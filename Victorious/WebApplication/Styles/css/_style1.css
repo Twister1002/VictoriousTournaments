@@ -1,0 +1,9 @@
+body {
+  background-color: #FFFFFF;
+}
+body p {
+  background-color: orange;
+}
+body p:before {
+  font-weight: bold;
+}
