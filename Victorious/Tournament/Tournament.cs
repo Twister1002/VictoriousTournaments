@@ -19,7 +19,7 @@ namespace Tournament
 
 		public Matchup()
 		{
-			winsNeeded = 0;
+			winsNeeded = 1;
 		}
 		public bool AddTeam(Team _t)
 		{
@@ -35,10 +35,19 @@ namespace Tournament
 			}
 			return false;
 		}
+		public void RemoveTeams()
+		{
+			teams[0] = null;
+			teams[1] = null;
+		}
+		public Team[] Teams
+		{
+			get { return teams; }
+		}
 	}
 
 	public class Tournament
-    {
+	{
 		private int totalTeams;
 		private List<Team> listTeams;
 		private List<List<Matchup>> listRounds; // each List<Matchup> is a particular round.
@@ -83,27 +92,62 @@ namespace Tournament
 
 		private void AssignTeams()
 		{
-			int firstRoundIndex = listRounds.Count - 1;
-			int numByes = totalTeams - (2 * listRounds[firstRoundIndex].Count);
+			/////////////////////////////////////////
+			// CURRENT STATE OF ALGORITHM:
+			// should work for (power of 2) teams: NEEDS TESTING
+			// does not work for bad numbers of teams
+			/////////////////////////////////////////
 
-			// Add teams to first round games
-			for (int rIndex = 0, tIndex = 0;
-				rIndex < (listRounds[firstRoundIndex].Count / 2);
-				++rIndex, ++tIndex)
+			int tIndex = 0;
+			listRounds[0][0].AddTeam(listTeams[tIndex++]);
+			listRounds[0][0].AddTeam(listTeams[tIndex++]);
+
+			for (int rIndex = 1; rIndex < listRounds.Count; ++rIndex)
 			{
-				(listRounds[firstRoundIndex])[rIndex].AddTeam(listTeams[numByes + tIndex]);
-				(listRounds[firstRoundIndex])[rIndex].AddTeam(listTeams[listTeams.Count - 1 - tIndex]);
+				for (int mIndex = 0; mIndex < listRounds[rIndex - 1].Count; ++mIndex)
+				{
+					// Move/add teams from future round
+					listRounds[rIndex][mIndex * 2].AddTeam(listRounds[rIndex - 1][mIndex].Teams[0]);
+					listRounds[rIndex][mIndex * 2 + 1].AddTeam(listRounds[rIndex - 1][mIndex].Teams[1]);
+					// REMOVE teams from future round
+					listRounds[rIndex - 1][mIndex].RemoveTeams();
+				}
 
-				++tIndex;
-				(listRounds[firstRoundIndex])[listRounds[firstRoundIndex].Count - 1 - rIndex]
-					.AddTeam(listTeams[numByes + tIndex]);
-				(listRounds[firstRoundIndex])[listRounds[firstRoundIndex].Count - 1 - rIndex]
-					.AddTeam(listTeams[listTeams.Count - 1 - tIndex]);
+				for (int preTeams = tIndex - 1; preTeams >= 0; --preTeams)
+				{
+					for (int mIndex = 0; mIndex < listRounds[rIndex].Count; ++mIndex)
+					{
+						if (listRounds[rIndex][mIndex].Teams[0] == listTeams[preTeams])
+						{
+							// Add new round's teams (according to seed)
+							listRounds[rIndex][mIndex].AddTeam(listTeams[tIndex++]);
+							break;
+						}
+					}
+				}
 			}
+#if false
+			//int firstRoundIndex = listRounds.Count - 1;
+			//int numByes = totalTeams - (2 * listRounds[firstRoundIndex].Count);
+
+			//// Add teams to first round games
+			//for (int rIndex = 0, tIndex = 0;
+			//	rIndex < (listRounds[firstRoundIndex].Count / 2);
+			//	++rIndex, ++tIndex)
+			//{
+			//	(listRounds[firstRoundIndex])[rIndex].AddTeam(listTeams[numByes + tIndex]);
+			//	(listRounds[firstRoundIndex])[rIndex].AddTeam(listTeams[listTeams.Count - 1 - tIndex]);
+
+			//	++tIndex;
+			//	(listRounds[firstRoundIndex])[listRounds[firstRoundIndex].Count - 1 - rIndex]
+			//		.AddTeam(listTeams[numByes + tIndex]);
+			//	(listRounds[firstRoundIndex])[listRounds[firstRoundIndex].Count - 1 - rIndex]
+			//		.AddTeam(listTeams[listTeams.Count - 1 - tIndex]);
+			//}
 
 			// Add teams to second round games
 			// ....
-
+#endif
 		}
 	}
 }
