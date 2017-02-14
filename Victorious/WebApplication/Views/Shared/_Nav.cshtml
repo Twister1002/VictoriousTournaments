@@ -1,0 +1,21 @@
+﻿<div id="navagation" class="navavation">
+    <div id="logo" class="logo">Logo</div>
+    <div class="searchBar text">
+        <input type="text" name="tournamentSearch" placeholder="Search Tournaments"/>
+        <button type="button">Search</button>
+    </div>
+    <ul>
+        <li class="navElement">@Html.ActionLink("Home", "Index")</li>
+        <li class="navElement">Tournaments</li>
+        <li class="rightBar">
+            <div class="login">
+                <p>Login</p>
+                <form method="post">
+                    <input type="text" name="user" maxlength="50" size="10" placeholder="Username"/>
+                    <input type="password" name="pass" size="10" placeholder="Password" />
+                    <input type="button" value="Login"/>
+                </form>
+            </div>
+        </li>
+    </ul>
+</div>

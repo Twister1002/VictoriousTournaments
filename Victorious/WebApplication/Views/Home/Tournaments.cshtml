@@ -1,0 +1,15 @@
+﻿
+@{
+    ViewBag.Title = "Tournaments";
+    Layout = "~/Views/Shared/_Header.cshtml";
+}
+
+<h2>Tournaments</h2>
+<ul>
+@{ 
+    for(int i = 1; i <= 10; i++)
+    {
+        <li>Tournament @i</li>
+    }
+}
+</ul>

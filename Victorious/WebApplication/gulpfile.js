@@ -17,7 +17,7 @@ var gulp = require("gulp"),
 //});
 
 gulp.task('less', function () {
-    gulp.src("Styles/less/*.less")
+    gulp.src("Styles/less/_style*.less")
     .pipe(less())
     .pipe(gulp.dest("Styles/css/"));
 });
