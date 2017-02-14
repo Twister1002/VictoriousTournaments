@@ -3,11 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tournament", "Tournament\Tournament.csproj", "{44165C54-471F-4697-A964-52D0B29007F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassData", "Tournament\ClassData.csproj", "{44165C54-471F-4697-A964-52D0B29007F1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication", "WebApplication\WebApplication.csproj", "{CE4C5D0C-EC20-454F-8223-7755E1EE8B0B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication.Tests", "WebApplication.Tests\WebApplication.Tests.csproj", "{CB4399E5-CE12-4B50-94AE-75947533A530}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTester", "ConsoleTester\ConsoleTester.csproj", "{008FA8DF-47C6-46E2-8E52-DA9AF2138BB8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{44165C54-471F-4697-A964-52D0B29007F1} = {44165C54-471F-4697-A964-52D0B29007F1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +32,10 @@ Global
 		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|Any CPU.Build.0 = Release|Any CPU
+		{008FA8DF-47C6-46E2-8E52-DA9AF2138BB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{008FA8DF-47C6-46E2-8E52-DA9AF2138BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{008FA8DF-47C6-46E2-8E52-DA9AF2138BB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{008FA8DF-47C6-46E2-8E52-DA9AF2138BB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
