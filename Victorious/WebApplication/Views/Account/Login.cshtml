@@ -1,0 +1,18 @@
+﻿@model WebApplication.Models.LoginViewModel
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+
+<h2>Register</h2>
+<div class="register">
+    <label>Registration</label>
+    @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+    {
+        <div class="registerUserName">
+            Username: <input type="text" name="Username" class="registerInput" />
+            Password: <input type="password" name="Password" class="registerInput" />
+            <input type="submit" />
+        </div>
+    }
+</div>

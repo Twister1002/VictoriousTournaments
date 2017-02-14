@@ -6,17 +6,9 @@
     </div>
     
     <ul>
-        <li class="navElement">@Html.ActionLink("Home", "Index", "Home")</li>
-        <li class="navElement">@Html.ActionLink("Tournaments", "Tournaments", "Home")</li>
-        <li class="rightBar">
-            <div class="login">
-                <p>Login</p>
-                <form method="post">
-                    <input type="text" name="user" maxlength="50" size="10" placeholder="Username"/>
-                    <input type="password" name="pass" size="10" placeholder="Password" />
-                    <input type="button" value="Login"/>
-                </form>
-            </div>
-        </li>
+        <li class="nav navElement">@Html.ActionLink("Home", "Index", "Home")</li>
+        <li class="nav navElement">@Html.ActionLink("Tournaments", "Tournaments", "Home")</li>
+        <li class="nav navElement navbar-right">@Html.ActionLink("Register", "Register", "Account")</li>
+        <li class="nav navElement navbar-right">@Html.ActionLink("Login", "Login", "Account")</li>
     </ul>
 </div>
