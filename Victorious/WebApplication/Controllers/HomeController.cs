@@ -8,14 +8,14 @@ namespace WebApplication.Controllers
 {
     public class HomeController : Controller
     {
-        // GET: Home
-        public ActionResult Index()
+        [Route("Tournaments/{name?}")]
+        public ActionResult Tournaments(String name)
         {
-            return View();
+            return View(name);
         }
 
-        [Route("Tournaments")]
-        public ActionResult Tournaments()
+        // GET: Home
+        public ActionResult Index()
         {
             return View();
         }

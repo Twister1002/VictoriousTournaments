@@ -77,3 +77,9 @@ input:not([type="button"]) {
   background-color: #171754;
   color: #FFFFFF;
 }
+a:link,
+a:hover,
+a:visited {
+  color: #FFFFFF;
+  text-decoration: none;
+}
