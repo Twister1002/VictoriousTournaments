@@ -9,10 +9,16 @@
     <label>Registration</label>
     @using (Html.BeginForm("Login", "Account", FormMethod.Post))
     {
-        <div class="registerUserName">
-            Username: <input type="text" name="Username" class="registerInput" />
-            Password: <input type="password" name="Password" class="registerInput" />
-            <input type="submit" />
+        <div class="login field">
+            <label for="Username">Username:</label>
+            <input type="text" name="Username" class="registerInput" placeholder="Username" />
+        </div>
+        <div class="login field">
+            <label for="Password">Password:</label>
+            <input type="password" name="Password" class="registerInput" placeholder="Password" />
+        </div>
+        <div class="login">
+            <input type="submit" value="Login" />
         </div>
     }
 </div>
