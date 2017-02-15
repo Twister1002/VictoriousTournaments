@@ -6,24 +6,24 @@ using System.Web;
 
 namespace WebApplication.Models
 {
-    public class LoginViewModel
+    public class AccountLoginViewModel
     {
         [Required(ErrorMessage = "Username is required")]
         [DataType(DataType.Text)]
-        [Display(Name="UserName")]
+        [Display(Name = "Username")]
         public string Username { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
-        [Display(Name ="Password")]
+        [Display(Name = "Password")]
         public string Password { get; set; }
     }
 
-    public class RegisterViewModel
+    public class AccountRegisterViewModel
     {
         [Required(ErrorMessage = "Username is required")]
         [DataType(DataType.Text)]
-        [Display(Name = "UserName")]
+        [Display(Name = "Username")]
         public string Username { get; set; }
 
         [Required(ErrorMessage = "Email is required")]
@@ -35,5 +35,10 @@ namespace WebApplication.Models
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
+
+        [Compare("Password", ErrorMessage = "Passwords do not match")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Verify Password")]
+        public string PasswordVerify { get; set; }
     }
 }

@@ -40,7 +40,7 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Account/Login")]
-        public ActionResult Login(LoginViewModel user)
+        public ActionResult Login(AccountLoginViewModel user)
         {
             if (ModelState.IsValid)
             {
@@ -81,7 +81,7 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Account/Register")]
-        public ActionResult Register(RegisterViewModel user)
+        public ActionResult Register(AccountRegisterViewModel user)
         {
 
             //If we hit this, then something failed 
