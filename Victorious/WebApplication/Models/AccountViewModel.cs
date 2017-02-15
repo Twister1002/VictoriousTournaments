@@ -8,12 +8,12 @@ namespace WebApplication.Models
 {
     public class LoginViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Username is required")]
         [DataType(DataType.Text)]
         [Display(Name="UserName")]
         public string Username { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
         [Display(Name ="Password")]
         public string Password { get; set; }
@@ -21,17 +21,17 @@ namespace WebApplication.Models
 
     public class RegisterViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Username is required")]
         [DataType(DataType.Text)]
         [Display(Name = "UserName")]
         public string Username { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Email is required")]
         [DataType(DataType.Text)]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }

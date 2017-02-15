@@ -8,7 +8,14 @@
     <ul>
         <li class="nav navElement">@Html.ActionLink("Home", "Index", "Home")</li>
         <li class="nav navElement">@Html.ActionLink("Tournaments", "Tournaments", "Home")</li>
+        @if (Session["UserId"] != null)
+        {
+            <li class="nav navbar-right">@Html.ActionLink("Account", "Index", "Account")</li>
+        }
+        else
+        {
         <li class="nav navElement navbar-right">@Html.ActionLink("Register", "Register", "Account")</li>
         <li class="nav navElement navbar-right">@Html.ActionLink("Login", "Login", "Account")</li>
+        }
     </ul>
 </div>
