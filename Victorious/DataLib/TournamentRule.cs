@@ -43,6 +43,6 @@ namespace DataLib
 
         public virtual Bracket Bracket { get; set; }
 
-        public virtual Tournament Tournament { get; set; }
+        //public virtual Tournament Tournament { get; set; }
     }
 }

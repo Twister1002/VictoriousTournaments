@@ -12,6 +12,11 @@ namespace DataLib
         {
         }
 
+        public static VictoriousDbContext Create()
+        {
+            return new VictoriousDbContext();
+        }
+
         public virtual DbSet<Bracket> Brackets { get; set; }
         public virtual DbSet<Match> Matches { get; set; }
         public virtual DbSet<TournamentRule> TournamentRules { get; set; }
@@ -59,9 +64,9 @@ namespace DataLib
             //    .WithMany(e => e.Tournaments)
             //    .Map(m => m.ToTable("UsersInTournament").MapLeftKey("TournamentID").MapRightKey("UserID"));
 
-            //modelBuilder.Entity<User>()
-            //    .Property(e => e.PhoneNumber)
-            //    .IsFixedLength();
+            modelBuilder.Entity<User>()
+                .Property(e => e.PhoneNumber)
+                .IsFixedLength();
 
             //modelBuilder.Entity<User>()
             //    .HasMany(e => e.Matches)
