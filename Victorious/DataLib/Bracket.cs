@@ -11,7 +11,7 @@ namespace DataLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Bracket()
         {
-            TournamentRules = new HashSet<TournamentRule>();
+            
         }
 
         public int BracketID { get; set; }
@@ -20,7 +20,7 @@ namespace DataLib
         [StringLength(50)]
         public string BracketType { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentRule> TournamentRules { get; set; }
+      
+        
     }
 }
