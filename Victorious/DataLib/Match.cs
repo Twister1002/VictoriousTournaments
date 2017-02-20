@@ -10,11 +10,11 @@ namespace DataLib
     {
         public int MatchID { get; set; }
 
-        public int TournamentID { get; set; }
-
         public int? ChallengerID { get; set; }
 
         public int? DefenderID { get; set; }
+
+        public int? TournamentID { get; set; }
 
         public int? WinnerID { get; set; }
 
@@ -24,20 +24,24 @@ namespace DataLib
 
         public int RoundNumber { get; set; }
 
+        public bool IsBye { get; set; }
+
         public DateTime StartDateTime { get; set; }
 
         public DateTime EndDateTime { get; set; }
 
         public TimeSpan? MatchDuration { get; set; }
 
-        public bool? IsBye { get; set; }
+        [ForeignKey("ChallengerID")]
+        public User Challenger { get; set; }
 
-        public virtual User User { get; set; }
+        [ForeignKey("DefenderID")]
+        public User Defender { get; set; }
 
-        public virtual User User1 { get; set; }
+        [ForeignKey("TournamentID")]
+        public Tournament Tournament { get; set; }
 
-        public virtual Tournament Tournament { get; set; }
-
-        public virtual User User2 { get; set; }
+        [ForeignKey("WinnerID")]
+        public User Winner { get; set; }
     }
 }

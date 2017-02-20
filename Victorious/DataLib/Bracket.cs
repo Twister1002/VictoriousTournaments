@@ -10,8 +10,7 @@ namespace DataLib
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Bracket()
-        {
-            
+        {         
         }
 
         public int BracketID { get; set; }
@@ -20,7 +19,5 @@ namespace DataLib
         [StringLength(50)]
         public string BracketType { get; set; }
 
-      
-        
     }
 }

@@ -8,18 +8,10 @@ namespace DataLib
 
     public partial class TournamentRule
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public TournamentRule()
-        {
-
-        }
-
         [Key]
-        public int TournamentRulesID { get; set; }
+        public int TournamnetRulesID { get; set; }
 
         public int TournamentID { get; set; }
-
-        public int BracketID { get; set; }
 
         public int NumberOfRounds { get; set; }
 
@@ -35,14 +27,15 @@ namespace DataLib
 
         public bool IsPublic { get; set; }
 
+        public int BracketID { get; set; }
+
         public DateTime CutoffDate { get; set; }
 
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }
 
-        public virtual Bracket Bracket { get; set; }
+        public Bracket Bracket { get; set; }
 
-        //public virtual Tournament Tournament { get; set; }
     }
 }

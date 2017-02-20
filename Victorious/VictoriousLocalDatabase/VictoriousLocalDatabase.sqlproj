@@ -62,7 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Brackets.sql" />
-    <Build Include="Byes.sql" />
     <Build Include="Matches.sql" />
     <Build Include="TournamentRules.sql" />
     <Build Include="Tournaments.sql" />

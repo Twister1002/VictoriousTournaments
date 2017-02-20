@@ -5,22 +5,16 @@ namespace DataLib
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
-    using System.Linq;
+
     public partial class Tournament
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Tournament()
         {
-          
+                      
         }
-
+        [Key]
         public int TournamentID { get; set; }
-
-        public int TournamentRulesID { get; set; }
-
-        public int CreatedByID { get; set; }
-
-        public int LastEditedByID { get; set; }
 
         [Required]
         public string Title { get; set; }
@@ -30,13 +24,22 @@ namespace DataLib
 
         public DateTime CreatedOn { get; set; }
 
+        public int CreatedByID { get; set; }
+
+        public int? WinnerID { get; set; }
+
         public DateTime LastEditedOn { get; set; }
 
-        public IQueryable<Match> Matches { get; set; }
+        public int LastEditedByID { get; set; }
 
-        public TournamentRule TournamentRules { get; set; }
+        public virtual TournamentRule TournamentRules { get; set; }
+
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public IQueryable<User> Users { get; set; }
+        public virtual ICollection<Match> Matches { get; set; }
+
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<User> Users { get; set; }
     }
 }

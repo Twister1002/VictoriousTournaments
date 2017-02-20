@@ -53,6 +53,19 @@
   <ItemGroup>
     <Compile Include="Bracket.cs" />
     <Compile Include="Match.cs" />
+    <Compile Include="Migrations\201702201702440_InitialCreate.cs" />
+    <Compile Include="Migrations\201702201702440_InitialCreate.Designer.cs">
+      <DependentUpon>201702201702440_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702201717334_TournamentRulesKeyUpdate.cs" />
+    <Compile Include="Migrations\201702201717334_TournamentRulesKeyUpdate.Designer.cs">
+      <DependentUpon>201702201717334_TournamentRulesKeyUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702201810590_FixedUserMatches.cs" />
+    <Compile Include="Migrations\201702201810590_FixedUserMatches.Designer.cs">
+      <DependentUpon>201702201810590_FixedUserMatches.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tournament.cs" />
     <Compile Include="TournamentRule.cs" />
@@ -62,6 +75,17 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201702201702440_InitialCreate.resx">
+      <DependentUpon>201702201702440_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702201717334_TournamentRulesKeyUpdate.resx">
+      <DependentUpon>201702201717334_TournamentRulesKeyUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702201810590_FixedUserMatches.resx">
+      <DependentUpon>201702201810590_FixedUserMatches.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
