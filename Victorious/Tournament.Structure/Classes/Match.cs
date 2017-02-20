@@ -11,7 +11,8 @@ namespace Tournament.Structure
 		// Variables
 		private uint id;
 		private ushort winsNeeded;
-		private IPlayer[] players;
+		//private IPlayer[] players;
+		private int[] playerIndexes;
 		private ushort[] score;
 		private int bracketId;
 		private int roundNumber;
@@ -29,10 +30,15 @@ namespace Tournament.Structure
 			get { return winsNeeded; }
 			set { winsNeeded = value; }
 		}
-		public IPlayer[] Players
+		//public IPlayer[] Players
+		//{
+		//	get { return players; }
+		//	set { players = value; }
+		//}
+		public int[] PlayerIndexes
 		{
-			get { return players; }
-			set { players = value; }
+			get { return playerIndexes; }
+			set { playerIndexes = value; }
 		}
 		public ushort[] Score
 		{
@@ -66,11 +72,13 @@ namespace Tournament.Structure
 		}
 
 		// Ctors
+		public Match() : this(0) { }
 		public Match(uint _id)
 		{
 			id = _id;
 			winsNeeded = 1;
-			players = new IPlayer[2] { null, null };
+			//players = new IPlayer[2] { null, null };
+			playerIndexes = new int[2] { -1, -1 };
 			score = new ushort[2] { 0, 0 };
 			bracketId = -1;
 			roundNumber = -1;
@@ -78,11 +86,12 @@ namespace Tournament.Structure
 			prevMatchIndexes = new List<int>();
 			nextMatchIndex = -1;
 		}
-		public Match(uint _id, ushort _winsNeeded, IPlayer[] _players, ushort[] _score, int _bracketId, int _roundNumber, int _matchIndex, List<int> _prevMatchIndexes, int _nextMatchIndex)
+		public Match(uint _id, ushort _winsNeeded, /*IPlayer[] _players*/ int[] _playerIndexes, ushort[] _score, int _bracketId, int _roundNumber, int _matchIndex, List<int> _prevMatchIndexes, int _nextMatchIndex)
 		{
 			id = _id;
 			winsNeeded = _winsNeeded;
-			players = _players;
+			//players = _players;
+			playerIndexes = _playerIndexes;
 			score = _score;
 			bracketId = _bracketId;
 			roundNumber = _roundNumber;
@@ -94,32 +103,60 @@ namespace Tournament.Structure
 		// Methods
 		public bool AddPlayer(IPlayer _p)
 		{
-			foreach (IPlayer p in Players)
-			{
-				if (p.Id == _p.Id)
-				{
-					return false;
-				}
-			}
+			//foreach (IPlayer p in Players)
+			//{
+			//	if (p.Id == _p.Id)
+			//	{
+			//		return false;
+			//	}
+			//}
+			//for (int i = 0; i < 2; ++i)
+			//{
+			//	if (null == players[i])
+			//	{
+			//		players[i] = _p;
+			//		return true;
+			//	}
+			//}
+			return false;
+		}
+		public bool AddPlayer(int _playerIndex)
+		{
 			for (int i = 0; i < 2; ++i)
 			{
-				if (null == players[i])
+				if (-1 == PlayerIndexes[i])
 				{
-					players[i] = _p;
+					PlayerIndexes[i] = _playerIndex;
 					return true;
 				}
 			}
 			return false;
 		}
-		public bool AddWin(int _playerIndex)
+		public bool RemovePlayer(int _playerIndex)
 		{
-			if(score[_playerIndex] >= WinsNeeded)
+			for (int i = 0; i < 2; ++i)
+			{
+				if (PlayerIndexes[i] == _playerIndex)
+				{
+					PlayerIndexes[i] = -1;
+					return true;
+				}
+			}
+			return false;
+		}
+		public void RemovePlayers()
+		{
+			PlayerIndexes[0] = PlayerIndexes[1] = -1;
+		}
+		public bool AddWin(int _index)
+		{
+			if(score[_index] >= WinsNeeded)
 			{
 				return false;
 			}
 
-			score[_playerIndex] += 1;
-			if (score[_playerIndex] == WinsNeeded)
+			score[_index] += 1;
+			if (score[_index] == WinsNeeded)
 			{
 				// TODO : Trigger victory condition/routine
 			}
@@ -134,5 +171,6 @@ namespace Tournament.Structure
 			prevMatchIndexes.Add(_i);
 			return true;
 		}
+
 	}
 }

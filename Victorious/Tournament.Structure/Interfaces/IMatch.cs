@@ -11,7 +11,8 @@ namespace Tournament.Structure
 		// Properties
 		uint Id { get; }
 		ushort WinsNeeded { get; set; }
-		IPlayer[] Players { get; set; }
+		//IPlayer[] Players { get; set; }
+		int[] PlayerIndexes { get; set; }
 		ushort[] Score { get; set; }
 		int BracketId { get; set; }
 		int RoundNumber { get; set; }
@@ -21,7 +22,10 @@ namespace Tournament.Structure
 
 		// Methods
 		bool AddPlayer(IPlayer _p);
-		bool AddWin(int _playerIndex);
+		bool AddPlayer(int _playerIndex);
+		bool RemovePlayer(int _playerIndex);
+		void RemovePlayers();
+		bool AddWin(int _index);
 		bool AddPrevMatchIndex(int _i);
 	}
 }

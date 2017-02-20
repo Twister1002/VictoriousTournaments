@@ -105,7 +105,10 @@ namespace Tournament.Structure
 		}
 		public bool CreateSingleElimBracket()
 		{
-			return false;
+			Brackets.Clear();
+
+			Brackets.Add(new SingleElimBracket(Players));
+			return true;
 		}
 	}
 }
