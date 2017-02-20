@@ -7,9 +7,15 @@ namespace WebApplication.Models
 {
     public class UserModel
     {
-        public String username { get; set; }
-        public String password { get; set; }
-        public String email { get; set; }
+        public String Username { get; private set; }
+        private String Password;
+        public String Email { get; set; }
 
+        public UserModel(AccountRegisterViewModel model)
+        {
+            Username = model.Username;
+            Password = model.Password;
+            Email = model.Email;
+        }
     }
 }

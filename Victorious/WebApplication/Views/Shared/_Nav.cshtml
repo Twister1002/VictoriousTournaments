@@ -10,7 +10,9 @@
         <li class="nav navElement">@Html.ActionLink("Tournaments", "Tournaments", "Home")</li>
         @if (Session["UserId"] != null)
         {
+            <li class="nav navbar-right">@Html.ActionLink("Create Tournament", "Create", "Tournament")</li>
             <li class="nav navbar-right">@Html.ActionLink("Account", "Index", "Account")</li>
+            
         }
         else
         {
