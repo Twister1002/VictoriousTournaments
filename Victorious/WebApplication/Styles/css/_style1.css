@@ -1,0 +1,85 @@
+/* Light Blue */
+/* Main Primary color */
+/* Dark Blue */
+/* Main Secondary color (1) */
+/* Green */
+/* Main Secondary color (2) */
+/* Tan */
+/* Main Complement color */
+#navagation {
+  position: relative;
+  background-color: #456985;
+  border-radius: .4em;
+  vertical-align: middle;
+  padding: 0em 1% 0em 1%;
+}
+#navagation > * {
+  padding-bottom: 1em;
+}
+#navagation #logo {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  width: 10em;
+  height: 5em;
+  background-color: green;
+}
+#navagation .searchBar {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  width: 15em;
+  background-color: orange;
+}
+#navagation .searchBar input {
+  padding: .25em;
+  width: 13em;
+}
+#navagation ul {
+  background-color: purple;
+  position: relative;
+  display: inline-block;
+  list-style-type: none;
+  vertical-align: middle;
+  padding: 0em;
+  margin: 0em;
+  height: 5em;
+}
+#navagation ul li {
+  float: left;
+  height: 100%;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0em 1em 0em 1em;
+}
+#navagation ul li .login {
+  background-color: #000000;
+  display: block;
+  width: 7em;
+  height: 100%;
+}
+#navagation ul li .login > * {
+  padding: 0em;
+  margin: 0em;
+}
+#navagation ul li .login input {
+  width: 100%;
+}
+#navagation ul li.navElement:hover {
+  background-color: #10334E;
+}
+body {
+  background-color: #264C69;
+  color: #FFFFFF;
+}
+input:not([type="button"]) {
+  background-color: #171754;
+  color: #FFFFFF;
+}
+a:link,
+a:hover,
+a:visited {
+  color: #FFFFFF;
+  text-decoration: none;
+}

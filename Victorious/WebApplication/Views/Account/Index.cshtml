@@ -1,0 +1,12 @@
+﻿
+@{
+    ViewBag.Title = "View";
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+
+<h2>Account Display Page</h2>
+
+<div class="accountInfo">
+    <label>Hello @Session["UserName"]</label>
+    <div class="logout">@Html.ActionLink("Logout", "Logout", "Account")</div>
+</div>
