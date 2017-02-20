@@ -12,7 +12,7 @@ namespace ConsoleTester
 	{
 		static void Main(string[] args)
 		{
-			Tournament t = new Tournament(9);
+			Tournament t = new Tournament(8);
 			t.PrintInfo();
 
 			Console.ReadLine();

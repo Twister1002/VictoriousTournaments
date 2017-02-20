@@ -9,6 +9,15 @@ namespace ClassData
 	public class Team
 	{
 		// stuff
+		public int Id { get; set; }
+		public string Name { get; set; }
+
+		public Team(int _id) : this(_id, "") { }
+		public Team(int _id, string _name)
+		{
+			Id = _id;
+			Name = _name;
+		}
 	}
 
 	public class Tournament
@@ -23,7 +32,7 @@ namespace ClassData
 			listTeams = new List<Team>();
 			for (int i = 0; i < totalTeams; ++i)
 			{
-				listTeams.Add(new Team());
+				listTeams.Add(new Team(i));
 			}
 			listRounds = new List<List<Matchup>>();
 
@@ -46,9 +55,18 @@ namespace ClassData
 			Console.WriteLine("---------------");
 			foreach (Matchup m in listRounds[listRounds.Count - 1])
 			{
-				foreach (int tIndex in m.TeamIndexes)
+				//foreach (int tIndex in m.TeamIndexes)
+				//{
+				//	Console.WriteLine("Seed: " + (tIndex + 1));
+				//}
+				for (int i = 0; i < 2; ++i)
 				{
-					Console.WriteLine("Seed: " + (tIndex + 1));
+					Console.Write("S: " + m.Teams[i].Id);
+					if (listTeams[m.Teams[i].Id].Name == m.Teams[i].Name)
+					{
+						Console.Write(" (names match): " + m.Teams[i].Name);
+					}
+					Console.WriteLine();
 				}
 				Console.WriteLine();
 			}
@@ -56,10 +74,15 @@ namespace ClassData
 			Console.WriteLine("---------------");
 			foreach(Matchup m in listRounds[listRounds.Count - 2])
 			{
-				foreach (int tIndex in m.TeamIndexes)
+				//foreach (int tIndex in m.TeamIndexes)
+				//{
+				//	string seedStr = (tIndex >= 0) ? (tIndex + 1).ToString() : "winner";
+				//	Console.WriteLine("Seed: " + seedStr);
+				//}
+				for (int i = 0; i < 2; ++i)
 				{
-					string seedStr = (tIndex >= 0) ? (tIndex + 1).ToString() : "winner";
-					Console.WriteLine("Seed: " + seedStr);
+					string seedStr = (m.Teams[i] == null) ? "winner" : m.Teams[i].Id.ToString();
+					Console.WriteLine("S: " + seedStr);
 				}
 				Console.WriteLine();
 			}
@@ -107,8 +130,10 @@ namespace ClassData
 		{
 			// Assign top two seeds to final match
 			int tIndex = 0;
-			listRounds[0][0].AddTeam(tIndex++);
-			listRounds[0][0].AddTeam(tIndex++);
+			//listRounds[0][0].AddTeam(tIndex++);
+			//listRounds[0][0].AddTeam(tIndex++);
+			listRounds[0][0].AddTeam(listTeams[tIndex++]);
+			listRounds[0][0].AddTeam(listTeams[tIndex++]);
 
 			for (int rIndex = 0; rIndex + 1 < listRounds.Count; ++rIndex)
 			{
@@ -124,15 +149,15 @@ namespace ClassData
 
 					for (int mIndex = 0; mIndex < listRounds[rIndex].Count; ++mIndex)
 					{
-						foreach (int t in listRounds[rIndex][mIndex].TeamIndexes)
-						{
-							if (t >= tIndex - prevRoundMatchups)
-							{
-								listRounds[rIndex][mIndex].AddPrevMatchupIndex(prevMatchupIndex);
-								listRounds[rIndex + 1][prevMatchupIndex].NextMatchupIndex = mIndex;
-								++prevMatchupIndex;
-							}
-						}
+						//foreach (int t in listRounds[rIndex][mIndex].TeamIndexes)
+						//{
+						//	if (t >= tIndex - prevRoundMatchups)
+						//	{
+						//		listRounds[rIndex][mIndex].AddPrevMatchupIndex(prevMatchupIndex);
+						//		listRounds[rIndex + 1][prevMatchupIndex].NextMatchupIndex = mIndex;
+						//		++prevMatchupIndex;
+						//	}
+						//}
 					}
 				}
 
@@ -146,11 +171,13 @@ namespace ClassData
 
 						if (2 == listRounds[rIndex][mIndex].PrevMatchupIndexes.Count)
 						{
-							ReassignTeam(listRounds[rIndex][mIndex].TeamIndexes[0],
+							ReassignTeam(
+								listRounds[rIndex][mIndex].Teams[0],
 								listRounds[rIndex][mIndex],
 								listRounds[rIndex + 1][(listRounds[rIndex][mIndex].PrevMatchupIndexes[pIndex++])]);
 						}
-						ReassignTeam(listRounds[rIndex][mIndex].TeamIndexes[1],
+						ReassignTeam(
+							listRounds[rIndex][mIndex].Teams[1],
 							listRounds[rIndex][mIndex],
 							listRounds[rIndex + 1][(listRounds[rIndex][mIndex].PrevMatchupIndexes[pIndex])]);
 					}
@@ -160,29 +187,60 @@ namespace ClassData
 				{
 					for (int mIndex = 0; mIndex < prevRoundMatchups; ++mIndex)
 					{
-						if (listRounds[rIndex + 1][mIndex].TeamIndexes.Contains(preTeams))
+						//if (listRounds[rIndex + 1][mIndex].TeamIndexes.Contains(preTeams))
+						//{
+						//	// Add previous round's teams (according to seed) from the master list
+						//	listRounds[rIndex + 1][mIndex].AddTeam(tIndex++);
+						//	break;
+						//}
+						foreach (Team t in listRounds[rIndex + 1][mIndex].Teams)
 						{
-							// Add previous round's teams (according to seed) from the master list
-							listRounds[rIndex + 1][mIndex].AddTeam(tIndex++);
-							break;
+							if (null != t
+								&& t.Id == preTeams)
+							{
+								// Add previous round's teams (according to seed) from the master list
+								listRounds[rIndex + 1][mIndex].AddTeam(listTeams[tIndex++]);
+								break;
+							}
 						}
 					}
 				}
 			}
 		}
 
-		private bool ReassignTeam(int _tIndex, Matchup _currMatchup, Matchup _newMatchup)
+		private bool ReassignTeam(Team _t, Matchup _currMatchup, Matchup _newMatchup)
 		{
-			if (_currMatchup.TeamIndexes.Contains(_tIndex))
+			for (int i = 0; i < 2; ++i)
 			{
-				_currMatchup.RemoveTeam(_tIndex);
-				_newMatchup.AddTeam(_tIndex);
-				if (_newMatchup.TeamIndexes.Contains(_tIndex))
+				if (null != _currMatchup.Teams[i]
+					&& _currMatchup.Teams[i].Id == _t.Id)
 				{
+					_currMatchup.RemoveTeam(_t);
+					_newMatchup.AddTeam(_t);
+					
+					for (int j = 0; j < 2; ++j)
+					{
+						if (null != _newMatchup.Teams[j]
+							&& _newMatchup.Teams[j].Id == _t.Id)
+						{
+							_newMatchup.Teams[j].Name += "a";
+						}
+					}
 					return true;
 				}
 			}
 			return false;
+
+			//if (_currMatchup.Teams.Contains(_t))
+			//{
+			//	_currMatchup.RemoveTeam(_tIndex);
+			//	_newMatchup.AddTeam(_tIndex);
+			//	if (_newMatchup.TeamIndexes.Contains(_tIndex))
+			//	{
+			//		return true;
+			//	}
+			//}
+			//return false;
 		}
 
 	}
