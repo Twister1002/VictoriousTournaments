@@ -22,15 +22,15 @@ namespace DataLib
         [Column(TypeName = "text")]
         public string Description { get; set; }
 
-        public DateTime CreatedOn { get; set; }
+        public DateTime? CreatedOn { get; set; }
 
-        public int CreatedByID { get; set; }
+        public int? CreatedByID { get; set; }
 
         public int? WinnerID { get; set; }
 
-        public DateTime LastEditedOn { get; set; }
+        public DateTime? LastEditedOn { get; set; }
 
-        public int LastEditedByID { get; set; }
+        public int? LastEditedByID { get; set; }
 
         public virtual TournamentRule TournamentRules { get; set; }
 

@@ -5,18 +5,18 @@ namespace DataLib
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    public partial class VictoriousDbContext : DbContext
+     partial class VictoriousDbContext : DbContext
     {
         public VictoriousDbContext()
             : base("name=VictoriousDbContext")
         {
         }
 
-        public virtual DbSet<Bracket> Brackets { get; set; }
-        public virtual DbSet<Match> Matches { get; set; }
-        public virtual DbSet<TournamentRule> TournamentRules { get; set; }
-        public virtual DbSet<Tournament> Tournaments { get; set; }
-        public virtual DbSet<User> Users { get; set; }
+        public DbSet<Bracket> Brackets { get; set; }
+        public DbSet<Match> Matches { get; set; }
+        public DbSet<TournamentRule> TournamentRules { get; set; }
+        public DbSet<Tournament> Tournaments { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
