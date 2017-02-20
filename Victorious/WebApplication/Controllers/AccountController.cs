@@ -5,13 +5,17 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebApplication.Models;
+using DataLib;
 
 namespace WebApplication.Controllers
 {
     public class AccountController : Controller
     {
         // Remove when we have ability to access database
-        List<UserModel> users = new List<UserModel>();
+        List<User> users = new List<User>();
+
+        //users.(new User{ FirstName = "User", LastName = "1", UserName="admin", UserID=1, Password="pass" });
+        //users.Add(new User { FirstName="User", LastName="2", UserName="User", UserID=2, Password="pass2" });
 
         // GET: Account
         [Route("Account")]
@@ -49,17 +53,17 @@ namespace WebApplication.Controllers
             {
                 //We need now to check the login credentias of the user
                 //Query for the username
-                UserModel user = users.Find(u => u.Username == viewModel.Username);
-                //if (user.Username == "admin")
-                //{
-                //    //Verfy the password is correct
-                //    if (user.Password == "pass")
-                //    {
-                //        Session["UserId"] = 0;
-                //        Session["UserName"] = user.Username;
-                //        return RedirectToAction("Index", "Account");
-                //    }
-                //}
+                //User user = users.Find(u => u.UserName == viewModel.Username);
+                if (viewModel.Username == "admin")
+                {
+                    //Verfy the password is correct
+                    if (viewModel.Password == "pass")
+                    {
+                        Session["UserId"] = 0;
+                        Session["UserName"] = viewModel.Username;
+                        return RedirectToAction("Index", "Account");
+                    }
+                }
             }
             else
             {
@@ -89,7 +93,7 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (users.Select(u => u.Username == user.Email).Count() > 0)
+                if (users.Select(u => u.UserName == user.Email).Count() > 0)
                 {
                     // There is a user that exists with this username all ready. Send the back with an error
                     return View();
@@ -101,7 +105,11 @@ namespace WebApplication.Controllers
                     // Email Verification?
 
                     // Add the user to the database
-                    users.Add(new UserModel(user));
+                    //users.Add(new User(user));
+                    //User dbUser = new User();
+                    //dbUser.UserName = user.Username;
+                    //dbUser.Password = user.Password;
+                    //dbUser.Email = user.Email;
 
                     // Let's just have the user login 
                     return RedirectToAction("Login", "Account");

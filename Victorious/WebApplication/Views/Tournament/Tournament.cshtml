@@ -6,4 +6,22 @@
 }
 
 <h2>Tournament </h2>
+@if (Model != null)
+{
+    <p>Org: @Model.org</p>
+    <p>Name: @Model.name</p>
+    <p>GUiD: @Model.guid</p>
+    <p>Rounds: @Model.rounds</p>
 
+    <div id="Tournament">
+        @for (int i = 0; i < Model.rounds; i++)
+        {
+            <div class="match">
+                <ul>
+                    <li class="team">Challenger</li>
+                    <li class="team">Defender</li>
+                </ul>
+            </div>
+        }
+    </div>
+}

@@ -13,14 +13,19 @@ namespace WebApplication.Controllers
         [Route("Tournament")]
         public ActionResult Index()
         {
-            return View();
+            return RedirectToAction("Search");
         }
 
-        // GET: Tournament/{name}
+        [Route("Tournament/Search")]
+        public ActionResult Search()
+        {
+            return View("Search");
+        }
+        
         [Route("Tournament/{guid}")]
         public ActionResult Tournament(String guid)
         {
-            TournamentModel model = new TournamentModel("Hi");
+            TournamentModel model = new TournamentModel(guid);
 
             return View("Tournament", model);
         }
@@ -28,10 +33,12 @@ namespace WebApplication.Controllers
         [Route("Tournament/{org}/{guid}")]
         public ActionResult TournamentOrginization(String org, String guid)
         {
-            return View();
+            TournamentModel model = new TournamentModel("LALA-LALA-LALA-LALALA", "Merp", "This is fancy!");
+            return View("Tournament", model);
         }
 
         // GET: Tournament/Create
+        [Route("Tournament/Create")]
         public ActionResult Create()
         {
             return View();
@@ -39,7 +46,7 @@ namespace WebApplication.Controllers
 
         // POST: Tournament/Create
         [HttpPost]
-        public ActionResult Create(TournamentModel model)
+        public ActionResult Create(TournamentViewModel model)
         {
             try
             {
