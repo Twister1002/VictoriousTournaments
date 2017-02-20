@@ -62,14 +62,20 @@ namespace Tournament.Structure
 		}
 
 		// Ctors
+		public Tournament()
+			: this(0, "", new List<IPlayer>(), new List<IBracket>(), 0, false)
+		{ }
 		public Tournament(uint _id)
+			: this(_id, "", new List<IPlayer>(), new List<IBracket>(), 0, false)
+		{ }
+		public Tournament(uint _id, string _title, List<IPlayer> _players, List<IBracket> _brackets, float _purse, bool _isPublic)
 		{
 			id = _id;
-			title = "";
-			players = new List<IPlayer>();
-			brackets = new List<IBracket>();
-			prizePurse = 0;
-			isPublic = false;
+			title = _title;
+			players = _players;
+			brackets = _brackets;
+			prizePurse = _purse;
+			isPublic = _isPublic;
 		}
 
 		// Methods
@@ -96,6 +102,10 @@ namespace Tournament.Structure
 			}
 			brackets.Add(_b);
 			return true;
+		}
+		public bool CreateSingleElimBracket()
+		{
+			return false;
 		}
 	}
 }

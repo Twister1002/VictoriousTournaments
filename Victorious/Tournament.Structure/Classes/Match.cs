@@ -78,6 +78,18 @@ namespace Tournament.Structure
 			prevMatchIndexes = new List<int>();
 			nextMatchIndex = -1;
 		}
+		public Match(uint _id, ushort _winsNeeded, IPlayer[] _players, ushort[] _score, int _bracketId, int _roundNumber, int _matchIndex, List<int> _prevMatchIndexes, int _nextMatchIndex)
+		{
+			id = _id;
+			winsNeeded = _winsNeeded;
+			players = _players;
+			score = _score;
+			bracketId = _bracketId;
+			roundNumber = _roundNumber;
+			matchIndex = _matchIndex;
+			prevMatchIndexes = _prevMatchIndexes;
+			nextMatchIndex = _nextMatchIndex;
+		}
 
 		// Methods
 		public bool AddPlayer(IPlayer _p)

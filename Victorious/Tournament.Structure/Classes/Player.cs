@@ -50,6 +50,14 @@ namespace Tournament.Structure
 			lastname = "";
 			email = "";
 		}
+		public Player(uint _id, string _username, string _firstname, string _lastname, string _email)
+		{
+			id = _id;
+			username = _username;
+			firstname = _firstname;
+			lastname = _lastname;
+			email = _email;
+		}
 
 		// Methods
 
