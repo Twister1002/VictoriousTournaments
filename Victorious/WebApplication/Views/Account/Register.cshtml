@@ -1,0 +1,35 @@
+﻿@model WebApplication.Models.AccountRegisterViewModel
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+
+<div class="register">
+    <h2>Registration</h2>
+    @using (Html.BeginForm("RegisterUser", "Account", FormMethod.Post))
+    {
+        <div class="register field">
+           @Html.LabelFor(m => m.Username)
+           <input type="text" name="Username" class="registerInput" placeholder="Username"/>
+            @Html.ValidationMessageFor(m => m.Username)
+        </div>
+        <div class="register field">
+            @Html.LabelFor(m => m.Email)
+            <input type="text" name="Email" class="registerInput" placeholder="Email" />
+            @Html.ValidationMessageFor(m => m.Email)
+        </div>
+        <div class="register field">
+            @Html.LabelFor(m => m.Password)
+            <input type="password" name="Password" class="registerInput" placeholder="Password" />
+            @Html.ValidationMessageFor(m => m.Password)
+        </div>
+        <div class="register field">
+            @Html.LabelFor(m => m.PasswordVerify)
+            <input type="password" name="PasswordVerify" class="registerInput" placeholder="Verify Password" />
+            @Html.ValidationMessageFor(m => m.PasswordVerify)
+        </div>
+        <div class="register">
+            <input type="submit" value="Register"/>
+        </div>
+    }
+</div>

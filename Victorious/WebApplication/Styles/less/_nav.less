@@ -1,0 +1,75 @@
+﻿#navagation {
+    position:relative;
+    background-color: @color-primary-1;
+    border-radius: .4em;
+    vertical-align: middle;
+    padding: 0em 1% 0em 1%;
+
+    > *{
+        padding-bottom: 1em;
+    }
+
+    #logo {
+        position:relative;
+        display:inline-block; 
+        text-align:center;
+        vertical-align: middle;
+        width: 10em;
+        height: 5em;
+        
+        background-color:green;
+    }
+
+    .searchBar {
+        position:relative;
+        display:inline-block; 
+        vertical-align: middle;
+        width: 15em;
+
+        background-color: orange;
+        input {
+            padding: .25em;
+            width: 13em;
+        }
+    }
+    
+    ul {
+        background-color:purple;
+        position:relative;
+        display:inline-block; 
+        list-style-type: none;
+        vertical-align: middle;
+        padding: 0em;
+        margin: 0em;
+        height: 5em;
+        
+        li {
+            float: left;
+            text-align: center;
+            height: 100%;
+            text-align:center;
+            vertical-align: middle;
+            padding: 0em 1em 0em 1em;
+
+            .login {
+                > * {
+                    padding: 0em;
+                    margin: 0em;
+                }
+
+                input {
+                    width: 100%;
+                }
+
+                background-color: @black;
+                display:block;
+                width: 7em;
+                height: 100%;
+            }
+        }
+
+        li.navElement:hover {
+            background-color: @color-primary-0;
+        }
+    }
+}
