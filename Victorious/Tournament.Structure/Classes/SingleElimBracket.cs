@@ -8,11 +8,11 @@ namespace Tournament.Structure
 {
 	public class SingleElimBracket : Bracket
 	{
+		#region Variables & Properties
 		// Variables
 		private uint id;
 		private List<IPlayer> players;
 		private List<List<IMatch>> rounds;
-
 		// Properties
 		public override uint Id
 		{
@@ -28,8 +28,9 @@ namespace Tournament.Structure
 			get { return rounds; }
 			set { rounds = value; }
 		}
+		#endregion
 
-		// Ctors
+		#region Ctors
 		public SingleElimBracket(uint _id)
 		{
 			id = _id;
@@ -45,8 +46,8 @@ namespace Tournament.Structure
 
 			CreateBracket();
 		}
-
-		// Methods
+		#endregion
+		#region Public Methods
 		public override bool AddPlayer(IPlayer _p)
 		{
 			foreach (IPlayer p in Players)
@@ -87,6 +88,8 @@ namespace Tournament.Structure
 			rounds[_roundIndex].Add(_m);
 			return true;
 		}
+		#endregion
+		#region Private Methods
 		private bool ReassignPlayer(int _pIndex, IMatch _currMatch, IMatch _newMatch)
 		{
 			if (_currMatch.PlayerIndexes.Contains(_pIndex))
@@ -216,5 +219,6 @@ namespace Tournament.Structure
 			}
 			#endregion
 		}
+		#endregion
 	}
 }
