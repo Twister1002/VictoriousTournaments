@@ -213,7 +213,7 @@ namespace ClassData
 			for (int i = 0; i < 2; ++i)
 			{
 				if (null != _currMatchup.Teams[i]
-					&& _currMatchup.Teams[i].Id == _t.Id)
+					&& _currMatchup.Teams[i] == _t)
 				{
 					_currMatchup.RemoveTeam(_t);
 					_newMatchup.AddTeam(_t);
@@ -221,7 +221,7 @@ namespace ClassData
 					for (int j = 0; j < 2; ++j)
 					{
 						if (null != _newMatchup.Teams[j]
-							&& _newMatchup.Teams[j].Id == _t.Id)
+							&& _newMatchup.Teams[j] == _t)
 						{
 							_newMatchup.Teams[j].Name += "a";
 						}
