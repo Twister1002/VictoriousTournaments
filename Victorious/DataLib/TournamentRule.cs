@@ -11,11 +11,11 @@ namespace DataLib
         [Key]
         public int TournamnetRulesID { get; set; }
 
-        public int TournamentID { get; set; }
+        public int? TournamentID { get; set; }
 
-        public int NumberOfRounds { get; set; }
+        public int? NumberOfRounds { get; set; }
 
-        public bool HasEntryFee { get; set; }
+        public bool? HasEntryFee { get; set; }
 
         [Column(TypeName = "money")]
         public decimal? EntryFee { get; set; }
@@ -25,15 +25,15 @@ namespace DataLib
 
         public int? NumberOfPlayers { get; set; }
 
-        public bool IsPublic { get; set; }
+        public bool? IsPublic { get; set; }
 
-        public int BracketID { get; set; }
+        public int? BracketID { get; set; }
 
-        public DateTime CutoffDate { get; set; }
+        public DateTime? CutoffDate { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         public Bracket Bracket { get; set; }
 

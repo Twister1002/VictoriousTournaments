@@ -16,32 +16,28 @@ namespace DataLib
 
         public int UserID { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string FirstName { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string LastName { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string Email { get; set; }
 
-        [Required]
+       
         [StringLength(50)]
-        public string UserName { get; set; }
+        public string Username { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string Password { get; set; }
 
         [StringLength(10)]
         public string PhoneNumber { get; set; }
 
-        public DateTime CreatedOn { get; set; }
+        public DateTime? CreatedOn { get; set; }
 
-        public DateTime LastLogin { get; set; }
+        public DateTime? LastLogin { get; set; }
 
         //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         //public virtual ICollection<Match> Matches { get; set; }

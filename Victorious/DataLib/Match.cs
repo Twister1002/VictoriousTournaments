@@ -22,13 +22,13 @@ namespace DataLib
 
         public int? DefenderScore { get; set; }
 
-        public int RoundNumber { get; set; }
+        public int? RoundNumber { get; set; }
 
-        public bool IsBye { get; set; }
+        public bool? IsBye { get; set; }
 
-        public DateTime StartDateTime { get; set; }
+        public DateTime? StartDateTime { get; set; }
 
-        public DateTime EndDateTime { get; set; }
+        public DateTime? EndDateTime { get; set; }
 
         public TimeSpan? MatchDuration { get; set; }
 

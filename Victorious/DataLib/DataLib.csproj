@@ -69,6 +69,14 @@
     <Compile Include="Migrations\201702202109371_NulledTournamentForInsertTesting.Designer.cs">
       <DependentUpon>201702202109371_NulledTournamentForInsertTesting.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702211309300_NulledAllModels.cs" />
+    <Compile Include="Migrations\201702211309300_NulledAllModels.Designer.cs">
+      <DependentUpon>201702211309300_NulledAllModels.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702211329202_FixedUsername.cs" />
+    <Compile Include="Migrations\201702211329202_FixedUsername.Designer.cs">
+      <DependentUpon>201702211329202_FixedUsername.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tournament.cs" />
@@ -93,6 +101,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702202109371_NulledTournamentForInsertTesting.resx">
       <DependentUpon>201702202109371_NulledTournamentForInsertTesting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702211309300_NulledAllModels.resx">
+      <DependentUpon>201702211309300_NulledAllModels.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702211329202_FixedUsername.resx">
+      <DependentUpon>201702211329202_FixedUsername.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

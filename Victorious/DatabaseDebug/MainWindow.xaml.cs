@@ -38,7 +38,8 @@ namespace DatabaseDebug
             //db.Tournaments.Add(tournament);
             //db.SaveChanges();
             //db.Tournaments.d
-            db.DeleteTournamentById(1);
+
+            db.AddUser("Ryan", "Kelton", "keltonr01@gmail.com", "keltonr01", "password", "9542344919");
         }
 
         private void button_Click(object sender, RoutedEventArgs e)

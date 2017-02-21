@@ -15,7 +15,6 @@ namespace DataLib
 
         public int BracketID { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string BracketType { get; set; }
 

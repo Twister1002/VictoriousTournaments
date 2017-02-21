@@ -8,7 +8,7 @@ namespace DataLib
      partial class VictoriousDbContext : DbContext
     {
         public VictoriousDbContext()
-            : base("name=VictoriousDbContext")
+            : base("name=VictoriousTestDbContext")
         {
         }
 
