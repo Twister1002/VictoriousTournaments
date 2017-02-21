@@ -54,6 +54,7 @@ namespace ClassData
 				if (null == Teams[i])
 				{
 					Teams[i] = _t;
+					Teams[i].Name += "b";
 					return true;
 				}
 			}
