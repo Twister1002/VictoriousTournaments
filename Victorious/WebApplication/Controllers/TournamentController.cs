@@ -43,7 +43,8 @@ namespace WebApplication.Controllers
         {
             TournamentViewModel model = new TournamentViewModel();
             model.RegistrationStart = DateTime.Now;
-
+            model.RegistrationEnd = DateTime.Now.AddDays(1);
+            model.CheckInDateTime = DateTime.Now.AddDays(3);
 
             return View(model);
         }

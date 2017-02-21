@@ -13,10 +13,10 @@ namespace WebApplication.Models
         [Display(Name = "Tournament Title")]
         public string Title { get; set; }
 
-        [Required(ErrorMessage = "What is the maximum players?")]
-        [DataType(DataType.Text)]
-        [Display(Name = "Max Players")]
-        public uint Players { get; set; }
+        //[Required(ErrorMessage = "What is the maximum players?")]
+        //[DataType(DataType.Text)]
+        //[Display(Name = "Max Players")]
+        //public uint Players { get; set; }
         
         [Required(ErrorMessage = "When do we allow registration to start?")]
         [DataType(DataType.DateTime)]
@@ -30,7 +30,7 @@ namespace WebApplication.Models
         
         [DataType(DataType.Text)]
         [Display(Name = "Check-in Date and Time")]
-        public string CheckInDateTime { get; set; }
+        public DateTime CheckInDateTime { get; set; }
         
         [Display(Name = "Public")]
         public bool IsPublic { get; set; }

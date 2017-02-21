@@ -13,24 +13,24 @@
             <input type="text" name="Title" placeholder="Title" value="@Model.Title"/>
             @Html.ValidationMessageFor(t => t.Title)
         </div>
-        <div class="tournament field">
+        @*<div class="tournament field">
             @Html.LabelFor(t => t.Players)
-            <input type="number" name="Players" placeholder="Max Number of Players" value="@Model.Players"/>
+            <input type="text" name="Players" class="slider" placeholder="Max Number of Players" value="@Model.Players"/>
             @Html.ValidationMessageFor(t => t.Players)
-        </div>
+        </div>*@
         <div class="tournament field">
             @Html.LabelFor(t => t.RegistrationStart)
-            <input type="datetime" name="RegistrationStart" placeholder="Registartion Starts" />
+            <input type="datetime" name="RegistrationStart" class="datepicker" />
             @Html.ValidationMessageFor(t => t.RegistrationStart)
         </div>
         <div class="tournament field">
             @Html.LabelFor(t => t.RegistrationEnd)
-            <input type="datetime" name="RegistrationEnd" placeholder="Registartion Ends" />
+            <input type="datetime" name="RegistrationEnd" class="datepicker" />
             @Html.ValidationMessageFor(t => t.RegistrationEnd)
         </div>
         <div class="tournament field">
             @Html.LabelFor(t => t.CheckInDateTime)
-            <input type="datetime" name="CheckInDateTime" placeholder="Checkin Time" />
+            <input type="datetime" name="CheckInDateTime" class="datepicker" />
             @Html.ValidationMessageFor(t => t.CheckInDateTime)
         </div>
         <div class="tournament field">
