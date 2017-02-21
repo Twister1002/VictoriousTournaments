@@ -8,7 +8,7 @@ namespace Tournament.Structure
 {
 	public class Tournament
 	{
-		// Variables
+		#region Variables
 		private uint id;
 		private string title;
 		private string description;
@@ -24,8 +24,8 @@ namespace Tournament.Structure
 		//cutoffDate
 		//startDate
 		//endDate
-
-		// Properties
+		#endregion
+		#region Properties
 		public uint Id
 		{
 			get { return id; }
@@ -60,8 +60,9 @@ namespace Tournament.Structure
 			get { return isPublic; }
 			set { isPublic = value; }
 		}
+		#endregion
 
-		// Ctors
+		#region Ctors
 		public Tournament()
 			: this(0, "", new List<IPlayer>(), new List<IBracket>(), 0, false)
 		{ }
@@ -77,8 +78,8 @@ namespace Tournament.Structure
 			prizePurse = _purse;
 			isPublic = _isPublic;
 		}
-
-		// Methods
+		#endregion
+		#region Public Methods
 		public bool AddPlayer(IPlayer _p)
 		{
 			foreach (IPlayer p in Players)
@@ -110,5 +111,6 @@ namespace Tournament.Structure
 			Brackets.Add(new SingleElimBracket(Players));
 			return true;
 		}
+		#endregion
 	}
 }
