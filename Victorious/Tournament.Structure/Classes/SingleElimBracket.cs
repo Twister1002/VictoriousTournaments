@@ -198,6 +198,10 @@ namespace Tournament.Structure
 		{
 			Rounds[_roundIndex][_matchIndex].AddWin(_index);
 
+			if (0 == _roundIndex)
+			{
+				return;
+			}
 			if (Rounds[_roundIndex][_matchIndex].Score[_index] >= Rounds[_roundIndex][_matchIndex].WinsNeeded)
 			{
 				// Player won the match. Advance!
@@ -227,8 +231,8 @@ namespace Tournament.Structure
 				}
 			}
 		}
-
 		#endregion
+
 		#region Private Methods
 		private bool ReassignPlayer(int _pIndex, IMatch _currMatch, IMatch _newMatch)
 		{
