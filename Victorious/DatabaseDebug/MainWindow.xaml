@@ -1,0 +1,48 @@
+﻿<Window x:Class="DatabaseDebug.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DatabaseDebug"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="720" Width="1280" Loaded="Window_Loaded"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <local:VictoriousTestDatabaseDataSet x:Key="victoriousTestDatabaseDataSet"/>
+        <CollectionViewSource x:Key="tournamentsViewSource" Source="{Binding Tournaments, Source={StaticResource victoriousTestDatabaseDataSet}}"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid DataContext="{StaticResource tournamentsViewSource}"
+              Grid.Row="0">
+            <DataGrid x:Name="tournamentsDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}" Margin="33,39,200,418" RowDetailsVisibilityMode="VisibleWhenSelected">
+                <DataGrid.Columns>
+                    <DataGridTextColumn x:Name="tournamentIDColumn" Binding="{Binding TournamentID}" Header="Tournament ID" IsReadOnly="True" Width="SizeToHeader"/>
+                    <DataGridTextColumn x:Name="titleColumn" Binding="{Binding Title}" Header="Title" Width="SizeToHeader"/>
+                    <DataGridTextColumn x:Name="descriptionColumn" Binding="{Binding Description}" Header="Description" Width="SizeToHeader"/>
+                    <DataGridTemplateColumn x:Name="createdOnColumn" Header="Created On" Width="SizeToHeader">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <DatePicker SelectedDate="{Binding CreatedOn, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn x:Name="createdByIDColumn" Binding="{Binding CreatedByID}" Header="Created By ID" Width="SizeToHeader"/>
+                    <DataGridTextColumn x:Name="winnerIDColumn" Binding="{Binding WinnerID}" Header="Winner ID" Width="SizeToHeader"/>
+                    <DataGridTemplateColumn x:Name="lastEditedOnColumn" Header="Last Edited On" Width="SizeToHeader">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <DatePicker SelectedDate="{Binding LastEditedOn, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn x:Name="lastEditedByIDColumn" Binding="{Binding LastEditedByID}" Header="Last Edited By ID" Width="SizeToHeader"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+        </Grid>
+    </Grid>
+</Window>
