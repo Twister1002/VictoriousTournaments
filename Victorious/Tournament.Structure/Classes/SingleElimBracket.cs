@@ -38,47 +38,7 @@ namespace Tournament.Structure
 		}
 		#endregion
 		#region Public Methods
-		public override bool AddPlayer(IPlayer _p)
-		{
-			foreach (IPlayer p in Players)
-			{
-				if (p.Id == _p.Id)
-				{
-					return false;
-				}
-			}
-			Players.Add(_p);
-			return true;
-		}
-		public override void AddRound()
-		{
-			Rounds.Add(new List<IMatch>());
-		}
-		public override bool AddMatch(int _roundIndex)
-		{
-			//rounds[_roundIndex].Add(new Match());
-			return false;
-		}
-		public override bool AddMatch(int _roundIndex, IMatch _m)
-		{
-			if (_roundIndex >= Rounds.Count)
-			{
-				return false;
-			}
-			foreach (List<IMatch> r in Rounds)
-			{
-				foreach (IMatch m in r)
-				{
-					if (m.Id == _m.Id)
-					{
-						return false;
-					}
-				}
-			}
-			Rounds[_roundIndex].Add(_m);
-			return true;
-		}
-		public void CreateBracket()
+		public override void CreateBracket()
 		{
 			#region Create the Bracket
 			int totalMatches = Players.Count - 1;
@@ -118,7 +78,7 @@ namespace Tournament.Structure
 						// Assign prev/next matchup indexes
 						Rounds[rIndex][mIndex].AddPrevMatchIndex(mIndex * 2);
 						Rounds[rIndex + 1][mIndex * 2].NextMatchIndex = mIndex;
-						
+
 						Rounds[rIndex][mIndex].AddPrevMatchIndex(mIndex * 2 + 1);
 						Rounds[rIndex + 1][mIndex * 2 + 1].NextMatchIndex = mIndex;
 					}
@@ -196,6 +156,80 @@ namespace Tournament.Structure
 			}
 			#endregion
 		}
+		public override bool AddPlayer(IPlayer _p)
+		{
+			foreach (IPlayer p in Players)
+			{
+				if (p.Id == _p.Id)
+				{
+					return false;
+				}
+			}
+			Players.Add(_p);
+			return true;
+		}
+		public override void AddRound()
+		{
+			Rounds.Add(new List<IMatch>());
+		}
+		public override bool AddMatch(int _roundIndex)
+		{
+			//rounds[_roundIndex].Add(new Match());
+			return false;
+		}
+		public override bool AddMatch(int _roundIndex, IMatch _m)
+		{
+			if (_roundIndex >= Rounds.Count)
+			{
+				return false;
+			}
+			foreach (List<IMatch> r in Rounds)
+			{
+				foreach (IMatch m in r)
+				{
+					if (m.Id == _m.Id)
+					{
+						return false;
+					}
+				}
+			}
+			Rounds[_roundIndex].Add(_m);
+			return true;
+		}
+		public override void AddWin(int _roundIndex, int _matchIndex, int _index)
+		{
+			Rounds[_roundIndex][_matchIndex].AddWin(_index);
+
+			if (Rounds[_roundIndex][_matchIndex].Score[_index] >= Rounds[_roundIndex][_matchIndex].WinsNeeded)
+			{
+				// Player won the match. Advance!
+				int nmIndex = Rounds[_roundIndex][_matchIndex].NextMatchIndex;
+
+				for (int i = 0; i < Rounds[_roundIndex - 1][nmIndex].PrevMatchIndexes.Count; ++i)
+				{
+					if (_matchIndex == Rounds[_roundIndex - 1][nmIndex].PrevMatchIndexes[i])
+					{
+						Rounds[_roundIndex - 1][nmIndex].PlayerIndexes[i] = Rounds[_roundIndex][_matchIndex].PlayerIndexes[_index];
+						return;
+					}
+				}
+			}
+		}
+		public override void AddWin(IMatch _match, int _index)
+		{
+			// Just find the appropriate indexes of _match, and call the overloaded AddWin()
+			for (int r = 0; r < Rounds.Count; ++r)
+			{
+				for (int m = 0; m < Rounds[r].Count; ++m)
+				{
+					if (Rounds[r][m].Id == _match.Id)
+					{
+						AddWin(r, m, _index);
+					}
+				}
+			}
+		}
+
 		#endregion
 		#region Private Methods
 		private bool ReassignPlayer(int _pIndex, IMatch _currMatch, IMatch _newMatch)
