@@ -15,6 +15,8 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "VictoriousLocalDatabase", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseDebug", "DatabaseDebug\DatabaseDebug.csproj", "{BDAB2C00-F82A-4C6D-A836-10D02CCFC2FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tournament.Structure", "Tournament.Structure\Tournament.Structure.csproj", "{2DE53F49-9B50-489D-8FE3-8FC10E1EFD57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{BDAB2C00-F82A-4C6D-A836-10D02CCFC2FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDAB2C00-F82A-4C6D-A836-10D02CCFC2FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDAB2C00-F82A-4C6D-A836-10D02CCFC2FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DE53F49-9B50-489D-8FE3-8FC10E1EFD57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DE53F49-9B50-489D-8FE3-8FC10E1EFD57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DE53F49-9B50-489D-8FE3-8FC10E1EFD57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DE53F49-9B50-489D-8FE3-8FC10E1EFD57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
