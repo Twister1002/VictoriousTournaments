@@ -9,11 +9,11 @@ namespace Tournament.Structure
 	public class Tournament
 	{
 		#region Variables & Properties
-		private uint id;
-		public uint Id
-		{
-			get { return id; }
-		}
+		//private uint id;
+		//public uint Id
+		//{
+		//	get { return id; }
+		//}
 		public string Title
 		{ get; set; }
 		public string Description
@@ -30,14 +30,14 @@ namespace Tournament.Structure
 
 		#region Ctors
 		public Tournament()
-			: this(0, "", new List<IPlayer>(), new List<IBracket>(), 0, false)
+			: this("", new List<IPlayer>(), new List<IBracket>(), 0, false)
 		{ }
-		public Tournament(uint _id)
-			: this(_id, "", new List<IPlayer>(), new List<IBracket>(), 0, false)
-		{ }
-		public Tournament(uint _id, string _title, List<IPlayer> _players, List<IBracket> _brackets, float _purse, bool _isPublic)
+		//public Tournament(uint _id)
+		//	: this(_id, "", new List<IPlayer>(), new List<IBracket>(), 0, false)
+		//{ }
+		public Tournament(/*uint _id,*/ string _title, List<IPlayer> _players, List<IBracket> _brackets, float _purse, bool _isPublic)
 		{
-			id = _id;
+			//id = _id;
 			Title = _title;
 			Players = _players;
 			Brackets = _brackets;
@@ -50,7 +50,7 @@ namespace Tournament.Structure
 		{
 			foreach (IPlayer p in Players)
 			{
-				if (p.Id == _p.Id)
+				if (p == _p)
 				{
 					return false;
 				}
@@ -62,7 +62,7 @@ namespace Tournament.Structure
 		{
 			foreach (IBracket b in Brackets)
 			{
-				if (b.Id == _b.Id)
+				if (b == _b)
 				{
 					return false;
 				}

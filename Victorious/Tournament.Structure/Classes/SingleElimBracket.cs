@@ -9,11 +9,11 @@ namespace Tournament.Structure
 	public class SingleElimBracket : Bracket
 	{
 		#region Variables & Properties
-		private uint id;
-		public override uint Id
-		{
-			get { return id; }
-		}
+		//private uint id;
+		//public override uint Id
+		//{
+		//	get { return id; }
+		//}
 		public override List<IPlayer> Players
 		{ get; set; }
 		public override List<List<IMatch>> Rounds
@@ -21,16 +21,16 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public SingleElimBracket(uint _id)
-		{
-			id = _id;
-			Players = new List<IPlayer>();
-			Rounds = new List<List<IMatch>>();
-			//rounds.Add(new List<IMatch>());
-		}
+		//public SingleElimBracket(uint _id)
+		//{
+		//	id = _id;
+		//	Players = new List<IPlayer>();
+		//	Rounds = new List<List<IMatch>>();
+		//	//rounds.Add(new List<IMatch>());
+		//}
 		public SingleElimBracket(List<IPlayer> _players)
 		{
-			id = 0;
+			//id = 0;
 			Players = _players;
 			Rounds = new List<List<IMatch>>();
 
@@ -55,11 +55,9 @@ namespace Tournament.Structure
 					// (rounds[0] is the final match)
 					int mIndex = Rounds[roundIndex].Count;
 					Rounds[roundIndex].Add(
-						new Match(0,                // id
-							1,                      // winsNeeded
+						new Match(1,                // winsNeeded
 							new int[2] { -1, -1 },  // playerIndexes
 							new ushort[2] { 0, 0 }, // score
-							(int)Id,                // bracketId
 							roundIndex,             // roundNumber
 							mIndex,                 // matchIndex
 							new List<int>(),        // prevMatchesIndex
@@ -160,7 +158,7 @@ namespace Tournament.Structure
 		{
 			foreach (IPlayer p in Players)
 			{
-				if (p.Id == _p.Id)
+				if (p == _p)
 				{
 					return false;
 				}
@@ -187,7 +185,7 @@ namespace Tournament.Structure
 			{
 				foreach (IMatch m in r)
 				{
-					if (m.Id == _m.Id)
+					if (m == _m)
 					{
 						return false;
 					}
@@ -222,7 +220,7 @@ namespace Tournament.Structure
 			{
 				for (int m = 0; m < Rounds[r].Count; ++m)
 				{
-					if (Rounds[r][m].Id == _match.Id)
+					if (Rounds[r][m] == _match)
 					{
 						AddWin(r, m, _index);
 					}

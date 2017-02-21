@@ -9,11 +9,11 @@ namespace Tournament.Structure
 	public class Player : IPlayer
 	{
 		#region Variables & Properties
-		private uint id;
-		public uint Id
-		{
-			get { return id; }
-		}
+		//private uint id;
+		//public uint Id
+		//{
+		//	get { return id; }
+		//}
 		public string Username
 		{ get; set; }
 		public string Firstname
@@ -25,17 +25,17 @@ namespace Tournament.Structure
 		#endregion
 
 		// Ctors
-		public Player(uint _id)
+		//public Player(uint _id)
+		//{
+		//	id = _id;
+		//	Username = "";
+		//	Firstname = "";
+		//	Lastname = "";
+		//	Email = "";
+		//}
+		public Player(/*uint _id,*/ string _username, string _firstname, string _lastname, string _email)
 		{
-			id = _id;
-			Username = "";
-			Firstname = "";
-			Lastname = "";
-			Email = "";
-		}
-		public Player(uint _id, string _username, string _firstname, string _lastname, string _email)
-		{
-			id = _id;
+			//id = _id;
 			Username = _username;
 			Firstname = _firstname;
 			Lastname = _lastname;

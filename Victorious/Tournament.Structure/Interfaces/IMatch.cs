@@ -9,12 +9,12 @@ namespace Tournament.Structure
 	public interface IMatch
 	{
 		// Properties
-		uint Id { get; }
+		//uint Id { get; }
 		ushort WinsNeeded { get; set; }
 		//IPlayer[] Players { get; set; }
 		int[] PlayerIndexes { get; set; }
 		ushort[] Score { get; set; }
-		int BracketId { get; set; }
+		//int BracketId { get; set; }
 		int RoundNumber { get; set; }
 		int MatchIndex { get; set; }
 		List<int> PrevMatchIndexes { get; set; }
