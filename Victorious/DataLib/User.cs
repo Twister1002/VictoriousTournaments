@@ -13,7 +13,7 @@ namespace DataLib
         {
           
         }
-
+        [Key]
         public int UserID { get; set; }
 
         [StringLength(50)]

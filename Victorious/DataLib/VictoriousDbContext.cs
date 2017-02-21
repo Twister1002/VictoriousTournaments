@@ -8,8 +8,9 @@ namespace DataLib
      partial class VictoriousDbContext : DbContext
     {
         public VictoriousDbContext()
-            : base("name=VictoriousTestDbContext")
+            : base("name=CloudStagingDb")
         {
+           
         }
 
         public DbSet<Bracket> Brackets { get; set; }
@@ -17,6 +18,7 @@ namespace DataLib
         public DbSet<TournamentRule> TournamentRules { get; set; }
         public DbSet<Tournament> Tournaments { get; set; }
         public DbSet<User> Users { get; set; }
+
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -42,10 +44,10 @@ namespace DataLib
                 .WithRequired(e => e.Tournament)
                 .WillCascadeOnDelete(false);
 
-            //modelBuilder.Entity<Tournament>()
-            //    .HasOptional(e => e.TournamentRules)
-            //    .WithRequired(e => e.Tournament)
-            //    .WillCascadeOnDelete(false);
+            modelBuilder.Entity<Tournament>()
+                .HasOptional(e => e.TournamentRules)
+                .WithRequired()
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Tournament>()
                 .HasMany(e => e.Users)

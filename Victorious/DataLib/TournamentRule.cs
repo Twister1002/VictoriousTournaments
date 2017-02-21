@@ -8,6 +8,12 @@ namespace DataLib
 
     public partial class TournamentRule
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public TournamentRule()
+        {
+
+        }
+
         [Key]
         public int TournamnetRulesID { get; set; }
 
@@ -36,6 +42,8 @@ namespace DataLib
         public DateTime? EndDate { get; set; }
 
         public Bracket Bracket { get; set; }
+
+        //public ICollection<Bracket> Brackets { get; set; }
 
     }
 }
