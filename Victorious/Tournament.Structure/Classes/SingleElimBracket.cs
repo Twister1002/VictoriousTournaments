@@ -38,8 +38,10 @@ namespace Tournament.Structure
 		}
 		#endregion
 		#region Public Methods
-		public override void CreateBracket()
+		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
+			Rounds.Clear();
+
 			#region Create the Bracket
 			int totalMatches = Players.Count - 1;
 			int numMatches = 0;
@@ -53,15 +55,11 @@ namespace Tournament.Structure
 				{
 					// Add new matchups per round
 					// (rounds[0] is the final match)
-					int mIndex = Rounds[roundIndex].Count;
-					Rounds[roundIndex].Add(
-						new Match(1,                // winsNeeded
-							new int[2] { -1, -1 },  // playerIndexes
-							new ushort[2] { 0, 0 }, // score
-							roundIndex,             // roundNumber
-							mIndex,                 // matchIndex
-							new List<int>(),        // prevMatchesIndex
-							-1));                   // nextMatchIndex
+					IMatch m = new Match();
+					m.RoundNumber = roundIndex;
+					m.MatchIndex = Rounds[roundIndex].Count;
+					m.WinsNeeded = _winsPerMatch;
+					Rounds[roundIndex].Add(m);
 				}
 				++roundIndex;
 			}
@@ -130,7 +128,7 @@ namespace Tournament.Structure
 							ReassignPlayer(
 								Rounds[rIndex][mIndex].PlayerIndexes[0],
 								Rounds[rIndex][mIndex],
-								Rounds[rIndex + 1][(Rounds[rIndex][mIndex].PrevMatchIndexes[prevIndex])]);
+								Rounds[rIndex + 1][(Rounds[rIndex][mIndex].PrevMatchIndexes[prevIndex++])]);
 						}
 						ReassignPlayer(
 							Rounds[rIndex][mIndex].PlayerIndexes[1],
@@ -172,12 +170,11 @@ namespace Tournament.Structure
 		}
 		public override bool AddMatch(int _roundIndex)
 		{
-			//rounds[_roundIndex].Add(new Match());
-			return false;
+			return (AddMatch(_roundIndex, new Match()));
 		}
 		public override bool AddMatch(int _roundIndex, IMatch _m)
 		{
-			if (_roundIndex >= Rounds.Count)
+			if (_roundIndex >= Rounds.Count || _roundIndex < 0)
 			{
 				return false;
 			}
@@ -196,7 +193,10 @@ namespace Tournament.Structure
 		}
 		public override void AddWin(int _roundIndex, int _matchIndex, int _index)
 		{
-			Rounds[_roundIndex][_matchIndex].AddWin(_index);
+			if (false == Rounds[_roundIndex][_matchIndex].AddWin(_index))
+			{
+				return;
+			}
 
 			if (0 == _roundIndex)
 			{

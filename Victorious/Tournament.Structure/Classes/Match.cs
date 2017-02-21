@@ -35,7 +35,9 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public Match() : this(1, new int[2] { -1, -1 }, new ushort[2] { 0, 0 }, -1, -1, new List<int>(), -1) { }
+		public Match()
+			: this(1, new int[2] { -1, -1 }, new ushort[2] { 0, 0 }, -1, -1, new List<int>(), -1)
+		{ }
 		//public Match(uint _id)
 		//{
 		//	id = _id;

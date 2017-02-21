@@ -12,7 +12,7 @@ namespace Tournament.Structure
 		public abstract List<IPlayer> Players { get; set; }
 		public abstract List<List<IMatch>> Rounds { get; set; }
 
-		public abstract void CreateBracket();
+		public abstract void CreateBracket(ushort _winsPerMatch = 1);
 		public abstract bool AddPlayer(IPlayer _p);
 		public abstract void AddRound();
 		public abstract bool AddMatch(int _roundIndex);
