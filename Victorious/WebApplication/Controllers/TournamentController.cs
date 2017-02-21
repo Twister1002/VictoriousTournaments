@@ -46,13 +46,18 @@ namespace WebApplication.Controllers
 
         // POST: Tournament/Create
         [HttpPost]
+        [Route("Tournament/Create")]
         public ActionResult Create(TournamentViewModel model)
         {
             try
             {
                 // TODO: Add insert logic here
+                if (ModelState.IsValid)
+                {
+                    return RedirectToAction("Index");
+                }
 
-                return RedirectToAction("Index");
+                return View(model);
             }
             catch
             {

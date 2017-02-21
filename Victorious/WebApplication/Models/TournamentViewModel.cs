@@ -32,7 +32,6 @@ namespace WebApplication.Models
         [Display(Name = "Check-in Date and Time")]
         public string CheckInDateTime { get; set; }
         
-        [DataType(DataType.Custom)]
         [Display(Name = "Public")]
         public bool IsPublic { get; set; }
     }

@@ -10,12 +10,12 @@
     {
         <div class="tournament field">
             @Html.LabelFor(t => t.Title)
-            <input type="text" name="Title" placeholder="Title" />
+            <input type="text" name="Title" placeholder="Title" value="@Model.Title"/>
             @Html.ValidationMessageFor(t => t.Title)
         </div>
         <div class="tournament field">
             @Html.LabelFor(t => t.Players)
-            <input type="number" name="Players" placeholder="Max Number of Players" />
+            <input type="number" name="Players" placeholder="Max Number of Players" value="@Model.Players"/>
             @Html.ValidationMessageFor(t => t.Players)
         </div>
         <div class="tournament field">
@@ -35,7 +35,7 @@
         </div>
         <div class="tournament field">
             @Html.LabelFor(t => t.IsPublic)
-            <input type="checkbox" name="IsPublic" />
+            <input type="checkbox" name="IsPublic" value="@Model.IsPublic"/>
             @Html.ValidationMessageFor(t => t.IsPublic)
         </div>
         <div class="tournament field">
