@@ -16,8 +16,8 @@ namespace WebApplication.Controllers
             return RedirectToAction("Search");
         }
 
-        [Route("Tournament/Search")]
-        public ActionResult Search()
+        [Route("Tournament/Search/{value?}")]
+        public ActionResult Search(String value)
         {
             return View("Search");
         }

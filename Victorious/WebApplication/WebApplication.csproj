@@ -159,6 +159,8 @@
     <Content Include="Views\Tournament\Tournament.cshtml" />
     <Content Include="Views\Tournament\Create.cshtml" />
     <Content Include="Views\Tournament\Search.cshtml" />
+    <Content Include="Styles\less\Tournament.less" />
+    <Content Include="Styles\less\_forms.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

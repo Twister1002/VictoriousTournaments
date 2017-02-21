@@ -32,7 +32,7 @@
   width: 15em;
   background-color: orange;
 }
-#navagation .searchBar input {
+#navagation .searchBar input:not([type="button"]) {
   padding: .25em;
   width: 13em;
 }
@@ -69,12 +69,18 @@
 #navagation ul li.navElement:hover {
   background-color: #10334E;
 }
-body {
-  background-color: #264C69;
+.form label {
+  display: block;
+}
+.form input {
+  margin-bottom: 1em;
+}
+.form input:not([type="submit"]):not([type="button"]) {
+  background-color: #171754;
   color: #FFFFFF;
 }
-input:not([type="button"]) {
-  background-color: #171754;
+body {
+  background-color: #264C69;
   color: #FFFFFF;
 }
 a:link,
@@ -82,4 +88,32 @@ a:hover,
 a:visited {
   color: #FFFFFF;
   text-decoration: none;
+}
+ul,
+li {
+  list-style-type: none;
+  padding: 0em;
+  margin: 0em;
+}
+#Tournament .match {
+  background-color: #26252B;
+  border: 1px solid #A88B00;
+  width: 10em;
+  margin-bottom: .5em;
+}
+#Tournament .match ul {
+  list-style-type: none;
+}
+#Tournament .match ul li {
+  vertical-align: middle;
+}
+#Tournament .match ul li:first-child {
+  border-bottom: 1px solid #FFFFFF;
+}
+#Tournament .match ul li .seed {
+  display: inline-block;
+  border-width: 0px 1px 0px 0px;
+  border-style: solid;
+  border-color: #FFFFFF;
+  padding: .2em;
 }

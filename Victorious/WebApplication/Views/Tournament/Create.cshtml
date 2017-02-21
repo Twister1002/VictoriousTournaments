@@ -1,8 +1,45 @@
-﻿@model WebApplication.Models.TournamentModel
+﻿@model WebApplication.Models.TournamentViewModel
 @{
     ViewBag.Title = "Create";
     Layout = "~/Views/Shared/_Layout1.cshtml";
 }
 
 <h2>Create</h2>
-
+<div id="TournamentCreate" class="form">
+    @using (Html.BeginForm("Create", "Tournament", FormMethod.Post))
+    {
+        <div class="tournament field">
+            @Html.LabelFor(t => t.Title)
+            <input type="text" name="Title" placeholder="Title" />
+            @Html.ValidationMessageFor(t => t.Title)
+        </div>
+        <div class="tournament field">
+            @Html.LabelFor(t => t.Players)
+            <input type="number" name="Players" placeholder="Max Number of Players" />
+            @Html.ValidationMessageFor(t => t.Players)
+        </div>
+        <div class="tournament field">
+            @Html.LabelFor(t => t.RegistrationStart)
+            <input type="datetime" name="RegistrationStart" placeholder="Registartion Starts" />
+            @Html.ValidationMessageFor(t => t.RegistrationStart)
+        </div>
+        <div class="tournament field">
+            @Html.LabelFor(t => t.RegistrationEnd)
+            <input type="datetime" name="RegistrationEnd" placeholder="Registartion Ends" />
+            @Html.ValidationMessageFor(t => t.RegistrationEnd)
+        </div>
+        <div class="tournament field">
+            @Html.LabelFor(t => t.CheckInDateTime)
+            <input type="datetime" name="CheckInDateTime" placeholder="Checkin Time" />
+            @Html.ValidationMessageFor(t => t.CheckInDateTime)
+        </div>
+        <div class="tournament field">
+            @Html.LabelFor(t => t.IsPublic)
+            <input type="checkbox" name="IsPublic" />
+            @Html.ValidationMessageFor(t => t.IsPublic)
+        </div>
+        <div class="tournament field">
+            <input type="submit" value="Create Tournament" />
+        </div>
+    }
+</div>

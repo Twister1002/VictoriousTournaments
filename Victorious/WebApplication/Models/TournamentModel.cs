@@ -11,7 +11,7 @@ namespace WebApplication.Models
         public String name { get; private set; }
         public String org { get; private set; }
 
-        public int rounds = 2;
+        public int rounds = 4;
 
         public TournamentModel(String guid) : this(guid, null)
         { 
