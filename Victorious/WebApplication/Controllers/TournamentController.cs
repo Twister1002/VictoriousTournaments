@@ -41,7 +41,11 @@ namespace WebApplication.Controllers
         [Route("Tournament/Create")]
         public ActionResult Create()
         {
-            return View();
+            TournamentViewModel model = new TournamentViewModel();
+            model.RegistrationStart = DateTime.Now;
+
+
+            return View(model);
         }
 
         // POST: Tournament/Create
