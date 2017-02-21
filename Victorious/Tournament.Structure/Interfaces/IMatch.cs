@@ -21,7 +21,7 @@ namespace Tournament.Structure
 		int NextMatchIndex { get; set; }
 
 		// Methods
-		bool AddPlayer(IPlayer _p);
+		//bool AddPlayer(IPlayer _p);
 		bool AddPlayer(int _playerIndex);
 		bool RemovePlayer(int _playerIndex);
 		void RemovePlayers();

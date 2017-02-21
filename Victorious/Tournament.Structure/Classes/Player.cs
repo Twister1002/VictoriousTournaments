@@ -8,55 +8,38 @@ namespace Tournament.Structure
 {
 	public class Player : IPlayer
 	{
-		// Variables
+		#region Variables & Properties
 		private uint id;
-		private string username;
-		private string firstname;
-		private string lastname;
-		private string email;
-
-		// Properties
 		public uint Id
 		{
 			get { return id; }
 		}
 		public string Username
-		{
-			get { return username; }
-			set { username = value; }
-		}
+		{ get; set; }
 		public string Firstname
-		{
-			get { return firstname; }
-			set { firstname = value; }
-		}
+		{ get; set; }
 		public string Lastname
-		{
-			get { return lastname; }
-			set { lastname = value; }
-		}
+		{ get; set; }
 		public string Email
-		{
-			get { return email; }
-			set { email = value; }
-		}
+		{ get; set; }
+		#endregion
 
 		// Ctors
 		public Player(uint _id)
 		{
 			id = _id;
-			username = "";
-			firstname = "";
-			lastname = "";
-			email = "";
+			Username = "";
+			Firstname = "";
+			Lastname = "";
+			Email = "";
 		}
 		public Player(uint _id, string _username, string _firstname, string _lastname, string _email)
 		{
 			id = _id;
-			username = _username;
-			firstname = _firstname;
-			lastname = _lastname;
-			email = _email;
+			Username = _username;
+			Firstname = _firstname;
+			Lastname = _lastname;
+			Email = _email;
 		}
 
 		// Methods

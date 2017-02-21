@@ -8,118 +8,82 @@ namespace Tournament.Structure
 {
 	public class Match : IMatch
 	{
-		// Variables
+		#region Variables & Properties
 		private uint id;
-		private ushort winsNeeded;
-		//private IPlayer[] players;
-		private int[] playerIndexes;
-		private ushort[] score;
-		private int bracketId;
-		private int roundNumber;
-		private int matchIndex;
-		private List<int> prevMatchIndexes;
-		private int nextMatchIndex;
-
-		// Properties
 		public uint Id
 		{
 			get { return id; }
 		}
 		public ushort WinsNeeded
-		{
-			get { return winsNeeded; }
-			set { winsNeeded = value; }
-		}
+		{ get; set; }
 		//public IPlayer[] Players
-		//{
-		//	get { return players; }
-		//	set { players = value; }
-		//}
+		//{ get; set; }
 		public int[] PlayerIndexes
-		{
-			get { return playerIndexes; }
-			set { playerIndexes = value; }
-		}
+		{ get; set; }
 		public ushort[] Score
-		{
-			get { return score; }
-			set { score = value; }
-		}
+		{ get; set; }
 		public int BracketId
-		{
-			get { return bracketId; }
-			set { bracketId = value; }
-		}
+		{ get; set; }
 		public int RoundNumber
-		{
-			get { return roundNumber; }
-			set { roundNumber = value; }
-		}
+		{ get; set; }
 		public int MatchIndex
-		{
-			get { return matchIndex; }
-			set { matchIndex = value; }
-		}
+		{ get; set; }
 		public List<int> PrevMatchIndexes
-		{
-			get { return prevMatchIndexes; }
-			set { prevMatchIndexes = value; }
-		}
+		{ get; set; }
 		public int NextMatchIndex
-		{
-			get { return nextMatchIndex; }
-			set { nextMatchIndex = value; }
-		}
+		{ get; set; }
+		#endregion
 
-		// Ctors
+		#region Ctors
 		public Match() : this(0) { }
 		public Match(uint _id)
 		{
 			id = _id;
-			winsNeeded = 1;
-			//players = new IPlayer[2] { null, null };
-			playerIndexes = new int[2] { -1, -1 };
-			score = new ushort[2] { 0, 0 };
-			bracketId = -1;
-			roundNumber = -1;
-			matchIndex = -1;
-			prevMatchIndexes = new List<int>();
-			nextMatchIndex = -1;
+			WinsNeeded = 1;
+			//Players = new IPlayer[2] { null, null };
+			PlayerIndexes = new int[2] { -1, -1 };
+			Score = new ushort[2] { 0, 0 };
+			BracketId = -1;
+			RoundNumber = -1;
+			MatchIndex = -1;
+			PrevMatchIndexes = new List<int>();
+			NextMatchIndex = -1;
 		}
 		public Match(uint _id, ushort _winsNeeded, /*IPlayer[] _players*/ int[] _playerIndexes, ushort[] _score, int _bracketId, int _roundNumber, int _matchIndex, List<int> _prevMatchIndexes, int _nextMatchIndex)
 		{
 			id = _id;
-			winsNeeded = _winsNeeded;
-			//players = _players;
-			playerIndexes = _playerIndexes;
-			score = _score;
-			bracketId = _bracketId;
-			roundNumber = _roundNumber;
-			matchIndex = _matchIndex;
-			prevMatchIndexes = _prevMatchIndexes;
-			nextMatchIndex = _nextMatchIndex;
+			WinsNeeded = _winsNeeded;
+			//Players = _players;
+			PlayerIndexes = _playerIndexes;
+			Score = _score;
+			BracketId = _bracketId;
+			RoundNumber = _roundNumber;
+			MatchIndex = _matchIndex;
+			PrevMatchIndexes = _prevMatchIndexes;
+			NextMatchIndex = _nextMatchIndex;
 		}
+		#endregion
 
-		// Methods
-		public bool AddPlayer(IPlayer _p)
-		{
-			//foreach (IPlayer p in Players)
-			//{
-			//	if (p.Id == _p.Id)
-			//	{
-			//		return false;
-			//	}
-			//}
-			//for (int i = 0; i < 2; ++i)
-			//{
-			//	if (null == players[i])
-			//	{
-			//		players[i] = _p;
-			//		return true;
-			//	}
-			//}
-			return false;
-		}
+		#region Public Methods
+		//public bool AddPlayer(IPlayer _p)
+		//{
+		//	//foreach (IPlayer p in Players)
+		//	//{
+		//	//	if (p.Id == _p.Id)
+		//	//	{
+		//	//		return false;
+		//	//	}
+		//	//}
+		//	//for (int i = 0; i < 2; ++i)
+		//	//{
+		//	//	if (null == players[i])
+		//	//	{
+		//	//		players[i] = _p;
+		//	//		return true;
+		//	//	}
+		//	//}
+		//	return false;
+		//}
 		public bool AddPlayer(int _playerIndex)
 		{
 			for (int i = 0; i < 2; ++i)
@@ -150,13 +114,13 @@ namespace Tournament.Structure
 		}
 		public bool AddWin(int _index)
 		{
-			if(score[_index] >= WinsNeeded)
+			if(Score[_index] >= WinsNeeded)
 			{
 				return false;
 			}
 
-			score[_index] += 1;
-			if (score[_index] == WinsNeeded)
+			Score[_index] += 1;
+			if (Score[_index] == WinsNeeded)
 			{
 				// TODO : Trigger victory condition/routine
 			}
@@ -164,13 +128,13 @@ namespace Tournament.Structure
 		}
 		public bool AddPrevMatchIndex(int _i)
 		{
-			if (prevMatchIndexes.Count >= 2)
+			if (PrevMatchIndexes.Count >= 2)
 			{
 				return false;
 			}
-			prevMatchIndexes.Add(_i);
+			PrevMatchIndexes.Add(_i);
 			return true;
 		}
-
+		#endregion
 	}
 }
