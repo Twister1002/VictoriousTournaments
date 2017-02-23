@@ -89,17 +89,14 @@ namespace Tournament.Structure
 		//	//}
 		//	return false;
 		//}
-		public bool AddPlayer(int _playerIndex)
+		public bool AddPlayer(int _playerIndex, int _index)
 		{
-			for (int i = 0; i < 2; ++i)
+			if (PlayerIndexes[_index] > -1)
 			{
-				if (-1 == PlayerIndexes[i])
-				{
-					PlayerIndexes[i] = _playerIndex;
-					return true;
-				}
+				return false;
 			}
-			return false;
+			PlayerIndexes[_index] = _playerIndex;
+			return true;
 		}
 		public bool RemovePlayer(int _playerIndex)
 		{
@@ -119,7 +116,9 @@ namespace Tournament.Structure
 		}
 		public bool AddWin(int _index)
 		{
-			if(Score[_index] >= WinsNeeded)
+			if (Score[0] >= WinsNeeded
+				|| Score[1] >= WinsNeeded
+				|| -1 == PlayerIndexes[_index])
 			{
 				return false;
 			}

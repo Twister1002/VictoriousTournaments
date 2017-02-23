@@ -8,18 +8,19 @@ namespace Tournament.Structure
 {
 	public class Team : Player
 	{
-		#region Properties
+		#region Variables & Properties
 		public List<User> TeamMembers
 		{ get; set; }
 		#endregion
 
-		// Ctors
+		#region Ctors
 		public Team(string _name) : base(_name)
 		{
 			TeamMembers = new List<User>();
 		}
+		#endregion
 
-		// Methods
+		#region Public Methods
 		public bool AddMember(User _user)
 		{
 			if (TeamMembers.Contains(_user))
@@ -37,6 +38,6 @@ namespace Tournament.Structure
 			}
 			return false;
 		}
-
+		#endregion
 	}
 }

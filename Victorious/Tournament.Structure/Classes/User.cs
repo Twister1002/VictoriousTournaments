@@ -8,7 +8,7 @@ namespace Tournament.Structure
 {
 	public class User : Player
 	{
-		#region Properties
+		#region Variables & Properties
 		public string Firstname
 		{ get; set; }
 		public string Lastname
@@ -17,15 +17,17 @@ namespace Tournament.Structure
 		{ get; set; }
 		#endregion
 
-		// Ctors
+		#region Ctors
 		public User(string _name) : base(_name)
 		{
 			Firstname = "";
 			Lastname = "";
 			Email = "";
 		}
+		#endregion
 
-		// Methods
+		#region Public Methods
 
+		#endregion
 	}
 }
