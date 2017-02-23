@@ -55,7 +55,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match Constructor")]
 		public void MatchCtor_Constructs()
 		{
-			Match m = new Match();
+			IMatch m = new Match();
 
 			Assert.AreEqual(1, m.WinsNeeded);
 		}
@@ -65,7 +65,7 @@ namespace Tournament.Structure.Tests
 		public void MatchOverloadedCtor_Constructs()
 		{
 			ushort[] sc = new ushort[2] { 1, 1 };
-			Match m = new Match(2, new int[2] { 0, 1 }, sc, 1, 1, new List<int>(), 0, 0);
+			IMatch m = new Match(2, new int[2] { 0, 1 }, sc, 1, 1, new List<int>(), 0, 0);
 
 			Assert.AreEqual(sc, m.Score);
 		}
@@ -77,9 +77,9 @@ namespace Tournament.Structure.Tests
 		{
 			int pIndex1 = 10;
 			int pIndex2 = 20;
-			Match m = new Match();
-			m.AddPlayer(pIndex1);
-			m.AddPlayer(pIndex2);
+			IMatch m = new Match();
+			m.AddPlayer(pIndex1, 0);
+			m.AddPlayer(pIndex2, 1);
 
 			Assert.AreEqual(pIndex1, m.PlayerIndexes[0]);
 		}
@@ -90,9 +90,9 @@ namespace Tournament.Structure.Tests
 		{
 			int pIndex1 = 10;
 			int pIndex2 = 20;
-			Match m = new Match();
-			m.AddPlayer(pIndex1);
-			m.AddPlayer(pIndex2);
+			IMatch m = new Match();
+			m.AddPlayer(pIndex1, 0);
+			m.AddPlayer(pIndex2, 1);
 
 			Assert.AreEqual(pIndex2, m.PlayerIndexes[1]);
 		}
@@ -103,8 +103,8 @@ namespace Tournament.Structure.Tests
 		public void RemovePlayer_Removes()
 		{
 			int pIndex = 10;
-			Match m = new Match();
-			m.AddPlayer(pIndex);
+			IMatch m = new Match();
+			m.AddPlayer(pIndex, 0);
 			m.RemovePlayer(pIndex);
 
 			Assert.AreEqual(-1, m.PlayerIndexes[0]);
@@ -114,9 +114,9 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match Methods")]
 		public void RemovePlayers_ResetsArr1()
 		{
-			Match m = new Match();
-			m.AddPlayer(10);
-			m.AddPlayer(20);
+			IMatch m = new Match();
+			m.AddPlayer(10, 0);
+			m.AddPlayer(20, 1);
 			m.RemovePlayers();
 
 			Assert.AreEqual(-1, m.PlayerIndexes[0]);
@@ -126,9 +126,9 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match Methods")]
 		public void RemovePlayers_ResetsArr2()
 		{
-			Match m = new Match();
-			m.AddPlayer(10);
-			m.AddPlayer(20);
+			IMatch m = new Match();
+			m.AddPlayer(10, 0);
+			m.AddPlayer(20, 1);
 			m.RemovePlayers();
 
 			Assert.AreEqual(-1, m.PlayerIndexes[1]);
@@ -139,7 +139,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match Methods")]
 		public void AddWin_AddsAWin()
 		{
-			Match m = new Match(3, new int[2] { 0, 1 }, new ushort[2] { 1, 0 }, 0, 0, new List<int>(), 0, 0);
+			IMatch m = new Match(3, new int[2] { 0, 1 }, new ushort[2] { 1, 0 }, 0, 0, new List<int>(), 0, 0);
 			m.AddWin(0);
 			m.AddWin(0);
 
@@ -150,7 +150,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match Methods")]
 		public void AddWin_Fails_OverMaxValue()
 		{
-			Match m = new Match();
+			IMatch m = new Match();
 			m.AddWin(0);
 
 			Assert.IsFalse(m.AddWin(0));
@@ -162,7 +162,7 @@ namespace Tournament.Structure.Tests
 		public void AddPrevMatchIndex_Adds()
 		{
 			int i = 14;
-			Match m = new Match();
+			IMatch m = new Match();
 			m.AddPrevMatchIndex(i);
 
 			Assert.IsTrue(m.PrevMatchIndexes.Contains(i));
@@ -172,7 +172,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match Methods")]
 		public void AddPrevMatchIndex_FailsAfterTwoCalls()
 		{
-			Match m = new Match();
+			IMatch m = new Match();
 			m.AddPrevMatchIndex(0);
 			m.AddPrevMatchIndex(1);
 
@@ -187,7 +187,7 @@ namespace Tournament.Structure.Tests
 		public void SEBCtor_Constructs()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
-			Bracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList);
 
 			Assert.AreEqual(pList, b.Players);
 		}
@@ -202,7 +202,7 @@ namespace Tournament.Structure.Tests
 			{
 				pList.Add(new Mock<IPlayer>().Object);
 			}
-			Bracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList);
 			b.CreateBracket();
 
 			Assert.AreEqual(2, b.Rounds[1].Count);
@@ -217,7 +217,7 @@ namespace Tournament.Structure.Tests
 			{
 				pList.Add(new Mock<IPlayer>().Object);
 			}
-			Bracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList);
 			b.CreateBracket();
 
 			Assert.AreEqual(-1, b.Rounds[0][0].PlayerIndexes[0]);
@@ -232,7 +232,7 @@ namespace Tournament.Structure.Tests
 			{
 				pList.Add(new Mock<IPlayer>().Object);
 			}
-			Bracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList);
 			b.CreateBracket();
 
 			Assert.AreEqual(3, b.Rounds[1][0].PlayerIndexes[1]);
@@ -247,7 +247,7 @@ namespace Tournament.Structure.Tests
 			{
 				pList.Add(new Mock<IPlayer>().Object);
 			}
-			Bracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList);
 			b.CreateBracket();
 
 			Assert.IsTrue(b.Rounds[2].Count == 1
@@ -263,7 +263,7 @@ namespace Tournament.Structure.Tests
 			{
 				pList.Add(new Mock<IPlayer>().Object);
 			}
-			Bracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList);
 			b.CreateBracket();
 
 			Assert.AreEqual(-1, b.Rounds[1][0].PlayerIndexes[1]);
@@ -279,7 +279,7 @@ namespace Tournament.Structure.Tests
 			{
 				pList.Add(new Mock<IPlayer>().Object);
 			}
-			Bracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList);
 			b.CreateBracket();
 
 			Assert.IsTrue(5 == b.Rounds.Count
@@ -295,7 +295,7 @@ namespace Tournament.Structure.Tests
 			{
 				pList.Add(new Mock<IPlayer>().Object);
 			}
-			Bracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList);
 			b.CreateBracket();
 
 			Assert.IsTrue(15 == b.Rounds[b.Rounds.Count - 1][0].PlayerIndexes[0]
@@ -308,7 +308,7 @@ namespace Tournament.Structure.Tests
 		public void SEBAddPlayer_Adds()
 		{
 			IPlayer p = new Mock<IPlayer>().Object;
-			Bracket b = new SingleElimBracket();
+			IBracket b = new SingleElimBracket();
 			b.AddPlayer(p);
 
 			Assert.IsTrue(b.Players.Contains(p));
@@ -319,7 +319,7 @@ namespace Tournament.Structure.Tests
 		public void SEBAddPlayer_FailsOnDuplicates()
 		{
 			IPlayer p = new Mock<IPlayer>().Object;
-			Bracket b = new SingleElimBracket();
+			IBracket b = new SingleElimBracket();
 			b.AddPlayer(p);
 
 			Assert.IsFalse(b.AddPlayer(p));
@@ -330,7 +330,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("SingleElimBracket Methods")]
 		public void SEBAddRound_Adds()
 		{
-			Bracket b = new SingleElimBracket(null);
+			IBracket b = new SingleElimBracket(null);
 			b.AddRound();
 			b.AddRound();
 
@@ -342,7 +342,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("SingleElimBracket Methods")]
 		public void SEBAddMatch_Blank_Adds()
 		{
-			Bracket b = new SingleElimBracket(null);
+			IBracket b = new SingleElimBracket(null);
 			b.AddRound();
 			b.AddMatch(0);
 			b.AddMatch(0);
@@ -354,7 +354,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("SingleElimBracket Methods")]
 		public void SEBAddMatch_Adds()
 		{
-			Bracket b = new SingleElimBracket(null);
+			IBracket b = new SingleElimBracket(null);
 			b.AddRound();
 			b.AddMatch(0, new Mock<IMatch>().Object);
 			b.AddMatch(0, new Mock<IMatch>().Object);
@@ -366,7 +366,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("SingleElimBracket Methods")]
 		public void SEBAddMatch_FailsWithOutOfRangeParam()
 		{
-			Bracket b = new SingleElimBracket(null);
+			IBracket b = new SingleElimBracket(null);
 
 			Assert.IsFalse(b.AddMatch(0, new Mock<IMatch>().Object));
 		}
@@ -381,7 +381,7 @@ namespace Tournament.Structure.Tests
 			{
 				pList.Add(new Mock<IPlayer>().Object);
 			}
-			Bracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList);
 			b.CreateBracket();
 
 			b.AddWin(1, 0, 1);
@@ -398,7 +398,7 @@ namespace Tournament.Structure.Tests
 			{
 				pList.Add(new Mock<IPlayer>().Object);
 			}
-			Bracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList);
 			b.CreateBracket();
 
 			b.AddWin(1, 0, 1);
@@ -416,7 +416,7 @@ namespace Tournament.Structure.Tests
 			{
 				pList.Add(new Mock<IPlayer>().Object);
 			}
-			Bracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList);
 			b.CreateBracket();
 
 			int playerNum = b.Rounds[1][1].PlayerIndexes[1];

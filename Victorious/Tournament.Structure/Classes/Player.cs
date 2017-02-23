@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Tournament.Structure
 {
+	/// <summary>
+	/// Abstract Parent of User and Team,
+	/// used to denote slots for either.
+	/// </summary>
 	public abstract class Player : IPlayer
 	{
 		#region Variables & Properties
@@ -17,14 +21,17 @@ namespace Tournament.Structure
 		public string Name
 		{ get; set; }
 		#endregion
-		
+
+		#region Ctors
 		public Player(/*uint _id,*/ string _name)
 		{
 			//id = _id;
 			Name = _name;
 		}
+		#endregion
 
-		// Methods
+		#region Public Methods
 
+		#endregion
 	}
 }
