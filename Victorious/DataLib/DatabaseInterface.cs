@@ -36,9 +36,9 @@ namespace DataLib
 
         #region Users Logic
 
-        public bool UserExists(int id)
+        public bool UserExists(UserModel _user)
         {
-            UserModel user = context.Users.Find(id);
+            UserModel user = context.Users.Find(_user);
             if (user == null)
                 return false;
             else
@@ -217,32 +217,20 @@ namespace DataLib
 
         #region Tournaments Logic
 
-        public bool TournamentExists(int id)
+        public bool TournamentExists(TournamentModel _tournament)
         {
-            TournamentModel tournament = context.Tournaments.Find(id);
+            TournamentModel tournament = context.Tournaments.Find(_tournament.TournamentID);
             if (tournament == null)
                 return false;
             else
                 return true;
         }
 
-        public int AddTournament(string title, string description, int createdById)
+        public int AddTournament(TournamentModel _tournament)
         {
-            TournamentModel tournament;
             try
             {
-                tournament = new TournamentModel()
-                {
-                    Title = title,
-                    Description = description,
-                    CreatedByID = createdById,
-                    CreatedOn = DateTime.Now,
-                    LastEditedByID = createdById,
-                    LastEditedOn = DateTime.Now
-                };
-
-                context.Tournaments.Add(tournament);
-
+                context.Tournaments.Add(_tournament);
                 context.SaveChanges();
             }
             catch (Exception)
@@ -250,19 +238,15 @@ namespace DataLib
                 return 0;
             }
 
-            return tournament.TournamentID;
+            return _tournament.TournamentID;
         }
 
-        public bool AddUserToTournament(int tournamentId, int userId)
+        public bool AddUserToTournament(TournamentModel _tournament, UserModel _user)
         {
-            TournamentModel tournament;
             try
             {
-                tournament = context.Tournaments.Single(t => t.TournamentID == tournamentId);
-                UserModel user = context.Users.Single(u => u.UserID == userId);
-                tournament.Users.Add(user);
-
-                context.SaveChanges();
+                _tournament.Users.Add(_user);
+              context.SaveChanges();
             }
             catch (Exception)
             {
@@ -272,7 +256,7 @@ namespace DataLib
             return true;
         }
 
-        public Dictionary<string, string> GetTournamentById(int id)
+        public TournamentModel GetTournamentById(int id)
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
 
