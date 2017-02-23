@@ -45,6 +45,7 @@ namespace Tournament.Structure
 			IsPublic = _isPublic;
 		}
 		#endregion
+
 		#region Public Methods
 		public bool AddPlayer(IPlayer _p)
 		{

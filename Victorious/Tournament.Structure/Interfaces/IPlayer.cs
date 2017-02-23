@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Tournament.Structure
 {
+	/// <summary>
+	/// Interface used to fill slots for Users or Teams.
+	/// </summary>
 	public interface IPlayer
 	{
 		//uint Id { get; }

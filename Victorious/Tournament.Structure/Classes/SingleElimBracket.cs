@@ -39,6 +39,7 @@ namespace Tournament.Structure
 			//CreateBracket();
 		}
 		#endregion
+
 		#region Public Methods
 		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
@@ -88,8 +89,8 @@ namespace Tournament.Structure
 			#region Assign the Players
 			// Assign top two seeds to final match
 			int pIndex = 0;
-			Rounds[0][0].AddPlayer(pIndex++);
-			Rounds[0][0].AddPlayer(pIndex++);
+			Rounds[0][0].AddPlayer(pIndex++, 0);
+			Rounds[0][0].AddPlayer(pIndex++, 1);
 
 			for (int rIndex = 0; rIndex + 1 < Rounds.Count; ++rIndex)
 			{
@@ -146,7 +147,7 @@ namespace Tournament.Structure
 						if (Rounds[rIndex + 1][mIndex].PlayerIndexes.Contains(prePlayers))
 						{
 							// Add prev round's teams (according to seed) from the master list
-							Rounds[rIndex + 1][mIndex].AddPlayer(pIndex++);
+							Rounds[rIndex + 1][mIndex].AddPlayer(pIndex++, 1);
 							break;
 						}
 					}
@@ -239,7 +240,7 @@ namespace Tournament.Structure
 			if (_currMatch.PlayerIndexes.Contains(_pIndex))
 			{
 				_currMatch.RemovePlayer(_pIndex);
-				_newMatch.AddPlayer(_pIndex);
+				_newMatch.AddPlayer(_pIndex, 0);
 				if (_newMatch.PlayerIndexes.Contains(_pIndex))
 				{
 					return true;
