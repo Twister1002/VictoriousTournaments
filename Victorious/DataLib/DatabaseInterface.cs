@@ -6,13 +6,19 @@ using System.Threading.Tasks;
 
 namespace DataLib
 {
+
+    public enum DbError
+    {
+        ERROR = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_REMOVE, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS
+    };
+
     public class DatabaseInterface
     {
         VictoriousDbContext context = new VictoriousDbContext();
 
         void VicotriousDatabase()
         {
-          
+
         }
 
         // DO NOT EVER CALL THIS FUNCTION OUTSIDE THE DEBUG PROJECT
@@ -23,7 +29,7 @@ namespace DataLib
             //context.Users.SqlQuery("DELETE FROM Users");
             //context.TournamentRules.SqlQuery("DELETE FROM TournamentRules");
             //context.Tournaments.SqlQuery("DELETE FROM Tournaments");
-            
+
             context.Database.Delete();
         }
 
@@ -36,16 +42,17 @@ namespace DataLib
 
         #region Users Logic
 
-        public bool UserExists(UserModel _user)
+        public DbError UserExists(UserModel user)
         {
-            UserModel user = context.Users.Find(_user);
+
+            UserModel _user = context.Users.Find(user.UserID);
             if (user == null)
-                return false;
+                return DbError.DOES_NOT_EXIST;
             else
-                return true;
+                return DbError.EXISTS;
         }
 
-        public bool UserEmailExists(string email)
+        public DbError UserEmailExists(string email)
         {
             try
             {
@@ -53,106 +60,94 @@ namespace DataLib
             }
             catch (Exception)
             {
-                return false;
+                return DbError.ERROR;
             }
 
-            return true;
+            return DbError.SUCCESS;
         }
 
-        public bool UserUsernameExists(string username)
+        public DbError UserUsernameExists(string username)
         {
-            UserModel user = context.Users.Single(u => u.Username == username);
-            if (user == null)
-                return false;
-            else
-                return true;
-        }
-
-        public int AddUser(string firstName, string lastName, string email, string username, string password, string phoneNumber)
-        {
-            UserModel user;
             try
             {
-                user = new UserModel()
-                {
-                    FirstName = firstName,
-                    LastName = lastName,
-                    Email = email,
-                    Username = username,
-                    Password = password,
-                    PhoneNumber = phoneNumber,
-                    CreatedOn = DateTime.Now,
-                    LastLogin = DateTime.Now
-                };
+                UserModel user = context.Users.Single(u => u.Username == username);
+            }
+            catch (Exception)
+            {
+                return DbError.DOES_NOT_EXIST;
+
+            }
+
+            return DbError.EXISTS;
+        }
+
+        public DbError AddUser(UserModel user)
+        {
+            try
+            {
                 context.Users.Add(user);
-
                 context.SaveChanges();
             }
             catch (Exception)
             {
-                return 0;
+                return DbError.FAILED_TO_ADD;
             }
 
-            return user.UserID;
+            return DbError.SUCCESS;
         }
 
-        public bool LogUserInById(int id)
+        public DbError LogUserIn(UserModel user)
         {
             try
             {
-                UserModel user = context.Users.SingleOrDefault(u => u.UserID == id);
                 user.LastLogin = DateTime.Now;
 
                 context.SaveChanges();
             }
             catch (Exception)
             {
-
-                return false;
+                return DbError.FAILED_TO_ADD;
             }
 
-            return true;
+            return DbError.SUCCESS;
         }
 
-        public bool LogUserInByUsername(string username)
+        //public bool LogUserInByUsername(string username)
+        //{
+        //    try
+        //    {
+        //        UserModel user = context.Users.SingleOrDefault(u => u.Username == username);
+        //        user.LastLogin = DateTime.Now;
+
+        //        context.SaveChanges();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return false;
+        //    }
+
+        //    return true;
+        //}
+
+        public DbError UpdateUserEmail(UserModel user, string newEmail)
         {
             try
             {
-                UserModel user = context.Users.SingleOrDefault(u => u.Username == username);
-                user.LastLogin = DateTime.Now;
-
-                context.SaveChanges();
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool UpdateUserEmail(int id, string newEmail)
-        {
-            try
-            {
-                UserModel user = context.Users.Single(u => u.UserID == id);
                 user.Email = newEmail;
-
                 context.SaveChanges();
             }
             catch (Exception)
             {
-                return false;
+                return DbError.ERROR;
             }
 
-            return true;
+            return DbError.SUCCESS;
         }
 
-        public bool DeleteUserById(int id)
+        public DbError DeleteUser(UserModel user)
         {
             try
             {
-                UserModel user = new UserModel() { UserID = id };
                 context.Users.Attach(user);
                 context.Users.Remove(user);
 
@@ -160,205 +155,180 @@ namespace DataLib
             }
             catch (Exception)
             {
-                return false;
+                return DbError.FAILED_TO_REMOVE;
             }
-            return true;
+            return DbError.SUCCESS;
         }
 
-        public Dictionary<string, string> GetUserById(int id)
+        public UserModel GetUserById(int id)
         {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
+            UserModel user = new UserModel();
             try
             {
-                UserModel user = context.Users.Find(id);
-                dict.Add("UserID", user.UserID.ToString());
-                dict.Add("FirstName", user.FirstName);
-                dict.Add("LastName", user.LastName);
-                dict.Add("Username", user.Username);
-                dict.Add("Email", user.Email);
-                dict.Add("PhoneNumber", user.PhoneNumber);
-                dict.Add("LastLogin", user.LastLogin.ToString());
+                user = context.Users.Find(id);
             }
             catch (Exception)
             {
-                dict.Clear();
-                dict.Add("UserID", "ERROR");
-                return dict;
+                user.UserID = -1;
             }
 
-            return dict;
+            return user;
         }
 
-        public Dictionary<string, string> GetUserByUsername(string username)
-        {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            try
-            {
-                UserModel user = context.Users.SingleOrDefault(u => u.Username == username);
-                dict.Add("UserID", user.UserID.ToString());
-                dict.Add("FirstName", user.FirstName);
-                dict.Add("LastName", user.LastName);
-                dict.Add("Username", user.Username);
-                dict.Add("Email", user.Email);
-                dict.Add("PhoneNumber", user.PhoneNumber);
-                dict.Add("LastLogin", user.LastLogin.ToString());
-            }
-            catch (Exception)
-            {
-                dict.Clear();
-                dict.Add("UserID", "ERROR");
-                return dict;
-            }
+        //public Dictionary<string, string> GetUserByUsername(string username)
+        //{
+        //    Dictionary<string, string> dict = new Dictionary<string, string>();
+        //    try
+        //    {
+        //        UserModel user = context.Users.SingleOrDefault(u => u.Username == username);
+        //        dict.Add("UserID", user.UserID.ToString());
+        //        dict.Add("FirstName", user.FirstName);
+        //        dict.Add("LastName", user.LastName);
+        //        dict.Add("Username", user.Username);
+        //        dict.Add("Email", user.Email);
+        //        dict.Add("PhoneNumber", user.PhoneNumber);
+        //        dict.Add("LastLogin", user.LastLogin.ToString());
+        //    }
+        //    catch (Exception)
+        //    {
+        //        dict.Clear();
+        //        dict.Add("UserID", "ERROR");
+        //        return dict;
+        //    }
 
-            return dict;
-        }
+        //    return dict;
+        //}
 
         #endregion
 
         #region Tournaments Logic
 
-        public bool TournamentExists(TournamentModel _tournament)
+        public DbError TournamentExists(TournamentModel tournament)
         {
-            TournamentModel tournament = context.Tournaments.Find(_tournament.TournamentID);
+            TournamentModel _tournament = context.Tournaments.Find(tournament.TournamentID);
             if (tournament == null)
-                return false;
+                return DbError.DOES_NOT_EXIST;
             else
-                return true;
+                return DbError.EXISTS;
         }
 
-        public int AddTournament(TournamentModel _tournament)
+        public DbError AddTournament(TournamentModel tournament)
         {
             try
             {
-                context.Tournaments.Add(_tournament);
+                context.Tournaments.Add(tournament);
                 context.SaveChanges();
             }
             catch (Exception)
             {
-                return 0;
+                return DbError.FAILED_TO_ADD;
             }
 
-            return _tournament.TournamentID;
+            return DbError.SUCCESS;
         }
 
-        public bool AddUserToTournament(TournamentModel _tournament, UserModel _user)
+        public DbError AddUserToTournament(TournamentModel tournament, UserModel user)
         {
             try
             {
-                _tournament.Users.Add(_user);
-              context.SaveChanges();
+                tournament.Users.Add(user);
+                context.SaveChanges();
             }
             catch (Exception)
             {
-                return false;
+                return DbError.FAILED_TO_ADD;
             }
 
-            return true;
+            return DbError.SUCCESS;
         }
 
         public TournamentModel GetTournamentById(int id)
         {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-
+            TournamentModel tournament = new TournamentModel();
             try
             {
-                TournamentModel tournament = context.Tournaments.SingleOrDefault(t => t.TournamentID == id);
-                dict.Add("TournamentID", tournament.TournamentID.ToString());
-                dict.Add("Title", tournament.Title);
-                dict.Add("Description", tournament.Description);
-                dict.Add("CreatedByID", tournament.CreatedByID.ToString());
-                dict.Add("CreatedOn", tournament.CreatedOn.ToString());
-
+                tournament = context.Tournaments.SingleOrDefault(t => t.TournamentID == id);
 
             }
             catch (Exception)
             {
-                dict.Clear();
-                dict.Add("TournamentID", "ERROR");
-                return dict;
+                tournament.TournamentID = -1;
             }
-            return dict;
+            return tournament;
 
         }
 
-        public List<int> GetAllUsersInTournament(int id)
+        //public List<int> GetAllUsersInTournament(int id)
+        //{
+        //    List<int> list = new List<int>();
+        //    TournamentModel tournament = context.Tournaments.SingleOrDefault(t => t.TournamentID == id);
+        //    try
+        //    {
+        //        foreach (UserModel user in tournament.Users)
+        //        {
+        //            list.Add(user.UserID);
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        list.Clear();
+        //        list.Add(0);
+        //        return list;
+        //    }
+
+        //    return list;
+        //}
+
+        public DbError UpdateTournamentCutoffDate(TournamentModel tournament, DateTime newCutoff)
         {
-            List<int> list = new List<int>();
-            TournamentModel tournament = context.Tournaments.SingleOrDefault(t => t.TournamentID == id);
+            TournamentModel tour = context.Tournaments.Find(tournament.TournamentID);
+
             try
             {
-                foreach (UserModel user in tournament.Users)
-                {
-                    list.Add(user.UserID);
-                }
+                newCutoff = tour.TournamentRules.CutoffDate.Value;
             }
             catch (Exception)
             {
-
-                list.Clear();
-                list.Add(0);
-                return list;
+                return DbError.SUCCESS;
             }
 
-            return list;
+            return DbError.SUCCESS;
         }
 
-        public DateTime GetTournamentCutoffDate(int id)
+        public DbError UpdateTournamentStartDate(TournamentModel tournament, DateTime newStartDate)
         {
-            TournamentModel tour = context.Tournaments.Find(id);
-            DateTime time;
+            TournamentModel tour = context.Tournaments.Find(tournament.TournamentID);
             try
             {
-                time = tour.TournamentRules.CutoffDate.Value;
+                newStartDate = tour.TournamentRules.StartDate.Value;
             }
             catch (Exception)
             {
-                time = DateTime.MinValue;
-                return time;
+                return DbError.FAILED_TO_UPDATE;
             }
 
-            return time;
+            return DbError.SUCCESS;
         }
 
-        public DateTime GetTournamentStartDate(int id)
+        public DbError UpdateTournamentEndDate(TournamentModel tournament, DateTime newEndDate)
         {
-            TournamentModel tour = context.Tournaments.Find(id);
-            DateTime time;
             try
             {
-                time = tour.TournamentRules.StartDate.Value;
+                tournament.TournamentRules.EndDate = newEndDate;
             }
             catch (Exception)
             {
-                time = DateTime.MinValue;
-                return time;
+                return DbError.FAILED_TO_UPDATE;
             }
 
-            return time;
+            return DbError.SUCCESS;
         }
 
-        public DateTime GetTournamentEndDate(int id)
-        {
-            TournamentModel tour = context.Tournaments.Find(id);
-            DateTime time;
-            try
-            {
-                time = tour.TournamentRules.EndDate.Value;
-            }
-            catch (Exception)
-            {
-                time = DateTime.MinValue;
-                return time;
-            }
-
-            return time;
-        }
-
-        public bool DeleteTournamentById(int id)
+        public DbError DeleteTournament(TournamentModel tournament)
         {
             try
             {
-                TournamentModel tournament = new TournamentModel() { TournamentID = id };
                 context.Tournaments.Attach(tournament);
                 context.Tournaments.Remove(tournament);
 
@@ -366,74 +336,65 @@ namespace DataLib
             }
             catch (Exception)
             {
-                return false;
+                return DbError.FAILED_TO_REMOVE;
             }
-            return true;
+            return DbError.SUCCESS;
         }
         #endregion
 
         #region TournamentRules Logic
 
-        public bool TournamentRulesExist(int id)
+        public DbError TournamentHasRules(TournamentModel tournament)
         {
-            TournamentRuleModel tournamentRule = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
-            if (tournamentRule == null)
-                return false;
-            else
-                return true;
-        }
-
-        public int AddTournamentRules(int tournamentId, int numberOfRounds, decimal entryFee, decimal prizePurse, int numberOfPlayers, bool isPublic,
-            int bracketTypeId, DateTime cutoffDate, DateTime startDate, DateTime endDate)
-        {
-            TournamentRuleModel tr;
             try
             {
-                tr = new TournamentRuleModel();
-                tr.TournamentID = tournamentId;
-                tr.NumberOfRounds = numberOfRounds;
-                tr.EntryFee = entryFee;
-                tr.PrizePurse = prizePurse;
-                tr.NumberOfPlayers = numberOfPlayers;
-                tr.IsPublic = isPublic;
-                tr.BracketID = bracketTypeId;
-                tr.CutoffDate = cutoffDate;
-                tr.StartDate = endDate;
-                tr.EndDate = endDate;
-                if (entryFee == 0)
-                    tr.HasEntryFee = false;
-                else
-                    tr.HasEntryFee = true;
-                
-                context.TournamentRules.Add(tr);
+                TournamentRuleModel tr = tournament.TournamentRules;
+            }
+            catch (Exception)
+            {
+                return DbError.DOES_NOT_EXIST;
+            }
 
+            return DbError.EXISTS;
+
+            //TournamentRuleModel tournamentRule = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
+           
+        }
+
+        public DbError AddRulesToTournament(TournamentModel tounrnament, TournamentRuleModel tournamentRules)
+        {
+            try
+            {
+                context.TournamentRules.Add(tournamentRules);
+                tounrnament.TournamentRules = tournamentRules;
+                tournamentRules.TournamentID = tounrnament.TournamentID;
                 context.SaveChanges();
             }
             catch (Exception)
             {
-                return 0;
+                return DbError.FAILED_TO_ADD;
             }
 
-            return tr.TournamnetRulesID;
+            return DbError.SUCCESS;
         }
 
-        public Dictionary<string, string> GetTournamentRulesById(int id)
-        {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            TournamentRuleModel tr = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
-            dict.Add("TournamentID", tr.TournamentID.ToString());
-            dict.Add("NumberOfRounds", tr.NumberOfRounds.ToString());
-            dict.Add("NumberOfPlayers", tr.NumberOfPlayers.ToString());
-            dict.Add("EntryFee", tr.EntryFee.ToString());
-            dict.Add("PrizePurse", tr.PrizePurse.ToString());
-            dict.Add("IsPublic", tr.IsPublic.ToString());
-            dict.Add("BracketID", tr.BracketID.ToString());
-            dict.Add("CutoffDate", tr.CutoffDate.ToString());
-            dict.Add("StartDate", tr.StartDate.ToString());
-            dict.Add("EndDate", tr.EndDate.ToString());
+        //public Dictionary<string, string> GetTournamentRulesById(int id)
+        //{
+        //    Dictionary<string, string> dict = new Dictionary<string, string>();
+        //    TournamentRuleModel tr = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
+        //    dict.Add("TournamentID", tr.TournamentID.ToString());
+        //    dict.Add("NumberOfRounds", tr.NumberOfRounds.ToString());
+        //    dict.Add("NumberOfPlayers", tr.NumberOfPlayers.ToString());
+        //    dict.Add("EntryFee", tr.EntryFee.ToString());
+        //    dict.Add("PrizePurse", tr.PrizePurse.ToString());
+        //    dict.Add("IsPublic", tr.IsPublic.ToString());
+        //    dict.Add("BracketID", tr.BracketID.ToString());
+        //    dict.Add("CutoffDate", tr.CutoffDate.ToString());
+        //    dict.Add("StartDate", tr.StartDate.ToString());
+        //    dict.Add("EndDate", tr.EndDate.ToString());
 
-            return dict;
-        }
+        //    return dict;
+        //}
 
         #endregion
 
@@ -492,35 +453,24 @@ namespace DataLib
 
         #region Match Logic
 
-        public bool MatchExists(int id)
+        public DbError MatchExists(MatchModel match)
         {
-            MatchModel match = context.Matches.Find(id);
-            if (match == null)
-                return false;
-            else
-                return true;
-        }
-
-        public int AddMatch(int tournamentId, int challengerId, int defenderId, int roundNumber, DateTime startDateTime, DateTime endDateTime, TimeSpan matchDuration)
-        {
-            MatchModel match;
             try
             {
-                match = new MatchModel()
-                {
-                    TournamentID = tournamentId,
-                    RoundNumber = roundNumber,
-                    ChallengerID = challengerId,
-                    DefenderID = defenderId,
-                    StartDateTime = startDateTime,
-                    EndDateTime = startDateTime,
-                    IsBye = false
-                };
+                MatchModel _match = context.Matches.Find(match.MatchID);
+            }
+            catch (Exception)
+            {
+                return DbError.DOES_NOT_EXIST;
+            }
 
-                match.Challenger = context.Users.Find(challengerId);
-                match.Defender = context.Users.Find(defenderId);
-                match.Tournament = context.Tournaments.Find(tournamentId);
+            return DbError.EXISTS;
+        }
 
+        public DbError AddMatch(MatchModel match)
+        {
+            try
+            {
                 context.Matches.Add(match);
 
                 context.SaveChanges();
@@ -528,68 +478,56 @@ namespace DataLib
             }
             catch (Exception)
             {
-                return 0;
+                return DbError.FAILED_TO_ADD;
             }
 
-            return match.MatchID;
+            return DbError.SUCCESS;
 
         }
 
-        public int AddByeMatch(int tournamentId, int roundNumber, int userId)
+        //public int AddByeMatch(int tournamentId, int roundNumber, int userId)
+        //{
+        //    MatchModel match;
+        //    try
+        //    {
+        //        match = new MatchModel()
+        //        {
+        //            TournamentID = tournamentId,
+        //            RoundNumber = roundNumber,
+        //            WinnerID = userId,
+        //            IsBye = true
+        //        };
+
+        //        match.Winner = context.Users.Find(userId);
+        //        match.Tournament = context.Tournaments.Find(tournamentId);
+
+        //        context.Matches.Add(match);
+
+        //        context.SaveChanges();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return 0;
+        //        throw;
+        //    }
+
+        //    return match.MatchID;
+        //}
+
+        public MatchModel GetMatch(int id)
         {
-            MatchModel match;
+            MatchModel match = new MatchModel();
             try
             {
-                match = new MatchModel()
-                {
-                    TournamentID = tournamentId,
-                    RoundNumber = roundNumber,
-                    WinnerID = userId,
-                    IsBye = true
-                };
-
-                match.Winner = context.Users.Find(userId);
-                match.Tournament = context.Tournaments.Find(tournamentId);
-
-                context.Matches.Add(match);
-
-                context.SaveChanges();
+                match = context.Matches.Find(id);
             }
             catch (Exception)
             {
-                return 0;
-                throw;
+                match.MatchID = -1;
+                return match;
             }
 
-            return match.MatchID;
-        }
-
-        public Dictionary<string, string> GetMatchById(int id)
-        {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            try
-            {
-                MatchModel match = context.Matches.Find(id);
-                dict.Add("MatchID", match.MatchID.ToString());
-                dict.Add("TournamentId", match.TournamentID.ToString());
-                dict.Add("ChallengerId", match.ChallengerID.ToString());
-                dict.Add("DefenderId", match.DefenderID.ToString());
-                dict.Add("RoundNumber", match.RoundNumber.ToString());
-                dict.Add("StartDateTime", match.StartDateTime.ToString());
-                dict.Add("EndDateTime", match.EndDateTime.ToString());
-                dict.Add("MatchDuration", match.MatchDuration.ToString());
-                dict.Add("IsBye", match.IsBye.ToString());
-                dict.Add("ChallengerScore", match.ChallengerScore.ToString());
-                dict.Add("DefenderScore", match.DefenderScore.ToString());
-            }
-            catch (Exception)
-            {
-                dict.Clear();
-                dict.Add("MatchID", "ERROR");
-                return dict;
-            }
-
-            return dict;
+            return match;
         }
 
         #endregion
