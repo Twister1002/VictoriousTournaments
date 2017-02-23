@@ -6,42 +6,39 @@ namespace DataLib
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class User
+ 
+    public partial class UserModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public User()
+        public UserModel()
         {
           
         }
-
+        [Key]
         public int UserID { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string FirstName { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string LastName { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string Email { get; set; }
 
-        [Required]
+       
         [StringLength(50)]
-        public string UserName { get; set; }
+        public string Username { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string Password { get; set; }
 
         [StringLength(10)]
         public string PhoneNumber { get; set; }
 
-        public DateTime CreatedOn { get; set; }
+        public DateTime? CreatedOn { get; set; }
 
-        public DateTime LastLogin { get; set; }
+        public DateTime? LastLogin { get; set; }
 
         //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         //public virtual ICollection<Match> Matches { get; set; }
@@ -53,6 +50,6 @@ namespace DataLib
         //public virtual ICollection<Match> Matches2 { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Tournament> Tournaments { get; set; }
+        public virtual ICollection<TournamentModel> Tournaments { get; set; }
     }
 }

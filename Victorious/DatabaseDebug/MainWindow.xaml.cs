@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using DataLib;
 namespace DatabaseDebug
 {
     /// <summary>
@@ -20,20 +20,32 @@ namespace DatabaseDebug
     /// </summary>
     public partial class MainWindow : Window
     {
+        //VictoriousDbContext db; 
+        VictoriousDatabase db = new VictoriousDatabase();
+
+        private string connection = "Data Source=RYAN-PC;Initial Catalog=VictoriousTestDatabase;Integrated Security=True;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
         public MainWindow()
         {
             InitializeComponent();
+            //db = new VictoriousDbContext();
+
+            //db.Database.Connection.ConnectionString = connection;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            //Tournament tournament = new Tournament() { Title = "Title", Description = "Desc" };
+            //db.Tournaments.Add(tournament);
+            //db.SaveChanges();
+            //db.Tournaments.d
 
-            DatabaseDebug.VictoriousTestDatabaseDataSet victoriousTestDatabaseDataSet = ((DatabaseDebug.VictoriousTestDatabaseDataSet)(this.FindResource("victoriousTestDatabaseDataSet")));
-            // Load data into the table Tournaments. You can modify this code as needed.
-            DatabaseDebug.VictoriousTestDatabaseDataSetTableAdapters.TournamentsTableAdapter victoriousTestDatabaseDataSetTournamentsTableAdapter = new DatabaseDebug.VictoriousTestDatabaseDataSetTableAdapters.TournamentsTableAdapter();
-            victoriousTestDatabaseDataSetTournamentsTableAdapter.Fill(victoriousTestDatabaseDataSet.Tournaments);
-            System.Windows.Data.CollectionViewSource tournamentsViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("tournamentsViewSource")));
-            tournamentsViewSource.View.MoveCurrentToFirst();
+            db.AddUser("Ryan", "Kelton", "keltonr01@gmail.com", "keltonr01", "password", "9542344919");
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+
+           
         }
     }
 }

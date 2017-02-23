@@ -6,8 +6,9 @@ namespace DataLib
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class Match
+    public partial class MatchModel
     {
+        [Key]
         public int MatchID { get; set; }
 
         public int? ChallengerID { get; set; }
@@ -22,26 +23,26 @@ namespace DataLib
 
         public int? DefenderScore { get; set; }
 
-        public int RoundNumber { get; set; }
+        public int? RoundNumber { get; set; }
 
-        public bool IsBye { get; set; }
+        public bool? IsBye { get; set; }
 
-        public DateTime StartDateTime { get; set; }
+        public DateTime? StartDateTime { get; set; }
 
-        public DateTime EndDateTime { get; set; }
+        public DateTime? EndDateTime { get; set; }
 
         public TimeSpan? MatchDuration { get; set; }
 
         [ForeignKey("ChallengerID")]
-        public User Challenger { get; set; }
+        public UserModel Challenger { get; set; }
 
         [ForeignKey("DefenderID")]
-        public User Defender { get; set; }
+        public UserModel Defender { get; set; }
 
         [ForeignKey("TournamentID")]
-        public Tournament Tournament { get; set; }
+        public TournamentModel Tournament { get; set; }
 
         [ForeignKey("WinnerID")]
-        public User Winner { get; set; }
+        public UserModel Winner { get; set; }
     }
 }
