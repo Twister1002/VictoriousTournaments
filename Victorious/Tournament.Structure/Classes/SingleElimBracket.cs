@@ -28,6 +28,8 @@ namespace Tournament.Structure
 		//	Rounds = new List<List<IMatch>>();
 		//	//rounds.Add(new List<IMatch>());
 		//}
+		public SingleElimBracket() : this(new List<IPlayer>())
+		{ }
 		public SingleElimBracket(List<IPlayer> _players)
 		{
 			//id = 0;

@@ -37,16 +37,16 @@ namespace Tournament.Structure.Tests
 		#endregion
 
 		#region Player Tests
-		[TestMethod]
-		[TestCategory("Player")]
-		[TestCategory("Player Constructor")]
-		public void PlayerCtor_Constructs()
-		{
-			string un = "username";
-			Player p = new Player(un, "firstname", "lastname", "email");
+		//[TestMethod]
+		//[TestCategory("Player")]
+		//[TestCategory("Player Constructor")]
+		//public void PlayerCtor_Constructs()
+		//{
+		//	string un = "username";
+		//	IPlayer p = new Player(un, "firstname", "lastname", "email");
 
-			Assert.AreEqual(un, p.Username);
-		}
+		//	Assert.AreEqual(un, p.Username);
+		//}
 		#endregion
 
 		#region Match Tests
@@ -307,9 +307,8 @@ namespace Tournament.Structure.Tests
 		[TestCategory("SingleElimBracket Methods")]
 		public void SEBAddPlayer_Adds()
 		{
-			IPlayer p = new Player("username", "firstname", "lastname", "email");
-			List<IPlayer> pList = new List<IPlayer>();
-			Bracket b = new SingleElimBracket(pList);
+			IPlayer p = new Mock<IPlayer>().Object;
+			Bracket b = new SingleElimBracket();
 			b.AddPlayer(p);
 
 			Assert.IsTrue(b.Players.Contains(p));
@@ -319,9 +318,8 @@ namespace Tournament.Structure.Tests
 		[TestCategory("SingleElimBracket Methods")]
 		public void SEBAddPlayer_FailsOnDuplicates()
 		{
-			IPlayer p = new Player("username", "firstname", "lastname", "email");
-			List<IPlayer> pList = new List<IPlayer>();
-			Bracket b = new SingleElimBracket(pList);
+			IPlayer p = new Mock<IPlayer>().Object;
+			Bracket b = new SingleElimBracket();
 			b.AddPlayer(p);
 
 			Assert.IsFalse(b.AddPlayer(p));

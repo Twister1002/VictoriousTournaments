@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tournament.Structure
 {
-	public class Player : IPlayer
+	public abstract class Player : IPlayer
 	{
 		#region Variables & Properties
 		//private uint id;
@@ -14,32 +14,14 @@ namespace Tournament.Structure
 		//{
 		//	get { return id; }
 		//}
-		public string Username
-		{ get; set; }
-		public string Firstname
-		{ get; set; }
-		public string Lastname
-		{ get; set; }
-		public string Email
+		public string Name
 		{ get; set; }
 		#endregion
-
-		// Ctors
-		//public Player(uint _id)
-		//{
-		//	id = _id;
-		//	Username = "";
-		//	Firstname = "";
-		//	Lastname = "";
-		//	Email = "";
-		//}
-		public Player(/*uint _id,*/ string _username, string _firstname, string _lastname, string _email)
+		
+		public Player(/*uint _id,*/ string _name)
 		{
 			//id = _id;
-			Username = _username;
-			Firstname = _firstname;
-			Lastname = _lastname;
-			Email = _email;
+			Name = _name;
 		}
 
 		// Methods
