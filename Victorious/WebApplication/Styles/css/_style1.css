@@ -14,7 +14,7 @@
   padding: 0em 1% 0em 1%;
 }
 #navagation > * {
-  padding-bottom: 1em;
+  padding: .5em;
 }
 #navagation #logo {
   position: relative;
@@ -49,22 +49,10 @@
 #navagation ul li {
   float: left;
   height: 100%;
+  line-height: 5em;
   text-align: center;
   vertical-align: middle;
   padding: 0em 1em 0em 1em;
-}
-#navagation ul li .login {
-  background-color: #000000;
-  display: block;
-  width: 7em;
-  height: 100%;
-}
-#navagation ul li .login > * {
-  padding: 0em;
-  margin: 0em;
-}
-#navagation ul li .login input {
-  width: 100%;
 }
 #navagation ul li.navElement:hover {
   background-color: #10334E;

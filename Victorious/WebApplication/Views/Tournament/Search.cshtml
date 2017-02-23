@@ -1,16 +1,17 @@
-﻿
-@{
+﻿@model WebApplication.Models.TournamentViewModel
+@{ 
     ViewBag.Title = "Search";
     Layout = "~/Views/Shared/_Layout1.cshtml";
+    List<WebApplication.Models.FakeTournamentModel> tournaments = Model.Search(null);
 }
 
 <h2>Index</h2>
-
+Searching for: @Model.Title
 <div class="Tournaments">
     <ul>
-    @for(int i = 0; i < 10; i++)
+    @foreach (WebApplication.Models.FakeTournamentModel tourny in tournaments)
     {
-        <li>Tournament @i</li>
+        <li>@tourny.Title</li>
     }
     </ul>
 </div>

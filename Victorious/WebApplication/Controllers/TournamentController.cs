@@ -16,10 +16,13 @@ namespace WebApplication.Controllers
             return RedirectToAction("Search");
         }
 
-        [Route("Tournament/Search/{value?}")]
-        public ActionResult Search(String value)
+        [Route("Tournament/Search/{title?}")]
+        public ActionResult Search(String title)
         {
-            return View("Search");
+            TournamentViewModel model = new TournamentViewModel();
+            model.Title = title;
+
+            return View("Search", model);
         }
         
         [Route("Tournament/{guid}")]

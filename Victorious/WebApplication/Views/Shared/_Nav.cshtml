@@ -1,22 +1,24 @@
 ﻿<div id="navagation" class="navavation">
     <div id="logo" class="logo">Logo</div>
     <div class="searchBar text form">
-        <input type="text" name="tournamentSearch" placeholder="Search Tournaments" />
-        <input type="button" value="search"/>
+        <form method="get" action="/Tournament/Search">
+            <input type="text" name="title" placeholder="Search Tournaments" />
+            <input type="button" value="search"/>
+        </form>
     </div>
     
     <ul>
-        <li class="nav navElement">@Html.ActionLink("Home", "Index", "Home")</li>
-        <li class="nav navElement">@Html.ActionLink("Tournaments", "Index", "Tournament")</li>
+        <a href="/"><li class="nav navElement">Home</li></a>
+        <a href="/Tournament"><li class="nav navElement">Tournaments</li></a>
         @if (Session["UserId"] != null)
         {
-            <li class="nav navbar-right">@Html.ActionLink("Create Tournament", "Create", "Tournament")</li>
-            <li class="nav navbar-right">@Html.ActionLink("Account", "Index", "Account")</li>
+            <a href="/Tournament/Create"><li class="nav navbar-right">Create Tournament</li></a>
+            <a href="/Account"><li class="nav navbar-right">Account</li></a>
         }
         else
         {
-        <li class="nav navElement navbar-right">@Html.ActionLink("Register", "Register", "Account")</li>
-        <li class="nav navElement navbar-right">@Html.ActionLink("Login", "Login", "Account")</li>
+        <a href="/Account/Register"><li class="nav navElement navbar-right">Register</li></a>
+        <a href="/Account/Login"><li class="nav navElement navbar-right">Login</li></a>
         }
     </ul>
 </div>
