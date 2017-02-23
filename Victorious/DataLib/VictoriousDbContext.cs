@@ -28,6 +28,10 @@ namespace DataLib
             //    .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<TournamentRuleModel>()
+                .Property(e => e.TournamnetRulesID)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<TournamentRuleModel>()
                 .Property(e => e.EntryFee)
                 .HasPrecision(19, 4);
 
