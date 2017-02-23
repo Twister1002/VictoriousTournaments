@@ -12,15 +12,15 @@ namespace DatabaseDebugConsole
 
         static void Main(string[] args)
         {
-            VictoriousDatabase db = new VictoriousDatabase();
+            DatabaseInterface db = new DatabaseInterface();
 
             //db.Clear();
-            //db.AddUser("Ryan", "Kelton", "keltonr01@gmail.com", "keltonr01", "password", "9542344919");
+            db.AddUser("Ryan", "Kelton", "keltonr01@gmail.com", "keltonr01", "password", "9542344919");
             //if (db.AddUser("Ryan", "Kelton", "keltonr01@gmail.com", "keltonr01", "password", "9542344919") != 0)
             //{
 
             //}
-            db.AddTournament("Tournament 1", "Test tournament", int.Parse(db.GetUserByUsername("keltonr01")["UserID"]));
+            //db.AddTournament("Tournament 1", "Test tournament", int.Parse(db.GetUserByUsername("keltonr01")["UserID"]));
 
             //Dictionary<string, string> dict = db.GetUserByUsername("keltonr01");
 
@@ -54,7 +54,13 @@ namespace DatabaseDebugConsole
             //    Console.WriteLine("email available");
 
 
+            //db.AddUserToTournament(1, 1);
 
+            //List<int> list = db.GetAllUsersInTournament(1);
+            //foreach(int val in list)
+            //{
+            //    Console.WriteLine(db.GetUserById(val)["Username"]);
+            //}
 
             Console.WriteLine("Done");
             Console.ReadLine();

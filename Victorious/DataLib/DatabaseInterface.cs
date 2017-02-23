@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataLib
 {
-    public class VictoriousDatabase
+    public class DatabaseInterface
     {
         VictoriousDbContext context = new VictoriousDbContext();
 
@@ -29,7 +29,7 @@ namespace DataLib
 
         public bool UserExists(int id)
         {
-            User user = context.Users.Find(id);
+            UserModel user = context.Users.Find(id);
             if (user == null)
                 return false;
             else
@@ -40,7 +40,7 @@ namespace DataLib
         {
             try
             {
-                User user = context.Users.Single(u => u.Email == email);
+                UserModel user = context.Users.Single(u => u.Email == email);
             }
             catch (Exception)
             {
@@ -52,7 +52,7 @@ namespace DataLib
 
         public bool UserUsernameExists(string username)
         {
-            User user = context.Users.Single(u => u.Username == username);
+            UserModel user = context.Users.Single(u => u.Username == username);
             if (user == null)
                 return false;
             else
@@ -61,10 +61,10 @@ namespace DataLib
 
         public int AddUser(string firstName, string lastName, string email, string username, string password, string phoneNumber)
         {
-            User user;
+            UserModel user;
             try
             {
-                user = new User()
+                user = new UserModel()
                 {
                     FirstName = firstName,
                     LastName = lastName,
@@ -91,7 +91,7 @@ namespace DataLib
         {
             try
             {
-                User user = context.Users.SingleOrDefault(u => u.UserID == id);
+                UserModel user = context.Users.SingleOrDefault(u => u.UserID == id);
                 user.LastLogin = DateTime.Now;
 
                 context.SaveChanges();
@@ -109,7 +109,7 @@ namespace DataLib
         {
             try
             {
-                User user = context.Users.SingleOrDefault(u => u.Username == username);
+                UserModel user = context.Users.SingleOrDefault(u => u.Username == username);
                 user.LastLogin = DateTime.Now;
 
                 context.SaveChanges();
@@ -126,7 +126,7 @@ namespace DataLib
         {
             try
             {
-                User user = context.Users.Single(u => u.UserID == id);
+                UserModel user = context.Users.Single(u => u.UserID == id);
                 user.Email = newEmail;
 
                 context.SaveChanges();
@@ -143,7 +143,7 @@ namespace DataLib
         {
             try
             {
-                User user = new User() { UserID = id };
+                UserModel user = new UserModel() { UserID = id };
                 context.Users.Attach(user);
                 context.Users.Remove(user);
 
@@ -161,7 +161,7 @@ namespace DataLib
             Dictionary<string, string> dict = new Dictionary<string, string>();
             try
             {
-                User user = context.Users.Find(id);
+                UserModel user = context.Users.Find(id);
                 dict.Add("FirstName", user.FirstName);
                 dict.Add("LastName", user.LastName);
                 dict.Add("Username", user.Username);
@@ -184,7 +184,7 @@ namespace DataLib
             Dictionary<string, string> dict = new Dictionary<string, string>();
             try
             {
-                User user = context.Users.SingleOrDefault(u => u.Username == username);
+                UserModel user = context.Users.SingleOrDefault(u => u.Username == username);
                 dict.Add("UserID", user.UserID.ToString());
                 dict.Add("FirstName", user.FirstName);
                 dict.Add("LastName", user.LastName);
@@ -208,7 +208,7 @@ namespace DataLib
 
         public bool TournamentExists(int id)
         {
-            Tournament tournament = context.Tournaments.Find(id);
+            TournamentModel tournament = context.Tournaments.Find(id);
             if (tournament == null)
                 return false;
             else
@@ -217,10 +217,10 @@ namespace DataLib
 
         public int AddTournament(string title, string description, int createdById)
         {
-            Tournament tournament;
+            TournamentModel tournament;
             try
             {
-                tournament = new Tournament()
+                tournament = new TournamentModel()
                 {
                     Title = title,
                     Description = description,
@@ -244,11 +244,11 @@ namespace DataLib
 
         public bool AddUserToTournament(int tournamentId, int userId)
         {
-            Tournament tournament;
+            TournamentModel tournament;
             try
             {
                 tournament = context.Tournaments.Single(t => t.TournamentID == tournamentId);
-                User user = context.Users.Single(u => u.UserID == userId);
+                UserModel user = context.Users.Single(u => u.UserID == userId);
                 tournament.Users.Add(user);
 
                 context.SaveChanges();
@@ -264,7 +264,7 @@ namespace DataLib
         public Dictionary<string, string> GetTournamentById(int id)
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            Tournament tournament = context.Tournaments.SingleOrDefault(t => t.TournamentID == id);
+            TournamentModel tournament = context.Tournaments.SingleOrDefault(t => t.TournamentID == id);
             dict.Add("Title", tournament.Title);
             dict.Add("Description", tournament.Description);
             dict.Add("CreatedByID", tournament.CreatedByID.ToString());
@@ -273,11 +273,33 @@ namespace DataLib
             return dict;
         }
 
+        public List<int> GetAllUsersInTournament(int id)
+        {
+            List<int> list = new List<int>();
+            TournamentModel tournament = context.Tournaments.SingleOrDefault(t => t.TournamentID == id);
+            try
+            {
+                foreach (UserModel user in tournament.Users)
+                {
+                    list.Add(user.UserID);
+                }
+            }
+            catch (Exception)
+            {
+
+                list.Clear();
+                list.Add(0);
+                return list;
+            }
+
+            return list;
+        }
+
         public bool DeleteTournamentById(int id)
         {
             try
             {
-                Tournament tournament = new Tournament() { TournamentID = id };
+                TournamentModel tournament = new TournamentModel() { TournamentID = id };
                 context.Tournaments.Attach(tournament);
                 context.Tournaments.Remove(tournament);
 
@@ -295,7 +317,7 @@ namespace DataLib
 
         public bool TournamentRulesExist(int id)
         {
-            TournamentRule tournamentRule = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
+            TournamentRuleModel tournamentRule = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
             if (tournamentRule == null)
                 return false;
             else
@@ -305,10 +327,10 @@ namespace DataLib
         public int AddTournamentRules(int tournamentId, int numberOfRounds, decimal entryFee, decimal prizePurse, int numberOfPlayers, bool isPublic,
             int bracketTypeId, DateTime cutoffDate, DateTime startDate, DateTime endDate)
         {
-            TournamentRule tr;
+            TournamentRuleModel tr;
             try
             {
-                tr = new TournamentRule();
+                tr = new TournamentRuleModel();
                 tr.TournamentID = tournamentId;
                 tr.NumberOfRounds = numberOfRounds;
                 tr.EntryFee = entryFee;
@@ -339,7 +361,7 @@ namespace DataLib
         public Dictionary<string, string> GetTournamentRulesById(int id)
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            TournamentRule tr = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
+            TournamentRuleModel tr = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
             dict.Add("TournamentID", tr.TournamentID.ToString());
             dict.Add("NumberOfRounds", tr.NumberOfRounds.ToString());
             dict.Add("NumberOfPlayers", tr.NumberOfPlayers.ToString());
@@ -359,7 +381,7 @@ namespace DataLib
         #region Brackets Logic
         public bool BracketExists(int id)
         {
-            Bracket bracket = context.Brackets.Find(id);
+            BracketModel bracket = context.Brackets.Find(id);
             if (bracket == null)
             {
                 return false;
@@ -370,10 +392,10 @@ namespace DataLib
 
         public int AddBracket(string bracketTypeName)
         {
-            Bracket bracket;
+            BracketModel bracket;
             try
             {
-                bracket = new Bracket()
+                bracket = new BracketModel()
                 {
                     BracketType = bracketTypeName
                 };
@@ -394,7 +416,7 @@ namespace DataLib
         {
             try
             {
-                Bracket bracket = new Bracket() { BracketID = id };
+                BracketModel bracket = new BracketModel() { BracketID = id };
                 context.Brackets.Attach(bracket);
                 context.Brackets.Remove(bracket);
 
@@ -407,6 +429,19 @@ namespace DataLib
 
             return true;
         }
+        #endregion
+
+        #region Match Logic
+
+        public bool MatchExists(int id)
+        {
+            MatchModel match = context.Matches.Find(id);
+            if (match == null)
+                return false;
+            else
+                return true;
+        }
+
         #endregion
 
     }

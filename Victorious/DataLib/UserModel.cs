@@ -6,10 +6,11 @@ namespace DataLib
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class User
+ 
+    public partial class UserModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public User()
+        public UserModel()
         {
           
         }
@@ -49,6 +50,6 @@ namespace DataLib
         //public virtual ICollection<Match> Matches2 { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Tournament> Tournaments { get; set; }
+        public virtual ICollection<TournamentModel> Tournaments { get; set; }
     }
 }

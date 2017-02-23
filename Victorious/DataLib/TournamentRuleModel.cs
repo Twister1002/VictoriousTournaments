@@ -6,10 +6,11 @@ namespace DataLib
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class TournamentRule
+  
+    public partial class TournamentRuleModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public TournamentRule()
+        public TournamentRuleModel()
         {
 
         }
@@ -41,7 +42,7 @@ namespace DataLib
 
         public DateTime? EndDate { get; set; }
 
-        public Bracket Bracket { get; set; }
+        public BracketModel Bracket { get; set; }
 
         //public ICollection<Bracket> Brackets { get; set; }
 

@@ -6,13 +6,15 @@ namespace DataLib
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class Bracket
+ 
+    public partial class BracketModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Bracket()
+        public BracketModel()
         {         
         }
 
+        [Key]
         public int BracketID { get; set; }
 
         [StringLength(50)]
