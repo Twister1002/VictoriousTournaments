@@ -13,14 +13,24 @@ namespace DatabaseDebugConsole
         static void Main(string[] args)
         {
             DatabaseInterface db = new DatabaseInterface();
-
+            db.Clear();
             //db.Clear();
-            db.AddUser("Ryan", "Kelton", "keltonr01@gmail.com", "keltonr01", "password", "9542344919");
+            int userId = db.AddUser("Ryan", "Kelton", "keltonr01@gmail.com", "keltonr01", "password", "9542344919");
             //if (db.AddUser("Ryan", "Kelton", "keltonr01@gmail.com", "keltonr01", "password", "9542344919") != 0)
             //{
 
             //}
-            //db.AddTournament("Tournament 1", "Test tournament", int.Parse(db.GetUserByUsername("keltonr01")["UserID"]));
+            int tournamentId = db.AddTournament("Tournament 1", "Test tournament", int.Parse(db.GetUserByUsername("keltonr01")["UserID"]));
+            db.AddByeMatch(tournamentId, 1, userId);
+
+            int bracketId = db.AddBracket("Single Elimination");
+
+            int trId = db.AddTournamentRules(tournamentId, 4, 0, 0, 16, true, 1, new DateTime(2017, 3, 1), new DateTime(2017, 3, 3), new DateTime(2017, 3, 10));
+
+            if (trId == 0)
+            {
+                Console.WriteLine("ERROR");
+            }
 
             //Dictionary<string, string> dict = db.GetUserByUsername("keltonr01");
 

@@ -12,17 +12,26 @@ namespace DataLib
 
         void VicotriousDatabase()
         {
-
+          
         }
 
         // DO NOT EVER CALL THIS FUNCTION OUTSIDE THE DEBUG PROJECT
         public void Clear()
         {
-            context.Brackets.SqlQuery("DELETE FROM Brackets");
-            context.Matches.SqlQuery("DELETE FROM Matches");
-            context.Users.SqlQuery("DELETE FROM Users");
-            context.TournamentRules.SqlQuery("DELETE FROM TournamentRules");
-            context.Tournaments.SqlQuery("DELETE FROM Tournaments");
+            //context.Brackets.SqlQuery("DELETE FROM Brackets");
+            //context.Matches.SqlQuery("DELETE FROM Matches");
+            //context.Users.SqlQuery("DELETE FROM Users");
+            //context.TournamentRules.SqlQuery("DELETE FROM TournamentRules");
+            //context.Tournaments.SqlQuery("DELETE FROM Tournaments");
+            
+            context.Database.Delete();
+        }
+
+        // For testing purposes only.
+        // Call this function to re-seed the database.
+        public void Seed()
+        {
+
         }
 
         #region Users Logic
@@ -162,6 +171,7 @@ namespace DataLib
             try
             {
                 UserModel user = context.Users.Find(id);
+                dict.Add("UserID", user.UserID.ToString());
                 dict.Add("FirstName", user.FirstName);
                 dict.Add("LastName", user.LastName);
                 dict.Add("Username", user.Username);
@@ -172,7 +182,7 @@ namespace DataLib
             catch (Exception)
             {
                 dict.Clear();
-                dict.Add("error", "error");
+                dict.Add("UserID", "ERROR");
                 return dict;
             }
 
@@ -196,12 +206,13 @@ namespace DataLib
             catch (Exception)
             {
                 dict.Clear();
-                dict.Add("error", "error");
+                dict.Add("UserID", "ERROR");
                 return dict;
             }
 
             return dict;
         }
+
         #endregion
 
         #region Tournaments Logic
@@ -264,13 +275,26 @@ namespace DataLib
         public Dictionary<string, string> GetTournamentById(int id)
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            TournamentModel tournament = context.Tournaments.SingleOrDefault(t => t.TournamentID == id);
-            dict.Add("Title", tournament.Title);
-            dict.Add("Description", tournament.Description);
-            dict.Add("CreatedByID", tournament.CreatedByID.ToString());
-            dict.Add("CreatedOn", tournament.CreatedOn.ToString());
 
+            try
+            {
+                TournamentModel tournament = context.Tournaments.SingleOrDefault(t => t.TournamentID == id);
+                dict.Add("TournamentID", tournament.TournamentID.ToString());
+                dict.Add("Title", tournament.Title);
+                dict.Add("Description", tournament.Description);
+                dict.Add("CreatedByID", tournament.CreatedByID.ToString());
+                dict.Add("CreatedOn", tournament.CreatedOn.ToString());
+
+
+            }
+            catch (Exception)
+            {
+                dict.Clear();
+                dict.Add("TournamentID", "ERROR");
+                return dict;
+            }
             return dict;
+
         }
 
         public List<int> GetAllUsersInTournament(int id)
@@ -293,6 +317,57 @@ namespace DataLib
             }
 
             return list;
+        }
+
+        public DateTime GetTournamentCutoffDate(int id)
+        {
+            TournamentModel tour = context.Tournaments.Find(id);
+            DateTime time;
+            try
+            {
+                time = tour.TournamentRules.CutoffDate.Value;
+            }
+            catch (Exception)
+            {
+                time = DateTime.MinValue;
+                return time;
+            }
+
+            return time;
+        }
+
+        public DateTime GetTournamentStartDate(int id)
+        {
+            TournamentModel tour = context.Tournaments.Find(id);
+            DateTime time;
+            try
+            {
+                time = tour.TournamentRules.StartDate.Value;
+            }
+            catch (Exception)
+            {
+                time = DateTime.MinValue;
+                return time;
+            }
+
+            return time;
+        }
+
+        public DateTime GetTournamentEndDate(int id)
+        {
+            TournamentModel tour = context.Tournaments.Find(id);
+            DateTime time;
+            try
+            {
+                time = tour.TournamentRules.EndDate.Value;
+            }
+            catch (Exception)
+            {
+                time = DateTime.MinValue;
+                return time;
+            }
+
+            return time;
         }
 
         public bool DeleteTournamentById(int id)
@@ -345,7 +420,7 @@ namespace DataLib
                     tr.HasEntryFee = false;
                 else
                     tr.HasEntryFee = true;
-
+                
                 context.TournamentRules.Add(tr);
 
                 context.SaveChanges();
@@ -440,6 +515,97 @@ namespace DataLib
                 return false;
             else
                 return true;
+        }
+
+        public int AddMatch(int tournamentId, int challengerId, int defenderId, int roundNumber, DateTime startDateTime, DateTime endDateTime, TimeSpan matchDuration)
+        {
+            MatchModel match;
+            try
+            {
+                match = new MatchModel()
+                {
+                    TournamentID = tournamentId,
+                    RoundNumber = roundNumber,
+                    ChallengerID = challengerId,
+                    DefenderID = defenderId,
+                    StartDateTime = startDateTime,
+                    EndDateTime = startDateTime,
+                    IsBye = false
+                };
+
+                match.Challenger = context.Users.Find(challengerId);
+                match.Defender = context.Users.Find(defenderId);
+                match.Tournament = context.Tournaments.Find(tournamentId);
+
+                context.Matches.Add(match);
+
+                context.SaveChanges();
+
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+
+            return match.MatchID;
+
+        }
+
+        public int AddByeMatch(int tournamentId, int roundNumber, int userId)
+        {
+            MatchModel match;
+            try
+            {
+                match = new MatchModel()
+                {
+                    TournamentID = tournamentId,
+                    RoundNumber = roundNumber,
+                    WinnerID = userId,
+                    IsBye = true
+                };
+
+                match.Winner = context.Users.Find(userId);
+                match.Tournament = context.Tournaments.Find(tournamentId);
+
+                context.Matches.Add(match);
+
+                context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return 0;
+                throw;
+            }
+
+            return match.MatchID;
+        }
+
+        public Dictionary<string, string> GetMatchById(int id)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            try
+            {
+                MatchModel match = context.Matches.Find(id);
+                dict.Add("MatchID", match.MatchID.ToString());
+                dict.Add("TournamentId", match.TournamentID.ToString());
+                dict.Add("ChallengerId", match.ChallengerID.ToString());
+                dict.Add("DefenderId", match.DefenderID.ToString());
+                dict.Add("RoundNumber", match.RoundNumber.ToString());
+                dict.Add("StartDateTime", match.StartDateTime.ToString());
+                dict.Add("EndDateTime", match.EndDateTime.ToString());
+                dict.Add("MatchDuration", match.MatchDuration.ToString());
+                dict.Add("IsBye", match.IsBye.ToString());
+                dict.Add("ChallengerScore", match.ChallengerScore.ToString());
+                dict.Add("DefenderScore", match.DefenderScore.ToString());
+            }
+            catch (Exception)
+            {
+                dict.Clear();
+                dict.Add("MatchID", "ERROR");
+                return dict;
+            }
+
+            return dict;
         }
 
         #endregion

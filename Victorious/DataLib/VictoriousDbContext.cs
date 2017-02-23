@@ -5,12 +5,12 @@ namespace DataLib
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-     partial class VictoriousDbContext : DbContext
+    partial class VictoriousDbContext : DbContext
     {
         public VictoriousDbContext()
             : base("name=VictoriousTestDbContext")
         {
-            Database.SetInitializer(new CreateDatabaseIfNotExists<VictoriousDbContext>());
+            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<VictoriousDbContext>());
         }
 
         public DbSet<BracketModel> Brackets { get; set; }
