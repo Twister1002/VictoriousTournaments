@@ -9,6 +9,8 @@ namespace WebApplication.Models
 {
     public class AccountLoginViewModel
     {
+        public DbError Exception = DbError.SUCCESS;
+
         [Required(ErrorMessage = "Username is required")]
         [DataType(DataType.Text)]
         [StringLength(UserModel.UsernameLength)]
@@ -24,6 +26,7 @@ namespace WebApplication.Models
 
     public class AccountRegisterViewModel
     {
+        public DbError Exception = DbError.SUCCESS;
 
         [Required(ErrorMessage = "First Name is required")]
         [DataType(DataType.Text)]

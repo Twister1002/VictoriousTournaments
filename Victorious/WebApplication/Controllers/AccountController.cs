@@ -17,7 +17,7 @@ namespace WebApplication.Controllers
         [Route("Account")]
         public ActionResult Index()
         {
-            if (Session["UserId"] != null)
+            if (Session["User.UserId"] != null)
             {
                 return View();
             }
@@ -30,7 +30,7 @@ namespace WebApplication.Controllers
         [Route("Account/Login")]
         public ActionResult Login()
         {
-            if (Session["UserId"] != null)
+            if (Session["User.UserId"] != null)
             {
                 return RedirectToAction("Index");
             }
@@ -48,11 +48,17 @@ namespace WebApplication.Controllers
             if (ModelState.IsValid)
             {
                 // Check the username and password
-                //UserModel user = db.GetUserByUsername(viewModel.Username);
-                //if (user.Password == viewModel.Password)
-                //{
-                //    db.LogUserInById(user.UserID);
-                //}
+                UserModel user = db.GetUserByUsername(viewModel.Username);
+                if (user.Password == viewModel.Password)
+                {
+                    Session["User.UserId"] = user.UserID;
+                    return RedirectToAction("Index", "Account");
+                }
+                else
+                {
+                    // There was an error 
+                    return View();
+                }
             }
             else
             {
@@ -65,13 +71,15 @@ namespace WebApplication.Controllers
         [Route("Account/Register")]
         public ActionResult Register()
         {
-            if (Session["UserId"] != null)
+            AccountRegisterViewModel model = new AccountRegisterViewModel();
+
+            if (Session["User.UserId"] != null)
             {
                 return RedirectToAction("Index");
             }
             else
             {
-                return View();
+                return View(model);
             }
            
         }
@@ -88,17 +96,22 @@ namespace WebApplication.Controllers
                 userModel.LastName = user.LastName;
                 userModel.Password = user.Password;
 
-                bool userExists = db.UserUsernameExists(user.Username);
-                bool emailExists = db.UserEmailExists(user.Email);
+                DbError userExists = db.UserUsernameExists(user.Username);
+                DbError emailExists = db.UserEmailExists(user.Email);
 
-
-                // Check to see if the username exists
-                
-                //if (!db.UserExists(user.Username))
-                if (!userExists && !emailExists)
+                if (userExists == DbError.DOES_NOT_EXIST && emailExists == DbError.ERROR)
                 {
                     // We can then register the user
-                    //db.AddUser(userModel);
+                    if (db.AddUser(userModel) == DbError.SUCCESS)
+                    {
+                        // User Registraion was successful
+                        return RedirectToAction("Login", "Account");
+                    }
+                    else
+                    {
+                        // User Registration failed.
+                        return View(user);
+                    }
                 }
 
             }

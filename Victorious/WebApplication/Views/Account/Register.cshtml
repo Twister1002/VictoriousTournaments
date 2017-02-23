@@ -6,6 +6,12 @@
 
 <div class="register form">
     <h2>Registration</h2>
+    @if (Model.Exception != DataLib.DbError.SUCCESS)
+    {
+        <div class="has-error">
+            ERROR In creation
+        </div>
+    }
     @using (Html.BeginForm("RegisterUser", "Account", FormMethod.Post))
     {
         <div class="register field">

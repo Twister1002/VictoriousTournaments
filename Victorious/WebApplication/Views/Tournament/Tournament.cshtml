@@ -1,27 +1,22 @@
-﻿@model WebApplication.Models.TournamentModel
+﻿@model DataLib.TournamentModel
 
 @{
     ViewBag.Title = "View";
     Layout = "~/Views/Shared/_Layout1.cshtml";
 }
 
-<h2>Tournament </h2>
-
-@if (Model != null) { 
-    <p>Org: @Model.org</p>
-    <p>Name: @Model.name</p>
-    <p>GUiD: @Model.guid</p>
-    <p>Rounds: @Model.rounds</p>
-
-    <div id="Tournament">
-        @for (int i = 0; i <= Model.rounds; i++)
-        {
-            <div class="match">
-                <ul>
-                    <li class="team"><div class="seed">1</div>Challenger</li>
-                    <li class="team"><div class="seed">2</div>Defender</li>
-                </ul>
-            </div>
-        }
-    </div>
-}
+<h2>Tournament - @Model.Title</h2>
+<div>
+    Functionality for this viewing is not complete yet
+</div>
+<div id="Tournament">
+    @for (int i = 0; i <= 6; i++)
+    {
+        <div class="match">
+            <ul>
+                <li class="team"><div class="seed">1</div>Challenger</li>
+                <li class="team"><div class="seed">2</div>Defender</li>
+            </ul>
+        </div>
+    }
+</div>

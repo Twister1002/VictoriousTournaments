@@ -60,10 +60,12 @@
 .form label {
   display: block;
 }
-.form input {
+.form input,
+.form textarea {
   margin-bottom: 1em;
 }
-.form input:not([type="submit"]):not([type="button"]) {
+.form input:not([type="submit"]):not([type="button"]),
+.form textarea:not([type="submit"]):not([type="button"]) {
   background-color: #171754;
   color: #FFFFFF;
 }
@@ -88,6 +90,7 @@ li {
   border: 1px solid #A88B00;
   width: 10em;
   margin-bottom: .5em;
+  border-radius: .5em;
 }
 #Tournament .match ul {
   list-style-type: none;

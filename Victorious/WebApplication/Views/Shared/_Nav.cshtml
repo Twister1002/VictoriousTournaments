@@ -10,7 +10,7 @@
     <ul>
         <a href="/"><li class="nav navElement">Home</li></a>
         <a href="/Tournament"><li class="nav navElement">Tournaments</li></a>
-        @if (Session["UserId"] != null)
+        @if (Session["User.UserId"] != null)
         {
             <a href="/Tournament/Create"><li class="nav navbar-right">Create Tournament</li></a>
             <a href="/Account"><li class="nav navbar-right">Account</li></a>
