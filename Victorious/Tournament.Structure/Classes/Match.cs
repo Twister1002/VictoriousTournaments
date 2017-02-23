@@ -32,11 +32,13 @@ namespace Tournament.Structure
 		{ get; set; }
 		public int NextMatchIndex
 		{ get; set; }
+		public int NextLoserMatchIndex
+		{ get; set; }
 		#endregion
 
 		#region Ctors
 		public Match()
-			: this(1, new int[2] { -1, -1 }, new ushort[2] { 0, 0 }, -1, -1, new List<int>(), -1)
+			: this(1, new int[2] { -1, -1 }, new ushort[2] { 0, 0 }, -1, -1, new List<int>(), -1, -1)
 		{ }
 		//public Match(uint _id)
 		//{
@@ -51,7 +53,7 @@ namespace Tournament.Structure
 		//	PrevMatchIndexes = new List<int>();
 		//	NextMatchIndex = -1;
 		//}
-		public Match(/*uint _id,*/ ushort _winsNeeded, /*IPlayer[] _players*/ int[] _playerIndexes, ushort[] _score, /*int _bracketId,*/ int _roundNumber, int _matchIndex, List<int> _prevMatchIndexes, int _nextMatchIndex)
+		public Match(/*uint _id,*/ ushort _winsNeeded, /*IPlayer[] _players*/ int[] _playerIndexes, ushort[] _score, /*int _bracketId,*/ int _roundNumber, int _matchIndex, List<int> _prevMatchIndexes, int _nextMatchIndex, int _nextLoserMatchIndex)
 		{
 			//id = _id;
 			WinsNeeded = _winsNeeded;
@@ -63,6 +65,7 @@ namespace Tournament.Structure
 			MatchIndex = _matchIndex;
 			PrevMatchIndexes = _prevMatchIndexes;
 			NextMatchIndex = _nextMatchIndex;
+			NextLoserMatchIndex = _nextLoserMatchIndex;
 		}
 		#endregion
 

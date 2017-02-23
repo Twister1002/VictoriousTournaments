@@ -43,6 +43,7 @@
     <Compile Include="Classes\Bracket.cs" />
     <Compile Include="Classes\Match.cs" />
     <Compile Include="Classes\SingleElimBracket.cs" />
+    <Compile Include="DoubleElimBracket.cs" />
     <Compile Include="Interfaces\IBracket.cs" />
     <Compile Include="Interfaces\IMatch.cs" />
     <Compile Include="Interfaces\IPlayer.cs" />

@@ -65,7 +65,7 @@ namespace Tournament.Structure.Tests
 		public void MatchOverloadedCtor_Constructs()
 		{
 			ushort[] sc = new ushort[2] { 1, 1 };
-			Match m = new Match(2, new int[2] { 0, 1 }, sc, 1, 1, new List<int>(), 0);
+			Match m = new Match(2, new int[2] { 0, 1 }, sc, 1, 1, new List<int>(), 0, 0);
 
 			Assert.AreEqual(sc, m.Score);
 		}
@@ -139,7 +139,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match Methods")]
 		public void AddWin_AddsAWin()
 		{
-			Match m = new Match(3, new int[2] { 0, 1 }, new ushort[2] { 1, 0 }, 0, 0, new List<int>(), 0);
+			Match m = new Match(3, new int[2] { 0, 1 }, new ushort[2] { 1, 0 }, 0, 0, new List<int>(), 0, 0);
 			m.AddWin(0);
 			m.AddWin(0);
 

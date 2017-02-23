@@ -19,6 +19,7 @@ namespace Tournament.Structure
 		int MatchIndex { get; set; }
 		List<int> PrevMatchIndexes { get; set; }
 		int NextMatchIndex { get; set; }
+		int NextLoserMatchIndex { get; set; }
 
 		// Methods
 		//bool AddPlayer(IPlayer _p);
