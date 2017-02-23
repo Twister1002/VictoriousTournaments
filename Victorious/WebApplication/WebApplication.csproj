@@ -180,7 +180,6 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\TournamentModel.cs" />
     <Compile Include="Models\TournamentViewModel.cs" />
-    <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

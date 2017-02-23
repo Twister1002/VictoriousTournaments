@@ -11,11 +11,7 @@ namespace WebApplication.Controllers
 {
     public class AccountController : Controller
     {
-        // Remove when we have ability to access database
-        List<User> users = new List<User>();
-
-        //users.(new User{ FirstName = "User", LastName = "1", UserName="admin", UserID=1, Password="pass" });
-        //users.Add(new User { FirstName="User", LastName="2", UserName="User", UserID=2, Password="pass2" });
+        DatabaseInterface db = new DatabaseInterface();
 
         // GET: Account
         [Route("Account")]
@@ -51,19 +47,12 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                //We need now to check the login credentias of the user
-                //Query for the username
-                //User user = users.Find(u => u.UserName == viewModel.Username);
-                if (viewModel.Username == "admin")
-                {
-                    //Verfy the password is correct
-                    if (viewModel.Password == "pass")
-                    {
-                        Session["UserId"] = 0;
-                        Session["UserName"] = viewModel.Username;
-                        return RedirectToAction("Index", "Account");
-                    }
-                }
+                // Check the username and password
+                //UserModel user = db.GetUserByUsername(viewModel.Username);
+                //if (user.Password == viewModel.Password)
+                //{
+                //    db.LogUserInById(user.UserID);
+                //}
             }
             else
             {
@@ -93,27 +82,25 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (users.Select(u => u.UserName == user.Email).Count() > 0)
+                UserModel userModel = new UserModel();
+                userModel.Username = user.Username;
+                userModel.FirstName = user.FirstName;
+                userModel.LastName = user.LastName;
+                userModel.Password = user.Password;
+
+                bool userExists = db.UserUsernameExists(user.Username);
+                bool emailExists = db.UserEmailExists(user.Email);
+
+
+                // Check to see if the username exists
+                
+                //if (!db.UserExists(user.Username))
+                if (!userExists && !emailExists)
                 {
-                    // There is a user that exists with this username all ready. Send the back with an error
-                    return View();
+                    // We can then register the user
+                    //db.AddUser(userModel);
                 }
-                else
-                {
-                    // Verify the password is strong enough
 
-                    // Email Verification?
-
-                    // Add the user to the database
-                    //users.Add(new User(user));
-                    //User dbUser = new User();
-                    //dbUser.UserName = user.Username;
-                    //dbUser.Password = user.Password;
-                    //dbUser.Email = user.Email;
-
-                    // Let's just have the user login 
-                    return RedirectToAction("Login", "Account");
-                }
             }
 
             //If we hit this, then something failed 
