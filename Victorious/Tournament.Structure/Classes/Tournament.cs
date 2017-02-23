@@ -77,6 +77,13 @@ namespace Tournament.Structure
 			Brackets.Add(new SingleElimBracket(Players));
 			return true;
 		}
+		public bool CreateDoubleElimBracket()
+		{
+			Brackets.Clear();
+
+			Brackets.Add(new DoubleElimBracket(Players));
+			return true;
+		}
 		#endregion
 	}
 }

@@ -182,12 +182,9 @@ namespace Tournament.Structure
 			}
 			foreach (List<IMatch> r in Rounds)
 			{
-				foreach (IMatch m in r)
+				if (r.Contains(_m))
 				{
-					if (m == _m)
-					{
-						return false;
-					}
+					return false;
 				}
 			}
 			Rounds[_roundIndex].Add(_m);
@@ -207,8 +204,9 @@ namespace Tournament.Structure
 			if (Rounds[_roundIndex][_matchIndex].Score[_index] >= Rounds[_roundIndex][_matchIndex].WinsNeeded)
 			{
 				// Player won the match. Advance!
-				int nmIndex = Rounds[_roundIndex][_matchIndex].NextMatchIndex;
 
+				// Move the winner:
+				int nmIndex = Rounds[_roundIndex][_matchIndex].NextMatchIndex;
 				for (int i = 0; i < Rounds[_roundIndex - 1][nmIndex].PrevMatchIndexes.Count; ++i)
 				{
 					if (_matchIndex == Rounds[_roundIndex - 1][nmIndex].PrevMatchIndexes[i])

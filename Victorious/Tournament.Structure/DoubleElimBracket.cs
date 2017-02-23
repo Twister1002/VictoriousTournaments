@@ -8,20 +8,24 @@ namespace Tournament.Structure
 {
 	public class DoubleElimBracket : SingleElimBracket
 	{
+		// Properties
 		public List<List<IMatch>> LowerRounds
 		{ get; set; }
 
-		public DoubleElimBracket() : base()
+		// Ctors
+		public DoubleElimBracket() : this(new List<IPlayer>())
+		{ }
+		public DoubleElimBracket(List<IPlayer> _players) : base(_players)
 		{
 			LowerRounds = new List<List<IMatch>>();
 		}
 
+		#region Public Methods
 		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
 			base.CreateBracket(_winsPerMatch);
 			LowerRounds.Clear();
-
-			#region Create the Bracket
+			
 			int totalMatches = Players.Count - 2;
 			int numMatches = 0;
 			int roundIndex = 0;
@@ -73,7 +77,10 @@ namespace Tournament.Structure
 						LowerRounds[rIndex + 1][mIndex * 2 + 1].NextMatchIndex = mIndex;
 					}
 				}
-				// Else: round is abnormal. FUCK
+				else
+				{
+					// Round is abnormal. FUCK. Do something???
+				}
 
 				rIndex = LowerRounds.Count - 1;
 				for (int mIndex = 0; mIndex < LowerRounds[rIndex].Count; ++mIndex)
@@ -87,7 +94,7 @@ namespace Tournament.Structure
 					Rounds[Rounds.Count - 1][mIndex * 2 + 1].NextLoserMatchIndex = mIndex;
 				}
 			}
-			#endregion
 		}
+		#endregion
 	}
 }
