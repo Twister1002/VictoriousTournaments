@@ -9,6 +9,13 @@ namespace DataLib
  
     public partial class UserModel
     {
+        public const int FirstNameLength = 50;
+        public const int LastNameLength = 50;
+        public const int EmailLength = 50;
+        public const int UsernameLength = 50;
+        public const int PasswordLength = 50;
+        public const int PhoneNumberLength = 10;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public UserModel()
         {
@@ -17,23 +24,23 @@ namespace DataLib
         [Key]
         public int UserID { get; set; }
 
-        [StringLength(50)]
+        [StringLength(FirstNameLength)]
         public string FirstName { get; set; }
 
-        [StringLength(50)]
+        [StringLength(LastNameLength)]
         public string LastName { get; set; }
 
-        [StringLength(50)]
+        [StringLength(EmailLength)]
         public string Email { get; set; }
 
        
-        [StringLength(50)]
+        [StringLength(UsernameLength)]
         public string Username { get; set; }
 
-        [StringLength(50)]
+        [StringLength(PasswordLength)]
         public string Password { get; set; }
 
-        [StringLength(10)]
+        [StringLength(PhoneNumberLength)]
         public string PhoneNumber { get; set; }
 
         public DateTime? CreatedOn { get; set; }
