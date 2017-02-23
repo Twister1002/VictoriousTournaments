@@ -8,13 +8,7 @@ namespace Tournament.Structure
 {
 	public interface IPlayer
 	{
-		uint Id { get; }
-		string Username { get; set; }
-		string Firstname { get; set; }
-		string Lastname { get; set; }
-		string Email { get; set; }
-		//phonenumber
-		//createdOn
-		//lastLogin
+		//uint Id { get; }
+		string Name { get; set; }
 	}
 }

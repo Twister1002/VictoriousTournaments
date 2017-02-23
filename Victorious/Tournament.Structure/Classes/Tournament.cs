@@ -8,75 +8,41 @@ namespace Tournament.Structure
 {
 	public class Tournament
 	{
-		#region Variables
-		private uint id;
-		private string title;
-		private string description;
-		private List<IPlayer> players;
-		private List<IBracket> brackets;
-		//createdOn
-		//createdById
-		//winnerId
-		//lastEditedOn
-		//lastEditedById
-		private float prizePurse;
-		private bool isPublic;
-		//cutoffDate
-		//startDate
-		//endDate
-		#endregion
-		#region Properties
-		public uint Id
-		{
-			get { return id; }
-		}
+		#region Variables & Properties
+		//private uint id;
+		//public uint Id
+		//{
+		//	get { return id; }
+		//}
 		public string Title
-		{
-			get { return title; }
-			set { title = value; }
-		}
+		{ get; set; }
 		public string Description
-		{
-			get { return description; }
-			set { description = value; }
-		}
+		{ get; set; }
 		public List<IPlayer> Players
-		{
-			get { return players; }
-			set { players = value; }
-		}
+		{ get; set; }
 		public List<IBracket> Brackets
-		{
-			get { return brackets; }
-			set { brackets = value; }
-		}
+		{ get; set; }
 		public float PrizePurse
-		{
-			get { return prizePurse; }
-			set { prizePurse = value; }
-		}
+		{ get; set; }
 		public bool IsPublic
-		{
-			get { return isPublic; }
-			set { isPublic = value; }
-		}
+		{ get; set; }
 		#endregion
 
 		#region Ctors
 		public Tournament()
-			: this(0, "", new List<IPlayer>(), new List<IBracket>(), 0, false)
+			: this("", new List<IPlayer>(), new List<IBracket>(), 0, false)
 		{ }
-		public Tournament(uint _id)
-			: this(_id, "", new List<IPlayer>(), new List<IBracket>(), 0, false)
-		{ }
-		public Tournament(uint _id, string _title, List<IPlayer> _players, List<IBracket> _brackets, float _purse, bool _isPublic)
+		//public Tournament(uint _id)
+		//	: this(_id, "", new List<IPlayer>(), new List<IBracket>(), 0, false)
+		//{ }
+		public Tournament(/*uint _id,*/ string _title, List<IPlayer> _players, List<IBracket> _brackets, float _purse, bool _isPublic)
 		{
-			id = _id;
-			title = _title;
-			players = _players;
-			brackets = _brackets;
-			prizePurse = _purse;
-			isPublic = _isPublic;
+			//id = _id;
+			Title = _title;
+			Players = _players;
+			Brackets = _brackets;
+			PrizePurse = _purse;
+			IsPublic = _isPublic;
 		}
 		#endregion
 		#region Public Methods
@@ -84,24 +50,24 @@ namespace Tournament.Structure
 		{
 			foreach (IPlayer p in Players)
 			{
-				if (p.Id == _p.Id)
+				if (p == _p)
 				{
 					return false;
 				}
 			}
-			players.Add(_p);
+			Players.Add(_p);
 			return true;
 		}
 		public bool AddBracket(IBracket _b)
 		{
 			foreach (IBracket b in Brackets)
 			{
-				if (b.Id == _b.Id)
+				if (b == _b)
 				{
 					return false;
 				}
 			}
-			brackets.Add(_b);
+			Brackets.Add(_b);
 			return true;
 		}
 		public bool CreateSingleElimBracket()
@@ -109,6 +75,13 @@ namespace Tournament.Structure
 			Brackets.Clear();
 
 			Brackets.Add(new SingleElimBracket(Players));
+			return true;
+		}
+		public bool CreateDoubleElimBracket()
+		{
+			Brackets.Clear();
+
+			Brackets.Add(new DoubleElimBracket(Players));
 			return true;
 		}
 		#endregion

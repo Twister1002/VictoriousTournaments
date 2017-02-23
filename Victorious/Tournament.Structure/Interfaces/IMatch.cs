@@ -9,19 +9,20 @@ namespace Tournament.Structure
 	public interface IMatch
 	{
 		// Properties
-		uint Id { get; }
+		//uint Id { get; }
 		ushort WinsNeeded { get; set; }
 		//IPlayer[] Players { get; set; }
 		int[] PlayerIndexes { get; set; }
 		ushort[] Score { get; set; }
-		int BracketId { get; set; }
+		//int BracketId { get; set; }
 		int RoundNumber { get; set; }
 		int MatchIndex { get; set; }
 		List<int> PrevMatchIndexes { get; set; }
 		int NextMatchIndex { get; set; }
+		int NextLoserMatchIndex { get; set; }
 
 		// Methods
-		bool AddPlayer(IPlayer _p);
+		//bool AddPlayer(IPlayer _p);
 		bool AddPlayer(int _playerIndex);
 		bool RemovePlayer(int _playerIndex);
 		void RemovePlayers();
