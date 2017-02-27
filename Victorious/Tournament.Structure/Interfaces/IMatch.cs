@@ -70,16 +70,14 @@ namespace Tournament.Structure
 		/// <param name="_playerIndex">Index of IPlayer object,
 		/// references Players list in Bracket.</param>
 		/// <param name="_index">Slot to add to, in PlayerIndexes[]</param>
-		/// <returns>True if successful, False if _index is already in use.</returns>
-		bool AddPlayer(int _playerIndex, int _index);
+		void AddPlayer(int _playerIndex, int _index);
 
 		/// <summary>
 		/// Removes the passed-in PlayerIndex from the Match, if present.
 		/// </summary>
 		/// <param name="_playerIndex">Index of IPlayer,
 		/// references Players list in Bracket.</param>
-		/// <returns>True if Player is removed, False if not found.</returns>
-		bool RemovePlayer(int _playerIndex);
+		void RemovePlayer(int _playerIndex);
 
 		/// <summary>
 		/// Removes all Player Indexes from the Match.
@@ -98,9 +96,7 @@ namespace Tournament.Structure
 		/// to enter this Match.
 		/// </summary>
 		/// <param name="_i">Previous Match's Index</param>
-		/// <returns>False if Match already has two previous,
-		/// True if successful.</returns>
-		bool AddPrevMatchIndex(int _i);
+		void AddPrevMatchIndex(int _i);
 		#endregion
 	}
 }

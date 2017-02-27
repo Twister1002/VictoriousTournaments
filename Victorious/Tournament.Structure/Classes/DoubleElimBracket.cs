@@ -134,10 +134,7 @@ namespace Tournament.Structure
 					if (_match == LowerRounds[r][m])
 					{
 						// Found match. Add win:
-						if (false == LowerRounds[r][m].AddWin(_index))
-						{
-							return;
-						}
+						LowerRounds[r][m].AddWin(_index);
 
 						if (LowerRounds[r][m].Score[_index] >= LowerRounds[r][m].WinsNeeded)
 						{

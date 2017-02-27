@@ -49,29 +49,37 @@ namespace Tournament.Structure
 			WinsNeeded = _m.WinsNeeded;
 
 			PlayerIndexes = new int[2] { -1, -1 };
-			for (int i = 0; i < _playerList.Count; ++i)
+			int p1id = (null == _m.DefenderID)
+				? -1 : (int)(_m.DefenderID);
+			int p2id = (null == _m.ChallengerID)
+				? -1 : (int)(_m.ChallengerID);
+			if (p1id > -1 || p2id > -1)
 			{
-				if (_m.Defender.UserID == _playerList[i].Id)
+				for (int i = 0; i < _playerList.Count; ++i)
 				{
-					PlayerIndexes[0] = i;
-				}
-				else if (_m.Challenger.UserID == _playerList[i].Id)
-				{
-					PlayerIndexes[1] = i;
+					if (p1id == _playerList[i].Id)
+					{
+						PlayerIndexes[0] = i;
+					}
+					else if (p2id == _playerList[i].Id)
+					{
+						PlayerIndexes[1] = i;
+					}
 				}
 			}
 
 			Score = new ushort[2] { 0, 0 };
 			Score[0] = (null == _m.DefenderScore)
-				? (ushort)0 : (ushort)(_m.DefenderScore);
+				? Score[0] : (ushort)(_m.DefenderScore);
 			Score[1] = (null == _m.ChallengerScore)
-				? (ushort)0 : (ushort)(_m.ChallengerScore);
+				? Score[1] : (ushort)(_m.ChallengerScore);
 
 			RoundNumber = (null == _m.RoundNumber)
 				? -1 : (int)(_m.RoundNumber);
 			MatchIndex = _m.MatchIndex;
 
 			PrevMatchIndexes = new List<int>();
+			// still need to fetch this...
 
 			NextMatchIndex = (null == _m.NextMatchIndex)
 				? -1 : (int)(_m.NextMatchIndex);
@@ -81,26 +89,35 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		public bool AddPlayer(int _playerIndex, int _index)
+		public void AddPlayer(int _playerIndex, int _index)
 		{
+			if (_index < 0 || _index > 1)
+			{
+				throw new IndexOutOfRangeException();
+			}
 			if (PlayerIndexes[_index] > -1)
 			{
-				return false;
+				throw new Exception();
 			}
+			if (PlayerIndexes[0] == _playerIndex || PlayerIndexes[1] == _playerIndex)
+			{
+				throw new DuplicateObjectException();
+			}
+
 			PlayerIndexes[_index] = _playerIndex;
-			return true;
 		}
-		public bool RemovePlayer(int _playerIndex)
+		public void RemovePlayer(int _playerIndex)
 		{
 			for (int i = 0; i < 2; ++i)
 			{
 				if (PlayerIndexes[i] == _playerIndex)
 				{
 					PlayerIndexes[i] = -1;
-					return true;
+					return;
 				}
 			}
-			return false;
+
+			throw new KeyNotFoundException();
 		}
 		public void RemovePlayers()
 		{
@@ -118,14 +135,14 @@ namespace Tournament.Structure
 
 			Score[_index] += 1;
 		}
-		public bool AddPrevMatchIndex(int _i)
+		public void AddPrevMatchIndex(int _i)
 		{
 			if (PrevMatchIndexes.Count >= 2)
 			{
-				return false;
+				throw new ArgumentOutOfRangeException();
 			}
+
 			PrevMatchIndexes.Add(_i);
-			return true;
 		}
 		#endregion
 	}
