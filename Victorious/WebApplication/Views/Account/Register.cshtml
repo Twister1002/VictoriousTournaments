@@ -6,6 +6,12 @@
 
 <div class="register form">
     <h2>Registration</h2>
+    @if (Model.Exception != DataLib.DbError.SUCCESS)
+    {
+        <div class="has-error">
+            ERROR In creation
+        </div>
+    }
     @using (Html.BeginForm("RegisterUser", "Account", FormMethod.Post))
     {
         <div class="register field">
@@ -17,6 +23,16 @@
             @Html.LabelFor(m => m.Email)
             <input type="text" name="Email" class="registerInput" placeholder="Email" />
             @Html.ValidationMessageFor(m => m.Email)
+        </div>
+        <div class="register field">
+            @Html.LabelFor(m => m.FirstName)
+            <input type="text" name="FirstName" class="registerInput" placeholder="FirstName" />
+            @Html.ValidationMessageFor(m => m.FirstName)
+        </div>
+        <div class="register field">
+            @Html.LabelFor(m => m.LastName)
+            <input type="text" name="LastName" class="registerInput" placeholder="LastName" />
+            @Html.ValidationMessageFor(m => m.LastName)
         </div>
         <div class="register field">
             @Html.LabelFor(m => m.Password)

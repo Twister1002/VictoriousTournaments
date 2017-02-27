@@ -11,17 +11,13 @@ namespace WebApplication.Controllers
 {
     public class AccountController : Controller
     {
-        // Remove when we have ability to access database
-        List<User> users = new List<User>();
-
-        //users.(new User{ FirstName = "User", LastName = "1", UserName="admin", UserID=1, Password="pass" });
-        //users.Add(new User { FirstName="User", LastName="2", UserName="User", UserID=2, Password="pass2" });
+        DatabaseInterface db = new DatabaseInterface();
 
         // GET: Account
         [Route("Account")]
         public ActionResult Index()
         {
-            if (Session["UserId"] != null)
+            if (Session["User.UserId"] != null)
             {
                 return View();
             }
@@ -34,7 +30,7 @@ namespace WebApplication.Controllers
         [Route("Account/Login")]
         public ActionResult Login()
         {
-            if (Session["UserId"] != null)
+            if (Session["User.UserId"] != null)
             {
                 return RedirectToAction("Index");
             }
@@ -51,18 +47,17 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                //We need now to check the login credentias of the user
-                //Query for the username
-                //User user = users.Find(u => u.UserName == viewModel.Username);
-                if (viewModel.Username == "admin")
+                // Check the username and password
+                UserModel user = db.GetUserByUsername(viewModel.Username);
+                if (user.Password == viewModel.Password)
                 {
-                    //Verfy the password is correct
-                    if (viewModel.Password == "pass")
-                    {
-                        Session["UserId"] = 0;
-                        Session["UserName"] = viewModel.Username;
-                        return RedirectToAction("Index", "Account");
-                    }
+                    Session["User.UserId"] = user.UserID;
+                    return RedirectToAction("Index", "Account");
+                }
+                else
+                {
+                    // There was an error 
+                    return View();
                 }
             }
             else
@@ -76,13 +71,15 @@ namespace WebApplication.Controllers
         [Route("Account/Register")]
         public ActionResult Register()
         {
-            if (Session["UserId"] != null)
+            AccountRegisterViewModel model = new AccountRegisterViewModel();
+
+            if (Session["User.UserId"] != null)
             {
                 return RedirectToAction("Index");
             }
             else
             {
-                return View();
+                return View(model);
             }
            
         }
@@ -93,27 +90,30 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (users.Select(u => u.UserName == user.Email).Count() > 0)
+                UserModel userModel = new UserModel();
+                userModel.Username = user.Username;
+                userModel.FirstName = user.FirstName;
+                userModel.LastName = user.LastName;
+                userModel.Password = user.Password;
+
+                DbError userExists = db.UserUsernameExists(user.Username);
+                DbError emailExists = db.UserEmailExists(user.Email);
+
+                if (userExists == DbError.DOES_NOT_EXIST && emailExists == DbError.ERROR)
                 {
-                    // There is a user that exists with this username all ready. Send the back with an error
-                    return View();
+                    // We can then register the user
+                    if (db.AddUser(userModel) == DbError.SUCCESS)
+                    {
+                        // User Registraion was successful
+                        return RedirectToAction("Login", "Account");
+                    }
+                    else
+                    {
+                        // User Registration failed.
+                        return View(user);
+                    }
                 }
-                else
-                {
-                    // Verify the password is strong enough
 
-                    // Email Verification?
-
-                    // Add the user to the database
-                    //users.Add(new User(user));
-                    //User dbUser = new User();
-                    //dbUser.UserName = user.Username;
-                    //dbUser.Password = user.Password;
-                    //dbUser.Email = user.Email;
-
-                    // Let's just have the user login 
-                    return RedirectToAction("Login", "Account");
-                }
             }
 
             //If we hit this, then something failed 

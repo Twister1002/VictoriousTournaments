@@ -4,39 +4,25 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebApplication.Models;
+using DataLib;
 
 namespace WebApplication.Controllers
 {
     public class TournamentController : Controller
     {
-        // GET: Tournament
+        DatabaseInterface db = new DatabaseInterface();
+
         [Route("Tournament")]
         public ActionResult Index()
         {
             return RedirectToAction("Search");
         }
 
-        [Route("Tournament/Search/{title?}")]
-        public ActionResult Search(String title)
-        {
-            TournamentViewModel model = new TournamentViewModel();
-            model.Title = title;
-
-            return View("Search", model);
-        }
-        
         [Route("Tournament/{guid}")]
-        public ActionResult Tournament(String guid)
+        public ActionResult Tournament(int guid)
         {
-            TournamentModel model = new TournamentModel(guid);
+            TournamentModel model = db.GetTournamentById(guid);
 
-            return View("Tournament", model);
-        }
-
-        [Route("Tournament/{org}/{guid}")]
-        public ActionResult TournamentOrginization(String org, String guid)
-        {
-            TournamentModel model = new TournamentModel("LALA-LALA-LALA-LALALA", "Merp", "This is fancy!");
             return View("Tournament", model);
         }
 
@@ -44,39 +30,67 @@ namespace WebApplication.Controllers
         [Route("Tournament/Create")]
         public ActionResult Create()
         {
-            TournamentViewModel model = new TournamentViewModel();
-            model.RegistrationStart = DateTime.Now;
-            model.RegistrationEnd = DateTime.Now.AddDays(1);
-            model.CheckInDateTime = DateTime.Now.AddDays(3);
+            TournamentViewModel viewModel = new TournamentViewModel();
 
-            return View(model);
+            return View(viewModel);
+        }
+
+        [Route("Tournament/Search/{title?}")]
+        public ActionResult Search(String title)
+        {
+            TournamentModel model = new TournamentModel();
+
+            return View("Search", model);
+        }
+        
+        
+
+        // GET: Tournament/Edit/5
+        public ActionResult Edit(int id)
+        {
+            return View();
+        }
+
+        // GET: Tournament/Delete/5
+        public ActionResult Delete(int id)
+        {
+            return View();
         }
 
         // POST: Tournament/Create
         [HttpPost]
         [Route("Tournament/Create")]
-        public ActionResult Create(TournamentViewModel model)
+        public ActionResult Create(TournamentViewModel viewModel)
         {
             try
             {
                 // TODO: Add insert logic here
                 if (ModelState.IsValid)
                 {
-                    return RedirectToAction("Index");
+                    TournamentModel model = new TournamentModel();
+                    model.Title = viewModel.Title;
+                    model.CreatedByID = (int)Session["User.UserId"];
+                    model.CreatedOn = DateTime.Now;
+                    model.Description = viewModel.Description;
+
+                    viewModel.Exception = db.AddTournament(model);
+
+                    if (viewModel.Exception == DbError.SUCCESS)
+                    {
+                        return RedirectToAction("Tournament/-1");
+                    }
+                    else
+                    {
+                        return View(viewModel);
+                    }
                 }
 
-                return View(model);
+                return View(viewModel);
             }
             catch
             {
-                return View();
+                return View(viewModel);
             }
-        }
-
-        // GET: Tournament/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
         }
 
         // POST: Tournament/Edit/5
@@ -93,12 +107,6 @@ namespace WebApplication.Controllers
             {
                 return View();
             }
-        }
-
-        // GET: Tournament/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
         }
 
         // POST: Tournament/Delete/5

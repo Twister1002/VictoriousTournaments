@@ -9,6 +9,7 @@ namespace DataLib
  
     public partial class BracketModel
     {
+        public const int BracketTypeLength = 50;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public BracketModel()
         {         
@@ -17,7 +18,7 @@ namespace DataLib
         [Key]
         public int BracketID { get; set; }
 
-        [StringLength(50)]
+        [StringLength(BracketTypeLength)]
         public string BracketType { get; set; }
 
     }

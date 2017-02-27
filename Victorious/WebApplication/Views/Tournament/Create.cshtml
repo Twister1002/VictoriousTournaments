@@ -6,11 +6,18 @@
 
 <h2>Create</h2>
 <div id="TournamentCreate" class="form">
+    @if (Model.Exception != DataLib.DbError.SUCCESS)
+    {
+        <div class="has-error">
+            Creation of a tournament has failed.
+        </div>
+    }
+
     @using (Html.BeginForm("Create", "Tournament", FormMethod.Post))
     {
         <div class="tournament field">
             @Html.LabelFor(t => t.Title)
-            <input type="text" name="Title" placeholder="Title" value="@Model.Title"/>
+            @Html.TextBoxFor(t => t.Title)
             @Html.ValidationMessageFor(t => t.Title)
         </div>
         @*<div class="tournament field">
@@ -34,8 +41,14 @@
             @Html.ValidationMessageFor(t => t.CheckInDateTime)
         </div>
         <div class="tournament field">
+            @Html.LabelFor(t => t.Description)
+            @Html.TextAreaFor(t => t.Description)
+            @*<textarea type="checkbox" name="Description" value="@Model.Description"></textarea>*@
+            @Html.ValidationMessageFor(t => t.Description)
+        </div>
+        <div class="tournament field">
             @Html.LabelFor(t => t.IsPublic)
-            <input type="checkbox" name="IsPublic" value="@Model.IsPublic"/>
+            @Html.CheckBoxFor(t => t.IsPublic)
             @Html.ValidationMessageFor(t => t.IsPublic)
         </div>
         <div class="tournament field">
