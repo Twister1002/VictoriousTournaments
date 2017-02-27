@@ -106,17 +106,17 @@ namespace Tournament.Structure
 		{
 			PlayerIndexes[0] = PlayerIndexes[1] = -1;
 		}
-		public bool AddWin(int _index)
+		public void AddWin(int _index)
 		{
-			if (Score[0] >= WinsNeeded
-				|| Score[1] >= WinsNeeded
-				|| -1 == PlayerIndexes[_index])
+			for (int i = 0; i < 2; ++i)
 			{
-				return false;
+				if (Score[i] >= WinsNeeded || PlayerIndexes[i] == -1)
+				{
+					throw new InactiveMatchException();
+				}
 			}
 
 			Score[_index] += 1;
-			return true;
 		}
 		public bool AddPrevMatchIndex(int _i)
 		{

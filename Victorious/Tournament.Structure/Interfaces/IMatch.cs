@@ -90,9 +90,7 @@ namespace Tournament.Structure
 		/// Adds a "win" to the Player at _index.
 		/// </summary>
 		/// <param name="_index">Index of a Player in Match, either 0 or 1.</param>
-		/// <returns>False if _index is empty or Match is already over,
-		/// True if successful.</returns>
-		bool AddWin(int _index);
+		void AddWin(int _index);
 
 		/// <summary>
 		/// Adds a Match Index (from previous round),
