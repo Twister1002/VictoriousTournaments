@@ -12,15 +12,11 @@ namespace Tournament.Structure
 	public interface IMatch
 	{
 		#region Variables & Properties
-		//uint Id { get; }
-
 		/// <summary>
 		/// Amount of "games" won to Win the Match.
 		/// Default 1
 		/// </summary>
 		ushort WinsNeeded { get; set; }
-
-		//IPlayer[] Players { get; set; }
 
 		/// <summary>
 		/// Two-element array: Indexes of both Players in Match.
@@ -33,8 +29,6 @@ namespace Tournament.Structure
 		/// Two-element array: Score of both Players.
 		/// </summary>
 		ushort[] Score { get; set; }
-
-		//int BracketId { get; set; }
 
 		/// <summary>
 		/// Which Round of the Bracket this Match is in.
@@ -70,8 +64,6 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Methods
-		//bool AddPlayer(IPlayer _p);
-
 		/// <summary>
 		/// Add _playerIndex to PlayerIndexes[]
 		/// </summary>

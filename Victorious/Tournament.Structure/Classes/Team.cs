@@ -14,8 +14,9 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public Team(string _name) : base(_name)
+		public Team(string _name)
 		{
+			Name = _name;
 			TeamMembers = new List<User>();
 		}
 		#endregion

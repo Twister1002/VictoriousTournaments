@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public class SingleElimBracket : Bracket
@@ -155,6 +157,27 @@ namespace Tournament.Structure
 			}
 			#endregion
 		}
+
+		public override bool FetchMatches(int _tournamentId)
+		{
+			DatabaseInterface db = new DatabaseInterface();
+			List<MatchModel> matchModels = db.GetAllMatchesInTournament(_tournamentId);
+
+			for (int rIndex = 0; rIndex < Rounds.Count; ++rIndex)
+			{
+				for (int mIndex = 0; mIndex < Rounds[rIndex].Count; ++mIndex)
+				{
+					foreach (MatchModel mm in matchModels)
+					{
+						if (rIndex == mm.RoundNumber && mIndex == mm.MatchIndex)
+						{
+							Rounds[rIndex][mIndex] = new Match(mm, Players);
+						}
+					}
+				}
+			}
+		}
+
 		public override bool AddPlayer(IPlayer _p)
 		{
 			foreach (IPlayer p in Players)

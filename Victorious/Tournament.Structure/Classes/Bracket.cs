@@ -16,6 +16,7 @@ namespace Tournament.Structure
 
 		#region Public Methods
 		public abstract void CreateBracket(ushort _winsPerMatch = 1);
+		public abstract bool FetchMatches(int _tournamentId);
 		public abstract bool AddPlayer(IPlayer _p);
 		public abstract void AddRound();
 		public abstract bool AddMatch(int _roundIndex);

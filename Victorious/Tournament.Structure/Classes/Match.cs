@@ -4,26 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public class Match : IMatch
 	{
 		#region Variables & Properties
-		//private uint id;
-		//public uint Id
-		//{
-		//	get { return id; }
-		//}
 		public ushort WinsNeeded
 		{ get; set; }
-		//public IPlayer[] Players
-		//{ get; set; }
 		public int[] PlayerIndexes
 		{ get; set; }
 		public ushort[] Score
 		{ get; set; }
-		//public int BracketId
-		//{ get; set; }
 		public int RoundNumber
 		{ get; set; }
 		public int MatchIndex
@@ -40,55 +33,54 @@ namespace Tournament.Structure
 		public Match()
 			: this(1, new int[2] { -1, -1 }, new ushort[2] { 0, 0 }, -1, -1, new List<int>(), -1, -1)
 		{ }
-		//public Match(uint _id)
-		//{
-		//	id = _id;
-		//	WinsNeeded = 1;
-		//	//Players = new IPlayer[2] { null, null };
-		//	PlayerIndexes = new int[2] { -1, -1 };
-		//	Score = new ushort[2] { 0, 0 };
-		//	BracketId = -1;
-		//	RoundNumber = -1;
-		//	MatchIndex = -1;
-		//	PrevMatchIndexes = new List<int>();
-		//	NextMatchIndex = -1;
-		//}
-		public Match(/*uint _id,*/ ushort _winsNeeded, /*IPlayer[] _players*/ int[] _playerIndexes, ushort[] _score, /*int _bracketId,*/ int _roundNumber, int _matchIndex, List<int> _prevMatchIndexes, int _nextMatchIndex, int _nextLoserMatchIndex)
+		public Match(ushort _winsNeeded, int[] _playerIndexes, ushort[] _score, int _roundNumber, int _matchIndex, List<int> _prevMatchIndexes, int _nextMatchIndex, int _nextLoserMatchIndex)
 		{
-			//id = _id;
 			WinsNeeded = _winsNeeded;
-			//Players = _players;
 			PlayerIndexes = _playerIndexes;
 			Score = _score;
-			//BracketId = _bracketId;
 			RoundNumber = _roundNumber;
 			MatchIndex = _matchIndex;
 			PrevMatchIndexes = _prevMatchIndexes;
 			NextMatchIndex = _nextMatchIndex;
 			NextLoserMatchIndex = _nextLoserMatchIndex;
 		}
+		public Match(MatchModel _m, List<IPlayer> _playerList)
+		{
+			WinsNeeded = _m.WinsNeeded;
+
+			PlayerIndexes = new int[2] { -1, -1 };
+			for (int i = 0; i < _playerList.Count; ++i)
+			{
+				if (_m.Defender.UserID == _playerList[i].Id)
+				{
+					PlayerIndexes[0] = i;
+				}
+				else if (_m.Challenger.UserID == _playerList[i].Id)
+				{
+					PlayerIndexes[1] = i;
+				}
+			}
+
+			Score = new ushort[2] { 0, 0 };
+			Score[0] = (null == _m.DefenderScore)
+				? (ushort)0 : (ushort)(_m.DefenderScore);
+			Score[1] = (null == _m.ChallengerScore)
+				? (ushort)0 : (ushort)(_m.ChallengerScore);
+
+			RoundNumber = (null == _m.RoundNumber)
+				? -1 : (int)(_m.RoundNumber);
+			MatchIndex = _m.MatchIndex;
+
+			PrevMatchIndexes = new List<int>();
+
+			NextMatchIndex = (null == _m.NextMatchIndex)
+				? -1 : (int)(_m.NextMatchIndex);
+			NextLoserMatchIndex = (null == _m.NextLoserMatchIndex)
+				? -1 : (int)(_m.NextLoserMatchIndex);
+		}
 		#endregion
 
 		#region Public Methods
-		//public bool AddPlayer(IPlayer _p)
-		//{
-		//	//foreach (IPlayer p in Players)
-		//	//{
-		//	//	if (p.Id == _p.Id)
-		//	//	{
-		//	//		return false;
-		//	//	}
-		//	//}
-		//	//for (int i = 0; i < 2; ++i)
-		//	//{
-		//	//	if (null == players[i])
-		//	//	{
-		//	//		players[i] = _p;
-		//	//		return true;
-		//	//	}
-		//	//}
-		//	return false;
-		//}
 		public bool AddPlayer(int _playerIndex, int _index)
 		{
 			if (PlayerIndexes[_index] > -1)

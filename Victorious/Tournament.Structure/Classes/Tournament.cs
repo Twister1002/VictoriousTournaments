@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public class Tournament : ITournament
@@ -43,6 +45,43 @@ namespace Tournament.Structure
 			Brackets = _brackets;
 			PrizePool = _pool;
 			IsPublic = _isPublic;
+		}
+		public Tournament(TournamentModel _t)
+		{
+			DatabaseInterface db = new DatabaseInterface();
+
+			Title = _t.Title;
+			Description = _t.Description;
+
+			Players = new List<IPlayer>();
+			List<UserModel> users = db.GetAllUsersInTournament(_t.TournamentID);
+			foreach (UserModel model in users)
+			{
+				Players.Add(new User(model));
+			}
+
+			Brackets = new List<IBracket>();
+			switch (_t.TournamentRules.Bracket.BracketType)
+			{
+				case ("single"):
+					CreateSingleElimBracket();
+					break;
+				case ("double"):
+					CreateDoubleElimBracket();
+					break;
+				default:
+
+					break;
+			}
+			foreach(IBracket bracket in Brackets)
+			{
+				bracket.FetchMatches(_t.TournamentID);
+			}
+
+			PrizePool = (null == _t.TournamentRules.PrizePurse)
+				? 0.0f : (float)(_t.TournamentRules.PrizePurse);
+			IsPublic = (null == _t.TournamentRules.IsPublic)
+				? false : (bool)(_t.TournamentRules.IsPublic);
 		}
 		#endregion
 

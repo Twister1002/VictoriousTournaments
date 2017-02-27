@@ -54,6 +54,12 @@
     <Compile Include="Classes\User.cs" />
     <Compile Include="Classes\Team.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataLib\DataLib.csproj">
+      <Project>{59636ed1-650e-4319-aabe-aed047a9feb5}</Project>
+      <Name>DataLib</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

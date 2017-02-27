@@ -33,6 +33,13 @@ namespace Tournament.Structure
 		void CreateBracket(ushort _winsPerMatch = 1);
 
 		/// <summary>
+		/// Fill the bracket with current Match data from the DB.
+		/// </summary>
+		/// <param name="_tournamentId">ID of the bracket's Tournament.</param>
+		/// <returns>True if successful.</returns>
+		bool FetchMatches(int _tournamentId);
+
+		/// <summary>
 		/// Add a Player to the Players list.
 		/// </summary>
 		/// <param name="_p">Player to add.</param>
