@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tournament.Structure
 {
-	public class Tournament
+	public class Tournament : ITournament
 	{
 		#region Variables & Properties
 		//private uint id;
@@ -22,7 +22,7 @@ namespace Tournament.Structure
 		{ get; set; }
 		public List<IBracket> Brackets
 		{ get; set; }
-		public float PrizePurse
+		public float PrizePool
 		{ get; set; }
 		public bool IsPublic
 		{ get; set; }
@@ -35,13 +35,13 @@ namespace Tournament.Structure
 		//public Tournament(uint _id)
 		//	: this(_id, "", new List<IPlayer>(), new List<IBracket>(), 0, false)
 		//{ }
-		public Tournament(/*uint _id,*/ string _title, List<IPlayer> _players, List<IBracket> _brackets, float _purse, bool _isPublic)
+		public Tournament(/*uint _id,*/ string _title, List<IPlayer> _players, List<IBracket> _brackets, float _pool, bool _isPublic)
 		{
 			//id = _id;
 			Title = _title;
 			Players = _players;
 			Brackets = _brackets;
-			PrizePurse = _purse;
+			PrizePool = _pool;
 			IsPublic = _isPublic;
 		}
 		#endregion
