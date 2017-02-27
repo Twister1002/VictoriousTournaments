@@ -149,20 +149,17 @@ namespace Tournament.Structure
 			#endregion
 		}
 
-		public override void FetchMatches(int _tournamentId)
+		public override void UpdateCurrentMatches(ICollection<MatchModel> _matchModels)
 		{
-			DatabaseInterface db = new DatabaseInterface();
-			List<MatchModel> matchModels = db.GetAllMatchesInTournament(_tournamentId);
-
 			for (int rIndex = 0; rIndex < Rounds.Count; ++rIndex)
 			{
 				for (int mIndex = 0; mIndex < Rounds[rIndex].Count; ++mIndex)
 				{
-					foreach (MatchModel mm in matchModels)
+					foreach (MatchModel model in _matchModels)
 					{
-						if (rIndex == mm.RoundNumber && mIndex == mm.MatchIndex)
+						if (rIndex == model.RoundNumber && mIndex == model.MatchIndex)
 						{
-							Rounds[rIndex][mIndex] = new Match(mm, Players);
+							Rounds[rIndex][mIndex] = new Match(model, Players);
 							break;
 						}
 					}

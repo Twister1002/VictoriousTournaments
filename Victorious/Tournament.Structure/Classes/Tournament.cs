@@ -39,8 +39,6 @@ namespace Tournament.Structure
 		}
 		public Tournament(TournamentModel _t)
 		{
-			DatabaseInterface db = new DatabaseInterface();
-
 			Title = _t.Title;
 			Description = _t.Description;
 
@@ -64,7 +62,7 @@ namespace Tournament.Structure
 			}
 			foreach(IBracket bracket in Brackets)
 			{
-				bracket.FetchMatches(_t.TournamentID);
+				bracket.UpdateCurrentMatches(_t.Matches);
 			}
 
 			PrizePool = (null == _t.TournamentRules.PrizePurse)

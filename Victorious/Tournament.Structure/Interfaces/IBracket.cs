@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public interface IBracket
@@ -31,10 +33,10 @@ namespace Tournament.Structure
 		void CreateBracket(ushort _winsPerMatch = 1);
 
 		/// <summary>
-		/// Fill the bracket with current Match data from the DB.
+		/// Sets Matches with current info from DB.
 		/// </summary>
-		/// <param name="_tournamentId">ID of the bracket's Tournament.</param>
-		void FetchMatches(int _tournamentId);
+		/// <param name="_matchModels">ICollection of DB Matches.</param>
+		void UpdateCurrentMatches(ICollection<MatchModel> _matchModels);
 
 		/// <summary>
 		/// Record a "game" win.

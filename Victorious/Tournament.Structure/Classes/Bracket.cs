@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public abstract class Bracket : IBracket
@@ -15,7 +17,7 @@ namespace Tournament.Structure
 
 		#region Abstract Methods
 		public abstract void CreateBracket(ushort _winsPerMatch = 1);
-		public abstract void FetchMatches(int _tournamentId);
+		public abstract void UpdateCurrentMatches(ICollection<MatchModel> _matchModels);
 		public abstract void AddWin(int _roundIndex, int _matchIndex, int _index);
 		public abstract void AddWin(IMatch _match, int _index);
 		#endregion
