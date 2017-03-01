@@ -16,7 +16,7 @@ namespace DataLib
         }
 
         [Key]
-        public int TournamnetRulesID { get; set; }
+        public int TournamentRulesID { get; set; }
 
         public int? TournamentID { get; set; }
 

@@ -14,7 +14,7 @@ namespace DataLib
         public const int EmailLength = 50;
         public const int UsernameLength = 50;
         public const int PasswordLength = 50;
-        public const int PhoneNumberLength = 10;
+        public const int PhoneNumberLength = 15;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public UserModel()

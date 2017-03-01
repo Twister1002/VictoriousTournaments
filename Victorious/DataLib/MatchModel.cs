@@ -15,7 +15,7 @@ namespace DataLib
 
         public int? DefenderID { get; set; }
 
-        public int? TournamentID { get; set; }
+        //public int? TournamentID { get; set; }
 
         public int? WinnerID { get; set; }
 
@@ -33,14 +33,28 @@ namespace DataLib
 
         public TimeSpan? MatchDuration { get; set; }
 
+        public int? WinsNeeded { get; set; }
+
+        public int? MatchIndex { get; set; }
+
+        public int? NextMatchIndex { get; set; }
+
+        public int? PrevMatchIndex { get; set; }
+
+        public int? NextLoserMatchIndex { get; set; }
+
+        public int? PrevDefenderMatchIndex { get; set; }
+
+        public int? PrevChallengerMatchIndex { get; set; }
+
         [ForeignKey("ChallengerID")]
         public UserModel Challenger { get; set; }
 
         [ForeignKey("DefenderID")]
         public UserModel Defender { get; set; }
 
-        [ForeignKey("TournamentID")]
-        public TournamentModel Tournament { get; set; }
+        //[ForeignKey("TournamentID")]
+        //public TournamentModel Tournament { get; set; }
 
         [ForeignKey("WinnerID")]
         public UserModel Winner { get; set; }
