@@ -3,6 +3,8 @@
 @{
     ViewBag.Title = "Tournament";
     Layout = "~/Views/Shared/_Layout1.cshtml";
+    int totalRounds = 4;
+    int totalMatches = 4;
 }
 
 <h2>Tournament - @Model.Title</h2>
@@ -10,13 +12,21 @@
     Functionality for this viewing is not complete yet
 </div>
 <div id="Tournament">
-    @for (int i = 0; i <= 6; i++)
+    @for (int round = 0; round < totalRounds; round++)
     {
-        <div class="match">
-            <ul>
-                <li class="team"><div class="seed">1</div>Challenger</li>
-                <li class="team"><div class="seed">2</div>Defender</li>
-            </ul>
+        <div class="round-@round">
+            @for (int match = 1; match <= totalMatches; match++)
+            {
+                int roundNumber = round * totalMatches + match;
+                <div class="match match-@roundNumber">
+                    <label>@roundNumber</label>
+                    <ul class="matchInfo">
+
+                        <li class="team"><div class="seed">1</div>Challenger</li>
+                        <li class="team"><div class="seed">2</div>Defender</li>
+                    </ul>
+                </div>
+            }
         </div>
     }
 </div>
