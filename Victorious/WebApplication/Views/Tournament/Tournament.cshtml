@@ -1,29 +1,27 @@
-﻿@model DataLib.TournamentModel
+﻿@model WebApplication.Models.TournamentViewModel
 
 @{
     ViewBag.Title = "Tournament";
     Layout = "~/Views/Shared/_Layout1.cshtml";
-    int totalRounds = 4;
-    int totalMatches = 4;
 }
 
-<h2>Tournament - @Model.Title</h2>
-<div>
-    Functionality for this viewing is not complete yet
-</div>
+<h2>Tournament - @Model.tourny.Title</h2>
 <div id="Tournament">
-    @for (int round = 0; round < totalRounds; round++)
+    @{int match = 0; }
+    @for (int roundNum = @Model.tourny.Brackets[0].Rounds.Count()-1; roundNum >= 0; roundNum--)
     {
-        <div class="round-@round">
-            @for (int match = 1; match <= totalMatches; match++)
+        var round = Model.tourny.Brackets[0].Rounds[roundNum];
+        <div class="round round-@roundNum">
+            @for (int matchNum = 0; matchNum < round.Count(); matchNum++)
             {
-                int roundNumber = round * totalMatches + match;
-                <div class="match match-@roundNumber">
-                    <label>@roundNumber</label>
+                match++;
+                <div class="match match-@match">
+                    <label>@match</label>
                     <ul class="matchInfo">
-
-                        <li class="team"><div class="seed">1</div>Challenger</li>
-                        <li class="team"><div class="seed">2</div>Defender</li>
+                        @foreach (var player in round[matchNum].PlayerIndexes)
+                        {
+                            <li class="team"><div class="seed">@player</div>Name</li>
+                        }
                     </ul>
                 </div>
             }

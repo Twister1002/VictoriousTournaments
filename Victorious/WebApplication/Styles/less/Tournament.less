@@ -1,28 +1,35 @@
 ﻿#Tournament {
-    .match {
-        background-color: #26252B;
-        border: 1px solid #A88B00;
-        width:10em;
-        margin-bottom: .5em;
-        border-radius: .5em;
+    padding:0em 0em 0em 3em;
+    .round {
+        float: left;
 
-        ul {
-            list-style-type:none;
+        .match {
+            background-color: #26252B;
+            border: 1px solid #A88B00;
+            width: 10em;
+            margin-bottom: .5em;
+            border-radius: .5em;
 
-            li {
-                &:first-child {
-                    border-bottom: 1px solid #FFFFFF;
+            ul {
+                list-style-type: none;
+
+                li {
+                    &:first-child {
+                        border-bottom: 1px solid #FFFFFF;
+                    }
+
+                    .seed {
+                        display: inline-block;
+                        border-width: 0px 1px 0px 0px;
+                        border-style: solid;
+                        border-color: #FFFFFF;
+                        padding: .2em;
+                        width:1em;
+                        text-align:right;
+                    }
+
+                    vertical-align: middle;
                 }
-
-                .seed {
-                    display:inline-block;
-                    border-width: 0px 1px 0px 0px;
-                    border-style: solid;
-                    border-color: #FFFFFF;
-                    padding:.2em;
-                }
-
-                vertical-align: middle;
             }
         }
     }

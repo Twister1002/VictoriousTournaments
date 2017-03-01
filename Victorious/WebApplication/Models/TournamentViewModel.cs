@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using Tournament.Structure;
 
 namespace WebApplication.Models
 {
-    public class TournamentViewModel
+    public class TournamentFormModel
     {
         public DbError Exception = DbError.SUCCESS;
 
@@ -15,7 +16,7 @@ namespace WebApplication.Models
         [DataType(DataType.Text)]
         [Display(Name = "Tournament Title")]
         public string Title { get; set; }
-        
+
         [Required(ErrorMessage = "When do we allow registration to start?")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Registration Start")]
@@ -25,7 +26,7 @@ namespace WebApplication.Models
         [DataType(DataType.DateTime)]
         [Display(Name = "Registration End")]
         public DateTime RegistrationEnd { get; set; }
-        
+
         [DataType(DataType.Text)]
         [Display(Name = "Check-in Date and Time")]
         public DateTime CheckInDateTime { get; set; }
@@ -36,5 +37,31 @@ namespace WebApplication.Models
 
         [Display(Name = "Public")]
         public bool IsPublic { get; set; }
+    }
+
+    public class TournamentViewModel {
+        public ITournament tourny;
+
+        public TournamentViewModel()
+        {
+            tourny = new Tournament.Structure.Tournament();
+            for (int i = 0; i < 30; i++)
+            {
+                UserModel uModel = new UserModel()
+                {
+                    UserID = i,
+                    FirstName = "FirstName " + i,
+                    LastName = "LastName " + i,
+                    Username = "Player " + i,
+                    Email = "EMail" + i
+                };
+
+                tourny.AddPlayer(new User(uModel));
+            }
+
+            tourny.CreateSingleElimBracket();
+
+        }
+        
     }
 }

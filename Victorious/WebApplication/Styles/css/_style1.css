@@ -101,26 +101,34 @@ li {
   padding: 0em;
   margin: 0em;
 }
-#Tournament .match {
+#Tournament {
+  padding: 0em 0em 0em 3em;
+}
+#Tournament .round {
+  float: left;
+}
+#Tournament .round .match {
   background-color: #26252B;
   border: 1px solid #A88B00;
   width: 10em;
   margin-bottom: .5em;
   border-radius: .5em;
 }
-#Tournament .match ul {
+#Tournament .round .match ul {
   list-style-type: none;
 }
-#Tournament .match ul li {
+#Tournament .round .match ul li {
   vertical-align: middle;
 }
-#Tournament .match ul li:first-child {
+#Tournament .round .match ul li:first-child {
   border-bottom: 1px solid #FFFFFF;
 }
-#Tournament .match ul li .seed {
+#Tournament .round .match ul li .seed {
   display: inline-block;
   border-width: 0px 1px 0px 0px;
   border-style: solid;
   border-color: #FFFFFF;
   padding: .2em;
+  width: 1em;
+  text-align: right;
 }
