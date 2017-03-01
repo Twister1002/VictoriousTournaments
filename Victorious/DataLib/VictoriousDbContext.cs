@@ -10,7 +10,8 @@ namespace DataLib
         public VictoriousDbContext()
             : base("name=VictoriousTestDbContext")
         {
-            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<VictoriousDbContext>());
+            //Database.SetInitializer(new DropCreateDatabaseAlways<VictoriousDbContext>());
+            this.Configuration.LazyLoadingEnabled = true;
         }
 
         public DbSet<BracketModel> Brackets { get; set; }
@@ -18,6 +19,8 @@ namespace DataLib
         public DbSet<TournamentRuleModel> TournamentRules { get; set; }
         public DbSet<TournamentModel> Tournaments { get; set; }
         public DbSet<UserModel> Users { get; set; }
+        public DbSet<UserBracketSeedModel> UserBracketSeeds { get; set; }
+        //public DbSet<UsersInTournamentsModel> UsersInTournaments { get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -27,8 +30,14 @@ namespace DataLib
             //    .WithRequired(e => e.Bracket)
             //    .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<BracketModel>()
+                .HasMany(e => e.Matches)
+                .WithRequired()
+                .WillCascadeOnDelete(false);
+
+
             modelBuilder.Entity<TournamentRuleModel>()
-                .Property(e => e.TournamnetRulesID)
+                .Property(e => e.TournamentRulesID)
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
             modelBuilder.Entity<TournamentRuleModel>()
@@ -43,9 +52,14 @@ namespace DataLib
                 .Property(e => e.Description)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<TournamentModel>()
-                .HasMany(e => e.Matches)
-                .WithRequired(e => e.Tournament)
+            //modelBuilder.Entity<TournamentModel>()
+            //    .HasMany(e => e.Matches)
+            //    .WithRequired(e => e.Tournament)
+            //    .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<BracketModel>()
+                .HasMany(e => e.UserSeeds)
+                .WithRequired()
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<TournamentModel>()
@@ -56,7 +70,18 @@ namespace DataLib
             modelBuilder.Entity<TournamentModel>()
                 .HasMany(e => e.Users)
                 .WithMany(e => e.Tournaments)
-                .Map(m => m.ToTable("UsersInTournament").MapLeftKey("TournamentID").MapRightKey("UserID"));
+                .Map(m =>
+                {
+                    m.MapLeftKey("UserID");
+                    m.MapRightKey("TournamentID");
+                    m.ToTable("UsersTournaments");
+                });
+
+            
+            //modelBuilder.Entity<TournamentModel>()
+            //    .HasMany(e => e.Users)
+            //    .WithMany(e => e.Tournaments)
+            //    .Map(m => m.ToTable("UsersTournaments").MapLeftKey("TournamentID").MapRightKey("UserID"));
 
             modelBuilder.Entity<UserModel>()
                 .Property(e => e.PhoneNumber)
@@ -77,16 +102,18 @@ namespace DataLib
             modelBuilder.Entity<BracketModel>()
                 .ToTable("Brackets");
 
-            //modelBuilder.Entity<Match>()
-            //    .HasRequired(e => e.Challenger)
-            //    .WithMany()
-            //    .WillCascadeOnDelete(false);
 
 
-            //modelBuilder.Entity<Match>()
-            //    .HasRequired(e => e.Defender)
-            //    .WithMany()
-            //    .WillCascadeOnDelete(false);
+            modelBuilder.Entity<MatchModel>()
+                .HasOptional(e => e.Challenger)
+                .WithMany()
+                .WillCascadeOnDelete(false);
+
+
+            modelBuilder.Entity<MatchModel>()
+                .HasOptional(e => e.Defender)
+                .WithMany()
+                .WillCascadeOnDelete(false);
 
 
             //modelBuilder.Entity<Match>()

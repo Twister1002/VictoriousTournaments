@@ -9,7 +9,7 @@ namespace DataLib
 
     public enum DbError
     {
-        ERROR = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_REMOVE, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS
+        ERROR = -1, NONE = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_REMOVE, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS
     };
 
     public class DatabaseInterface
@@ -29,9 +29,14 @@ namespace DataLib
             //context.Users.SqlQuery("DELETE FROM Users");
             //context.TournamentRules.SqlQuery("DELETE FROM TournamentRules");
             //context.Tournaments.SqlQuery("DELETE FROM Tournaments");
-
+            if (context.Database.Connection.State != System.Data.ConnectionState.Closed)
+            {
+                context.Database.Connection.Close();
+            }
             context.Database.Delete();
         }
+
+        
 
         // For testing purposes only.
         // Call this function to re-seed the database.
@@ -60,10 +65,10 @@ namespace DataLib
             }
             catch (Exception)
             {
-                return DbError.ERROR;
+                return DbError.DOES_NOT_EXIST;
             }
 
-            return DbError.SUCCESS;
+            return DbError.EXISTS;
         }
 
         public DbError UserUsernameExists(string username)
@@ -85,6 +90,7 @@ namespace DataLib
         {
             try
             {
+                user.CreatedOn = DateTime.Now;
                 context.Users.Add(user);
                 context.SaveChanges();
             }
@@ -106,34 +112,18 @@ namespace DataLib
             }
             catch (Exception)
             {
-                return DbError.FAILED_TO_ADD;
+                return DbError.FAILED_TO_UPDATE;
             }
 
             return DbError.SUCCESS;
         }
 
-        //public bool LogUserInByUsername(string username)
-        //{
-        //    try
-        //    {
-        //        UserModel user = context.Users.SingleOrDefault(u => u.Username == username);
-        //        user.LastLogin = DateTime.Now;
 
-        //        context.SaveChanges();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return false;
-        //    }
-
-        //    return true;
-        //}
-
-        public DbError UpdateUserEmail(UserModel user, string newEmail)
+        public DbError UpdateUserEmail(UserModel user)
         {
             try
             {
-                user.Email = newEmail;
+                //user.Email = newEmail;
                 context.SaveChanges();
             }
             catch (Exception)
@@ -175,29 +165,23 @@ namespace DataLib
             return user;
         }
 
-        //public Dictionary<string, string> GetUserByUsername(string username)
-        //{
-        //    Dictionary<string, string> dict = new Dictionary<string, string>();
-        //    try
-        //    {
-        //        UserModel user = context.Users.SingleOrDefault(u => u.Username == username);
-        //        dict.Add("UserID", user.UserID.ToString());
-        //        dict.Add("FirstName", user.FirstName);
-        //        dict.Add("LastName", user.LastName);
-        //        dict.Add("Username", user.Username);
-        //        dict.Add("Email", user.Email);
-        //        dict.Add("PhoneNumber", user.PhoneNumber);
-        //        dict.Add("LastLogin", user.LastLogin.ToString());
-        //    }
-        //    catch (Exception)
-        //    {
-        //        dict.Clear();
-        //        dict.Add("UserID", "ERROR");
-        //        return dict;
-        //    }
+        public UserModel GetUserByUsername(string username)
+        {
+            UserModel user = new UserModel();
+            try
+            {
+                user = context.Users.SingleOrDefault(u => u.Username == username);
+                if (user.Password == null || user.Email == null || user.FirstName == null || user.LastName == null)
+                    throw new NullReferenceException();
+            }
+            catch (Exception)
+            {
+                user.UserID = -1;
+                return user;
+            }
 
-        //    return dict;
-        //}
+            return user;
+        }
 
         #endregion
 
@@ -216,7 +200,18 @@ namespace DataLib
         {
             try
             {
+                TournamentModel newTournament = new TournamentModel();
+             
+
+                //uit.User = context.Users.Find(tournament.CreatedByID);
+                //uit.Tournament = tournament;
+                //uit.Permission = "Administrator";
+                //context.UsersInTournaments.Add(uit);
+                newTournament = tournament;
+               
+
                 context.Tournaments.Add(tournament);
+                
                 context.SaveChanges();
             }
             catch (Exception)
@@ -231,8 +226,10 @@ namespace DataLib
         {
             try
             {
+                context.Users.Add(user);
                 tournament.Users.Add(user);
                 context.SaveChanges();
+                
             }
             catch (Exception)
             {
@@ -258,27 +255,29 @@ namespace DataLib
 
         }
 
-        //public List<int> GetAllUsersInTournament(int id)
-        //{
-        //    List<int> list = new List<int>();
-        //    TournamentModel tournament = context.Tournaments.SingleOrDefault(t => t.TournamentID == id);
-        //    try
-        //    {
-        //        foreach (UserModel user in tournament.Users)
-        //        {
-        //            list.Add(user.UserID);
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
+        public List<UserModel> GetAllUsersInTournament(TournamentModel tournament)
+        {
+            List<UserModel> list = new List<UserModel>();
+           
+            try
+            {
+                //foreach (UserModel user in tournament.Users)
+                //{
+                //    list.Add(user.UserID);
+                //}
 
-        //        list.Clear();
-        //        list.Add(0);
-        //        return list;
-        //    }
+                list = tournament.Users.ToList();
+            }
+            catch (Exception)
+            {
 
-        //    return list;
-        //}
+                list.Clear();
+                list.Add(new UserModel() { UserID = 0});
+                return list;
+            }
+
+            return list;
+        }
 
         public DbError UpdateTournamentCutoffDate(TournamentModel tournament, DateTime newCutoff)
         {
@@ -410,17 +409,12 @@ namespace DataLib
                 return true;
         }
 
-        public int AddBracket(string bracketTypeName)
-        {
-            BracketModel bracket;
+        public DbError AddBracket(TournamentModel tournament, BracketModel bracket)
+        {       
             try
             {
-                bracket = new BracketModel()
-                {
-                    BracketType = bracketTypeName
-                };
-
                 context.Brackets.Add(bracket);
+                tournament.Brackets.Add(bracket);
 
                 context.SaveChanges();
             }
@@ -429,8 +423,25 @@ namespace DataLib
                 return 0;
             }
 
-            return bracket.BracketID;
+            return DbError.SUCCESS;
         }
+        
+        public BracketModel GetBracketByID(int id)
+        {
+            BracketModel bracket = new BracketModel();
+            try
+            {
+                bracket = context.Brackets.Single(b => b.BracketID == id);
+            }
+            catch (Exception)
+            {
+                bracket.BracketID = -1;
+                return bracket;
+            }
+
+            return bracket;
+        }
+
 
         public bool DeletBracketById(int id)
         {
@@ -472,7 +483,7 @@ namespace DataLib
             try
             {
                 context.Matches.Add(match);
-
+                
                 context.SaveChanges();
 
             }
@@ -483,6 +494,52 @@ namespace DataLib
 
             return DbError.SUCCESS;
 
+        }
+
+        public DbError AddDefender(MatchModel match, UserModel user)
+        {
+            try
+            {
+                match.Defender = user;
+                context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return DbError.FAILED_TO_ADD;
+            }
+
+            return DbError.SUCCESS;
+        }
+
+        public DbError AddChallenger(MatchModel match, UserModel user)
+        {
+            try
+            {
+                match.Challenger = user;
+                context.SaveChanges();
+            }
+            catch
+            {
+                return DbError.FAILED_TO_ADD;
+            }
+
+            return DbError.SUCCESS;
+        }
+
+        public DbError AddMatch(MatchModel match, BracketModel bracket)
+        {
+            try
+            {
+                bracket.Matches.Add(match);
+                context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return DbError.ERROR;
+               
+            }
+
+            return DbError.SUCCESS;
         }
 
         //public int AddByeMatch(int tournamentId, int roundNumber, int userId)
@@ -514,7 +571,7 @@ namespace DataLib
         //    return match.MatchID;
         //}
 
-        public MatchModel GetMatch(int id)
+        public MatchModel GetMatchById(int id)
         {
             MatchModel match = new MatchModel();
             try
@@ -531,6 +588,8 @@ namespace DataLib
         }
 
         #endregion
+
+
 
     }
 }
