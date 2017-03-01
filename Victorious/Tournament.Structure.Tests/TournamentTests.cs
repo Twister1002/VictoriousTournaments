@@ -25,9 +25,7 @@ namespace Tournament.Structure.Tests
 		{
 			string str = "title";
 			List<IPlayer> pList = new List<IPlayer>();
-			//pList.Add(new Mock<IPlayer>().Object);
 			List<IBracket> bList = new List<IBracket>();
-			//bList.Add(new Mock<IBracket>().Object);
 			Tournament t = new Tournament(str, pList, bList, 1.0f, true);
 
 			Assert.AreEqual(str, t.Title);

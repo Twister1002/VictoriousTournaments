@@ -53,6 +53,7 @@ namespace Tournament.Structure
 		}
 		public Match(MatchModel _m, List<IPlayer> _playerList)
 		{
+#if false
 			if (null == _m
 				|| null == _playerList
 				|| null == _m.ChallengerID
@@ -114,6 +115,7 @@ namespace Tournament.Structure
 
 			NextMatchIndex = (int)(_m.NextMatchIndex);
 			NextLoserMatchIndex = (int)(_m.NextLoserMatchIndex);
+#endif
 		}
 		#endregion
 

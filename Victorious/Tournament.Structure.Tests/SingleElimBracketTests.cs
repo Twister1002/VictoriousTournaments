@@ -164,7 +164,7 @@ namespace Tournament.Structure.Tests
 			{
 				pList.Add(new Mock<IPlayer>().Object);
 			}
-			IBracket b = new SingleElimBracket();
+			IBracket b = new SingleElimBracket(pList);
 			b.AddPlayer(p);
 
 			Assert.IsTrue(b.Players.Contains(p));
@@ -181,7 +181,7 @@ namespace Tournament.Structure.Tests
 			{
 				pList.Add(new Mock<IPlayer>().Object);
 			}
-			IBracket b = new SingleElimBracket();
+			IBracket b = new SingleElimBracket(pList);
 
 			b.AddPlayer(p);
 			b.AddPlayer(p);
@@ -199,7 +199,7 @@ namespace Tournament.Structure.Tests
 			{
 				pList.Add(new Mock<IPlayer>().Object);
 			}
-			IBracket b = new SingleElimBracket();
+			IBracket b = new SingleElimBracket(pList);
 
 			b.AddPlayer(null);
 
@@ -272,7 +272,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SingleElimBracket Methods")]
-		public void SEBAddWin_4Players_DoesNothingWhenMatchIsOver()
+		[ExpectedException(typeof(InactiveMatchException))]
+		public void SEBAddWin_ThrowsInactive_WhenMatchIsAlreadyOver()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -282,10 +283,10 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(1, 0, 1);
-			b.AddWin(1, 0, 1); // does nothing
+			b.AddWin(1, 0, 1); // ends match
+			b.AddWin(1, 0, 1); // throws exception
 
-			Assert.AreEqual(1, b.GetMatch(1, 0).Score[1]);
+			Assert.AreEqual(1, 2);
 		}
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
@@ -322,6 +323,24 @@ namespace Tournament.Structure.Tests
 			b.AddWin(1, 1, 1);
 
 			Assert.AreEqual(playerNum, b.GetMatch(0, 0).PlayerIndexes[1]);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SingleElimBracket Methods")]
+		[ExpectedException(typeof(KeyNotFoundException))]
+		public void SEBAddWin_ThrowsKeyNotFound_WhenMatchParamIsNotFound()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				pList.Add(new Mock<IPlayer>().Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			b.AddWin(new Mock<IMatch>().Object, 0);
+
+			Assert.AreEqual(1, 2);
 		}
 	}
 }

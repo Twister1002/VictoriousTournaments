@@ -157,6 +157,7 @@ namespace Tournament.Structure
 
 		public override void UpdateCurrentMatches(ICollection<MatchModel> _matchModels)
 		{
+#if false
 			for (int rIndex = 0; rIndex < Rounds.Count; ++rIndex)
 			{
 				for (int mIndex = 0; mIndex < Rounds[rIndex].Count; ++mIndex)
@@ -171,6 +172,7 @@ namespace Tournament.Structure
 					}
 				}
 			}
+#endif
 		}
 
 		public override void AddWin(int _roundIndex, int _matchIndex, int _index)
@@ -220,9 +222,9 @@ namespace Tournament.Structure
 
 			throw new KeyNotFoundException();
 		}
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 		private void ReassignPlayer(int _pIndex, IMatch _currMatch, IMatch _newMatch)
 		{
 			if (null == _currMatch || null == _newMatch)
@@ -242,6 +244,6 @@ namespace Tournament.Structure
 
 			throw new KeyNotFoundException();
 		}
-		#endregion
+#endregion
 	}
 }
