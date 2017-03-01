@@ -4,16 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public class Tournament : ITournament
 	{
 		#region Variables & Properties
-		//private uint id;
-		//public uint Id
-		//{
-		//	get { return id; }
-		//}
 		public string Title
 		{ get; set; }
 		public string Description
@@ -32,58 +29,77 @@ namespace Tournament.Structure
 		public Tournament()
 			: this("", new List<IPlayer>(), new List<IBracket>(), 0, false)
 		{ }
-		//public Tournament(uint _id)
-		//	: this(_id, "", new List<IPlayer>(), new List<IBracket>(), 0, false)
-		//{ }
-		public Tournament(/*uint _id,*/ string _title, List<IPlayer> _players, List<IBracket> _brackets, float _pool, bool _isPublic)
+		public Tournament(string _title, List<IPlayer> _players, List<IBracket> _brackets, float _pool, bool _isPublic)
 		{
-			//id = _id;
 			Title = _title;
 			Players = _players;
 			Brackets = _brackets;
 			PrizePool = _pool;
 			IsPublic = _isPublic;
 		}
+		public Tournament(TournamentModel _t)
+		{
+			Title = _t.Title;
+			Description = _t.Description;
+
+			Players = new List<IPlayer>();
+			foreach (UserModel model in _t.Users)
+			{
+				Players.Add(new User(model));
+			}
+
+			Brackets = new List<IBracket>();
+			switch (_t.TournamentRules.Bracket.BracketType)
+			{
+				case ("single"):
+					CreateSingleElimBracket();
+					break;
+				case ("double"):
+					CreateDoubleElimBracket();
+					break;
+				default:
+					break;
+			}
+			foreach(IBracket bracket in Brackets)
+			{
+				bracket.UpdateCurrentMatches(_t.Matches);
+			}
+
+			PrizePool = (null == _t.TournamentRules.PrizePurse)
+				? 0.0f : (float)(_t.TournamentRules.PrizePurse);
+			IsPublic = (null == _t.TournamentRules.IsPublic)
+				? false : (bool)(_t.TournamentRules.IsPublic);
+		}
 		#endregion
 
 		#region Public Methods
-		public bool AddPlayer(IPlayer _p)
+		public void AddPlayer(IPlayer _p)
 		{
-			foreach (IPlayer p in Players)
+			if (Players.Contains(_p))
 			{
-				if (p == _p)
-				{
-					return false;
-				}
+				throw new DuplicateObjectException();
 			}
+			
 			Players.Add(_p);
-			return true;
 		}
-		public bool AddBracket(IBracket _b)
+		public void AddBracket(IBracket _b)
 		{
-			foreach (IBracket b in Brackets)
+			if (Brackets.Contains(_b))
 			{
-				if (b == _b)
-				{
-					return false;
-				}
+				throw new DuplicateObjectException();
 			}
+			
 			Brackets.Add(_b);
-			return true;
 		}
-		public bool CreateSingleElimBracket()
+		public void CreateSingleElimBracket()
 		{
 			Brackets.Clear();
-
 			Brackets.Add(new SingleElimBracket(Players));
-			return true;
 		}
-		public bool CreateDoubleElimBracket()
+		public void CreateDoubleElimBracket()
 		{
 			Brackets.Clear();
-
 			Brackets.Add(new DoubleElimBracket(Players));
-			return true;
 		}
 		#endregion
 	}

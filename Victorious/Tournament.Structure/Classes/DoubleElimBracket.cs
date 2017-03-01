@@ -13,41 +13,40 @@ namespace Tournament.Structure
 		{ get; set; }
 
 		// Ctors
-		public DoubleElimBracket() : this(new List<IPlayer>())
+		public DoubleElimBracket()
+			: this(new List<IPlayer>())
 		{ }
 		public DoubleElimBracket(List<IPlayer> _players) : base(_players)
-		{
-			LowerRounds = new List<List<IMatch>>();
-		}
+		{ }
 
 		#region Public Methods
 		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
 			base.CreateBracket(_winsPerMatch);
-			LowerRounds.Clear();
+			LowerRounds = new List<List<IMatch>>();
 
-			int totalMatches = Players.Count - 2;
+			int totalMatches = CalculateTotalLowerBracketMatches(Players.Count);
 			int numMatches = 0;
-			int roundIndex = 0;
+			int rIndex = 0;
 			while (numMatches < totalMatches)
 			{
 				LowerRounds.Add(new List<IMatch>());
 				for (int i = 0;
-					i < Math.Pow(2, roundIndex / 2) && numMatches < totalMatches;
+					i < Math.Pow(2, rIndex / 2) && numMatches < totalMatches;
 					++i, ++numMatches)
 				{
 					// Add new matchups per round
 					// (rounds[0] is the final match)
 					IMatch m = new Match();
-					m.RoundNumber = roundIndex;
-					m.MatchIndex = LowerRounds[roundIndex].Count;
+					m.RoundNumber = rIndex;
+					m.MatchIndex = LowerRounds[rIndex].Count;
 					m.WinsNeeded = _winsPerMatch;
-					LowerRounds[roundIndex].Add(m);
+					LowerRounds[rIndex].Add(m);
 				}
-				++roundIndex;
+				++rIndex;
 			}
 
-			int rIndex = 0;
+			rIndex = 0;
 			for (; rIndex + 1 < LowerRounds.Count; ++rIndex)
 			{
 				bool rIndexIsEven = (0 == rIndex % 2) ? true : false;
@@ -80,20 +79,23 @@ namespace Tournament.Structure
 				}
 				else
 				{
-					// Round is abnormal. FUCK. Do something???
+					// Round is abnormal. Case is not possible (for now)
 				}
 			}
 
 			rIndex = LowerRounds.Count - 1;
-			for (int mIndex = 0; mIndex < LowerRounds[rIndex].Count; ++mIndex)
+			if (rIndex >= 0)
 			{
-				// Assign prev/next matchup indexes for FIRST round
-				// (both teams come from Upper Bracket)
-				LowerRounds[rIndex][mIndex].AddPrevMatchIndex(mIndex * -2);
-				Rounds[Rounds.Count - 1][mIndex * 2].NextLoserMatchIndex = mIndex;
+				for (int mIndex = 0; mIndex < LowerRounds[rIndex].Count; ++mIndex)
+				{
+					// Assign prev/next matchup indexes for FIRST round
+					// (both teams come from Upper Bracket)
+					LowerRounds[rIndex][mIndex].AddPrevMatchIndex(mIndex * -2);
+					Rounds[rIndex / 2 + 1][mIndex * 2].NextLoserMatchIndex = mIndex;
 
-				LowerRounds[rIndex][mIndex].AddPrevMatchIndex(mIndex * -2 - 1);
-				Rounds[Rounds.Count - 1][mIndex * 2 + 1].NextLoserMatchIndex = mIndex;
+					LowerRounds[rIndex][mIndex].AddPrevMatchIndex(mIndex * -2 - 1);
+					Rounds[rIndex / 2 + 1][mIndex * 2 + 1].NextLoserMatchIndex = mIndex;
+				}
 			}
 		}
 
@@ -134,10 +136,7 @@ namespace Tournament.Structure
 					if (_match == LowerRounds[r][m])
 					{
 						// Found match. Add win:
-						if (false == LowerRounds[r][m].AddWin(_index))
-						{
-							return;
-						}
+						LowerRounds[r][m].AddWin(_index);
 
 						if (LowerRounds[r][m].Score[_index] >= LowerRounds[r][m].WinsNeeded)
 						{
@@ -162,6 +161,52 @@ namespace Tournament.Structure
 					}
 				}
 			}
+		}
+
+		public List<IMatch> GetLowerRound(int _index)
+		{
+			if (_index < 0 || _index >= LowerRounds.Count)
+			{
+				throw new IndexOutOfRangeException();
+			}
+
+			return LowerRounds[_index];
+		}
+		public IMatch GetLowerMatch(int _roundIndex, int _index)
+		{
+			List<IMatch> matches = GetLowerRound(_roundIndex);
+
+			if (_index < 0 || _index >= matches.Count)
+			{
+				throw new IndexOutOfRangeException();
+			}
+
+			return matches[_index];
+		}
+		#endregion
+
+		#region Private Methods
+		private int CalculateTotalLowerBracketMatches(int _numPlayers)
+		{
+			if (_numPlayers < 4)
+			{
+				return 0;
+			}
+
+			int normalizedPlayers = 2;
+			while (true)
+			{
+				int next = normalizedPlayers * 2;
+				if (next <= _numPlayers)
+				{
+					normalizedPlayers = next;
+				}
+				else
+				{
+					break;
+				}
+			}
+			return (normalizedPlayers - 2);
 		}
 		#endregion
 	}

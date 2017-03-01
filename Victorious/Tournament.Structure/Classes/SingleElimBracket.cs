@@ -4,16 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public class SingleElimBracket : Bracket
 	{
 		#region Variables & Properties
-		//private uint id;
-		//public override uint Id
-		//{
-		//	get { return id; }
-		//}
 		public override List<IPlayer> Players
 		{ get; set; }
 		public override List<List<IMatch>> Rounds
@@ -21,28 +18,30 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		//public SingleElimBracket(uint _id)
-		//{
-		//	id = _id;
-		//	Players = new List<IPlayer>();
-		//	Rounds = new List<List<IMatch>>();
-		//	//rounds.Add(new List<IMatch>());
-		//}
-		public SingleElimBracket() : this(new List<IPlayer>())
+		public SingleElimBracket()
+			: this(new List<IPlayer>())
 		{ }
 		public SingleElimBracket(List<IPlayer> _players)
 		{
-			//id = 0;
+			if (null == _players)
+			{
+				throw new NullReferenceException();
+			}
+
 			Players = _players;
 			Rounds = new List<List<IMatch>>();
-
-			//CreateBracket();
+			CreateBracket();
 		}
 		#endregion
 
 		#region Public Methods
 		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
+			if (Players.Count < 2)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+
 			Rounds.Clear();
 
 			#region Create the Bracket
@@ -62,7 +61,7 @@ namespace Tournament.Structure
 					m.RoundNumber = roundIndex;
 					m.MatchIndex = Rounds[roundIndex].Count;
 					m.WinsNeeded = _winsPerMatch;
-					Rounds[roundIndex].Add(m);
+					AddMatch(roundIndex, m);
 				}
 				++roundIndex;
 			}
@@ -155,48 +154,36 @@ namespace Tournament.Structure
 			}
 			#endregion
 		}
-		public override bool AddPlayer(IPlayer _p)
+
+		public override void UpdateCurrentMatches(ICollection<MatchModel> _matchModels)
 		{
-			foreach (IPlayer p in Players)
+#if false
+			for (int rIndex = 0; rIndex < Rounds.Count; ++rIndex)
 			{
-				if (p == _p)
+				for (int mIndex = 0; mIndex < Rounds[rIndex].Count; ++mIndex)
 				{
-					return false;
+					foreach (MatchModel model in _matchModels)
+					{
+						if (rIndex == model.RoundNumber && mIndex == model.MatchIndex)
+						{
+							Rounds[rIndex][mIndex] = new Match(model, Players);
+							break;
+						}
+					}
 				}
 			}
-			Players.Add(_p);
-			return true;
+#endif
 		}
-		public override void AddRound()
-		{
-			Rounds.Add(new List<IMatch>());
-		}
-		public override bool AddMatch(int _roundIndex)
-		{
-			return (AddMatch(_roundIndex, new Match()));
-		}
-		public override bool AddMatch(int _roundIndex, IMatch _m)
-		{
-			if (_roundIndex >= Rounds.Count || _roundIndex < 0)
-			{
-				return false;
-			}
-			foreach (List<IMatch> r in Rounds)
-			{
-				if (r.Contains(_m))
-				{
-					return false;
-				}
-			}
-			Rounds[_roundIndex].Add(_m);
-			return true;
-		}
+
 		public override void AddWin(int _roundIndex, int _matchIndex, int _index)
 		{
-			if (false == Rounds[_roundIndex][_matchIndex].AddWin(_index))
+			if (_roundIndex < 0 || _roundIndex >= Rounds.Count
+				|| _matchIndex < 0 || _matchIndex >= Rounds[_roundIndex].Count)
 			{
-				return;
+				throw new IndexOutOfRangeException();
 			}
+
+			Rounds[_roundIndex][_matchIndex].AddWin(_index);
 
 			if (0 == _roundIndex)
 			{
@@ -228,26 +215,35 @@ namespace Tournament.Structure
 					if (Rounds[r][m] == _match)
 					{
 						AddWin(r, m, _index);
+						return;
 					}
 				}
 			}
-		}
-		#endregion
 
-		#region Private Methods
-		private bool ReassignPlayer(int _pIndex, IMatch _currMatch, IMatch _newMatch)
+			throw new KeyNotFoundException();
+		}
+#endregion
+
+#region Private Methods
+		private void ReassignPlayer(int _pIndex, IMatch _currMatch, IMatch _newMatch)
 		{
+			if (null == _currMatch || null == _newMatch)
+			{
+				throw new NullReferenceException();
+			}
+
 			if (_currMatch.PlayerIndexes.Contains(_pIndex))
 			{
 				_currMatch.RemovePlayer(_pIndex);
 				_newMatch.AddPlayer(_pIndex, 0);
 				if (_newMatch.PlayerIndexes.Contains(_pIndex))
 				{
-					return true;
+					return;
 				}
 			}
-			return false;
+
+			throw new KeyNotFoundException();
 		}
-		#endregion
+#endregion
 	}
 }

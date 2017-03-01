@@ -46,29 +46,25 @@ namespace Tournament.Structure
 		/// Add a Player object to tournament's list.
 		/// </summary>
 		/// <param name="_p">Player object to add.</param>
-		/// <returns>False if _p is a duplicate, True if successful.</returns>
-		bool AddPlayer(IPlayer _p);
+		void AddPlayer(IPlayer _p);
 
 		/// <summary>
 		/// Add an existing Bracket object to tournament's list.
 		/// </summary>
 		/// <param name="_b">Bracket object to add.</param>
-		/// <returns>False if _b is a duplicate, True if successful.</returns>
-		bool AddBracket(IBracket _b);
+		void AddBracket(IBracket _b);
 
 		/// <summary>
 		/// Create a new Single Elim Bracket, and add to the tournament.
 		/// (temp: replaces any current bracket)
 		/// </summary>
-		/// <returns>False if error, True if successful.</returns>
-		bool CreateSingleElimBracket();
+		void CreateSingleElimBracket();
 
 		/// <summary>
 		/// Create a new Single Elim Bracket, and add to the tournament.
 		/// (temp: replaces any current bracket)
 		/// </summary>
-		/// <returns>False if error, True if successful.</returns>
-		bool CreateDoubleElimBracket();
+		void CreateDoubleElimBracket();
 		#endregion
 	}
 }

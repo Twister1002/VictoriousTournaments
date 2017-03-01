@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public interface IBracket
 	{
 		#region Variables & Properties
-		//uint Id { get; }
-
 		/// <summary>
 		/// List of Teams/Users in the Bracket.
 		/// </summary>
@@ -33,33 +33,10 @@ namespace Tournament.Structure
 		void CreateBracket(ushort _winsPerMatch = 1);
 
 		/// <summary>
-		/// Add a Player to the Players list.
+		/// Sets Matches with current info from DB.
 		/// </summary>
-		/// <param name="_p">Player to add.</param>
-		/// <returns>False if _p is already present,
-		/// True if successful.</returns>
-		bool AddPlayer(IPlayer _p);
-
-		/// <summary>
-		/// Add a new round to the Bracket.
-		/// </summary>
-		void AddRound();
-
-		/// <summary>
-		/// Add a new Match to the specified round.
-		/// </summary>
-		/// <param name="_roundIndex">Index of the round to add Match to.</param>
-		/// <returns>False if index is invalid, True if successful.</returns>
-		bool AddMatch(int _roundIndex);
-
-		/// <summary>
-		/// Add an existing Match to specified round.
-		/// </summary>
-		/// <param name="_roundIndex">Index of the round to add Match to.</param>
-		/// <param name="_m">Match to add.</param>
-		/// <returns>False if index is invalid or Match is a duplicate,
-		/// True if successful.</returns>
-		bool AddMatch(int _roundIndex, IMatch _m);
+		/// <param name="_matchModels">ICollection of DB Matches.</param>
+		void UpdateCurrentMatches(ICollection<MatchModel> _matchModels);
 
 		/// <summary>
 		/// Record a "game" win.
@@ -77,6 +54,27 @@ namespace Tournament.Structure
 		/// <param name="_match">Match object.</param>
 		/// <param name="_index">Index of winning Player (0 or 1).</param>
 		void AddWin(IMatch _match, int _index);
+
+		/// <summary>
+		/// Get all matches in the requested round.
+		/// </summary>
+		/// <param name="_index">Round index (0 is the final round).</param>
+		/// <returns>List of IMatches.</returns>
+		List<IMatch> GetRound(int _index);
+
+		/// <summary>
+		/// Get the requested match.
+		/// </summary>
+		/// <param name="_roundIndex">Round index (0 is the final round).</param>
+		/// <param name="_index">Match index inside the round.</param>
+		/// <returns>Requested IMatch.</returns>
+		IMatch GetMatch(int _roundIndex, int _index);
+
+		/// <summary>
+		/// Add a Player to the Players list.
+		/// </summary>
+		/// <param name="_p">Player to add.</param>
+		void AddPlayer(IPlayer _p);
 		#endregion
 	}
 }

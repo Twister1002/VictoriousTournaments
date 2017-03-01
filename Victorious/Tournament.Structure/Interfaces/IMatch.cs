@@ -12,15 +12,11 @@ namespace Tournament.Structure
 	public interface IMatch
 	{
 		#region Variables & Properties
-		//uint Id { get; }
-
 		/// <summary>
 		/// Amount of "games" won to Win the Match.
 		/// Default 1
 		/// </summary>
 		ushort WinsNeeded { get; set; }
-
-		//IPlayer[] Players { get; set; }
 
 		/// <summary>
 		/// Two-element array: Indexes of both Players in Match.
@@ -33,8 +29,6 @@ namespace Tournament.Structure
 		/// Two-element array: Score of both Players.
 		/// </summary>
 		ushort[] Score { get; set; }
-
-		//int BracketId { get; set; }
 
 		/// <summary>
 		/// Which Round of the Bracket this Match is in.
@@ -70,24 +64,20 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Methods
-		//bool AddPlayer(IPlayer _p);
-
 		/// <summary>
 		/// Add _playerIndex to PlayerIndexes[]
 		/// </summary>
 		/// <param name="_playerIndex">Index of IPlayer object,
 		/// references Players list in Bracket.</param>
 		/// <param name="_index">Slot to add to, in PlayerIndexes[]</param>
-		/// <returns>True if successful, False if _index is already in use.</returns>
-		bool AddPlayer(int _playerIndex, int _index);
+		void AddPlayer(int _playerIndex, int _index);
 
 		/// <summary>
 		/// Removes the passed-in PlayerIndex from the Match, if present.
 		/// </summary>
 		/// <param name="_playerIndex">Index of IPlayer,
 		/// references Players list in Bracket.</param>
-		/// <returns>True if Player is removed, False if not found.</returns>
-		bool RemovePlayer(int _playerIndex);
+		void RemovePlayer(int _playerIndex);
 
 		/// <summary>
 		/// Removes all Player Indexes from the Match.
@@ -98,9 +88,7 @@ namespace Tournament.Structure
 		/// Adds a "win" to the Player at _index.
 		/// </summary>
 		/// <param name="_index">Index of a Player in Match, either 0 or 1.</param>
-		/// <returns>False if _index is empty or Match is already over,
-		/// True if successful.</returns>
-		bool AddWin(int _index);
+		void AddWin(int _index);
 
 		/// <summary>
 		/// Adds a Match Index (from previous round),
@@ -108,9 +96,7 @@ namespace Tournament.Structure
 		/// to enter this Match.
 		/// </summary>
 		/// <param name="_i">Previous Match's Index</param>
-		/// <returns>False if Match already has two previous,
-		/// True if successful.</returns>
-		bool AddPrevMatchIndex(int _i);
+		void AddPrevMatchIndex(int _i);
 		#endregion
 	}
 }

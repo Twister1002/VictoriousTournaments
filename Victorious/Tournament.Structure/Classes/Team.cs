@@ -14,29 +14,29 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public Team(string _name) : base(_name)
+		public Team(string _name)
 		{
+			Name = _name;
 			TeamMembers = new List<User>();
 		}
 		#endregion
 
 		#region Public Methods
-		public bool AddMember(User _user)
+		public void AddMember(User _user)
 		{
 			if (TeamMembers.Contains(_user))
 			{
-				return false;
+				throw new DuplicateObjectException();
 			}
+
 			TeamMembers.Add(_user);
-			return true;
 		}
-		public bool RemoveMember(User _user)
+		public void RemoveMember(User _user)
 		{
-			if (TeamMembers.Remove(_user))
+			if (!TeamMembers.Remove(_user))
 			{
-				return true;
+				throw new KeyNotFoundException();
 			}
-			return false;
 		}
 		#endregion
 	}
