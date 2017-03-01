@@ -19,9 +19,19 @@ namespace WebApplication.Controllers
         }
 
         [Route("Tournament/{guid}")]
-        public ActionResult Tournament(int guid)
+        public ActionResult Tournament(String guid)
         {
-            TournamentModel model = db.GetTournamentById(guid);
+            int guidInt = -1;
+            TournamentModel model = new TournamentModel();
+
+            if (int.TryParse(guid, out guidInt))
+            {
+                TournamentModel dbModel = db.GetTournamentById(guidInt);
+                if (dbModel != null)
+                {
+                    model = dbModel;
+                }
+            }
 
             return View("Tournament", model);
         }

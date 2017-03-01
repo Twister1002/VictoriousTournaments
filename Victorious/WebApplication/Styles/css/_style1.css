@@ -12,6 +12,7 @@
   border-radius: .4em;
   vertical-align: middle;
   padding: 0em 1% 0em 1%;
+  max-height: 10em;
 }
 #navagation > * {
   padding: .5em;
@@ -23,18 +24,33 @@
   vertical-align: middle;
   width: 10em;
   height: 5em;
+  line-height: 5em;
   background-color: green;
 }
 #navagation .searchBar {
   position: relative;
   display: inline-block;
   vertical-align: middle;
-  width: 15em;
   background-color: orange;
+  width: 15em;
+  line-height: 5em;
 }
-#navagation .searchBar input:not([type="button"]) {
-  padding: .25em;
-  width: 13em;
+#navagation .searchBar .fieldImage {
+  position: absolute;
+  display: inline-block;
+  height: 1.5em;
+  width: 1.5em;
+  left: 1em;
+  top: 1em;
+  z-index: 1;
+}
+#navagation .searchBar .fieldImage #eyeglass {
+  background-color: white;
+}
+#navagation .searchBar .field {
+  position: relative;
+  vertical-align: middle;
+  padding: .75em 0em .75em 2.5em;
 }
 #navagation ul {
   background-color: purple;

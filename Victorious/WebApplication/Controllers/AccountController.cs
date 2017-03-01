@@ -48,17 +48,17 @@ namespace WebApplication.Controllers
             if (ModelState.IsValid)
             {
                 // Check the username and password
-                UserModel user = db.GetUserByUsername(viewModel.Username);
-                if (user.Password == viewModel.Password)
-                {
-                    Session["User.UserId"] = user.UserID;
-                    return RedirectToAction("Index", "Account");
-                }
-                else
-                {
-                    // There was an error 
-                    return View();
-                }
+                //UserModel user = db.GetUserByUsername(viewModel.Username);
+                //if (user.Password == viewModel.Password)
+                //{
+                //    Session["User.UserId"] = user.UserID;
+                //    return RedirectToAction("Index", "Account");
+                //}
+                //else
+                //{
+                //    // There was an error 
+                //    return View();
+                //}
             }
             else
             {
