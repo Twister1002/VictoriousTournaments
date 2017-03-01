@@ -22,16 +22,19 @@ namespace WebApplication.Controllers
         public ActionResult Tournament(String guid)
         {
             int guidInt = -1;
-            TournamentModel model = new TournamentModel();
+            TournamentViewModel model = new TournamentViewModel();
 
-            if (int.TryParse(guid, out guidInt))
-            {
-                TournamentModel dbModel = db.GetTournamentById(guidInt);
-                if (dbModel != null)
-                {
-                    model = dbModel;
-                }
-            }
+            //if (int.TryParse(guid, out guidInt))
+            //{
+            //    TournamentModel dbModel = db.GetTournamentById(guidInt);
+            //    if (dbModel != null)
+            //    {
+            //        model = dbModel;
+            //    }
+            //}
+
+
+
 
             return View("Tournament", model);
         }
@@ -40,7 +43,7 @@ namespace WebApplication.Controllers
         [Route("Tournament/Create")]
         public ActionResult Create()
         {
-            TournamentViewModel viewModel = new TournamentViewModel();
+            TournamentFormModel viewModel = new TournamentFormModel();
 
             return View(viewModel);
         }
@@ -70,7 +73,7 @@ namespace WebApplication.Controllers
         // POST: Tournament/Create
         [HttpPost]
         [Route("Tournament/Create")]
-        public ActionResult Create(TournamentViewModel viewModel)
+        public ActionResult Create(TournamentFormModel viewModel)
         {
             try
             {
@@ -87,7 +90,7 @@ namespace WebApplication.Controllers
 
                     if (viewModel.Exception == DbError.SUCCESS)
                     {
-                        return RedirectToAction("Tournament/-1");
+                        return RedirectToAction("Tournament/"+model.TournamentID);
                     }
                     else
                     {
