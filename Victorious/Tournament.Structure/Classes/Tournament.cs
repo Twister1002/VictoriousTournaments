@@ -62,7 +62,7 @@ namespace Tournament.Structure
 			}
 			foreach(IBracket bracket in Brackets)
 			{
-				bracket.UpdateCurrentMatches(_t.Matches);
+				//bracket.UpdateCurrentMatches(_t.Matches);
 			}
 
 			PrizePool = (null == _t.TournamentRules.PrizePurse)

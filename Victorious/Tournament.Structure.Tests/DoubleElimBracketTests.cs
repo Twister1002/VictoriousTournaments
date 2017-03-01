@@ -177,7 +177,7 @@ namespace Tournament.Structure.Tests
 				? (b as DoubleElimBracket).GetLowerMatch(3, 0).PlayerIndexes[0] : 0;
 			b.AddWin((b as DoubleElimBracket).GetLowerMatch(3, 0), 0);
 
-			Assert.AreEqual(pIndex, (b as DoubleElimBracket).GetLowerMatch(2, 0).PlayerIndexes[0]);
+			Assert.AreEqual(pIndex, (b as DoubleElimBracket).GetLowerMatch(2, 0).PlayerIndexes[1]);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]

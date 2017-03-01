@@ -8,16 +8,21 @@ namespace Tournament.Structure
 {
 	public class DoubleElimBracket : SingleElimBracket
 	{
-		// Properties
+		#region Variables & Properties
 		public List<List<IMatch>> LowerRounds
 		{ get; set; }
+		public IMatch GrandFinal
+		{ get; set; }
+		#endregion
 
-		// Ctors
+		#region Ctors
 		public DoubleElimBracket()
 			: this(new List<IPlayer>())
 		{ }
-		public DoubleElimBracket(List<IPlayer> _players) : base(_players)
+		public DoubleElimBracket(List<IPlayer> _players)
+			: base(_players)
 		{ }
+		#endregion
 
 		#region Public Methods
 		public override void CreateBracket(ushort _winsPerMatch = 1)
@@ -56,7 +61,7 @@ namespace Tournament.Structure
 					for (int mIndex = 0; mIndex < LowerRounds[rIndex].Count; ++mIndex)
 					{
 						// Assign prev/next matchup indexes
-						LowerRounds[rIndex][mIndex].AddPrevMatchIndex(mIndex * -1);
+						LowerRounds[rIndex][mIndex].AddPrevMatchIndex(mIndex);
 						Rounds[rIndex / 2][mIndex].NextLoserMatchIndex = mIndex;
 						// *************** THIS ISN'T QUITE RIGHT [mIndex]
 
@@ -86,21 +91,37 @@ namespace Tournament.Structure
 			rIndex = LowerRounds.Count - 1;
 			if (rIndex >= 0)
 			{
+				// We have enough teams to created a Lower Bracket.
+				// Manually update the first Lower round,
+				// and create a Grand Final match
+
 				for (int mIndex = 0; mIndex < LowerRounds[rIndex].Count; ++mIndex)
 				{
 					// Assign prev/next matchup indexes for FIRST round
 					// (both teams come from Upper Bracket)
-					LowerRounds[rIndex][mIndex].AddPrevMatchIndex(mIndex * -2);
+					LowerRounds[rIndex][mIndex].AddPrevMatchIndex(mIndex * 2);
 					Rounds[rIndex / 2 + 1][mIndex * 2].NextLoserMatchIndex = mIndex;
 
-					LowerRounds[rIndex][mIndex].AddPrevMatchIndex(mIndex * -2 - 1);
+					LowerRounds[rIndex][mIndex].AddPrevMatchIndex(mIndex * 2 + 1);
 					Rounds[rIndex / 2 + 1][mIndex * 2 + 1].NextLoserMatchIndex = mIndex;
 				}
+
+				GrandFinal = new Match();
+				GrandFinal.WinsNeeded = _winsPerMatch;
 			}
 		}
 
 		public override void AddWin(IMatch _match, int _index)
 		{
+			if (_match == GrandFinal)
+			{
+				GrandFinal.AddWin(_index);
+				if (GrandFinal.Score[_index] >= GrandFinal.WinsNeeded)
+				{
+					// Match is over. Do something?
+				}
+			}
+
 			for (int r = 0; r < Rounds.Count; ++r)
 			{
 				for (int m = 0; m < Rounds[r].Count; ++m)
@@ -111,13 +132,20 @@ namespace Tournament.Structure
 
 						if (Rounds[r][m].Score[_index] >= Rounds[r][m].WinsNeeded)
 						{
-							// Match over: move the loser
+							// Match over!
+
+							if (0 == r)
+							{
+								// Final round: move winner to Grand Finals!
+								GrandFinal.PlayerIndexes[0] = Rounds[r][m].PlayerIndexes[_index];
+							}
+							// Move the loser
 							int loserIndex = (0 == _index) ? 1 : 0;
 							int nMatchIndex = Rounds[r][m].NextLoserMatchIndex;
 							int nRoundIndex = (r == Rounds.Count - 1) ? (r * 2 - 1) : (r * 2);
 							for (int i = 0; i < LowerRounds[nRoundIndex][nMatchIndex].PrevMatchIndexes.Count; ++i)
 							{
-								if (m == (-1 * LowerRounds[nRoundIndex][nMatchIndex].PrevMatchIndexes[i]))
+								if (m == LowerRounds[nRoundIndex][nMatchIndex].PrevMatchIndexes[i])
 								{
 									LowerRounds[nRoundIndex][nMatchIndex].PlayerIndexes[i] = Rounds[r][m].PlayerIndexes[loserIndex];
 									return;
@@ -143,13 +171,14 @@ namespace Tournament.Structure
 							// Match is over. Move the winner forward:
 							if (0 == r)
 							{
-								// TODO : Move winner to Grand Finals
+								// Final round: Move winner to Grand Finals!
+								GrandFinal.PlayerIndexes[1] = LowerRounds[0][0].PlayerIndexes[_index];
 								return;
 							}
 
 							// Move the winner forward
 							int nmIndex = LowerRounds[r][m].NextMatchIndex;
-							for (int i = 0; i < LowerRounds[r - 1][nmIndex].PrevMatchIndexes.Count; ++i)
+							for (int i = LowerRounds[r - 1][nmIndex].PrevMatchIndexes.Count - 1; i >= 0; --i)
 							{
 								if (m == LowerRounds[r - 1][nmIndex].PrevMatchIndexes[i])
 								{
