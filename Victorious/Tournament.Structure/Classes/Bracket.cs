@@ -27,7 +27,7 @@ namespace Tournament.Structure
 		{
 			if (_index < 0 || _index >= Rounds.Count)
 			{
-				throw new ArgumentOutOfRangeException();
+				throw new IndexOutOfRangeException();
 			}
 
 			return Rounds[_index];
@@ -38,7 +38,7 @@ namespace Tournament.Structure
 
 			if (_index < 0 || _index >= matches.Count)
 			{
-				throw new ArgumentOutOfRangeException();
+				throw new IndexOutOfRangeException();
 			}
 
 			return matches[_index];
