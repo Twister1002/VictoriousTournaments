@@ -75,18 +75,6 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_p">Player to add.</param>
 		void AddPlayer(IPlayer _p);
-
-		/// <summary>
-		/// Add a new round to the Bracket.
-		/// </summary>
-		void AddRound();
-
-		/// <summary>
-		/// Add an existing Match to specified round.
-		/// </summary>
-		/// <param name="_roundIndex">Index of the round to add Match to.</param>
-		/// <param name="_m">Match to add.</param>
-		void AddMatch(int _roundIndex, IMatch _m);
 		#endregion
 	}
 }

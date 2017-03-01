@@ -23,6 +23,11 @@ namespace Tournament.Structure
 		{ }
 		public SingleElimBracket(List<IPlayer> _players)
 		{
+			if (null == _players)
+			{
+				throw new NullReferenceException();
+			}
+
 			Players = _players;
 			Rounds = new List<List<IMatch>>();
 			CreateBracket();

@@ -56,7 +56,7 @@ namespace Tournament.Structure
 
 			Players.Add(_p);
 		}
-		public void AddRound()
+		protected void AddRound()
 		{
 			if (null == Rounds)
 			{
@@ -65,7 +65,7 @@ namespace Tournament.Structure
 
 			Rounds.Add(new List<IMatch>());
 		}
-		public void AddMatch(int _roundIndex, IMatch _m)
+		protected void AddMatch(int _roundIndex, IMatch _m)
 		{
 			if (null == _m || null == Rounds)
 			{
