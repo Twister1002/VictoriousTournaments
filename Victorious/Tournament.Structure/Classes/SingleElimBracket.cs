@@ -25,6 +25,7 @@ namespace Tournament.Structure
 		{
 			Players = _players;
 			Rounds = new List<List<IMatch>>();
+			CreateBracket();
 		}
 		#endregion
 

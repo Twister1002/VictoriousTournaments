@@ -13,11 +13,13 @@ namespace Tournament.Structure
 		{ get; set; }
 
 		// Ctors
-		public DoubleElimBracket() : this(new List<IPlayer>())
+		public DoubleElimBracket()
+			: this(new List<IPlayer>())
 		{ }
 		public DoubleElimBracket(List<IPlayer> _players) : base(_players)
 		{
 			LowerRounds = new List<List<IMatch>>();
+			CreateBracket();
 		}
 
 		#region Public Methods

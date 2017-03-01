@@ -35,6 +35,13 @@ namespace Tournament.Structure
 		{ }
 		public Match(ushort _winsNeeded, int[] _playerIndexes, ushort[] _score, int _roundNumber, int _matchIndex, List<int> _prevMatchIndexes, int _nextMatchIndex, int _nextLoserMatchIndex)
 		{
+			if (null == _playerIndexes
+				|| null == _score
+				|| null == _prevMatchIndexes)
+			{
+				throw new NullReferenceException();
+			}
+
 			WinsNeeded = _winsNeeded;
 			PlayerIndexes = _playerIndexes;
 			Score = _score;
@@ -46,15 +53,38 @@ namespace Tournament.Structure
 		}
 		public Match(MatchModel _m, List<IPlayer> _playerList)
 		{
+			if (null == _m
+				|| null == _playerList
+				|| null == _m.ChallengerID
+				|| null == _m.DefenderID
+				|| null == _m.TournamentID
+				//|| null == _m.WinnerID
+				|| null == _m.ChallengerScore
+				|| null == _m.DefenderScore
+				|| null == _m.RoundNumber
+				|| null == _m.Challenger
+				|| null == _m.Defender
+				|| null == _m.Tournament
+				|| null == _m.WinsNeeded
+				|| null == _m.MatchIndex
+				|| null == _m.NextMatchIndex
+				|| null == _m.NextLoserMatchIndex)
+			{
+				throw new NullReferenceException();
+			}
+
 			WinsNeeded = _m.WinsNeeded;
+			if (WinsNeeded < 1)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
 
 			PlayerIndexes = new int[2] { -1, -1 };
-			int p1id = (null == _m.DefenderID)
-				? -1 : (int)(_m.DefenderID);
-			int p2id = (null == _m.ChallengerID)
-				? -1 : (int)(_m.ChallengerID);
+			int p1id = (int)(_m.DefenderID);
+			int p2id = (int)(_m.ChallengerID);
 			if (p1id > -1 || p2id > -1)
 			{
+				// Find and set player indexes (from the PlayerList)
 				for (int i = 0; i < _playerList.Count; ++i)
 				{
 					if (p1id == _playerList[i].Id)
@@ -69,22 +99,21 @@ namespace Tournament.Structure
 			}
 
 			Score = new ushort[2] { 0, 0 };
-			Score[0] = (null == _m.DefenderScore)
-				? Score[0] : (ushort)(_m.DefenderScore);
-			Score[1] = (null == _m.ChallengerScore)
-				? Score[1] : (ushort)(_m.ChallengerScore);
+			Score[0] = (ushort)(_m.DefenderScore);
+			Score[1] = (ushort)(_m.ChallengerScore);
+			if (Score[0] > WinsNeeded || Score[1] > WinsNeeded)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
 
-			RoundNumber = (null == _m.RoundNumber)
-				? -1 : (int)(_m.RoundNumber);
+			RoundNumber = (int)(_m.RoundNumber);
 			MatchIndex = _m.MatchIndex;
 
 			PrevMatchIndexes = new List<int>();
 			// still need to fetch this...
 
-			NextMatchIndex = (null == _m.NextMatchIndex)
-				? -1 : (int)(_m.NextMatchIndex);
-			NextLoserMatchIndex = (null == _m.NextLoserMatchIndex)
-				? -1 : (int)(_m.NextLoserMatchIndex);
+			NextMatchIndex = (int)(_m.NextMatchIndex);
+			NextLoserMatchIndex = (int)(_m.NextLoserMatchIndex);
 		}
 		#endregion
 
