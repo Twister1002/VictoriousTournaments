@@ -1,18 +1,37 @@
-﻿#Tournament {
-    padding:0em 0em 0em 3em;
+﻿@heightPerMatch: 2em;
+
+#Tournament {
+    padding:0em 0em 0em 2em;
+    display:table;
+    width: 99%;
+    
     .round {
         float: left;
-
+        &:after {
+            float: none;
+            content:'';
+            display:block;
+            clear:both;
+        }
         .match {
-            background-color: #26252B;
-            border: 1px solid #A88B00;
-            width: 10em;
-            margin-bottom: .5em;
-            border-radius: .5em;
-
+            position: relative;
+            label {
+                position:absolute;
+                background-color:@white;
+                min-width: 1em;
+                top: 1em;
+                z-index:1;
+                color:@black;
+            }
             ul {
+                width:10em;
+                margin: .5em;
+                position: relative;
                 list-style-type: none;
-
+                background-color: #26252B;
+                border: 1px solid #A88B00;
+                border-radius: .5em;
+                
                 li {
                     &:first-child {
                         border-bottom: 1px solid #FFFFFF;

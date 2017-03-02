@@ -102,20 +102,38 @@ li {
   margin: 0em;
 }
 #Tournament {
-  padding: 0em 0em 0em 3em;
+  padding: 0em 0em 0em 2em;
+  display: table;
+  width: 99%;
 }
 #Tournament .round {
   float: left;
 }
+#Tournament .round:after {
+  float: none;
+  content: '';
+  display: block;
+  clear: both;
+}
 #Tournament .round .match {
-  background-color: #26252B;
-  border: 1px solid #A88B00;
-  width: 10em;
-  margin-bottom: .5em;
-  border-radius: .5em;
+  position: relative;
+}
+#Tournament .round .match label {
+  position: absolute;
+  background-color: #FFFFFF;
+  min-width: 1em;
+  top: 1em;
+  z-index: 1;
+  color: #000000;
 }
 #Tournament .round .match ul {
+  width: 10em;
+  margin: .5em;
+  position: relative;
   list-style-type: none;
+  background-color: #26252B;
+  border: 1px solid #A88B00;
+  border-radius: .5em;
 }
 #Tournament .round .match ul li {
   vertical-align: middle;

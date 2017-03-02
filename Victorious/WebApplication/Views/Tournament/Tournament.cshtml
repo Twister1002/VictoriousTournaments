@@ -11,7 +11,7 @@
     @for (int roundNum = @Model.tourny.Brackets[0].Rounds.Count()-1; roundNum >= 0; roundNum--)
     {
         var round = Model.tourny.Brackets[0].Rounds[roundNum];
-        <div class="round round-@roundNum">
+        <div class="round round-@roundNum" data-matches="@round.Count()">
             @for (int matchNum = 0; matchNum < round.Count(); matchNum++)
             {
                 match++;
