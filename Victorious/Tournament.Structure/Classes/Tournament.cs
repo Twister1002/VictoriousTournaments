@@ -49,20 +49,22 @@ namespace Tournament.Structure
 			}
 
 			Brackets = new List<IBracket>();
-			switch (_t.TournamentRules.Bracket.BracketType)
+			foreach(BracketModel bModel in _t.Brackets)
 			{
-				case ("single"):
-					CreateSingleElimBracket();
-					break;
-				case ("double"):
-					CreateDoubleElimBracket();
-					break;
-				default:
-					break;
-			}
-			foreach(IBracket bracket in Brackets)
-			{
-				bracket.UpdateCurrentMatches(_t.Matches);
+				switch (bModel.BracketType)
+				{
+					case ("single"):
+						CreateSingleElimBracket();
+						break;
+					case ("double"):
+						CreateDoubleElimBracket();
+						break;
+
+					default:
+						break;
+				}
+
+				Brackets[Brackets.Count - 1].UpdateCurrentMatches(bModel.Matches);
 			}
 
 			PrizePool = (null == _t.TournamentRules.PrizePurse)

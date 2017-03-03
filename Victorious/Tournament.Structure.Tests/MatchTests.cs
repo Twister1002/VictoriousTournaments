@@ -22,7 +22,7 @@ namespace Tournament.Structure.Tests
 		public void MatchOverloadedCtor_Constructs()
 		{
 			ushort[] sc = new ushort[2] { 1, 1 };
-			IMatch m = new Match(2, new int[2] { 0, 1 }, sc, 1, 1, new List<int>(), 0, 0);
+			IMatch m = new Match(2, new int[2] { 0, 1 }, sc, 1, 1, 1, new List<int>(), 0, 0);
 
 			Assert.AreEqual(sc, m.Score);
 		}
@@ -32,7 +32,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(NullReferenceException))]
 		public void MatchOverloadedCtor_ThrowsNullRef_OnNullParams()
 		{
-			IMatch m = new Match(2, null, null, 0, 0, null, 0, 0);
+			IMatch m = new Match(2, null, null, 0, 0, 0, null, 0, 0);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -163,7 +163,7 @@ namespace Tournament.Structure.Tests
 		public void AddWin_AddsAWin()
 		{
 			int[] score = new int[2] { 0, 1 };
-			IMatch m = new Match(3, score, new ushort[2] { 1, 0 }, 0, 0, new List<int>(), 0, 0);
+			IMatch m = new Match(3, score, new ushort[2] { 1, 0 }, 0, 0, 0, new List<int>(), 0, 0);
 			m.AddWin(0);
 			m.AddWin(0);
 
@@ -202,9 +202,9 @@ namespace Tournament.Structure.Tests
 		{
 			int i = 14;
 			IMatch m = new Match();
-			m.AddPrevMatchIndex(i);
+			m.AddPrevMatchNumber(i);
 
-			Assert.IsTrue(m.PrevMatchIndexes.Contains(i));
+			Assert.IsTrue(m.PrevMatchNumbers.Contains(i));
 		}
 		[TestMethod]
 		[TestCategory("Match")]
@@ -213,9 +213,9 @@ namespace Tournament.Structure.Tests
 		public void AddPrevMatchIndex_ThrowsOutOfRange_AfterMoreThanTwoCalls()
 		{
 			IMatch m = new Match();
-			m.AddPrevMatchIndex(0);
-			m.AddPrevMatchIndex(1);
-			m.AddPrevMatchIndex(2);
+			m.AddPrevMatchNumber(0);
+			m.AddPrevMatchNumber(1);
+			m.AddPrevMatchNumber(2);
 
 			Assert.AreEqual(1, 2);
 		}

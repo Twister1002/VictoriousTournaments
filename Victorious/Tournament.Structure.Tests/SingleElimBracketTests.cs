@@ -60,6 +60,51 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("CreateBracket")]
+		public void SEBCreateBracket_AssignsR1MatchNumbers()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 10; ++i)
+			{
+				pList.Add(new Mock<IPlayer>().Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			Assert.AreEqual(1, b.GetMatch(b.Rounds.Count - 1, 0).MatchNumber);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("CreateBracket")]
+		public void SEBCreateBracket_AssignsR2MatchNumbers()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 10; ++i)
+			{
+				pList.Add(new Mock<IPlayer>().Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			Assert.AreEqual(3, b.GetMatch(b.Rounds.Count - 2, 0).MatchNumber);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("CreateBracket")]
+		public void SEBCreateBracket_AssignsFinalRoundMatchNumber()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 10; ++i)
+			{
+				pList.Add(new Mock<IPlayer>().Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			Assert.AreEqual(9, b.GetMatch(0, 0).MatchNumber);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("CreateBracket")]
 		public void SEBCreateBracket_4Players_DoesNotAssignToRound0()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -265,7 +310,7 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(1, 0, 1);
+			b.AddWin(b.GetMatch(1, 0), 1);
 
 			Assert.AreEqual(1, b.GetMatch(1, 0).Score[1]);
 		}
@@ -283,8 +328,8 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(1, 0, 1); // ends match
-			b.AddWin(1, 0, 1); // throws exception
+			b.AddWin(b.GetMatch(1, 0), 1); // ends match
+			b.AddWin(b.GetMatch(1, 0), 1); // throws exception
 
 			Assert.AreEqual(1, 2);
 		}
@@ -302,7 +347,7 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(-1, 0, 1);
+			b.AddWin(b.GetMatch(-1, 0), 1);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -320,7 +365,7 @@ namespace Tournament.Structure.Tests
 			//b.CreateBracket();
 
 			int playerNum = b.GetMatch(1, 1).PlayerIndexes[1];
-			b.AddWin(1, 1, 1);
+			b.AddWin(b.GetMatch(1, 1), 1);
 
 			Assert.AreEqual(playerNum, b.GetMatch(0, 0).PlayerIndexes[1]);
 		}
