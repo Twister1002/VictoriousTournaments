@@ -4,10 +4,16 @@ namespace DataLib
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.SqlClient;
     using System.Data.Entity.Spatial;
 
     public partial class MatchModel
     {
+        public MatchModel()
+        {
+            MatchNumber = -1;
+        }
+
         [Key]
         public int MatchID { get; set; }
 
@@ -23,7 +29,9 @@ namespace DataLib
 
         public int? DefenderScore { get; set; }
 
-        public int? RoundNumber { get; set; }
+        public int? RoundIndex { get; set; }
+             
+        public int MatchNumber { get; set; }
 
         public bool? IsBye { get; set; }
 
@@ -37,26 +45,26 @@ namespace DataLib
 
         public int? MatchIndex { get; set; }
 
-        public int? NextMatchIndex { get; set; }
+        public int? NextMatchNumber { get; set; }
 
         public int? PrevMatchIndex { get; set; }
 
-        public int? NextLoserMatchIndex { get; set; }
+        public int? NextLoserMatchNumber { get; set; }
 
-        public int? PrevDefenderMatchIndex { get; set; }
+        public int? PrevDefenderMatchNumber { get; set; }
 
-        public int? PrevChallengerMatchIndex { get; set; }
+        public int? PrevChallengerMatchNumber { get; set; }
 
         [ForeignKey("ChallengerID")]
-        public UserModel Challenger { get; set; }
+        public virtual UserModel Challenger { get; set; }
 
         [ForeignKey("DefenderID")]
-        public UserModel Defender { get; set; }
+        public virtual UserModel Defender { get; set; }
 
         //[ForeignKey("TournamentID")]
         //public TournamentModel Tournament { get; set; }
 
         [ForeignKey("WinnerID")]
-        public UserModel Winner { get; set; }
+        public virtual UserModel Winner { get; set; }
     }
 }

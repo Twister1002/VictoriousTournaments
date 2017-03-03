@@ -6,10 +6,10 @@
 
 <div class="register form">
     <h2>Registration</h2>
-    @if (Model.Exception != DataLib.DbError.SUCCESS)
+    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
     {
-        <div class="has-error">
-            ERROR In creation
+        <div class="message @Model.errorClassNames[(int)Model.error]">
+            @Model.ErrorMessage
         </div>
     }
     @using (Html.BeginForm("RegisterUser", "Account", FormMethod.Post))

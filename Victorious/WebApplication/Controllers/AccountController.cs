@@ -19,7 +19,8 @@ namespace WebApplication.Controllers
         {
             if (Session["User.UserId"] != null)
             {
-                return View();
+                AccountViewModel model = new AccountViewModel(db.GetUserById((int)Session["User.UserId"]));
+                return View("Index", model);
             }
             else
             {
@@ -30,13 +31,15 @@ namespace WebApplication.Controllers
         [Route("Account/Login")]
         public ActionResult Login()
         {
+            AccountLoginViewModel model = new AccountLoginViewModel();
+
             if (Session["User.UserId"] != null)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Account");
             }
             else
             {
-                return View();
+                return View("Login", model);
             }
             
         }
@@ -48,24 +51,35 @@ namespace WebApplication.Controllers
             if (ModelState.IsValid)
             {
                 // Check the username and password
-                //UserModel user = db.GetUserByUsername(viewModel.Username);
-                //if (user.Password == viewModel.Password)
-                //{
-                //    Session["User.UserId"] = user.UserID;
-                //    return RedirectToAction("Index", "Account");
-                //}
-                //else
-                //{
-                //    // There was an error 
-                //    return View();
-                //}
+                UserModel user = db.GetUserByUsername(viewModel.Username);
+                
+                if (user != null)
+                {
+                    if (user.Password == viewModel.Password)
+                    {
+                        Session["User.UserId"] = user.UserID;
+                        return RedirectToAction("Index", "Account");
+                    }
+                    else
+                    {
+                        // There was an error 
+                        viewModel.error = ViewModel.ViewError.WARNING;
+                        viewModel.ErrorMessage = "The password you provided for this user is invalid";
+                    }
+                }
+                else
+                {
+                    viewModel.error = ViewModel.ViewError.WARNING;
+                    viewModel.ErrorMessage = "The username you provided doesn't exist.";
+                }
             }
             else
             {
-                ModelState.AddModelError("", "This is an invalid model");
+                viewModel.error = ViewModel.ViewError.CRITICAL;
+                viewModel.ErrorMessage = "Please enter in the required fields.";
             }
 
-            return View(viewModel);
+            return View("Login", viewModel);
         }
         
         [Route("Account/Register")]
@@ -86,20 +100,22 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Account/Register")]
-        public ActionResult Register(AccountRegisterViewModel user)
+        public ActionResult Register(AccountRegisterViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                UserModel userModel = new UserModel();
-                userModel.Username = user.Username;
-                userModel.FirstName = user.FirstName;
-                userModel.LastName = user.LastName;
-                userModel.Password = user.Password;
+                UserModel userModel = new UserModel()
+                {
+                    Username = viewModel.Username,
+                    FirstName = viewModel.FirstName,
+                    LastName = viewModel.LastName,
+                    Password = viewModel.Password
+                };
 
-                DbError userExists = db.UserUsernameExists(user.Username);
-                DbError emailExists = db.UserEmailExists(user.Email);
+                DbError userExists = db.UserUsernameExists(viewModel.Username);
+                DbError emailExists = db.UserEmailExists(viewModel.Email);
 
-                if (userExists == DbError.DOES_NOT_EXIST && emailExists == DbError.ERROR)
+                if (userExists == DbError.DOES_NOT_EXIST && emailExists == DbError.DOES_NOT_EXIST)
                 {
                     // We can then register the user
                     if (db.AddUser(userModel) == DbError.SUCCESS)
@@ -110,14 +126,25 @@ namespace WebApplication.Controllers
                     else
                     {
                         // User Registration failed.
-                        return View(user);
+                        viewModel.error = ViewModel.ViewError.WARNING;
+                        viewModel.ErrorMessage = "Well... Something went wrong when creating your account.";
+                        return View(viewModel);
                     }
                 }
-
+                else
+                {
+                    viewModel.error = ViewModel.ViewError.WARNING;
+                    viewModel.ErrorMessage = "The username of email is all ready being used. Click <a href='/Account/Login/'>here</a> to login";
+                    return View(viewModel);
+                }
             }
-
-            //If we hit this, then something failed 
-            return View(user);
+            else
+            {
+                //If we hit this, then something failed 
+                viewModel.error = ViewModel.ViewError.CRITICAL;
+                viewModel.ErrorMessage = "Please enter in the required fields.";
+                return View(viewModel);
+            }
         }
 
         [Route("Account/Logout")]

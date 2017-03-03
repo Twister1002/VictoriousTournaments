@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Data.Sql;
+using Microsoft.SqlServer.Server;
+using System.Security.Cryptography;
 
 namespace DatabaseDebugConsole
 {
@@ -17,11 +20,11 @@ namespace DatabaseDebugConsole
             DatabaseInterface db = new DatabaseInterface();
 
             //db.Clear();
-            Seed(db);
+            //Seed(db);
             TournamentModel tournament = db.GetTournamentById(1);
 
             UserBracketSeedModel ubs = new UserBracketSeedModel();
-            
+
             //foreach (var user in tournament.Users)
             //{
             //    Console.WriteLine(user.FirstName + ' ' + user.LastName);
@@ -35,6 +38,12 @@ namespace DatabaseDebugConsole
             //    Console.WriteLine(user.FirstName + ' ' + user.LastName);
             //}
 
+            //tournament.Users.ElementAt(0).Email = "keltonr01@gmail.com";
+            //db.UpdateUserEmail(tournament.Users.ElementAt(0), "keltonr01@gmail.com");
+            //Console.WriteLine(tournament.Users.ElementAt(0).Email);
+
+            //db.SetUserBracketSeed(db.GetUserById(0), db.GetBracketByID(0), 1);
+
             foreach (var bracket in tournament.Brackets)
             {
                 foreach (var match in bracket.Matches)
@@ -43,6 +52,11 @@ namespace DatabaseDebugConsole
                     Console.WriteLine("Defender: " + match.Defender.FirstName + ' ' + match.Defender.LastName);
                 }
 
+            }
+
+            foreach (var match in tournament.Brackets.ElementAt(0).Matches)
+            {
+                Console.WriteLine(match.MatchNumber);
             }
 
             Console.WriteLine("Done");
@@ -104,6 +118,11 @@ namespace DatabaseDebugConsole
                 db.AddDefender(match, defender);
                 db.AddMatch(match, db.GetBracketByID(1));
             }
+
+        }
+
+        static void Encrypt()
+        {
 
         }
     }
