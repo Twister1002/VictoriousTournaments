@@ -83,7 +83,6 @@ form input[type="password"] {
   color: #FFFFFF;
 }
 form label {
-  /*display: none;*/
   display: block;
 }
 form > * {
@@ -176,5 +175,14 @@ label {
   text-align: right;
 }
 .account {
+  display: block;
+}
+.account ul li {
+  text-decoration: underline;
+}
+.account .settings {
+  display: block;
+}
+.account .tournaments {
   display: block;
 }

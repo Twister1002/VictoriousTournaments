@@ -15,16 +15,18 @@
     }
 
     <label>Hello @Model.userModel.Username</label>
-    <div class="settings">
-        <label>Account Settings</label>
-        <ul>
-           <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
-        </ul>
-    </div>
     <div class="tournaments">
         <ul>
             <li>Currently Registered Tournaments</li>
             <li>Past Tournaments</li>
         </ul>
     </div>
+
+    <div class="settings">
+        <label>Account Settings</label>
+        <ul>
+           <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
+        </ul>
+    </div>
+    
 </div>
