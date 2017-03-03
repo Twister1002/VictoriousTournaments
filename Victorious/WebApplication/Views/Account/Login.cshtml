@@ -6,6 +6,13 @@
 
 <div class="login form">
     <h2>Login</h2>
+    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
+    {
+        <div class="message @Model.errorClassNames[(int)Model.error]">
+            @Model.ErrorMessage
+        </div>
+    }
+
     @using (Html.BeginForm("Login", "Account", FormMethod.Post))
     {
         <div class="login field">

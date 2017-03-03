@@ -181,6 +181,7 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\TournamentViewModel.cs" />
+    <Compile Include="Models\ViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -205,6 +206,7 @@
     <Content Include="Views\Tournament\Search.cshtml" />
     <Content Include="Styles\less\Tournament.less" />
     <Content Include="Styles\less\_forms.less" />
+    <Content Include="Styles\less\Account.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -219,6 +221,10 @@
     <ProjectReference Include="..\DataLib\DataLib.csproj">
       <Project>{59636ed1-650e-4319-aabe-aed047a9feb5}</Project>
       <Name>DataLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tournament.Structure\Tournament.Structure.csproj">
+      <Project>{2de53f49-9b50-489d-8fe3-8fc10e1efd57}</Project>
+      <Name>Tournament.Structure</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

@@ -22,16 +22,16 @@ namespace WebApplication.Controllers
         public ActionResult Tournament(String guid)
         {
             int guidInt = -1;
-            TournamentModel model = new TournamentModel();
+            TournamentViewModel model = new TournamentViewModel();
 
-            if (int.TryParse(guid, out guidInt))
-            {
-                TournamentModel dbModel = db.GetTournamentById(guidInt);
-                if (dbModel != null)
-                {
-                    model = dbModel;
-                }
-            }
+            //if (int.TryParse(guid, out guidInt))
+            //{
+            //    TournamentModel dbModel = db.GetTournamentById(guidInt);
+            //    if (dbModel != null)
+            //    {
+            //        model = dbModel;
+            //    }
+            //}
 
             return View("Tournament", model);
         }
@@ -40,7 +40,7 @@ namespace WebApplication.Controllers
         [Route("Tournament/Create")]
         public ActionResult Create()
         {
-            TournamentViewModel viewModel = new TournamentViewModel();
+            TournamentFormModel viewModel = new TournamentFormModel();
 
             return View(viewModel);
         }
@@ -48,57 +48,56 @@ namespace WebApplication.Controllers
         [Route("Tournament/Search/{title?}")]
         public ActionResult Search(String title)
         {
-            TournamentModel model = new TournamentModel();
+            TournamentSearchViewModel model = new TournamentSearchViewModel();
 
             return View("Search", model);
         }
-        
-        
 
         // GET: Tournament/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            return View("Edit");
         }
 
         // GET: Tournament/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            return View("Delete");
         }
 
         // POST: Tournament/Create
         [HttpPost]
         [Route("Tournament/Create")]
-        public ActionResult Create(TournamentViewModel viewModel)
+        public ActionResult Create(TournamentFormModel viewModel)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add insert logic here
-                if (ModelState.IsValid)
+                TournamentModel model = new TournamentModel()
                 {
-                    TournamentModel model = new TournamentModel();
-                    model.Title = viewModel.Title;
-                    model.CreatedByID = (int)Session["User.UserId"];
-                    model.CreatedOn = DateTime.Now;
-                    model.Description = viewModel.Description;
+                    Title = viewModel.Title,
+                    CreatedByID = (int)Session["User.UserId"],
+                    CreatedOn = DateTime.Now,
+                    Description = viewModel.Description
+                };
 
-                    viewModel.Exception = db.AddTournament(model);
+                DbError dbError = db.AddTournament(model);
 
-                    if (viewModel.Exception == DbError.SUCCESS)
-                    {
-                        return RedirectToAction("Tournament/-1");
-                    }
-                    else
-                    {
-                        return View(viewModel);
-                    }
+                if (dbError == DbError.SUCCESS)
+                {
+                    return RedirectToAction("Tournament/" + model.TournamentID);
                 }
-
-                return View(viewModel);
+                else
+                {
+                    // The tournament failed to be created
+                    viewModel.error = ViewModel.ViewError.EXCEPTION;
+                    viewModel.ErrorMessage = "We could not create the tournament due to an error.";
+                    return View(viewModel);
+                }
             }
-            catch
+            else
             {
+                viewModel.error = ViewModel.ViewError.CRITICAL;
+                viewModel.ErrorMessage = "Please enter in the required fields listed below.";
                 return View(viewModel);
             }
         }
@@ -107,32 +106,18 @@ namespace WebApplication.Controllers
         [HttpPost]
         public ActionResult Edit(int id, FormCollection collection)
         {
-            try
-            {
-                // TODO: Add update logic here
+            // TODO: Add update logic here
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction("Index");
         }
 
         // POST: Tournament/Delete/5
         [HttpPost]
         public ActionResult Delete(int id, FormCollection collection)
         {
-            try
-            {
-                // TODO: Add delete logic here
+            // TODO: Add delete logic here
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction("Index");
         }
     }
 }

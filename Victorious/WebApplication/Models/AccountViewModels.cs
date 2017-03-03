@@ -7,10 +7,19 @@ using System.Web;
 
 namespace WebApplication.Models
 {
-    public class AccountLoginViewModel
-    {
-        public DbError Exception = DbError.SUCCESS;
 
+    public class AccountViewModel : ViewModel
+    {
+        public UserModel userModel { get; private set; }
+
+        public AccountViewModel(UserModel model)
+        {
+            userModel = model;
+        }
+    }
+
+    public class AccountLoginViewModel : ViewModel
+    {
         [Required(ErrorMessage = "Username is required")]
         [DataType(DataType.Text)]
         [StringLength(UserModel.UsernameLength)]
@@ -22,12 +31,12 @@ namespace WebApplication.Models
         [StringLength(UserModel.PasswordLength)]
         [Display(Name = "Password")]
         public string Password { get; set; }
+
+
     }
 
-    public class AccountRegisterViewModel
+    public class AccountRegisterViewModel : ViewModel
     {
-        public DbError Exception = DbError.SUCCESS;
-
         [Required(ErrorMessage = "First Name is required")]
         [DataType(DataType.Text)]
         [StringLength(UserModel.FirstNameLength)]
