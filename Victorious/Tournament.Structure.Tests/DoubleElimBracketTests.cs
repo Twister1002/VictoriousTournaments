@@ -137,7 +137,7 @@ namespace Tournament.Structure.Tests
 			IBracket b = new DoubleElimBracket(pList);
 			//b.CreateBracket(2);
 
-			Assert.AreEqual(-1, b.GetMatch(b.Rounds.Count - 1, 0).NextLoserMatchIndex);
+			Assert.AreEqual(-1, b.GetMatch(b.Rounds.Count - 1, 0).NextLoserMatchNumber);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]

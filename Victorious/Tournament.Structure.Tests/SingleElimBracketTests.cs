@@ -310,7 +310,7 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(1, 0, 1);
+			b.AddWin(b.GetMatch(1, 0), 1);
 
 			Assert.AreEqual(1, b.GetMatch(1, 0).Score[1]);
 		}
@@ -328,8 +328,8 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(1, 0, 1); // ends match
-			b.AddWin(1, 0, 1); // throws exception
+			b.AddWin(b.GetMatch(1, 0), 1); // ends match
+			b.AddWin(b.GetMatch(1, 0), 1); // throws exception
 
 			Assert.AreEqual(1, 2);
 		}
@@ -347,7 +347,7 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(-1, 0, 1);
+			b.AddWin(b.GetMatch(-1, 0), 1);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -365,7 +365,7 @@ namespace Tournament.Structure.Tests
 			//b.CreateBracket();
 
 			int playerNum = b.GetMatch(1, 1).PlayerIndexes[1];
-			b.AddWin(1, 1, 1);
+			b.AddWin(b.GetMatch(1, 1), 1);
 
 			Assert.AreEqual(playerNum, b.GetMatch(0, 0).PlayerIndexes[1]);
 		}

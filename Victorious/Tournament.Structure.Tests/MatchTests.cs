@@ -202,9 +202,9 @@ namespace Tournament.Structure.Tests
 		{
 			int i = 14;
 			IMatch m = new Match();
-			m.AddPrevMatchIndex(i);
+			m.AddPrevMatchNumber(i);
 
-			Assert.IsTrue(m.PrevMatchIndexes.Contains(i));
+			Assert.IsTrue(m.PrevMatchNumbers.Contains(i));
 		}
 		[TestMethod]
 		[TestCategory("Match")]
@@ -213,9 +213,9 @@ namespace Tournament.Structure.Tests
 		public void AddPrevMatchIndex_ThrowsOutOfRange_AfterMoreThanTwoCalls()
 		{
 			IMatch m = new Match();
-			m.AddPrevMatchIndex(0);
-			m.AddPrevMatchIndex(1);
-			m.AddPrevMatchIndex(2);
+			m.AddPrevMatchNumber(0);
+			m.AddPrevMatchNumber(1);
+			m.AddPrevMatchNumber(2);
 
 			Assert.AreEqual(1, 2);
 		}
