@@ -58,7 +58,7 @@ namespace Tournament.Structure
 			int matchNum = 1 + Rounds[0][0].MatchNumber;
 			for (r = LowerRounds.Count - 1; r >= 0; --r)
 			{
-				foreach (IMatch match in Rounds[r])
+				foreach (IMatch match in LowerRounds[r])
 				{
 					match.MatchNumber = matchNum++;
 				}
@@ -211,10 +211,15 @@ namespace Tournament.Structure
 							int nRIndex = (r == Rounds.Count - 1) ? (r * 2 - 1) : (r * 2);
 							foreach (IMatch match in LowerRounds[nRIndex])
 							{
-								if (match.MatchNumber == nMatchNumber &&
-									match.PrevMatchNumbers.Contains(Rounds[r][m].MatchNumber))
+								if (match.MatchNumber == nMatchNumber)
 								{
-									match.AddPlayer(loserIndex, 0);
+									for (int i = 0; i < match.PrevMatchNumbers.Count; ++i)
+									{
+										if (match.PrevMatchNumbers[i] == Rounds[r][m].MatchNumber)
+										{
+											match.AddPlayer(Rounds[r][m].PlayerIndexes[loserIndex], i);
+										}
+									}
 									break;
 								}
 							}
@@ -349,7 +354,7 @@ namespace Tournament.Structure
 						{
 							if (match.PrevMatchNumbers[i] == LowerRounds[_round][_match].MatchNumber)
 							{
-								match.AddPlayer(_pIndex, i);
+								match.AddPlayer(LowerRounds[_round][_match].PlayerIndexes[_pIndex], i);
 								return;
 							}
 						}

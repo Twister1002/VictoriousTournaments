@@ -268,7 +268,7 @@ namespace Tournament.Structure
 							if (Rounds[_roundIndex][_matchIndex].MatchNumber == match.PrevMatchNumbers[i])
 							{
 								int newIndex = (1 == match.PrevMatchNumbers.Count) ? 1 : i;
-								match.AddPlayer(_index, newIndex);
+								match.AddPlayer(Rounds[_roundIndex][_matchIndex].PlayerIndexes[_index], newIndex);
 								return;
 							}
 						}
