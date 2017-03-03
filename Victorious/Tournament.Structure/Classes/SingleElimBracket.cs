@@ -46,55 +46,53 @@ namespace Tournament.Structure
 			Rounds.Clear();
 			int totalMatches = Players.Count - 1;
 			int numMatches = 0;
-			int rIndex = 0;
+			int r = 0;
 
 			// Create the Matches
 			while (numMatches < totalMatches)
 			{
 				Rounds.Add(new List<IMatch>());
 				for (int i = 0;
-					i < Math.Pow(2, rIndex) && numMatches < totalMatches;
+					i < Math.Pow(2, r) && numMatches < totalMatches;
 					++i, ++numMatches)
 				{
 					// Add new matchups per round
 					// (rounds[0] is the final match)
 					IMatch m = new Match();
-					m.RoundIndex = rIndex;
-					m.MatchIndex = Rounds[rIndex].Count;
+					m.RoundIndex = r;
+					m.MatchIndex = Rounds[r].Count;
 					m.WinsNeeded = _winsPerMatch;
-					AddMatch(rIndex, m);
+					AddMatch(r, m);
 				}
-				++rIndex;
+				++r;
 			}
 
 			// Assign Match Numbers
 			int matchNum = 1;
-			for (rIndex = Rounds.Count - 1; rIndex >= 0; --rIndex)
+			for (r = Rounds.Count - 1; r >= 0; --r)
 			{
-				foreach (IMatch match in Rounds[rIndex])
+				foreach (IMatch match in Rounds[r])
 				{
 					match.MatchNumber = matchNum++;
 				}
 			}
 
 			// Tie Matches Together
-			for (rIndex = 0; rIndex + 1 < Rounds.Count; ++rIndex)
+			for (r = 0; r + 1 < Rounds.Count; ++r)
 			{
-				if (Rounds[rIndex + 1].Count == (Rounds[rIndex].Count * 2))
+				if (Rounds[r + 1].Count == (Rounds[r].Count * 2))
 				{
 					// "Normal" rounds: twice as many matchups
-					for (int mIndex = 0; mIndex < Rounds[rIndex].Count; ++mIndex)
+					for (int m = 0; m < Rounds[r].Count; ++m)
 					{
-						int currNum = Rounds[rIndex][mIndex].MatchNumber;
+						int currNum = Rounds[r][m].MatchNumber;
 
 						// Assign prev/next matchup numbers
-						Rounds[rIndex][mIndex].AddPrevMatchNumber
-							(Rounds[rIndex + 1][mIndex * 2].MatchNumber);
-						Rounds[rIndex + 1][mIndex * 2].NextMatchNumber = currNum;
+						Rounds[r][m].AddPrevMatchNumber(Rounds[r + 1][m * 2].MatchNumber);
+						Rounds[r + 1][m * 2].NextMatchNumber = currNum;
 
-						Rounds[rIndex][mIndex].AddPrevMatchNumber
-							(Rounds[rIndex + 1][mIndex * 2 + 1].MatchNumber);
-						Rounds[rIndex + 1][mIndex * 2 + 1].NextMatchNumber = currNum;
+						Rounds[r][m].AddPrevMatchNumber(Rounds[r + 1][m * 2 + 1].MatchNumber);
+						Rounds[r + 1][m * 2 + 1].NextMatchNumber = currNum;
 					}
 				}
 				// Else: round is abnormal. Ignore it for now (we'll handle it later)
@@ -107,63 +105,63 @@ namespace Tournament.Structure
 			Rounds[0][0].AddPlayer(pIndex++, 0);
 			Rounds[0][0].AddPlayer(pIndex++, 1);
 
-			for (rIndex = 0; rIndex + 1 < Rounds.Count; ++rIndex)
+			for (r = 0; r + 1 < Rounds.Count; ++r)
 			{
 				// We're shifting back one player for each match in the prev round
-				int prevRoundMatches = Rounds[rIndex + 1].Count;
+				int prevRoundMatches = Rounds[r + 1].Count;
 
-				if ((Rounds[rIndex].Count * 2) > prevRoundMatches)
+				if ((Rounds[r].Count * 2) > prevRoundMatches)
 				{
 					// Abnormal round ahead: we need to allocate prevMatchIndexes
 					// to correctly distribute bye seeds
 
 					int prevMatchNumber = 1;
 
-					for (int mIndex = 0; mIndex < Rounds[rIndex].Count; ++mIndex)
+					for (int m = 0; m < Rounds[r].Count; ++m)
 					{
-						foreach (int p in Rounds[rIndex][mIndex].PlayerIndexes)
+						foreach (int p in Rounds[r][m].PlayerIndexes)
 						{
 							if (p >= pIndex - prevRoundMatches)
 							{
-								Rounds[rIndex][mIndex].AddPrevMatchNumber(prevMatchNumber);
-								Rounds[rIndex + 1][prevMatchNumber - 1].NextMatchNumber =
-									Rounds[rIndex][mIndex].MatchNumber;
+								Rounds[r][m].AddPrevMatchNumber(prevMatchNumber);
+								Rounds[r + 1][prevMatchNumber - 1].NextMatchNumber =
+									Rounds[r][m].MatchNumber;
 								++prevMatchNumber;
 							}
 						}
 					}
 				}
 
-				for (int mIndex = 0; mIndex < Rounds[rIndex].Count; ++mIndex)
+				for (int m = 0; m < Rounds[r].Count; ++m)
 				{
 					// For each match, shift/reassign all teams to the prev bracket level
 					// If prev level is abnormal, only shift 1 (or 0) teams
-					if (1 <= Rounds[rIndex][mIndex].PrevMatchNumbers.Count)
+					if (1 <= Rounds[r][m].PrevMatchNumbers.Count)
 					{
 						int prevIndex = 0;
 
-						if (2 == Rounds[rIndex][mIndex].PrevMatchNumbers.Count)
+						if (2 == Rounds[r][m].PrevMatchNumbers.Count)
 						{
 							ReassignPlayer(
-								Rounds[rIndex][mIndex].PlayerIndexes[0],
-								Rounds[rIndex][mIndex],
-								Rounds[rIndex][mIndex].PrevMatchNumbers[prevIndex++]);
+								Rounds[r][m].PlayerIndexes[0],
+								Rounds[r][m],
+								Rounds[r][m].PrevMatchNumbers[prevIndex++]);
 						}
 						ReassignPlayer(
-							Rounds[rIndex][mIndex].PlayerIndexes[1],
-							Rounds[rIndex][mIndex],
-							Rounds[rIndex][mIndex].PrevMatchNumbers[prevIndex]);
+							Rounds[r][m].PlayerIndexes[1],
+							Rounds[r][m],
+							Rounds[r][m].PrevMatchNumbers[prevIndex]);
 					}
 				}
 
 				for (int prePlayers = pIndex - 1; prePlayers >= 0; --prePlayers)
 				{
-					for (int mIndex = 0; mIndex < prevRoundMatches; ++mIndex)
+					for (int m = 0; m < prevRoundMatches; ++m)
 					{
-						if (Rounds[rIndex + 1][mIndex].PlayerIndexes.Contains(prePlayers))
+						if (Rounds[r + 1][m].PlayerIndexes.Contains(prePlayers))
 						{
 							// Add prev round's teams (according to seed) from the master list
-							Rounds[rIndex + 1][mIndex].AddPlayer(pIndex++, 1);
+							Rounds[r + 1][m].AddPlayer(pIndex++, 1);
 							break;
 						}
 					}
@@ -174,15 +172,15 @@ namespace Tournament.Structure
 
 		public override void UpdateCurrentMatches(ICollection<MatchModel> _matchModels)
 		{
-			for (int rIndex = Rounds.Count - 1; rIndex >= 0; --rIndex)
+			for (int r = Rounds.Count - 1; r >= 0; --r)
 			{
-				for (int mIndex = 0; mIndex < Rounds[rIndex].Count; ++mIndex)
+				for (int m = 0; m < Rounds[r].Count; ++m)
 				{
 					foreach (MatchModel model in _matchModels)
 					{
-						if (model.MatchNumber == Rounds[rIndex][mIndex].MatchNumber)
+						if (model.MatchNumber == Rounds[r][m].MatchNumber)
 						{
-							Rounds[rIndex][mIndex] = new Match(model, Players);
+							Rounds[r][m] = new Match(model, Players);
 							break;
 						}
 					}
@@ -190,7 +188,58 @@ namespace Tournament.Structure
 			}
 		}
 
-		public override void AddWin(int _roundIndex, int _matchIndex, int _index)
+		public override void AddWin(IMatch _match, int _index)
+		{
+			AddWin(_match.MatchNumber, _index);
+		}
+		public override void AddWin(int _matchNumber, int _index)
+		{
+			// Find the appropriate indexes of _match, and call the private AddWin()
+			for (int r = 0; r < Rounds.Count; ++r)
+			{
+				for (int m = 0; m < Rounds[r].Count; ++m)
+				{
+					if (Rounds[r][m].MatchNumber == _matchNumber)
+					{
+						AddWin(r, m, _index);
+						return;
+					}
+				}
+			}
+
+			throw new KeyNotFoundException();
+		}
+		#endregion
+
+		#region Private Methods
+		private void ReassignPlayer(int _pIndex, IMatch _currMatch, int _newMatchNum)
+		{
+			if (null == _currMatch || _newMatchNum < 1)
+			{
+				throw new NullReferenceException();
+			}
+
+			if (_currMatch.PlayerIndexes.Contains(_pIndex))
+			{
+				_currMatch.RemovePlayer(_pIndex);
+
+				foreach (IMatch match in Rounds[_currMatch.RoundIndex + 1])
+				{
+					if (match.MatchNumber == _newMatchNum)
+					{
+						match.AddPlayer(_pIndex, 0);
+						if (match.PlayerIndexes.Contains(_pIndex))
+						{
+							return;
+						}
+					}
+				}
+			}
+
+			throw new KeyNotFoundException();
+		}
+
+		protected void AddWin(int _roundIndex, int _matchIndex, int _index)
 		{
 			if (_roundIndex < 0 || _roundIndex >= Rounds.Count
 				|| _matchIndex < 0 || _matchIndex >= Rounds[_roundIndex].Count)
@@ -218,61 +267,15 @@ namespace Tournament.Structure
 						{
 							if (Rounds[_roundIndex][_matchIndex].MatchNumber == match.PrevMatchNumbers[i])
 							{
-								match.PlayerIndexes[i] = Rounds[_roundIndex][_matchIndex].PlayerIndexes[_index];
+								int newIndex = (1 == match.PrevMatchNumbers.Count) ? 1 : i;
+								match.AddPlayer(_index, newIndex);
 								return;
 							}
 						}
 					}
-					break;
 				}
 			}
 		}
-		public override void AddWin(IMatch _match, int _index)
-		{
-			// Just find the appropriate indexes of _match, and call the overloaded AddWin()
-			for (int r = 0; r < Rounds.Count; ++r)
-			{
-				for (int m = 0; m < Rounds[r].Count; ++m)
-				{
-					if (Rounds[r][m] == _match)
-					{
-						AddWin(r, m, _index);
-						return;
-					}
-				}
-			}
-
-			throw new KeyNotFoundException();
-		}
-#endregion
-
-#region Private Methods
-		private void ReassignPlayer(int _pIndex, IMatch _currMatch, int _newMatchNum)
-		{
-			if (null == _currMatch || _newMatchNum < 1)
-			{
-				throw new NullReferenceException();
-			}
-
-			if (_currMatch.PlayerIndexes.Contains(_pIndex))
-			{
-				_currMatch.RemovePlayer(_pIndex);
-
-				foreach (IMatch match in Rounds[_currMatch.RoundIndex + 1])
-				{
-					if (match.MatchNumber == _newMatchNum)
-					{
-						match.AddPlayer(_pIndex, 0);
-						if (match.PlayerIndexes.Contains(_pIndex))
-						{
-							return;
-						}
-					}
-				}
-			}
-
-			throw new KeyNotFoundException();
-		}
-#endregion
+		#endregion
 	}
 }
