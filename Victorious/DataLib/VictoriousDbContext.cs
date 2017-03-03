@@ -77,7 +77,7 @@ namespace DataLib
                     m.ToTable("UsersTournaments");
                 });
 
-            
+
             //modelBuilder.Entity<TournamentModel>()
             //    .HasMany(e => e.Users)
             //    .WithMany(e => e.Tournaments)

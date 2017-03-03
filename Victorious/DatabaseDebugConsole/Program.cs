@@ -42,7 +42,7 @@ namespace DatabaseDebugConsole
             //db.UpdateUserEmail(tournament.Users.ElementAt(0), "keltonr01@gmail.com");
             //Console.WriteLine(tournament.Users.ElementAt(0).Email);
 
-            db.SetUserBracketSeed(db.GetUserById(0), db.GetBracketByID(0), 1);
+            //db.SetUserBracketSeed(db.GetUserById(0), db.GetBracketByID(0), 1);
 
             foreach (var bracket in tournament.Brackets)
             {
@@ -52,6 +52,11 @@ namespace DatabaseDebugConsole
                     Console.WriteLine("Defender: " + match.Defender.FirstName + ' ' + match.Defender.LastName);
                 }
 
+            }
+
+            foreach (var match in tournament.Brackets.ElementAt(0).Matches)
+            {
+                Console.WriteLine(match.MatchNumber);
             }
 
             Console.WriteLine("Done");
