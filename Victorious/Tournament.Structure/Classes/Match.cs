@@ -53,19 +53,18 @@ namespace Tournament.Structure
 		}
 		public Match(MatchModel _m, List<IPlayer> _playerList)
 		{
-#if false
 			if (null == _m
 				|| null == _playerList
 				|| null == _m.ChallengerID
 				|| null == _m.DefenderID
-				|| null == _m.TournamentID
+				//|| null == _m.TournamentID
 				//|| null == _m.WinnerID
 				|| null == _m.ChallengerScore
 				|| null == _m.DefenderScore
 				|| null == _m.RoundNumber
 				|| null == _m.Challenger
 				|| null == _m.Defender
-				|| null == _m.Tournament
+				//|| null == _m.Tournament
 				|| null == _m.WinsNeeded
 				|| null == _m.MatchIndex
 				|| null == _m.NextMatchIndex
@@ -74,11 +73,7 @@ namespace Tournament.Structure
 				throw new NullReferenceException();
 			}
 
-			WinsNeeded = _m.WinsNeeded;
-			if (WinsNeeded < 1)
-			{
-				throw new ArgumentOutOfRangeException();
-			}
+			WinsNeeded = (ushort)(_m.WinsNeeded);
 
 			PlayerIndexes = new int[2] { -1, -1 };
 			int p1id = (int)(_m.DefenderID);
@@ -108,14 +103,20 @@ namespace Tournament.Structure
 			}
 
 			RoundNumber = (int)(_m.RoundNumber);
-			MatchIndex = _m.MatchIndex;
+			MatchIndex = (int)(_m.MatchIndex);
 
 			PrevMatchIndexes = new List<int>();
-			// still need to fetch this...
-
+			if (null != _m.PrevDefenderMatchIndex)
+			{
+				PrevMatchIndexes.Add((int)(_m.PrevDefenderMatchIndex));
+			}
+			if (null != _m.PrevChallengerMatchIndex)
+			{
+				PrevMatchIndexes.Add((int)(_m.PrevChallengerMatchIndex));
+			}
+			
 			NextMatchIndex = (int)(_m.NextMatchIndex);
 			NextLoserMatchIndex = (int)(_m.NextLoserMatchIndex);
-#endif
 		}
 		#endregion
 

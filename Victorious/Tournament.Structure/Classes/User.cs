@@ -43,11 +43,7 @@ namespace Tournament.Structure
 		}
 		public User(UserModel _u)
 		{
-			if (null == _u
-				|| null == _u.Username
-				|| null == _u.FirstName
-				|| null == _u.LastName
-				|| null == _u.Email)
+			if (null == _u)
 			{
 				throw new NullReferenceException();
 			}

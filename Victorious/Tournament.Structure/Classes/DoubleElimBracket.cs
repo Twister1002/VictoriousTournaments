@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public class DoubleElimBracket : SingleElimBracket
@@ -113,6 +115,13 @@ namespace Tournament.Structure
 			{
 				GrandFinal = null;
 			}
+		}
+
+		public override void UpdateCurrentMatches(ICollection<MatchModel> _matchModels)
+		{
+			base.UpdateCurrentMatches(_matchModels);
+
+			// DO OTHER SHIT TOO
 		}
 
 		public override void AddWin(IMatch _match, int _index)
