@@ -32,6 +32,15 @@ namespace WebApplication.Controllers
         public ActionResult Login()
         {
             AccountLoginViewModel model = new AccountLoginViewModel();
+            if (Session["registered"] != null)
+            {
+                if ((bool)Session["registered"])
+                {
+                    model.error = ViewModel.ViewError.SUCCESS;
+                    model.message = "Account registered successfully.";
+                    Session.Remove("registered");
+                }
+            }
 
             if (Session["User.UserId"] != null)
             {
@@ -41,7 +50,6 @@ namespace WebApplication.Controllers
             {
                 return View("Login", model);
             }
-            
         }
 
         [HttpPost]
@@ -53,8 +61,9 @@ namespace WebApplication.Controllers
                 // Check the username and password
                 UserModel user = db.GetUserByUsername(viewModel.Username);
                 
-                if (user != null)
+                if (user.UserID != -1)
                 {
+
                     if (user.Password == viewModel.Password)
                     {
                         Session["User.UserId"] = user.UserID;
@@ -64,19 +73,19 @@ namespace WebApplication.Controllers
                     {
                         // There was an error 
                         viewModel.error = ViewModel.ViewError.WARNING;
-                        viewModel.ErrorMessage = "The password you provided for this user is invalid";
+                        viewModel.message = "The password you provided for this user is invalid";
                     }
                 }
                 else
                 {
                     viewModel.error = ViewModel.ViewError.WARNING;
-                    viewModel.ErrorMessage = "The username you provided doesn't exist.";
+                    viewModel.message = "The username you provided doesn't exist.";
                 }
             }
             else
             {
                 viewModel.error = ViewModel.ViewError.CRITICAL;
-                viewModel.ErrorMessage = "Please enter in the required fields.";
+                viewModel.message = "Please enter in the required fields.";
             }
 
             return View("Login", viewModel);
@@ -118,23 +127,26 @@ namespace WebApplication.Controllers
                 if (userExists == DbError.DOES_NOT_EXIST && emailExists == DbError.DOES_NOT_EXIST)
                 {
                     // We can then register the user
-                    if (db.AddUser(userModel) == DbError.SUCCESS)
+                    int userID = db.AddUser(userModel);
+                    //if (db.AddUser(userModel) == DbError.SUCCESS)
+                    if (userID > 0)
                     {
                         // User Registraion was successful
+                        Session["registered"] = true;
                         return RedirectToAction("Login", "Account");
                     }
                     else
                     {
                         // User Registration failed.
                         viewModel.error = ViewModel.ViewError.WARNING;
-                        viewModel.ErrorMessage = "Well... Something went wrong when creating your account.";
+                        viewModel.message = "Well... Something went wrong when creating your account.";
                         return View(viewModel);
                     }
                 }
                 else
                 {
                     viewModel.error = ViewModel.ViewError.WARNING;
-                    viewModel.ErrorMessage = "The username of email is all ready being used. Click <a href='/Account/Login/'>here</a> to login";
+                    viewModel.message = "The username of email is all ready being used. Click <a href='/Account/Login/'>here</a> to login";
                     return View(viewModel);
                 }
             }
@@ -142,7 +154,7 @@ namespace WebApplication.Controllers
             {
                 //If we hit this, then something failed 
                 viewModel.error = ViewModel.ViewError.CRITICAL;
-                viewModel.ErrorMessage = "Please enter in the required fields.";
+                viewModel.message = "Please enter in the required fields.";
                 return View(viewModel);
             }
         }

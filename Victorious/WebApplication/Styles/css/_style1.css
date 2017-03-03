@@ -118,6 +118,9 @@ label {
 .message.none {
   background-color: #887308;
 }
+.message.success {
+  background-color: #066D06;
+}
 .message.warning {
   background-color: #884208;
 }
@@ -160,6 +163,7 @@ label {
   border-radius: .5em;
 }
 #Tournament .round .match ul li {
+  min-height: 1em;
   vertical-align: middle;
 }
 #Tournament .round .match ul li:first-child {

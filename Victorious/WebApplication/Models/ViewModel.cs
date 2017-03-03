@@ -11,15 +11,23 @@ namespace WebApplication.Models
         public enum ViewError
         {
             NONE,
+            SUCCESS,
             WARNING,
             EXCEPTION,
             CRITICAL
         }
 
-        public String[] errorClassNames = new String[] {"none", "warning", "exception", "critical" };
+        public String[] errorClassNames = new String[] {
+            "none",
+            "success",
+            "warning",
+            "exception",
+            "critical"
+        };
+
         public ViewError error = ViewError.NONE;
         protected DatabaseInterface db;
-        public String ErrorMessage { get; set; }
+        public String message { get; set; }
 
 
     }

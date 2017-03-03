@@ -1,16 +1,17 @@
 ﻿@model WebApplication.Models.AccountViewModel
 @{
-    ViewBag.Title = "View";
+    ViewBag.Title = "Account";
+    ViewBag.ClassName = "account";
     Layout = "~/Views/Shared/_Layout1.cshtml";
 }
 
 <h2>Account Display Page</h2>
 
-<div class="account">
+<div class="@{((string)ViewBag.Title).ToLower(); }">
     @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
     {
         <div class="message @Model.errorClassNames[(int)Model.error]">
-            @Model.ErrorMessage
+            @MvcHtmlString.Create(Model.message);
         </div>
     }
 

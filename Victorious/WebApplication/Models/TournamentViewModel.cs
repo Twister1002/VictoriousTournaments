@@ -73,7 +73,13 @@ namespace WebApplication.Models
             }
 
             tourny.CreateSingleElimBracket();
-
+            tourny.Brackets[0].AddWin(1, 0);
+            tourny.Brackets[0].AddWin(2, 1);
+            tourny.Brackets[0].AddWin(3, 0);
+            tourny.Brackets[0].AddWin(4, 1);
+            tourny.Brackets[0].AddWin(5, 0);
+            tourny.Brackets[0].AddWin(6, 1);
+            tourny.Brackets[0].AddWin(7, 0);
         }
         
     }

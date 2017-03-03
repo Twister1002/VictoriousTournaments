@@ -9,7 +9,7 @@
     @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
     {
         <div class="message @Model.errorClassNames[(int)Model.error]">
-            @Model.ErrorMessage
+            @MvcHtmlString.Create(Model.message)
         </div>
     }
     @using (Html.BeginForm("RegisterUser", "Account", FormMethod.Post))
