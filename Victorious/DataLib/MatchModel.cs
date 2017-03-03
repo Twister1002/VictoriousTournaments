@@ -25,6 +25,8 @@ namespace DataLib
 
         public int? RoundNumber { get; set; }
 
+        public int? MatchNumber { get; set; }
+
         public bool? IsBye { get; set; }
 
         public DateTime? StartDateTime { get; set; }
