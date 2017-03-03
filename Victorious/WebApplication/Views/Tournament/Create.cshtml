@@ -20,11 +20,6 @@
             @Html.TextBoxFor(t => t.Title)
             @Html.ValidationMessageFor(t => t.Title)
         </div>
-        @*<div class="tournament field">
-            @Html.LabelFor(t => t.Players)
-            <input type="text" name="Players" class="slider" placeholder="Max Number of Players" value="@Model.Players"/>
-            @Html.ValidationMessageFor(t => t.Players)
-        </div>*@
         <div class="tournament field">
             @Html.LabelFor(t => t.RegistrationStart)
             <input type="text" name="RegistrationStart" class="datepicker" />

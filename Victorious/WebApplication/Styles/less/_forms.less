@@ -1,14 +1,13 @@
-﻿.form {
-    label {
-        display:block;
-    }
-
-    input, textarea {
-        &:not([type="submit"]):not([type="button"]) {
-            background-color:@color-secondary-1-0;
+﻿form {
+        input[type="text"], input[type="password"] {
+            border: 0em;
+            border-bottom: .1em solid @white;
+            padding: .5em 0em .5em 1em;
+            background-color: inherit;
             color: @white;
         }
-        
-        margin-bottom: 1em;
+
+    > * {
+        padding: .5em;
     }
 }

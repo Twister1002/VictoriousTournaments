@@ -38,6 +38,7 @@
 #navagation .searchBar .fieldImage {
   position: absolute;
   display: inline-block;
+  padding: 0em;
   height: 1.5em;
   width: 1.5em;
   left: 1em;
@@ -73,17 +74,16 @@
 #navagation ul li.navElement:hover {
   background-color: #10334E;
 }
-.form label {
-  display: block;
-}
-.form input,
-.form textarea {
-  margin-bottom: 1em;
-}
-.form input:not([type="submit"]):not([type="button"]),
-.form textarea:not([type="submit"]):not([type="button"]) {
-  background-color: #171754;
+form input[type="text"],
+form input[type="password"] {
+  border: 0em;
+  border-bottom: 0.1em solid #FFFFFF;
+  padding: .5em 0em .5em 1em;
+  background-color: inherit;
   color: #FFFFFF;
+}
+form > * {
+  padding: .5em;
 }
 body {
   background-color: #264C69;
@@ -100,6 +100,27 @@ li {
   list-style-type: none;
   padding: 0em;
   margin: 0em;
+}
+label {
+  display: block;
+  padding: .25em 0em .25em 0em;
+}
+.message {
+  display: block;
+  padding: 1em;
+}
+.message:after {
+  padding-bottom: 1em;
+}
+.message.none {
+  background-color: #887308;
+}
+.message.warning {
+  background-color: #884208;
+}
+.message.exception,
+.message.critical {
+  background-color: #880C08;
 }
 #Tournament {
   padding: 0em 0em 0em 2em;
