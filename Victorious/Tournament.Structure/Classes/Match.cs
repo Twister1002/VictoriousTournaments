@@ -17,27 +17,29 @@ namespace Tournament.Structure
 		{ get; set; }
 		public ushort[] Score
 		{ get; set; }
-		public int RoundNumber
+		public int RoundIndex
 		{ get; set; }
 		public int MatchIndex
 		{ get; set; }
-		public List<int> PrevMatchIndexes
+		public int MatchNumber
 		{ get; set; }
-		public int NextMatchIndex
+		public List<int> PrevMatchNumbers
 		{ get; set; }
-		public int NextLoserMatchIndex
+		public int NextMatchNumber
+		{ get; set; }
+		public int NextLoserMatchNumber
 		{ get; set; }
 		#endregion
 
 		#region Ctors
 		public Match()
-			: this(1, new int[2] { -1, -1 }, new ushort[2] { 0, 0 }, -1, -1, new List<int>(), -1, -1)
+			: this(1, new int[2] { -1, -1 }, new ushort[2] { 0, 0 }, -1, -1, -1, new List<int>(), -1, -1)
 		{ }
-		public Match(ushort _winsNeeded, int[] _playerIndexes, ushort[] _score, int _roundNumber, int _matchIndex, List<int> _prevMatchIndexes, int _nextMatchIndex, int _nextLoserMatchIndex)
+		public Match(ushort _winsNeeded, int[] _playerIndexes, ushort[] _score, int _roundIndex, int _matchIndex, int _matchNumber, List<int> _prevMatchNumbers, int _nextMatchNumber, int _nextLoserMatchNumber)
 		{
 			if (null == _playerIndexes
 				|| null == _score
-				|| null == _prevMatchIndexes)
+				|| null == _prevMatchNumbers)
 			{
 				throw new NullReferenceException();
 			}
@@ -45,11 +47,12 @@ namespace Tournament.Structure
 			WinsNeeded = _winsNeeded;
 			PlayerIndexes = _playerIndexes;
 			Score = _score;
-			RoundNumber = _roundNumber;
+			RoundIndex = _roundIndex;
 			MatchIndex = _matchIndex;
-			PrevMatchIndexes = _prevMatchIndexes;
-			NextMatchIndex = _nextMatchIndex;
-			NextLoserMatchIndex = _nextLoserMatchIndex;
+			MatchNumber = _matchNumber;
+			PrevMatchNumbers = _prevMatchNumbers;
+			NextMatchNumber = _nextMatchNumber;
+			NextLoserMatchNumber = _nextLoserMatchNumber;
 		}
 		public Match(MatchModel _m, List<IPlayer> _playerList)
 		{
@@ -61,14 +64,15 @@ namespace Tournament.Structure
 				//|| null == _m.WinnerID
 				|| null == _m.ChallengerScore
 				|| null == _m.DefenderScore
-				|| null == _m.RoundNumber
+				|| null == _m.RoundIndex
 				|| null == _m.Challenger
 				|| null == _m.Defender
 				//|| null == _m.Tournament
 				|| null == _m.WinsNeeded
 				|| null == _m.MatchIndex
-				|| null == _m.NextMatchIndex
-				|| null == _m.NextLoserMatchIndex)
+				|| null == _m.MatchNumber
+				|| null == _m.NextMatchNumber
+				|| null == _m.NextLoserMatchNumber)
 			{
 				throw new NullReferenceException();
 			}
@@ -102,25 +106,26 @@ namespace Tournament.Structure
 				throw new ArgumentOutOfRangeException();
 			}
 
-			RoundNumber = (int)(_m.RoundNumber);
+			RoundIndex = (int)(_m.RoundIndex);
 			MatchIndex = (int)(_m.MatchIndex);
+			MatchNumber = (int)(_m.MatchNumber);
 
-			PrevMatchIndexes = new List<int>();
-			if (null != _m.PrevDefenderMatchIndex)
+			PrevMatchNumbers = new List<int>();
+			if (null != _m.PrevDefenderMatchNumber)
 			{
-				PrevMatchIndexes.Add((int)(_m.PrevDefenderMatchIndex));
+				PrevMatchNumbers.Add((int)(_m.PrevDefenderMatchNumber));
 			}
-			if (null != _m.PrevChallengerMatchIndex)
+			if (null != _m.PrevChallengerMatchNumber)
 			{
-				PrevMatchIndexes.Add((int)(_m.PrevChallengerMatchIndex));
+				PrevMatchNumbers.Add((int)(_m.PrevChallengerMatchNumber));
 			}
-			
-			NextMatchIndex = (int)(_m.NextMatchIndex);
-			NextLoserMatchIndex = (int)(_m.NextLoserMatchIndex);
+
+			NextMatchNumber = (int)(_m.NextMatchNumber);
+			NextLoserMatchNumber = (int)(_m.NextLoserMatchNumber);
 		}
-		#endregion
+#endregion
 
-		#region Public Methods
+#region Public Methods
 		public void AddPlayer(int _playerIndex, int _index)
 		{
 			if (_index < 0 || _index > 1)
@@ -167,15 +172,15 @@ namespace Tournament.Structure
 
 			Score[_index] += 1;
 		}
-		public void AddPrevMatchIndex(int _i)
+		public void AddPrevMatchNumber(int _n)
 		{
-			if (PrevMatchIndexes.Count >= 2)
+			if (PrevMatchNumbers.Count >= 2)
 			{
 				throw new ArgumentOutOfRangeException();
 			}
 
-			PrevMatchIndexes.Add(_i);
+			PrevMatchNumbers.Add(_n);
 		}
-		#endregion
+#endregion
 	}
 }

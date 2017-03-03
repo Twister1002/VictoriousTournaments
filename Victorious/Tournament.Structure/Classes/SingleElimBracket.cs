@@ -42,43 +42,59 @@ namespace Tournament.Structure
 				throw new ArgumentOutOfRangeException();
 			}
 
-			Rounds.Clear();
-
 			#region Create the Bracket
+			Rounds.Clear();
 			int totalMatches = Players.Count - 1;
 			int numMatches = 0;
-			int roundIndex = 0;
+			int rIndex = 0;
+
+			// Create the Matches
 			while (numMatches < totalMatches)
 			{
 				Rounds.Add(new List<IMatch>());
 				for (int i = 0;
-					i < Math.Pow(2, roundIndex) && numMatches < totalMatches;
+					i < Math.Pow(2, rIndex) && numMatches < totalMatches;
 					++i, ++numMatches)
 				{
 					// Add new matchups per round
 					// (rounds[0] is the final match)
 					IMatch m = new Match();
-					m.RoundNumber = roundIndex;
-					m.MatchIndex = Rounds[roundIndex].Count;
+					m.RoundIndex = rIndex;
+					m.MatchIndex = Rounds[rIndex].Count;
 					m.WinsNeeded = _winsPerMatch;
-					AddMatch(roundIndex, m);
+					AddMatch(rIndex, m);
 				}
-				++roundIndex;
+				++rIndex;
 			}
 
-			for (int rIndex = 0; rIndex + 1 < Rounds.Count; ++rIndex)
+			// Assign Match Numbers
+			int matchNum = 1;
+			for (rIndex = Rounds.Count - 1; rIndex >= 0; --rIndex)
+			{
+				foreach (IMatch match in Rounds[rIndex])
+				{
+					match.MatchNumber = matchNum++;
+				}
+			}
+
+			// Tie Matches Together
+			for (rIndex = 0; rIndex + 1 < Rounds.Count; ++rIndex)
 			{
 				if (Rounds[rIndex + 1].Count == (Rounds[rIndex].Count * 2))
 				{
 					// "Normal" rounds: twice as many matchups
 					for (int mIndex = 0; mIndex < Rounds[rIndex].Count; ++mIndex)
 					{
-						// Assign prev/next matchup indexes
-						Rounds[rIndex][mIndex].AddPrevMatchIndex(mIndex * 2);
-						Rounds[rIndex + 1][mIndex * 2].NextMatchIndex = mIndex;
+						int currNum = Rounds[rIndex][mIndex].MatchNumber;
 
-						Rounds[rIndex][mIndex].AddPrevMatchIndex(mIndex * 2 + 1);
-						Rounds[rIndex + 1][mIndex * 2 + 1].NextMatchIndex = mIndex;
+						// Assign prev/next matchup numbers
+						Rounds[rIndex][mIndex].AddPrevMatchNumber
+							(Rounds[rIndex + 1][mIndex * 2].MatchNumber);
+						Rounds[rIndex + 1][mIndex * 2].NextMatchNumber = currNum;
+
+						Rounds[rIndex][mIndex].AddPrevMatchNumber
+							(Rounds[rIndex + 1][mIndex * 2 + 1].MatchNumber);
+						Rounds[rIndex + 1][mIndex * 2 + 1].NextMatchNumber = currNum;
 					}
 				}
 				// Else: round is abnormal. Ignore it for now (we'll handle it later)
@@ -91,7 +107,7 @@ namespace Tournament.Structure
 			Rounds[0][0].AddPlayer(pIndex++, 0);
 			Rounds[0][0].AddPlayer(pIndex++, 1);
 
-			for (int rIndex = 0; rIndex + 1 < Rounds.Count; ++rIndex)
+			for (rIndex = 0; rIndex + 1 < Rounds.Count; ++rIndex)
 			{
 				// We're shifting back one player for each match in the prev round
 				int prevRoundMatches = Rounds[rIndex + 1].Count;
@@ -101,7 +117,7 @@ namespace Tournament.Structure
 					// Abnormal round ahead: we need to allocate prevMatchIndexes
 					// to correctly distribute bye seeds
 
-					int prevMatchIndex = 0;
+					int prevMatchNumber = 1;
 
 					for (int mIndex = 0; mIndex < Rounds[rIndex].Count; ++mIndex)
 					{
@@ -109,9 +125,10 @@ namespace Tournament.Structure
 						{
 							if (p >= pIndex - prevRoundMatches)
 							{
-								Rounds[rIndex][mIndex].AddPrevMatchIndex(prevMatchIndex);
-								Rounds[rIndex + 1][prevMatchIndex].NextMatchIndex = mIndex;
-								++prevMatchIndex;
+								Rounds[rIndex][mIndex].AddPrevMatchNumber(prevMatchNumber);
+								Rounds[rIndex + 1][prevMatchNumber - 1].NextMatchNumber =
+									Rounds[rIndex][mIndex].MatchNumber;
+								++prevMatchNumber;
 							}
 						}
 					}
@@ -121,21 +138,21 @@ namespace Tournament.Structure
 				{
 					// For each match, shift/reassign all teams to the prev bracket level
 					// If prev level is abnormal, only shift 1 (or 0) teams
-					if (1 <= Rounds[rIndex][mIndex].PrevMatchIndexes.Count)
+					if (1 <= Rounds[rIndex][mIndex].PrevMatchNumbers.Count)
 					{
 						int prevIndex = 0;
 
-						if (2 == Rounds[rIndex][mIndex].PrevMatchIndexes.Count)
+						if (2 == Rounds[rIndex][mIndex].PrevMatchNumbers.Count)
 						{
 							ReassignPlayer(
 								Rounds[rIndex][mIndex].PlayerIndexes[0],
 								Rounds[rIndex][mIndex],
-								Rounds[rIndex + 1][(Rounds[rIndex][mIndex].PrevMatchIndexes[prevIndex++])]);
+								Rounds[rIndex][mIndex].PrevMatchNumbers[prevIndex++]);
 						}
 						ReassignPlayer(
 							Rounds[rIndex][mIndex].PlayerIndexes[1],
 							Rounds[rIndex][mIndex],
-							Rounds[rIndex + 1][(Rounds[rIndex][mIndex].PrevMatchIndexes[prevIndex])]);
+							Rounds[rIndex][mIndex].PrevMatchNumbers[prevIndex]);
 					}
 				}
 
@@ -157,13 +174,13 @@ namespace Tournament.Structure
 
 		public override void UpdateCurrentMatches(ICollection<MatchModel> _matchModels)
 		{
-			for (int rIndex = 0; rIndex < Rounds.Count; ++rIndex)
+			for (int rIndex = Rounds.Count - 1; rIndex >= 0; --rIndex)
 			{
 				for (int mIndex = 0; mIndex < Rounds[rIndex].Count; ++mIndex)
 				{
 					foreach (MatchModel model in _matchModels)
 					{
-						if (rIndex == model.RoundNumber && mIndex == model.MatchIndex)
+						if (model.MatchNumber == Rounds[rIndex][mIndex].MatchNumber)
 						{
 							Rounds[rIndex][mIndex] = new Match(model, Players);
 							break;
@@ -192,14 +209,21 @@ namespace Tournament.Structure
 				// Player won the match. Advance!
 
 				// Move the winner:
-				int nmIndex = Rounds[_roundIndex][_matchIndex].NextMatchIndex;
-				for (int i = 0; i < Rounds[_roundIndex - 1][nmIndex].PrevMatchIndexes.Count; ++i)
+				int nmNumber = Rounds[_roundIndex][_matchIndex].NextMatchNumber;
+				foreach (IMatch match in Rounds[_roundIndex - 1])
 				{
-					if (_matchIndex == Rounds[_roundIndex - 1][nmIndex].PrevMatchIndexes[i])
+					if (nmNumber == match.MatchNumber)
 					{
-						Rounds[_roundIndex - 1][nmIndex].PlayerIndexes[i] = Rounds[_roundIndex][_matchIndex].PlayerIndexes[_index];
-						return;
+						for (int i = 0; i < match.PrevMatchNumbers.Count; ++i)
+						{
+							if (Rounds[_roundIndex][_matchIndex].MatchNumber == match.PrevMatchNumbers[i])
+							{
+								match.PlayerIndexes[i] = Rounds[_roundIndex][_matchIndex].PlayerIndexes[_index];
+								return;
+							}
+						}
 					}
+					break;
 				}
 			}
 		}
@@ -223,9 +247,9 @@ namespace Tournament.Structure
 #endregion
 
 #region Private Methods
-		private void ReassignPlayer(int _pIndex, IMatch _currMatch, IMatch _newMatch)
+		private void ReassignPlayer(int _pIndex, IMatch _currMatch, int _newMatchNum)
 		{
-			if (null == _currMatch || null == _newMatch)
+			if (null == _currMatch || _newMatchNum < 1)
 			{
 				throw new NullReferenceException();
 			}
@@ -233,10 +257,17 @@ namespace Tournament.Structure
 			if (_currMatch.PlayerIndexes.Contains(_pIndex))
 			{
 				_currMatch.RemovePlayer(_pIndex);
-				_newMatch.AddPlayer(_pIndex, 0);
-				if (_newMatch.PlayerIndexes.Contains(_pIndex))
+
+				foreach (IMatch match in Rounds[_currMatch.RoundIndex + 1])
 				{
-					return;
+					if (match.MatchNumber == _newMatchNum)
+					{
+						match.AddPlayer(_pIndex, 0);
+						if (match.PlayerIndexes.Contains(_pIndex))
+						{
+							return;
+						}
+					}
 				}
 			}
 

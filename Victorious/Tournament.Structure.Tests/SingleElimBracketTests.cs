@@ -60,6 +60,51 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("CreateBracket")]
+		public void SEBCreateBracket_AssignsR1MatchNumbers()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 10; ++i)
+			{
+				pList.Add(new Mock<IPlayer>().Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			Assert.AreEqual(1, b.GetMatch(b.Rounds.Count - 1, 0).MatchNumber);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("CreateBracket")]
+		public void SEBCreateBracket_AssignsR2MatchNumbers()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 10; ++i)
+			{
+				pList.Add(new Mock<IPlayer>().Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			Assert.AreEqual(3, b.GetMatch(b.Rounds.Count - 2, 0).MatchNumber);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("CreateBracket")]
+		public void SEBCreateBracket_AssignsFinalRoundMatchNumber()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 10; ++i)
+			{
+				pList.Add(new Mock<IPlayer>().Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			Assert.AreEqual(9, b.GetMatch(0, 0).MatchNumber);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("CreateBracket")]
 		public void SEBCreateBracket_4Players_DoesNotAssignToRound0()
 		{
 			List<IPlayer> pList = new List<IPlayer>();

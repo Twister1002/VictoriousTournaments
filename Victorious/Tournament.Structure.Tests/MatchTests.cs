@@ -22,7 +22,7 @@ namespace Tournament.Structure.Tests
 		public void MatchOverloadedCtor_Constructs()
 		{
 			ushort[] sc = new ushort[2] { 1, 1 };
-			IMatch m = new Match(2, new int[2] { 0, 1 }, sc, 1, 1, new List<int>(), 0, 0);
+			IMatch m = new Match(2, new int[2] { 0, 1 }, sc, 1, 1, 1, new List<int>(), 0, 0);
 
 			Assert.AreEqual(sc, m.Score);
 		}
@@ -32,7 +32,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(NullReferenceException))]
 		public void MatchOverloadedCtor_ThrowsNullRef_OnNullParams()
 		{
-			IMatch m = new Match(2, null, null, 0, 0, null, 0, 0);
+			IMatch m = new Match(2, null, null, 0, 0, 0, null, 0, 0);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -163,7 +163,7 @@ namespace Tournament.Structure.Tests
 		public void AddWin_AddsAWin()
 		{
 			int[] score = new int[2] { 0, 1 };
-			IMatch m = new Match(3, score, new ushort[2] { 1, 0 }, 0, 0, new List<int>(), 0, 0);
+			IMatch m = new Match(3, score, new ushort[2] { 1, 0 }, 0, 0, 0, new List<int>(), 0, 0);
 			m.AddWin(0);
 			m.AddWin(0);
 
