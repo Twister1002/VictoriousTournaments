@@ -7,6 +7,13 @@
 
 <h2>Tournament - @Model.tourny.Title</h2>
 <div id="Tournament">
+    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
+    {
+        <div class="message @Model.errorClassNames[(int)Model.error]">
+            @Model.ErrorMessage
+        </div>
+    }
+
     @{int match = 0; }
     @for (int roundNum = @Model.tourny.Brackets[0].Rounds.Count()-1; roundNum >= 0; roundNum--)
     {

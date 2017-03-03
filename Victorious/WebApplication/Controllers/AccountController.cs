@@ -31,13 +31,15 @@ namespace WebApplication.Controllers
         [Route("Account/Login")]
         public ActionResult Login()
         {
+            AccountLoginViewModel model = new AccountLoginViewModel();
+
             if (Session["User.UserId"] != null)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Account");
             }
             else
             {
-                return View();
+                return View("Login", model);
             }
             
         }
@@ -61,24 +63,23 @@ namespace WebApplication.Controllers
                     else
                     {
                         // There was an error 
-                        viewModel.ErrorMessage = "Invalid Password";
-                        return View();
+                        viewModel.error = ViewModel.ViewError.WARNING;
+                        viewModel.ErrorMessage = "The password you provided for this user is invalid";
                     }
                 }
                 else
                 {
-                    viewModel.ErrorMessage = "Invalid Username";
-                    return View();
+                    viewModel.error = ViewModel.ViewError.WARNING;
+                    viewModel.ErrorMessage = "The username you provided doesn't exist.";
                 }
             }
             else
             {
-                viewModel.Exception = DbError.ERROR;
-                viewModel.ErrorMessage = "An unexpted error has occured trying to log you in.";
-                ModelState.AddModelError("", "This is an invalid model");
+                viewModel.error = ViewModel.ViewError.CRITICAL;
+                viewModel.ErrorMessage = "Please enter in the required fields.";
             }
 
-            return View(viewModel);
+            return View("Login", viewModel);
         }
         
         [Route("Account/Register")]
@@ -125,14 +126,14 @@ namespace WebApplication.Controllers
                     else
                     {
                         // User Registration failed.
-                        viewModel.Exception = DbError.ERROR;
+                        viewModel.error = ViewModel.ViewError.WARNING;
                         viewModel.ErrorMessage = "Well... Something went wrong when creating your account.";
                         return View(viewModel);
                     }
                 }
                 else
                 {
-                    viewModel.Exception = DbError.ERROR;
+                    viewModel.error = ViewModel.ViewError.WARNING;
                     viewModel.ErrorMessage = "The username of email is all ready being used. Click <a href='/Account/Login/'>here</a> to login";
                     return View(viewModel);
                 }
@@ -140,8 +141,8 @@ namespace WebApplication.Controllers
             else
             {
                 //If we hit this, then something failed 
-                viewModel.Exception = DbError.ERROR;
-                viewModel.ErrorMessage = "There was a problem validating the information you provided: " + ModelState.ToString();
+                viewModel.error = ViewModel.ViewError.CRITICAL;
+                viewModel.ErrorMessage = "Please enter in the required fields.";
                 return View(viewModel);
             }
         }

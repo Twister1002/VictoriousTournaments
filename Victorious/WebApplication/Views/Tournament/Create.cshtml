@@ -6,10 +6,10 @@
 
 <h2>Create</h2>
 <div id="TournamentCreate" class="form">
-    @if (Model.Exception != DataLib.DbError.SUCCESS)
+    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
     {
-        <div class="has-error">
-            Creation of a tournament has failed.
+        <div class="message @Model.errorClassNames[(int)Model.error]">
+            @Model.ErrorMessage
         </div>
     }
 
@@ -27,17 +27,17 @@
         </div>*@
         <div class="tournament field">
             @Html.LabelFor(t => t.RegistrationStart)
-            <input type="datetime" name="RegistrationStart" class="datepicker" />
+            <input type="text" name="RegistrationStart" class="datepicker" />
             @Html.ValidationMessageFor(t => t.RegistrationStart)
         </div>
         <div class="tournament field">
             @Html.LabelFor(t => t.RegistrationEnd)
-            <input type="datetime" name="RegistrationEnd" class="datepicker" />
+            <input type="text" name="RegistrationEnd" class="datepicker" />
             @Html.ValidationMessageFor(t => t.RegistrationEnd)
         </div>
         <div class="tournament field">
             @Html.LabelFor(t => t.CheckInDateTime)
-            <input type="datetime" name="CheckInDateTime" class="datepicker" />
+            <input type="text" name="CheckInDateTime" class="datepicker" />
             @Html.ValidationMessageFor(t => t.CheckInDateTime)
         </div>
         <div class="tournament field">

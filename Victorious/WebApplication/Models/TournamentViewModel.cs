@@ -8,11 +8,8 @@ using Tournament.Structure;
 
 namespace WebApplication.Models
 {
-    public class TournamentFormModel
+    public class TournamentFormModel : ViewModel
     {
-        public String ErrorMessage;
-        public DbError Exception = DbError.SUCCESS;
-
         [Required(ErrorMessage = "Title is required")]
         [DataType(DataType.Text)]
         [Display(Name = "Tournament Title")]
@@ -40,8 +37,22 @@ namespace WebApplication.Models
         public bool IsPublic { get; set; }
     }
 
-    public class TournamentViewModel {
-        public String ErrorMessage;
+    public class TournamentSearchViewModel : ViewModel
+    {
+        private List<TournamentModel> models = new List<TournamentModel>();
+
+        public void AddTournament(TournamentModel model)
+        {
+            models.Add(model);
+        }
+
+        public void AddTournaments(List<TournamentModel> models)
+        {
+            this.models = models;
+        }
+    }
+
+    public class TournamentViewModel : ViewModel {
         public ITournament tourny;
 
         public TournamentViewModel()

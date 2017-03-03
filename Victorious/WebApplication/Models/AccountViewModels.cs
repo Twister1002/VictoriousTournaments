@@ -8,11 +8,9 @@ using System.Web;
 namespace WebApplication.Models
 {
 
-    public class AccountViewModel
+    public class AccountViewModel : ViewModel
     {
-        public DbError Exception = DbError.NONE;
         public UserModel userModel { get; private set; }
-        public String ErrorMessage { get; set; }
 
         public AccountViewModel(UserModel model)
         {
@@ -20,11 +18,8 @@ namespace WebApplication.Models
         }
     }
 
-    public class AccountLoginViewModel
+    public class AccountLoginViewModel : ViewModel
     {
-        public DbError Exception = DbError.NONE;
-        public String ErrorMessage { get; set; }
-
         [Required(ErrorMessage = "Username is required")]
         [DataType(DataType.Text)]
         [StringLength(UserModel.UsernameLength)]
@@ -40,11 +35,8 @@ namespace WebApplication.Models
 
     }
 
-    public class AccountRegisterViewModel
+    public class AccountRegisterViewModel : ViewModel
     {
-        public DbError Exception = DbError.NONE;
-        public String ErrorMessage { get; set; }
-
         [Required(ErrorMessage = "First Name is required")]
         [DataType(DataType.Text)]
         [StringLength(UserModel.FirstNameLength)]
