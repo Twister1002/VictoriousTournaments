@@ -19,7 +19,8 @@ namespace WebApplication.Controllers
         {
             if (Session["User.UserId"] != null)
             {
-                return View();
+                AccountViewModel model = new AccountViewModel(db.GetUserById((int)Session["User.UserId"]));
+                return View("Index", model);
             }
             else
             {
@@ -49,19 +50,31 @@ namespace WebApplication.Controllers
             {
                 // Check the username and password
                 UserModel user = db.GetUserByUsername(viewModel.Username);
-                if (user.Password == viewModel.Password)
+                
+                if (user != null)
                 {
-                    Session["User.UserId"] = user.UserID;
-                    return RedirectToAction("Index", "Account");
+                    if (user.Password == viewModel.Password)
+                    {
+                        Session["User.UserId"] = user.UserID;
+                        return RedirectToAction("Index", "Account");
+                    }
+                    else
+                    {
+                        // There was an error 
+                        viewModel.ErrorMessage = "Invalid Password";
+                        return View();
+                    }
                 }
                 else
                 {
-                    // There was an error 
+                    viewModel.ErrorMessage = "Invalid Username";
                     return View();
                 }
             }
             else
             {
+                viewModel.Exception = DbError.ERROR;
+                viewModel.ErrorMessage = "An unexpted error has occured trying to log you in.";
                 ModelState.AddModelError("", "This is an invalid model");
             }
 
@@ -86,18 +99,20 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Account/Register")]
-        public ActionResult Register(AccountRegisterViewModel user)
+        public ActionResult Register(AccountRegisterViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                UserModel userModel = new UserModel();
-                userModel.Username = user.Username;
-                userModel.FirstName = user.FirstName;
-                userModel.LastName = user.LastName;
-                userModel.Password = user.Password;
+                UserModel userModel = new UserModel()
+                {
+                    Username = viewModel.Username,
+                    FirstName = viewModel.FirstName,
+                    LastName = viewModel.LastName,
+                    Password = viewModel.Password
+                };
 
-                DbError userExists = db.UserUsernameExists(user.Username);
-                DbError emailExists = db.UserEmailExists(user.Email);
+                DbError userExists = db.UserUsernameExists(viewModel.Username);
+                DbError emailExists = db.UserEmailExists(viewModel.Email);
 
                 if (userExists == DbError.DOES_NOT_EXIST && emailExists == DbError.DOES_NOT_EXIST)
                 {
@@ -110,14 +125,25 @@ namespace WebApplication.Controllers
                     else
                     {
                         // User Registration failed.
-                        return View(user);
+                        viewModel.Exception = DbError.ERROR;
+                        viewModel.ErrorMessage = "Well... Something went wrong when creating your account.";
+                        return View(viewModel);
                     }
                 }
-
+                else
+                {
+                    viewModel.Exception = DbError.ERROR;
+                    viewModel.ErrorMessage = "The username of email is all ready being used. Click <a href='/Account/Login/'>here</a> to login";
+                    return View(viewModel);
+                }
             }
-
-            //If we hit this, then something failed 
-            return View(user);
+            else
+            {
+                //If we hit this, then something failed 
+                viewModel.Exception = DbError.ERROR;
+                viewModel.ErrorMessage = "There was a problem validating the information you provided: " + ModelState.ToString();
+                return View(viewModel);
+            }
         }
 
         [Route("Account/Logout")]

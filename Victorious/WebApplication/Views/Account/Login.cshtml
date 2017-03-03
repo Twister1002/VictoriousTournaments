@@ -6,6 +6,12 @@
 
 <div class="login form">
     <h2>Login</h2>
+    @if (Model.Exception != DataLib.DbError.NONE)
+    {
+        <div class="exeptionMessage">
+            @Model.ErrorMessage
+        </div>
+    }
     @using (Html.BeginForm("Login", "Account", FormMethod.Post))
     {
         <div class="login field">

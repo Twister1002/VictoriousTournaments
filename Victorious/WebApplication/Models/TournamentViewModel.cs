@@ -10,6 +10,7 @@ namespace WebApplication.Models
 {
     public class TournamentFormModel
     {
+        public String ErrorMessage;
         public DbError Exception = DbError.SUCCESS;
 
         [Required(ErrorMessage = "Title is required")]
@@ -40,6 +41,7 @@ namespace WebApplication.Models
     }
 
     public class TournamentViewModel {
+        public String ErrorMessage;
         public ITournament tourny;
 
         public TournamentViewModel()

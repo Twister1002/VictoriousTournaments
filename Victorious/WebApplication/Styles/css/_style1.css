@@ -150,3 +150,6 @@ li {
   width: 1em;
   text-align: right;
 }
+.account {
+  display: block;
+}
