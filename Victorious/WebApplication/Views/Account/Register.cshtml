@@ -4,14 +4,8 @@
     Layout = "~/Views/Shared/_Layout1.cshtml";
 }
 
-<div class="register form">
+<div class="register">
     <h2>Registration</h2>
-    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
-    {
-        <div class="message @Model.errorClassNames[(int)Model.error]">
-            @MvcHtmlString.Create(Model.message)
-        </div>
-    }
     @using (Html.BeginForm("RegisterUser", "Account", FormMethod.Post))
     {
         <div class="register field">

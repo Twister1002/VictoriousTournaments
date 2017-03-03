@@ -7,13 +7,6 @@
 
 <h2>Tournament - @Model.tourny.Title</h2>
 <div id="Tournament">
-    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
-    {
-        <div class="message @Model.errorClassNames[(int)Model.error]">
-            @MvcHtmlString.Create(Model.message);
-        </div>
-    }
-
     @for (int roundNum = @Model.tourny.Brackets[0].Rounds.Count()-1; roundNum >= 0; roundNum--)
     {
         var round = Model.tourny.Brackets[0].Rounds[roundNum];
@@ -33,7 +26,7 @@
                             }
                             else
                             {
-                                <li class="team"><div class="seed">@player</div>@Model.tourny.Brackets[0].Players[player].Name</li>
+                                <li class="team teamNum-@player"><div class="seed">@player</div>@Model.tourny.Brackets[0].Players[player].Name</li>
                             }
                         }
                     </ul>

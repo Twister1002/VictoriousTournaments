@@ -163,11 +163,15 @@ label {
   border-radius: .5em;
 }
 #Tournament .round .match ul li {
-  min-height: 1em;
+  height: 1.5em;
   vertical-align: middle;
 }
 #Tournament .round .match ul li:first-child {
   border-bottom: 1px solid #FFFFFF;
+}
+#Tournament .round .match ul li:hover {
+  border-radius: .5em;
+  background-color: #582b05;
 }
 #Tournament .round .match ul li .seed {
   display: inline-block;
@@ -177,6 +181,7 @@ label {
   padding: .2em;
   width: 1em;
   text-align: right;
+  height: 1em;
 }
 .account {
   display: block;

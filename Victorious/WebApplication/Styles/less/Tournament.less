@@ -1,6 +1,4 @@
-﻿@heightPerMatch: 2em;
-
-#Tournament {
+﻿#Tournament {
     padding:0em 0em 0em 2em;
     display:table;
     width: 99%;
@@ -36,6 +34,10 @@
                     &:first-child {
                         border-bottom: 1px solid #FFFFFF;
                     }
+                    &:hover {
+                        border-radius: .5em;
+                        background-color: darken(@alert-orange, 10%);
+                    }
 
                     .seed {
                         display: inline-block;
@@ -45,9 +47,10 @@
                         padding: .2em;
                         width:1em;
                         text-align:right;
+                        height: 1em;
                     }
 
-                    min-height:1em;
+                    height: 1.5em;
                     vertical-align: middle;
                 }
             }

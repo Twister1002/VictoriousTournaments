@@ -28,7 +28,5 @@ namespace WebApplication.Models
         public ViewError error = ViewError.NONE;
         protected DatabaseInterface db;
         public String message { get; set; }
-
-
     }
 }

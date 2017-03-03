@@ -6,13 +6,6 @@
 
 <div class="Tournaments">
     <h2>Searching for </h2>
-    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
-    {
-        <div class="message @Model.errorClassNames[(int)Model.error]">
-           @MvcHtmlString.Create(Model.message);
-        </div>
-    }
-
     This feature is not available. 
     Missing: DatabaseInterface::SearchTournaments()
 </div>

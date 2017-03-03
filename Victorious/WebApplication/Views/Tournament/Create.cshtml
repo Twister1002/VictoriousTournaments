@@ -5,14 +5,7 @@
 }
 
 <h2>Create</h2>
-<div id="TournamentCreate" class="form">
-    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
-    {
-        <div class="message @Model.errorClassNames[(int)Model.error]">
-            @MvcHtmlString.Create(Model.message);
-        </div>
-    }
-
+<div id="TournamentCreate">
     @using (Html.BeginForm("Create", "Tournament", FormMethod.Post))
     {
         <div class="tournament field">

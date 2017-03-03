@@ -12,7 +12,12 @@
 </head>
 <body>
     @Html.Partial("_Nav")
-    <div class="@ViewBag.Title"
+    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
+    {
+        <div class="message @Model.errorClassNames[(int)Model.error]">
+            @MvcHtmlString.Create(Model.message)
+        </div>
+    }
     @RenderBody()
     <footer>
         <p>
