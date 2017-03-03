@@ -139,6 +139,21 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(-1, b.GetMatch(b.Rounds.Count - 1, 0).NextLoserMatchIndex);
 		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("CreateBracket")]
+		public void DEB_CreateBracket_MakesGrandFinalMatch()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				pList.Add(new Mock<IPlayer>().Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+			//b.CreateBracket();
+
+			Assert.IsNotNull((b as DoubleElimBracket).GrandFinal);
+		}
 
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -198,6 +213,70 @@ namespace Tournament.Structure.Tests
 			b.AddWin(b.GetMatch(0, 0), 0);
 
 			Assert.AreEqual(pIndex, (b as DoubleElimBracket).GetLowerMatch(0, 0).PlayerIndexes[0]);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("DoubleElimBracket Methods")]
+		public void DEB_AddWin_MovesUpperWinnerToGrandFinal()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				pList.Add(new Mock<IPlayer>().Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+			//b.CreateBracket();
+
+			b.AddWin(b.GetMatch(1, 0), 0);
+			b.AddWin(b.GetMatch(1, 1), 0);
+			int pIndex = b.GetMatch(0, 0).PlayerIndexes[1];
+			b.AddWin(b.GetMatch(0, 0), 1);
+
+			Assert.AreEqual(pIndex, (b as DoubleElimBracket).GrandFinal.PlayerIndexes[0]);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("DoubleElimBracket Methods")]
+		public void DEB_AddWin_MovesLowerWinnerToGrandFinal()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				pList.Add(new Mock<IPlayer>().Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+			//b.CreateBracket();
+
+			b.AddWin(b.GetMatch(1, 0), 0);
+			b.AddWin(b.GetMatch(1, 1), 0);
+			b.AddWin(b.GetMatch(0, 0), 0);
+			b.AddWin((b as DoubleElimBracket).GetLowerMatch(1, 0), 0);
+			int pIndex = (b as DoubleElimBracket).GetLowerMatch(0, 0).PlayerIndexes[0];
+			b.AddWin((b as DoubleElimBracket).GetLowerMatch(0, 0), 0);
+
+			Assert.AreEqual(pIndex, (b as DoubleElimBracket).GrandFinal.PlayerIndexes[1]);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("DoubleElimBracket Methods")]
+		public void DEB_AddWin_AddsWinsToGrandFinalMatch()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				pList.Add(new Mock<IPlayer>().Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+			//b.CreateBracket();
+
+			b.AddWin(b.GetMatch(1, 0), 0);
+			b.AddWin(b.GetMatch(1, 1), 0);
+			b.AddWin(b.GetMatch(0, 0), 0);
+			b.AddWin((b as DoubleElimBracket).GetLowerMatch(1, 0), 0);
+			b.AddWin((b as DoubleElimBracket).GetLowerMatch(0, 0), 0);
+			b.AddWin((b as DoubleElimBracket).GrandFinal, 0);
+
+			Assert.AreEqual(1, (b as DoubleElimBracket).GrandFinal.Score[0]);
 		}
 	}
 }

@@ -109,6 +109,10 @@ namespace Tournament.Structure
 				GrandFinal = new Match();
 				GrandFinal.WinsNeeded = _winsPerMatch;
 			}
+			else
+			{
+				GrandFinal = null;
+			}
 		}
 
 		public override void AddWin(IMatch _match, int _index)
