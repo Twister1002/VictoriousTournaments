@@ -40,7 +40,9 @@ namespace DatabaseDebugConsole
 
             //tournament.Users.ElementAt(0).Email = "keltonr01@gmail.com";
             //db.UpdateUserEmail(tournament.Users.ElementAt(0), "keltonr01@gmail.com");
-            Console.WriteLine(tournament.Users.ElementAt(0).Email);
+            //Console.WriteLine(tournament.Users.ElementAt(0).Email);
+
+            db.SetUserBracketSeed(db.GetUserById(0), db.GetBracketByID(0), 1);
 
             foreach (var bracket in tournament.Brackets)
             {

@@ -36,7 +36,7 @@ namespace DataLib
             context.Database.Delete();
         }
 
-        
+
 
         // For testing purposes only.
         // Call this function to re-seed the database.
@@ -88,8 +88,9 @@ namespace DataLib
             {
                 UserModel user = context.Users.Single(u => u.Username == username);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Exception " + ex.ToString() + " in UserUsernameExists");
                 return DbError.DOES_NOT_EXIST;
 
             }
@@ -175,7 +176,7 @@ namespace DataLib
 
                 context.SaveChanges();
             }
-            catch (Exception ex)  
+            catch (Exception ex)
             {
                 Console.WriteLine("Exception " + ex.ToString() + " in DeleteUser");
                 return DbError.FAILED_TO_REMOVE;
@@ -238,13 +239,13 @@ namespace DataLib
             {
                 newTournament = tournament;
                 context.Tournaments.Add(tournament);
-                
+
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Exception " + ex.ToString() + " in AddTournament");
-                
+
                 return -1;
             }
 
@@ -258,7 +259,7 @@ namespace DataLib
                 context.Users.Add(user);
                 tournament.Users.Add(user);
                 context.SaveChanges();
-                
+
             }
             catch (Exception)
             {
@@ -287,7 +288,7 @@ namespace DataLib
         public List<UserModel> GetAllUsersInTournament(TournamentModel tournament)
         {
             List<UserModel> list = new List<UserModel>();
-           
+
             try
             {
                 //foreach (UserModel user in tournament.Users)
@@ -301,7 +302,7 @@ namespace DataLib
             {
 
                 list.Clear();
-                list.Add(new UserModel() { UserID = 0});
+                list.Add(new UserModel() { UserID = 0 });
                 return list;
             }
 
@@ -386,7 +387,7 @@ namespace DataLib
             return DbError.EXISTS;
 
             //TournamentRuleModel tournamentRule = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
-           
+
         }
 
         public DbError AddRulesToTournament(TournamentModel tounrnament, TournamentRuleModel tournamentRules)
@@ -439,12 +440,12 @@ namespace DataLib
         }
 
         public int AddBracket(TournamentModel tournament, BracketModel bracket)
-        {       
+        {
             try
             {
                 context.Brackets.Add(bracket);
                 tournament.Brackets.Add(bracket);
-
+                bracket.Tournament = tournament;
                 context.SaveChanges();
             }
             catch (Exception)
@@ -454,7 +455,7 @@ namespace DataLib
 
             return bracket.BracketID;
         }
-        
+
         public BracketModel GetBracketByID(int id)
         {
             BracketModel bracket = new BracketModel();
@@ -512,7 +513,7 @@ namespace DataLib
             try
             {
                 context.Matches.Add(match);
-                
+
                 context.SaveChanges();
 
             }
@@ -565,7 +566,7 @@ namespace DataLib
             catch (Exception)
             {
                 return -1;
-               
+
             }
 
             return match.MatchID;
@@ -618,7 +619,45 @@ namespace DataLib
 
         #endregion
 
-      
+        public DbError SetUserBracketSeed(UserModel user, BracketModel bracket, int seed)
+        {
+            UserBracketSeedModel ubs = new UserBracketSeedModel();
+            try
+            {
+                ubs.User = user;
+                ubs.Bracket = bracket;
+                ubs.Tournament = bracket.Tournament;
+                ubs.Seed = seed;
+
+                context.UserBracketSeeds.Add(ubs);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Excetption " + ex.ToString() + " in SetUserBracketSeed");
+                return DbError.ERROR;              
+            }
+
+            return DbError.SUCCESS;
+        }
+        
+        // Gets the user's seed in the passed-in bracket
+        // Returns -1 if the user is not found in the bracket
+        public int GetUserSeedInBracket(UserModel user, BracketModel bracket)
+        {
+            UserBracketSeedModel ubs = new UserBracketSeedModel();
+            try
+            {
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception " + ex.ToString() + " in GetUserSeedInBracket");
+                return -1;
+            }
+
+            return ubs.Seed.Value;
+        }
 
 
     }
