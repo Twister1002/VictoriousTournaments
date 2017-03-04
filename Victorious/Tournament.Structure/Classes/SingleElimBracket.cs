@@ -194,6 +194,11 @@ namespace Tournament.Structure
 		}
 		public override void AddWin(int _matchNumber, int _index)
 		{
+			if (_index < 0 || _index > 1)
+			{
+				throw new IndexOutOfRangeException();
+			}
+
 			// Find the appropriate indexes of _match, and call the private AddWin()
 			for (int r = 0; r < Rounds.Count; ++r)
 			{

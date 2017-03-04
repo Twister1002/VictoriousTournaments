@@ -123,9 +123,9 @@ namespace Tournament.Structure
 			NextMatchNumber = (int)(_m.NextMatchNumber);
 			NextLoserMatchNumber = (int)(_m.NextLoserMatchNumber);
 		}
-#endregion
+		#endregion
 
-#region Public Methods
+		#region Public Methods
 		public void AddPlayer(int _playerIndex, int _index)
 		{
 			if (_index < 0 || _index > 1)
@@ -162,6 +162,10 @@ namespace Tournament.Structure
 		}
 		public void AddWin(int _index)
 		{
+			if (_index < 0 || _index > 1)
+			{
+				throw new IndexOutOfRangeException();
+			}
 			for (int i = 0; i < 2; ++i)
 			{
 				if (Score[i] >= WinsNeeded || PlayerIndexes[i] == -1)

@@ -175,6 +175,11 @@ namespace Tournament.Structure
 		}
 		public override void AddWin(int _matchNumber, int _index)
 		{
+			if (_index < 0 || _index > 1)
+			{
+				throw new IndexOutOfRangeException();
+			}
+
 			// Is _match the GrandFinal?
 			if (_matchNumber == GrandFinal.MatchNumber)
 			{
