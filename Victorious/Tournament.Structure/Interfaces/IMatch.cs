@@ -8,6 +8,7 @@ namespace Tournament.Structure
 {
 	public enum PlayerSlot
 	{
+		unspecified = -1,
 		Defender = 0,
 		Challenger = 1
 	};
@@ -32,10 +33,10 @@ namespace Tournament.Structure
 		#region Methods
 		int DefenderIndex();
 		int ChallengerIndex();
-		void AddPlayer(int _playerIndex);
+		void AddPlayer(int _playerIndex, PlayerSlot _slot = PlayerSlot.unspecified);
 		void RemovePlayer(int _playerIndex);
 		void ResetPlayers();
-		void AddWin(PlayerSlot _index);
+		void AddWin(PlayerSlot _slot);
 		void ResetScore();
 		void SetRoundIndex(int _index);
 		void SetMatchIndex(int _index);

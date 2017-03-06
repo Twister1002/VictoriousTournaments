@@ -192,13 +192,14 @@ namespace Tournament.Structure
 			}
 		}
 
-		public override void AddWin(IMatch _match, int _index)
+		public override void AddWin(IMatch _match, PlayerSlot _slot)
 		{
-			AddWin(_match.MatchNumber, _index);
+			AddWin(_match.MatchNumber, _slot);
 		}
-		public override void AddWin(int _matchNumber, int _index)
+		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
-			if (_index < 0 || _index > 1)
+			if (_slot != PlayerSlot.Defender ||
+				_slot != PlayerSlot.Challenger)
 			{
 				throw new IndexOutOfRangeException();
 			}
@@ -210,7 +211,7 @@ namespace Tournament.Structure
 				{
 					if (Rounds[r][m].MatchNumber == _matchNumber)
 					{
-						AddWin(r, m, _index);
+						AddWin(r, m, _slot);
 						return;
 					}
 				}
@@ -316,8 +317,13 @@ namespace Tournament.Structure
 						{
 							if (Rounds[_roundIndex][_matchIndex].MatchNumber == match.PrevMatchNumbers[i])
 							{
-								int newIndex = (1 == match.PrevMatchNumbers.Count) ? 1 : i;
-								match.AddPlayer(Rounds[_roundIndex][_matchIndex].PlayerIndexes[(int)_slot], newIndex);
+								PlayerSlot newSlot = (1 == match.PrevMatchNumbers.Count)
+									? PlayerSlot.Challenger : (PlayerSlot)i;
+								match.AddPlayer(
+									(PlayerSlot.Defender == _slot)
+									? Rounds[_roundIndex][_matchIndex].DefenderIndex()
+									: Rounds[_roundIndex][_matchIndex].ChallengerIndex()
+									, newSlot);
 								return;
 							}
 						}

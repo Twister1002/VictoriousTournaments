@@ -135,16 +135,34 @@ namespace Tournament.Structure
 		{
 			return PlayerIndexes[1];
 		}
-		public void AddPlayer(int _playerIndex)
+		public void AddPlayer(int _playerIndex, PlayerSlot _slot = PlayerSlot.unspecified)
 		{
-			try
+			if (_slot != PlayerSlot.unspecified &&
+				_slot != PlayerSlot.Defender &&
+				_slot != PlayerSlot.Challenger)
 			{
-				AddPlayer(_playerIndex, PlayerSlot.Defender);
+				throw new IndexOutOfRangeException();
 			}
-			catch (SlotFullException)
+			if (PlayerIndexes[0] == _playerIndex ||
+				PlayerIndexes[1] == _playerIndex)
 			{
-				AddPlayer(_playerIndex, PlayerSlot.Challenger);
+				throw new DuplicateObjectException();
 			}
+
+			for (int i = 0; i < 2; ++i)
+			{
+				if ((int)_slot == i ||
+					_slot == PlayerSlot.unspecified)
+				{
+					if (PlayerIndexes[i] < 0)
+					{
+						PlayerIndexes[i] = _playerIndex;
+						return;
+					}
+				}
+			}
+
+			throw new SlotFullException();
 		}
 		public void RemovePlayer(int _playerIndex)
 		{
@@ -164,10 +182,10 @@ namespace Tournament.Structure
 			PlayerIndexes[0] = PlayerIndexes[1] = -1;
 		}
 
-		public void AddWin(PlayerSlot _index)
+		public void AddWin(PlayerSlot _slot)
 		{
-			if (_index != PlayerSlot.Defender &&
-				_index != PlayerSlot.Challenger)
+			if (_slot != PlayerSlot.Defender &&
+				_slot != PlayerSlot.Challenger)
 			{
 				throw new IndexOutOfRangeException();
 			}
@@ -179,7 +197,7 @@ namespace Tournament.Structure
 				}
 			}
 
-			Score[(int)_index] += 1;
+			Score[(int)_slot] += 1;
 		}
 		public void ResetScore()
 		{
@@ -237,25 +255,6 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		private void AddPlayer(int _playerIndex, PlayerSlot _index)
-		{
-			if (_index != PlayerSlot.Defender &&
-				_index != PlayerSlot.Challenger)
-			{
-				throw new IndexOutOfRangeException();
-			}
-			if (PlayerIndexes[(int)_index] > -1)
-			{
-				throw new SlotFullException();
-			}
-			if (PlayerIndexes[0] == _playerIndex ||
-				PlayerIndexes[1] == _playerIndex)
-			{
-				throw new DuplicateObjectException();
-			}
-
-			PlayerIndexes[(int)_index] = _playerIndex;
-		}
 		#endregion
 	}
 }

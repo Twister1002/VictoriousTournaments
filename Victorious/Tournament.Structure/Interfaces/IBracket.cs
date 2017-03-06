@@ -38,21 +38,9 @@ namespace Tournament.Structure
 		/// <param name="_matchModels">ICollection of DB Matches.</param>
 		void UpdateCurrentMatches(ICollection<MatchModel> _matchModels);
 
-		/// <summary>
-		/// Record a "game" win.
-		/// If applicable, will advance the winner (and loser).
-		/// </summary>
-		/// <param name="_match">Match object.</param>
-		/// <param name="_index">Index of winning Player (0 or 1).</param>
-		void AddWin(IMatch _match, int _index);
+		void AddWin(IMatch _match, PlayerSlot _slot);
 
-		/// <summary>
-		/// Record a "game" win.
-		/// If applicable, will advance the winner (and loser).
-		/// </summary>
-		/// <param name="_matchNumber">Match number of current Match.</param>
-		/// <param name="_index">Index of winning Player (0 or 1).</param>
-		void AddWin(int _matchNumber, int _index);
+		void AddWin(int _matchNumber, PlayerSlot _slot);
 
 		/// <summary>
 		/// Get all matches in the requested round.

@@ -18,8 +18,8 @@ namespace Tournament.Structure
 		#region Abstract Methods
 		public abstract void CreateBracket(ushort _winsPerMatch = 1);
 		public abstract void UpdateCurrentMatches(ICollection<MatchModel> _matchModels);
-		public abstract void AddWin(IMatch _match, int _index);
-		public abstract void AddWin(int _matchNumber, int _index);
+		public abstract void AddWin(IMatch _match, PlayerSlot _slot);
+		public abstract void AddWin(int _matchNumber, PlayerSlot _slot);
 		#endregion
 
 		#region Public Methods

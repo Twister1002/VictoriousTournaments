@@ -46,8 +46,8 @@ namespace Tournament.Structure
 					// Add new matchups per round
 					// (rounds[0] is the final match)
 					IMatch m = new Match();
-					m.RoundIndex = r;
-					m.MatchIndex = LowerRounds[r].Count;
+					m.SetRoundIndex(r);
+					m.SetMatchIndex(LowerRounds[r].Count);
 					m.WinsNeeded = _winsPerMatch;
 					LowerRounds[r].Add(m);
 				}
@@ -60,7 +60,7 @@ namespace Tournament.Structure
 			{
 				foreach (IMatch match in LowerRounds[r])
 				{
-					match.MatchNumber = matchNum++;
+					match.SetMatchNumber(matchNum++);
 				}
 			}
 
@@ -77,11 +77,11 @@ namespace Tournament.Structure
 
 						// Assign prev/next matchup indexes
 						LowerRounds[r][m].AddPrevMatchNumber(Rounds[r / 2][m].MatchNumber);
-						Rounds[r / 2][m].NextLoserMatchNumber = currNum;
+						Rounds[r / 2][m].SetNextLoserMatchNumber(currNum);
 						// *************** THIS ISN'T QUITE RIGHT [mIndex]
 
 						LowerRounds[r][m].AddPrevMatchNumber(LowerRounds[r + 1][m].MatchNumber);
-						LowerRounds[r + 1][m].NextMatchNumber = currNum;
+						LowerRounds[r + 1][m].SetNextMatchNumber(currNum);
 					}
 				}
 				else if (!rIndexIsEven && LowerRounds[r + 1].Count == (LowerRounds[r].Count * 2))
@@ -93,10 +93,10 @@ namespace Tournament.Structure
 
 						// Assign prev/next matchup indexes
 						LowerRounds[r][m].AddPrevMatchNumber(LowerRounds[r + 1][m * 2].MatchNumber);
-						LowerRounds[r + 1][m * 2].NextMatchNumber = currNum;
+						LowerRounds[r + 1][m * 2].SetNextMatchNumber(currNum);
 
 						LowerRounds[r][m].AddPrevMatchNumber(LowerRounds[r + 1][m * 2 + 1].MatchNumber);
-						LowerRounds[r + 1][m * 2 + 1].NextMatchNumber = currNum;
+						LowerRounds[r + 1][m * 2 + 1].SetNextMatchNumber(currNum);
 					}
 				}
 				else
@@ -119,21 +119,23 @@ namespace Tournament.Structure
 					// Assign prev/next matchup indexes for FIRST round
 					// (both teams come from Upper Bracket)
 					LowerRounds[r][m].AddPrevMatchNumber(Rounds[r / 2 + 1][m * 2].MatchNumber);
-					Rounds[r / 2 + 1][m * 2].NextLoserMatchNumber = currNum;
+					Rounds[r / 2 + 1][m * 2].SetNextLoserMatchNumber(currNum);
 
 					LowerRounds[r][m].AddPrevMatchNumber(Rounds[r / 2 + 1][m * 2 + 1].MatchNumber);
-					Rounds[r / 2 + 1][m * 2 + 1].NextLoserMatchNumber = currNum;
+					Rounds[r / 2 + 1][m * 2 + 1].SetNextLoserMatchNumber(currNum);
 				}
 
 				GrandFinal = new Match();
-				GrandFinal.MatchNumber = matchNum;
+				GrandFinal.SetMatchNumber(matchNum);
 				GrandFinal.WinsNeeded = _winsPerMatch;
-				GrandFinal.RoundIndex = GrandFinal.MatchIndex = 0;
+				GrandFinal.SetRoundIndex(0);
+				GrandFinal.SetMatchIndex(0);
 				GrandFinal.AddPrevMatchNumber(Rounds[0][0].MatchNumber);
 				GrandFinal.AddPrevMatchNumber(LowerRounds[0][0].MatchNumber);
 			}
 			else
 			{
+				LowerRounds = null;
 				GrandFinal = null;
 			}
 		}
@@ -169,13 +171,14 @@ namespace Tournament.Structure
 			}
 		}
 
-		public override void AddWin(IMatch _match, int _index)
+		public override void AddWin(IMatch _match, PlayerSlot _slot)
 		{
-			AddWin(_match.MatchNumber, _index);
+			AddWin(_match.MatchNumber, _slot);
 		}
-		public override void AddWin(int _matchNumber, int _index)
+		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
-			if (_index < 0 || _index > 1)
+			if (_slot != PlayerSlot.Defender ||
+				_slot != PlayerSlot.Challenger)
 			{
 				throw new IndexOutOfRangeException();
 			}
@@ -183,8 +186,8 @@ namespace Tournament.Structure
 			// Is _match the GrandFinal?
 			if (_matchNumber == GrandFinal.MatchNumber)
 			{
-				GrandFinal.AddWin(_index);
-				if (GrandFinal.Score[_index] >= GrandFinal.WinsNeeded)
+				GrandFinal.AddWin(_slot);
+				if (GrandFinal.Score[(int)_slot] >= GrandFinal.WinsNeeded)
 				{
 					// Match is over. Do something?
 				}
@@ -199,21 +202,26 @@ namespace Tournament.Structure
 					if (Rounds[r][m].MatchNumber == _matchNumber)
 					{
 						// Found _match:
-						base.AddWin(r, m, _index);
+						base.AddWin(r, m, _slot);
 
-						if (Rounds[r][m].Score[_index] >= Rounds[r][m].WinsNeeded)
+						if (Rounds[r][m].Score[(int)_slot] >= Rounds[r][m].WinsNeeded)
 						{
 							// Match over!
 
 							if (0 == r)
 							{
 								// Final round: move winner to Grand Finals!
-								GrandFinal.PlayerIndexes[0] = Rounds[r][m].PlayerIndexes[_index];
+								GrandFinal.AddPlayer(
+									(PlayerSlot.Defender == _slot)
+									? Rounds[0][0].DefenderIndex()
+									: Rounds[0][0].ChallengerIndex());
 							}
 							// Move the loser
-							int loserIndex = (0 == _index) ? 1 : 0;
+							PlayerSlot loserSlot = (PlayerSlot.Defender == _slot)
+								? PlayerSlot.Challenger : PlayerSlot.Defender;
 							int nMatchNumber = Rounds[r][m].NextLoserMatchNumber;
-							int nRIndex = (r == Rounds.Count - 1) ? (r * 2 - 1) : (r * 2);
+							int nRIndex = (r == Rounds.Count - 1)
+								? (r * 2 - 1) : (r * 2);
 							foreach (IMatch match in LowerRounds[nRIndex])
 							{
 								if (match.MatchNumber == nMatchNumber)
@@ -222,7 +230,11 @@ namespace Tournament.Structure
 									{
 										if (match.PrevMatchNumbers[i] == Rounds[r][m].MatchNumber)
 										{
-											match.AddPlayer(Rounds[r][m].PlayerIndexes[loserIndex], i);
+											match.AddPlayer(
+												(PlayerSlot.Defender == _slot)
+												? Rounds[r][m].ChallengerIndex()
+												: Rounds[r][m].DefenderIndex()
+												, (PlayerSlot)i);
 										}
 									}
 									break;
@@ -243,7 +255,7 @@ namespace Tournament.Structure
 					if (_matchNumber == LowerRounds[r][m].MatchNumber)
 					{
 						// Found match. Add win:
-						AddLowerBracketWin(r, m, _index);
+						AddLowerBracketWin(r, m, _slot);
 						return;
 #if false
 						LowerRounds[r][m].AddWin(_index);
@@ -329,7 +341,7 @@ namespace Tournament.Structure
 			return (normalizedPlayers - 2);
 		}
 
-		private void AddLowerBracketWin(int _round, int _match, int _pIndex)
+		private void AddLowerBracketWin(int _round, int _match, PlayerSlot _slot)
 		{
 			if (_round < 0 || _round >= LowerRounds.Count
 				|| _match < 0 || _match >= LowerRounds[_round].Count)
@@ -337,15 +349,19 @@ namespace Tournament.Structure
 				throw new IndexOutOfRangeException();
 			}
 
-			LowerRounds[_round][_match].AddWin(_pIndex);
+			LowerRounds[_round][_match].AddWin(_slot);
 
-			if (LowerRounds[_round][_match].Score[_pIndex] >= LowerRounds[_round][_match].WinsNeeded)
+			if (LowerRounds[_round][_match].Score[(int)_slot] >= LowerRounds[_round][_match].WinsNeeded)
 			{
 				// Match is over. Move the winner forward:
 				if (0 == _round)
 				{
 					// Final round: Move winner to Grand Finals!
-					GrandFinal.AddPlayer(LowerRounds[0][0].PlayerIndexes[_pIndex], 1);
+					GrandFinal.AddPlayer(
+						(PlayerSlot.Defender == _slot)
+						? LowerRounds[0][0].DefenderIndex()
+						: LowerRounds[0][0].ChallengerIndex()
+						, PlayerSlot.Challenger);
 					return;
 				}
 
@@ -359,7 +375,11 @@ namespace Tournament.Structure
 						{
 							if (match.PrevMatchNumbers[i] == LowerRounds[_round][_match].MatchNumber)
 							{
-								match.AddPlayer(LowerRounds[_round][_match].PlayerIndexes[_pIndex], i);
+								match.AddPlayer(
+									(PlayerSlot.Defender == _slot)
+									? LowerRounds[_round][_match].DefenderIndex()
+									: LowerRounds[_round][_match].ChallengerIndex()
+									, (PlayerSlot)i);
 								return;
 							}
 						}
