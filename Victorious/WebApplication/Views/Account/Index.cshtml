@@ -1,4 +1,4 @@
-﻿
+﻿@model WebApplication.Models.AccountViewModel
 @{
     ViewBag.Title = "View";
     Layout = "~/Views/Shared/_Layout1.cshtml";
@@ -6,7 +6,27 @@
 
 <h2>Account Display Page</h2>
 
-<div class="accountInfo">
-    <label>Hello @Session["UserName"]</label>
-    <div class="logout">@Html.ActionLink("Logout", "Logout", "Account")</div>
+<div class="account">
+    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
+    {
+        <div class="message @Model.errorClassNames[(int)Model.error]">
+            @Model.ErrorMessage
+        </div>
+    }
+
+    <label>Hello @Model.userModel.Username</label>
+    <div class="tournaments">
+        <ul>
+            <li>Currently Registered Tournaments</li>
+            <li>Past Tournaments</li>
+        </ul>
+    </div>
+
+    <div class="settings">
+        <label>Account Settings</label>
+        <ul>
+           <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
+        </ul>
+    </div>
+    
 </div>

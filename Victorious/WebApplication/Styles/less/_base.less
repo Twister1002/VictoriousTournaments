@@ -18,3 +18,28 @@ ul, li {
     padding: 0em;
     margin: 0em;
 }
+
+label {
+    display: block;
+    padding: .25em 0em .25em 0em;
+}
+
+.message {
+    display:block;
+    padding: 1em;
+
+    &:after {
+        padding-bottom: 1em;
+    }
+    &.none {
+        background-color:@alert-yellow;
+    }
+
+    &.warning {
+        background-color:@alert-orange;
+    }
+
+    &.exception,  &.critical {
+        background-color:@alert-red;
+    }
+}

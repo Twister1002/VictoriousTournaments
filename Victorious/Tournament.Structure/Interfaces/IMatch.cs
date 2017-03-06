@@ -32,9 +32,10 @@ namespace Tournament.Structure
 
 		/// <summary>
 		/// Which Round of the Bracket this Match is in.
+		/// "Reverse" index (Final match is 0)
 		/// Default -1
 		/// </summary>
-		int RoundNumber { get; set; }
+		int RoundIndex { get; set; }
 
 		/// <summary>
 		/// Index of the Match, within the Round.
@@ -43,24 +44,30 @@ namespace Tournament.Structure
 		int MatchIndex { get; set; }
 
 		/// <summary>
-		/// List of Match indexes,
+		/// Number of the Match.
+		/// First is 1, counting up to the Final.
+		/// </summary>
+		int MatchNumber { get; set; }
+
+		/// <summary>
+		/// List of Match numbers,
 		/// where Players enter this Match from.
 		/// (shouldn't be larger than 2)
 		/// </summary>
-		List<int> PrevMatchIndexes { get; set; }
+		List<int> PrevMatchNumbers { get; set; }
 
 		/// <summary>
-		/// Match index where this Match's winner goes.
+		/// Match number where this Match's winner goes.
 		/// -1 if not applicable
 		/// </summary>
-		int NextMatchIndex { get; set; }
+		int NextMatchNumber { get; set; }
 
 		/// <summary>
-		/// Match index in Lower Bracket (if present)
+		/// Match number in Lower Bracket (if present)
 		/// where this Match's loser goes.
 		/// -1 if not applicable
 		/// </summary>
-		int NextLoserMatchIndex { get; set; }
+		int NextLoserMatchNumber { get; set; }
 		#endregion
 
 		#region Methods
@@ -91,12 +98,12 @@ namespace Tournament.Structure
 		void AddWin(int _index);
 
 		/// <summary>
-		/// Adds a Match Index (from previous round),
+		/// Adds a Match Number,
 		/// that a winning Player will come from
 		/// to enter this Match.
 		/// </summary>
-		/// <param name="_i">Previous Match's Index</param>
-		void AddPrevMatchIndex(int _i);
+		/// <param name="_n">Previous Match's Number</param>
+		void AddPrevMatchNumber(int _n);
 		#endregion
 	}
 }

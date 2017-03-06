@@ -42,18 +42,17 @@ namespace Tournament.Structure
 		/// Record a "game" win.
 		/// If applicable, will advance the winner (and loser).
 		/// </summary>
-		/// <param name="_roundIndex">Round of the Match.</param>
-		/// <param name="_matchIndex">Index with round of the Match.</param>
+		/// <param name="_match">Match object.</param>
 		/// <param name="_index">Index of winning Player (0 or 1).</param>
-		void AddWin(int _roundIndex, int _matchIndex, int _index);
+		void AddWin(IMatch _match, int _index);
 
 		/// <summary>
 		/// Record a "game" win.
 		/// If applicable, will advance the winner (and loser).
 		/// </summary>
-		/// <param name="_match">Match object.</param>
+		/// <param name="_matchNumber">Match number of current Match.</param>
 		/// <param name="_index">Index of winning Player (0 or 1).</param>
-		void AddWin(IMatch _match, int _index);
+		void AddWin(int _matchNumber, int _index);
 
 		/// <summary>
 		/// Get all matches in the requested round.
