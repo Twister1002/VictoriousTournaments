@@ -44,16 +44,22 @@ namespace DatabaseDebugConsole
 
             //db.SetUserBracketSeed(db.GetUserById(0), db.GetBracketByID(0), 1);
 
-            foreach (var bracket in tournament.Brackets)
-            {
-                foreach (var match in bracket.Matches)
-                {
-                    Console.WriteLine("Match number: " + match.MatchNumber);
-                    Console.WriteLine("Challenger: " + match.Challenger.FirstName + ' ' + match.Challenger.LastName);
-                    Console.WriteLine("Defender: " + match.Defender.FirstName + ' ' + match.Defender.LastName);
-                }
+            //foreach (var bracket in tournament.Brackets)
+            //{
+            //    foreach (var match in bracket.Matches)
+            //    {
+            //        Console.WriteLine("Match number: " + match.MatchNumber);
+            //        Console.WriteLine("Challenger: " + match.Challenger.FirstName + ' ' + match.Challenger.LastName);
+            //        Console.WriteLine("Defender: " + match.Defender.FirstName + ' ' + match.Defender.LastName);
+            //    }
 
-            }
+            //}
+
+            UserModel user = db.GetUserById(1);
+            Console.WriteLine(user.Username);
+            user.Username = "testUsername";
+            db.UpdateUser(user);
+            Console.WriteLine(user.Username);
 
             //foreach (var match in tournament.Brackets.ElementAt(0).Matches)
             //{

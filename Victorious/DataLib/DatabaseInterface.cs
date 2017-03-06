@@ -45,6 +45,7 @@ namespace DataLib
 
         }
 
+
         #region Users Logic
 
         public DbError UserExists(UserModel user)
@@ -100,7 +101,7 @@ namespace DataLib
 
         // Adds user to the users table. DOES NOT ASSIGN USER TO TOURNAMENT.
         // Returns database ID of passed-in user.
-        public int AddUser(UserModel user)
+        public int AddUser(ref UserModel user)
         {
             try
             {
@@ -134,8 +135,27 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
+        public DbError UpdateUser(UserModel user)
+        {
+            try
+            {
+                UserModel _user = context.Users.Find(user.UserID);
+                _user = user;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception " + ex.ToString() + " in UpdateUser");
+                return DbError.FAILED_TO_UPDATE;
+                throw;
+            }
+
+            return DbError.SUCCESS;
+        }
+
         // Sets the email of the passed-in user to the newEmail.
         // Returns ERROR if the email failed to update.
+        [Obsolete("Depricated. Use UpdateUser.")]
         public DbError UpdateUserEmail(UserModel user, string newEmail)
         {
             try
@@ -151,6 +171,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
+        [Obsolete("Depricated. Use UpdateModel.")]
         public DbError UpdateUserPassword(UserModel user, string newPassword)
         {
             try
@@ -166,7 +187,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        // 
+        
         public DbError DeleteUser(UserModel user)
         {
             try
@@ -232,12 +253,12 @@ namespace DataLib
         }
 
         // Adds the passed-in tournament to the database
-        public int AddTournament(TournamentModel tournament)
+        public DbError AddTournament(ref TournamentModel tournament)
         {
-            TournamentModel newTournament = new TournamentModel();
+            
             try
             {
-                newTournament = tournament;
+                
                 context.Tournaments.Add(tournament);
 
                 context.SaveChanges();
@@ -246,10 +267,10 @@ namespace DataLib
             {
                 Console.WriteLine("Exception " + ex.ToString() + " in AddTournament");
 
-                return -1;
+                return DbError.FAILED_TO_ADD;
             }
 
-            return newTournament.TournamentID;
+            return DbError.SUCCESS;
         }
 
         public DbError AddUserToTournament(TournamentModel tournament, UserModel user)
@@ -309,6 +330,23 @@ namespace DataLib
             return list;
         }
 
+        public DbError UpdateTournament(TournamentModel tournament)
+        {
+            try
+            {
+                TournamentModel _tournament = context.Tournaments.Find(tournament.TournamentID);
+                _tournament = tournament;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception " + ex.ToString() + " in UpdateTournament");
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        [Obsolete("Depricated. Use UpdateTournament.")]
         public DbError UpdateTournamentCutoffDate(TournamentModel tournament, DateTime newCutoff)
         {
             TournamentModel tour = context.Tournaments.Find(tournament.TournamentID);
@@ -325,6 +363,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
+        [Obsolete("Depricated. User UpdateTournament.")]
         public DbError UpdateTournamentStartDate(TournamentModel tournament, DateTime newStartDate)
         {
             TournamentModel tour = context.Tournaments.Find(tournament.TournamentID);
@@ -340,6 +379,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
+        [Obsolete("Depricated. User UpdateTournament.")]
         public DbError UpdateTournamentEndDate(TournamentModel tournament, DateTime newEndDate)
         {
             try
@@ -354,6 +394,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
+        [Obsolete("Depricated. User UpdateTournament.")]
         public DbError DeleteTournament(TournamentModel tournament)
         {
             try
@@ -526,6 +567,7 @@ namespace DataLib
 
         }
 
+        [Obsolete("Depricated. Use UpdateMatch.")]
         public DbError AddDefender(MatchModel match, UserModel user)
         {
             try
@@ -541,6 +583,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
+        [Obsolete("Depricated. Use UpdateMatch.")]
         public DbError AddChallenger(MatchModel match, UserModel user)
         {
             try
@@ -556,50 +599,39 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        public int AddMatch(MatchModel match, BracketModel bracket)
+        public DbError UpdateMatch(MatchModel match)
         {
             try
             {
+                MatchModel _match = context.Matches.Find(match.MatchID);
+                _match = match;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception " + ex.ToString() + " in UpdateMatch");
+                return DbError.FAILED_TO_UPDATE;
+               
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError AddMatch(ref MatchModel match, BracketModel bracket)
+        {
+            try
+            {
+                context.Matches.Add(match);
                 bracket.Matches.Add(match);
                 context.SaveChanges();
             }
             catch (Exception)
             {
-                return -1;
+                return DbError.ERROR;
 
             }
 
-            return match.MatchID;
+            return DbError.SUCCESS;
         }
-
-        //public int AddByeMatch(int tournamentId, int roundNumber, int userId)
-        //{
-        //    MatchModel match;
-        //    try
-        //    {
-        //        match = new MatchModel()
-        //        {
-        //            TournamentID = tournamentId,
-        //            RoundNumber = roundNumber,
-        //            WinnerID = userId,
-        //            IsBye = true
-        //        };
-
-        //        match.Winner = context.Users.Find(userId);
-        //        match.Tournament = context.Tournaments.Find(tournamentId);
-
-        //        context.Matches.Add(match);
-
-        //        context.SaveChanges();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return 0;
-        //        throw;
-        //    }
-
-        //    return match.MatchID;
-        //}
 
         public MatchModel GetMatchById(int id)
         {

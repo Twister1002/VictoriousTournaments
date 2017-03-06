@@ -7,7 +7,7 @@ namespace DataLib
     using System.Data.Entity.Spatial;
 
  
-    public partial class UserModel
+    public partial class UserModel : DbModel
     {
         public const int FirstNameLength = 50;
         public const int LastNameLength = 50;

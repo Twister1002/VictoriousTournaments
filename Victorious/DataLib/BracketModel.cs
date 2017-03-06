@@ -8,7 +8,7 @@ namespace DataLib
     using System.Data.Entity.Spatial;
 
 
-    public partial class BracketModel
+    public partial class BracketModel : DbModel
     {
         public const int BracketTypeLength = 50;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]

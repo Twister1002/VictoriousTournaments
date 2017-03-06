@@ -7,7 +7,7 @@ namespace DataLib
     using System.Data.SqlClient;
     using System.Data.Entity.Spatial;
 
-    public partial class MatchModel
+    public partial class MatchModel : DbModel
     {
         public MatchModel()
         {

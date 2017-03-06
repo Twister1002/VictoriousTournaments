@@ -7,12 +7,21 @@ namespace DataLib
 
     partial class VictoriousDbContext : DbContext
     {
+#if DEBUG
         public VictoriousDbContext()
             : base("name=VictoriousTestDbContext")
         {
             //Database.SetInitializer(new DropCreateDatabaseAlways<VictoriousDbContext>());
-            this.Configuration.LazyLoadingEnabled = true;
+            this.Configuration.LazyLoadingEnabled = false;
         }
+#elif !DEBUG
+        public VictoriousDbContext()
+           : base(@"Data Source=.\;Initial Catalog=VictoriousLocalDatabase;Integrated Security=True;")
+        {
+            //Database.SetInitializer(new DropCreateDatabaseAlways<VictoriousDbContext>());
+            this.Configuration.LazyLoadingEnabled = false;
+        }
+#endif
 
         public DbSet<BracketModel> Brackets { get; set; }
         public DbSet<MatchModel> Matches { get; set; }
