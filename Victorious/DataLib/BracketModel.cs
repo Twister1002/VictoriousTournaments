@@ -30,8 +30,8 @@ namespace DataLib
 
         public virtual ICollection<UserBracketSeedModel> UserSeeds { get; set; }
 
-        //// Tournament that holds this bracket.
-        //public virtual TournamentModel Tournament { get; set; }
+        // Tournament that holds this bracket.
+        public virtual TournamentModel Tournament { get; set; }
 
     }
 }

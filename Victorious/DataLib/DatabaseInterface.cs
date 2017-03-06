@@ -445,7 +445,7 @@ namespace DataLib
             {
                 context.Brackets.Add(bracket);
                 tournament.Brackets.Add(bracket);
-                //bracket.Tournament = tournament;
+                bracket.Tournament = tournament;
                 context.SaveChanges();
             }
             catch (Exception)
@@ -626,7 +626,7 @@ namespace DataLib
             {
                 ubs.User = user;
                 ubs.Bracket = bracket;
-                //ubs.Tournament = bracket.Tournament;
+                ubs.Tournament = bracket.Tournament;
                 ubs.Seed = seed;
 
                 context.UserBracketSeeds.Add(ubs);

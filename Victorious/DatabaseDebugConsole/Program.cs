@@ -48,16 +48,17 @@ namespace DatabaseDebugConsole
             {
                 foreach (var match in bracket.Matches)
                 {
+                    Console.WriteLine("Match number: " + match.MatchNumber);
                     Console.WriteLine("Challenger: " + match.Challenger.FirstName + ' ' + match.Challenger.LastName);
                     Console.WriteLine("Defender: " + match.Defender.FirstName + ' ' + match.Defender.LastName);
                 }
 
             }
 
-            foreach (var match in tournament.Brackets.ElementAt(0).Matches)
-            {
-                Console.WriteLine(match.MatchNumber);
-            }
+            //foreach (var match in tournament.Brackets.ElementAt(0).Matches)
+            //{
+            //    Console.WriteLine(match.MatchNumber);
+            //}
 
             Console.WriteLine("Done");
             Console.ReadLine();
