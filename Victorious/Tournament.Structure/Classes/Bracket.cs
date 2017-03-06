@@ -45,6 +45,7 @@ namespace Tournament.Structure
 			}
 
 			Players.Add(_p);
+			ResetBracket();
 		}
 		public void RemovePlayer(IPlayer _p)
 		{
@@ -56,6 +57,8 @@ namespace Tournament.Structure
 			{
 				throw new KeyNotFoundException();
 			}
+
+			ResetBracket();
 		}
 		public void ResetPlayers()
 		{
@@ -63,7 +66,9 @@ namespace Tournament.Structure
 			{
 				Players = new List<IPlayer>();
 			}
+
 			Players.Clear();
+			ResetBracket();
 		}
 
 		public int NumberOfRounds()

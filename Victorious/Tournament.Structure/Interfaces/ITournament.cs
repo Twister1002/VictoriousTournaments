@@ -19,7 +19,7 @@ namespace Tournament.Structure
 
 		#region Methods
 		/// <summary>
-		/// Gets the number of players in the tournament.
+		/// Gets the number of Players in the tournament.
 		/// </summary>
 		/// <returns>Number of Players</returns>
 		int NumberOfPlayers();

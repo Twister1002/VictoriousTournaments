@@ -16,19 +16,76 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Methods
+		/// <summary>
+		/// Generates the bracket (rounds & matches).
+		/// </summary>
+		/// <param name="_winsPerMatch">"Games" needed to win each match.</param>
 		void CreateBracket(ushort _winsPerMatch = 1);
+
+		/// <summary>
+		/// temporarily public, DON'T USE THIS METHOD.
+		/// </summary>
+		/// <param name="_matchModels">WHY ARE YOU STILL HERE</param>
 		void UpdateCurrentMatches(ICollection<MatchModel> _matchModels);
+
 		//void AddWin(IMatch _match, PlayerSlot _slot);
+
+		/// <summary>
+		/// Record one win for the specified match.
+		/// </summary>
+		/// <param name="_matchNumber">Match Number, to specify the match.</param>
+		/// <param name="_slot">Winning player's slot: Defender or Challenger</param>
 		void AddWin(int _matchNumber, PlayerSlot _slot);
 
+		/// <summary>
+		/// Gets the number of Players in the Bracket.
+		/// </summary>
+		/// <returns>Number of Players.</returns>
 		int NumberOfPlayers();
+
+		/// <summary>
+		/// Add a Player.
+		/// </summary>
+		/// <param name="_p">Player-type object to add.</param>
 		void AddPlayer(IPlayer _p);
+
+		/// <summary>
+		/// Remove a Player from the bracket.
+		/// </summary>
+		/// <param name="_p">Player-type object to remove.</param>
 		void RemovePlayer(IPlayer _p);
+
+		/// <summary>
+		/// Clears the bracket's player list.
+		/// </summary>
 		void ResetPlayers();
+
+		/// <summary>
+		/// Gets the number of rounds in the bracket.
+		/// </summary>
+		/// <returns>Number of Rounds.</returns>
 		int NumberOfRounds();
+
+		/// <summary>
+		/// Get all Matches in specified round.
+		/// (Round 1 is the bracket's FIRST round)
+		/// </summary>
+		/// <param name="_index">Round number to get.</param>
+		/// <returns>List of Matches in the round.</returns>
 		List<IMatch> GetRound(int _index);
+
 		//IMatch GetMatch(int _roundIndex, int _index);
+
+		/// <summary>
+		/// Get a specific Match object.
+		/// </summary>
+		/// <param name="_matchNumber">Match Number of the desired Match.</param>
+		/// <returns>Match object.</returns>
 		IMatch GetMatch(int _matchNumber);
+
+		/// <summary>
+		/// Clears all Matches and rounds in the bracket.
+		/// </summary>
 		void ResetBracket();
 		#endregion
 	}
