@@ -11,16 +11,13 @@ namespace Tournament.Structure
 	public class SingleElimBracket : Bracket
 	{
 		#region Variables & Properties
-		public override List<IPlayer> Players
-		{ get; set; }
-		public override List<List<IMatch>> Rounds
-		{ get; set; }
+		//public override List<IPlayer> Players
+		//{ get; set; }
+		//public override List<List<IMatch>> Rounds
+		//{ get; set; }
 		#endregion
 
 		#region Ctors
-		public SingleElimBracket()
-			: this(new List<IPlayer>())
-		{ }
 		public SingleElimBracket(List<IPlayer> _players)
 		{
 			if (null == _players)
@@ -32,6 +29,9 @@ namespace Tournament.Structure
 			Rounds = new List<List<IMatch>>();
 			CreateBracket();
 		}
+		public SingleElimBracket()
+			: this(new List<IPlayer>())
+		{ }
 		#endregion
 
 		#region Public Methods
@@ -43,13 +43,12 @@ namespace Tournament.Structure
 			}
 
 			#region Create the Bracket
-			Rounds.Clear();
+			ResetBracket();
 			int totalMatches = Players.Count - 1;
 			int numMatches = 0;
-			int r = 0;
 
 			// Create the Matches
-			while (numMatches < totalMatches)
+			for (int r = 0; numMatches < totalMatches; ++r)
 			{
 				Rounds.Add(new List<IMatch>());
 				for (int i = 0;
@@ -64,12 +63,11 @@ namespace Tournament.Structure
 					m.WinsNeeded = _winsPerMatch;
 					AddMatch(r, m);
 				}
-				++r;
 			}
 
 			// Assign Match Numbers
 			int matchNum = 1;
-			for (r = Rounds.Count - 1; r >= 0; --r)
+			for (int r = Rounds.Count - 1; r >= 0; --r)
 			{
 				foreach (IMatch match in Rounds[r])
 				{
@@ -78,7 +76,7 @@ namespace Tournament.Structure
 			}
 
 			// Tie Matches Together
-			for (r = 0; r + 1 < Rounds.Count; ++r)
+			for (int r = 0; r + 1 < Rounds.Count; ++r)
 			{
 				if (Rounds[r + 1].Count == (Rounds[r].Count * 2))
 				{
@@ -105,7 +103,7 @@ namespace Tournament.Structure
 			Rounds[0][0].AddPlayer(pIndex++);
 			Rounds[0][0].AddPlayer(pIndex++);
 
-			for (r = 0; r + 1 < Rounds.Count; ++r)
+			for (int r = 0; r + 1 < Rounds.Count; ++r)
 			{
 				// We're shifting back one player for each match in the prev round
 				int prevRoundMatches = Rounds[r + 1].Count;
@@ -192,10 +190,10 @@ namespace Tournament.Structure
 			}
 		}
 
-		public override void AddWin(IMatch _match, PlayerSlot _slot)
-		{
-			AddWin(_match.MatchNumber, _slot);
-		}
+		//public override void AddWin(IMatch _match, PlayerSlot _slot)
+		//{
+		//	AddWin(_match.MatchNumber, _slot);
+		//}
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
 			if (_slot != PlayerSlot.Defender ||

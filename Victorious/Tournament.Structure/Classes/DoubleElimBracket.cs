@@ -11,18 +11,21 @@ namespace Tournament.Structure
 	public class DoubleElimBracket : SingleElimBracket
 	{
 		#region Variables & Properties
-		public List<List<IMatch>> LowerRounds
+		protected List<List<IMatch>> LowerRounds
 		{ get; set; }
-		public IMatch GrandFinal
+		protected IMatch GrandFinal
 		{ get; set; }
 		#endregion
 
 		#region Ctors
-		public DoubleElimBracket()
-			: this(new List<IPlayer>())
-		{ }
 		public DoubleElimBracket(List<IPlayer> _players)
 			: base(_players)
+		{
+			LowerRounds = null;
+			GrandFinal = null;
+		}
+		public DoubleElimBracket()
+			: this(new List<IPlayer>())
 		{ }
 		#endregion
 
@@ -171,10 +174,10 @@ namespace Tournament.Structure
 			}
 		}
 
-		public override void AddWin(IMatch _match, PlayerSlot _slot)
-		{
-			AddWin(_match.MatchNumber, _slot);
-		}
+		//public override void AddWin(IMatch _match, PlayerSlot _slot)
+		//{
+		//	AddWin(_match.MatchNumber, _slot);
+		//}
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
 			if (_slot != PlayerSlot.Defender ||
@@ -318,7 +321,7 @@ namespace Tournament.Structure
 #endregion
 
 #region Private Methods
-		private int CalculateTotalLowerBracketMatches(int _numPlayers)
+		protected int CalculateTotalLowerBracketMatches(int _numPlayers)
 		{
 			if (_numPlayers < 4)
 			{
@@ -341,7 +344,7 @@ namespace Tournament.Structure
 			return (normalizedPlayers - 2);
 		}
 
-		private void AddLowerBracketWin(int _round, int _match, PlayerSlot _slot)
+		protected void AddLowerBracketWin(int _round, int _match, PlayerSlot _slot)
 		{
 			if (_round < 0 || _round >= LowerRounds.Count
 				|| _match < 0 || _match >= LowerRounds[_round].Count)

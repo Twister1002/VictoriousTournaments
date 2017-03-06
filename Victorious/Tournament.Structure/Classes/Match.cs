@@ -71,7 +71,7 @@ namespace Tournament.Structure
 				//|| null == _m.Tournament
 				|| null == _m.WinsNeeded
 				|| null == _m.MatchIndex
-				|| null == _m.MatchNumber
+				//|| null == _m.MatchNumber
 				|| null == _m.NextMatchNumber
 				|| null == _m.NextLoserMatchNumber)
 			{
@@ -179,7 +179,12 @@ namespace Tournament.Structure
 		}
 		public void ResetPlayers()
 		{
+			if (null == PlayerIndexes)
+			{
+				PlayerIndexes = new int[2];
+			}
 			PlayerIndexes[0] = PlayerIndexes[1] = -1;
+			ResetScore();
 		}
 
 		public void AddWin(PlayerSlot _slot)
@@ -199,8 +204,26 @@ namespace Tournament.Structure
 
 			Score[(int)_slot] += 1;
 		}
+		public void RemoveWin(PlayerSlot _slot)
+		{
+			if (_slot != PlayerSlot.Defender &&
+				_slot != PlayerSlot.Challenger)
+			{
+				throw new IndexOutOfRangeException();
+			}
+			if (Score[(int)_slot] <= 0)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+
+			Score[(int)_slot] -= 1;
+		}
 		public void ResetScore()
 		{
+			if (null == Score)
+			{
+				Score = new ushort[2];
+			}
 			Score[0] = Score[1] = 0;
 		}
 

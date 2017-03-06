@@ -37,6 +37,7 @@ namespace Tournament.Structure
 		void RemovePlayer(int _playerIndex);
 		void ResetPlayers();
 		void AddWin(PlayerSlot _slot);
+		void RemoveWin(PlayerSlot _slot);
 		void ResetScore();
 		void SetRoundIndex(int _index);
 		void SetMatchIndex(int _index);
