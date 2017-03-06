@@ -9,62 +9,27 @@ namespace Tournament.Structure
 	public interface ITournament
 	{
 		#region Variables & Properties
-		/// <summary>
-		/// Tournament's name.
-		/// </summary>
 		string Title { get; set; }
-
-		/// <summary>
-		/// Tournament's description.
-		/// </summary>
 		string Description { get; set; }
-
-		/// <summary>
-		/// List of users/teams participating in tournament.
-		/// </summary>
-		List<IPlayer> Players { get; set; }
-
-		/// <summary>
-		/// List of brackets for the tournament.
-		/// (temporarily limited to one)
-		/// </summary>
-		List<IBracket> Brackets { get; set; }
-
-		/// <summary>
-		/// Tournament's payout.
-		/// </summary>
+		List<IPlayer> Players { get; }
+		List<IBracket> Brackets { get; }
 		float PrizePool { get; set; }
-
-		/// <summary>
-		/// Is tournament publicly viewable?
-		/// </summary>
 		bool IsPublic { get; set; }
 		#endregion
 
 		#region Methods
-		/// <summary>
-		/// Add a Player object to tournament's list.
-		/// </summary>
-		/// <param name="_p">Player object to add.</param>
+		int NumberOfPlayers();
 		void AddPlayer(IPlayer _p);
-
-		/// <summary>
-		/// Add an existing Bracket object to tournament's list.
-		/// </summary>
-		/// <param name="_b">Bracket object to add.</param>
+		void RemovePlayer(IPlayer _p);
+		void ResetPlayers();
+		int NumberOfBrackets();
 		void AddBracket(IBracket _b);
-
-		/// <summary>
-		/// Create a new Single Elim Bracket, and add to the tournament.
-		/// (temp: replaces any current bracket)
-		/// </summary>
-		void CreateSingleElimBracket();
-
-		/// <summary>
-		/// Create a new Single Elim Bracket, and add to the tournament.
-		/// (temp: replaces any current bracket)
-		/// </summary>
-		void CreateDoubleElimBracket();
+		void RemoveBracket(IBracket _b);
+		void ResetBrackets();
+		void AddSingleElimBracket(List<IPlayer> _playerList);
+		void AddSingleElimBracket(int _numPlayers);
+		void AddDoubleElimBracket(List<IPlayer> _playerList);
+		void AddDoubleElimBracket(int _numPlayers);
 		#endregion
 	}
 }

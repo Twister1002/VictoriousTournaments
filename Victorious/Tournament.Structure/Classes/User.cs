@@ -22,9 +22,6 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public User()
-			: this(-1, "", "", "", "")
-		{ }
 		public User(int _id, string _name, string _first, string _last, string _email)
 		{
 			if (null == _name
@@ -41,6 +38,10 @@ namespace Tournament.Structure
 			Lastname = _last;
 			Email = _email;
 		}
+		public User()
+	: this(-1, "", "", "", "")
+		{ }
+
 		public User(UserModel _u)
 		{
 			if (null == _u)

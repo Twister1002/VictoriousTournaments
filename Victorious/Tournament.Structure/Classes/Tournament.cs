@@ -16,9 +16,9 @@ namespace Tournament.Structure
 		public string Description
 		{ get; set; }
 		public List<IPlayer> Players
-		{ get; set; }
+		{ get; private set; }
 		public List<IBracket> Brackets
-		{ get; set; }
+		{ get; private set; }
 		public float PrizePool
 		{ get; set; }
 		public bool IsPublic
@@ -26,17 +26,19 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public Tournament()
-			: this("", new List<IPlayer>(), new List<IBracket>(), 0, false)
-		{ }
-		public Tournament(string _title, List<IPlayer> _players, List<IBracket> _brackets, float _pool, bool _isPublic)
+		public Tournament(string _title, string _description, List<IPlayer> _players, List<IBracket> _brackets, float _pool, bool _isPublic)
 		{
 			Title = _title;
+			Description = _description;
 			Players = _players;
 			Brackets = _brackets;
 			PrizePool = _pool;
 			IsPublic = _isPublic;
 		}
+		public Tournament()
+			: this("", "", new List<IPlayer>(), new List<IBracket>(), 0.0f, false)
+		{ }
+
 		public Tournament(TournamentModel _t)
 		{
 			Title = _t.Title;
@@ -51,13 +53,14 @@ namespace Tournament.Structure
 			Brackets = new List<IBracket>();
 			foreach(BracketModel bModel in _t.Brackets)
 			{
+				// THIS WILL NEED TO BE UPDATED
 				switch (bModel.BracketType)
 				{
 					case ("single"):
-						CreateSingleElimBracket();
+						AddSingleElimBracket(Players);
 						break;
 					case ("double"):
-						CreateDoubleElimBracket();
+						AddDoubleElimBracket(Players);
 						break;
 
 					default:
@@ -75,33 +78,113 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		public int NumberOfPlayers()
+		{
+			if (null == Players)
+			{
+				Players = new List<IPlayer>();
+			}
+			return Players.Count;
+		}
 		public void AddPlayer(IPlayer _p)
 		{
+			if (null == _p || null == Players)
+			{
+				throw new NullReferenceException();
+			}
 			if (Players.Contains(_p))
 			{
 				throw new DuplicateObjectException();
 			}
-			
+
 			Players.Add(_p);
+		}
+		public void RemovePlayer(IPlayer _p)
+		{
+			if (null == _p || null == Players)
+			{
+				throw new NullReferenceException();
+			}
+			if (!Players.Remove(_p))
+			{
+				throw new KeyNotFoundException();
+			}
+		}
+		public void ResetPlayers()
+		{
+			if (null == Players)
+			{
+				Players = new List<IPlayer>();
+			}
+			Players.Clear();
+		}
+
+		public int NumberOfBrackets()
+		{
+			if (null == Brackets)
+			{
+				Brackets = new List<IBracket>();
+			}
+			return Brackets.Count;
 		}
 		public void AddBracket(IBracket _b)
 		{
+			if (null == _b || null == Brackets)
+			{
+				throw new NullReferenceException();
+			}
 			if (Brackets.Contains(_b))
 			{
 				throw new DuplicateObjectException();
 			}
-			
+
 			Brackets.Add(_b);
 		}
-		public void CreateSingleElimBracket()
+		public void RemoveBracket(IBracket _b)
 		{
-			Brackets.Clear();
-			Brackets.Add(new SingleElimBracket(Players));
+			if (null == _b || null == Brackets)
+			{
+				throw new NullReferenceException();
+			}
+			if (!Brackets.Remove(_b))
+			{
+				throw new KeyNotFoundException();
+			}
 		}
-		public void CreateDoubleElimBracket()
+		public void ResetBrackets()
 		{
+			if (null == Brackets)
+			{
+				Brackets = new List<IBracket>();
+			}
 			Brackets.Clear();
-			Brackets.Add(new DoubleElimBracket(Players));
+		}
+
+		public void AddSingleElimBracket(List<IPlayer> _playerList)
+		{
+			Brackets.Add(new SingleElimBracket(_playerList));
+		}
+		public void AddSingleElimBracket(int _numPlayers)
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < _numPlayers; ++i)
+			{
+				pList.Add(new User());
+			}
+			AddSingleElimBracket(pList);
+		}
+		public void AddDoubleElimBracket(List<IPlayer> _playerList)
+		{
+			Brackets.Add(new DoubleElimBracket(_playerList));
+		}
+		public void AddDoubleElimBracket(int _numPlayers)
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < _numPlayers; ++i)
+			{
+				pList.Add(new User());
+			}
+			AddDoubleElimBracket(pList);
 		}
 		#endregion
 	}
