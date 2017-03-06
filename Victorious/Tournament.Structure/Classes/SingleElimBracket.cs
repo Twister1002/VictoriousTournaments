@@ -48,7 +48,7 @@ namespace Tournament.Structure
 			// Create the Matches
 			for (int r = 0; numMatches < totalMatches; ++r)
 			{
-				Rounds.Add(new List<IMatch>());
+				AddRound();
 				for (int i = 0;
 					i < Math.Pow(2, r) && numMatches < totalMatches;
 					++i, ++numMatches)

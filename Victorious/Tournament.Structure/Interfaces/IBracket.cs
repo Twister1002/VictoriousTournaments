@@ -12,7 +12,7 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		List<IPlayer> Players { get; }
-		//List<List<IMatch>> Rounds { get; set; }
+		// protected List<List<IMatch>> Rounds { get; set; }
 		#endregion
 
 		#region Methods

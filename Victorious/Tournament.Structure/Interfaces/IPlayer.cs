@@ -12,14 +12,7 @@ namespace Tournament.Structure
 	public interface IPlayer
 	{
 		#region Variables & Properties
-		/// <summary>
-		/// Id references the object's DB id.
-		/// </summary>
 		int Id { get; }
-
-		/// <summary>
-		/// Name of user/team.
-		/// </summary>
 		string Name { get; set; }
 		#endregion
 
