@@ -23,7 +23,7 @@ namespace Tournament.Structure
 		{ get; set; }
 		public int MatchNumber
 		{ get; private set; }
-		public List<int> PrevMatchNumbers
+		public List<int> PreviousMatchNumbers
 		{ get; private set; }
 		public int NextMatchNumber
 		{ get; private set; }
@@ -47,7 +47,7 @@ namespace Tournament.Structure
 			RoundIndex = _roundIndex;
 			MatchIndex = _matchIndex;
 			MatchNumber = _matchNumber;
-			PrevMatchNumbers = _prevMatchNumbers;
+			PreviousMatchNumbers = _prevMatchNumbers;
 			NextMatchNumber = _nextMatchNumber;
 			NextLoserMatchNumber = _nextLoserMatchNumber;
 		}
@@ -111,14 +111,14 @@ namespace Tournament.Structure
 			MatchIndex = (int)(_m.MatchIndex);
 			MatchNumber = (int)(_m.MatchNumber);
 
-			PrevMatchNumbers = new List<int>();
+			PreviousMatchNumbers = new List<int>();
 			if (null != _m.PrevDefenderMatchNumber)
 			{
-				PrevMatchNumbers.Add((int)(_m.PrevDefenderMatchNumber));
+				PreviousMatchNumbers.Add((int)(_m.PrevDefenderMatchNumber));
 			}
 			if (null != _m.PrevChallengerMatchNumber)
 			{
-				PrevMatchNumbers.Add((int)(_m.PrevChallengerMatchNumber));
+				PreviousMatchNumbers.Add((int)(_m.PrevChallengerMatchNumber));
 			}
 
 			NextMatchNumber = (int)(_m.NextMatchNumber);
@@ -204,7 +204,7 @@ namespace Tournament.Structure
 
 			Score[(int)_slot] += 1;
 		}
-		public void RemoveWin(PlayerSlot _slot)
+		public void SubtractWin(PlayerSlot _slot)
 		{
 			if (_slot != PlayerSlot.Defender &&
 				_slot != PlayerSlot.Challenger)
@@ -215,7 +215,7 @@ namespace Tournament.Structure
 			{
 				throw new ArgumentOutOfRangeException();
 			}
-
+			
 			Score[(int)_slot] -= 1;
 		}
 		public void ResetScore()
@@ -251,13 +251,13 @@ namespace Tournament.Structure
 			}
 			MatchNumber = _number;
 		}
-		public void AddPrevMatchNumber(int _number)
+		public void AddPreviousMatchNumber(int _number)
 		{
-			if (PrevMatchNumbers.Count >= 2)
+			if (PreviousMatchNumbers.Count >= 2)
 			{
 				throw new AlreadyAssignedException();
 			}
-			PrevMatchNumbers.Add(_number);
+			PreviousMatchNumbers.Add(_number);
 		}
 		public void SetNextMatchNumber(int _number)
 		{

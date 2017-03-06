@@ -81,11 +81,11 @@ namespace Tournament.Structure
 						int currNum = LowerRounds[r][m].MatchNumber;
 
 						// Assign prev/next matchup indexes
-						LowerRounds[r][m].AddPrevMatchNumber(Rounds[r / 2][m].MatchNumber);
+						LowerRounds[r][m].AddPreviousMatchNumber(Rounds[r / 2][m].MatchNumber);
 						Rounds[r / 2][m].SetNextLoserMatchNumber(currNum);
 						// *************** THIS ISN'T QUITE RIGHT [mIndex]
 
-						LowerRounds[r][m].AddPrevMatchNumber(LowerRounds[r + 1][m].MatchNumber);
+						LowerRounds[r][m].AddPreviousMatchNumber(LowerRounds[r + 1][m].MatchNumber);
 						LowerRounds[r + 1][m].SetNextMatchNumber(currNum);
 					}
 				}
@@ -97,10 +97,10 @@ namespace Tournament.Structure
 						int currNum = LowerRounds[r][m].MatchNumber;
 
 						// Assign prev/next matchup indexes
-						LowerRounds[r][m].AddPrevMatchNumber(LowerRounds[r + 1][m * 2].MatchNumber);
+						LowerRounds[r][m].AddPreviousMatchNumber(LowerRounds[r + 1][m * 2].MatchNumber);
 						LowerRounds[r + 1][m * 2].SetNextMatchNumber(currNum);
 
-						LowerRounds[r][m].AddPrevMatchNumber(LowerRounds[r + 1][m * 2 + 1].MatchNumber);
+						LowerRounds[r][m].AddPreviousMatchNumber(LowerRounds[r + 1][m * 2 + 1].MatchNumber);
 						LowerRounds[r + 1][m * 2 + 1].SetNextMatchNumber(currNum);
 					}
 				}
@@ -123,10 +123,10 @@ namespace Tournament.Structure
 
 					// Assign prev/next matchup indexes for FIRST round
 					// (both teams come from Upper Bracket)
-					LowerRounds[r][m].AddPrevMatchNumber(Rounds[r / 2 + 1][m * 2].MatchNumber);
+					LowerRounds[r][m].AddPreviousMatchNumber(Rounds[r / 2 + 1][m * 2].MatchNumber);
 					Rounds[r / 2 + 1][m * 2].SetNextLoserMatchNumber(currNum);
 
-					LowerRounds[r][m].AddPrevMatchNumber(Rounds[r / 2 + 1][m * 2 + 1].MatchNumber);
+					LowerRounds[r][m].AddPreviousMatchNumber(Rounds[r / 2 + 1][m * 2 + 1].MatchNumber);
 					Rounds[r / 2 + 1][m * 2 + 1].SetNextLoserMatchNumber(currNum);
 				}
 
@@ -135,8 +135,8 @@ namespace Tournament.Structure
 				GrandFinal.WinsNeeded = _winsPerMatch;
 				GrandFinal.SetRoundIndex(0);
 				GrandFinal.SetMatchIndex(0);
-				GrandFinal.AddPrevMatchNumber(Rounds[0][0].MatchNumber);
-				GrandFinal.AddPrevMatchNumber(LowerRounds[0][0].MatchNumber);
+				GrandFinal.AddPreviousMatchNumber(Rounds[0][0].MatchNumber);
+				GrandFinal.AddPreviousMatchNumber(LowerRounds[0][0].MatchNumber);
 			}
 			else
 			{
@@ -176,10 +176,6 @@ namespace Tournament.Structure
 			}
 		}
 
-		//public override void AddWin(IMatch _match, PlayerSlot _slot)
-		//{
-		//	AddWin(_match.MatchNumber, _slot);
-		//}
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
 			if (_slot != PlayerSlot.Defender ||
@@ -231,9 +227,9 @@ namespace Tournament.Structure
 							{
 								if (match.MatchNumber == nMatchNumber)
 								{
-									for (int i = 0; i < match.PrevMatchNumbers.Count; ++i)
+									for (int i = 0; i < match.PreviousMatchNumbers.Count; ++i)
 									{
-										if (match.PrevMatchNumbers[i] == Rounds[r][m].MatchNumber)
+										if (match.PreviousMatchNumbers[i] == Rounds[r][m].MatchNumber)
 										{
 											match.AddPlayer(
 												(PlayerSlot.Defender == _slot)
@@ -298,6 +294,14 @@ namespace Tournament.Structure
 			}
 
 			throw new KeyNotFoundException();
+		}
+		//public override void AddWin(IMatch _match, PlayerSlot _slot)
+		//{
+		//	AddWin(_match.MatchNumber, _slot);
+		//}
+		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
+		{
+			base.SubtractWin(_matchNumber, _slot);
 		}
 
 		public List<IMatch> GetLowerRound(int _index)
@@ -376,9 +380,9 @@ namespace Tournament.Structure
 				{
 					if (match.MatchNumber == nMatchNumber)
 					{
-						for (int i = 0; i < match.PrevMatchNumbers.Count; ++i)
+						for (int i = 0; i < match.PreviousMatchNumbers.Count; ++i)
 						{
-							if (match.PrevMatchNumbers[i] == LowerRounds[_round][_match].MatchNumber)
+							if (match.PreviousMatchNumbers[i] == LowerRounds[_round][_match].MatchNumber)
 							{
 								match.AddPlayer(
 									(PlayerSlot.Defender == _slot)

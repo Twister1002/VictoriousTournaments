@@ -23,19 +23,27 @@ namespace Tournament.Structure
 		void CreateBracket(ushort _winsPerMatch = 1);
 
 		/// <summary>
-		/// temporarily public, DON'T USE THIS METHOD.
+		/// Temporarily public, DON'T USE THIS METHOD.
 		/// </summary>
 		/// <param name="_matchModels">WHY ARE YOU STILL HERE</param>
 		void UpdateCurrentMatches(ICollection<MatchModel> _matchModels);
 
+		/// <summary>
+		/// Record one win for the specified match.
+		/// Advances Player if the Match is over.
+		/// </summary>
+		/// <param name="_matchNumber">Number of specified match.</param>
+		/// <param name="_slot">Winning player's slot: Defender or Challenger</param>
+		void AddWin(int _matchNumber, PlayerSlot _slot);
 		//void AddWin(IMatch _match, PlayerSlot _slot);
 
 		/// <summary>
-		/// Record one win for the specified match.
+		/// Remove one win for the specified match.
+		/// Resets any affected "future" matches.
 		/// </summary>
-		/// <param name="_matchNumber">Match Number, to specify the match.</param>
-		/// <param name="_slot">Winning player's slot: Defender or Challenger</param>
-		void AddWin(int _matchNumber, PlayerSlot _slot);
+		/// <param name="_matchNumber">Number of specified match.</param>
+		/// <param name="_slot">Player slot: Defender or Challenger.</param>
+		void SubtractWin(int _matchNumber, PlayerSlot _slot);
 
 		/// <summary>
 		/// Gets the number of Players in the Bracket.
