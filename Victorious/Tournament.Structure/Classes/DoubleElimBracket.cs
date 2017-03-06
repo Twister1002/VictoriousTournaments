@@ -11,6 +11,8 @@ namespace Tournament.Structure
 	public class DoubleElimBracket : SingleElimBracket
 	{
 		#region Variables & Properties
+		// inherits List<IPlayer> Players
+		// inherits List<List<IMatch>> Rounds
 		protected List<List<IMatch>> LowerRounds
 		{ get; set; }
 		protected IMatch GrandFinal

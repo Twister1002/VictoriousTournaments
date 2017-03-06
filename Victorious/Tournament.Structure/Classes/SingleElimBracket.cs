@@ -11,10 +11,8 @@ namespace Tournament.Structure
 	public class SingleElimBracket : Bracket
 	{
 		#region Variables & Properties
-		//public override List<IPlayer> Players
-		//{ get; set; }
-		//public override List<List<IMatch>> Rounds
-		//{ get; set; }
+		// inherits List<IPlayer> Players
+		// inherits List<List<IMatch>> Rounds
 		#endregion
 
 		#region Ctors

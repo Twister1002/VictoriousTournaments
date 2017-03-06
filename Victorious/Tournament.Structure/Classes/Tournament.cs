@@ -160,6 +160,7 @@ namespace Tournament.Structure
 			Brackets.Clear();
 		}
 
+		#region Bracket Creation Methods
 		public void AddSingleElimBracket(List<IPlayer> _playerList)
 		{
 			Brackets.Add(new SingleElimBracket(_playerList));
@@ -186,6 +187,24 @@ namespace Tournament.Structure
 			}
 			AddDoubleElimBracket(pList);
 		}
+
+		public void AddRoundRobinBracket(List<IPlayer> _playerList, int _numRounds = 0)
+		{
+			throw new NotImplementedException();
+		}
+		public void AddRoundRobinBracket(int _numPlayers, int _numRounds = 0)
+		{
+			throw new NotImplementedException();
+		}
+		public void AddGroupStageBracket(List<IPlayer> _playerList, int _numGroups = 2)
+		{
+			throw new NotImplementedException();
+		}
+		public void AddGroupStageBracket(int _numPlayers, int _numGroups = 2)
+		{
+			throw new NotImplementedException();
+		}
+		#endregion
 		#endregion
 	}
 }
