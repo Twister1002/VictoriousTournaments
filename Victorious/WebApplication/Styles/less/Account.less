@@ -1,18 +1,38 @@
 ﻿.Account{
-    display: block;
+    /*label {
+        padding: .5em .25em .5em 0em;
+        text-decoration: underline;
+    }*/
+ 
+    .tournaments {
+        
+        ul {
+            li {
+                border: .1em;
+                border-color: @white;
+                border-style: solid;
+            }
+        }
 
-    ul{
-        li{
-            text-decoration: underline;
+        > div {
+            padding: .5em 1em 1em 1em;
+        }
+
+        .active {
+            background-color: black;
+        }
+        .upcoming {
+            background-color: orange;
+        }
+        .create {
+            background-color: grey;
         }
     }
 
     .settings {
-        display:block;
-    }
-
-    .tournaments {
-        display:block;
+        label {
+            
+        }
     }
 
     @media screen and (min-width: @@b1) {

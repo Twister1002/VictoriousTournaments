@@ -1,24 +1,42 @@
 ﻿@model WebApplication.Models.AccountViewModel
 @{
     ViewBag.Title = "Account";
-    ViewBag.ClassName = "account";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="@ViewBag.Title">
     <h2>Account Display Page</h2>
-    <label>Hello @Model.userModel.Username</label>
     <div class="tournaments">
-        <ul>
-            <li>Currently Registered Tournaments</li>
-            <li>Past Tournaments</li>
-        </ul>
+        <label>Tournaments</label>
+        <div class="active">
+            <label>Active Tournaments</label>
+            <ul>
+                @for (int i = 0; i < 3; i++)
+                {
+                    <li>Tournament @i</li>
+                }
+            </ul>
+        </div>
+        <div class="upcoming">
+            <label>Upcoming</label>
+            <ul>
+                @for (int i = 0; i < 5; i++)
+                {
+                    <li>Tournament @i</li>
+                }
+            </ul>
+        </div>
+        <div class="create">
+            @Html.ActionLink("Create Tournament", "Create", "Tournament")
+        </div>
     </div>
 
     <div class="settings">
         <label>Account Settings</label>
         <ul>
-           <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
+            <li>Update Account</li>
+            <li>View Profile</li>
+            <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
         </ul>
     </div>
 </div>
