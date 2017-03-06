@@ -9,7 +9,7 @@ namespace DataLib
 
     public enum DbError
     {
-        ERROR = -1, NONE = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS
+        ERROR = -1, NONE = 0, SUCCESS, FAILED_TO_ADD, [Obsolete("Use FAILED_TO_DELETE")] FAILED_TO_REMOVE, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS
     };
 
     public class DatabaseInterface
@@ -101,7 +101,8 @@ namespace DataLib
 
         // Adds user to the users table. DOES NOT ASSIGN USER TO TOURNAMENT.
         // Returns database ID of passed-in user.
-        public int AddUser(ref UserModel user)
+        [Obsolete("Use AddUser(ref UserModel user)")]
+        public int AddUser(UserModel user)
         {
             try
             {
@@ -116,6 +117,22 @@ namespace DataLib
             }
 
             return user.UserID;
+        }
+
+        public DbError AddUser(ref UserModel user)
+        {
+            try
+            {
+                user.CreatedOn = DateTime.Now;
+                context.Users.Add(user);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception " + ex.ToString() + " in AddUser");
+                return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
         }
 
         // Updates LastLogin of passed-in user.
@@ -155,7 +172,7 @@ namespace DataLib
 
         // Sets the email of the passed-in user to the newEmail.
         // Returns ERROR if the email failed to update.
-        [Obsolete("Depricated. Use UpdateUser.")]
+        [Obsolete("Use UpdateUser(UserModel user).")]
         public DbError UpdateUserEmail(UserModel user, string newEmail)
         {
             try
@@ -171,7 +188,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        [Obsolete("Depricated. Use UpdateModel.")]
+        [Obsolete("Use UpdateModel(UserModel user).")]
         public DbError UpdateUserPassword(UserModel user, string newPassword)
         {
             try
@@ -186,8 +203,7 @@ namespace DataLib
             }
             return DbError.SUCCESS;
         }
-
-        
+       
         public DbError DeleteUser(UserModel user)
         {
             try
@@ -253,12 +269,13 @@ namespace DataLib
         }
 
         // Adds the passed-in tournament to the database
-        public DbError AddTournament(ref TournamentModel tournament)
+        [Obsolete("Use AddTournament(ref TournamentModel tournament)")]
+        public int AddTournament(TournamentModel tournament)
         {
-            
+            TournamentModel newTournament = new TournamentModel();
             try
             {
-                
+                newTournament = tournament;
                 context.Tournaments.Add(tournament);
 
                 context.SaveChanges();
@@ -267,9 +284,24 @@ namespace DataLib
             {
                 Console.WriteLine("Exception " + ex.ToString() + " in AddTournament");
 
-                return DbError.FAILED_TO_ADD;
+                return -1;
             }
 
+            return newTournament.TournamentID;
+        }
+
+        public DbError AddTournament(ref TournamentModel tournament)
+        {
+            try
+            {
+                context.Tournaments.Add(tournament);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception " + ex.ToString() + " in AddTournament");
+                return DbError.FAILED_TO_ADD;
+            }
             return DbError.SUCCESS;
         }
 
@@ -346,7 +378,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        [Obsolete("Depricated. Use UpdateTournament.")]
+        [Obsolete("Use UpdateTournament(TournamentModel tournament).")]
         public DbError UpdateTournamentCutoffDate(TournamentModel tournament, DateTime newCutoff)
         {
             TournamentModel tour = context.Tournaments.Find(tournament.TournamentID);
@@ -363,7 +395,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        [Obsolete("Depricated. User UpdateTournament.")]
+        [Obsolete("Use UpdateTournament(TournamentModel tournament).")]
         public DbError UpdateTournamentStartDate(TournamentModel tournament, DateTime newStartDate)
         {
             TournamentModel tour = context.Tournaments.Find(tournament.TournamentID);
@@ -379,7 +411,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        [Obsolete("Depricated. User UpdateTournament.")]
+        [Obsolete("Use UpdateTournament(TournamentModel tournament).")]
         public DbError UpdateTournamentEndDate(TournamentModel tournament, DateTime newEndDate)
         {
             try
@@ -429,7 +461,8 @@ namespace DataLib
             //TournamentRuleModel tournamentRule = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
 
         }
-
+        
+        [Obsolete("Use AddRules(ref TournamentRuleModel tournamentRules, TournamentModel tournament).")]
         public DbError AddRulesToTournament(TournamentModel tounrnament, TournamentRuleModel tournamentRules)
         {
             try
@@ -447,23 +480,37 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        //public Dictionary<string, string> GetTournamentRulesById(int id)
-        //{
-        //    Dictionary<string, string> dict = new Dictionary<string, string>();
-        //    TournamentRuleModel tr = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
-        //    dict.Add("TournamentID", tr.TournamentID.ToString());
-        //    dict.Add("NumberOfRounds", tr.NumberOfRounds.ToString());
-        //    dict.Add("NumberOfPlayers", tr.NumberOfPlayers.ToString());
-        //    dict.Add("EntryFee", tr.EntryFee.ToString());
-        //    dict.Add("PrizePurse", tr.PrizePurse.ToString());
-        //    dict.Add("IsPublic", tr.IsPublic.ToString());
-        //    dict.Add("BracketID", tr.BracketID.ToString());
-        //    dict.Add("CutoffDate", tr.CutoffDate.ToString());
-        //    dict.Add("StartDate", tr.StartDate.ToString());
-        //    dict.Add("EndDate", tr.EndDate.ToString());
+        public DbError AddRules(ref TournamentRuleModel tournamentRules, TournamentModel tournament)
+        {
+            try
+            {
+                context.TournamentRules.Add(tournamentRules);
+                tournament.TournamentRules = tournamentRules;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception " + ex.ToString() + " in AddRules");
+                return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
+        }
 
-        //    return dict;
-        //}
+        public DbError UpdateRules(TournamentRuleModel tournamentRules)
+        {
+            try
+            {
+                TournamentRuleModel _tournamentRules = context.TournamentRules.Find(tournamentRules.TournamentID);
+                _tournamentRules = tournamentRules;
+                context.SaveChanges();
+            } 
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception " + ex.ToString() + " in UpdateRules");
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
 
         public DbError DeleteTournamentRules(TournamentRuleModel tournamentRules)
         {
@@ -495,7 +542,7 @@ namespace DataLib
                 return true;
         }
 
-        [Obsolete("Depricated. Use AddBracket that takes in a BracketModel refernece")]
+        [Obsolete("Use AddBracket(ref BracketModel bracket, TournamentModel tournament).")]
         public int AddBracket(TournamentModel tournament, BracketModel bracket)
         {
             try
@@ -520,6 +567,7 @@ namespace DataLib
             {
                 context.Brackets.Add(bracket);
                 tournament.Brackets.Add(bracket);
+                bracket.Tournament = tournament;
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -547,7 +595,23 @@ namespace DataLib
             return bracket;
         }
 
-        [Obsolete("Depricated. Use DeleteBracket.")]
+        public DbError UpdateBracket(BracketModel bracket)
+        {
+            try
+            {
+                BracketModel _bracket = context.Brackets.Find(bracket.BracketID);
+                _bracket = bracket;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception" + ex.ToString() + " in UpdateBracket");
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        [Obsolete("Use DeleteBracket(BracketMdoel bracket).")]
         public bool DeletBracketById(int id)
         {
             try
@@ -600,8 +664,8 @@ namespace DataLib
             return DbError.EXISTS;
         }
 
-        [Obsolete("Depricated. Use AddMatch that takes a match and bracket.")]
-        public DbError AddMatch(ref MatchModel match)
+        [Obsolete("Use AddMatch(ref MatchModel match, BracketModel bracket).")]
+        public DbError AddMatch(MatchModel match)
         {
             try
             {
@@ -619,7 +683,7 @@ namespace DataLib
 
         }
 
-        [Obsolete("Depricated. Use UpdateMatch.")]
+        [Obsolete("Use UpdateMatch.")]
         public DbError AddDefender(MatchModel match, UserModel user)
         {
             try
@@ -635,7 +699,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        [Obsolete("Depricated. Use UpdateMatch.")]
+        [Obsolete("Use UpdateMatch.")]
         public DbError AddChallenger(MatchModel match, UserModel user)
         {
             try
@@ -666,6 +730,23 @@ namespace DataLib
                
             }
             return DbError.SUCCESS;
+        }
+
+        [Obsolete("Use AddMatch(ref MatchModel match, BracketModel bracket)")]
+        public int AddMatch(MatchModel match, BracketModel bracket)
+        {
+            try
+            {
+                bracket.Matches.Add(match);
+                context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return -1;
+
+            }
+
+            return match.MatchID;
         }
 
         // Adds the passed-in match to the database and also adds it to the passed-in bracket's list of matches.
@@ -755,7 +836,6 @@ namespace DataLib
                 Console.WriteLine("Exception " + ex.ToString() + " in GetUserSeedInBracket");
                 return -1;
             }
-
             return ubs.Seed.Value;
         }
 

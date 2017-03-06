@@ -44,22 +44,13 @@ namespace DatabaseDebugConsole
 
             //db.SetUserBracketSeed(db.GetUserById(0), db.GetBracketByID(0), 1);
 
-            //foreach (var bracket in tournament.Brackets)
-            //{
-            //    foreach (var match in bracket.Matches)
-            //    {
-            //        Console.WriteLine("Match number: " + match.MatchNumber);
-            //        Console.WriteLine("Challenger: " + match.Challenger.FirstName + ' ' + match.Challenger.LastName);
-            //        Console.WriteLine("Defender: " + match.Defender.FirstName + ' ' + match.Defender.LastName);
-            //    }
-
-            //}
+            //PrintAllMatches(db, tournament);
 
             UserModel user = db.GetUserById(1);
             Console.WriteLine(user.Username);
-            user.Username = "testUsername";
-            db.UpdateUser(user);
-            Console.WriteLine(user.Username);
+            //user.Username = "testUsername";
+            //db.UpdateUser(user);
+            //Console.WriteLine(user.Username);
 
             //foreach (var match in tournament.Brackets.ElementAt(0).Matches)
             //{
@@ -80,7 +71,7 @@ namespace DatabaseDebugConsole
                 Description = "Test Tournament",
                 CreatedByID = 1
             };
-            db.AddTournament(tournament);
+            db.AddTournament(ref tournament);
 
 
             using (StreamReader reader = new StreamReader("..\\..\\Random User Info.txt"))
@@ -105,14 +96,17 @@ namespace DatabaseDebugConsole
                 BracketTitle = "Bracket 1",
                 BracketType = "Double Elimination"
             };
-            db.AddBracket(tournament, bracket);
+            //db.AddBracket(tournament, bracket);
+            db.AddBracket(ref bracket, tournament);
 
             BracketModel bracket2 = new BracketModel()
             {
                 BracketTitle = "Bracket 2",
                 BracketType = "Double Elimination"
             };
-            db.AddBracket(tournament, bracket);
+            //db.AddBracket(tournament, bracket);
+            db.AddBracket(ref bracket2, tournament);
+
 
             for (int i = 1; i < 11; i += 2)
             {
@@ -122,10 +116,27 @@ namespace DatabaseDebugConsole
                 challenger = db.GetUserById(i);
                 match.Challenger = challenger;
                 defender = db.GetUserById(i + 1);
-                db.AddDefender(match, defender);
-                db.AddMatch(match, db.GetBracketByID(1));
+                //db.AddDefender(match, defender);
+                match.Defender = defender;
+                db.UpdateMatch(match);
+                //db.AddMatch(match, db.GetBracketByID(1));
+                db.AddMatch(ref match, bracket);
             }
 
+        }
+
+        static void PrintAllMatches(DatabaseInterface db, TournamentModel tournament)
+        {
+            foreach (var bracket in tournament.Brackets)
+            {
+                foreach (var match in bracket.Matches)
+                {
+                    Console.WriteLine("Match number: " + match.MatchNumber);
+                    Console.WriteLine("Challenger: " + match.Challenger.FirstName + ' ' + match.Challenger.LastName);
+                    Console.WriteLine("Defender: " + match.Defender.FirstName + ' ' + match.Defender.LastName);
+                }
+
+            }
         }
 
         static void Encrypt()
