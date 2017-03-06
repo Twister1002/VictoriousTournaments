@@ -42,3 +42,32 @@ label {
         background-color:@alert-red;
     }
 }
+
+.dev-bp {
+    position:absolute;
+    top:0em;
+    height:.5em;
+    width: 100%;
+    background-color: grey;
+}
+
+@media screen and (min-width: @@b1) {
+	.dev-bp {
+        background-color: blue;
+	}
+}
+@media screen and (min-width: @@b2) {
+	.dev-bp {
+        background-color: violet;
+	}
+}
+@media screen and (min-width: @@b3) {
+	.dev-bp {
+        background-color: yellow;
+	}
+}
+@media screen and (min-width: @@b4) {
+    .dev-bp {
+        background-color: orange;
+	}
+}
