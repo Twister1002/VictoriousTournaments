@@ -1,4 +1,4 @@
-﻿/// <binding BeforeBuild='less' />
+﻿/// <binding AfterBuild='less' ProjectOpened='watch-less' />
 /*
 This file in the main entry point for defining Gulp tasks and using Gulp plugins.
 Click here to learn more. http://go.microsoft.com/fwlink/?LinkId=518007
@@ -11,7 +11,7 @@ var gulp = require("gulp"),
     rimraf = require("rimraf");
 
 gulp.task('less', function () {
-    gulp.src("Styles/less/_style*.less")
+    gulp.src("Styles/less/style*.less")
     .pipe(less())
     .pipe(gulp.dest("Styles/css/"));
 });

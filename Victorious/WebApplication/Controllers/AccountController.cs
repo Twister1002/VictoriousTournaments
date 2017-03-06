@@ -61,9 +61,9 @@ namespace WebApplication.Controllers
                 // Check the username and password
                 UserModel user = db.GetUserByUsername(viewModel.Username);
                 
-                if (user.UserID != -1)
+                //if (user.UserID != -1)
+                if (user != null)
                 {
-
                     if (user.Password == viewModel.Password)
                     {
                         Session["User.UserId"] = user.UserID;
@@ -138,8 +138,9 @@ namespace WebApplication.Controllers
                     else
                     {
                         // User Registration failed.
-                        viewModel.error = ViewModel.ViewError.WARNING;
-                        viewModel.message = "Well... Something went wrong when creating your account.";
+                        viewModel.error = ViewModel.ViewError.CRITICAL;
+                        viewModel.message = "Well... Something went wrong when creating your account: <br/>";
+                           //+"<h2>Message</h2>"+db.e.Message+"<h2>Inner Exception</h2>"+db.e.InnerException;
                         return View(viewModel);
                     }
                 }
@@ -153,7 +154,7 @@ namespace WebApplication.Controllers
             else
             {
                 //If we hit this, then something failed 
-                viewModel.error = ViewModel.ViewError.CRITICAL;
+                viewModel.error = ViewModel.ViewError.EXCEPTION;
                 viewModel.message = "Please enter in the required fields.";
                 return View(viewModel);
             }
