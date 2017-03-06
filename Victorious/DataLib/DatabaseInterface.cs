@@ -9,7 +9,7 @@ namespace DataLib
 
     public enum DbError
     {
-        ERROR = -1, NONE = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_REMOVE, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS
+        ERROR = -1, NONE = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS
     };
 
     public class DatabaseInterface
@@ -200,7 +200,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 Console.WriteLine("Exception " + ex.ToString() + " in DeleteUser");
-                return DbError.FAILED_TO_REMOVE;
+                return DbError.FAILED_TO_DELETE;
             }
             return DbError.SUCCESS;
         }
@@ -394,7 +394,6 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        [Obsolete("Depricated. User UpdateTournament.")]
         public DbError DeleteTournament(TournamentModel tournament)
         {
             try
@@ -406,7 +405,7 @@ namespace DataLib
             }
             catch (Exception)
             {
-                return DbError.FAILED_TO_REMOVE;
+                return DbError.FAILED_TO_DELETE;
             }
             return DbError.SUCCESS;
         }
@@ -466,6 +465,22 @@ namespace DataLib
         //    return dict;
         //}
 
+        public DbError DeleteTournamentRules(TournamentRuleModel tournamentRules)
+        {
+            try
+            {
+                context.TournamentRules.Attach(tournamentRules);
+                context.TournamentRules.Remove(tournamentRules);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception " + ex.ToString() + " in DeleteTournamentRules");
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
+        }
+
         #endregion
 
         #region Brackets Logic
@@ -480,6 +495,7 @@ namespace DataLib
                 return true;
         }
 
+        [Obsolete("Depricated. Use AddBracket that takes in a BracketModel refernece")]
         public int AddBracket(TournamentModel tournament, BracketModel bracket)
         {
             try
@@ -495,6 +511,24 @@ namespace DataLib
             }
 
             return bracket.BracketID;
+        }
+
+        // Adds the passed-in bracket to the databaase and also adds the bracket to the passed-in tournament's list of brackets
+        public DbError AddBracket(ref BracketModel bracket, TournamentModel tournament)
+        {
+            try
+            {
+                context.Brackets.Add(bracket);
+                tournament.Brackets.Add(bracket);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception " + ex.ToString() + " in AddBracket");
+                return DbError.FAILED_TO_ADD;
+            }
+
+            return DbError.SUCCESS;
         }
 
         public BracketModel GetBracketByID(int id)
@@ -513,7 +547,7 @@ namespace DataLib
             return bracket;
         }
 
-
+        [Obsolete("Depricated. Use DeleteBracket.")]
         public bool DeletBracketById(int id)
         {
             try
@@ -531,6 +565,23 @@ namespace DataLib
 
             return true;
         }
+
+        public DbError DeleteBracket(BracketModel bracket)
+        {
+            try
+            {
+                context.Brackets.Attach(bracket);
+                context.Brackets.Remove(bracket);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception " + ex.ToString() + " in DeleteBracket");
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
+        }
+
         #endregion
 
         #region Match Logic
@@ -549,7 +600,8 @@ namespace DataLib
             return DbError.EXISTS;
         }
 
-        public DbError AddMatch(MatchModel match)
+        [Obsolete("Depricated. Use AddMatch that takes a match and bracket.")]
+        public DbError AddMatch(ref MatchModel match)
         {
             try
             {
@@ -616,6 +668,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
+        // Adds the passed-in match to the database and also adds it to the passed-in bracket's list of matches.
         public DbError AddMatch(ref MatchModel match, BracketModel bracket)
         {
             try
@@ -629,7 +682,6 @@ namespace DataLib
                 return DbError.ERROR;
 
             }
-
             return DbError.SUCCESS;
         }
 
@@ -647,6 +699,22 @@ namespace DataLib
             }
 
             return match;
+        }
+
+        public DbError DeleteMatch(MatchModel match)
+        {
+            try
+            {
+                context.Matches.Attach(match);
+                context.Matches.Remove(match);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception " + ex.ToString() + " in DeleteMatch");
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
         }
 
         #endregion
