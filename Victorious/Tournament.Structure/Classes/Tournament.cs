@@ -99,6 +99,34 @@ namespace Tournament.Structure
 
 			Players.Add(_p);
 		}
+		public void ReplacePlayer(IPlayer _p, int _index)
+		{
+			if (null == _p)
+			{
+				throw new NullReferenceException();
+			}
+			if (_index < 0 || _index >= Players.Count)
+			{
+				throw new IndexOutOfRangeException();
+			}
+
+			if (Players[_index].Id >= 0)
+			{
+				int pId = Players[_index].Id;
+				foreach (IBracket bracket in Brackets)
+				{
+					for (int i = 0; i < bracket.Players.Count; ++i)
+					{
+						if (bracket.Players[i].Id == pId)
+						{
+							bracket.ReplacePlayer(_p, i);
+							break;
+						}
+					}
+				}
+			}
+			Players[_index] = _p;
+		}
 		public void RemovePlayer(IPlayer _p)
 		{
 			if (null == _p || null == Players)

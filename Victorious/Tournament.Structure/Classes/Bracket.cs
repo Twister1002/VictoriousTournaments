@@ -52,6 +52,19 @@ namespace Tournament.Structure
 			Players.Add(_p);
 			ResetBracket();
 		}
+		public void ReplacePlayer(IPlayer _p, int _index)
+		{
+			if (null == _p)
+			{
+				throw new NullReferenceException();
+			}
+			if (_index < 0 || _index >= Players.Count)
+			{
+				throw new IndexOutOfRangeException();
+			}
+
+			Players[_index] = _p;
+		}
 		public void RemovePlayer(IPlayer _p)
 		{
 			if (null == _p || null == Players)

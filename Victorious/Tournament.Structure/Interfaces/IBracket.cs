@@ -58,6 +58,14 @@ namespace Tournament.Structure
 		void AddPlayer(IPlayer _p);
 
 		/// <summary>
+		/// Replaces a player/slot in the playerlist
+		/// with the new indicated Player.
+		/// </summary>
+		/// <param name="_p">Player-type object to add.</param>
+		/// <param name="_index">Slot in list to replace.</param>
+		void ReplacePlayer(IPlayer _p, int _index);
+
+		/// <summary>
 		/// Remove a Player from the bracket.
 		/// </summary>
 		/// <param name="_p">Player-type object to remove.</param>
