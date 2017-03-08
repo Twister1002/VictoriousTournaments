@@ -225,7 +225,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			Assert.AreEqual(-1, b.GetGrandFinalMatchNumber());
+			Assert.IsNull(b.GetGrandFinal());
 		}
 
 		[TestMethod]
@@ -348,20 +348,6 @@ namespace Tournament.Structure.Tests
 			var x = b.GetLowerRound(1);
 
 			Assert.AreEqual(1, 2);
-		}
-		[TestMethod]
-		[TestCategory("SingleElimBracket")]
-		[TestCategory("Bracket Methods")]
-		public void SEBGetGrandFinalMatchNumber_ReturnsNegative1()
-		{
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 4; ++i)
-			{
-				pList.Add(new Mock<IPlayer>().Object);
-			}
-			IBracket b = new SingleElimBracket(pList);
-
-			Assert.AreEqual(-1, b.GetGrandFinalMatchNumber());
 		}
 	}
 }

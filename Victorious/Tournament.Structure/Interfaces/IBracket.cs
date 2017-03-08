@@ -107,10 +107,10 @@ namespace Tournament.Structure
 		List<IMatch> GetLowerRound(int _round);
 
 		/// <summary>
-		/// Gets Match Number of the Grand Final.
+		/// Gets the Grand Final Match.
 		/// </summary>
-		/// <returns>-1 if not applicable.</returns>
-		int GetGrandFinalMatchNumber();
+		/// <returns>null if not applicable.</returns>
+		IMatch GetGrandFinal();
 
 		//IMatch GetMatch(int _roundIndex, int _index);
 

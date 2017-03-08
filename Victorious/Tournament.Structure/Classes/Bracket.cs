@@ -131,24 +131,22 @@ namespace Tournament.Structure
 
 			return LowerRounds[LowerRounds.Count - _round];
 		}
-		public int GetGrandFinalMatchNumber()
+		public IMatch GetGrandFinal()
 		{
-			if (null == GrandFinal)
-			{
-				return -1;
-			}
-			return GrandFinal.MatchNumber;
+			return GrandFinal;
 		}
-		//public IMatch GetMatch(int _roundIndex, int _index)
-		//{
-		//	List<IMatch> matches = GetRound(_roundIndex);
+#if false
+		public IMatch GetMatch(int _roundIndex, int _index)
+		{
+			List<IMatch> matches = GetRound(_roundIndex);
 
-		//	if (_index < 0 || _index >= matches.Count)
-		//	{
-		//		throw new IndexOutOfRangeException();
-		//	}
-		//	return matches[_index];
-		//}
+			if (_index < 0 || _index >= matches.Count)
+			{
+				throw new IndexOutOfRangeException();
+			}
+			return matches[_index];
+		}
+#endif
 		public IMatch GetMatch(int _matchNumber)
 		{
 			if (_matchNumber < 1)
@@ -156,13 +154,33 @@ namespace Tournament.Structure
 				throw new IndexOutOfRangeException();
 			}
 
-			foreach (List<IMatch> round in Rounds)
+			if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
 			{
-				foreach (IMatch match in round)
+				return GrandFinal;
+			}
+			if (null != Rounds)
+			{
+				foreach (List<IMatch> round in Rounds)
 				{
-					if (match.MatchNumber == _matchNumber)
+					foreach (IMatch match in round)
 					{
-						return match;
+						if (match.MatchNumber == _matchNumber)
+						{
+							return match;
+						}
+					}
+				}
+			}
+			if (null != LowerRounds)
+			{
+				foreach (List<IMatch> round in LowerRounds)
+				{
+					foreach (IMatch match in round)
+					{
+						if (match.MatchNumber == _matchNumber)
+						{
+							return match;
+						}
 					}
 				}
 			}
@@ -179,7 +197,7 @@ namespace Tournament.Structure
 			LowerRounds = null;
 			GrandFinal = null;
 		}
-		#endregion
+#endregion
 
 #region Private Methods
 #if false

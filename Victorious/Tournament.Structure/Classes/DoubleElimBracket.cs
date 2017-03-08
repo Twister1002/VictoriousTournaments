@@ -173,7 +173,7 @@ namespace Tournament.Structure
 
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
-			if (_slot != PlayerSlot.Defender ||
+			if (_slot != PlayerSlot.Defender &&
 				_slot != PlayerSlot.Challenger)
 			{
 				throw new IndexOutOfRangeException();
