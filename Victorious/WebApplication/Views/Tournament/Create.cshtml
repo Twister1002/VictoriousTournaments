@@ -36,12 +36,12 @@
                 </li>
                 <li>
                     @Html.LabelFor(t => t.RegistrationEnd)
-                    @Html.TextBoxFor(t => t.RegistrationEnd, DateTime.Now.ToShortDateString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.RegistrationEnd, DateTime.Now.AddDays(1).ToShortDateString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.RegistrationEnd)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.CheckInDateTime)
-                    @Html.TextBoxFor(t => t.CheckInDateTime, DateTime.Now.ToShortDateString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.CheckInDateTime, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.CheckInDateTime)
                 </li>
             </ul>

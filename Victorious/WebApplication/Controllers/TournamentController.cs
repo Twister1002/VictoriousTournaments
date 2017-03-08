@@ -40,9 +40,16 @@ namespace WebApplication.Controllers
         [Route("Tournament/Create")]
         public ActionResult Create()
         {
-            TournamentFormModel viewModel = new TournamentFormModel();
+            if (Session["User.UserId"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                TournamentFormModel viewModel = new TournamentFormModel();
 
-            return View(viewModel);
+                return View(viewModel);
+            }
         }
 
         [Route("Tournament/Search/{title?}")]
@@ -70,6 +77,12 @@ namespace WebApplication.Controllers
         [Route("Tournament/Create")]
         public ActionResult Create(TournamentFormModel viewModel)
         {
+            // Verify the user is logged in first
+            if (Session["User.UserId"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             if (ModelState.IsValid)
             {
                 TournamentModel model = new TournamentModel()
