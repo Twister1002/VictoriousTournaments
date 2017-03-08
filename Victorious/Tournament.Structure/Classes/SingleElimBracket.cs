@@ -13,6 +13,8 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		// inherits List<IPlayer> Players
 		// inherits List<List<IMatch>> Rounds
+		// inherits List<List<IMatch>> LowerRounds (null)
+		// inherits IMatch GrandFinal (null)
 		#endregion
 
 		#region Ctors
@@ -25,6 +27,8 @@ namespace Tournament.Structure
 
 			Players = _players;
 			Rounds = new List<List<IMatch>>();
+			LowerRounds = null;
+			GrandFinal = null;
 			CreateBracket();
 		}
 		public SingleElimBracket()
@@ -48,7 +52,7 @@ namespace Tournament.Structure
 			// Create the Matches
 			for (int r = 0; numMatches < totalMatches; ++r)
 			{
-				AddRound();
+				Rounds.Add(new List<IMatch>());
 				for (int i = 0;
 					i < Math.Pow(2, r) && numMatches < totalMatches;
 					++i, ++numMatches)
@@ -59,7 +63,7 @@ namespace Tournament.Structure
 					m.SetRoundIndex(r);
 					m.SetMatchIndex(Rounds[r].Count);
 					m.WinsNeeded = _winsPerMatch;
-					AddMatch(r, m);
+					Rounds[r].Add(m);
 				}
 			}
 
@@ -136,20 +140,21 @@ namespace Tournament.Structure
 					if (1 <= Rounds[r][m].PreviousMatchNumbers.Count)
 					{
 						ReassignPlayers(Rounds[r][m], r);
-
-						//int prevIndex = 0;
-						//if (2 == Rounds[r][m].PreviousMatchNumbers.Count)
-						//{
-						//	ReassignPlayer(
-						//		Rounds[r][m].DefenderIndex(),
-						//		Rounds[r][m],
-						//		r,
-						//		Rounds[r][m].PreviousMatchNumbers[prevIndex++]);
-						//}
-						//ReassignPlayer(
-						//	Rounds[r][m].ChallengerIndex(),
-						//	Rounds[r][m],
-						//	Rounds[r][m].PreviousMatchNumbers[prevIndex]);
+#if false
+						int prevIndex = 0;
+						if (2 == Rounds[r][m].PreviousMatchNumbers.Count)
+						{
+							ReassignPlayer(
+								Rounds[r][m].DefenderIndex(),
+								Rounds[r][m],
+								r,
+								Rounds[r][m].PreviousMatchNumbers[prevIndex++]);
+						}
+						ReassignPlayer(
+							Rounds[r][m].ChallengerIndex(),
+							Rounds[r][m],
+							Rounds[r][m].PreviousMatchNumbers[prevIndex]);
+#endif
 					}
 				}
 
@@ -167,7 +172,7 @@ namespace Tournament.Structure
 					}
 				}
 			}
-			#endregion
+#endregion
 		}
 
 		public override void UpdateCurrentMatches(ICollection<MatchModel> _matchModels)
@@ -211,44 +216,48 @@ namespace Tournament.Structure
 
 			throw new KeyNotFoundException();
 		}
-		//public override void AddWin(IMatch _match, PlayerSlot _slot)
-		//{
-		//	AddWin(_match.MatchNumber, _slot);
-		//}
+#if false
+		public override void AddWin(IMatch _match, PlayerSlot _slot)
+		{
+			AddWin(_match.MatchNumber, _slot);
+		}
+#endif
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
 			throw new NotImplementedException();
 		}
-		#endregion
+#endregion
 
-		#region Private Methods
-		//private void ReassignPlayer(int _pIndex, IMatch _currMatch, int _currRound, int _newMatchNum)
-		//{
-		//	if (null == _currMatch || _newMatchNum < 1)
-		//	{
-		//		throw new NullReferenceException();
-		//	}
+#region Private Methods
+#if false
+		private void ReassignPlayer(int _pIndex, IMatch _currMatch, int _currRound, int _newMatchNum)
+		{
+			if (null == _currMatch || _newMatchNum < 1)
+			{
+				throw new NullReferenceException();
+			}
 
-		//	if (_currMatch.DefenderIndex() == _pIndex ||
-		//		_currMatch.ChallengerIndex() == _pIndex)
-		//	{
-		//		_currMatch.RemovePlayer(_pIndex);
+			if (_currMatch.DefenderIndex() == _pIndex ||
+				_currMatch.ChallengerIndex() == _pIndex)
+			{
+				_currMatch.RemovePlayer(_pIndex);
 
-		//		foreach (IMatch match in Rounds[_currMatch.RoundIndex + 1])
-		//		{
-		//			if (match.MatchNumber == _newMatchNum)
-		//			{
-		//				match.AddPlayer(_pIndex, 0);
-		//				if (match.PlayerIndexes.Contains(_pIndex))
-		//				{
-		//					return;
-		//				}
-		//			}
-		//		}
-		//	}
+				foreach (IMatch match in Rounds[_currMatch.RoundIndex + 1])
+				{
+					if (match.MatchNumber == _newMatchNum)
+					{
+						match.AddPlayer(_pIndex, 0);
+						if (match.PlayerIndexes.Contains(_pIndex))
+						{
+							return;
+						}
+					}
+				}
+			}
 
-		//	throw new KeyNotFoundException();
-		//}
+			throw new KeyNotFoundException();
+		}
+#endif
 		private void ReassignPlayers(IMatch _currMatch, int _currRound)
 		{
 			if (null == _currMatch || _currRound < 0)
@@ -331,6 +340,6 @@ namespace Tournament.Structure
 				}
 			}
 		}
-		#endregion
+#endregion
 	}
 }

@@ -15,6 +15,10 @@ namespace Tournament.Structure
 		{ get; protected set; }
 		protected List<List<IMatch>> Rounds
 		{ get; set; }
+		protected List<List<IMatch>> LowerRounds
+		{ get; set; }
+		protected IMatch GrandFinal
+		{ get; set; }
 		#endregion
 
 		#region Abstract Methods
@@ -82,17 +86,37 @@ namespace Tournament.Structure
 		}
 		public List<IMatch> GetRound(int _round)
 		{
+			if (null == Rounds)
+			{
+				throw new NullReferenceException();
+			}
 			if (_round < 1 || _round > Rounds.Count)
 			{
 				throw new IndexOutOfRangeException();
 			}
-			return Rounds[Rounds.Count - _round];
 
-			//if (_index < 0 || _index >= Rounds.Count)
-			//{
-			//	throw new IndexOutOfRangeException();
-			//}
-			//return Rounds[_index];
+			return Rounds[Rounds.Count - _round];
+		}
+		public int NumberOfLowerRounds()
+		{
+			if (null == LowerRounds || 0 == LowerRounds.Count)
+			{
+				throw new NullReferenceException();
+			}
+			return LowerRounds.Count;
+		}
+		public List<IMatch> GetLowerRound(int _round)
+		{
+			if (null == LowerRounds || 0 == LowerRounds.Count)
+			{
+				throw new NullReferenceException();
+			}
+			if (_round < 1 || _round > LowerRounds.Count)
+			{
+				throw new IndexOutOfRangeException();
+			}
+
+			return LowerRounds[LowerRounds.Count - _round];
 		}
 		//public IMatch GetMatch(int _roundIndex, int _index)
 		//{
@@ -124,17 +148,20 @@ namespace Tournament.Structure
 
 			throw new KeyNotFoundException();
 		}
-		public virtual void ResetBracket()
+		public void ResetBracket()
 		{
 			if (null == Rounds)
 			{
 				Rounds = new List<List<IMatch>>();
 			}
 			Rounds.Clear();
+			LowerRounds = null;
+			GrandFinal = null;
 		}
 		#endregion
 
-		#region Private Methods
+#region Private Methods
+#if false
 		protected void AddRound()
 		{
 			if (null == Rounds)
@@ -163,6 +190,7 @@ namespace Tournament.Structure
 
 			Rounds[_roundIndex].Add(_m);
 		}
-		#endregion
+#endif
+#endregion
 	}
 }

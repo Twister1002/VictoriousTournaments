@@ -71,16 +71,30 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Gets the number of rounds in the bracket.
 		/// </summary>
-		/// <returns>Number of Rounds.</returns>
+		/// <returns>Number of rounds.</returns>
 		int NumberOfRounds();
 
 		/// <summary>
 		/// Get all Matches in specified round.
-		/// (Round 1 is the bracket's FIRST round)
+		/// (_index=1 returns FIRST round)
 		/// </summary>
-		/// <param name="_index">Round number to get.</param>
+		/// <param name="_round">Round number to get.</param>
 		/// <returns>List of Matches in the round.</returns>
-		List<IMatch> GetRound(int _index);
+		List<IMatch> GetRound(int _round);
+
+		/// <summary>
+		/// Gets the number of rounds in the lower bracket.
+		/// </summary>
+		/// <returns>Number of rounds.</returns>
+		int NumberOfLowerRounds();
+
+		/// <summary>
+		/// Get all Matches in specified lower bracket round.
+		/// (_index=1 returns FIRST round)
+		/// </summary>
+		/// <param name="_round">Round number to get.</param>
+		/// <returns>List of Matches in the round.</returns>
+		List<IMatch> GetLowerRound(int _round);
 
 		//IMatch GetMatch(int _roundIndex, int _index);
 

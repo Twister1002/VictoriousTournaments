@@ -13,19 +13,14 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		// inherits List<IPlayer> Players
 		// inherits List<List<IMatch>> Rounds
-		protected List<List<IMatch>> LowerRounds
-		{ get; set; }
-		protected IMatch GrandFinal
-		{ get; set; }
+		// inherits List<LIst<IMatch>> LowerRounds
+		// inherits IMatch GrandFinal
 		#endregion
 
 		#region Ctors
 		public DoubleElimBracket(List<IPlayer> _players)
 			: base(_players)
-		{
-			LowerRounds = null;
-			GrandFinal = null;
-		}
+		{ }
 		public DoubleElimBracket()
 			: this(new List<IPlayer>())
 		{ }
@@ -295,15 +290,18 @@ namespace Tournament.Structure
 
 			throw new KeyNotFoundException();
 		}
-		//public override void AddWin(IMatch _match, PlayerSlot _slot)
-		//{
-		//	AddWin(_match.MatchNumber, _slot);
-		//}
+#if false
+		public override void AddWin(IMatch _match, PlayerSlot _slot)
+		{
+			AddWin(_match.MatchNumber, _slot);
+		}
+#endif
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
 			base.SubtractWin(_matchNumber, _slot);
 		}
 
+#if false
 		public List<IMatch> GetLowerRound(int _index)
 		{
 			if (_index < 0 || _index >= LowerRounds.Count)
@@ -324,9 +322,10 @@ namespace Tournament.Structure
 
 			return matches[_index];
 		}
-#endregion
+#endif
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 		protected int CalculateTotalLowerBracketMatches(int _numPlayers)
 		{
 			if (_numPlayers < 4)
@@ -396,6 +395,6 @@ namespace Tournament.Structure
 				}
 			}
 		}
-#endregion
+		#endregion
 	}
 }
