@@ -112,9 +112,9 @@ namespace Tournament.Structure
 		}
 		public int NumberOfLowerRounds()
 		{
-			if (null == LowerRounds || 0 == LowerRounds.Count)
+			if (null == LowerRounds)
 			{
-				throw new NullReferenceException();
+				return 0;
 			}
 			return LowerRounds.Count;
 		}
@@ -130,6 +130,14 @@ namespace Tournament.Structure
 			}
 
 			return LowerRounds[LowerRounds.Count - _round];
+		}
+		public int GetGrandFinalMatchNumber()
+		{
+			if (null == GrandFinal)
+			{
+				return -1;
+			}
+			return GrandFinal.MatchNumber;
 		}
 		//public IMatch GetMatch(int _roundIndex, int _index)
 		//{

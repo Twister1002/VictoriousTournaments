@@ -13,6 +13,8 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		List<IPlayer> Players { get; }
 		// protected List<List<IMatch>> Rounds { get; set; }
+		// protected List<List<IMatch>> LowerRounds { get; set; }
+		// protected IMatch GrandFinal { get; set; }
 		#endregion
 
 		#region Methods
@@ -103,6 +105,12 @@ namespace Tournament.Structure
 		/// <param name="_round">Round number to get.</param>
 		/// <returns>List of Matches in the round.</returns>
 		List<IMatch> GetLowerRound(int _round);
+
+		/// <summary>
+		/// Gets Match Number of the Grand Final.
+		/// </summary>
+		/// <returns>-1 if not applicable.</returns>
+		int GetGrandFinalMatchNumber();
 
 		//IMatch GetMatch(int _roundIndex, int _index);
 

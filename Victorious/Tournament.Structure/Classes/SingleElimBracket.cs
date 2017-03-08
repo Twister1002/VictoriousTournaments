@@ -195,7 +195,7 @@ namespace Tournament.Structure
 
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
-			if (_slot != PlayerSlot.Defender ||
+			if (_slot != PlayerSlot.Defender &&
 				_slot != PlayerSlot.Challenger)
 			{
 				throw new IndexOutOfRangeException();
@@ -280,7 +280,9 @@ namespace Tournament.Structure
 						if (match.MatchNumber == _currMatch.PreviousMatchNumbers[i])
 						{
 							match.AddPlayer(_currMatch.DefenderIndex());
+							_currMatch.RemovePlayer(_currMatch.DefenderIndex());
 							++i;
+							break;
 						}
 					}
 				}
@@ -291,11 +293,11 @@ namespace Tournament.Structure
 					if (match.MatchNumber == _currMatch.PreviousMatchNumbers[i])
 					{
 						match.AddPlayer(_currMatch.ChallengerIndex());
+						_currMatch.RemovePlayer(_currMatch.ChallengerIndex());
+						break;
 					}
 				}
 			}
-
-			_currMatch.ResetPlayers();
 		}
 
 		protected void AddWin(int _roundIndex, int _matchIndex, PlayerSlot _slot)

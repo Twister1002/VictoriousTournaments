@@ -109,7 +109,7 @@ namespace Tournament.Structure
 
 			RoundIndex = (int)(_m.RoundIndex);
 			MatchIndex = (int)(_m.MatchIndex);
-			MatchNumber = (int)(_m.MatchNumber);
+			MatchNumber = _m.MatchNumber;
 
 			PreviousMatchNumbers = new List<int>();
 			if (null != _m.PrevDefenderMatchNumber)
@@ -171,6 +171,7 @@ namespace Tournament.Structure
 				if (PlayerIndexes[i] == _playerIndex)
 				{
 					PlayerIndexes[i] = -1;
+					ResetScore();
 					return;
 				}
 			}
