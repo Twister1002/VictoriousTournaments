@@ -1,1 +1,17 @@
-﻿
+﻿.list-table-spacing(@max) {
+    .list-table-spacing-loop(@i) when (@i > 0) {
+        .list-table-spacing-loop(@i) {
+            &:first-child:nth-last-child(@{i}),
+            &:first-child:nth-last-child(@{i}) ~ & {
+                width: 1 / @i;
+            }
+        }
+    }
+
+    .list-table-spacing-loop(@max);
+}
+
+.size-calc(@a) when (@a > 0) {
+    width: 1 / @a;
+    background-color: @white;
+}

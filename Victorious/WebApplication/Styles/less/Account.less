@@ -5,8 +5,14 @@
     }*/
  
     .tournaments {
-        
+        position: relative;
+        vertical-align: top;
         ul {
+            &.list-table-header { 
+                > li{ 
+                    .size-calc(3);
+                    }
+            }
             li {
                 border: .1em;
                 border-color: @white;
@@ -19,27 +25,35 @@
         }
 
         .active {
-            background-color: black;
+            /*background-color: black;*/
         }
         .upcoming {
-            background-color: orange;
+            /*background-color: orange;*/
         }
         .create {
-            background-color: grey;
+            /*background-color: grey;*/
         }
     }
 
     .settings {
-        label {
-            
-        }
+        position: relative;
+        vertical-align: top;
     }
 
     @media screen and (min-width: @@b1) {
 	
     }
     @media screen and (min-width: @@b2) {
-	
+	    .tournaments {
+            display:inline-block;
+            width: 50%;
+
+	    }
+
+        .settings {
+            width: 49%;
+            display:inline-block;
+        }
     }
     @media screen and (min-width: @@b3) {
 	

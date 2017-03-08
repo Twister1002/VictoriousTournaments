@@ -188,6 +188,7 @@
     <Content Include="Styles\less\__breakpoints.less" />
     <Content Include="Styles\less\_layout.less" />
     <Content Include="Styles\less\_nav.less" />
+    <Content Include="Styles\less\_list-table.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
