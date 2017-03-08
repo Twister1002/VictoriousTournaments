@@ -21,6 +21,7 @@
                         @for (int i = 0; i < 3; i++)
                         {
                             <li>Tournament @i</li>
+                            <li>Rocket League</li>
                         }
                     </ul>
                 </li>
@@ -48,15 +49,13 @@
                 </li>
             </ul>
         </div>
-        <div class="create">
-            @Html.ActionLink("Create Tournament", "Create", "Tournament")
-        </div>
     </div>
 
     <div class="settings">
-        <h2>Account Settings</h2>
+        <h2>Settings</h2>
         <ul>
             <li>Update Account</li>
+            <li>@Html.ActionLink("Create Tournament", "Create", "Tournament")</li>
             <li>View Profile</li>
             <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
         </ul>
