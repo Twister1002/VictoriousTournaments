@@ -8,6 +8,7 @@ using System.IO;
 using System.Data.Sql;
 using Microsoft.SqlServer.Server;
 using System.Security.Cryptography;
+using System.Data.SqlClient;
 
 namespace DatabaseDebugConsole
 {
@@ -59,6 +60,8 @@ namespace DatabaseDebugConsole
 
             Console.WriteLine("Done");
             Console.ReadLine();
+
+            
 
         }
 
