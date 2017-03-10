@@ -22,10 +22,20 @@ namespace DatabaseDebugConsole
 
             //db.Clear();
             //Seed(db);
-            TournamentModel tournament = db.GetTournamentById(1);
+            //TournamentModel tournament = db.GetTournamentById(1);
 
-            UserBracketSeedModel ubs = new UserBracketSeedModel();
-
+            //UserBracketSeedModel ubs = new UserBracketSeedModel();
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    TournamentModel tournament = new TournamentModel()
+            //    {
+            //        Title = "Tournament " + i.ToString(),
+            //        Description = "Test Tournament",
+            //        CreatedByID = i
+            //    };
+            //    db.AddTournament(ref tournament);
+               
+            //}
             //foreach (var user in tournament.Users)
             //{
             //    Console.WriteLine(user.FirstName + ' ' + user.LastName);
@@ -47,8 +57,14 @@ namespace DatabaseDebugConsole
 
             //PrintAllMatches(db, tournament);
 
-            UserModel user = db.GetUserById(1);
-            Console.WriteLine(user.Username);
+            //UserModel user = db.GetUserById(1);
+            //Console.WriteLine(user.Username);
+
+            List<TournamentModel> tournaments = new List<TournamentModel>(db.GetAllTournaments());
+            foreach (var t in tournaments)
+            {
+                Console.WriteLine(t.CreatedByID);
+            }
             //user.Username = "testUsername";
             //db.UpdateUser(user);
             //Console.WriteLine(user.Username);

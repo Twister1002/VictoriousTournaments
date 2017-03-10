@@ -268,6 +268,22 @@ namespace DataLib
                 return DbError.EXISTS;
         }
 
+        public List<TournamentModel> GetAllTournaments()
+        {
+            List<TournamentModel> tournaments = new List<TournamentModel>(); 
+            try
+            {
+                tournaments = context.Tournaments.ToList();
+            }
+            catch (Exception ex)
+            {
+                
+                Console.WriteLine("Exception " + ex.ToString() + " in GetAllTournaments");
+                throw;
+            }
+            return tournaments;
+        }
+
         // Adds the passed-in tournament to the database
         [Obsolete("Use AddTournament(ref TournamentModel tournament)")]
         public int AddTournament(TournamentModel tournament)
