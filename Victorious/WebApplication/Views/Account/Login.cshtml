@@ -1,28 +1,28 @@
 ﻿@model WebApplication.Models.AccountLoginViewModel
 @{
     ViewBag.Title = "Register";
-    Layout = "~/Views/Shared/_Layout1.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="login form">
+<div id="AccountLogin">
     <h2>Login</h2>
-    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
-    {
-        <div class="message @Model.errorClassNames[(int)Model.error]">
-            @Model.ErrorMessage
-        </div>
-    }
-
     @using (Html.BeginForm("Login", "Account", FormMethod.Post))
     {
+        <div class="section" >
+            <ul>
+                <li>
+
+                </li>
+            </ul>
+        </div>
         <div class="login field">
             @Html.LabelFor(m => m.Username)
-            <input type="text" name="Username" class="registerInput" placeholder="Username" />
+            @Html.TextBoxFor(m => m.Username, null, new { @placeholder = "Username" })
             @Html.ValidationMessageFor(m => m.Username)
         </div>
         <div class="login field">
             @Html.LabelFor(m => m.Password)
-            <input type="password" name="Password" class="registerInput" placeholder="Password" />
+            @Html.TextBoxFor(m => m.Password, null, new { @placeholder = "Password" })
             @Html.ValidationMessageFor(m => m.Password)
         </div>
         <div class="login">

@@ -6,18 +6,19 @@
             <input type="text" name="title" class="field" placeholder="Search Tournaments" autocomplete="off" />
         </form>
     </div>
-    <ul>
-        <a href="/"><li class="nav navElement">Home</li></a>
-        <a href="/Tournament"><li class="nav navElement">Tournaments</li></a>
+    <div class="nav">
+
+        <a href="/">Home</a>
+        <a href="/Tournament">Tournaments</a>
         @if (Session["User.UserId"] != null)
         {
-            <a href="/Tournament/Create"><li class="nav navbar-right">Create Tournament</li></a>
-            <a href="/Account"><li class="nav navbar-right">Account</li></a>
+            <a href="/Tournament/Create">Create Tournament</a>
+            <a href="/Account">Account</a>
         }
         else
         {
-        <a href="/Account/Register"><li class="nav navElement navbar-right">Register</li></a>
-        <a href="/Account/Login"><li class="nav navElement navbar-right">Login</li></a>
+            <a href="/Account/Register">Register</a>
+            <a href="/Account/Login">Login</a>
         }
-    </ul>
+    </div>
 </div>

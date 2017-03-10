@@ -17,4 +17,7 @@
     //    }
     //})
     //.val($(this).slider("value"));
+
+    // Create Widths for list tables
+
 });

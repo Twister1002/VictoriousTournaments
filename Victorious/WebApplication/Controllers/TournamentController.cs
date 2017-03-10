@@ -40,9 +40,16 @@ namespace WebApplication.Controllers
         [Route("Tournament/Create")]
         public ActionResult Create()
         {
-            TournamentFormModel viewModel = new TournamentFormModel();
+            if (Session["User.UserId"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                TournamentFormModel viewModel = new TournamentFormModel();
 
-            return View(viewModel);
+                return View(viewModel);
+            }
         }
 
         [Route("Tournament/Search/{title?}")]
@@ -70,6 +77,12 @@ namespace WebApplication.Controllers
         [Route("Tournament/Create")]
         public ActionResult Create(TournamentFormModel viewModel)
         {
+            // Verify the user is logged in first
+            if (Session["User.UserId"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             if (ModelState.IsValid)
             {
                 TournamentModel model = new TournamentModel()
@@ -80,24 +93,26 @@ namespace WebApplication.Controllers
                     Description = viewModel.Description
                 };
 
-                DbError dbError = db.AddTournament(model);
+                //DbError dbError = db.AddTournament(model);
+                int tournamentId = db.AddTournament(model);
 
-                if (dbError == DbError.SUCCESS)
+                //if (dbError == DbError.SUCCESS)
+                if (tournamentId > 0)
                 {
-                    return RedirectToAction("Tournament/" + model.TournamentID);
+                    return RedirectToAction("Tournament/" + tournamentId);
                 }
                 else
                 {
                     // The tournament failed to be created
                     viewModel.error = ViewModel.ViewError.EXCEPTION;
-                    viewModel.ErrorMessage = "We could not create the tournament due to an error.";
+                    viewModel.message = "We could not create the tournament due to an error.";
                     return View(viewModel);
                 }
             }
             else
             {
                 viewModel.error = ViewModel.ViewError.CRITICAL;
-                viewModel.ErrorMessage = "Please enter in the required fields listed below.";
+                viewModel.message = "Please enter in the required fields listed below.";
                 return View(viewModel);
             }
         }

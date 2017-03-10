@@ -1,18 +1,11 @@
 ﻿@model WebApplication.Models.TournamentSearchViewModel
 @{ 
     ViewBag.Title = "Search";
-    Layout = "~/Views/Shared/_Layout1.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="Tournaments">
     <h2>Searching for </h2>
-    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
-    {
-        <div class="message @Model.errorClassNames[(int)Model.error]">
-            @Model.ErrorMessage
-        </div>
-    }
-
     This feature is not available. 
     Missing: DatabaseInterface::SearchTournaments()
 </div>

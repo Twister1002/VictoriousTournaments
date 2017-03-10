@@ -1,78 +1,86 @@
 ﻿#navagation {
-    position:relative;
+    position: relative;
     background-color: @color-primary-1;
-    border-radius: .4em;
-    vertical-align: middle;
-    padding: 0em 1% 0em 1%;
-    max-height: 10em;
+    border-radius: 1em;
+    padding:1em;
 
-    > *{
-        padding: .5em;
+    > * {
+        padding: .5em; 
     }
 
-    #logo {
-        position:relative;
-        display:inline-block; 
-        text-align:center;
-        vertical-align: middle;
-        width: 10em;
-        height: 5em;
-        line-height: 5em;
-        
-        background-color:green;
+    .logo {
+        background-color: green;
     }
-
     .searchBar {
-        position:relative;
-        display:inline-block; 
-        vertical-align: middle;
-        /*background-color: orange;*/
-        width: 15em;
-        line-height: 5em;
+        position: relative;
+        fill: #FFFFFF;
 
-        .fieldImage{
-            #eyeglass{
-                background-color:white;
-            }
-
+        .fieldImage {
             position: absolute;
             display: inline-block;
             padding: 0em;
             height: 1.5em;
             width: 1.5em;
-            left: 1em;
-            top: 1em;
             z-index:1;
+            
         }
         .field {
-            position:relative;
-            vertical-align: middle;
-            padding: .75em 0em .75em 2.5em;
+            width: 100%;
+            padding: .5em 0em .5em 2em;
         }
     }
-    
-    ul {
+
+    .nav {
         background-color:purple;
-        position:relative;
-        display:inline-block; 
-        list-style-type: none;
-        vertical-align: middle;
-        padding: 0em;
-        margin: 0em;
-        height: 5em;
-        
-        li {
-            float: left;
-            text-align: center;
-            height: 100%;
-            line-height:5em;
-            text-align:center;
-            vertical-align: middle;
-            padding: 0em 1em 0em 1em;
+        text-align: center;
+        border-radius: .5em;
+
+        a {
+            display: block;
+            padding: 1em;
+            text-decoration:none;
+            &:hover {
+                background-color: @color-primary-0;
+                color: inherit;
+            }
+        }
+    }
+
+    @media screen and (min-width: @@b1) {
+	    .nav {
+            a {
+                display:inline-block;
+            }
+	    }
+    }
+    @media screen and (min-width: @@b2) {
+        .logo {
+            display: inline-block;
+            width:49%;
+        }
+        .searchBar {
+            display: inline-block;
+            width: 46%;
         }
 
-        li.navElement:hover {
-            background-color: @color-primary-0;
+        /*.nav {
+            display:inline-block;
+	    }*/
+    }
+    @media screen and (min-width: @@b3) {
+        /*.logo {
+            width: 30%;
         }
+        .searchBar {
+            width: 20%;
+        }
+	    .nav {
+            width: 45%;
+            display:inline-block;
+	    }*/
+    }
+    @media screen and (min-width: @@b4) {
+
     }
 }
+

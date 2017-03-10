@@ -2,32 +2,32 @@
 
 @{
     ViewBag.Title = "Tournament";
-    Layout = "~/Views/Shared/_Layout1.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Tournament - @Model.tourny.Title</h2>
 <div id="Tournament">
-    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
-    {
-        <div class="message @Model.errorClassNames[(int)Model.error]">
-            @Model.ErrorMessage
-        </div>
-    }
-
-    @{int match = 0; }
     @for (int roundNum = @Model.tourny.Brackets[0].Rounds.Count()-1; roundNum >= 0; roundNum--)
     {
         var round = Model.tourny.Brackets[0].Rounds[roundNum];
         <div class="round round-@roundNum" data-matches="@round.Count()">
             @for (int matchNum = 0; matchNum < round.Count(); matchNum++)
             {
-                match++;
-                <div class="match match-@match">
-                    <label>@match</label>
+               var match = round[matchNum];
+
+                <div class="match match-@match.MatchNumber">
+                    <label>@match.MatchNumber</label>
                     <ul class="matchInfo">
-                        @foreach (var player in round[matchNum].PlayerIndexes)
+                        @foreach (int player in round[matchNum].PlayerIndexes)
                         {
-                            <li class="team"><div class="seed">@player</div>Name</li>
+                            if (player == -1)
+                            {
+                                <li class="team"><div class="seed"></div></li>
+                            }
+                            else
+                            {
+                                <li class="team teamNum-@player"><div class="seed">@player</div>@Model.tourny.Brackets[0].Players[player].Name</li>
+                            }
                         }
                     </ul>
                 </div>
