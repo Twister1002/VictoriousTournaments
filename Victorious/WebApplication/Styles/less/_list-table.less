@@ -1,5 +1,38 @@
 ﻿ul.list-table {
-    li.list-table-header {
+    display: table;
+    width: 100%;
+    height: 5em;
+    ul {
+        &[data-columns="2"] {
+            .columnSet(2);
+        }
+        &[data-columns="3"] {
+            .columnSet(3);
+        }
+        &[data-columns="4"] {
+            .columnSet(4);
+        }
+        &[data-columns="5"] {
+            .columnSet(5);
+        }
+        &[data-columns="6"] {
+            .columnSet(6);
+        }
         
+        border-bottom: .1em solid @white;
     }
+}
+
+.columnSet(@value) {
+    column-count: @value;
+    -moz-column-count: @value;
+    -webkit-column-count: @value;
+}
+
+.columnWidth(@value) {
+    @width: floor(((1/@value)-1)*100%);
+    /*width: @width;*/
+    column-width: @width;
+    -moz-column-width: @width;
+    -webkit-column-width: @width;
 }

@@ -139,8 +139,8 @@ namespace WebApplication.Controllers
                     {
                         // User Registration failed.
                         viewModel.error = ViewModel.ViewError.CRITICAL;
-                        viewModel.message = "Well... Something went wrong when creating your account: <br/>";
-                           //+"<h2>Message</h2>"+db.e.Message+"<h2>Inner Exception</h2>"+db.e.InnerException;
+                        viewModel.message = "Well... Something went wrong when creating your account: <br/>"
+                        +"<h2>Message</h2>" + db.e.Message + "<h2>Inner Exception</h2>" + db.e.InnerException;
                         return View(viewModel);
                     }
                 }

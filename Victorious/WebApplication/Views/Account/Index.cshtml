@@ -4,26 +4,50 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="@ViewBag.Title">
+<div id="Account">
     <div class="tournaments">
         <h2>Tournaments</h2>
+        <div class="personal">
+            <label>Your Tournaments</label>
+            <ul class="list-table">
+                <li class="list-table-header">
+                    <ul class="list-table-columns" data-columns="4">
+                        <li class="column">Name</li>
+                        <li class="column">Game</li>
+                        <li class="column">Registration Days</li>
+                        <li class="column">Start Date</li>
+                    </ul>
+                </li>
+                <li class="list-table-body">
+                    @for (int i = 0; i < 3; i++)
+                    {
+                        <ul data-columns="4">
+                            <li class="column">My Tournament @i</li>
+                            <li class="column">League of Legends</li>
+                            <li class="column">4 Days Left</li>
+                            <li class="column">@DateTime.Now.AddDays(6).ToShortDateString()</li>
+                        </ul>
+                    }
+                </li>
+            </ul>
+        </div>
         <div class="active">
             <label>Active Tournaments</label>
             <ul class="list-table">
                 <li class="list-table-header">
-                    <ul data-columns="2">
-                        <li>Name</li>
-                        <li>Game</li>
+                    <ul class="list-table-columns" data-columns="2">
+                        <li class="column">Name</li>
+                        <li class="column">Game</li>
                     </ul>
                 </li>
                 <li class="list-table-body">
-                    <ul>
-                        @for (int i = 0; i < 3; i++)
-                        {
-                            <li>Tournament @i</li>
-                            <li>Rocket League</li>
-                        }
-                    </ul>
+                    @for (int i = 0; i < 3; i++)
+                    {
+                        <ul data-columns="2">
+                            <li class="column">Tournament @i</li>
+                            <li class="column">Rocket League</li>
+                        </ul>
+                    }
                 </li>
             </ul>
         </div>
@@ -31,21 +55,21 @@
             <label>Upcoming</label>
             <ul class="list-table">
                 <li class="list-table-header">
-                    <ul data-columns="3">
-                        <li>Name</li>
-                        <li>Game</li>
-                        <li>Start Date</li>
+                    <ul class="list-table-columns" data-columns="3">
+                        <li class="column">Name</li>
+                        <li class="column">Game</li>
+                        <li class="column">Start Date</li>
                     </ul>
                 </li>
                 <li class="list-table-body">
-                    <ul>
-                        @for (int i = 0; i < 5; i++)
-                        {
-                            <li>Tournament @i</li>
-                            <li>Game Name</li>
-                            <li>@DateTime.Now.ToShortDateString()</li>
-                        }
-                    </ul>
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        <ul data-columns="3">
+                            <li class="column">Tournament @i</li>
+                            <li class="column">Rocket League</li>
+                            <li class="column">@DateTime.Now.ToShortDateString()</li>
+                        </ul>
+                    }
                 </li>
             </ul>
         </div>
