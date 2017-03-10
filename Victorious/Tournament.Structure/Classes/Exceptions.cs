@@ -15,4 +15,14 @@ namespace Tournament.Structure
 	{
 		public InactiveMatchException() { }
 	}
+
+	public class SlotFullException : Exception
+	{
+		public SlotFullException() { }
+	}
+
+	public class AlreadyAssignedException : Exception
+	{
+		public AlreadyAssignedException() { }
+	}
 }

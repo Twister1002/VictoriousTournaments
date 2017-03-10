@@ -13,28 +13,25 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		public ushort WinsNeeded
 		{ get; set; }
-		public int[] PlayerIndexes
+		private int[] PlayerIndexes
 		{ get; set; }
 		public ushort[] Score
+		{ get; private set; }
+		private int RoundIndex
 		{ get; set; }
-		public int RoundIndex
-		{ get; set; }
-		public int MatchIndex
+		private int MatchIndex
 		{ get; set; }
 		public int MatchNumber
-		{ get; set; }
-		public List<int> PrevMatchNumbers
-		{ get; set; }
+		{ get; private set; }
+		public List<int> PreviousMatchNumbers
+		{ get; private set; }
 		public int NextMatchNumber
-		{ get; set; }
+		{ get; private set; }
 		public int NextLoserMatchNumber
-		{ get; set; }
+		{ get; private set; }
 		#endregion
 
 		#region Ctors
-		public Match()
-			: this(1, new int[2] { -1, -1 }, new ushort[2] { 0, 0 }, -1, -1, -1, new List<int>(), -1, -1)
-		{ }
 		public Match(ushort _winsNeeded, int[] _playerIndexes, ushort[] _score, int _roundIndex, int _matchIndex, int _matchNumber, List<int> _prevMatchNumbers, int _nextMatchNumber, int _nextLoserMatchNumber)
 		{
 			if (null == _playerIndexes
@@ -50,10 +47,14 @@ namespace Tournament.Structure
 			RoundIndex = _roundIndex;
 			MatchIndex = _matchIndex;
 			MatchNumber = _matchNumber;
-			PrevMatchNumbers = _prevMatchNumbers;
+			PreviousMatchNumbers = _prevMatchNumbers;
 			NextMatchNumber = _nextMatchNumber;
 			NextLoserMatchNumber = _nextLoserMatchNumber;
 		}
+		public Match()
+			: this(1, new int[2] { -1, -1 }, new ushort[2] { 0, 0 }, -1, -1, -1, new List<int>(), -1, -1)
+		{ }
+
 		public Match(MatchModel _m, List<IPlayer> _playerList)
 		{
 			if (null == _m
@@ -70,7 +71,7 @@ namespace Tournament.Structure
 				//|| null == _m.Tournament
 				|| null == _m.WinsNeeded
 				|| null == _m.MatchIndex
-				|| null == _m.MatchNumber
+				//|| null == _m.MatchNumber
 				|| null == _m.NextMatchNumber
 				|| null == _m.NextLoserMatchNumber)
 			{
@@ -108,40 +109,60 @@ namespace Tournament.Structure
 
 			RoundIndex = (int)(_m.RoundIndex);
 			MatchIndex = (int)(_m.MatchIndex);
-			MatchNumber = (int)(_m.MatchNumber);
+			MatchNumber = _m.MatchNumber;
 
-			PrevMatchNumbers = new List<int>();
+			PreviousMatchNumbers = new List<int>();
 			if (null != _m.PrevDefenderMatchNumber)
 			{
-				PrevMatchNumbers.Add((int)(_m.PrevDefenderMatchNumber));
+				PreviousMatchNumbers.Add((int)(_m.PrevDefenderMatchNumber));
 			}
 			if (null != _m.PrevChallengerMatchNumber)
 			{
-				PrevMatchNumbers.Add((int)(_m.PrevChallengerMatchNumber));
+				PreviousMatchNumbers.Add((int)(_m.PrevChallengerMatchNumber));
 			}
 
 			NextMatchNumber = (int)(_m.NextMatchNumber);
 			NextLoserMatchNumber = (int)(_m.NextLoserMatchNumber);
 		}
-#endregion
+		#endregion
 
-#region Public Methods
-		public void AddPlayer(int _playerIndex, int _index)
+		#region Public Methods
+		public int DefenderIndex()
 		{
-			if (_index < 0 || _index > 1)
+			return PlayerIndexes[0];
+		}
+		public int ChallengerIndex()
+		{
+			return PlayerIndexes[1];
+		}
+		public void AddPlayer(int _playerIndex, PlayerSlot _slot = PlayerSlot.unspecified)
+		{
+			if (_slot != PlayerSlot.unspecified &&
+				_slot != PlayerSlot.Defender &&
+				_slot != PlayerSlot.Challenger)
 			{
 				throw new IndexOutOfRangeException();
 			}
-			if (PlayerIndexes[_index] > -1)
-			{
-				throw new Exception();
-			}
-			if (PlayerIndexes[0] == _playerIndex || PlayerIndexes[1] == _playerIndex)
+			if (PlayerIndexes[0] == _playerIndex ||
+				PlayerIndexes[1] == _playerIndex)
 			{
 				throw new DuplicateObjectException();
 			}
 
-			PlayerIndexes[_index] = _playerIndex;
+			for (int i = 0; i < 2; ++i)
+			{
+				if ((int)_slot == i ||
+					_slot == PlayerSlot.unspecified)
+				{
+					if (PlayerIndexes[i] < 0)
+					{
+						PlayerIndexes[i] = _playerIndex;
+						return;
+					}
+				}
+			}
+
+			throw new SlotFullException();
 		}
 		public void RemovePlayer(int _playerIndex)
 		{
@@ -150,18 +171,30 @@ namespace Tournament.Structure
 				if (PlayerIndexes[i] == _playerIndex)
 				{
 					PlayerIndexes[i] = -1;
+					ResetScore();
 					return;
 				}
 			}
 
 			throw new KeyNotFoundException();
 		}
-		public void RemovePlayers()
+		public void ResetPlayers()
 		{
+			if (null == PlayerIndexes)
+			{
+				PlayerIndexes = new int[2];
+			}
 			PlayerIndexes[0] = PlayerIndexes[1] = -1;
+			ResetScore();
 		}
-		public void AddWin(int _index)
+
+		public void AddWin(PlayerSlot _slot)
 		{
+			if (_slot != PlayerSlot.Defender &&
+				_slot != PlayerSlot.Challenger)
+			{
+				throw new IndexOutOfRangeException();
+			}
 			for (int i = 0; i < 2; ++i)
 			{
 				if (Score[i] >= WinsNeeded || PlayerIndexes[i] == -1)
@@ -170,17 +203,82 @@ namespace Tournament.Structure
 				}
 			}
 
-			Score[_index] += 1;
+			Score[(int)_slot] += 1;
 		}
-		public void AddPrevMatchNumber(int _n)
+		public void SubtractWin(PlayerSlot _slot)
 		{
-			if (PrevMatchNumbers.Count >= 2)
+			if (_slot != PlayerSlot.Defender &&
+				_slot != PlayerSlot.Challenger)
+			{
+				throw new IndexOutOfRangeException();
+			}
+			if (Score[(int)_slot] <= 0)
 			{
 				throw new ArgumentOutOfRangeException();
 			}
-
-			PrevMatchNumbers.Add(_n);
+			
+			Score[(int)_slot] -= 1;
 		}
-#endregion
+		public void ResetScore()
+		{
+			if (null == Score)
+			{
+				Score = new ushort[2];
+			}
+			Score[0] = Score[1] = 0;
+		}
+
+		public void SetRoundIndex(int _index)
+		{
+			if (RoundIndex > -1)
+			{
+				throw new AlreadyAssignedException();
+			}
+			RoundIndex = _index;
+		}
+		public void SetMatchIndex(int _index)
+		{
+			if (MatchIndex > -1)
+			{
+				throw new AlreadyAssignedException();
+			}
+			MatchIndex = _index;
+		}
+		public void SetMatchNumber(int _number)
+		{
+			if (MatchNumber > -1)
+			{
+				throw new AlreadyAssignedException();
+			}
+			MatchNumber = _number;
+		}
+		public void AddPreviousMatchNumber(int _number)
+		{
+			if (PreviousMatchNumbers.Count >= 2)
+			{
+				throw new AlreadyAssignedException();
+			}
+			PreviousMatchNumbers.Add(_number);
+		}
+		public void SetNextMatchNumber(int _number)
+		{
+			if (NextMatchNumber > -1)
+			{
+				throw new AlreadyAssignedException();
+			}
+			NextMatchNumber = _number;
+		}
+		public void SetNextLoserMatchNumber(int _number)
+		{
+			if (NextLoserMatchNumber > -1)
+			{
+				throw new AlreadyAssignedException();
+			}
+			NextLoserMatchNumber = _number;
+		}
+		#endregion
+
+		#region Private Methods
+		#endregion
 	}
 }

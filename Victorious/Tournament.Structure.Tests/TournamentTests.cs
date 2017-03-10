@@ -9,6 +9,7 @@ namespace Tournament.Structure.Tests
 	[TestClass]
 	public class TournamentTests
 	{
+#if false
 		[TestMethod]
 		[TestCategory("Tournament")]
 		[TestCategory("Tournament Constructor")]
@@ -30,5 +31,6 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(str, t.Title);
 		}
+#endif
 	}
 }

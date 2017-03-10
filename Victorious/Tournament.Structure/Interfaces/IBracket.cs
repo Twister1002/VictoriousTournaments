@@ -11,69 +11,120 @@ namespace Tournament.Structure
 	public interface IBracket
 	{
 		#region Variables & Properties
-		/// <summary>
-		/// List of Teams/Users in the Bracket.
-		/// </summary>
-		List<IPlayer> Players { get; set; }
-
-		/// <summary>
-		/// List of "rounds": List of Matches.
-		/// Match = "Rounds[round][match]"
-		/// </summary>
-		List<List<IMatch>> Rounds { get; set; }
+		List<IPlayer> Players { get; }
+		// protected List<List<IMatch>> Rounds { get; set; }
+		// protected List<List<IMatch>> LowerRounds { get; set; }
+		// protected IMatch GrandFinal { get; set; }
 		#endregion
 
 		#region Methods
 		/// <summary>
-		/// Generates a bracket (Rounds list),
-		/// based on current class data.
+		/// Generates the bracket (rounds & matches).
 		/// </summary>
-		/// <param name="_winsPerMatch">Default number of wins
-		/// needed to "win" each Match.</param>
+		/// <param name="_winsPerMatch">"Games" needed to win each match.</param>
 		void CreateBracket(ushort _winsPerMatch = 1);
 
 		/// <summary>
-		/// Sets Matches with current info from DB.
+		/// Temporarily public, DON'T USE THIS METHOD.
 		/// </summary>
-		/// <param name="_matchModels">ICollection of DB Matches.</param>
+		/// <param name="_matchModels">WHY ARE YOU STILL HERE</param>
 		void UpdateCurrentMatches(ICollection<MatchModel> _matchModels);
 
 		/// <summary>
-		/// Record a "game" win.
-		/// If applicable, will advance the winner (and loser).
+		/// Record one win for the specified match.
+		/// Advances Player if the Match is over.
 		/// </summary>
-		/// <param name="_match">Match object.</param>
-		/// <param name="_index">Index of winning Player (0 or 1).</param>
-		void AddWin(IMatch _match, int _index);
+		/// <param name="_matchNumber">Number of specified match.</param>
+		/// <param name="_slot">Winning player's slot: Defender or Challenger</param>
+		void AddWin(int _matchNumber, PlayerSlot _slot);
+		//void AddWin(IMatch _match, PlayerSlot _slot);
 
 		/// <summary>
-		/// Record a "game" win.
-		/// If applicable, will advance the winner (and loser).
+		/// Remove one win for the specified match.
+		/// Resets any affected "future" matches.
 		/// </summary>
-		/// <param name="_matchNumber">Match number of current Match.</param>
-		/// <param name="_index">Index of winning Player (0 or 1).</param>
-		void AddWin(int _matchNumber, int _index);
+		/// <param name="_matchNumber">Number of specified match.</param>
+		/// <param name="_slot">Player slot: Defender or Challenger.</param>
+		void SubtractWin(int _matchNumber, PlayerSlot _slot);
 
 		/// <summary>
-		/// Get all matches in the requested round.
+		/// Gets the number of Players in the Bracket.
 		/// </summary>
-		/// <param name="_index">Round index (0 is the final round).</param>
-		/// <returns>List of IMatches.</returns>
-		List<IMatch> GetRound(int _index);
+		/// <returns>Number of Players.</returns>
+		int NumberOfPlayers();
 
 		/// <summary>
-		/// Get the requested match.
+		/// Add a Player.
 		/// </summary>
-		/// <param name="_roundIndex">Round index (0 is the final round).</param>
-		/// <param name="_index">Match index inside the round.</param>
-		/// <returns>Requested IMatch.</returns>
-		IMatch GetMatch(int _roundIndex, int _index);
-
-		/// <summary>
-		/// Add a Player to the Players list.
-		/// </summary>
-		/// <param name="_p">Player to add.</param>
+		/// <param name="_p">Player-type object to add.</param>
 		void AddPlayer(IPlayer _p);
+
+		/// <summary>
+		/// Replaces a player/slot in the playerlist
+		/// with the new indicated Player.
+		/// </summary>
+		/// <param name="_p">Player-type object to add.</param>
+		/// <param name="_index">Slot in list to replace.</param>
+		void ReplacePlayer(IPlayer _p, int _index);
+
+		/// <summary>
+		/// Remove a Player from the bracket.
+		/// </summary>
+		/// <param name="_p">Player-type object to remove.</param>
+		void RemovePlayer(IPlayer _p);
+
+		/// <summary>
+		/// Clears the bracket's player list.
+		/// </summary>
+		void ResetPlayers();
+
+		/// <summary>
+		/// Gets the number of rounds in the bracket.
+		/// </summary>
+		/// <returns>Number of rounds.</returns>
+		int NumberOfRounds();
+
+		/// <summary>
+		/// Get all Matches in specified round.
+		/// (_index=1 returns FIRST round)
+		/// </summary>
+		/// <param name="_round">Round number to get.</param>
+		/// <returns>List of Matches in the round.</returns>
+		List<IMatch> GetRound(int _round);
+
+		/// <summary>
+		/// Gets the number of rounds in the lower bracket.
+		/// </summary>
+		/// <returns>Number of rounds.</returns>
+		int NumberOfLowerRounds();
+
+		/// <summary>
+		/// Get all Matches in specified lower bracket round.
+		/// (_index=1 returns FIRST round)
+		/// </summary>
+		/// <param name="_round">Round number to get.</param>
+		/// <returns>List of Matches in the round.</returns>
+		List<IMatch> GetLowerRound(int _round);
+
+		/// <summary>
+		/// Gets the Grand Final Match.
+		/// </summary>
+		/// <returns>null if not applicable.</returns>
+		IMatch GetGrandFinal();
+
+		//IMatch GetMatch(int _roundIndex, int _index);
+
+		/// <summary>
+		/// Get a specific Match object.
+		/// </summary>
+		/// <param name="_matchNumber">Match Number of the desired Match.</param>
+		/// <returns>Match object.</returns>
+		IMatch GetMatch(int _matchNumber);
+
+		/// <summary>
+		/// Clears all Matches and rounds in the bracket.
+		/// </summary>
+		void ResetBracket();
 		#endregion
 	}
 }
