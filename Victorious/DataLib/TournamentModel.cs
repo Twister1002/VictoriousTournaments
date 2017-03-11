@@ -15,12 +15,13 @@ namespace DataLib
         {
             Users = new Collection<UserModel>();
             Brackets = new Collection<BracketModel>();
+            //TournamentRules = new TournamentRuleModel();
             
         }
         [Key]
         public int TournamentID { get; set; }
 
-        public int TournamentRulesID { get; set; }
+        public int? TournamentRulesID { get; set; }
 
         [Required]
         public string Title { get; set; }

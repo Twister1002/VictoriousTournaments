@@ -498,10 +498,17 @@ namespace DataLib
 
         public DbError AddRules(ref TournamentRuleModel tournamentRules, TournamentModel tournament)
         {
+            TournamentRuleModel rules = new TournamentRuleModel();
             try
             {
+                rules = tournamentRules;
                 context.TournamentRules.Add(tournamentRules);
+                //context.SaveChanges();
+
+                tournamentRules = rules;
                 tournament.TournamentRules = tournamentRules;
+                //tournamentRules.TournamentID = tournament.TournamentID;
+
                 context.SaveChanges();
             }
             catch (Exception ex)

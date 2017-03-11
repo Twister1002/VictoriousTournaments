@@ -40,6 +40,9 @@ namespace DataLib
 
         public DateTime? EndDate { get; set; }
 
+        //[ForeignKey("TournamentID")]
+        //public virtual TournamentModel Tournament { get; set; }
+
         //public ICollection<Bracket> Brackets { get; set; }
 
     }

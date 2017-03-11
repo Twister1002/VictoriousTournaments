@@ -12,7 +12,8 @@ namespace DataLib
             : base("name=VictoriousTestDbContext")
         {
             //Database.SetInitializer(new DropCreateDatabaseAlways<VictoriousDbContext>());
-            //this.Configuration.LazyLoadingEnabled = true;
+            //Database.SetInitializer<VictoriousDbContext>(null);
+            this.Configuration.LazyLoadingEnabled = true;
         }
 #elif !DEBUG
         public VictoriousDbContext()
@@ -44,6 +45,9 @@ namespace DataLib
                 .WithRequired()
                 .WillCascadeOnDelete(false);
 
+            //modelBuilder.Entity<TournamentRuleModel>()
+            //    .HasOptional(e => e.Tournament)
+            //    .WithOptionalDependent(e => e.TournamentRules);
 
             modelBuilder.Entity<TournamentRuleModel>()
                 .Property(e => e.TournamentRulesID)
@@ -71,10 +75,10 @@ namespace DataLib
                 .WithRequired()
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<TournamentModel>()
-                .HasOptional(e => e.TournamentRules)
-                .WithRequired()
-                .WillCascadeOnDelete(false);
+            //modelBuilder.Entity<TournamentModel>()
+            //    .HasOptional(e => e.TournamentRules)
+            //    .WithRequired()
+            //    .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<TournamentModel>()
                 .HasMany(e => e.Users)

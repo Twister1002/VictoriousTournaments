@@ -22,7 +22,7 @@ namespace DatabaseDebugConsole
 
             //db.Clear();
             //Seed(db);
-            //TournamentModel tournament = db.GetTournamentById(1);
+            TournamentModel tournament = db.GetTournamentById(1);
 
             //UserBracketSeedModel ubs = new UserBracketSeedModel();
             //for (int i = 0; i < 5; i++)
@@ -34,7 +34,7 @@ namespace DatabaseDebugConsole
             //        CreatedByID = i
             //    };
             //    db.AddTournament(ref tournament);
-               
+
             //}
             //foreach (var user in tournament.Users)
             //{
@@ -60,11 +60,11 @@ namespace DatabaseDebugConsole
             //UserModel user = db.GetUserById(1);
             //Console.WriteLine(user.Username);
 
-            List<TournamentModel> tournaments = new List<TournamentModel>(db.GetAllTournaments());
-            foreach (var t in tournaments)
-            {
-                Console.WriteLine(t.CreatedByID);
-            }
+            //List<TournamentModel> tournaments = new List<TournamentModel>(db.GetAllTournaments());
+            //foreach (var t in tournaments)
+            //{
+            //    Console.WriteLine(t.CreatedByID);
+            //}
             //user.Username = "testUsername";
             //db.UpdateUser(user);
             //Console.WriteLine(user.Username);
@@ -73,6 +73,24 @@ namespace DatabaseDebugConsole
             //{
             //    Console.WriteLine(match.MatchNumber);
             //}
+
+            //if (db.TournamentHasRules(tournament) == DbError.EXISTS)
+            //{
+            //    Console.WriteLine("Yes");
+            //}
+
+            //TournamentRuleModel rules = new TournamentRuleModel()
+            //{
+            //    StartDate = DateTime.Now
+            //};
+            //db.AddRules(ref rules, tournament);
+            Console.WriteLine(tournament.Users.ElementAt(0).Email);
+
+            if (db.TournamentHasRules(tournament) == DbError.EXISTS)
+            {
+                Console.WriteLine(tournament.TournamentRules.StartDate.ToString());
+            }
+
 
             Console.WriteLine("Done");
             Console.ReadLine();
