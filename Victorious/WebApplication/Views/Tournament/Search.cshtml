@@ -1,11 +1,46 @@
 ﻿@model WebApplication.Models.TournamentSearchViewModel
-@{ 
+@{
     ViewBag.Title = "Search";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="Tournaments">
-    <h2>Searching for </h2>
-    This feature is not available. 
-    Missing: DatabaseInterface::SearchTournaments()
+<div id="TournamentSearch">
+    <h2>Find A Tournament</h2>
+    <ul class="list-table">
+        <li class="list-table-header">
+            <ul class="list-table-columns" data-columns="4">
+                <li>Title</li>
+                <li>Game</li>
+                <li>Start Date</li>
+                <li>Public</li>
+            </ul>
+        </li>
+        <li class="list-table-body">
+            @if (Model.models.Count > 0)
+            {
+                foreach (DataLib.TournamentModel tournyModel in Model.models)
+                {
+                    <a href="/Tournament/@tournyModel.TournamentID">
+                        <ul class="list-table-columns column-clickable" data-columns="4" data->
+                            <li>@tournyModel.Title</li>
+                            <li>League of Legends</li>
+                            <li>@DateTime.Now.ToShortDateString()</li>
+                            <li>Public</li>
+                            @*<li>@tournyModel.TournamentRules.StartDate</li>
+                            <li>@tournyModel.TournamentRules.IsPublic</li>
+                            <li>@tournyModel.TournamentRules.EntryFee</li>*@
+                        </ul>
+                    </a>
+                }
+            }
+            else
+            {
+                <ul data-columns="1">
+                    <li>
+                        No tournaments found.
+                    </li>
+                </ul>
+            }
+        </li>
+    </ul>
 </div>

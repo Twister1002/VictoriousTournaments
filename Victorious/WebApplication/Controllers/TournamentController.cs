@@ -21,19 +21,17 @@ namespace WebApplication.Controllers
         [Route("Tournament/{guid}")]
         public ActionResult Tournament(String guid)
         {
-            int guidInt = -1;
-            TournamentViewModel model = new TournamentViewModel();
+            int id = -1;
 
-            //if (int.TryParse(guid, out guidInt))
-            //{
-            //    TournamentModel dbModel = db.GetTournamentById(guidInt);
-            //    if (dbModel != null)
-            //    {
-            //        model = dbModel;
-            //    }
-            //}
-
-            return View("Tournament", model);
+            if (int.TryParse(guid, out id))
+            {
+                TournamentViewModel viewModel = new TournamentViewModel(id);
+                return View("Tournament", viewModel);
+            }
+            else
+            {
+                return RedirectToAction("Search", "Tournament");
+            }
         }
 
         // GET: Tournament/Create
@@ -92,18 +90,34 @@ namespace WebApplication.Controllers
                     CreatedOn = DateTime.Now,
                     Description = viewModel.Description
                 };
+                TournamentRuleModel rules = new TournamentRuleModel()
+                {
+                    IsPublic = viewModel.IsPublic
+                };
 
                 //DbError dbError = db.AddTournament(model);
-                int tournamentId = db.AddTournament(model);
-
-                //if (dbError == DbError.SUCCESS)
-                if (tournamentId > 0)
-                {
-                    return RedirectToAction("Tournament/" + tournamentId);
+                DbError result = db.AddTournament(ref model);
+                
+                if (result == DbError.SUCCESS) {
+                    rules.TournamentID = model.TournamentID;
+                    //DbError ruleResult = db.AddRules(ref rules, model);
+                    //if (ruleResult == DbError.SUCCESS)
+                    //{
+                    return RedirectToAction("Tournmanet", "Tournament", new { guid = model.TournamentID });
+                    //}
+                    //else
+                    //{
+                    //    db.DeleteTournament(model);
+                    //    viewModel.dbException = db.e;
+                    //    viewModel.error = ViewModel.ViewError.CRITICAL;
+                    //    viewModel.message = "Unable to create the rules for the tournament.";
+                    //    return View(viewModel);
+                    //}
                 }
                 else
                 {
                     // The tournament failed to be created
+                    viewModel.dbException = db.e;
                     viewModel.error = ViewModel.ViewError.EXCEPTION;
                     viewModel.message = "We could not create the tournament due to an error.";
                     return View(viewModel);

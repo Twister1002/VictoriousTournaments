@@ -39,43 +39,48 @@ namespace WebApplication.Models
 
     public class TournamentSearchViewModel : ViewModel
     {
-        private List<TournamentModel> models = new List<TournamentModel>();
-
-        public void AddTournament(TournamentModel model)
+        public List<TournamentModel> models { get; private set; }
+        
+        public TournamentSearchViewModel()
         {
-            models.Add(model);
+            models = db.GetAllTournaments();
         }
 
-        public void AddTournaments(List<TournamentModel> models)
+        public List<TournamentModel> Search(String title)
         {
-            this.models = models;
+            return models.Where(m => m.Title == title).ToList();
         }
     }
 
     public class TournamentViewModel : ViewModel {
         public ITournament tourny;
+        public TournamentModel tournament;
 
-        public TournamentViewModel()
+        public TournamentViewModel(int modelId)
         {
+            tournament = db.GetTournamentById(modelId);
+
             tourny = new Tournament.Structure.Tournament();
-            for (int i = 1; i <= 8; i++)
-            {
-                UserModel uModel = new UserModel()
-                {
-                    UserID = i,
-                    FirstName = "FirstName " + i,
-                    LastName = "LastName " + i,
-                    Username = "Player " + i,
-                    Email = "EMail" + i
-                };
+            //List<IPlayer> players = new List<IPlayer>();
 
-                tourny.AddPlayer(new User(uModel));
-            }
+            //for (int i = 1; i <= 8; i++)
+            //{
+            //    UserModel uModel = new UserModel()
+            //    {
+            //        UserID = i,
+            //        FirstName = "FirstName " + i,
+            //        LastName = "LastName " + i,
+            //        Username = "Player " + i,
+            //        Email = "EMail" + i
+            //    };
 
-            tourny.CreateSingleElimBracket();
-            tourny.Brackets[0].AddWin(1, 0);
-            tourny.Brackets[0].AddWin(2, 1);
-            tourny.Brackets[0].AddWin(5, 0);
+            //    players.Add(uModel);
+            //}
+
+            tourny.AddSingleElimBracket(15);
+            tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
+            tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
+            tourny.Brackets[0].AddWin(3, PlayerSlot.Defender);
         }
         
     }

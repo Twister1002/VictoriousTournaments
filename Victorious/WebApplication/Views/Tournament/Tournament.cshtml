@@ -5,33 +5,34 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Tournament - @Model.tourny.Title</h2>
 <div id="Tournament">
-    @for (int roundNum = @Model.tourny.Brackets[0].Rounds.Count()-1; roundNum >= 0; roundNum--)
-    {
-        var round = Model.tourny.Brackets[0].Rounds[roundNum];
-        <div class="round round-@roundNum" data-matches="@round.Count()">
-            @for (int matchNum = 0; matchNum < round.Count(); matchNum++)
-            {
-               var match = round[matchNum];
+    <h2>Tournament - @Model.tournament.Title</h2>
+    @{
+        var Bracket = Model.tourny.Brackets[0];
+        for (int roundNum = 1; roundNum <= Bracket.NumberOfRounds(); roundNum++)
+        {
+            var matches = Model.tourny.Brackets[0].GetRound(roundNum);
+            <div class="round round-@roundNum" data-matches="@matches.Count">
+                @foreach (var match in matches)
+                {
+                    var challenger = Bracket.Players[match.ChallengerIndex()];
+                    var defender = Bracket.Players[match.DefenderIndex()];
 
-                <div class="match match-@match.MatchNumber">
-                    <label>@match.MatchNumber</label>
-                    <ul class="matchInfo">
-                        @foreach (int player in round[matchNum].PlayerIndexes)
-                        {
-                            if (player == -1)
-                            {
-                                <li class="team"><div class="seed"></div></li>
-                            }
-                            else
-                            {
-                                <li class="team teamNum-@player"><div class="seed">@player</div>@Model.tourny.Brackets[0].Players[player].Name</li>
-                            }
-                        }
-                    </ul>
-                </div>
-            }
-        </div>
+                    <div class="match match-@match.MatchNumber">
+                        <label>@match.MatchNumber</label>
+                        <ul class="matchInfo">
+                            <li>
+                                <div class="seed">@defender.Id</div>
+                                @defender.Name'
+                            </li>
+                            <li>
+                                <div class="seed">@challenger.Id</div>
+                                @challenger.Name
+                            </li>
+                        </ul>
+                    </div>
+                }
+            </div>
+        }
     }
 </div>

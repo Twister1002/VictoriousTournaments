@@ -15,12 +15,21 @@
     @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
     {
         <div class="message @Model.errorClassNames[(int)Model.error]">
-            @MvcHtmlString.Create(Model.message)
+            @Model.message
+            <br />
+            @if (Model.dbException != null)
+            {
+                <h2>Exception Message</h2>
+                @Model.dbException.Message <br />
+                <h2>Inner Message</h2>
+                @Model.dbException.InnerException <br />
+            }
         </div>
     }
 
-    @if (Session["Message"] != null) {
-        
+    @if (Session["Message"] != null)
+    {
+
     }
 
     @RenderBody()
