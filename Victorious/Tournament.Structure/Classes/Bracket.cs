@@ -27,6 +27,7 @@ namespace Tournament.Structure
 		public abstract void AddWin(int _matchNumber, PlayerSlot _slot);
 		//public abstract void AddWin(IMatch _match, PlayerSlot _slot);
 		public abstract void SubtractWin(int _matchNumber, PlayerSlot _slot);
+		public abstract void ResetMatchScore(int _matchNumber);
 		#endregion
 
 		#region Public Methods

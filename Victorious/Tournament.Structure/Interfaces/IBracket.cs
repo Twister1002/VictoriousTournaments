@@ -47,6 +47,8 @@ namespace Tournament.Structure
 		/// <param name="_slot">Player slot: Defender or Challenger.</param>
 		void SubtractWin(int _matchNumber, PlayerSlot _slot);
 
+		void ResetMatchScore(int _matchNumber);
+
 		/// <summary>
 		/// Gets the number of Players in the Bracket.
 		/// </summary>

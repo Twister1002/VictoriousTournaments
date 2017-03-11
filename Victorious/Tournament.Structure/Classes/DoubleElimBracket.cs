@@ -301,6 +301,70 @@ namespace Tournament.Structure
 			base.SubtractWin(_matchNumber, _slot);
 		}
 
+		public override void ResetMatchScore(int _matchNumber)
+		{
+			if (_matchNumber < 1)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+			//base.ResetMatchScore(_matchNumber);
+
+			if (GrandFinal.MatchNumber == _matchNumber)
+			{
+				GrandFinal.ResetScore();
+				// if we start storing a "bracket winner", do more here...
+				return;
+			}
+			foreach (List<IMatch> round in Rounds)
+			{
+				foreach (IMatch match in round)
+				{
+					// Find the Match:
+					if (match.MatchNumber == _matchNumber)
+					{
+						// If this Match is done, remove advanced Players from future Matches
+						if (match.Score[(int)PlayerSlot.Defender] >= match.WinsNeeded)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.ChallengerIndex());
+						}
+						else if (match.Score[(int)PlayerSlot.Challenger] >= match.WinsNeeded)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.DefenderIndex());
+						}
+
+						match.ResetScore();
+						return;
+					}
+				}
+			}
+			foreach (List<IMatch> round in LowerRounds)
+			{
+				foreach (IMatch match in round)
+				{
+					// Find the Match:
+					if (match.MatchNumber == _matchNumber)
+					{
+						// If this Match is done, remove advanced Players from future Matches
+						if (match.Score[(int)PlayerSlot.Defender] >= match.WinsNeeded)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
+						}
+						else if (match.Score[(int)PlayerSlot.Challenger] >= match.WinsNeeded)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+						}
+
+						match.ResetScore();
+						return;
+					}
+				}
+			}
+
+			throw new KeyNotFoundException();
+		}
+
 #if false
 		public List<IMatch> GetLowerRound(int _index)
 		{
@@ -394,6 +458,72 @@ namespace Tournament.Structure
 					}
 				}
 			}
+		}
+
+		protected override void RemovePlayerFromFutureMatches(int _matchNumber, int _playerIndex)
+		{
+			if (_matchNumber < 1)
+			{
+				return;
+			}
+			if (_playerIndex < 0 || _playerIndex >= Players.Count)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+			//base.RemovePlayerFromFutureMatches(_matchNumber, _playerIndex);
+
+			if (GrandFinal.MatchNumber == _matchNumber)
+			{
+				GrandFinal.RemovePlayer(_playerIndex);
+			}
+			foreach (List<IMatch> round in Rounds)
+			{
+				foreach (IMatch match in round)
+				{
+					// Find the Match:
+					if (match.MatchNumber == _matchNumber)
+					{
+						// Find the Player:
+						if (match.DefenderIndex() == _playerIndex ||
+							match.ChallengerIndex() == _playerIndex)
+						{
+							// Remove any advanced Players from future Matches:
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.ChallengerIndex());
+
+							match.RemovePlayer(_playerIndex);
+						}
+
+						return;
+					}
+				}
+			}
+			foreach (List<IMatch> round in LowerRounds)
+			{
+				foreach (IMatch match in round)
+				{
+					// Find the Match:
+					if (match.MatchNumber == _matchNumber)
+					{
+						// Find the Player:
+						if (match.DefenderIndex() == _playerIndex ||
+							match.ChallengerIndex() == _playerIndex)
+						{
+							// Remove any advanced Players from future Matches:
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+
+							match.RemovePlayer(_playerIndex);
+						}
+
+						return;
+					}
+				}
+			}
+
+			throw new KeyNotFoundException();
 		}
 		#endregion
 	}
