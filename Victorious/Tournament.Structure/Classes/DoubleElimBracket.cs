@@ -298,7 +298,69 @@ namespace Tournament.Structure
 #endif
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
-			base.SubtractWin(_matchNumber, _slot);
+			if (_matchNumber < 1 ||
+				(_slot != PlayerSlot.Defender && _slot != PlayerSlot.Challenger))
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+
+			if (GrandFinal.MatchNumber == _matchNumber)
+			{
+				GrandFinal.SubtractWin(_slot);
+				// in future, this may affect other Brackets...
+			}
+			foreach (List<IMatch> round in Rounds)
+			{
+				foreach (IMatch match in round)
+				{
+					// Find the Match:
+					if (match.MatchNumber == _matchNumber)
+					{
+						// Remove advanced Players from future Matches:
+						if (match.Score[(int)_slot] >= match.WinsNeeded &&
+							_slot == PlayerSlot.Defender)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.ChallengerIndex());
+						}
+						else if (match.Score[(int)_slot] >= match.WinsNeeded &&
+							_slot == PlayerSlot.Challenger)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.DefenderIndex());
+						}
+
+						match.SubtractWin(_slot);
+						return;
+					}
+				}
+			}
+			foreach (List<IMatch> round in LowerRounds)
+			{
+				foreach (IMatch match in round)
+				{
+					// Find the Match:
+					if (match.MatchNumber == _matchNumber)
+					{
+						// Remove advanced Players from future Matches:
+						if (match.Score[(int)_slot] >= match.WinsNeeded &&
+							_slot == PlayerSlot.Defender)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
+						}
+						else if (match.Score[(int)_slot] >= match.WinsNeeded &&
+							_slot == PlayerSlot.Challenger)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+						}
+
+						match.SubtractWin(_slot);
+						return;
+					}
+				}
+			}
+
+			throw new KeyNotFoundException();
 		}
 
 		public override void ResetMatchScore(int _matchNumber)
@@ -307,7 +369,6 @@ namespace Tournament.Structure
 			{
 				throw new ArgumentOutOfRangeException();
 			}
-			//base.ResetMatchScore(_matchNumber);
 
 			if (GrandFinal.MatchNumber == _matchNumber)
 			{
@@ -470,7 +531,6 @@ namespace Tournament.Structure
 			{
 				throw new ArgumentOutOfRangeException();
 			}
-			//base.RemovePlayerFromFutureMatches(_matchNumber, _playerIndex);
 
 			if (GrandFinal.MatchNumber == _matchNumber)
 			{

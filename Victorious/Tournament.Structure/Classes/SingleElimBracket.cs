@@ -224,7 +224,38 @@ namespace Tournament.Structure
 #endif
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
-			throw new NotImplementedException();
+			if (_matchNumber < 1 ||
+				(_slot != PlayerSlot.Defender && _slot != PlayerSlot.Challenger))
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+
+			foreach (List<IMatch> round in Rounds)
+			{
+				foreach (IMatch match in round)
+				{
+					// Find the Match:
+					if (match.MatchNumber == _matchNumber)
+					{
+						// Remove advanced Players from future Matches:
+						if (match.Score[(int)_slot] >= match.WinsNeeded &&
+							_slot == PlayerSlot.Defender)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
+						}
+						else if (match.Score[(int)_slot] >= match.WinsNeeded &&
+							_slot == PlayerSlot.Challenger)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+						}
+
+						match.SubtractWin(_slot);
+						return;
+					}
+				}
+			}
+
+			throw new KeyNotFoundException();
 		}
 
 		public override void ResetMatchScore(int _matchNumber)
