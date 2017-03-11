@@ -15,19 +15,33 @@
             <div class="round round-@roundNum" data-matches="@matches.Count">
                 @foreach (var match in matches)
                 {
-                    var challenger = Bracket.Players[match.ChallengerIndex()];
-                    var defender = Bracket.Players[match.DefenderIndex()];
+                    int challenger = match.ChallengerIndex();
+                    int defender = match.DefenderIndex();
 
                     <div class="match match-@match.MatchNumber">
                         <label>@match.MatchNumber</label>
                         <ul class="matchInfo">
                             <li>
-                                <div class="seed">@defender.Id</div>
-                                @defender.Name'
+                                @if (challenger > -1)
+                                {
+                                    <div class="seed">@Bracket.Players[challenger].Id</div>
+                                    @Bracket.Players[challenger].Name
+                                }
+                                else
+                                {
+                                    <div class="seed"></div>
+                                }
                             </li>
                             <li>
-                                <div class="seed">@challenger.Id</div>
-                                @challenger.Name
+                                @if (defender > -1)
+                                {
+                                    <div class="seed">@Bracket.Players[defender].Id</div>
+                                    @Bracket.Players[defender].Name
+                                }
+                                else
+                                {
+                                    <div class="seed"></div>
+                                }
                             </li>
                         </ul>
                     </div>

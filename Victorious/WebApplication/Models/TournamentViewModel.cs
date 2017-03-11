@@ -61,26 +61,27 @@ namespace WebApplication.Models
             tournament = db.GetTournamentById(modelId);
 
             tourny = new Tournament.Structure.Tournament();
-            //List<IPlayer> players = new List<IPlayer>();
+            List<IPlayer> players = new List<IPlayer>();
 
-            //for (int i = 1; i <= 8; i++)
-            //{
-            //    UserModel uModel = new UserModel()
-            //    {
-            //        UserID = i,
-            //        FirstName = "FirstName " + i,
-            //        LastName = "LastName " + i,
-            //        Username = "Player " + i,
-            //        Email = "EMail" + i
-            //    };
+            for (int i = 1; i <= 15; i++)
+            {
+                UserModel uModel = new UserModel()
+                {
+                    UserID = i,
+                    FirstName = "FirstName " + i,
+                    LastName = "LastName " + i,
+                    Username = "Player " + i,
+                    Email = "Email" + i
+                };
 
-            //    players.Add(uModel);
-            //}
+                players.Add(new User(uModel));
+            }
 
-            tourny.AddSingleElimBracket(15);
-            tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
+            tourny.AddSingleElimBracket(players);
+            tourny.Brackets[0].AddWin(5, PlayerSlot.Challenger);
             tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
             tourny.Brackets[0].AddWin(3, PlayerSlot.Defender);
+            tourny.Brackets[0].AddWin(7, PlayerSlot.Challenger);
         }
         
     }
