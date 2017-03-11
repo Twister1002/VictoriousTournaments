@@ -21,8 +21,6 @@ namespace DataLib
 
         public int? DefenderID { get; set; }
 
-        //public int? TournamentID { get; set; }
-
         public int? WinnerID { get; set; }
 
         public int? ChallengerScore { get; set; }
