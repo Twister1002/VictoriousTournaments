@@ -6,7 +6,7 @@ namespace DataLib
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-  
+
     public partial class TournamentRuleModel : DbModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -30,15 +30,20 @@ namespace DataLib
         [Column(TypeName = "money")]
         public decimal? PrizePurse { get; set; }
 
-        public int? NumberOfPlayers { get; set; }
+        //public int? NumberOfPlayers { get; set; }
 
         public bool? IsPublic { get; set; }
 
-        public DateTime? CutoffDate { get; set; }
+        public DateTime? RegistrationStartDate { get; set; }
 
-        public DateTime? StartDate { get; set; }
+        public DateTime? RegistrationEndDate { get; set; }
 
-        public DateTime? EndDate { get; set; }
+        public DateTime? TournamentStartDate { get; set; }
+
+        public DateTime? TournamentEndDate { get; set; }
+
+        //[ForeignKey("TournamentID")]
+        //public virtual TournamentModel Tournament { get; set; }
 
         //public ICollection<Bracket> Brackets { get; set; }
 

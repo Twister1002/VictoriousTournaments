@@ -21,8 +21,6 @@ namespace DataLib
 
         public int? DefenderID { get; set; }
 
-        //public int? TournamentID { get; set; }
-
         public int? WinnerID { get; set; }
 
         public int? ChallengerScore { get; set; }
@@ -30,7 +28,7 @@ namespace DataLib
         public int? DefenderScore { get; set; }
 
         public int? RoundIndex { get; set; }
-             
+
         public int MatchNumber { get; set; }
 
         public bool? IsBye { get; set; }

@@ -10,7 +10,7 @@ namespace DataLib
 
     public partial class BracketModel : DbModel
     {
-        public const int BracketTypeLength = 50;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public BracketModel()
         {
@@ -23,8 +23,7 @@ namespace DataLib
 
         public string BracketTitle { get; set; }
 
-        [StringLength(BracketTypeLength)]
-        public string BracketType { get; set; }
+        public int BracketTypeID { get; set; }     
 
         public virtual ICollection<MatchModel> Matches { get; set; }
 
@@ -33,5 +32,6 @@ namespace DataLib
         // Tournament that holds this bracket.
         public virtual TournamentModel Tournament { get; set; }
 
+     
     }
 }

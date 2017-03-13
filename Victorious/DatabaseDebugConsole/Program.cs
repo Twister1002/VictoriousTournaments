@@ -34,7 +34,7 @@ namespace DatabaseDebugConsole
             //        CreatedByID = i
             //    };
             //    db.AddTournament(ref tournament);
-               
+
             //}
             //foreach (var user in tournament.Users)
             //{
@@ -60,11 +60,11 @@ namespace DatabaseDebugConsole
             //UserModel user = db.GetUserById(1);
             //Console.WriteLine(user.Username);
 
-            List<TournamentModel> tournaments = new List<TournamentModel>(db.GetAllTournaments());
-            foreach (var t in tournaments)
-            {
-                Console.WriteLine(t.CreatedByID);
-            }
+            //List<TournamentModel> tournaments = new List<TournamentModel>(db.GetAllTournaments());
+            //foreach (var t in tournaments)
+            //{
+            //    Console.WriteLine(t.CreatedByID);
+            //}
             //user.Username = "testUsername";
             //db.UpdateUser(user);
             //Console.WriteLine(user.Username);
@@ -74,10 +74,37 @@ namespace DatabaseDebugConsole
             //    Console.WriteLine(match.MatchNumber);
             //}
 
+            //if (db.TournamentHasRules(tournament) == DbError.EXISTS)
+            //{
+            //    Console.WriteLine("Yes");
+            //}
+
+            //TournamentRuleModel rules = new TournamentRuleModel()
+            //{
+            //    StartDate = DateTime.Now
+            //};
+            //db.AddRules(ref rules, tournament);
+            //Console.WriteLine(tournament.Users.ElementAt(0).Email);
+
+            //if (db.TournamentHasRules(tournament) == DbError.EXISTS)
+            //{
+            //    Console.WriteLine(tournament.TournamentRules.TournamentBeginsDate.ToString());
+            //}
+
+            //foreach (var tournament in db.GetAllTournaments())
+            //{
+            //    PrintAllMatches(db, tournament);
+            //}
+
+
+
+            //DeleteAllTournaments(db);
+
+
             Console.WriteLine("Done");
             Console.ReadLine();
 
-            
+
 
         }
 
@@ -108,22 +135,22 @@ namespace DatabaseDebugConsole
                     db.AddUserToTournament(tournament, user);
                     //db.AddUser(user);
                 }
-            }     
+            }
+
+
 
             BracketModel bracket = new BracketModel()
             {
                 BracketTitle = "Bracket 1",
-                BracketType = "Double Elimination"
+                BracketTypeID = 1               
             };
-            //db.AddBracket(tournament, bracket);
             db.AddBracket(ref bracket, tournament);
 
             BracketModel bracket2 = new BracketModel()
             {
                 BracketTitle = "Bracket 2",
-                BracketType = "Double Elimination"
+                BracketTypeID = 2
             };
-            //db.AddBracket(tournament, bracket);
             db.AddBracket(ref bracket2, tournament);
 
 
@@ -155,6 +182,21 @@ namespace DatabaseDebugConsole
                     Console.WriteLine("Defender: " + match.Defender.FirstName + ' ' + match.Defender.LastName);
                 }
 
+            }
+        }
+
+        static void DeleteAllTournaments(DatabaseInterface db)
+        {
+
+            List<TournamentModel> tournaments = db.GetAllTournaments();
+
+            foreach (var tournament in tournaments)
+            {
+                Console.WriteLine(tournament.Title);
+                if (db.DeleteTournament(tournament) == DbError.FAILED_TO_DELETE)
+                {
+                    Console.WriteLine("Error");
+                }
             }
         }
 

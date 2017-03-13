@@ -97,14 +97,29 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BracketModel.cs" />
+    <Compile Include="BracketTypeModel.cs" />
     <Compile Include="DbModel.cs" />
     <Compile Include="MatchModel.cs" />
     <Compile Include="Migrations\201703100236141_Initial.cs" />
     <Compile Include="Migrations\201703100236141_Initial.Designer.cs">
       <DependentUpon>201703100236141_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201703102354543_RemovedIdentity.cs" />
+    <Compile Include="Migrations\201703102354543_RemovedIdentity.Designer.cs">
+      <DependentUpon>201703102354543_RemovedIdentity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703131442531_AddedTeams.cs" />
+    <Compile Include="Migrations\201703131442531_AddedTeams.Designer.cs">
+      <DependentUpon>201703131442531_AddedTeams.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703131732047_AddedBracketTypeModel.cs" />
+    <Compile Include="Migrations\201703131732047_AddedBracketTypeModel.Designer.cs">
+      <DependentUpon>201703131732047_AddedBracketTypeModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TeamMemberModel.cs" />
+    <Compile Include="TeamModel.cs" />
     <Compile Include="TournamentModel.cs" />
     <Compile Include="TournamentRuleModel.cs" />
     <Compile Include="UserBracketSeedModel.cs" />
@@ -125,6 +140,15 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201703100236141_Initial.resx">
       <DependentUpon>201703100236141_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703102354543_RemovedIdentity.resx">
+      <DependentUpon>201703102354543_RemovedIdentity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703131442531_AddedTeams.resx">
+      <DependentUpon>201703131442531_AddedTeams.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703131732047_AddedBracketTypeModel.resx">
+      <DependentUpon>201703131732047_AddedBracketTypeModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
