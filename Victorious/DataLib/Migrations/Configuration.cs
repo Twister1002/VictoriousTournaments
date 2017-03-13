@@ -10,6 +10,8 @@ namespace DataLib.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
+
+
         }
 
         protected override void Seed(DataLib.VictoriousDbContext context)
@@ -26,6 +28,13 @@ namespace DataLib.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
+
+            //context.BracketTypes.AddOrUpdate(
+            //    b => b.BracketTypeID,
+            //    new BracketTypeModel { BracketTypeID = 1, TypeName = "Single Elimination" },
+            //    new BracketTypeModel { BracketTypeID = 2, TypeName = "Double Elimination" },
+            //    new BracketTypeModel { BracketTypeID = 3, TypeName = "Round Robin" }
+            //    );
         }
     }
 }

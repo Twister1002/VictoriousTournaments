@@ -16,12 +16,24 @@ namespace DataLib
     public class DatabaseInterface
     {
         VictoriousDbContext context = new VictoriousDbContext();
-
-        void VicotriousDatabase()
+        public Exception exception;
+        public DatabaseInterface()
         {
 
+            if (context.BracketTypes.Find(1) == null)
+            {
+                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 1, TypeName = "Single Elimination" }); 
+            }
+            if (context.BracketTypes.Find(2) == null)
+            {
+                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 2, TypeName = "Double Elimination" });
+            }
+            if (context.BracketTypes.Find(3) == null)
+            {
+                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 3, TypeName = "Round Robin" });
+            }
+
         }
-       
         // DO NOT EVER CALL THIS FUNCTION OUTSIDE THE DEBUG PROJECT
         public void Clear()
         {
@@ -58,8 +70,6 @@ namespace DataLib
 
 
         }
-
-
 
         // For testing purposes only.
         // Call this function to re-seed the database.
@@ -447,7 +457,7 @@ namespace DataLib
         }
         #endregion
 
-        #region TournamentRules Logic
+        #region TournamentRules
 
         public DbError TournamentHasRules(TournamentModel tournament)
         {
@@ -543,7 +553,7 @@ namespace DataLib
 
         #endregion
 
-        #region Brackets Logic
+        #region Brackets
         public bool BracketExists(int id)
         {
             BracketModel bracket = context.Brackets.Find(id);
@@ -666,7 +676,7 @@ namespace DataLib
 
         #endregion
 
-        #region Match Logic
+        #region Match
 
         public DbError MatchExists(MatchModel match)
         {

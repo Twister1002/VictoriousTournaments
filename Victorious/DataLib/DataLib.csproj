@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BracketModel.cs" />
+    <Compile Include="BracketTypeModel.cs" />
     <Compile Include="DbModel.cs" />
     <Compile Include="MatchModel.cs" />
     <Compile Include="Migrations\201703100236141_Initial.cs" />
@@ -110,6 +111,10 @@
     <Compile Include="Migrations\201703131442531_AddedTeams.cs" />
     <Compile Include="Migrations\201703131442531_AddedTeams.Designer.cs">
       <DependentUpon>201703131442531_AddedTeams.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703131732047_AddedBracketTypeModel.cs" />
+    <Compile Include="Migrations\201703131732047_AddedBracketTypeModel.Designer.cs">
+      <DependentUpon>201703131732047_AddedBracketTypeModel.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -141,6 +146,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703131442531_AddedTeams.resx">
       <DependentUpon>201703131442531_AddedTeams.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703131732047_AddedBracketTypeModel.resx">
+      <DependentUpon>201703131732047_AddedBracketTypeModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

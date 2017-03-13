@@ -93,9 +93,12 @@ namespace DatabaseDebugConsole
 
             //foreach (var tournament in db.GetAllTournaments())
             //{
+            //    PrintAllMatches(db, tournament);
             //}
 
-            DeleteAllTournaments(db);
+
+
+            //DeleteAllTournaments(db);
 
 
             Console.WriteLine("Done");
@@ -134,20 +137,20 @@ namespace DatabaseDebugConsole
                 }
             }
 
+
+
             BracketModel bracket = new BracketModel()
             {
                 BracketTitle = "Bracket 1",
-                BracketType = "Double Elimination"
+                BracketTypeID = 1               
             };
-            //db.AddBracket(tournament, bracket);
             db.AddBracket(ref bracket, tournament);
 
             BracketModel bracket2 = new BracketModel()
             {
                 BracketTitle = "Bracket 2",
-                BracketType = "Double Elimination"
+                BracketTypeID = 2
             };
-            //db.AddBracket(tournament, bracket);
             db.AddBracket(ref bracket2, tournament);
 
 

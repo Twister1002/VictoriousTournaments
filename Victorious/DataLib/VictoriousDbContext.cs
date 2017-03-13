@@ -14,7 +14,7 @@ namespace DataLib
             //Database.SetInitializer(new DropCreateDatabaseAlways<VictoriousDbContext>());
             //Database.SetInitializer<VictoriousDbContext>(null);
             this.Configuration.LazyLoadingEnabled = true;
-
+           
         }
 #elif !DEBUG
         public VictoriousDbContext()
@@ -33,11 +33,14 @@ namespace DataLib
         public DbSet<UserBracketSeedModel> UserBracketSeeds { get; set; }
         public DbSet<TeamModel> Teams { get; set; }
         public DbSet<TeamMemberModel> TeamMembers { get; set; }
+        public DbSet<BracketTypeModel> BracketTypes { get; set; }
         //public DbSet<UsersInTournamentsModel> UsersInTournaments { get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            
+
             //modelBuilder.Entity<Bracket>()
             //    .HasMany(e => e.TournamentRules)
             //    .WithRequired(e => e.Bracket)
@@ -126,6 +129,9 @@ namespace DataLib
 
             modelBuilder.Entity<TeamMemberModel>()
                 .ToTable("TeamMembers");
+
+            modelBuilder.Entity<BracketTypeModel>()
+                .ToTable("BracketTypes");
 
             modelBuilder.Entity<MatchModel>()
                 .HasOptional(e => e.Challenger)
