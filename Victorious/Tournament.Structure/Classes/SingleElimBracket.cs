@@ -260,6 +260,11 @@ namespace Tournament.Structure
 
 		public override void ResetMatchScore(int _matchNumber)
 		{
+			if (_matchNumber < 1)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+
 			foreach (List<IMatch> round in Rounds)
 			{
 				foreach (IMatch match in round)
