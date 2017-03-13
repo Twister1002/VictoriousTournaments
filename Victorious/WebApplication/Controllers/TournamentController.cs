@@ -25,8 +25,17 @@ namespace WebApplication.Controllers
 
             if (int.TryParse(guid, out id))
             {
-                TournamentViewModel viewModel = new TournamentViewModel(id);
-                return View("Tournament", viewModel);
+                TournamentViewModel viewModel = new TournamentViewModel(db.GetTournamentById(id));
+
+                if (viewModel.model != null)
+                {
+                    return View("Tournament", viewModel);
+                }
+                else
+                {
+                    Session["Server.Message"] = "The tournmanet you're looking for doesn't exist or is not publicly shared.";
+                    return RedirectToAction("Search", "Tournament");
+                }
             }
             else
             {

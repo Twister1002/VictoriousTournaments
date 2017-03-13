@@ -21,12 +21,14 @@
                 <li class="list-table-body">
                     @for (int i = 0; i < 3; i++)
                     {
-                        <ul data-columns="4">
-                            <li class="column">My Tournament @i</li>
-                            <li class="column">League of Legends</li>
-                            <li class="column">4 Days Left</li>
-                            <li class="column">@DateTime.Now.AddDays(6).ToShortDateString()</li>
-                        </ul>
+                        <a href="#">
+                            <ul class="row-clickable" data-columns="4">
+                                <li class="column">My Tournament @i</li>
+                                <li class="column">League of Legends</li>
+                                <li class="column">4 Days Left</li>
+                                <li class="column">@DateTime.Now.AddDays(6).ToShortDateString()</li>
+                            </ul>
+                        </a>
                     }
                 </li>
             </ul>
@@ -43,10 +45,12 @@
                 <li class="list-table-body">
                     @for (int i = 0; i < 3; i++)
                     {
-                        <ul data-columns="2">
-                            <li class="column">Tournament @i</li>
-                            <li class="column">Rocket League</li>
-                        </ul>
+                        <a href="#">
+                            <ul class="row-clickable" data-columns="2">
+                                <li class="column">Tournament @i</li>
+                                <li class="column">Rocket League</li>
+                            </ul>
+                        </a>
                     }
                 </li>
             </ul>
@@ -64,11 +68,13 @@
                 <li class="list-table-body">
                     @for (int i = 0; i < 5; i++)
                     {
-                        <ul data-columns="3">
-                            <li class="column">Tournament @i</li>
-                            <li class="column">Rocket League</li>
-                            <li class="column">@DateTime.Now.ToShortDateString()</li>
-                        </ul>
+                        <a href="#">
+                            <ul class="row-clickable" data-columns="3">
+                                <li class="column">Tournament @i</li>
+                                <li class="column">Rocket League</li>
+                                <li class="column">@DateTime.Now.ToShortDateString()</li>
+                            </ul>
+                        </a>
                     }
                 </li>
             </ul>
@@ -79,9 +85,9 @@
         <h2>Settings</h2>
         <ul>
             <li>Update Account</li>
-            <li>@Html.ActionLink("Create Tournament", "Create", "Tournament")</li>
+            <li class="clickable-underline">@Html.ActionLink("Create Tournament", "Create", "Tournament")</li>
             <li>View Profile</li>
-            <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
+            <li class="clickable-underline">@Html.ActionLink("Logout", "Logout", "Account")</li>
         </ul>
     </div>
 </div>

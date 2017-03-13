@@ -54,16 +54,18 @@ namespace WebApplication.Models
 
     public class TournamentViewModel : ViewModel {
         public ITournament tourny;
-        public TournamentModel tournament;
+        public TournamentModel model;
 
-        public TournamentViewModel(int modelId)
+        public TournamentViewModel(TournamentModel model)
         {
-            tournament = db.GetTournamentById(modelId);
+            // We need to grab data about this tournament and feed it
+            // Into the tournament class so we can get proper rendering
+            this.model = model;
 
             tourny = new Tournament.Structure.Tournament();
             List<IPlayer> players = new List<IPlayer>();
 
-            for (int i = 1; i <= 15; i++)
+            for (int i = 1; i <= 50; i++)
             {
                 UserModel uModel = new UserModel()
                 {
@@ -78,10 +80,10 @@ namespace WebApplication.Models
             }
 
             tourny.AddSingleElimBracket(players);
-            tourny.Brackets[0].AddWin(5, PlayerSlot.Challenger);
+            tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
             tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
-            tourny.Brackets[0].AddWin(3, PlayerSlot.Defender);
-            tourny.Brackets[0].AddWin(7, PlayerSlot.Challenger);
+            //tourny.Brackets[0].AddWin(3, PlayerSlot.Defender);
+            //tourny.Brackets[0].AddWin(7, PlayerSlot.Challenger);
         }
         
     }

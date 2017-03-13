@@ -1,27 +1,52 @@
 ﻿ul.list-table {
     display: table;
     width: 100%;
-    height: 5em;
+    min-height: 5em;
+
     ul {
-        &[data-columns="2"] {
-            .columnSet(2);
-        }
-        &[data-columns="3"] {
-            .columnSet(3);
-        }
-        &[data-columns="4"] {
-            .columnSet(4);
-        }
-        &[data-columns="5"] {
-            .columnSet(5);
-        }
-        &[data-columns="6"] {
-            .columnSet(6);
-        }
-        > a {
-            display: inline-block;
-        }
         border-bottom: .1em solid @white;
+
+        &.row-clickable {
+            &:hover {
+                background-color: @color-primary-4;
+                color: @white;
+            }
+        }
+
+        &[data-columns="2"] {
+            a, li {
+                display: inline-block;
+                .columnwidth(2);
+            }
+        }
+
+        &[data-columns="3"] {
+            a, li {
+                display: inline-block;
+                .columnwidth(3);
+            }
+        }
+
+        &[data-columns="4"] {
+            a, li {
+                display: inline-block;
+                .columnwidth(4);
+            }
+        }
+
+        &[data-columns="5"] {
+            a, li {
+                display: inline-block;
+                .columnwidth(5);
+            }
+        }
+
+        &[data-columns="6"] {
+            a, li {
+                display: inline-block;
+                .columnwidth(6);
+            }
+        }
     }
 }
 
@@ -31,10 +56,6 @@
     -webkit-column-count: @value;
 }
 
-.columnWidth(@value) {
-    @width: floor(((1/@value)-1)*100%);
-    /*width: @width;*/
-    column-width: @width;
-    -moz-column-width: @width;
-    -webkit-column-width: @width;
+.columnwidth(@value) {
+    width: (1/@value) * 98%;
 }
