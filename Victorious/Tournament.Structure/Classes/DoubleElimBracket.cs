@@ -298,7 +298,133 @@ namespace Tournament.Structure
 #endif
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
-			base.SubtractWin(_matchNumber, _slot);
+			if (_matchNumber < 1 ||
+				(_slot != PlayerSlot.Defender && _slot != PlayerSlot.Challenger))
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+
+			if (GrandFinal.MatchNumber == _matchNumber)
+			{
+				GrandFinal.SubtractWin(_slot);
+				// in future, this may affect other Brackets...
+				return;
+			}
+			foreach (List<IMatch> round in Rounds)
+			{
+				foreach (IMatch match in round)
+				{
+					// Find the Match:
+					if (match.MatchNumber == _matchNumber)
+					{
+						// Remove advanced Players from future Matches:
+						if (match.Score[(int)_slot] >= match.WinsNeeded &&
+							_slot == PlayerSlot.Defender)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.ChallengerIndex());
+						}
+						else if (match.Score[(int)_slot] >= match.WinsNeeded &&
+							_slot == PlayerSlot.Challenger)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.DefenderIndex());
+						}
+
+						match.SubtractWin(_slot);
+						return;
+					}
+				}
+			}
+			foreach (List<IMatch> round in LowerRounds)
+			{
+				foreach (IMatch match in round)
+				{
+					// Find the Match:
+					if (match.MatchNumber == _matchNumber)
+					{
+						// Remove advanced Players from future Matches:
+						if (match.Score[(int)_slot] >= match.WinsNeeded &&
+							_slot == PlayerSlot.Defender)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
+						}
+						else if (match.Score[(int)_slot] >= match.WinsNeeded &&
+							_slot == PlayerSlot.Challenger)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+						}
+
+						match.SubtractWin(_slot);
+						return;
+					}
+				}
+			}
+
+			throw new KeyNotFoundException();
+		}
+
+		public override void ResetMatchScore(int _matchNumber)
+		{
+			if (_matchNumber < 1)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+
+			if (GrandFinal.MatchNumber == _matchNumber)
+			{
+				GrandFinal.ResetScore();
+				// if we start storing a "bracket winner", do more here...
+				return;
+			}
+			foreach (List<IMatch> round in Rounds)
+			{
+				foreach (IMatch match in round)
+				{
+					// Find the Match:
+					if (match.MatchNumber == _matchNumber)
+					{
+						// If this Match is done, remove advanced Players from future Matches
+						if (match.Score[(int)PlayerSlot.Defender] >= match.WinsNeeded)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.ChallengerIndex());
+						}
+						else if (match.Score[(int)PlayerSlot.Challenger] >= match.WinsNeeded)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.DefenderIndex());
+						}
+
+						match.ResetScore();
+						return;
+					}
+				}
+			}
+			foreach (List<IMatch> round in LowerRounds)
+			{
+				foreach (IMatch match in round)
+				{
+					// Find the Match:
+					if (match.MatchNumber == _matchNumber)
+					{
+						// If this Match is done, remove advanced Players from future Matches
+						if (match.Score[(int)PlayerSlot.Defender] >= match.WinsNeeded)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
+						}
+						else if (match.Score[(int)PlayerSlot.Challenger] >= match.WinsNeeded)
+						{
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+						}
+
+						match.ResetScore();
+						return;
+					}
+				}
+			}
+
+			throw new KeyNotFoundException();
 		}
 
 #if false
@@ -394,6 +520,79 @@ namespace Tournament.Structure
 					}
 				}
 			}
+		}
+
+		protected override void RemovePlayerFromFutureMatches(int _matchNumber, int _playerIndex)
+		{
+			if (_matchNumber < 1 ||
+				_playerIndex < 0 || _playerIndex >= Players.Count)
+			{
+				return;
+			}
+
+			if (GrandFinal.MatchNumber == _matchNumber)
+			{
+				if (GrandFinal.DefenderIndex() == _playerIndex ||
+					GrandFinal.ChallengerIndex() == _playerIndex)
+				{
+					GrandFinal.RemovePlayer(_playerIndex);
+				}
+				return;
+			}
+			foreach (List<IMatch> round in Rounds)
+			{
+				foreach (IMatch match in round)
+				{
+					// Find the Match:
+					if (match.MatchNumber == _matchNumber)
+					{
+						// Find the Player:
+						if (match.DefenderIndex() == _playerIndex ||
+							match.ChallengerIndex() == _playerIndex)
+						{
+							// Remove any advanced Players from future Matches:
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.ChallengerIndex());
+
+							RemovePlayerFromFutureMatches(GrandFinal.MatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(GrandFinal.MatchNumber, match.ChallengerIndex());
+
+							match.RemovePlayer(_playerIndex);
+						}
+
+						return;
+					}
+				}
+			}
+			foreach (List<IMatch> round in LowerRounds)
+			{
+				foreach (IMatch match in round)
+				{
+					// Find the Match:
+					if (match.MatchNumber == _matchNumber)
+					{
+						// Find the Player:
+						if (match.DefenderIndex() == _playerIndex ||
+							match.ChallengerIndex() == _playerIndex)
+						{
+							// Remove any advanced Players from future Matches:
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+
+							RemovePlayerFromFutureMatches(GrandFinal.MatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(GrandFinal.MatchNumber, match.ChallengerIndex());
+
+							match.RemovePlayer(_playerIndex);
+						}
+
+						return;
+					}
+				}
+			}
+
+			throw new KeyNotFoundException();
 		}
 		#endregion
 	}

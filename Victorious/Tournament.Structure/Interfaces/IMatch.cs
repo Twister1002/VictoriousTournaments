@@ -19,8 +19,8 @@ namespace Tournament.Structure
 		ushort WinsNeeded { get; set; }
 		// private int[] PlayerIndexes { get; set; }
 		ushort[] Score { get; }
-		// private int RoundIndex { get; set; }
-		// private int MatchIndex { get; set; }
+		int RoundIndex { get; }
+		int MatchIndex { get; }
 		int MatchNumber { get; }
 
 		/// <summary>

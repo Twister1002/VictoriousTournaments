@@ -12,9 +12,11 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		List<IPlayer> Players { get; }
-		// protected List<List<IMatch>> Rounds { get; set; }
-		// protected List<List<IMatch>> LowerRounds { get; set; }
-		// protected IMatch GrandFinal { get; set; }
+		Dictionary<int, IMatch> Matches { get; }
+		int NumberOfRounds { get; }
+		Dictionary<int, IMatch> LowerMatches { get; }
+		int NumberOfLowerRounds { get; }
+		IMatch GrandFinal { get; }
 		#endregion
 
 		#region Methods
@@ -46,6 +48,8 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Number of specified match.</param>
 		/// <param name="_slot">Player slot: Defender or Challenger.</param>
 		void SubtractWin(int _matchNumber, PlayerSlot _slot);
+
+		void ResetMatchScore(int _matchNumber);
 
 		/// <summary>
 		/// Gets the number of Players in the Bracket.
@@ -79,24 +83,12 @@ namespace Tournament.Structure
 		void ResetPlayers();
 
 		/// <summary>
-		/// Gets the number of rounds in the bracket.
-		/// </summary>
-		/// <returns>Number of rounds.</returns>
-		int NumberOfRounds();
-
-		/// <summary>
 		/// Get all Matches in specified round.
 		/// (_index=1 returns FIRST round)
 		/// </summary>
 		/// <param name="_round">Round number to get.</param>
 		/// <returns>List of Matches in the round.</returns>
 		List<IMatch> GetRound(int _round);
-
-		/// <summary>
-		/// Gets the number of rounds in the lower bracket.
-		/// </summary>
-		/// <returns>Number of rounds.</returns>
-		int NumberOfLowerRounds();
 
 		/// <summary>
 		/// Get all Matches in specified lower bracket round.

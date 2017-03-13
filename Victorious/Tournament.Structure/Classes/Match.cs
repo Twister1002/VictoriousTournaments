@@ -17,10 +17,10 @@ namespace Tournament.Structure
 		{ get; set; }
 		public ushort[] Score
 		{ get; private set; }
-		private int RoundIndex
-		{ get; set; }
-		private int MatchIndex
-		{ get; set; }
+		public int RoundIndex
+		{ get; private set; }
+		public int MatchIndex
+		{ get; private set; }
 		public int MatchNumber
 		{ get; private set; }
 		public List<int> PreviousMatchNumbers
