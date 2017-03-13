@@ -13,12 +13,20 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		public List<IPlayer> Players
 		{ get; protected set; }
-		protected List<List<IMatch>> Rounds
-		{ get; set; }
-		protected List<List<IMatch>> LowerRounds
-		{ get; set; }
-		protected IMatch GrandFinal
-		{ get; set; }
+		//protected List<List<IMatch>> Rounds
+		//{ get; set; }
+		//protected List<List<IMatch>> LowerRounds
+		//{ get; set; }
+		public Dictionary<int, IMatch> Matches
+		{ get; protected set; }
+		public int NumberOfRounds
+		{ get; protected set; }
+		public Dictionary<int, IMatch> LowerMatches
+		{ get; protected set; }
+		public int NumberOfLowerRounds
+		{ get; protected set; }
+		public IMatch GrandFinal
+		{ get; protected set; }
 		#endregion
 
 		#region Abstract Methods
@@ -90,47 +98,31 @@ namespace Tournament.Structure
 			ResetBracket();
 		}
 
-		public int NumberOfRounds()
-		{
-			if (null == Rounds)
-			{
-				Rounds = new List<List<IMatch>>();
-			}
-			return Rounds.Count;
-		}
 		public List<IMatch> GetRound(int _round)
 		{
-			if (null == Rounds)
+			if (null == Matches)
 			{
 				throw new NullReferenceException();
 			}
-			if (_round < 1 || _round > Rounds.Count)
-			{
-				throw new IndexOutOfRangeException();
-			}
 
-			return Rounds[Rounds.Count - _round];
-		}
-		public int NumberOfLowerRounds()
-		{
-			if (null == LowerRounds)
-			{
-				return 0;
-			}
-			return LowerRounds.Count;
+			List<IMatch> ret = Matches.Values
+				.Where(m => m.RoundIndex == _round)
+				.OrderBy(m => m.MatchIndex)
+				.ToList();
+			return ret;
 		}
 		public List<IMatch> GetLowerRound(int _round)
 		{
-			if (null == LowerRounds || 0 == LowerRounds.Count)
+			if (null == LowerMatches)
 			{
 				throw new NullReferenceException();
 			}
-			if (_round < 1 || _round > LowerRounds.Count)
-			{
-				throw new IndexOutOfRangeException();
-			}
 
-			return LowerRounds[LowerRounds.Count - _round];
+			List<IMatch> ret = LowerMatches.Values
+				.Where(m => m.RoundIndex == _round)
+				.OrderBy(m => m.MatchIndex)
+				.ToList();
+			return ret;
 		}
 		public IMatch GetGrandFinal()
 		{
@@ -159,44 +151,23 @@ namespace Tournament.Structure
 			{
 				return GrandFinal;
 			}
-			if (null != Rounds)
+			if (null != Matches[_matchNumber])
 			{
-				foreach (List<IMatch> round in Rounds)
-				{
-					foreach (IMatch match in round)
-					{
-						if (match.MatchNumber == _matchNumber)
-						{
-							return match;
-						}
-					}
-				}
+				return Matches[_matchNumber];
 			}
-			if (null != LowerRounds)
+			if (null != LowerMatches[_matchNumber])
 			{
-				foreach (List<IMatch> round in LowerRounds)
-				{
-					foreach (IMatch match in round)
-					{
-						if (match.MatchNumber == _matchNumber)
-						{
-							return match;
-						}
-					}
-				}
+				return LowerMatches[_matchNumber];
 			}
 
 			throw new KeyNotFoundException();
 		}
 		public void ResetBracket()
 		{
-			if (null == Rounds)
-			{
-				Rounds = new List<List<IMatch>>();
-			}
-			Rounds.Clear();
-			LowerRounds = null;
+			Matches = null;
+			LowerMatches = null;
 			GrandFinal = null;
+			NumberOfRounds = NumberOfLowerRounds = 0;
 		}
 #endregion
 
