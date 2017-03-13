@@ -181,8 +181,8 @@ namespace Tournament.Structure
 
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
-			if (_slot != PlayerSlot.Defender &&
-				_slot != PlayerSlot.Challenger)
+			if (_matchNumber < 1 ||
+				(_slot != PlayerSlot.Defender && _slot != PlayerSlot.Challenger))
 			{
 				throw new IndexOutOfRangeException();
 			}
@@ -192,6 +192,26 @@ namespace Tournament.Structure
 			}
 
 			Matches[_matchNumber].AddWin(_slot);
+
+			if (Matches[_matchNumber].Score[(int)_slot] >= Matches[_matchNumber].WinsNeeded
+				&& Matches[_matchNumber].RoundIndex < NumberOfRounds)
+			{
+				// Player won the match. Advance!
+				int nmNumber = Matches[_matchNumber].NextMatchNumber;
+				for (int i = 0; i < Matches[nmNumber].PreviousMatchNumbers.Count; ++i)
+				{
+					if (_matchNumber == Matches[nmNumber].PreviousMatchNumbers[i])
+					{
+						PlayerSlot newSlot = (1 == Matches[nmNumber].PreviousMatchNumbers.Count)
+							? PlayerSlot.Challenger : (PlayerSlot)i;
+						Matches[nmNumber].AddPlayer((PlayerSlot.Defender == _slot)
+							? Matches[_matchNumber].DefenderIndex()
+							: Matches[_matchNumber].ChallengerIndex()
+							, newSlot);
+						break;
+					}
+				}
+			}
 		}
 #if false
 		public override void AddWin(IMatch _match, PlayerSlot _slot)
@@ -212,17 +232,12 @@ namespace Tournament.Structure
 			}
 
 			// If this Match is over, remove advanced Players from future Matches
-			if (Matches[_matchNumber].Score[(int)_slot] >= Matches[_matchNumber].WinsNeeded
-				&& _slot == PlayerSlot.Defender)
+			if (Matches[_matchNumber].Score[(int)_slot] == Matches[_matchNumber].WinsNeeded)
 			{
-				RemovePlayerFromFutureMatches
-					(Matches[_matchNumber].NextMatchNumber, Matches[_matchNumber].DefenderIndex());
-			}
-			else if (Matches[_matchNumber].Score[(int)_slot] >= Matches[_matchNumber].WinsNeeded
-				&& _slot == PlayerSlot.Challenger)
-			{
-				RemovePlayerFromFutureMatches
-					(Matches[_matchNumber].NextMatchNumber, Matches[_matchNumber].ChallengerIndex());
+				RemovePlayerFromFutureMatches(Matches[_matchNumber].NextMatchNumber,
+					(PlayerSlot.Defender == _slot)
+					? Matches[_matchNumber].DefenderIndex()
+					: Matches[_matchNumber].ChallengerIndex());
 			}
 
 			// Subtract a Win
@@ -255,9 +270,9 @@ namespace Tournament.Structure
 			// Reset Score
 			Matches[_matchNumber].ResetScore();
 		}
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 #if false
 		private void ReassignPlayer(int _pIndex, IMatch _currMatch, int _currRound, int _newMatchNum)
 		{
