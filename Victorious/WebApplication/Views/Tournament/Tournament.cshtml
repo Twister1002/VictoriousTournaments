@@ -8,6 +8,10 @@
 
 <div id="Tournament">
     <h2>Tournament - @Model.model.Title</h2>
+    @if (Session["User.UserId"] != null && (int)Session["User.UserId"] == Model.model.CreatedByID)
+    {
+        <div class="clickable-underline">@Html.ActionLink("Edit", "Edit", "Tournament", new { id = Model.model.TournamentID }, null)</div>
+    }
     <ul class="list-table">
         <li class="list-table-header">
             <ul data-columns="@Bracket.NumberOfRounds()">
@@ -46,12 +50,12 @@
                                 <label class="matchNum">Match @match.MatchNumber</label>
                                 <div class="matchData">
                                     <ul class="info">
-                                        <li class="defender">
-                                            <label class="seed">999</label>
+                                        <li class="defender" data-seed="@match.DefenderIndex()">
+                                            <label class="seed">@match.DefenderIndex()</label>
                                             <div class="name">@defender.Name</div>
                                         </li>
-                                        <li class="challenger">
-                                            <label class="seed">73</label>
+                                        <li class="challenger" data-seed="@match.ChallengerIndex()">
+                                            <label class="seed">@match.ChallengerIndex()</label>
                                             <div class="name">@challenger.Name</div>
                                         </li>
                                     </ul>

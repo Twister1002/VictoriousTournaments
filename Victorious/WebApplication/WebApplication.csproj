@@ -133,7 +133,39 @@
     <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="Global.asax" />
     <Content Include="gulpfile.js" />
-    <Content Include="Images\magnifying-glass-1976105.svg" />
+    <Content Include="Images\checkmark.png" />
+    <Content Include="Images\cross.png" />
+    <Content Include="Images\facebook.png" />
+    <Content Include="Images\loop2.png" />
+    <Content Include="Images\minus.png" />
+    <Content Include="Images\pause2.png" />
+    <Content Include="Images\pencil.png" />
+    <Content Include="Images\play3.png" />
+    <Content Include="Images\plus.png" />
+    <Content Include="Images\search.png" />
+    <Content Include="Images\shuffle.png" />
+    <Content Include="Images\svg\checkmark.svg" />
+    <Content Include="Images\svg\cross.svg" />
+    <Content Include="Images\svg\facebook.svg" />
+    <Content Include="Images\svg\loop2.svg" />
+    <Content Include="Images\svg\magnifying-glass-1976105.svg" />
+    <Content Include="Images\svg\minus.svg" />
+    <Content Include="Images\svg\pause2.svg" />
+    <Content Include="Images\svg\pencil.svg" />
+    <Content Include="Images\svg\play3.svg" />
+    <Content Include="Images\svg\plus.svg" />
+    <Content Include="Images\svg\search.svg" />
+    <Content Include="Images\svg\shuffle.svg" />
+    <Content Include="Images\svg\tree.svg" />
+    <Content Include="Images\svg\tumblr.svg" />
+    <Content Include="Images\svg\twitch.svg" />
+    <Content Include="Images\svg\twitter.svg" />
+    <Content Include="Images\svg\youtube.svg" />
+    <Content Include="Images\tree.png" />
+    <Content Include="Images\tumblr.png" />
+    <Content Include="Images\twitch.png" />
+    <Content Include="Images\twitter.png" />
+    <Content Include="Images\youtube.png" />
     <Content Include="package.json" />
     <None Include="Properties\PublishProfiles\IIS.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
@@ -175,7 +207,6 @@
     <Content Include="Views\Shared\_Nav.cshtml" />
     <Content Include="Styles\less\_colors.less" />
     <Content Include="Styles\less\_mixins.less" />
-    <Content Include="Styles\less\_nav_old.less" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Index.cshtml" />
@@ -189,6 +220,8 @@
     <Content Include="Styles\less\_layout.less" />
     <Content Include="Styles\less\_nav.less" />
     <Content Include="Styles\less\_list-table.less" />
+    <Content Include="Styles\less\_icons.less" />
+    <Content Include="Views\Tournament\Edit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

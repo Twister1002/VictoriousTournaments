@@ -17,4 +17,19 @@
     //    }
     //})
     //.val($(this).slider("value"));
+
+    $(".matchData .info li").on("mouseover", function () {
+        //console.log("Entered: " + $(this).data("seed"));
+        var seed = $(this).data("seed");
+        if (seed > -1) {
+            $(".matchData .info [data-seed='" + seed + "']").addClass("seedHover");
+        }
+    });
+    $(".matchData .info li").on("mouseleave", function() {
+        //console.log("Left: " + $(this).data("seed"));
+        var seed = $(this).data("seed");
+        if (seed > -1) {
+            $(".matchData .info [data-seed='" + seed + "']").removeClass("seedHover");
+        }
+    });
 });

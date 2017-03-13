@@ -1,0 +1,65 @@
+﻿@model WebApplication.Models.TournamentFormModel
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="TournamentEdit">
+    @using (Html.BeginForm("Edit", "Tournament", FormMethod.Post))
+    {
+        <div class="section">
+            <h2>Basic Information</h2>
+            <ul>
+                <li>
+                    @Html.LabelFor(t => t.Title)
+                    @Html.TextBoxFor(t => t.Title)
+                    @Html.ValidationMessageFor(t => t.Title)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.Description)
+                    @Html.TextBoxFor(t => t.Description)
+                    @Html.ValidationMessageFor(t => t.Description)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.IsPublic)
+                    @Html.CheckBoxFor(t => t.IsPublic)
+                    @Html.ValidationMessageFor(t => t.IsPublic)
+                </li>
+            </ul>
+        </div>
+        <div class="section">
+            <h2>Tournament Dates</h2>
+            <ul>
+                <li>
+                    @Html.LabelFor(t => t.RegistrationStart)
+                    @Html.TextBoxFor(t => t.RegistrationStart, DateTime.Now.ToShortDateString(), new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.RegistrationStart)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.RegistrationEnd)
+                    @Html.TextBoxFor(t => t.RegistrationEnd, DateTime.Now.AddDays(1).ToShortDateString(), new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.RegistrationEnd)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.CheckInDateTime)
+                    @Html.TextBoxFor(t => t.CheckInDateTime, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.CheckInDateTime)
+                </li>
+            </ul>
+        </div>
+        <div class="section">
+            <h2>Tournament Rules</h2>
+            <ul>
+                <li>Coming soon</li>
+            </ul>
+        </div>
+        <div class="section">
+            <h2>Tournament Administrators</h2>
+            <ul>
+                <li>Coming soon</li>
+            </ul>
+        </div>
+        <div class="section">
+            <button type="submit">Accept Changes</button>
+        </div>
+    }
+</div>

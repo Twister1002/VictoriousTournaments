@@ -10,6 +10,21 @@ namespace WebApplication.Models
 {
     public class TournamentFormModel : ViewModel
     {
+        public TournamentFormModel()
+        {
+
+        }
+
+        public TournamentFormModel(TournamentModel model)
+        {
+            Title = model.Title;
+            Description = model.Description;
+            //IsPublic = model.TournamentRules.IsPublic == null ? true : (bool)model.TournamentRules.IsPublic;
+            //RegistrationStart = model.TournamentRules.StartDate;
+            //RegistrationEnd = model.TournamentRules.EndDate;
+            //CheckInDateTime = model.TournamentRules.CutoffDate;
+        }
+
         [Required(ErrorMessage = "Title is required")]
         [DataType(DataType.Text)]
         [Display(Name = "Tournament Title")]
@@ -18,16 +33,16 @@ namespace WebApplication.Models
         [Required(ErrorMessage = "When do we allow registration to start?")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Registration Start")]
-        public DateTime RegistrationStart { get; set; }
+        public DateTime? RegistrationStart { get; set; }
 
         [Required(ErrorMessage = "When does registration end?")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Registration End")]
-        public DateTime RegistrationEnd { get; set; }
+        public DateTime? RegistrationEnd { get; set; }
 
         [DataType(DataType.Text)]
         [Display(Name = "Check-in Date and Time")]
-        public DateTime CheckInDateTime { get; set; }
+        public DateTime? CheckInDateTime { get; set; }
 
         [DataType(DataType.Text)]
         [Display(Name = "Tournament Description")]
@@ -65,7 +80,7 @@ namespace WebApplication.Models
             tourny = new Tournament.Structure.Tournament();
             List<IPlayer> players = new List<IPlayer>();
 
-            for (int i = 1; i <= 50; i++)
+            for (int i = 1; i <= 10; i++)
             {
                 UserModel uModel = new UserModel()
                 {
@@ -82,7 +97,7 @@ namespace WebApplication.Models
             tourny.AddSingleElimBracket(players);
             tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
             tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
-            //tourny.Brackets[0].AddWin(3, PlayerSlot.Defender);
+            tourny.Brackets[0].AddWin(3, PlayerSlot.Challenger);
             //tourny.Brackets[0].AddWin(7, PlayerSlot.Challenger);
         }
         

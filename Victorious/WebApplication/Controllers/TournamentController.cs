@@ -68,9 +68,29 @@ namespace WebApplication.Controllers
         }
 
         // GET: Tournament/Edit/5
+        [Route("Tournament/Edit/{id}")]
         public ActionResult Edit(int id)
         {
-            return View("Edit");
+            TournamentModel model = db.GetTournamentById(id);
+            if (Session["User.UserId"] != null && model.CreatedByID == (int)Session["User.UserId"])
+            {
+                if (model != null)
+                {
+                    TournamentFormModel viewModel = new TournamentFormModel(model);
+                    return View("Edit", viewModel);
+                }
+                else
+                {
+                    Session["Message"] = "That tournament doesn't exist.";
+                }
+            }
+            else
+            {
+                Session["Message"] = "You do not have permission to do that.";
+            }
+
+
+            return RedirectToAction("Search", "Tournament");
         }
 
         // GET: Tournament/Delete/5
@@ -142,6 +162,7 @@ namespace WebApplication.Controllers
 
         // POST: Tournament/Edit/5
         [HttpPost]
+        [Route("Tournament/Edit/{id}")]
         public ActionResult Edit(int id, FormCollection collection)
         {
             // TODO: Add update logic here

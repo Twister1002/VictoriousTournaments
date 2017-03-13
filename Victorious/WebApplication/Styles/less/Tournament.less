@@ -20,7 +20,11 @@
                     .defender, .challenger {
                         position: relative;
                         display:block;
-                        width: 10em;
+                        min-width: 10em;
+
+                        &.seedHover {
+                            background-color: @color-primary-2;
+                        }
 
                         .seed {
                             display:inline-block;
@@ -43,7 +47,7 @@
     }
 }
 
-#TournamentCreate {
+#TournamentCreate, #TournamentEdit {
     .section {
         li {
             padding:.5em 0em;
@@ -72,7 +76,7 @@
 }
 
 @media screen and (min-width: @@b1) {
-	#TournamentCreate {
+	#TournamentCreate, #TournamentEdit {
         .section {
             li {
                 width: 40%;
@@ -82,7 +86,7 @@
 	}
 }
 @media screen and (min-width: @@b2) {
-	#TournamentCreate {
+	#TournamentCreate, #TournamentEdit {
         .section {
             li {
                 width: 30%;
