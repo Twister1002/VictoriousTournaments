@@ -308,6 +308,7 @@ namespace Tournament.Structure
 			{
 				GrandFinal.SubtractWin(_slot);
 				// in future, this may affect other Brackets...
+				return;
 			}
 			foreach (List<IMatch> round in Rounds)
 			{
@@ -523,18 +524,20 @@ namespace Tournament.Structure
 
 		protected override void RemovePlayerFromFutureMatches(int _matchNumber, int _playerIndex)
 		{
-			if (_matchNumber < 1)
+			if (_matchNumber < 1 ||
+				_playerIndex < 0 || _playerIndex >= Players.Count)
 			{
 				return;
-			}
-			if (_playerIndex < 0 || _playerIndex >= Players.Count)
-			{
-				throw new ArgumentOutOfRangeException();
 			}
 
 			if (GrandFinal.MatchNumber == _matchNumber)
 			{
-				GrandFinal.RemovePlayer(_playerIndex);
+				if (GrandFinal.DefenderIndex() == _playerIndex ||
+					GrandFinal.ChallengerIndex() == _playerIndex)
+				{
+					GrandFinal.RemovePlayer(_playerIndex);
+				}
+				return;
 			}
 			foreach (List<IMatch> round in Rounds)
 			{
@@ -552,6 +555,9 @@ namespace Tournament.Structure
 							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
 							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.DefenderIndex());
 							RemovePlayerFromFutureMatches(match.NextLoserMatchNumber, match.ChallengerIndex());
+
+							RemovePlayerFromFutureMatches(GrandFinal.MatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(GrandFinal.MatchNumber, match.ChallengerIndex());
 
 							match.RemovePlayer(_playerIndex);
 						}
@@ -574,6 +580,9 @@ namespace Tournament.Structure
 							// Remove any advanced Players from future Matches:
 							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.DefenderIndex());
 							RemovePlayerFromFutureMatches(match.NextMatchNumber, match.ChallengerIndex());
+
+							RemovePlayerFromFutureMatches(GrandFinal.MatchNumber, match.DefenderIndex());
+							RemovePlayerFromFutureMatches(GrandFinal.MatchNumber, match.ChallengerIndex());
 
 							match.RemovePlayer(_playerIndex);
 						}

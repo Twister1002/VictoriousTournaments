@@ -411,13 +411,10 @@ namespace Tournament.Structure
 
 		protected virtual void RemovePlayerFromFutureMatches(int _matchNumber, int _playerIndex)
 		{
-			if (_matchNumber < 1)
+			if (_matchNumber < 1 ||
+				_playerIndex < 0 || _playerIndex >= Players.Count)
 			{
 				return;
-			}
-			if (_playerIndex < 0 || _playerIndex >= Players.Count)
-			{
-				throw new ArgumentOutOfRangeException();
 			}
 
 			foreach (List<IMatch> round in Rounds)
