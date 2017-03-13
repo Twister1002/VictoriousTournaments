@@ -28,7 +28,7 @@ namespace DataLib
         public int? DefenderScore { get; set; }
 
         public int? RoundIndex { get; set; }
-             
+
         public int MatchNumber { get; set; }
 
         public bool? IsBye { get; set; }

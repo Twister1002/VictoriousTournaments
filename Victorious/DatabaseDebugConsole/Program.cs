@@ -22,7 +22,7 @@ namespace DatabaseDebugConsole
 
             //db.Clear();
             //Seed(db);
-            TournamentModel tournament = db.GetTournamentById(1);
+            //TournamentModel tournament = db.GetTournamentById(1);
 
             //UserBracketSeedModel ubs = new UserBracketSeedModel();
             //for (int i = 0; i < 5; i++)
@@ -84,18 +84,24 @@ namespace DatabaseDebugConsole
             //    StartDate = DateTime.Now
             //};
             //db.AddRules(ref rules, tournament);
-            Console.WriteLine(tournament.Users.ElementAt(0).Email);
+            //Console.WriteLine(tournament.Users.ElementAt(0).Email);
 
-            if (db.TournamentHasRules(tournament) == DbError.EXISTS)
-            {
-                Console.WriteLine(tournament.TournamentRules.StartDate.ToString());
-            }
+            //if (db.TournamentHasRules(tournament) == DbError.EXISTS)
+            //{
+            //    Console.WriteLine(tournament.TournamentRules.TournamentBeginsDate.ToString());
+            //}
+
+            //foreach (var tournament in db.GetAllTournaments())
+            //{
+            //}
+
+            DeleteAllTournaments(db);
 
 
             Console.WriteLine("Done");
             Console.ReadLine();
 
-            
+
 
         }
 
@@ -126,7 +132,7 @@ namespace DatabaseDebugConsole
                     db.AddUserToTournament(tournament, user);
                     //db.AddUser(user);
                 }
-            }     
+            }
 
             BracketModel bracket = new BracketModel()
             {
@@ -173,6 +179,21 @@ namespace DatabaseDebugConsole
                     Console.WriteLine("Defender: " + match.Defender.FirstName + ' ' + match.Defender.LastName);
                 }
 
+            }
+        }
+
+        static void DeleteAllTournaments(DatabaseInterface db)
+        {
+
+            List<TournamentModel> tournaments = db.GetAllTournaments();
+
+            foreach (var tournament in tournaments)
+            {
+                Console.WriteLine(tournament.Title);
+                if (db.DeleteTournament(tournament) == DbError.FAILED_TO_DELETE)
+                {
+                    Console.WriteLine("Error");
+                }
             }
         }
 

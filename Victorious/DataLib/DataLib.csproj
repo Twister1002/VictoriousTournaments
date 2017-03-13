@@ -107,8 +107,14 @@
     <Compile Include="Migrations\201703102354543_RemovedIdentity.Designer.cs">
       <DependentUpon>201703102354543_RemovedIdentity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201703131442531_AddedTeams.cs" />
+    <Compile Include="Migrations\201703131442531_AddedTeams.Designer.cs">
+      <DependentUpon>201703131442531_AddedTeams.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TeamMemberModel.cs" />
+    <Compile Include="TeamModel.cs" />
     <Compile Include="TournamentModel.cs" />
     <Compile Include="TournamentRuleModel.cs" />
     <Compile Include="UserBracketSeedModel.cs" />
@@ -132,6 +138,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703102354543_RemovedIdentity.resx">
       <DependentUpon>201703102354543_RemovedIdentity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703131442531_AddedTeams.resx">
+      <DependentUpon>201703131442531_AddedTeams.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

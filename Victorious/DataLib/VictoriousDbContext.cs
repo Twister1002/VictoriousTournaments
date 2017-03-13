@@ -9,11 +9,12 @@ namespace DataLib
     {
 #if DEBUG
         public VictoriousDbContext()
-            : base("name=VictoriousTestDbContext")
+            : base("name=CloudStagingDb")
         {
             //Database.SetInitializer(new DropCreateDatabaseAlways<VictoriousDbContext>());
             //Database.SetInitializer<VictoriousDbContext>(null);
             this.Configuration.LazyLoadingEnabled = true;
+
         }
 #elif !DEBUG
         public VictoriousDbContext()
@@ -30,6 +31,8 @@ namespace DataLib
         public DbSet<TournamentModel> Tournaments { get; set; }
         public DbSet<UserModel> Users { get; set; }
         public DbSet<UserBracketSeedModel> UserBracketSeeds { get; set; }
+        public DbSet<TeamModel> Teams { get; set; }
+        public DbSet<TeamMemberModel> TeamMembers { get; set; }
         //public DbSet<UsersInTournamentsModel> UsersInTournaments { get; set; }
 
 
@@ -90,7 +93,10 @@ namespace DataLib
                     m.ToTable("UsersTournaments");
                 });
 
-
+            //modelBuilder.Entity<TournamentModel>()
+            //    .HasMany(e => e.Users)
+            //    .WithOptional()
+            //    .WillCascadeOnDelete(true);
             //modelBuilder.Entity<TournamentModel>()
             //    .HasMany(e => e.Users)
             //    .WithMany(e => e.Tournaments)
@@ -115,7 +121,11 @@ namespace DataLib
             modelBuilder.Entity<BracketModel>()
                 .ToTable("Brackets");
 
+            modelBuilder.Entity<TeamModel>()
+                .ToTable("Teams");
 
+            modelBuilder.Entity<TeamMemberModel>()
+                .ToTable("TeamMembers");
 
             modelBuilder.Entity<MatchModel>()
                 .HasOptional(e => e.Challenger)

@@ -6,7 +6,7 @@ namespace DataLib
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
- 
+
     public partial class UserModel : DbModel
     {
         public const int FirstNameLength = 50;
@@ -19,7 +19,7 @@ namespace DataLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public UserModel()
         {
-          
+
         }
         [Key]
         public int UserID { get; set; }
@@ -33,7 +33,7 @@ namespace DataLib
         [StringLength(EmailLength)]
         public string Email { get; set; }
 
-       
+
         [StringLength(UsernameLength)]
         public string Username { get; set; }
 
