@@ -30,8 +30,6 @@ namespace DataLib
         [Column(TypeName = "money")]
         public decimal? PrizePurse { get; set; }
 
-        public bool? MatchesBeginAutomatically { get; set; }
-
         //public int? NumberOfPlayers { get; set; }
 
         public bool? IsPublic { get; set; }
