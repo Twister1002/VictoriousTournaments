@@ -12,7 +12,7 @@
                 <li>Title</li>
                 <li>Game</li>
                 <li>Start Date</li>
-                <li>Public</li>
+                <li> </li>
             </ul>
         </li>
         <li class="list-table-body">
@@ -21,14 +21,11 @@
                 foreach (DataLib.TournamentModel tournyModel in Model.models)
                 {
                     <a href="/Tournament/@tournyModel.TournamentID">
-                        <ul class="list-table-columns column-clickable" data-columns="4" data->
+                        <ul class="list-table-columns column-clickable" data-columns="4">
                             <li>@tournyModel.Title</li>
-                            <li>League of Legends</li>
-                            <li>@DateTime.Now.ToShortDateString()</li>
-                            <li>Public</li>
-                            @*<li>@tournyModel.TournamentRules.StartDate</li>
+                            <li>GAME</li>
+                            <li>@tournyModel.TournamentRules.TournamentStartDate</li>
                             <li>@tournyModel.TournamentRules.IsPublic</li>
-                            <li>@tournyModel.TournamentRules.EntryFee</li>*@
                         </ul>
                     </a>
                 }

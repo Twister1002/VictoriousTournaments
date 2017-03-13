@@ -15,6 +15,8 @@ namespace WebApplication.Models
         public AccountViewModel(UserModel model)
         {
             userModel = model;
+            List<TournamentModel> tournies = db.GetAllTournaments();
+            userModel.Tournaments = tournies.Where(t => t.CreatedByID == userModel.UserID).ToList();
         }
     }
 

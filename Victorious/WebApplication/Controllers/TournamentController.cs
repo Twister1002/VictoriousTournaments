@@ -112,36 +112,28 @@ namespace WebApplication.Controllers
 
             if (ModelState.IsValid)
             {
-                TournamentModel model = new TournamentModel()
-                {
-                    Title = viewModel.Title,
-                    CreatedByID = (int)Session["User.UserId"],
-                    CreatedOn = DateTime.Now,
-                    Description = viewModel.Description
-                };
-                TournamentRuleModel rules = new TournamentRuleModel()
-                {
-                    IsPublic = viewModel.IsPublic
-                };
+                TournamentModel model = viewModel.ApplyChanges(new TournamentModel());
+                TournamentRuleModel modelRules = model.TournamentRules;
+                model.TournamentRules = null;
 
                 //DbError dbError = db.AddTournament(model);
                 DbError result = db.AddTournament(ref model);
                 
                 if (result == DbError.SUCCESS) {
-                    rules.TournamentID = model.TournamentID;
-                    //DbError ruleResult = db.AddRules(ref rules, model);
-                    //if (ruleResult == DbError.SUCCESS)
-                    //{
-                    return RedirectToAction("Tournmanet", "Tournament", new { guid = model.TournamentID });
-                    //}
-                    //else
-                    //{
-                    //    db.DeleteTournament(model);
-                    //    viewModel.dbException = db.e;
-                    //    viewModel.error = ViewModel.ViewError.CRITICAL;
-                    //    viewModel.message = "Unable to create the rules for the tournament.";
-                    //    return View(viewModel);
-                    //}
+                    modelRules.TournamentID = model.TournamentID;
+                    DbError ruleResult = db.AddRules(ref modelRules, model);
+                    if (ruleResult == DbError.SUCCESS)
+                    {
+                        return RedirectToAction("Tournament", "Tournament", new { guid = model.TournamentID });
+                    }
+                    else
+                    {
+                        db.DeleteTournament(model);
+                        viewModel.dbException = db.e;
+                        viewModel.error = ViewModel.ViewError.CRITICAL;
+                        viewModel.message = "Unable to create the rules for the tournament.";
+                        return View(viewModel);
+                    }
                 }
                 else
                 {
@@ -163,20 +155,72 @@ namespace WebApplication.Controllers
         // POST: Tournament/Edit/5
         [HttpPost]
         [Route("Tournament/Edit/{id}")]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Edit(TournamentFormModel viewModel)
         {
-            // TODO: Add update logic here
+            // TODO: When ability comes in, check against administrators
+            if (Session["User.UserId"] != null && viewModel.model.CreatedByID == (int)Session["User.UserId"])
+            {
+                // This user is authorized to make changes
+                viewModel.ApplyChanges();
+                DbError tourny = db.UpdateTournament(viewModel.model);
+                DbError rules = db.UpdateRules(viewModel.model.TournamentRules);
 
-            return RedirectToAction("Index");
+                if (tourny == DbError.SUCCESS && rules == DbError.SUCCESS)
+                {
+                    viewModel.error = ViewModel.ViewError.SUCCESS;
+                    viewModel.message = "Edits to the tournament was successful";
+                    Session["Message"] = viewModel.message;
+                    return RedirectToAction("Tournament", "Tournament", new { guid = viewModel.model.TournamentID });
+                }
+                else
+                {
+                    viewModel.error = ViewModel.ViewError.CRITICAL;
+                    viewModel.message = "Something went wrong while trying to update your tournament. Please try again or submit a ticket.";
+                    viewModel.dbException = db.e;
+                }
+            }
+            else
+            {
+                
+                viewModel.message = "You do not have permission to update this tournament";
+                viewModel.error = ViewModel.ViewError.EXCEPTION;
+            }
+
+            Session["Message"] = viewModel.message;
+            return View("Edit", viewModel);
         }
 
         // POST: Tournament/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        [Route("Tournament/Delete/{guid}")]
+        public ActionResult Delete(TournamentFormModel viewModel)
         {
-            // TODO: Add delete logic here
+            // TODO: When ability comes in, check against administrators
+            if (Session["User.UserId"] != null && viewModel.model.CreatedByID == (int)Session["User.UserId"])
+            {
+                // This user is authorized to make changes
+                DbError tourny = db.DeleteTournament(viewModel.model);
+                DbError rules = db.DeleteTournamentRules(viewModel.model.TournamentRules);
 
-            return RedirectToAction("Index");
+                if (tourny == DbError.SUCCESS && rules == DbError.SUCCESS)
+                {
+                    viewModel.error = ViewModel.ViewError.SUCCESS;
+                    viewModel.message = "The tournament was successfully deleted.";
+                    return RedirectToAction("Index", "Account");
+                }
+                else
+                {
+                    viewModel.error = ViewModel.ViewError.CRITICAL;
+                    viewModel.message = "Unable to update the tournament. Please try again later.";
+                    viewModel.dbException = db.e;
+                }
+            }
+            else
+            {
+                Session["Message"] = "You do not have permission to update this tournament";
+            }
+
+            return View("Delete", viewModel);
         }
     }
 }

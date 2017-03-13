@@ -138,6 +138,7 @@ namespace WebApplication.Controllers
                     else
                     {
                         // User Registration failed.
+                        viewModel.dbException = db.e;
                         viewModel.error = ViewModel.ViewError.CRITICAL;
                         viewModel.message = "Well... Something went wrong when creating your account: <br/>";
                         //+"<h2>Message</h2>" + db.e.Message + "<h2>Inner Exception</h2>" + db.e.InnerException;

@@ -37,7 +37,7 @@
                 </li>
                 <li>
                     @Html.LabelFor(m => m.PasswordVerify)
-                    @Html.TextBoxFor(m => m.PasswordVerify, null, new { @placeholder = "Verify Password" })
+                    @Html.PasswordFor(m => m.PasswordVerify, new { @placeholder = "Verify Password" })
                     @Html.ValidationMessageFor(m => m.PasswordVerify)
                 </li>
             </ul>

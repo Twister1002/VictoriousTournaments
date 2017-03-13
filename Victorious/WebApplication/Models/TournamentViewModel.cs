@@ -10,6 +10,8 @@ namespace WebApplication.Models
 {
     public class TournamentFormModel : ViewModel
     {
+        public TournamentModel model { get; private set; }
+
         public TournamentFormModel()
         {
 
@@ -17,37 +19,73 @@ namespace WebApplication.Models
 
         public TournamentFormModel(TournamentModel model)
         {
+            this.model = model;
+
             Title = model.Title;
             Description = model.Description;
-            //IsPublic = model.TournamentRules.IsPublic == null ? true : (bool)model.TournamentRules.IsPublic;
-            //RegistrationStart = model.TournamentRules.StartDate;
-            //RegistrationEnd = model.TournamentRules.EndDate;
-            //CheckInDateTime = model.TournamentRules.CutoffDate;
+            IsPublic = model.TournamentRules.IsPublic == null ? true : (bool)model.TournamentRules.IsPublic;
+            RegistrationStartDate = model.TournamentRules.RegistrationStartDate;
+            RegistrationEndDate = model.TournamentRules.RegistrationEndDate;
+            TournamentStartDate = model.TournamentRules.TournamentStartDate;
+            TournamentEndDate = model.TournamentRules.TournamentEndDate;
         }
 
-        [Required(ErrorMessage = "Title is required")]
+        public void ApplyChanges()
+        {
+            ApplyChanges(this.model);
+        }
+
+        public TournamentModel ApplyChanges(TournamentModel model)
+        {
+            if (model.TournamentRules == null)
+            {
+                model.TournamentRules = new TournamentRuleModel();
+            }
+
+            model.Title = Title;
+            model.Description = Description;
+            model.TournamentRules.IsPublic = IsPublic;
+            model.TournamentRules.RegistrationStartDate = RegistrationStartDate;
+            model.TournamentRules.RegistrationEndDate = RegistrationEndDate;
+            model.TournamentRules.TournamentStartDate = TournamentStartDate;
+            model.TournamentRules.TournamentEndDate = TournamentEndDate;
+
+            return model;
+        }
+
+        [Required(ErrorMessage = "Name your tournament")]
         [DataType(DataType.Text)]
         [Display(Name = "Tournament Title")]
         public string Title { get; set; }
-
-        [Required(ErrorMessage = "When do we allow registration to start?")]
-        [DataType(DataType.DateTime)]
-        [Display(Name = "Registration Start")]
-        public DateTime? RegistrationStart { get; set; }
-
-        [Required(ErrorMessage = "When does registration end?")]
-        [DataType(DataType.DateTime)]
-        [Display(Name = "Registration End")]
-        public DateTime? RegistrationEnd { get; set; }
-
-        [DataType(DataType.Text)]
-        [Display(Name = "Check-in Date and Time")]
-        public DateTime? CheckInDateTime { get; set; }
 
         [DataType(DataType.Text)]
         [Display(Name = "Tournament Description")]
         public String Description { get; set; }
 
+        [Required(ErrorMessage = "When will registration start?")]
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Registration Start")]
+        public DateTime? RegistrationStartDate { get; set; }
+
+        [Required(ErrorMessage = "When will registration end?")]
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Registration End")]
+        public DateTime? RegistrationEndDate { get; set; }
+
+        [Required(ErrorMessage = "When will the tournament start?")]
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Tournament Start")]
+        public DateTime? TournamentStartDate { get; set; }
+
+        [Required(ErrorMessage = "When will the tournament end?")]
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Tournament End")]
+        public DateTime? TournamentEndDate { get; set; }
+
+        //[DataType(DataType.Text)]
+        //[Display(Name = "Check-in Date")]
+        //public DateTime? CheckInDateTime { get; set; }
+        
         [Display(Name = "Public")]
         public bool IsPublic { get; set; }
     }
