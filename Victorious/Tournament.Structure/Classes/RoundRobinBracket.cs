@@ -20,6 +20,8 @@ namespace Tournament.Structure
 		// inherits int NumberOfMatches
 		public int[] Scores
 		{ get; private set; }
+		public int MaxRounds
+		{ get; set; }
 		#endregion
 
 		#region Ctors
@@ -31,6 +33,7 @@ namespace Tournament.Structure
 			}
 
 			Players = _players;
+			MaxRounds = _numRounds;
 			ResetBracket();
 			CreateBracket();
 		}
@@ -42,6 +45,7 @@ namespace Tournament.Structure
 				Players.Add(new User());
 			}
 
+			MaxRounds = _numRounds;
 			ResetBracket();
 			CreateBracket();
 		}
@@ -70,6 +74,7 @@ namespace Tournament.Structure
 			{
 				Scores[i] = 0;
 			}
+			MaxRounds = 0;
 
 			ResetBracket();
 			Matches = new Dictionary<int, IMatch>();
@@ -110,6 +115,13 @@ namespace Tournament.Structure
 			Matches = new Dictionary<int, IMatch>();
 			int totalRounds = (0 == Players.Count % 2)
 				? Players.Count - 1 : Players.Count;
+			if (MaxRounds > 0 && MaxRounds < totalRounds)
+			{
+				// NOTE: this sets a limit on the number of created rounds
+				// it does NOT randomize the rounds
+				// should that be included in future?
+				totalRounds = MaxRounds;
+			}
 			int matchesPerRound = (int)(Players.Count * 0.5);
 			for (int r = 0; r < totalRounds; ++r, ++NumberOfRounds)
 			{

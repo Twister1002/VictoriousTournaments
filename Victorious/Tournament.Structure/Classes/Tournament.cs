@@ -50,9 +50,9 @@ namespace Tournament.Structure
 			}
 
 			Brackets = new List<IBracket>();
-			foreach(BracketModel bModel in _t.Brackets)
+			foreach (BracketModel bModel in _t.Brackets)
 			{
-				switch (bModel.BracketType.Type)
+				switch ((BracketTypeModel.BracketType)bModel.BracketType.BracketTypeID)
 				{
 					case (BracketTypeModel.BracketType.SINGLE):
 						AddBracket(new SingleElimBracket(bModel));
