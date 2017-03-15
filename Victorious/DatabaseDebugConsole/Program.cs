@@ -96,20 +96,20 @@ namespace DatabaseDebugConsole
             //    PrintAllMatches(db, tournament);
             //}
 
-            TournamentModel tournament = new TournamentModel()
-            {
-                Title = "Tournament Rules Test",
-                Description = "Test Tournament",
-                CreatedByID = 1
-            };
-            TournamentRuleModel rules = new TournamentRuleModel()
-            {
-                RegistrationStartDate = DateTime.Now
-            };
+            //TournamentModel tournament = new TournamentModel()
+            //{
+            //    Title = "Tournament Rules Test",
+            //    Description = "Test Tournament",
+            //    CreatedByID = 1
+            //};
+            //TournamentRuleModel rules = new TournamentRuleModel()
+            //{
+            //    RegistrationStartDate = DateTime.Now
+            //};
 
-            tournament.TournamentRules = rules;
+            //tournament.TournamentRules = rules;
 
-            db.AddTournament(ref tournament);
+            //db.AddTournament(ref tournament);
 
 
             //DeleteAllTournaments(db);
@@ -202,16 +202,16 @@ namespace DatabaseDebugConsole
         static void DeleteAllTournaments(DatabaseInterface db)
         {
 
-            //List<TournamentModel> tournaments = db.GetAllTournaments();
+            List<TournamentModel> tournaments = db.GetAllTournaments();
 
-            //foreach (var tournament in tournaments)
-            //{
-            //    Console.WriteLine(tournament.Title);
-            //    if (db.DeleteTournament(tournament) == DbError.FAILED_TO_DELETE)
-            //    {
-            //        Console.WriteLine("Error");
-            //    }
-            //}
+            foreach (var tournament in tournaments)
+            {
+                Console.WriteLine(tournament.Title);
+                if (db.DeleteTournament(tournament) == DbError.FAILED_TO_DELETE)
+                {
+                    Console.WriteLine("Error");
+                }
+            }
         }
 
         static void Encrypt()
