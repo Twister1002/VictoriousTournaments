@@ -39,7 +39,7 @@ namespace Tournament.Structure
 			Email = _email;
 		}
 		public User()
-	: this(-1, "", "", "", "")
+			: this(-1, "", "", "", "")
 		{ }
 
 		public User(UserModel _u)

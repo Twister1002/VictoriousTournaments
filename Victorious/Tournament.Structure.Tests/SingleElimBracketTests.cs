@@ -20,6 +20,7 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(pList, b.Players);
 		}
+#if false
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB Ctor")]
@@ -30,18 +31,18 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(1, 2);
 		}
-
+#endif
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
-		[TestCategory("SEB CreateBracket")]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
-		public void SEBCreateBracket_ThrowsOutOfRange_WithLessThanTwoPlayers()
+		[TestCategory("SEB Ctor")]
+		public void SEBCreateBracket_CreatesNoMatches_WithLessThanTwoPlayers()
 		{
 			IBracket b = new SingleElimBracket();
 			//b.CreateBracket();
 
-			Assert.AreEqual(1, 2);
+			Assert.AreEqual(0, b.NumberOfMatches);
 		}
+
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB CreateBracket")]
@@ -55,7 +56,7 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 			//b.CreateBracket();
 
-			Assert.AreEqual(2, b.GetRound(1).Count);
+			Assert.AreEqual(3, b.NumberOfMatches);
 		}
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
@@ -100,7 +101,7 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 			//b.CreateBracket();
 
-			Assert.AreEqual(9, b.GetRound(b.NumberOfRounds())[0].MatchNumber);
+			Assert.AreEqual(9, b.GetRound(b.NumberOfRounds)[0].MatchNumber);
 		}
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
@@ -178,7 +179,7 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 			//b.CreateBracket();
 
-			Assert.IsTrue(5 == b.NumberOfRounds()
+			Assert.IsTrue(5 == b.NumberOfRounds
 				&& 13 == b.GetRound(1).Count);
 		}
 		[TestMethod]
@@ -225,7 +226,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			Assert.IsNull(b.GetGrandFinal());
+			Assert.IsNull(b.GrandFinal);
 		}
 
 		[TestMethod]
@@ -303,6 +304,24 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB AddWin")]
+		[ExpectedException(typeof(IndexOutOfRangeException))]
+		public void SEBAddWin_ThrowsOutOfRange_WhenMatchParamIsNotFound()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				pList.Add(new Mock<IPlayer>().Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			b.AddWin(-1, 0);
+
+			Assert.AreEqual(1, 2);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB AddWin")]
 		[ExpectedException(typeof(KeyNotFoundException))]
 		public void SEBAddWin_ThrowsKeyNotFound_WhenMatchParamIsNotFound()
 		{
@@ -314,7 +333,7 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(-1, 0);
+			b.AddWin(b.NumberOfMatches + 1, 0);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -331,7 +350,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			b.GetMatch(1).WinsNeeded = 2;
+			b.Matches[1].WinsNeeded = 2;
 			b.AddWin(1, PlayerSlot.Defender);
 			b.SubtractWin(1, PlayerSlot.Defender);
 
@@ -349,7 +368,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			b.GetMatch(1).WinsNeeded = 2;
+			b.Matches[1].WinsNeeded = 2;
 			int pIndex = b.GetMatch(1).DefenderIndex();
 			b.AddWin(1, PlayerSlot.Defender);
 			b.AddWin(1, PlayerSlot.Challenger);
@@ -361,7 +380,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB SubtractWin")]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[ExpectedException(typeof(IndexOutOfRangeException))]
 		public void SEBSubtractWin_ThrowsOutOfRange_WithBadMatchNumberInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -403,7 +422,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			b.GetMatch(1).WinsNeeded = 2;
+			b.Matches[1].WinsNeeded = 2;
 			b.AddWin(1, PlayerSlot.Defender);
 			b.AddWin(1, PlayerSlot.Challenger);
 			b.ResetMatchScore(1);
@@ -413,7 +432,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB ResetMatchScore")]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[ExpectedException(typeof(IndexOutOfRangeException))]
 		public void SEBResetMatchScore_ThrowsOutOfRange_WithBadMatchNumberInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -474,7 +493,7 @@ namespace Tournament.Structure.Tests
 
 			b.AddWin(1, PlayerSlot.Defender);
 			b.AddWin(2, PlayerSlot.Defender);
-			b.GetMatch(3).WinsNeeded = 3;
+			b.Matches[3].WinsNeeded = 3;
 			b.AddWin(3, PlayerSlot.Defender);
 			b.AddWin(3, PlayerSlot.Defender);
 			b.AddWin(3, PlayerSlot.Challenger);
@@ -536,7 +555,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			Assert.AreEqual(0, b.NumberOfLowerRounds());
+			Assert.AreEqual(0, b.NumberOfLowerRounds);
 		}
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]

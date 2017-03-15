@@ -279,6 +279,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+
 		#endregion
 	}
 }

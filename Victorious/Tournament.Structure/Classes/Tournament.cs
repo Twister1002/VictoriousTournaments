@@ -38,7 +38,6 @@ namespace Tournament.Structure
 		public Tournament()
 			: this("", "", new List<IPlayer>(), new List<IBracket>(), 0.0f, false)
 		{ }
-
 		public Tournament(TournamentModel _t)
 		{
 			Title = _t.Title;
@@ -57,17 +56,15 @@ namespace Tournament.Structure
 				switch (bModel.BracketType)
 				{
 					case ("single"):
-						AddSingleElimBracket(Players);
+						AddBracket(new SingleElimBracket(bModel));
 						break;
 					case ("double"):
-						AddDoubleElimBracket(Players);
+						AddBracket(new DoubleElimBracket(bModel));
 						break;
 
 					default:
 						break;
 				}
-
-				Brackets[Brackets.Count - 1].UpdateCurrentMatches(bModel.Matches);
 			}
 
 			PrizePool = (null == _t.TournamentRules.PrizePurse)
@@ -222,7 +219,12 @@ namespace Tournament.Structure
 		}
 		public void AddRoundRobinBracket(int _numPlayers, int _numRounds = 0)
 		{
-			throw new NotImplementedException();
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < _numPlayers; ++i)
+			{
+				pList.Add(new User());
+			}
+			AddRoundRobinBracket(pList, _numRounds);
 		}
 		public void AddGroupStageBracket(List<IPlayer> _playerList, int _numGroups = 2)
 		{
@@ -230,9 +232,18 @@ namespace Tournament.Structure
 		}
 		public void AddGroupStageBracket(int _numPlayers, int _numGroups = 2)
 		{
-			throw new NotImplementedException();
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < _numPlayers; ++i)
+			{
+				pList.Add(new User());
+			}
+			AddGroupStageBracket(pList, _numGroups);
 		}
 		#endregion
+		#endregion
+
+		#region Private Methods
+
 		#endregion
 	}
 }
