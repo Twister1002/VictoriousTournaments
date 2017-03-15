@@ -52,16 +52,15 @@ namespace Tournament.Structure
 			Brackets = new List<IBracket>();
 			foreach(BracketModel bModel in _t.Brackets)
 			{
-				// THIS WILL NEED TO BE UPDATED
-				switch (bModel.BracketType)
+				switch (bModel.BracketTypeID)
 				{
-					case ("single"):
+					case (1):
 						AddBracket(new SingleElimBracket(bModel));
 						break;
-					case ("double"):
+					case (2):
 						AddBracket(new DoubleElimBracket(bModel));
 						break;
-
+					// More here eventually...
 					default:
 						break;
 				}
