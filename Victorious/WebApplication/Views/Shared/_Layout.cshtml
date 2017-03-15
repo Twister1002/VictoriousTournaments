@@ -16,7 +16,9 @@
 
     @if (Session["Message"] != null)
     {
-        <div class="message">
+        var messageClass = WebApplication.Models.ViewModel.ViewError.WARNING;
+        if (Session["Message.Class"] != null) { messageClass = (WebApplication.Models.ViewModel.ViewError)Session["Message.Class"]; }
+        <div class="message @Model.errorClassNames[(int)messageClass]">
             @Html.Raw((String)Session["Message"])
         </div>
 

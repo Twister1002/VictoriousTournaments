@@ -10,7 +10,8 @@
     <h2>Tournament - @Model.model.Title</h2>
     @if (Session["User.UserId"] != null && (int)Session["User.UserId"] == Model.model.CreatedByID)
     {
-        <div class="clickable-underline">@Html.ActionLink("Edit", "Edit", "Tournament", new { id = Model.model.TournamentID }, null)</div>
+        <div class="clickable-underline">@Html.ActionLink("Update", "Update", "Tournament", new { id = Model.model.TournamentID }, null)</div>
+        <div class="clickable-underline">@Html.ActionLink("Delete", "Delete", "Tournament", new { id = Model.model.TournamentID }, null)</div>
     }
     <ul class="list-table">
         <li class="list-table-header">

@@ -1,4 +1,4 @@
-﻿@model WebApplication.Models.TournamentSearchViewModel
+﻿@model WebApplication.Models.TournamentViewModel
 @{
     ViewBag.Title = "Search";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -16,9 +16,9 @@
             </ul>
         </li>
         <li class="list-table-body">
-            @if (Model.models.Count > 0)
+            @if (Model.SearchModels.Count > 0)
             {
-                foreach (DataLib.TournamentModel tournyModel in Model.models)
+                foreach (DataLib.TournamentModel tournyModel in Model.SearchModels)
                 {
                     <a href="/Tournament/@tournyModel.TournamentID">
                         <ul class="list-table-columns column-clickable" data-columns="4">

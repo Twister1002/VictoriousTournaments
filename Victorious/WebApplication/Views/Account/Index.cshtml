@@ -21,11 +21,11 @@
                 <li class="list-table-body">
                     @foreach (var tournament in Model.getUserModel().Tournaments)
                     {
-                        <a href="#">
+                        <a href="/Tournament/@tournament.TournamentID">
                             <ul class="row-clickable" data-columns="4">
                                 <li class="column">@tournament.Title</li>
                                 <li class="column">GAME</li>
-                                <li class="column">@(DateTime.Now - tournament.TournamentRules.RegistrationEndDate)</li>
+                                <li class="column">@*@(DateTime.Now - tournament.TournamentRules.RegistrationEndDate)*@</li>
                                 <li class="column">@*@tournament.TournamentRules.TournamentStartDate*@</li>
                             </ul>
                         </a>

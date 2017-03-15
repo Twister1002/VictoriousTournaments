@@ -45,4 +45,43 @@ namespace WebApplication.Models
         [Display(Name = "Verify Password")]
         public string PasswordVerify { get; set; }
     }
+
+    public abstract class TournamentFields : ViewModel
+    {
+        [Required(ErrorMessage = "Name your tournament")]
+        [DataType(DataType.Text)]
+        [Display(Name = "Tournament Title")]
+        public string Title { get; set; }
+
+        [DataType(DataType.Text)]
+        [Display(Name = "Tournament Description")]
+        public String Description { get; set; }
+
+        [Required(ErrorMessage = "When will registration start?")]
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Registration Start")]
+        public DateTime? RegistrationStartDate { get; set; }
+
+        [Required(ErrorMessage = "When will registration end?")]
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Registration End")]
+        public DateTime? RegistrationEndDate { get; set; }
+
+        [Required(ErrorMessage = "When will the tournament start?")]
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Tournament Start")]
+        public DateTime? TournamentStartDate { get; set; }
+
+        [Required(ErrorMessage = "When will the tournament end?")]
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Tournament End")]
+        public DateTime? TournamentEndDate { get; set; }
+
+        //[DataType(DataType.Text)]
+        //[Display(Name = "Check-in Date")]
+        //public DateTime? CheckInDateTime { get; set; }
+
+        [Display(Name = "Public")]
+        public bool IsPublic { get; set; }
+    }
 }
