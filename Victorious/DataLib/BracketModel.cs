@@ -32,6 +32,9 @@ namespace DataLib
         // Tournament that holds this bracket.
         public virtual TournamentModel Tournament { get; set; }
 
+        [ForeignKey("BracketTypeID")]
+        public virtual BracketTypeModel BracketType { get; set; }
+
      
     }
 }

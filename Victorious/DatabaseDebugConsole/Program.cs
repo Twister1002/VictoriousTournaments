@@ -96,12 +96,12 @@ namespace DatabaseDebugConsole
             //    PrintAllMatches(db, tournament);
             //}
 
-            //TournamentModel tournament = new TournamentModel()
-            //{
-            //    Title = "Tournament Rules Test",
-            //    Description = "Test Tournament",
-            //    CreatedByID = 1
-            //};
+            TournamentModel tournament = new TournamentModel()
+            {
+                Title = "Tournament Rules Test",
+                Description = "Test Tournament",
+                CreatedByID = 1
+            };
             //TournamentRuleModel rules = new TournamentRuleModel()
             //{
             //    RegistrationStartDate = DateTime.Now
@@ -114,6 +114,18 @@ namespace DatabaseDebugConsole
 
             //DeleteAllTournaments(db);
 
+            BracketModel bracket = new BracketModel()
+            {
+                BracketTitle = "Test Bracket"
+            };
+            BracketTypeModel type = new BracketTypeModel()
+            {
+                Type = BracketTypeModel.BracketType.SINGLE
+            };
+            bracket.BracketType = type;
+            db.AddBracket(ref bracket, tournament);
+
+            Console.WriteLine(db.GetAllTournaments()[0].Brackets.ToList()[0].BracketType.Type.ToString());
 
             Console.WriteLine("Done");
             Console.ReadLine();
@@ -156,7 +168,7 @@ namespace DatabaseDebugConsole
             BracketModel bracket = new BracketModel()
             {
                 BracketTitle = "Bracket 1",
-                BracketTypeID = 1               
+                BracketTypeID = 1
             };
             db.AddBracket(ref bracket, tournament);
 
