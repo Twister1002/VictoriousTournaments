@@ -17,6 +17,7 @@ namespace Tournament.Structure
 		// inherits Dictionary<int, IMatch> LowerMatches (null)
 		// inherits int NumberOfLowerRounds (0)
 		// inherits IMatch GrandFinal (null)
+		// inherits int NumberOfMatches
 		#endregion
 
 		#region Ctors
@@ -42,7 +43,6 @@ namespace Tournament.Structure
 			ResetBracket();
 			if (Players.Count < 2)
 			{
-				//throw new ArgumentOutOfRangeException();
 				return;
 			}
 
@@ -140,7 +140,6 @@ namespace Tournament.Structure
 					if (1 <= roundList[r][m].PreviousMatchNumbers.Count)
 					{
 						ReassignPlayers(roundList[r][m], roundList[r + 1]);
-						//ReassignPlayers(roundList[r][m], r);
 					}
 				}
 
@@ -158,7 +157,9 @@ namespace Tournament.Structure
 					}
 				}
 			}
+			#endregion
 
+			#region Set Bracket Member Variables
 			// Move bracket data to member variables (Matches dictionary)
 			NumberOfRounds = roundList.Count;
 			Matches = new Dictionary<int, IMatch>();
@@ -215,12 +216,7 @@ namespace Tournament.Structure
 				}
 			}
 		}
-#if false
-		public override void AddWin(IMatch _match, PlayerSlot _slot)
-		{
-			AddWin(_match.MatchNumber, _slot);
-		}
-#endif
+
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
 			if (_matchNumber < 1 ||
@@ -275,35 +271,6 @@ namespace Tournament.Structure
 #endregion
 
 #region Private Methods
-#if false
-		private void ReassignPlayer(int _pIndex, IMatch _currMatch, int _currRound, int _newMatchNum)
-		{
-			if (null == _currMatch || _newMatchNum < 1)
-			{
-				throw new NullReferenceException();
-			}
-
-			if (_currMatch.DefenderIndex() == _pIndex ||
-				_currMatch.ChallengerIndex() == _pIndex)
-			{
-				_currMatch.RemovePlayer(_pIndex);
-
-				foreach (IMatch match in Rounds[_currMatch.RoundIndex + 1])
-				{
-					if (match.MatchNumber == _newMatchNum)
-					{
-						match.AddPlayer(_pIndex, 0);
-						if (match.PlayerIndexes.Contains(_pIndex))
-						{
-							return;
-						}
-					}
-				}
-			}
-
-			throw new KeyNotFoundException();
-		}
-#endif
 		private void ReassignPlayers(IMatch _currMatch, List<IMatch> _prevRound)
 		{
 			if (null == _currMatch ||
@@ -342,93 +309,7 @@ namespace Tournament.Structure
 				}
 			}
 		}
-#if false
-		private void ReassignPlayers(IMatch _currMatch, int _currRound)
-		{
-			if (null == _currMatch || _currRound < 0)
-			{
-				throw new NullReferenceException();
-			}
-			if (_currRound + 1 >= Rounds.Count)
-			{
-				throw new IndexOutOfRangeException();
-			}
 
-			int i = 0;
-			if (1 <= _currMatch.PreviousMatchNumbers.Count)
-			{
-				if (2 == _currMatch.PreviousMatchNumbers.Count)
-				{
-					// Reassign the higher seed (Defender)
-					foreach (IMatch match in Rounds[_currRound + 1])
-					{
-						if (match.MatchNumber == _currMatch.PreviousMatchNumbers[i])
-						{
-							match.AddPlayer(_currMatch.DefenderIndex());
-							_currMatch.RemovePlayer(_currMatch.DefenderIndex());
-							++i;
-							break;
-						}
-					}
-				}
-
-				// Reassign the lower seed (Challenger)
-				foreach (IMatch match in Rounds[_currRound + 1])
-				{
-					if (match.MatchNumber == _currMatch.PreviousMatchNumbers[i])
-					{
-						match.AddPlayer(_currMatch.ChallengerIndex());
-						_currMatch.RemovePlayer(_currMatch.ChallengerIndex());
-						break;
-					}
-				}
-			}
-		}
-#endif
-#if false
-		protected void AddWin(int _roundIndex, int _matchIndex, PlayerSlot _slot)
-		{
-			if (_roundIndex < 0 || _roundIndex >= Rounds.Count
-				|| _matchIndex < 0 || _matchIndex >= Rounds[_roundIndex].Count)
-			{
-				throw new IndexOutOfRangeException();
-			}
-
-			Rounds[_roundIndex][_matchIndex].AddWin(_slot);
-
-			if (0 == _roundIndex)
-			{
-				return;
-			}
-			if (Rounds[_roundIndex][_matchIndex].Score[(int)_slot] >= Rounds[_roundIndex][_matchIndex].WinsNeeded)
-			{
-				// Player won the match. Advance!
-
-				// Move the winner:
-				int nmNumber = Rounds[_roundIndex][_matchIndex].NextMatchNumber;
-				foreach (IMatch match in Rounds[_roundIndex - 1])
-				{
-					if (nmNumber == match.MatchNumber)
-					{
-						for (int i = 0; i < match.PreviousMatchNumbers.Count; ++i)
-						{
-							if (Rounds[_roundIndex][_matchIndex].MatchNumber == match.PreviousMatchNumbers[i])
-							{
-								PlayerSlot newSlot = (1 == match.PreviousMatchNumbers.Count)
-									? PlayerSlot.Challenger : (PlayerSlot)i;
-								match.AddPlayer(
-									(PlayerSlot.Defender == _slot)
-									? Rounds[_roundIndex][_matchIndex].DefenderIndex()
-									: Rounds[_roundIndex][_matchIndex].ChallengerIndex()
-									, newSlot);
-								return;
-							}
-						}
-					}
-				}
-			}
-		}
-#endif
 		protected virtual void RemovePlayerFromFutureMatches(int _matchNumber, int _playerIndex)
 		{
 			if (_matchNumber < 1 ||

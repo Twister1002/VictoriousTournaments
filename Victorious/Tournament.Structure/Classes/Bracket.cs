@@ -13,10 +13,6 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		public List<IPlayer> Players
 		{ get; protected set; }
-		//protected List<List<IMatch>> Rounds
-		//{ get; set; }
-		//protected List<List<IMatch>> LowerRounds
-		//{ get; set; }
 		public Dictionary<int, IMatch> Matches
 		{ get; protected set; }
 		public int NumberOfRounds
@@ -35,7 +31,6 @@ namespace Tournament.Structure
 		public abstract void CreateBracket(ushort _winsPerMatch = 1);
 		public abstract void UpdateCurrentMatches(ICollection<MatchModel> _matchModels);
 		public abstract void AddWin(int _matchNumber, PlayerSlot _slot);
-		//public abstract void AddWin(IMatch _match, PlayerSlot _slot);
 		public abstract void SubtractWin(int _matchNumber, PlayerSlot _slot);
 		public abstract void ResetMatchScore(int _matchNumber);
 		#endregion
@@ -134,22 +129,6 @@ namespace Tournament.Structure
 				.ToList();
 			return ret;
 		}
-#if false
-		public IMatch GetGrandFinal()
-		{
-			return GrandFinal;
-		}
-		public IMatch GetMatch(int _roundIndex, int _index)
-		{
-			List<IMatch> matches = GetRound(_roundIndex);
-
-			if (_index < 0 || _index >= matches.Count)
-			{
-				throw new IndexOutOfRangeException();
-			}
-			return matches[_index];
-		}
-#endif
 		public IMatch GetMatch(int _matchNumber)
 		{
 			if (_matchNumber < 1)
@@ -183,39 +162,10 @@ namespace Tournament.Structure
 			NumberOfRounds = NumberOfLowerRounds = 0;
 			NumberOfMatches = 0;
 		}
-#endregion
+		#endregion
 
-#region Private Methods
-#if false
-		protected void AddRound()
-		{
-			if (null == Rounds)
-			{
-				throw new NullReferenceException();
-			}
-			Rounds.Add(new List<IMatch>());
-		}
-		protected void AddMatch(int _roundIndex, IMatch _m)
-		{
-			if (null == _m || null == Rounds)
-			{
-				throw new NullReferenceException();
-			}
-			if (_roundIndex >= Rounds.Count || _roundIndex < 0)
-			{
-				throw new ArgumentOutOfRangeException();
-			}
-			foreach (List<IMatch> r in Rounds)
-			{
-				if (r.Contains(_m))
-				{
-					throw new DuplicateObjectException();
-				}
-			}
+		#region Private Methods
 
-			Rounds[_roundIndex].Add(_m);
-		}
-#endif
-#endregion
+		#endregion
 	}
 }

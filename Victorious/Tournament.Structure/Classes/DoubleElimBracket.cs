@@ -17,6 +17,7 @@ namespace Tournament.Structure
 		// inherits Dictionary<int, IMatch> LowerMatches
 		// inherits int NumberOfLowerRounds
 		// inherits IMatch GrandFinal
+		// inherits int NumberOfMatches
 		#endregion
 
 		#region Ctors
@@ -88,12 +89,6 @@ namespace Tournament.Structure
 
 						roundList[r][m].AddPreviousMatchNumber(roundList[r + 1][m].MatchNumber);
 						roundList[r + 1][m].SetNextMatchNumber(currNum);
-#if false
-						// Assign prev/next matchup indexes
-						roundList[r][m].AddPreviousMatchNumber(Rounds[r / 2][m].MatchNumber);
-						Rounds[r / 2][m].SetNextLoserMatchNumber(currNum);
-						// *************** THIS ISN'T QUITE RIGHT [mIndex]
-#endif
 					}
 				}
 				else if (!rIndexIsEven && roundList[r + 1].Count == (roundList[r].Count * 2))
@@ -137,13 +132,6 @@ namespace Tournament.Structure
 
 					roundList[r][m].AddPreviousMatchNumber(upperRound[m * 2 + 1].MatchNumber);
 					Matches[upperRound[m * 2 + 1].MatchNumber].SetNextLoserMatchNumber(currNum);
-#if false
-					roundList[r][m].AddPreviousMatchNumber(Rounds[r / 2 + 1][m * 2].MatchNumber);
-					Rounds[r / 2 + 1][m * 2].SetNextLoserMatchNumber(currNum);
-
-					roundList[r][m].AddPreviousMatchNumber(Rounds[r / 2 + 1][m * 2 + 1].MatchNumber);
-					Rounds[r / 2 + 1][m * 2 + 1].SetNextLoserMatchNumber(currNum);
-#endif
 				}
 
 				// Create a Grand Final

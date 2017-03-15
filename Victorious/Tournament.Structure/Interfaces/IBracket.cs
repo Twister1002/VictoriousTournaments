@@ -12,11 +12,28 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		List<IPlayer> Players { get; }
+
+		/// <summary>
+		/// NULL if not applicable.
+		/// </summary>
 		Dictionary<int, IMatch> Matches { get; }
 		int NumberOfRounds { get; }
+
+		/// <summary>
+		/// NULL if not applicable.
+		/// </summary>
 		Dictionary<int, IMatch> LowerMatches { get; }
 		int NumberOfLowerRounds { get; }
+
+		/// <summary>
+		/// NULL if not applicable.
+		/// </summary>
 		IMatch GrandFinal { get; }
+
+		/// <summary>
+		/// TOTAL number of matches.
+		/// Includes Lower Bracket & Grand Final.
+		/// </summary>
 		int NumberOfMatches { get; }
 		#endregion
 
@@ -40,7 +57,6 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Number of specified match.</param>
 		/// <param name="_slot">Winning player's slot: Defender or Challenger</param>
 		void AddWin(int _matchNumber, PlayerSlot _slot);
-		//void AddWin(IMatch _match, PlayerSlot _slot);
 
 		/// <summary>
 		/// Remove one win for the specified match.
@@ -50,6 +66,11 @@ namespace Tournament.Structure
 		/// <param name="_slot">Player slot: Defender or Challenger.</param>
 		void SubtractWin(int _matchNumber, PlayerSlot _slot);
 
+		/// <summary>
+		/// Reset score for the specified match.
+		/// Resets any affected "future" matches.
+		/// </summary>
+		/// <param name="_matchNumber">Number of specified match.</param>
 		void ResetMatchScore(int _matchNumber);
 
 		/// <summary>
@@ -99,18 +120,9 @@ namespace Tournament.Structure
 		/// <returns>List of Matches in the round.</returns>
 		List<IMatch> GetLowerRound(int _round);
 
-#if false
 		/// <summary>
-		/// Gets the Grand Final Match.
-		/// </summary>
-		/// <returns>null if not applicable.</returns>
-		IMatch GetGrandFinal();
-
-		//IMatch GetMatch(int _roundIndex, int _index);
-#endif
-
-		/// <summary>
-		/// Get a specific Match object.
+		/// Get a specific Match object from:
+		/// Upper & Lower Brackets and Grand Final.
 		/// </summary>
 		/// <param name="_matchNumber">Match Number of the desired Match.</param>
 		/// <returns>Match object.</returns>
