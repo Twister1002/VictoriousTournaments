@@ -32,11 +32,27 @@ namespace Tournament.Structure
 			ResetBracket();
 			CreateBracket();
 		}
+		public SingleElimBracket(int _numPlayers)
+		{
+			Players = new List<IPlayer>();
+			for (int i = 0; i < _numPlayers; ++i)
+			{
+				Players.Add(new User());
+			}
+
+			ResetBracket();
+			CreateBracket();
+		}
 		public SingleElimBracket()
 			: this(new List<IPlayer>())
 		{ }
 		public SingleElimBracket(BracketModel _model)
 		{
+			if (null == _model)
+			{
+				throw new NullReferenceException();
+			}
+
 			List<UserModel> userModels = _model.UserSeeds
 				.OrderBy(ubs => ubs.Seed)
 				.Select(ubs => ubs.User)

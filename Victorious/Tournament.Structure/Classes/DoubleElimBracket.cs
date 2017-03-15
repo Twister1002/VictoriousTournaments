@@ -24,6 +24,9 @@ namespace Tournament.Structure
 		public DoubleElimBracket(List<IPlayer> _players)
 			: base(_players)
 		{ }
+		public DoubleElimBracket(int _numPlayers)
+			: base(_numPlayers)
+		{ }
 		public DoubleElimBracket()
 			: this(new List<IPlayer>())
 		{ }
