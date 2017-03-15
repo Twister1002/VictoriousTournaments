@@ -23,7 +23,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public RoundRobinBracket(List<IPlayer> _players)
+		public RoundRobinBracket(List<IPlayer> _players, int _numRounds = 0)
 		{
 			if (null == _players)
 			{
@@ -34,7 +34,7 @@ namespace Tournament.Structure
 			ResetBracket();
 			CreateBracket();
 		}
-		public RoundRobinBracket(int _numPlayers)
+		public RoundRobinBracket(int _numPlayers, int _numRounds = 0)
 		{
 			Players = new List<IPlayer>();
 			for (int i = 0; i < _numPlayers; ++i)
@@ -46,11 +46,46 @@ namespace Tournament.Structure
 			CreateBracket();
 		}
 		public RoundRobinBracket()
-			: this(new List<IPlayer>())
+			: this(new List<IPlayer>(), 0)
 		{ }
 		public RoundRobinBracket(BracketModel _model)
 		{
-			throw new NotImplementedException();
+			if (null == _model)
+			{
+				throw new NullReferenceException();
+			}
+
+			List<UserModel> userModels = _model.UserSeeds
+				.OrderBy(ubs => ubs.Seed)
+				.Select(ubs => ubs.User)
+				.ToList();
+			Players = new List<IPlayer>();
+			foreach (UserModel um in userModels)
+			{
+				Players.Add(new User(um));
+			}
+
+			Scores = new int[Players.Count];
+			for (int i = 0; i < Scores.Count(); ++i)
+			{
+				Scores[i] = 0;
+			}
+
+			ResetBracket();
+			Matches = new Dictionary<int, IMatch>();
+			foreach (MatchModel mm in _model.Matches)
+			{
+				IMatch match = new Match(mm, Players);
+				Matches.Add(match.MatchNumber, match);
+				++NumberOfMatches;
+				if (match.RoundIndex > NumberOfRounds)
+				{
+					NumberOfRounds = match.RoundIndex;
+				}
+
+				Scores[match.DefenderIndex()] += match.Score[(int)PlayerSlot.Defender];
+				Scores[match.ChallengerIndex()] += match.Score[(int)PlayerSlot.Challenger];
+			}
 		}
 		#endregion
 
@@ -62,10 +97,6 @@ namespace Tournament.Structure
 			{
 				return;
 			}
-			//if (Players.Count % 2 > 0)
-			//{
-			//	throw new NotImplementedException();
-			//}
 
 			if (null == Scores)
 			{
@@ -159,13 +190,6 @@ namespace Tournament.Structure
 		{
 			base.ResetBracket();
 
-			//if (null != Scores)
-			//{
-			//	for (int i = 0; i < Scores.Count(); ++i)
-			//	{
-			//		Scores[i] = 0;
-			//	}
-			//}
 			Scores = null;
 		}
 		#endregion

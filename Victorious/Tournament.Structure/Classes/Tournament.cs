@@ -52,12 +52,12 @@ namespace Tournament.Structure
 			Brackets = new List<IBracket>();
 			foreach(BracketModel bModel in _t.Brackets)
 			{
-				switch (bModel.BracketTypeID)
+				switch (bModel.BracketType.Type)
 				{
-					case (1):
+					case (BracketTypeModel.BracketType.SINGLE):
 						AddBracket(new SingleElimBracket(bModel));
 						break;
-					case (2):
+					case (BracketTypeModel.BracketType.DOUBLE):
 						AddBracket(new DoubleElimBracket(bModel));
 						break;
 					// More here eventually...
@@ -214,7 +214,7 @@ namespace Tournament.Structure
 
 		public void AddRoundRobinBracket(List<IPlayer> _playerList, int _numRounds = 0)
 		{
-			throw new NotImplementedException();
+			Brackets.Add(new RoundRobinBracket(_playerList, _numRounds));
 		}
 		public void AddRoundRobinBracket(int _numPlayers, int _numRounds = 0)
 		{
