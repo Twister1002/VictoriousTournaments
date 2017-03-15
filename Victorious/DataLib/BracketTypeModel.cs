@@ -18,8 +18,10 @@ namespace DataLib
         }
 
         [Key]
-        public int BracketTypeID { get; set; }
+        public int BracketTypeID { get; set; } // set this to private
 
-        public string TypeName { get; set; }
+        public string TypeName { get; set; } // will be removed
+
+        public BracketType Type { get; set; }
     }
 }

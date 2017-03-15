@@ -551,24 +551,7 @@ namespace DataLib
                 return true;
         }
 
-        [Obsolete("Use AddBracket(ref BracketModel bracket, TournamentModel tournament).")]
-        public int AddBracket(TournamentModel tournament, BracketModel bracket)
-        {
-            try
-            {
-                context.Brackets.Add(bracket);
-                tournament.Brackets.Add(bracket);
-                bracket.Tournament = tournament;
-                context.SaveChanges();
-            }
-            catch (Exception)
-            {
-                return -1;
-            }
-
-            return bracket.BracketID;
-        }
-
+       
         // Adds the passed-in bracket to the databaase and also adds the bracket to the passed-in tournament's list of brackets
         public DbError AddBracket(ref BracketModel bracket, TournamentModel tournament)
         {
@@ -620,25 +603,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        [Obsolete("Use DeleteBracket(BracketMdoel bracket).")]
-        public bool DeletBracketById(int id)
-        {
-            try
-            {
-                BracketModel bracket = new BracketModel() { BracketID = id };
-                context.Brackets.Attach(bracket);
-                context.Brackets.Remove(bracket);
-
-                context.SaveChanges();
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
+       
         public DbError DeleteBracket(BracketModel bracket)
         {
             try
