@@ -12,6 +12,7 @@ namespace DataLib
             : base("name=VictoriousTestDbContext")
         {
             //Database.SetInitializer(new DropCreateDatabaseAlways<VictoriousDbContext>());
+            //Database.CreateIfNotExists();
             //Database.SetInitializer<VictoriousDbContext>(null);
             this.Configuration.LazyLoadingEnabled = false;
            
