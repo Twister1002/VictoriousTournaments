@@ -21,7 +21,7 @@ namespace DatabaseDebugConsole
             DatabaseInterface db = new DatabaseInterface();
 
             //db.Clear();
-            //Seed(db);
+            Seed(db);
             //TournamentModel tournament = db.GetTournamentById(1);
 
             //UserBracketSeedModel ubs = new UserBracketSeedModel();
@@ -112,7 +112,7 @@ namespace DatabaseDebugConsole
             //db.AddTournament(ref tournament);
 
 
-            DeleteAllTournaments(db);
+            //DeleteAllTournaments(db);
 
             //BracketModel bracket = new BracketModel()
             //{
@@ -143,7 +143,13 @@ namespace DatabaseDebugConsole
                 Description = "Test Tournament",
                 CreatedByID = 1
             };
-            //db.AddTournament(ref tournament);
+            TournamentRuleModel rules = new TournamentRuleModel()
+            {
+                RegistrationStartDate = DateTime.Now
+            };
+            tournament.TournamentRules = rules;
+
+            db.AddTournament(ref tournament);
 
 
             using (StreamReader reader = new StreamReader("..\\..\\Random User Info.txt"))
