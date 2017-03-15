@@ -35,7 +35,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB Ctor")]
-		public void SEBCreateBracket_CreatesNoMatches_WithLessThanTwoPlayers()
+		public void SEBCtor_CreatesNoMatches_WithLessThanTwoPlayers()
 		{
 			IBracket b = new SingleElimBracket();
 			//b.CreateBracket();
