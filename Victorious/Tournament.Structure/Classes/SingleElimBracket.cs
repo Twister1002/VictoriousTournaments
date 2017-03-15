@@ -168,7 +168,7 @@ namespace Tournament.Structure
 				{
 					roundList[r][m].SetRoundIndex(roundList.Count - r);
 					roundList[r][m].SetMatchIndex(m + 1);
-					Matches[roundList[r][m].MatchNumber] = roundList[r][m];
+					Matches.Add(roundList[r][m].MatchNumber, roundList[r][m]);
 				}
 			}
 			NumberOfMatches = Matches.Count;
@@ -436,7 +436,7 @@ namespace Tournament.Structure
 			{
 				return;
 			}
-			if (null == Matches[_matchNumber])
+			if (!Matches.ContainsKey(_matchNumber))
 			{
 				throw new KeyNotFoundException();
 			}

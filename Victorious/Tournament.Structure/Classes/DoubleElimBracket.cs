@@ -32,6 +32,10 @@ namespace Tournament.Structure
 		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
 			base.CreateBracket(_winsPerMatch);
+			if (0 == NumberOfMatches)
+			{
+				return;
+			}
 
 			List<List<IMatch>> roundList = new List<List<IMatch>>();
 			int totalMatches = CalculateTotalLowerBracketMatches(Players.Count);
@@ -163,7 +167,7 @@ namespace Tournament.Structure
 					{
 						roundList[r][m].SetRoundIndex(roundList.Count - r);
 						roundList[r][m].SetMatchIndex(m + 1);
-						LowerMatches[roundList[r][m].MatchNumber] = roundList[r][m];
+						LowerMatches.Add(roundList[r][m].MatchNumber, roundList[r][m]);
 					}
 				}
 				NumberOfMatches += (LowerMatches.Count + 1);
@@ -231,7 +235,7 @@ namespace Tournament.Structure
 				}
 
 				// Check the Lower Bracket:
-				if (null != LowerMatches[_matchNumber])
+				if (LowerMatches.ContainsKey(_matchNumber))
 				{
 					LowerMatches[_matchNumber].AddWin(_slot);
 
@@ -288,7 +292,7 @@ namespace Tournament.Structure
 				// in future, this may affect other Brackets...
 			}
 			// Check the Upper Bracket:
-			else if (null != Matches[_matchNumber])
+			else if (Matches.ContainsKey(_matchNumber))
 			{
 				if (Matches[_matchNumber].Score[(int)_slot] == Matches[_matchNumber].WinsNeeded)
 				{
@@ -306,7 +310,7 @@ namespace Tournament.Structure
 				Matches[_matchNumber].SubtractWin(_slot);
 			}
 			// Check the Lower Bracket:
-			else if (null != LowerMatches[_matchNumber])
+			else if (LowerMatches.ContainsKey(_matchNumber))
 			{
 				if (LowerMatches[_matchNumber].Score[(int)_slot] == LowerMatches[_matchNumber].WinsNeeded)
 				{
@@ -339,7 +343,7 @@ namespace Tournament.Structure
 				// if we start storing a "bracket winner", do more here...
 			}
 			// Check the Upper Bracket:
-			else if (null != Matches[_matchNumber])
+			else if (Matches.ContainsKey(_matchNumber))
 			{
 				if (Matches[_matchNumber].Score[(int)PlayerSlot.Defender] >= Matches[_matchNumber].WinsNeeded)
 				{
@@ -359,7 +363,7 @@ namespace Tournament.Structure
 				Matches[_matchNumber].ResetScore();
 			}
 			// Check the Lower Bracket:
-			else if (null != LowerMatches[_matchNumber])
+			else if (LowerMatches.ContainsKey(_matchNumber))
 			{
 				if (LowerMatches[_matchNumber].Score[(int)PlayerSlot.Defender] >= LowerMatches[_matchNumber].WinsNeeded)
 				{
@@ -425,7 +429,7 @@ namespace Tournament.Structure
 				return;
 			}
 			// Check the Upper Bracket:
-			else if (null != Matches[_matchNumber])
+			else if (Matches.ContainsKey(_matchNumber))
 			{
 				if (Matches[_matchNumber].DefenderIndex() == _playerIndex ||
 					Matches[_matchNumber].ChallengerIndex() == _playerIndex)
@@ -450,7 +454,7 @@ namespace Tournament.Structure
 				}
 			}
 			// Check the Lower Bracket:
-			else if (null != LowerMatches[_matchNumber])
+			else if (LowerMatches.ContainsKey(_matchNumber))
 			{
 				if (LowerMatches[_matchNumber].DefenderIndex() == _playerIndex ||
 					LowerMatches[_matchNumber].ChallengerIndex() == _playerIndex)

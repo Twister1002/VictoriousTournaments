@@ -245,7 +245,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket GetRound")]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
+		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void GetRound_ThrowsOutOfRange_WithBadParam()
 		{
 			List<IPlayer> pList = new List<IPlayer>();

@@ -106,6 +106,10 @@ namespace Tournament.Structure
 			{
 				throw new NullReferenceException();
 			}
+			if (_round < 1)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
 
 			List<IMatch> ret = Matches.Values
 				.Where(m => m.RoundIndex == _round)
@@ -118,6 +122,10 @@ namespace Tournament.Structure
 			if (null == LowerMatches)
 			{
 				throw new NullReferenceException();
+			}
+			if (_round < 1)
+			{
+				throw new ArgumentOutOfRangeException();
 			}
 
 			List<IMatch> ret = LowerMatches.Values
@@ -149,15 +157,18 @@ namespace Tournament.Structure
 				throw new IndexOutOfRangeException();
 			}
 
-			if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
+			if (null != GrandFinal &&
+				GrandFinal.MatchNumber == _matchNumber)
 			{
 				return GrandFinal;
 			}
-			if (null != Matches[_matchNumber])
+			if (null != Matches &&
+				Matches.ContainsKey(_matchNumber))
 			{
 				return Matches[_matchNumber];
 			}
-			if (null != LowerMatches[_matchNumber])
+			if (null != LowerMatches &&
+				LowerMatches.ContainsKey(_matchNumber))
 			{
 				return LowerMatches[_matchNumber];
 			}
