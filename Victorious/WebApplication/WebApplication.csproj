@@ -191,6 +191,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Fields.cs" />
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Models\TournamentViewModel.cs" />
     <Compile Include="Models\ViewModel.cs" />
@@ -223,6 +224,7 @@
     <Content Include="Styles\less\_icons.less" />
     <Content Include="Views\Tournament\Edit.cshtml" />
     <Content Include="Views\Tournament\Delete.cshtml" />
+    <Content Include="Views\Account\Update.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

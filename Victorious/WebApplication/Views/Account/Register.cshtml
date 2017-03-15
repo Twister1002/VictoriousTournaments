@@ -1,4 +1,4 @@
-﻿@model WebApplication.Models.AccountRegisterViewModel
+﻿@model WebApplication.Models.AccountViewModel
 @{
     ViewBag.Title = "Register";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -6,39 +6,33 @@
 
 <div id="AccountRegister">
     <h2>Account Registration</h2>
-    @using (Html.BeginForm("RegisterUser", "Account", FormMethod.Post))
+    @using (Html.BeginForm("RegisterUser", "Account", FormMethod.Post, new { @onsubmit = "return Validate(this)" }))
     {
         <div class="section">
             <ul>
                 <li>
                     @Html.LabelFor(m => m.Username)
-                    @Html.TextBoxFor(m => m.Username, null, new { @placeholder = "Username" })
-                    @Html.ValidationMessageFor(m => m.Username)
+                    @Html.TextBoxFor(m => m.Username, null, new { @placeholder = "Username", @required="required" })
                 </li>
                 <li>
                     @Html.LabelFor(m => m.Email)
-                    @Html.TextBoxFor(m => m.Email, null, new { @placeholder = "Email" })
-                    @Html.ValidationMessageFor(m => m.Email)
+                    @Html.TextBoxFor(m => m.Email, null, new { @placeholder = "Email", @required = "required" })
                 </li>
                 <li>
                     @Html.LabelFor(m => m.FirstName)
-                    @Html.TextBoxFor(m => m.FirstName, null, new { @placeholder = "First Name" })
-                    @Html.ValidationMessageFor(m => m.FirstName)
+                    @Html.TextBoxFor(m => m.FirstName, null, new { @placeholder = "First Name", @required = "required" })
                 </li>
                 <li>
                     @Html.LabelFor(m => m.LastName)
-                    @Html.TextBoxFor(m => m.LastName, null, new { @placeholder = "Last Name" })
-                    @Html.ValidationMessageFor(m => m.LastName)
+                    @Html.TextBoxFor(m => m.LastName, null, new { @placeholder = "Last Name", @required = "required" })
                 </li>
                 <li>
                     @Html.LabelFor(m => m.Password)
-                    @Html.PasswordFor(m => m.Password, new { @placeholder = "Password" })
-                    @Html.ValidationMessageFor(m => m.Password)
+                    @Html.PasswordFor(m => m.Password, new { @placeholder = "Password", @required = "required" })
                 </li>
                 <li>
                     @Html.LabelFor(m => m.PasswordVerify)
-                    @Html.PasswordFor(m => m.PasswordVerify, new { @placeholder = "Verify Password" })
-                    @Html.ValidationMessageFor(m => m.PasswordVerify)
+                    @Html.PasswordFor(m => m.PasswordVerify, new { @placeholder = "Verify Password", @required = "required" })
                 </li>
             </ul>
         </div>

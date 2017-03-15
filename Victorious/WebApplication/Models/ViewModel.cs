@@ -24,10 +24,10 @@ namespace WebApplication.Models
             "exception",
             "critical"
         };
-
-        public Exception dbException { get; set; }
+        
         public ViewError error = ViewError.NONE;
         protected DatabaseInterface db = new DatabaseInterface();
         public String message { get; set; }
+        public Exception dbException { get; set; }
     }
 }

@@ -6,18 +6,6 @@
     .prop("readonly", "readonly")
     ;
 
-    //$(".slider")
-    //.slider({
-    //    range: true,
-    //    min: 3,
-    //    max: 128,
-    //    value: 3,
-    //    slide: function (event, ui) {
-    //        $(".slider").val(ui.value);
-    //    }
-    //})
-    //.val($(this).slider("value"));
-
     $(".matchData .info li").on("mouseover", function () {
         //console.log("Entered: " + $(this).data("seed"));
         var seed = $(this).data("seed");
@@ -32,4 +20,24 @@
             $(".matchData .info [data-seed='" + seed + "']").removeClass("seedHover");
         }
     });
+
+    // Form Validation
+    function Validate(form) {
+        var returnVal = true;
+
+        $(".section li", form).each(function (i, e) {
+            input = $(this).find("input");
+            label = $(this).find("label");
+
+            if (input.prop("required") && input.val().length < 1) {
+                label.addClass("required");
+                returnVal = false;
+            }
+            else {
+                label.removeClass("required");
+            }
+        });
+
+        return retrunVal;
+    }
 });

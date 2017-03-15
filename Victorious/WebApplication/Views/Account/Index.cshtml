@@ -19,7 +19,7 @@
                     </ul>
                 </li>
                 <li class="list-table-body">
-                    @foreach (var tournament in Model.userModel.Tournaments)
+                    @foreach (var tournament in Model.getUserModel().Tournaments)
                     {
                         <a href="#">
                             <ul class="row-clickable" data-columns="4">
@@ -84,7 +84,7 @@
     <div class="settings">
         <h2>Settings</h2>
         <ul>
-            <li>Update Account</li>
+            <li class="clickable-underline">@Html.ActionLink("Update Account", "Update", "Account")</li>
             <li class="clickable-underline">@Html.ActionLink("Create Tournament", "Create", "Tournament")</li>
             <li>View Profile</li>
             <li class="clickable-underline">@Html.ActionLink("Logout", "Logout", "Account")</li>
