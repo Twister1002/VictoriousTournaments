@@ -55,9 +55,18 @@ namespace DataLib
             //    .HasOptional(e => e.Tournament)
             //    .WithOptionalDependent(e => e.TournamentRules);
 
-            modelBuilder.Entity<TournamentRuleModel>()
-                .Property(e => e.TournamentRulesID)
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            //modelBuilder.Entity<TournamentRuleModel>()
+            //    .Property(e => e.TournamentRulesID)
+            //    .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            //modelBuilder.Entity<TournamentModel>()
+            //    .HasOptional(e => e.TournamentRules)
+            //    .WithOptionalPrincipal(e => e.Tournament);               
+
+            //modelBuilder.Entity<TournamentModel>()
+            //    .HasOptional(e => e.TournamentRules)
+            //    .WithRequired()
+            //    .Map(k => k.MapKey("TournamentRulesID"));
 
             modelBuilder.Entity<TournamentRuleModel>()
                 .Property(e => e.EntryFee)

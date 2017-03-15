@@ -45,7 +45,5 @@ namespace DataLib
         //[ForeignKey("TournamentID")]
         //public virtual TournamentModel Tournament { get; set; }
 
-        //public ICollection<Bracket> Brackets { get; set; }
-
     }
 }

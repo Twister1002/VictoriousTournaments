@@ -116,6 +116,14 @@
     <Compile Include="Migrations\201703131732047_AddedBracketTypeModel.Designer.cs">
       <DependentUpon>201703131732047_AddedBracketTypeModel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201703151709008_RemovedTournamentRulesFK.cs" />
+    <Compile Include="Migrations\201703151709008_RemovedTournamentRulesFK.Designer.cs">
+      <DependentUpon>201703151709008_RemovedTournamentRulesFK.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703151740288_ReaddedTournamentRulesForeignKey.cs" />
+    <Compile Include="Migrations\201703151740288_ReaddedTournamentRulesForeignKey.Designer.cs">
+      <DependentUpon>201703151740288_ReaddedTournamentRulesForeignKey.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TeamMemberModel.cs" />
@@ -149,6 +157,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703131732047_AddedBracketTypeModel.resx">
       <DependentUpon>201703131732047_AddedBracketTypeModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703151709008_RemovedTournamentRulesFK.resx">
+      <DependentUpon>201703151709008_RemovedTournamentRulesFK.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703151740288_ReaddedTournamentRulesForeignKey.resx">
+      <DependentUpon>201703151740288_ReaddedTournamentRulesForeignKey.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

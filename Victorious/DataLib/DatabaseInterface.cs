@@ -317,33 +317,19 @@ namespace DataLib
             return tournaments;
         }
 
-        // Adds the passed-in tournament to the database
-        [Obsolete("Use AddTournament(ref TournamentModel tournament)")]
-        public int AddTournament(TournamentModel tournament)
-        {
-            TournamentModel newTournament = new TournamentModel();
-            try
-            {
-                newTournament = tournament;
-                context.Tournaments.Add(tournament);
-
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception " + ex.ToString() + " in AddTournament");
-
-                return -1;
-            }
-
-            return newTournament.TournamentID;
-        }
-
         public DbError AddTournament(ref TournamentModel tournament)
         {
+            TournamentRuleModel _rules = new TournamentRuleModel();
+            TournamentModel _tournament = new TournamentModel();
             try
             {
+                // Tournament.TournamentRules.TournamentID isn't being properly set on insert of tournament, will be fixed
+                _tournament = tournament;
+                _rules = tournament.TournamentRules;
+                context.TournamentRules.Add(_rules);
+                context.SaveChanges();
                 context.Tournaments.Add(tournament);
+                
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -434,7 +420,7 @@ namespace DataLib
                 TournamentModel _tournament = context.Tournaments.Find(tournament.TournamentID);
                 if (_tournament.TournamentRules != null)
                 {
-                    TournamentRuleModel _rule = context.TournamentRules.Find(tournament.TournamentRules);
+                    TournamentRuleModel _rule = context.TournamentRules.Find(tournament.TournamentRules.TournamentRulesID);
                     DeleteTournamentRules(_rule);
 
                 }
@@ -537,7 +523,7 @@ namespace DataLib
         {
             try
             {
-                TournamentRuleModel _rules = context.TournamentRules.Find(tournamentRules.TournamentID);
+                TournamentRuleModel _rules = context.TournamentRules.Find(tournamentRules.TournamentRulesID);
                 context.TournamentRules.Remove(_rules);
                 //context.TournamentRules.Attach(tournamentRules);
                 //context.TournamentRules.Remove(tournamentRules);
