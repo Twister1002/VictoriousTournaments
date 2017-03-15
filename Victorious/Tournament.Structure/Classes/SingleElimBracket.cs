@@ -171,6 +171,7 @@ namespace Tournament.Structure
 					Matches[roundList[r][m].MatchNumber] = roundList[r][m];
 				}
 			}
+			NumberOfMatches = Matches.Count;
 			#endregion
 		}
 

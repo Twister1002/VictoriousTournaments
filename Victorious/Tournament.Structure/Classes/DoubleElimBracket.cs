@@ -32,6 +32,7 @@ namespace Tournament.Structure
 		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
 			base.CreateBracket(_winsPerMatch);
+
 			List<List<IMatch>> roundList = new List<List<IMatch>>();
 			int totalMatches = CalculateTotalLowerBracketMatches(Players.Count);
 			int numMatches = 0;
@@ -165,6 +166,7 @@ namespace Tournament.Structure
 						LowerMatches[roundList[r][m].MatchNumber] = roundList[r][m];
 					}
 				}
+				NumberOfMatches += (LowerMatches.Count + 1);
 			}
 			else
 			{

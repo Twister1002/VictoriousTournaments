@@ -27,6 +27,8 @@ namespace Tournament.Structure
 		{ get; protected set; }
 		public IMatch GrandFinal
 		{ get; protected set; }
+		public int NumberOfMatches
+		{ get; protected set; }
 		#endregion
 
 		#region Abstract Methods
@@ -124,11 +126,11 @@ namespace Tournament.Structure
 				.ToList();
 			return ret;
 		}
+#if false
 		public IMatch GetGrandFinal()
 		{
 			return GrandFinal;
 		}
-#if false
 		public IMatch GetMatch(int _roundIndex, int _index)
 		{
 			List<IMatch> matches = GetRound(_roundIndex);
@@ -168,6 +170,7 @@ namespace Tournament.Structure
 			LowerMatches = null;
 			GrandFinal = null;
 			NumberOfRounds = NumberOfLowerRounds = 0;
+			NumberOfMatches = 0;
 		}
 #endregion
 

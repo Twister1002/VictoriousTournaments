@@ -17,6 +17,7 @@ namespace Tournament.Structure
 		Dictionary<int, IMatch> LowerMatches { get; }
 		int NumberOfLowerRounds { get; }
 		IMatch GrandFinal { get; }
+		int NumberOfMatches { get; }
 		#endregion
 
 		#region Methods
@@ -98,6 +99,7 @@ namespace Tournament.Structure
 		/// <returns>List of Matches in the round.</returns>
 		List<IMatch> GetLowerRound(int _round);
 
+#if false
 		/// <summary>
 		/// Gets the Grand Final Match.
 		/// </summary>
@@ -105,6 +107,7 @@ namespace Tournament.Structure
 		IMatch GetGrandFinal();
 
 		//IMatch GetMatch(int _roundIndex, int _index);
+#endif
 
 		/// <summary>
 		/// Get a specific Match object.
@@ -117,6 +120,6 @@ namespace Tournament.Structure
 		/// Clears all Matches and rounds in the bracket.
 		/// </summary>
 		void ResetBracket();
-		#endregion
+#endregion
 	}
 }
