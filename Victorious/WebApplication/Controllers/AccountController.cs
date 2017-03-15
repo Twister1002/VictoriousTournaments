@@ -110,6 +110,7 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
+                bool passwordsMatch = viewModel.Password == viewModel.PasswordVerify;
                 DbError userExists = db.UserUsernameExists(viewModel.Username);
                 DbError emailExists = db.UserEmailExists(viewModel.Email);
 
@@ -130,7 +131,7 @@ namespace WebApplication.Controllers
                     else
                     {
                         // User Registration failed.
-                        viewModel.dbException = db.e;
+                        viewModel.dbException = db.exception;
                         viewModel.error = ViewModel.ViewError.CRITICAL;
                         viewModel.message = "Well... Something went wrong when creating your account: <br/>";
                         //+"<h2>Message</h2>" + db.e.Message + "<h2>Inner Exception</h2>" + db.e.InnerException;

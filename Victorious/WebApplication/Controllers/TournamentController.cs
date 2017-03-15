@@ -124,33 +124,33 @@ namespace WebApplication.Controllers
                 viewModel.ApplyChanges();
 
                 TournamentModel model = viewModel.Model;
-                TournamentRuleModel modelRules = viewModel.Model.TournamentRules;
-                viewModel.Model.TournamentRules = null;
+                //TournamentRuleModel modelRules = viewModel.Model.TournamentRules;
+                //viewModel.Model.TournamentRules = null;
 
                 DbError result = db.AddTournament(ref model);
 
                 if (result == DbError.SUCCESS)
                 {
-                    modelRules.TournamentID = model.TournamentID;
-                    DbError ruleResult = db.AddRules(ref modelRules, model);
+                    //modelRules.TournamentID = model.TournamentID;
+                    //DbError ruleResult = db.AddRules(ref modelRules, model);
 
-                    if (ruleResult == DbError.SUCCESS)
-                    {
+                    //if (ruleResult == DbError.SUCCESS)
+                    //{
                         return RedirectToAction("Tournament", "Tournament", new { guid = model.TournamentID });
-                    }
-                    else
-                    {
-                        db.DeleteTournament(model);
-                        viewModel.dbException = db.e;
-                        viewModel.error = ViewModel.ViewError.CRITICAL;
-                        viewModel.message = "Unable to create the rules for the tournament.";
-                        return View("Create", viewModel);
-                    }
+                    //}
+                    //else
+                    //{
+                    //    db.DeleteTournament(model);
+                    //    viewModel.dbException = db.exception;
+                    //    viewModel.error = ViewModel.ViewError.CRITICAL;
+                    //    viewModel.message = "Unable to create the rules for the tournament.";
+                    //    return View("Create", viewModel);
+                    //}
                 }
                 else
                 {
                     // The tournament failed to be created
-                    viewModel.dbException = db.e;
+                    viewModel.dbException = db.exception;
                     viewModel.error = ViewModel.ViewError.EXCEPTION;
                     viewModel.message = "We could not create the tournament due to an error.";
                     return View("Create", viewModel);
@@ -192,7 +192,7 @@ namespace WebApplication.Controllers
                     {
                         viewModel.error = ViewModel.ViewError.CRITICAL;
                         viewModel.message = "Something went wrong while trying to update your tournament. Please try again or submit a ticket.";
-                        viewModel.dbException = db.e;
+                        viewModel.dbException = db.exception;
                     }
                 }
                 else
@@ -235,7 +235,7 @@ namespace WebApplication.Controllers
                     {
                         viewModel.error = ViewModel.ViewError.CRITICAL;
                         viewModel.message = "Unable to update the tournament. Please try again later.";
-                        viewModel.dbException = db.e;
+                        viewModel.dbException = db.exception;
                     }
                 }
                 else

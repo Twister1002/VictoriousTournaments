@@ -39,6 +39,7 @@ namespace WebApplication.Models
             userModel.FirstName     = this.FirstName;
             userModel.LastName      = this.LastName;
             userModel.Email         = this.Email;
+            userModel.Password      = this.Password;
         }
 
         public AccountFields SetFields()
