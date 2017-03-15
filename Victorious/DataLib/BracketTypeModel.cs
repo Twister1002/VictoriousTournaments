@@ -10,6 +10,13 @@ namespace DataLib
     public partial class BracketTypeModel
     {
 
+        public enum BracketType
+        {
+            SINGLE,
+            DOUBLE,
+            ROUNDROBIN
+        }
+
         [Key]
         public int BracketTypeID { get; set; }
 
