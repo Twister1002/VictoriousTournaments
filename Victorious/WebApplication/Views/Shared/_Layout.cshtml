@@ -13,10 +13,20 @@
 <body>
     <div class="dev-bp"></div>
     @Html.Partial("_Nav")
+
+    @if (Session["Message"] != null)
+    {
+        <div class="message">
+            @Html.Raw((String)Session["Message"])
+        </div>
+
+        Session.Remove("Message");
+    }
+
     @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
     {
         <div class="message @Model.errorClassNames[(int)Model.error]">
-            @Model.message
+            @Html.Raw(Model.message)
             <br />
             @if (Model.dbException != null)
             {
@@ -28,12 +38,9 @@
         </div>
     }
 
-    @if (Session["Message"] != null)
-    {
-
-    }
-
-    @RenderBody()
+    <div id="content">
+        @RenderBody()
+    </div>
     <footer>
         <p>
             Copyright &copy; Full Sail Software Development
