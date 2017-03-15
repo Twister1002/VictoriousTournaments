@@ -231,7 +231,7 @@ namespace Tournament.Structure
 			{
 				throw new IndexOutOfRangeException();
 			}
-			if (null == Matches[_matchNumber])
+			if (!Matches.ContainsKey(_matchNumber))
 			{
 				throw new KeyNotFoundException();
 			}

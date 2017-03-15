@@ -153,7 +153,7 @@ namespace Tournament.Structure
 
 			throw new KeyNotFoundException();
 		}
-		public void ResetBracket()
+		public virtual void ResetBracket()
 		{
 			Matches = null;
 			LowerMatches = null;
