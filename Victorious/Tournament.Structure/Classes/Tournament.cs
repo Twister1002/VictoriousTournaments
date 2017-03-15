@@ -57,17 +57,15 @@ namespace Tournament.Structure
 				switch (bModel.BracketType)
 				{
 					case ("single"):
-						AddSingleElimBracket(Players);
+						Brackets.Add(new SingleElimBracket(bModel));
 						break;
 					case ("double"):
-						AddDoubleElimBracket(Players);
+						Brackets.Add(new DoubleElimBracket(bModel));
 						break;
 
 					default:
 						break;
 				}
-
-				Brackets[Brackets.Count - 1].UpdateCurrentMatches(bModel.Matches);
 			}
 
 			PrizePool = (null == _t.TournamentRules.PrizePurse)

@@ -45,12 +45,6 @@ namespace Tournament.Structure
 		void CreateBracket(ushort _winsPerMatch = 1);
 
 		/// <summary>
-		/// Temporarily public, DON'T USE THIS METHOD.
-		/// </summary>
-		/// <param name="_matchModels">WHY ARE YOU STILL HERE</param>
-		void UpdateCurrentMatches(ICollection<MatchModel> _matchModels);
-
-		/// <summary>
 		/// Record one win for the specified match.
 		/// Advances Player if the Match is over.
 		/// </summary>

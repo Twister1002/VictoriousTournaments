@@ -35,6 +35,38 @@ namespace Tournament.Structure
 		public SingleElimBracket()
 			: this(new List<IPlayer>())
 		{ }
+		public SingleElimBracket(BracketModel _model)
+		{
+			List<UserModel> userModels = _model.UserSeeds
+				.OrderBy(ubs => ubs.Seed)
+				.Select(ubs => ubs.User)
+				.ToList();
+			Players = new List<IPlayer>();
+			foreach (UserModel um in userModels)
+			{
+				Players.Add(new User(um));
+			}
+
+			ResetBracket();
+			int totalMatches = Players.Count - 1;
+
+			Matches = new Dictionary<int, IMatch>();
+			foreach (MatchModel mm in _model.Matches)
+			{
+				IMatch match = new Match(mm, Players);
+				if (match.RoundIndex > NumberOfRounds)
+				{
+					NumberOfRounds = match.RoundIndex;
+				}
+				Matches.Add(match.MatchNumber, match);
+
+				++NumberOfMatches;
+				if (NumberOfMatches >= totalMatches)
+				{
+					break;
+				}
+			}
+		}
 		#endregion
 
 		#region Public Methods
@@ -176,12 +208,6 @@ namespace Tournament.Structure
 			#endregion
 		}
 
-		public override void UpdateCurrentMatches(ICollection<MatchModel> _matchModels)
-		{
-			// REPLACE THIS
-			throw new NotImplementedException();
-		}
-
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
 			if (_matchNumber < 1 ||
@@ -268,9 +294,9 @@ namespace Tournament.Structure
 			// Reset Score
 			Matches[_matchNumber].ResetScore();
 		}
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 		private void ReassignPlayers(IMatch _currMatch, List<IMatch> _prevRound)
 		{
 			if (null == _currMatch ||
@@ -339,6 +365,6 @@ namespace Tournament.Structure
 				Matches[_matchNumber].RemovePlayer(_playerIndex);
 			}
 		}
-#endregion
+		#endregion
 	}
 }

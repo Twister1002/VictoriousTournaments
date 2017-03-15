@@ -29,7 +29,6 @@ namespace Tournament.Structure
 
 		#region Abstract Methods
 		public abstract void CreateBracket(ushort _winsPerMatch = 1);
-		public abstract void UpdateCurrentMatches(ICollection<MatchModel> _matchModels);
 		public abstract void AddWin(int _matchNumber, PlayerSlot _slot);
 		public abstract void SubtractWin(int _matchNumber, PlayerSlot _slot);
 		public abstract void ResetMatchScore(int _matchNumber);

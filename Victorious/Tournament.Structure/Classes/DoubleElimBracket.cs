@@ -27,6 +27,38 @@ namespace Tournament.Structure
 		public DoubleElimBracket()
 			: this(new List<IPlayer>())
 		{ }
+		public DoubleElimBracket(BracketModel _model)
+			: base(_model)
+		{
+			if (CalculateTotalLowerBracketMatches(Players.Count) > 0)
+			{
+				int numOfGrandFinal = _model.Matches.Count - 1;
+				int i = 0;
+
+				LowerMatches = new Dictionary<int, IMatch>();
+				foreach (MatchModel mm in _model.Matches)
+				{
+					if (i >= Matches.Count
+						&& i < numOfGrandFinal)
+					{
+						IMatch match = new Match(mm, Players);
+						if (match.RoundIndex > NumberOfLowerRounds)
+						{
+							NumberOfLowerRounds = match.RoundIndex;
+						}
+						LowerMatches.Add(match.MatchNumber, match);
+						++NumberOfMatches;
+					}
+					else if (i == numOfGrandFinal)
+					{
+						GrandFinal = new Match(mm, Players);
+						++NumberOfMatches;
+					}
+
+					++i;
+				}
+			}
+		}
 		#endregion
 
 		#region Public Methods
@@ -165,12 +197,6 @@ namespace Tournament.Structure
 				LowerMatches = null;
 				GrandFinal = null;
 			}
-		}
-
-		public override void UpdateCurrentMatches(ICollection<MatchModel> _matchModels)
-		{
-			// REPLACE THIS
-			base.UpdateCurrentMatches(_matchModels);
 		}
 
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)

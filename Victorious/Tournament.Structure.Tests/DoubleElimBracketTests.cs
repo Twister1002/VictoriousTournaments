@@ -32,6 +32,7 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(2, b.Players.Count);
 		}
+#if false
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB Ctor")]
@@ -42,6 +43,7 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(1, 2);
 		}
+#endif
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB Ctor")]
