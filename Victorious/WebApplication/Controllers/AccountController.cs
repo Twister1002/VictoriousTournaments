@@ -39,16 +39,7 @@ namespace WebApplication.Controllers
         public ActionResult Login()
         {
             AccountViewModel model = new AccountViewModel();
-            if (Session["registered"] != null)
-            {
-                if ((bool)Session["registered"])
-                {
-                    model.error = ViewModel.ViewError.SUCCESS;
-                    model.message = "Account registered successfully.";
-                    Session.Remove("registered");
-                }
-            }
-
+           
             if (Session["User.UserId"] != null)
             {
                 return RedirectToAction("Index", "Account");
@@ -132,7 +123,8 @@ namespace WebApplication.Controllers
                     if (error == DbError.SUCCESS)
                     {
                         // User Registraion was successful
-                        Session["registered"] = true;
+                        Session["Message"] = "Registration was successful. Please login to continue.";
+                        Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
                         return RedirectToAction("Login", "Account");
                     }
                     else
@@ -167,11 +159,14 @@ namespace WebApplication.Controllers
             if (Session["User.UserId"] != null)
             {
                 AccountViewModel model = new AccountViewModel((int)Session["User.UserId"]);
+                model.SetFields();
+
                 return View("Update", model);
             }
             else
             {
                 Session["Message"] = "You need you login to update your account.";
+                Session["Message.Class"] = ViewModel.ViewError.WARNING;
                 return RedirectToAction("Login", "Account");
             }
         }
@@ -184,6 +179,8 @@ namespace WebApplication.Controllers
             {
                 if (Session["User.UserId"] != null)
                 {
+                    viewModel.setUserModel((int)Session["User.UserId"]);
+
                     // Verify the user being updated is legitly the user logged in
                     if (viewModel.getUserModel().UserID == (int)Session["User.UserId"])
                     {
@@ -195,6 +192,8 @@ namespace WebApplication.Controllers
                         {
                             viewModel.error = ViewModel.ViewError.SUCCESS;
                             viewModel.message = "Your account was successfully updated.";
+                            Session["Message"] = viewModel.message;
+                            Session["Message.Class"] = viewModel.error;
                             return RedirectToAction("Index", "Account");
                         }
                         else
@@ -209,11 +208,14 @@ namespace WebApplication.Controllers
                         // Log the user out as I feel this is a hacking attempt
                         Session.RemoveAll();
                         Session["Message"] = "We couldn't validate who you are. Please login and try again.";
+                        Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
                         return RedirectToAction("Login", "Account");
                     }
                 }
                 else
                 {
+                    Session["Message"] = "Please login to edit your account information";
+                    Session["Message.Class"] = ViewModel.ViewError.WARNING;
                     return RedirectToAction("Login", "Account");
                 }
             }
