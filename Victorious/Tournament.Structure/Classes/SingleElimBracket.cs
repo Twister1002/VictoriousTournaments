@@ -177,6 +177,7 @@ namespace Tournament.Structure
 		public override void UpdateCurrentMatches(ICollection<MatchModel> _matchModels)
 		{
 			// REPLACE THIS
+			throw new NotImplementedException();
 		}
 
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
@@ -261,7 +262,7 @@ namespace Tournament.Structure
 				RemovePlayerFromFutureMatches
 					(Matches[_matchNumber].NextMatchNumber, Matches[_matchNumber].DefenderIndex());
 			}
-			else if (Matches[_matchNumber].Score[(int)PlayerSlot.Challenger] >= Matches[_matchNumber].WinsNeeded)
+			if (Matches[_matchNumber].Score[(int)PlayerSlot.Challenger] >= Matches[_matchNumber].WinsNeeded)
 			{
 				RemovePlayerFromFutureMatches
 					(Matches[_matchNumber].NextMatchNumber, Matches[_matchNumber].ChallengerIndex());
@@ -442,10 +443,16 @@ namespace Tournament.Structure
 			if (Matches[_matchNumber].DefenderIndex() == _playerIndex ||
 				Matches[_matchNumber].ChallengerIndex() == _playerIndex)
 			{
-				RemovePlayerFromFutureMatches
-					(Matches[_matchNumber].NextMatchNumber, Matches[_matchNumber].DefenderIndex());
-				RemovePlayerFromFutureMatches
-					(Matches[_matchNumber].NextMatchNumber, Matches[_matchNumber].ChallengerIndex());
+				if (Matches[_matchNumber].Score[(int)PlayerSlot.Defender] >= Matches[_matchNumber].WinsNeeded)
+				{
+					RemovePlayerFromFutureMatches
+						(Matches[_matchNumber].NextMatchNumber, Matches[_matchNumber].DefenderIndex());
+				}
+				if (Matches[_matchNumber].Score[(int)PlayerSlot.Challenger] >= Matches[_matchNumber].WinsNeeded)
+				{
+					RemovePlayerFromFutureMatches
+						(Matches[_matchNumber].NextMatchNumber, Matches[_matchNumber].ChallengerIndex());
+				}
 
 				Matches[_matchNumber].RemovePlayer(_playerIndex);
 			}
