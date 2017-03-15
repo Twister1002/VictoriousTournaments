@@ -339,11 +339,20 @@ namespace DataLib
             return newTournament.TournamentID;
         }
 
+
         public DbError AddTournament(ref TournamentModel tournament)
         {
+            TournamentRuleModel _rules = new TournamentRuleModel();
+            TournamentModel _tournament = new TournamentModel();
             try
             {
+                // Tournament.TournamentRules.TournamentID isn't being properly set on insert of tournament, will be fixed
+                _tournament = tournament;
+                _rules = tournament.TournamentRules;
+                context.TournamentRules.Add(_rules);
+                context.SaveChanges();
                 context.Tournaments.Add(tournament);
+                //_rules.TournamentID = tournament.TournamentID;
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -427,131 +436,131 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        public DbError DeleteTournament(TournamentModel tournament)
-        {
-            try
-            {
-                TournamentModel _tournament = context.Tournaments.Find(tournament.TournamentID);
-                if (_tournament.TournamentRules != null)
-                {
-                    TournamentRuleModel _rule = context.TournamentRules.Find(tournament.TournamentRules);
-                    DeleteTournamentRules(_rule);
+        //public DbError DeleteTournament(TournamentModel tournament)
+        //{
+        //    try
+        //    {
+        //        TournamentModel _tournament = context.Tournaments.Find(tournament.TournamentID);
+        //        if (_tournament.TournamentRules != null)
+        //        {
+        //            TournamentRuleModel _rule = context.TournamentRules.Find(tournament.TournamentRules);
+        //            DeleteTournamentRules(_rule);
 
-                }
-                foreach (var bracket in _tournament.Brackets.ToList())
-                {
-                    DeleteBracket(bracket);
-                }
-                //context.Entry(tournament).State = System.Data.Entity.EntityState.Deleted;
-                //context.Tournaments.Attach(_tournament);
-                context.Tournaments.Remove(_tournament);
+        //        }
+        //        foreach (var bracket in _tournament.Brackets.ToList())
+        //        {
+        //            DeleteBracket(bracket);
+        //        }
+        //        //context.Entry(tournament).State = System.Data.Entity.EntityState.Deleted;
+        //        //context.Tournaments.Attach(_tournament);
+        //        context.Tournaments.Remove(_tournament);
 
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception " + ex.ToString() + " in DeleteTournament");
-                return DbError.FAILED_TO_DELETE;
-            }
-            return DbError.SUCCESS;
-        }
+        //        context.SaveChanges();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("Exception " + ex.ToString() + " in DeleteTournament");
+        //        return DbError.FAILED_TO_DELETE;
+        //    }
+        //    return DbError.SUCCESS;
+        //}
         #endregion
 
-        #region TournamentRules
+        //#region TournamentRules
 
-        public DbError TournamentHasRules(TournamentModel tournament)
-        {
-            try
-            {
-                TournamentRuleModel tr = tournament.TournamentRules;
-            }
-            catch (Exception)
-            {
-                return DbError.DOES_NOT_EXIST;
-            }
+        //public DbError TournamentHasRules(TournamentModel tournament)
+        //{
+        //    try
+        //    {
+        //        TournamentRuleModel tr = tournament.TournamentRules;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return DbError.DOES_NOT_EXIST;
+        //    }
 
-            return DbError.EXISTS;
+        //    return DbError.EXISTS;
 
-            //TournamentRuleModel tournamentRule = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
+        //    //TournamentRuleModel tournamentRule = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
 
-        }
+        //}
 
-        [Obsolete("Use AddRules(ref TournamentRuleModel tournamentRules, TournamentModel tournament).")]
-        public DbError AddRulesToTournament(TournamentModel tounrnament, TournamentRuleModel tournamentRules)
-        {
-            try
-            {
-                context.TournamentRules.Add(tournamentRules);
-                tounrnament.TournamentRules = tournamentRules;
-                tournamentRules.TournamentID = tounrnament.TournamentID;
-                context.SaveChanges();
-            }
-            catch (Exception)
-            {
-                return DbError.FAILED_TO_ADD;
-            }
+        //[Obsolete("Use AddRules(ref TournamentRuleModel tournamentRules, TournamentModel tournament).")]
+        //public DbError AddRulesToTournament(TournamentModel tounrnament, TournamentRuleModel tournamentRules)
+        //{
+        //    try
+        //    {
+        //        context.TournamentRules.Add(tournamentRules);
+        //        tounrnament.TournamentRules = tournamentRules;
+        //        tournamentRules.TournamentID = tounrnament.TournamentID;
+        //        context.SaveChanges();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return DbError.FAILED_TO_ADD;
+        //    }
 
-            return DbError.SUCCESS;
-        }
+        //    return DbError.SUCCESS;
+        //}
 
-        public DbError AddRules(ref TournamentRuleModel tournamentRules, TournamentModel tournament)
-        {
-            TournamentRuleModel rules = new TournamentRuleModel();
-            try
-            {
-                rules = tournamentRules;
-                context.TournamentRules.Add(tournamentRules);
-                //context.SaveChanges();
+        //public DbError AddRules(ref TournamentRuleModel tournamentRules, TournamentModel tournament)
+        //{
+        //    TournamentRuleModel rules = new TournamentRuleModel();
+        //    try
+        //    {
+        //        rules = tournamentRules;
+        //        context.TournamentRules.Add(tournamentRules);
+        //        //context.SaveChanges();
 
-                tournamentRules = rules;
-                tournament.TournamentRules = tournamentRules;
-                //tournamentRules.TournamentID = tournament.TournamentID;
+        //        tournamentRules = rules;
+        //        tournament.TournamentRules = tournamentRules;
+        //        //tournamentRules.TournamentID = tournament.TournamentID;
 
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception " + ex.ToString() + " in AddRules");
-                return DbError.FAILED_TO_ADD;
-            }
-            return DbError.SUCCESS;
-        }
+        //        context.SaveChanges();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("Exception " + ex.ToString() + " in AddRules");
+        //        return DbError.FAILED_TO_ADD;
+        //    }
+        //    return DbError.SUCCESS;
+        //}
 
-        public DbError UpdateRules(TournamentRuleModel tournamentRules)
-        {
-            try
-            {
-                TournamentRuleModel _tournamentRules = context.TournamentRules.Find(tournamentRules.TournamentID);
-                _tournamentRules = tournamentRules;
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception " + ex.ToString() + " in UpdateRules");
-                return DbError.FAILED_TO_UPDATE;
-            }
-            return DbError.SUCCESS;
-        }
+        //public DbError UpdateRules(TournamentRuleModel tournamentRules)
+        //{
+        //    try
+        //    {
+        //        TournamentRuleModel _tournamentRules = context.TournamentRules.Find(tournamentRules.TournamentID);
+        //        _tournamentRules = tournamentRules;
+        //        context.SaveChanges();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("Exception " + ex.ToString() + " in UpdateRules");
+        //        return DbError.FAILED_TO_UPDATE;
+        //    }
+        //    return DbError.SUCCESS;
+        //}
 
-        public DbError DeleteTournamentRules(TournamentRuleModel tournamentRules)
-        {
-            try
-            {
-                TournamentRuleModel _rules = context.TournamentRules.Find(tournamentRules.TournamentID);
-                context.TournamentRules.Remove(_rules);
-                //context.TournamentRules.Attach(tournamentRules);
-                //context.TournamentRules.Remove(tournamentRules);
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception " + ex.ToString() + " in DeleteTournamentRules");
-                return DbError.FAILED_TO_DELETE;
-            }
-            return DbError.SUCCESS;
-        }
+        //public DbError DeleteTournamentRules(TournamentRuleModel tournamentRules)
+        //{
+        //    try
+        //    {
+        //        TournamentRuleModel _rules = context.TournamentRules.Find(tournamentRules.TournamentID);
+        //        context.TournamentRules.Remove(_rules);
+        //        //context.TournamentRules.Attach(tournamentRules);
+        //        //context.TournamentRules.Remove(tournamentRules);
+        //        context.SaveChanges();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("Exception " + ex.ToString() + " in DeleteTournamentRules");
+        //        return DbError.FAILED_TO_DELETE;
+        //    }
+        //    return DbError.SUCCESS;
+        //}
 
-        #endregion
+        //#endregion
 
         #region Brackets
         public bool BracketExists(int id)
