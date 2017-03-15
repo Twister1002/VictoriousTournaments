@@ -112,20 +112,20 @@ namespace DatabaseDebugConsole
             //db.AddTournament(ref tournament);
 
 
-            //DeleteAllTournaments(db);
+            DeleteAllTournaments(db);
 
-            BracketModel bracket = new BracketModel()
-            {
-                BracketTitle = "Test Bracket"
-            };
-            BracketTypeModel type = new BracketTypeModel()
-            {
-                Type = BracketTypeModel.BracketType.SINGLE
-            };
-            bracket.BracketType = type;
-            db.AddBracket(ref bracket, tournament);
+            //BracketModel bracket = new BracketModel()
+            //{
+            //    BracketTitle = "Test Bracket"
+            //};
+            //BracketTypeModel type = new BracketTypeModel()
+            //{
+            //    Type = BracketTypeModel.BracketType.SINGLE
+            //};
+            //bracket.BracketType = type;
+            //db.AddBracket(ref bracket, tournament);
 
-            Console.WriteLine(db.GetAllTournaments()[0].Brackets.ToList()[0].BracketType.Type.ToString());
+            //Console.WriteLine(db.GetAllTournaments()[0].Brackets.ToList()[0].BracketType.Type.ToString());
 
             Console.WriteLine("Done");
             Console.ReadLine();
