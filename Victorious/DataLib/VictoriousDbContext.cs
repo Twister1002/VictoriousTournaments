@@ -13,7 +13,7 @@ namespace DataLib
         {
             //Database.SetInitializer(new DropCreateDatabaseAlways<VictoriousDbContext>());
             //Database.SetInitializer<VictoriousDbContext>(null);
-            this.Configuration.LazyLoadingEnabled = true;
+            this.Configuration.LazyLoadingEnabled = false;
            
         }
 #elif !DEBUG
