@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tournament", "Tournament\Tournament.csproj", "{44165C54-471F-4697-A964-52D0B29007F1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication", "WebApplication\WebApplication.csproj", "{CE4C5D0C-EC20-454F-8223-7755E1EE8B0B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication.Tests", "WebApplication.Tests\WebApplication.Tests.csproj", "{CB4399E5-CE12-4B50-94AE-75947533A530}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLib", "DataLib\DataLib.csproj", "{59636ED1-650E-4319-AABE-AED047A9FEB5}"
 EndProject
@@ -16,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tournament.Structure", "Tournament.Structure\Tournament.Structure.csproj", "{2DE53F49-9B50-489D-8FE3-8FC10E1EFD57}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tournament.Structure.Tests", "Tournament.Structure.Tests\Tournament.Structure.Tests.csproj", "{CADCED70-A71A-4E6B-BA93-F2617B0A9426}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication.Tests", "WebApplication.Tests\WebApplication.Tests.csproj", "{CB4399E5-CE12-4B50-94AE-75947533A530}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,22 +61,6 @@ Global
 		{CE4C5D0C-EC20-454F-8223-7755E1EE8B0B}.Release|x64.Build.0 = Release|Any CPU
 		{CE4C5D0C-EC20-454F-8223-7755E1EE8B0B}.Release|x86.ActiveCfg = Release|Any CPU
 		{CE4C5D0C-EC20-454F-8223-7755E1EE8B0B}.Release|x86.Build.0 = Release|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|ARM.Build.0 = Debug|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|x64.Build.0 = Debug|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|x86.Build.0 = Debug|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|ARM.ActiveCfg = Release|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|ARM.Build.0 = Release|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|x64.ActiveCfg = Release|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|x64.Build.0 = Release|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|x86.ActiveCfg = Release|Any CPU
-		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|x86.Build.0 = Release|Any CPU
 		{59636ED1-650E-4319-AABE-AED047A9FEB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{59636ED1-650E-4319-AABE-AED047A9FEB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59636ED1-650E-4319-AABE-AED047A9FEB5}.Debug|ARM.ActiveCfg = Debug|Any CPU
@@ -135,6 +119,22 @@ Global
 		{CADCED70-A71A-4E6B-BA93-F2617B0A9426}.Release|x64.Build.0 = Release|Any CPU
 		{CADCED70-A71A-4E6B-BA93-F2617B0A9426}.Release|x86.ActiveCfg = Release|Any CPU
 		{CADCED70-A71A-4E6B-BA93-F2617B0A9426}.Release|x86.Build.0 = Release|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|ARM.Build.0 = Debug|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|x64.Build.0 = Debug|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Debug|x86.Build.0 = Debug|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|ARM.ActiveCfg = Release|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|ARM.Build.0 = Release|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|x64.ActiveCfg = Release|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|x64.Build.0 = Release|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|x86.ActiveCfg = Release|Any CPU
+		{CB4399E5-CE12-4B50-94AE-75947533A530}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
