@@ -37,6 +37,7 @@ namespace WebApplication.Controllers
             if (int.TryParse(guid, out id))
             {
                 TournamentViewModel viewModel = new TournamentViewModel(db.GetTournamentById(id));
+                viewModel.ProcessTournament();
 
                 if (viewModel.Model != null)
                 {
@@ -71,8 +72,8 @@ namespace WebApplication.Controllers
         }
 
         // GET: Tournament/Edit/5
-        [Route("Tournament/Edit/{id}")]
-        public ActionResult Edit(int id)
+        [Route("Tournament/Update/{id}")]
+        public ActionResult Update(int id)
         {
             if (Session["User.UserId"] != null)
             {
@@ -84,26 +85,48 @@ namespace WebApplication.Controllers
                 }
                 else
                 {
-                    Session["Message"] = "That tournament doesn't exist.";
+                    Session["Message"] = "You do not have permission to do that.";
                     Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
+
+                    return RedirectToAction("Tournament", "Tournament", new { guid = viewModel.Model.TournamentID });
                 }
             }
             else
             {
-                Session["Message"] = "You do not have permission to do that.";
+                Session["Message"] = "You need to login to do that";
                 Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+
+                return RedirectToAction("Login", "Account");
             }
-
-
-            return RedirectToAction("Search", "Tournament");
         }
 
         // GET: Tournament/Delete/5
+        [Route("Tournament/Delete/{id}")]
         public ActionResult Delete(int id)
         {
-            TournamentViewModel viewModel = new TournamentViewModel(id);
+            if (Session["User.UserId"] != null)
+            {
+                TournamentViewModel viewModel = new TournamentViewModel(id);
 
-            return View("Delete", viewModel);
+                if ((int)Session["User.UserId"] == viewModel.Model.CreatedByID)
+                {
+                    return View("Delete", viewModel);
+                }
+                else
+                {
+                    Session["Message"] = "You do not have permission to do that.";
+                    Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+
+                    return RedirectToAction("Tournament", "Tournament", new { @guid = viewModel.Model.TournamentID });
+                }
+            }
+            else
+            {
+                Session["Message"] = "You need to login to do that";
+                Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+
+                return RedirectToAction("Login", "Account");
+            }
         }
 
         // POST: Tournament/Create
@@ -121,31 +144,14 @@ namespace WebApplication.Controllers
 
             if (ModelState.IsValid)
             {
-                viewModel.ApplyChanges();
+                viewModel.ApplyChanges((int)Session["User.UserId"]);
 
                 TournamentModel model = viewModel.Model;
-                //TournamentRuleModel modelRules = viewModel.Model.TournamentRules;
-                //viewModel.Model.TournamentRules = null;
-
                 DbError result = db.AddTournament(ref model);
 
                 if (result == DbError.SUCCESS)
                 {
-                    //modelRules.TournamentID = model.TournamentID;
-                    //DbError ruleResult = db.AddRules(ref modelRules, model);
-
-                    //if (ruleResult == DbError.SUCCESS)
-                    //{
-                        return RedirectToAction("Tournament", "Tournament", new { guid = model.TournamentID });
-                    //}
-                    //else
-                    //{
-                    //    db.DeleteTournament(model);
-                    //    viewModel.dbException = db.exception;
-                    //    viewModel.error = ViewModel.ViewError.CRITICAL;
-                    //    viewModel.message = "Unable to create the rules for the tournament.";
-                    //    return View("Create", viewModel);
-                    //}
+                    return RedirectToAction("Tournament", "Tournament", new { guid = model.TournamentID });
                 }
                 else
                 {
@@ -166,14 +172,14 @@ namespace WebApplication.Controllers
 
         // POST: Tournament/Edit/5
         [HttpPost]
-        [Route("Tournament/Edit/{id}")]
-        public ActionResult Edit(TournamentViewModel viewModel)
+        [Route("Tournament/Update/{id}")]
+        public ActionResult Update(TournamentViewModel viewModel)
         {
             if (Session["User.UserId"] != null)
             {
                 if (viewModel.Model.CreatedByID == (int)Session["User.UserId"])
                 {
-                    viewModel.ApplyChanges();
+                    viewModel.ApplyChanges((int)Session["User.UserId."]);
 
                     DbError tourny = db.UpdateTournament(viewModel.Model);
                     DbError rules = db.UpdateRules(viewModel.Model.TournamentRules);
@@ -252,6 +258,31 @@ namespace WebApplication.Controllers
             }
 
             return View("Delete", viewModel);
+        }
+
+        [HttpPost]
+        [Route("Tournament/Ajax/Delete")]
+        public JsonResult Delete(String id)
+        {
+            JsonResult json = new JsonResult();
+
+            int uid = -1;
+            if (Session["User.UserId"] != null && int.TryParse(id, out uid))
+            {
+                TournamentViewModel model = new TournamentViewModel(uid);
+                if (model.Model.CreatedByID == (int)Session["User.UserId"])
+                {
+                    return Json(new { status=true, message="Tournament was deleted." });
+                }
+                else
+                {
+                    return Json(new { status = false, message = "User is not the owner of this tournament." });
+                }
+            }
+            else
+            {
+                return Json(new { status = false, message = "User needs to login." });
+            }
         }
     }
 }

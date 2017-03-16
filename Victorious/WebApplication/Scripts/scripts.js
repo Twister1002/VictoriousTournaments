@@ -21,6 +21,23 @@
         }
     });
 
+    $(".tournament-delete").on("click", function () {
+        if (confirm("Are you sure you want to delete this tournament? This can no be reverted.")) {
+            $.ajax({
+                "url": "/Tournament/Ajax/Delete",
+                "type": "POST",
+                "data": {"id": $(this).data("id")},
+                "dataType": "json",
+                "success":function(json){
+                    console.log(json);
+                },
+                "error":function(json) {
+                    console.log(json);
+                }
+            })
+        }
+    });
+
     // Form Validation
     function Validate(form) {
         var returnVal = true;

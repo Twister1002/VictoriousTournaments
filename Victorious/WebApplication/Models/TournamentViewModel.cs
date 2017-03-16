@@ -32,7 +32,7 @@ namespace WebApplication.Models
             SetFields();
         }
 
-        public void ApplyChanges()
+        public void ApplyChanges(int SessionId)
         {
             Model.Title                                 = this.Title;
             Model.Description                           = this.Description;
@@ -41,6 +41,13 @@ namespace WebApplication.Models
             Model.TournamentRules.RegistrationEndDate   = this.RegistrationEndDate;
             Model.TournamentRules.TournamentStartDate   = this.TournamentStartDate;
             Model.TournamentRules.TournamentEndDate     = this.TournamentEndDate;
+            Model.LastEditedOn = DateTime.Now;
+
+            if (Model.CreatedByID == 0 || Model.CreatedByID == null)
+            {
+                Model.CreatedByID = SessionId;
+                Model.CreatedOn = DateTime.Now;
+            }
         }
 
         public void SetFields()
@@ -67,7 +74,7 @@ namespace WebApplication.Models
             SearchModels = models;
         }
 
-        public ITournament getTournament(int id)
+        public void ProcessTournament()
         {
             Tourny = new Tournament.Structure.Tournament();
             List<IPlayer> players = new List<IPlayer>();
@@ -91,8 +98,6 @@ namespace WebApplication.Models
             Tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
             Tourny.Brackets[0].AddWin(3, PlayerSlot.Challenger);
             //tourny.Brackets[0].AddWin(7, PlayerSlot.Challenger);
-
-            return Tourny;
         }
     }
 }

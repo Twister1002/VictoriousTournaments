@@ -3,31 +3,31 @@
 @{
     ViewBag.Title = "Tournament";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var Bracket = Model.tourny.Brackets[0];
+    var Bracket = Model.Tourny.Brackets[0];
 }
 
 <div id="Tournament">
-    <h2>Tournament - @Model.model.Title</h2>
-    @if (Session["User.UserId"] != null && (int)Session["User.UserId"] == Model.model.CreatedByID)
+    <h2>Tournament - @Model.Model.Title</h2>
+    @if (Session["User.UserId"] != null && (int)Session["User.UserId"] == Model.Model.CreatedByID)
     {
-        <div class="clickable-underline">@Html.ActionLink("Update", "Update", "Tournament", new { id = Model.model.TournamentID }, null)</div>
-        <div class="clickable-underline">@Html.ActionLink("Delete", "Delete", "Tournament", new { id = Model.model.TournamentID }, null)</div>
+        <div class="clickable-underline">@Html.ActionLink("Update", "Update", "Tournament", new { id = Model.Model.TournamentID }, null)</div>
+        <div class="clickable-underline tournament-delete" data-id="@Model.Model.TournamentID">Delete</div>
     }
     <ul class="list-table">
         <li class="list-table-header">
-            <ul data-columns="@Bracket.NumberOfRounds()">
-                @for (int i = 1; i <= Bracket.NumberOfRounds(); i++)
+            <ul data-columns="@Bracket.NumberOfRounds">
+                @for (int i = 1; i <= Bracket.NumberOfRounds; i++)
                 {
                     String displayTitle = " ";
-                    if (i == Bracket.NumberOfRounds())
+                    if (i == Bracket.NumberOfRounds)
                     {
                         displayTitle = "Finals";
                     }
-                    else if (i == Bracket.NumberOfRounds() - 1)
+                    else if (i == Bracket.NumberOfRounds - 1)
                     {
                         displayTitle = "Semi-Finals";
                     }
-                    else if (i == Bracket.NumberOfRounds() - 2)
+                    else if (i == Bracket.NumberOfRounds - 2)
                     {
                         displayTitle = "Quater Finals";
                     }
@@ -37,8 +37,8 @@
             </ul>
         </li>
         <li class="list-table-body">
-            <ul data-columns="@Bracket.NumberOfRounds()">
-                @for (int roundNum = 1; roundNum <= Bracket.NumberOfRounds(); roundNum++)
+            <ul data-columns="@Bracket.NumberOfRounds">
+                @for (int roundNum = 1; roundNum <= Bracket.NumberOfRounds; roundNum++)
                 {
                     var matches = Bracket.GetRound(roundNum);
                     <li class="round" data-round="@roundNum">

@@ -5,7 +5,13 @@
 }
 
 <div class="TournamentDelete">
-    Are you sure you wish you delete this tournament?
-    <button>Yes</button>
-    <button>No</button>
+    <h2>Delete Tournament @Model.Model.Title</h2>
+    @using (Html.BeginForm("Delete", "Tournament", FormMethod.Post, new { @id = Model.Model.TournamentID }))
+    {
+        <div class="info">
+            Are you sure you wish you delete this tournament ?
+            <button type="submit">Yes</button>
+            <button type="button">No</button>
+        </div>
+    }
 </div>
