@@ -309,10 +309,25 @@ namespace WebApplication.Controllers
                     winner = PlayerSlot.Defender;
                 }
 
-                viewModel.Tourny.Brackets[0].AddWin(matchId, winner);
+                if (viewModel.Model.CreatedByID == (int)Session["User.UserId"])
+                {
+                    try
+                    {
+                        viewModel.Tourny.Brackets[0].AddWin(matchId, winner);
+                        return Json(new { status = true, message = "Match was updated successfully" });
+                    }
+                    catch (Exception e)
+                    {
+                        return Json(new { status = false, message = "Exception thrown: "+e.Message });
+                    }
+                }
+                else
+                {
+                    return Json(new { status = false, message = "You are not allowed to update matches" });
+                }
             }
 
-            return Json("Received: Match: "+match+" and tournament: "+tournamentId);
+            return Json(new { status = false, message = "You must login before adjusting matches" });
         }
     }
 }

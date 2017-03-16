@@ -37,7 +37,7 @@
         $.ajax({
             "url": "/Tournament/Ajax/Match/Update",
             "type": "POST",
-            "data": { "match": matchData.data("match"), "tournamentId": matchData.data("tournamentId") },
+            "data": { "match": matchData.data("match"), "tournamentId": matchData.data("tournamentId"), "seedWin": matchData.find("li.selected-winner").data("seed") },
             "dataType": "json",
             "success": function (json) {
                 console.log("Success");
