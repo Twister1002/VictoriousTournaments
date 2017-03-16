@@ -193,9 +193,12 @@ namespace Tournament.Structure
 				throw new KeyNotFoundException();
 			}
 
-			Scores[Matches[_matchNumber].DefenderIndex()] -= Matches[_matchNumber].Score[(int)PlayerSlot.Defender];
-			Scores[Matches[_matchNumber].ChallengerIndex()] -= Matches[_matchNumber].Score[(int)PlayerSlot.Challenger];
+			int defScore = Matches[_matchNumber].Score[(int)PlayerSlot.Defender];
+			int chalScore = Matches[_matchNumber].Score[(int)PlayerSlot.Challenger];
+
 			Matches[_matchNumber].ResetScore();
+			Scores[Matches[_matchNumber].DefenderIndex()] -= defScore;
+			Scores[Matches[_matchNumber].ChallengerIndex()] -= chalScore;
 		}
 
 		public override void ResetBracket()
