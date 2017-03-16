@@ -21,6 +21,45 @@
         }
     });
 
+    $(".matchNum .edit").on("click", function () {
+        var matchNum = $(this).closest(".match").data("match");
+        var tournamentId = $("#Tournament").data("id");
+
+        $(".match-edit-module").addClass("open");
+        $(".match-edit-module .module-content .match")
+            .data({ "match": matchNum, "tournamentId":tournamentId })
+            .html($(this).closest(".match").html())
+            ;
+    });
+    $(".match-edit-module .match-submit button").on("click", function () {
+        var matchData = $(".match-edit-module .module-content .match");
+
+        $.ajax({
+            "url": "/Tournament/Ajax/Match/Update",
+            "type": "POST",
+            "data": { "match": matchData.data("match"), "tournamentId": matchData.data("tournamentId") },
+            "dataType": "json",
+            "success": function (json) {
+                console.log("Success");
+                console.log(json);
+            },
+            "error": function (json) {
+                console.log("error");
+                console.log(json);
+            }
+        });
+    });
+
+    $(".match-edit-module").on("click", ".matchData .info li", function () {
+        // Remove the class
+        $(this).siblings().removeClass("selected-winner");
+        $(this).addClass("selected-winner");
+    });
+
+    $(".match-edit-module .module-close .close").on("click", function () {
+        $(".match-edit-module").removeClass("open");
+    });
+
     $(".tournament-delete").on("click", function () {
         if (confirm("Are you sure you want to delete this tournament? This can no be reverted.")) {
             $.ajax({
@@ -28,10 +67,12 @@
                 "type": "POST",
                 "data": {"id": $(this).data("id")},
                 "dataType": "json",
-                "success":function(json){
+                "success": function (json) {
+                    console.log("Success");
                     console.log(json);
                 },
-                "error":function(json) {
+                "error": function (json) {
+                    console.log("error");
                     console.log(json);
                 }
             })

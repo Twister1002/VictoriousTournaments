@@ -1,45 +1,119 @@
 ﻿#Tournament {
     min-width: 33em;
+
+    .content-header {
+        width: 100%;
+
+        .adminMenu div {
+            display: inline-block;
+        }
+    }
+
     .list-table-header ul li {
         text-align: center;
     }
+
     .round {
         vertical-align: middle;
-        .match{
+
+        .match {
             padding: .5em;
 
-            .matchData {
-                background-color: @match-color;
+            .matchNum {
+                position: relative;
 
-                .info {
-                    position: relative;
-                    display: block;
-                    border: .1em solid @white;
-                    overflow: hidden;
-
-                    .defender, .challenger {
-                        position: relative;
-                        display:block;
-                        min-width: 10em;
-                        width: 100%;
-
-                        &.seedHover {
-                            background-color: @color-primary-2;
-                        }
-
-                        .seed {
-                            display:inline-block;
-                            text-align: right;
-                            width: 1.5em;
-                            padding: .3em;
-                            border-right: .1em solid @white;
-                        }
-                        .name { 
-                            display: inline-block;
-                        }
+                .edit {
+                    .svg {
+                        position: absolute;
+                        right: 0em;
+                        top: 0em;
+                        width: 1.5em;
+                        height: 1.5em;
                     }
-                    .defender {
-                        border-bottom: .1em solid @white;
+                }
+            }
+        }
+    }
+
+    .matchData {
+        background-color: @match-color;
+
+        .info {
+            position: relative;
+            display: block;
+            border: .1em solid @white;
+            overflow: hidden;
+
+            .defender, .challenger {
+                position: relative;
+                display: block;
+                min-width: 10em;
+                width: 100%;
+
+                &.seedHover {
+                    background-color: @color-primary-2;
+                }
+
+                .seed {
+                    display: inline-block;
+                    text-align: right;
+                    width: 1.5em;
+                    padding: .3em;
+                    border-right: .1em solid @white;
+                }
+
+                .name {
+                    display: inline-block;
+                }
+            }
+
+            .defender {
+                border-bottom: .1em solid @white;
+            }
+        }
+    }
+
+    .match-edit-module {
+        display: none;
+
+        &.open {
+            display: inline-block;
+        }
+
+        &.open, > * {
+            position: absolute;
+            top: 0em;
+            left: 0em;
+            width: 100%;
+            height: 100%;
+        }
+
+        .module-background {
+            opacity: 0.9;
+            background-color: darken(@color-primary-0, 30%);
+        }
+
+        .module-close {
+            text-align: right;
+            font-size: 3em;
+        }
+        .module-content {
+            width: 95%;
+            padding: 1em;
+            top: 10%;
+
+            .edit {
+                display:none;
+            }
+            .match-submit {
+                padding-top: 1em;
+            }
+            .info {
+                > li {
+                    width: 100%;
+
+                    &.selected-winner {
+                        background-color:@alert-orange;
                     }
                 }
             }
@@ -50,7 +124,7 @@
 #TournamentCreate, #TournamentEdit {
     .section {
         li {
-            padding:.5em 0em;
+            padding: .5em 0em;
         }
     }
 }
@@ -58,7 +132,8 @@
 #TournamentSearch {
     li.list-table-body {
         a {
-            text-decoration:none;
+            text-decoration: none;
+
             &:hover {
                 background-color: inherit;
                 color: inherit;
@@ -67,6 +142,7 @@
 
         .column-clickable {
             padding: 1em 0em;
+
             &:hover {
                 background-color: @color-primary-4;
                 cursor: pointer;
@@ -76,31 +152,49 @@
 }
 
 @media screen and (min-width: @@b1) {
-	#TournamentCreate, #TournamentEdit {
+    #TournamentCreate, #TournamentEdit {
         .section {
             li {
                 width: 40%;
-                display:inline-block;
+                display: inline-block;
             }
         }
-	}
+    }
+
+    #Tournament {
+        .content-header {
+            > * {
+                display: inline-block;
+                width: 48%;
+            }
+
+            .adminMenu {
+                > * {
+                    width: 40%;
+                    text-align: right;
+                }
+            }
+        }
+    }
 }
+
 @media screen and (min-width: @@b2) {
-	#TournamentCreate, #TournamentEdit {
+    #TournamentCreate, #TournamentEdit {
         .section {
             li {
                 width: 30%;
-                display:inline-block;
+                display: inline-block;
+
                 input:not([type='checkbox']) {
                     width: 80%;
                 }
             }
         }
-	}
+    }
 }
-@media screen and (min-width: @@b3) {
-	
-}
-@media screen and (min-width: @@b4) {
 
+@media screen and (min-width: @@b3) {
+}
+
+@media screen and (min-width: @@b4) {
 }

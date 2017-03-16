@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using WebApplication.Models;
 using DataLib;
+using Tournament.Structure;
 
 namespace WebApplication.Controllers
 {
@@ -283,6 +284,35 @@ namespace WebApplication.Controllers
             {
                 return Json(new { status = false, message = "User needs to login." });
             }
+        }
+
+        [HttpPost]
+        [Route("Tournament/Ajax/Match/Update")]
+        public JsonResult MatchUpdate(String match, String tournamentId, String seedWin)
+        {
+            if (Session["User.UserId"] != null)
+            {
+                int tournyId = int.Parse(tournamentId);
+                int matchId = int.Parse(match);
+                int seedId = int.Parse(seedWin);
+                PlayerSlot winner;
+
+                TournamentViewModel viewModel = new TournamentViewModel(tournyId);
+                viewModel.ProcessTournament();
+
+                if (viewModel.Tourny.Brackets[0].GetMatch(matchId).ChallengerIndex() == seedId)
+                {
+                    winner = PlayerSlot.Challenger;
+                }
+                else
+                {
+                    winner = PlayerSlot.Defender;
+                }
+
+                viewModel.Tourny.Brackets[0].AddWin(matchId, winner);
+            }
+
+            return Json("Received: Match: "+match+" and tournament: "+tournamentId);
         }
     }
 }
