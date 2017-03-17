@@ -247,7 +247,7 @@ namespace Tournament.Structure.Tests
 			IMatch m = new Match();
 			m.AddPlayer(0);
 			m.AddPlayer(1);
-			m.WinsNeeded = 2;
+			m.SetWinsNeeded(2);
 			m.AddWin(PlayerSlot.Defender);
 			m.AddWin(PlayerSlot.Challenger);
 
@@ -297,7 +297,7 @@ namespace Tournament.Structure.Tests
 		public void SubtractWin_Subtracts()
 		{
 			IMatch m = new Match();
-			m.WinsNeeded = 3;
+			m.SetWinsNeeded(3);
 			m.AddPlayer(5);
 			m.AddPlayer(6);
 			m.AddWin(PlayerSlot.Challenger);
@@ -359,11 +359,11 @@ namespace Tournament.Structure.Tests
 
 		[TestMethod]
 		[TestCategory("Match")]
-		[TestCategory("Match Methods")]
+		[TestCategory("Match ResetScore")]
 		public void ResetScore_ResetsToZero()
 		{
 			IMatch m = new Match();
-			m.WinsNeeded = 2;
+			m.SetWinsNeeded(2);
 			m.AddPlayer(1);
 			m.AddPlayer(2);
 			m.AddWin(PlayerSlot.Defender);
@@ -414,6 +414,31 @@ namespace Tournament.Structure.Tests
 			Assert.AreEqual(0, m.Score[0]);
 		}
 
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match Mutators")]
+		[ExpectedException(typeof(ArgumentOutOfRangeException))]
+		public void SetWinsNeeded_ThrowsOutOfRange_WithZeroInput()
+		{
+			IMatch m = new Match();
+			m.SetWinsNeeded(0);
+
+			Assert.AreEqual(1, 2);
+		}
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match Mutators")]
+		[ExpectedException(typeof(InactiveMatchException))]
+		public void SetWinsNeeded_ThrowsInactive_WhenCalledOnFinishedMatch()
+		{
+			IMatch m = new Match();
+			m.AddPlayer(0);
+			m.AddPlayer(1);
+			m.AddWin(PlayerSlot.Challenger);
+			m.SetWinsNeeded(2);
+
+			Assert.AreEqual(1, 2);
+		}
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match Mutators")]

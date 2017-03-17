@@ -89,7 +89,7 @@ namespace Tournament.Structure
 					// Add new matchups per round
 					// (rounds[0] is the final match)
 					IMatch m = new Match();
-					m.WinsNeeded = _winsPerMatch;
+					m.SetWinsNeeded(_winsPerMatch);
 					roundList[r].Add(m);
 				}
 				++r;
@@ -172,7 +172,7 @@ namespace Tournament.Structure
 				// Create a Grand Final
 				GrandFinal = new Match();
 				GrandFinal.SetMatchNumber(matchNum);
-				GrandFinal.WinsNeeded = _winsPerMatch;
+				GrandFinal.SetWinsNeeded(_winsPerMatch);
 				GrandFinal.SetRoundIndex(0);
 				GrandFinal.SetMatchIndex(0);
 				GrandFinal.AddPreviousMatchNumber(Matches.Count);

@@ -16,7 +16,7 @@ namespace Tournament.Structure
 		public bool IsFinished
 		{ get; private set; }
 		public ushort WinsNeeded
-		{ get; set; }
+		{ get; private set; }
 		private int[] PlayerIndexes
 		{ get; set; }
 		public int WinnerIndex
@@ -273,6 +273,19 @@ namespace Tournament.Structure
 			Score[0] = Score[1] = 0;
 		}
 
+		public void SetWinsNeeded(ushort _wins)
+		{
+			if (IsFinished)
+			{
+				throw new InactiveMatchException();
+			}
+			if (_wins < 1)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+
+			WinsNeeded = _wins;
+		}
 		public void SetRoundIndex(int _index)
 		{
 			if (RoundIndex > -1)

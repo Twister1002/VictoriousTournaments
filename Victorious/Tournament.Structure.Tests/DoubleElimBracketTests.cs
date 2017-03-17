@@ -349,7 +349,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new DoubleElimBracket(pList);
 
-			b.Matches[1].WinsNeeded = 2;
+			b.Matches[1].SetWinsNeeded(2);
 			b.AddWin(1, PlayerSlot.Defender);
 			b.SubtractWin(1, PlayerSlot.Defender);
 
@@ -370,7 +370,7 @@ namespace Tournament.Structure.Tests
 			b.AddWin(1, PlayerSlot.Defender);
 			b.AddWin(2, PlayerSlot.Defender);
 			int mNum = b.GetLowerRound(1)[0].MatchNumber;
-			b.LowerMatches[mNum].WinsNeeded = 2;
+			b.LowerMatches[mNum].SetWinsNeeded(2);
 			b.AddWin(mNum, PlayerSlot.Defender);
 			b.SubtractWin(mNum, PlayerSlot.Defender);
 
@@ -410,7 +410,7 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n < b.GrandFinal.MatchNumber; ++n)
 			{
-				b.GetMatch(n).WinsNeeded = 2;
+				b.GetMatch(n).SetWinsNeeded(2);
 				b.AddWin(n, PlayerSlot.Defender);
 				b.AddWin(n, PlayerSlot.Challenger);
 				b.AddWin(n, PlayerSlot.Defender);
@@ -465,7 +465,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new DoubleElimBracket(pList);
 
-			b.Matches[1].WinsNeeded = 2;
+			b.Matches[1].SetWinsNeeded(2);
 			b.AddWin(1, PlayerSlot.Defender);
 			b.AddWin(1, PlayerSlot.Challenger);
 			b.ResetMatchScore(1);
@@ -486,7 +486,7 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n < 5; ++n)
 			{
-				b.GetMatch(n).WinsNeeded = 2;
+				b.GetMatch(n).SetWinsNeeded(2);
 				b.AddWin(n, PlayerSlot.Defender);
 				b.AddWin(n, PlayerSlot.Challenger);
 				b.AddWin(n, PlayerSlot.Defender);
@@ -509,7 +509,7 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n <= b.NumberOfMatches; ++n)
 			{
-				b.GetMatch(n).WinsNeeded = 2;
+				b.GetMatch(n).SetWinsNeeded(2);
 				b.AddWin(n, PlayerSlot.Defender);
 				b.AddWin(n, PlayerSlot.Challenger);
 				b.AddWin(n, PlayerSlot.Defender);

@@ -18,7 +18,7 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		bool IsReady { get; }
 		bool IsFinished { get; }
-		ushort WinsNeeded { get; set; }
+		ushort WinsNeeded { get; }
 		// private int[] PlayerIndexes { get; set; }
 		int WinnerIndex { get; }
 		ushort[] Score { get; }
@@ -100,6 +100,12 @@ namespace Tournament.Structure
 		/// Resets Match score to 0-0.
 		/// </summary>
 		void ResetScore();
+
+		/// <summary>
+		/// Sets amount of wins needed to advance.
+		/// </summary>
+		/// <param name="_wins">Wins needed.</param>
+		void SetWinsNeeded(ushort _wins);
 
 		/// <summary>
 		/// Sets round index for Match.
