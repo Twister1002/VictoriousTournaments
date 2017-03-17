@@ -40,13 +40,13 @@ namespace DataLib
         public int? LastEditedByID { get; set; }
 
         [ForeignKey("TournamentRulesID")]
-        public virtual TournamentRuleModel TournamentRules { get; set; }
+        public TournamentRuleModel TournamentRules { get; set; }
 
-        public virtual ICollection<TeamModel> Teams { get; set; }
+        public ICollection<TeamModel> Teams { get; set; }
 
-        public virtual ICollection<UserModel> Users { get; set; }
+        public ICollection<UserModel> Users { get; set; }
 
-        public virtual ICollection<BracketModel> Brackets { get; set; }
+        public ICollection<BracketModel> Brackets { get; set; }
 
     }
 }

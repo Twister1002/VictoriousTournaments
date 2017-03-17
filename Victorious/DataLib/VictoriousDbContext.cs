@@ -9,12 +9,12 @@ namespace DataLib
     {
 #if DEBUG
         public VictoriousDbContext()
-            : base("name=VictoriousTestDbContext")
+            : base("name=CloudStagingDb")
         {
             //Database.SetInitializer(new DropCreateDatabaseAlways<VictoriousDbContext>());
             //Database.CreateIfNotExists();
             //Database.SetInitializer<VictoriousDbContext>(null);
-            this.Configuration.LazyLoadingEnabled = true;
+            this.Configuration.LazyLoadingEnabled = false;
            
         }
 #elif !DEBUG

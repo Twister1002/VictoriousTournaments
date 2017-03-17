@@ -96,12 +96,12 @@ namespace DatabaseDebugConsole
             //    PrintAllMatches(db, tournament);
             //}
 
-            TournamentModel tournament = new TournamentModel()
-            {
-                Title = "Tournament Rules Test",
-                Description = "Test Tournament",
-                CreatedByID = 1
-            };
+            //TournamentModel tournament = new TournamentModel()
+            //{
+            //    Title = "Tournament Rules Test",
+            //    Description = "Test Tournament",
+            //    CreatedByID = 1
+            //};
             //TournamentRuleModel rules = new TournamentRuleModel()
             //{
             //    RegistrationStartDate = DateTime.Now
@@ -126,6 +126,8 @@ namespace DatabaseDebugConsole
             //db.AddBracket(ref bracket, tournament);
 
             //Console.WriteLine(db.GetAllTournaments()[0].Brackets.ToList()[0].BracketType.Type.ToString());
+
+            //DeleteAllUsers(db);
 
             Console.WriteLine("Done");
             Console.ReadLine();
@@ -226,6 +228,20 @@ namespace DatabaseDebugConsole
             {
                 Console.WriteLine(tournament.Title);
                 if (db.DeleteTournament(tournament) == DbError.FAILED_TO_DELETE)
+                {
+                    Console.WriteLine("Error");
+                }
+            }
+        }
+
+        static void DeleteAllUsers(DatabaseInterface db)
+        {
+            List<UserModel> users = db.GetAllUsers();
+
+            foreach (var user in users)
+            {
+                Console.WriteLine(user.FirstName + ' ' + user.LastName);
+                if (db.DeleteUser(user) == DbError.FAILED_TO_DELETE)
                 {
                     Console.WriteLine("Error");
                 }

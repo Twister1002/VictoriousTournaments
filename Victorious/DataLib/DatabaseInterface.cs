@@ -16,21 +16,21 @@ namespace DataLib
     public class DatabaseInterface
     {
         VictoriousDbContext context = new VictoriousDbContext();
-        public Exception exception;
+        public Exception interfaceException;
         public DatabaseInterface()
         {
 
             if (context.BracketTypes.Find(1) == null)
             {
-                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 1, TypeName = "Single Elimination" }); 
+                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 1, TypeName = "Single Elimination", Type = BracketTypeModel.BracketType.SINGLE }); 
             }
             if (context.BracketTypes.Find(2) == null)
             {
-                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 2, TypeName = "Double Elimination" });
+                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 2, TypeName = "Double Elimination", Type = BracketTypeModel.BracketType.DOUBLE });
             }
             if (context.BracketTypes.Find(3) == null)
             {
-                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 3, TypeName = "Round Robin" });
+                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 3, TypeName = "Round Robin", Type = BracketTypeModel.BracketType.ROUNDROBIN });
             }
 
         }
@@ -90,6 +90,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 Console.WriteLine("Exeption " + ex.ToString() + " in UserExists");
                 throw;
             }
@@ -107,6 +108,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 Console.WriteLine("Exception " + ex.ToString() + " in UserEmailExists");
                 return DbError.DOES_NOT_EXIST;
             }
@@ -124,32 +126,13 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 Console.WriteLine("Exception " + ex.ToString() + " in UserUsernameExists");
                 return DbError.DOES_NOT_EXIST;
 
             }
 
             return DbError.EXISTS;
-        }
-
-        // Adds user to the users table. DOES NOT ASSIGN USER TO TOURNAMENT.
-        // Returns database ID of passed-in user.
-        [Obsolete("Use AddUser(ref UserModel user)")]
-        public int AddUser(UserModel user)
-        {
-            try
-            {
-                user.CreatedOn = DateTime.Now;
-                context.Users.Add(user);
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception " + ex.ToString() + " in AddUser");
-                return -1;
-            }
-
-            return user.UserID;
         }
 
         public DbError AddUser(ref UserModel user)
@@ -162,6 +145,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 Console.WriteLine("Exception " + ex.ToString() + " in AddUser");
                 return DbError.FAILED_TO_ADD;
             }
@@ -178,6 +162,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 Console.WriteLine("Exception " + ex.ToString() + " in LogUserIn");
                 return DbError.FAILED_TO_UPDATE;
             }
@@ -195,59 +180,26 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 Console.WriteLine("Exception " + ex.ToString() + " in UpdateUser");
                 return DbError.FAILED_TO_UPDATE;
-                throw;
             }
 
-            return DbError.SUCCESS;
-        }
-
-        // Sets the email of the passed-in user to the newEmail.
-        // Returns ERROR if the email failed to update.
-        [Obsolete("Use UpdateUser(UserModel user).")]
-        public DbError UpdateUserEmail(UserModel user, string newEmail)
-        {
-            try
-            {
-                user.Email = newEmail;
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception " + ex.ToString() + " in UpdateUserEmail");
-                return DbError.ERROR;
-            }
-            return DbError.SUCCESS;
-        }
-
-        [Obsolete("Use UpdateModel(UserModel user).")]
-        public DbError UpdateUserPassword(UserModel user, string newPassword)
-        {
-            try
-            {
-                user.Password = newPassword;
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception " + ex.ToString() + " in UpdateUserPassword");
-                return DbError.ERROR;
-            }
             return DbError.SUCCESS;
         }
 
         public DbError DeleteUser(UserModel user)
         {
+            UserModel _user = context.Users.Find(user.UserID);
             try
-            {
-                context.Users.Attach(user);
-                context.Users.Remove(user);
+            { 
+                context.Users.Remove(_user);
 
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 Console.WriteLine("Exception " + ex.ToString() + " in DeleteUser");
                 return DbError.FAILED_TO_DELETE;
             }
@@ -261,8 +213,9 @@ namespace DataLib
             {
                 user = context.Users.Find(id);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                interfaceException = ex;
                 user.UserID = -1;
             }
 
@@ -280,12 +233,30 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 Console.WriteLine("Exception " + ex.ToString() + " in GetUserByUsername");
                 user.UserID = -1;
                 return user;
             }
 
             return user;
+        }
+
+        public List<UserModel> GetAllUsers()
+        {
+            List<UserModel> users = new List<UserModel>();
+            try
+            {
+                users = context.Users.ToList();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                users.Clear();
+                Console.WriteLine("Exceltion " + ex.ToString() + " in GetAllUsers");
+                users.Add(new UserModel() { UserID = 0 });
+            }
+            return users;
         }
 
         #endregion
@@ -310,9 +281,10 @@ namespace DataLib
             }
             catch (Exception ex)
             {
-
+                interfaceException = ex;
+                tournaments.Clear();
                 Console.WriteLine("Exception " + ex.ToString() + " in GetAllTournaments");
-                throw;
+                tournaments.Add(new TournamentModel() { TournamentID = 0 });
             }
             return tournaments;
         }
@@ -334,6 +306,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 Console.WriteLine("Exception " + ex.ToString() + " in AddTournament");
                 return DbError.FAILED_TO_ADD;
             }
@@ -349,8 +322,9 @@ namespace DataLib
                 context.SaveChanges();
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                interfaceException = ex;
                 return DbError.FAILED_TO_ADD;
             }
 
@@ -365,14 +339,16 @@ namespace DataLib
                 tournament = context.Tournaments.SingleOrDefault(t => t.TournamentID == id);
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                interfaceException = ex;
                 tournament.TournamentID = -1;
             }
             return tournament;
 
         }
 
+        [Obsolete("Use 'Users' collection of tournament")]
         public List<UserModel> GetAllUsersInTournament(TournamentModel tournament)
         {
             List<UserModel> list = new List<UserModel>();
@@ -813,6 +789,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+
                 Console.WriteLine("Exception " + ex.ToString() + " in GetUserSeedInBracket");
                 return -1;
             }
@@ -838,6 +815,27 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
+        public DbError DeleteTeam(TeamModel team)
+        {
+            TeamModel _team = context.Teams.Find(team.TeamID);
+            try
+            {
+                foreach (var teamMember in _team.TeamMembers.ToList())
+                {
+
+                }
+                context.Teams.Remove(_team);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                Console.WriteLine("Exception " + ex.ToString() + " in DeleteTeam");
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
+        }
+
         #endregion
 
         #region TeamMembers
@@ -851,10 +849,16 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 Console.WriteLine("Exception " + ex.ToString() + " in AddTeam");
                 return DbError.FAILED_TO_ADD;
             }
             return DbError.SUCCESS;
+        }
+
+        public DbError DeleteTeamMember(ref TeamMemberModel teamMember)
+        {
+
         }
 
         #endregion

@@ -54,15 +54,15 @@ namespace DataLib
         public int? PrevChallengerMatchNumber { get; set; }
 
         [ForeignKey("ChallengerID")]
-        public virtual UserModel Challenger { get; set; }
+        public UserModel Challenger { get; set; }
 
         [ForeignKey("DefenderID")]
-        public virtual UserModel Defender { get; set; }
+        public UserModel Defender { get; set; }
 
         //[ForeignKey("TournamentID")]
         //public TournamentModel Tournament { get; set; }
 
         [ForeignKey("WinnerID")]
-        public virtual UserModel Winner { get; set; }
+        public UserModel Winner { get; set; }
     }
 }

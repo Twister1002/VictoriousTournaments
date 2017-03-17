@@ -42,6 +42,10 @@ namespace DataLib
 
         public DateTime? TournamentEndDate { get; set; }
 
+        public DateTime? CheckInBegins { get; set; }
+
+        public DateTime? CheckInEnds { get; set; }
+
         //[ForeignKey("TournamentID")]
         //public virtual TournamentModel Tournament { get; set; }
 

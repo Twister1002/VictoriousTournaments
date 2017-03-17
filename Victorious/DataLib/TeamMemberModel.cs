@@ -31,10 +31,10 @@ namespace DataLib
         public DateTime? DateLeft { get; set; }
 
         [ForeignKey("UserID")]
-        public virtual UserModel User { get; set; }
+        public UserModel User { get; set; }
 
         [ForeignKey("TeamID")]
-        public virtual TeamModel Team { get; set; }
+        public TeamModel Team { get; set; }
 
 
 
