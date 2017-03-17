@@ -153,7 +153,10 @@ namespace Tournament.Structure
 
 			throw new KeyNotFoundException();
 		}
-		public virtual void ResetBracket()
+		#endregion
+
+		#region Private Methods
+		protected virtual void ResetBracket()
 		{
 			Matches = null;
 			LowerMatches = null;
@@ -161,10 +164,6 @@ namespace Tournament.Structure
 			NumberOfRounds = NumberOfLowerRounds = 0;
 			NumberOfMatches = 0;
 		}
-		#endregion
-
-		#region Private Methods
-
 		#endregion
 	}
 }

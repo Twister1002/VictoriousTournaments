@@ -8,6 +8,7 @@ namespace Tournament.Structure.Tests
 	[TestClass]
 	public class BracketTests
 	{
+#if false
 		[TestMethod]
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket Accessors")]
@@ -322,5 +323,6 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(0, b.NumberOfMatches);
 		}
+#endif
 	}
 }

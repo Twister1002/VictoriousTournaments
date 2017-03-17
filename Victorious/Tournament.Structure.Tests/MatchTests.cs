@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using Moq;
 
 namespace Tournament.Structure.Tests
 {
@@ -16,6 +17,7 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(1, m.WinsNeeded);
 		}
+#if false
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match Ctor")]
@@ -36,17 +38,18 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(1, 2);
 		}
+#endif
 
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match AddPlayer")]
 		public void AddPlayer_AddsAPlayer()
 		{
-			int pIndex = 5;
+			IPlayer p = new Mock<IPlayer>().Object;
 			IMatch m = new Match();
-			m.AddPlayer(pIndex);
+			m.AddPlayer(p);
 
-			Assert.AreEqual(pIndex, m.DefenderIndex());
+			Assert.AreEqual(p, m.Players[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
@@ -54,7 +57,7 @@ namespace Tournament.Structure.Tests
 		public void AddPlayer_DoesNotActivateMatch()
 		{
 			IMatch m = new Match();
-			m.AddPlayer(1);
+			m.AddPlayer(new Mock<IPlayer>().Object);
 
 			Assert.AreEqual(false, m.IsReady);
 		}
@@ -63,22 +66,30 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match AddPlayer")]
 		public void AddPlayer_AddsTwoPlayers()
 		{
-			int pIndex1 = 10;
-			int pIndex2 = 20;
-			IMatch m = new Match();
-			m.AddPlayer(pIndex1);
-			m.AddPlayer(pIndex2);
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
 
-			Assert.AreEqual(pIndex2, m.ChallengerIndex());
+			IMatch m = new Match();
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
+
+			Assert.AreEqual(p2.Object, m.Players[(int)PlayerSlot.Challenger]);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match AddPlayer")]
 		public void AddPlayer_SecondPlayerActivatesMatch()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(0);
-			m.AddPlayer(1);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 
 			Assert.AreEqual(true, m.IsReady);
 		}
@@ -87,11 +98,12 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match AddPlayer")]
 		public void AddPlayer_AddsSecondPlayer()
 		{
-			int pIndex2 = 20;
-			IMatch m = new Match();
-			m.AddPlayer(pIndex2, PlayerSlot.Challenger);
+			var p2 = new Mock<IPlayer>();
 
-			Assert.AreEqual(pIndex2, m.ChallengerIndex());
+			IMatch m = new Match();
+			m.AddPlayer(p2.Object, PlayerSlot.Challenger);
+
+			Assert.AreEqual(p2.Object, m.Players[(int)PlayerSlot.Challenger]);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
@@ -100,7 +112,7 @@ namespace Tournament.Structure.Tests
 		public void AddPlayer_ThrowsException_WithBadIndexParam()
 		{
 			IMatch m = new Match();
-			m.AddPlayer(1, (PlayerSlot)4);
+			m.AddPlayer(new Mock<IPlayer>().Object, (PlayerSlot)4);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -110,9 +122,14 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(SlotFullException))]
 		public void AddPlayer_ThrowsException_WhenAddingPlayerToSameSpot()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(10, PlayerSlot.Defender);
-			m.AddPlayer(20, PlayerSlot.Defender);
+			m.AddPlayer(p1.Object, PlayerSlot.Defender);
+			m.AddPlayer(p2.Object, PlayerSlot.Defender);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -122,9 +139,12 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(DuplicateObjectException))]
 		public void AddPlayer_ThrowsDuplicate_WhenAddingSamePlayerTwice()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(1);
+
 			IMatch m = new Match();
-			m.AddPlayer(10, PlayerSlot.Challenger);
-			m.AddPlayer(10, PlayerSlot.Defender);
+			m.AddPlayer(p1.Object, PlayerSlot.Challenger);
+			m.AddPlayer(p1.Object, PlayerSlot.Defender);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -135,21 +155,30 @@ namespace Tournament.Structure.Tests
 		public void RemovePlayer_Removes()
 		{
 			int pIndex = 10;
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(pIndex);
+			
 			IMatch m = new Match();
-			m.AddPlayer(pIndex, 0); // 0 = PlayerSlot.Defender
+			m.AddPlayer(p1.Object, PlayerSlot.Defender);
 			m.RemovePlayer(pIndex);
 
-			Assert.AreEqual(-1, m.DefenderIndex());
+			Assert.IsNull(m.Players[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match RemovePlayer")]
 		public void RemovePlayer_SetsMatchInactive()
 		{
+			int pIndex = 10;
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(pIndex);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(0);
-			m.AddPlayer(1);
-			m.RemovePlayer(0);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
+			m.RemovePlayer(pIndex);
 
 			Assert.AreEqual(false, m.IsReady);
 		}
@@ -170,58 +199,83 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match ResetPlayers")]
 		public void ResetPlayers_ResetsArr1()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(10, PlayerSlot.Defender);
-			m.AddPlayer(20, PlayerSlot.Challenger);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.ResetPlayers();
 
-			Assert.AreEqual(-1, m.DefenderIndex());
+			Assert.IsNull(m.Players[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match ResetPlayers")]
 		public void ResetPlayers_ResetsArr2()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(10, PlayerSlot.Defender);
-			m.AddPlayer(20, PlayerSlot.Challenger);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.ResetPlayers();
 
-			Assert.AreEqual(-1, m.ChallengerIndex());
+			Assert.IsNull(m.Players[(int)PlayerSlot.Challenger]);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match ResetPlayers")]
 		public void ResetPlayers_SetsMatchInactive()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(0);
-			m.AddPlayer(1);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.ResetPlayers();
 
 			Assert.AreEqual(false, m.IsReady);
 		}
-
+		
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match AddWin")]
 		public void AddWin_AddsAWin()
 		{
-			int[] indexes = new int[2] { 0, 1 };
-			IMatch m = new Match(true, false, 3, indexes, -1, new ushort[2] { 1, 0 }, 0, 0, 0, new List<int>(), 0, 0);
-			m.AddWin(PlayerSlot.Defender);
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
+			IMatch m = new Match();
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.AddWin(PlayerSlot.Defender);
 
-			Assert.AreEqual(1 + 1 + 1, m.Score[0]);
+			Assert.AreEqual(1, m.Score[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match AddWin")]
 		public void AddWin_SetsMatchFinishedCorrectly()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(0);
-			m.AddPlayer(1);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.AddWin(PlayerSlot.Challenger);
 
 			Assert.AreEqual(true, m.IsFinished);
@@ -231,22 +285,32 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match AddWin")]
 		public void AddWin_SetsWinnerIndex_IfMatchIsOver()
 		{
-			int pIndex = 1;
-			IMatch m = new Match();
-			m.AddPlayer(0);
-			m.AddPlayer(pIndex);
-			m.AddWin(PlayerSlot.Challenger);
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
 
-			Assert.AreEqual(pIndex, m.WinnerIndex);
+			IMatch m = new Match();
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
+			PlayerSlot wSlot = PlayerSlot.Challenger;
+			m.AddWin(wSlot);
+
+			Assert.AreEqual(wSlot, m.WinnerSlot);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match AddWin")]
 		public void AddWin_DoesNotSetMatchFinishedIncorrectly()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(0);
-			m.AddPlayer(1);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.SetWinsNeeded(2);
 			m.AddWin(PlayerSlot.Defender);
 			m.AddWin(PlayerSlot.Challenger);
@@ -271,7 +335,7 @@ namespace Tournament.Structure.Tests
 		public void AddWin_ThrowsInactiveMatch_WithNotEnoughPlayersInMatch()
 		{
 			IMatch m = new Match();
-			m.AddPlayer(10, PlayerSlot.Defender);
+			m.AddPlayer(new Mock<IPlayer>().Object);
 			m.AddWin(PlayerSlot.Defender);
 
 			Assert.AreEqual(1, 2);
@@ -282,9 +346,14 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(InactiveMatchException))]
 		public void AddWin_ThrowsInactiveMatch_IfMatchIsAlreadyWon()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(10, PlayerSlot.Defender);
-			m.AddPlayer(11, PlayerSlot.Challenger);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.AddWin(PlayerSlot.Defender);
 			m.AddWin(PlayerSlot.Defender);
 
@@ -296,10 +365,15 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match SubtractWin")]
 		public void SubtractWin_Subtracts()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
 			m.SetWinsNeeded(3);
-			m.AddPlayer(5);
-			m.AddPlayer(6);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.AddWin(PlayerSlot.Challenger);
 			m.AddWin(PlayerSlot.Challenger);
 			m.SubtractWin(PlayerSlot.Challenger);
@@ -311,9 +385,14 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match SubtractWin")]
 		public void SubtractWin_SetsFinishedToFalse()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(0);
-			m.AddPlayer(1);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.AddWin(PlayerSlot.Challenger);
 			m.SubtractWin(PlayerSlot.Challenger);
 
@@ -324,13 +403,18 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match SubtractWin")]
 		public void SubtractWin_ResetsWinnerIndex()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(0);
-			m.AddPlayer(1);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.AddWin(PlayerSlot.Challenger);
 			m.SubtractWin(PlayerSlot.Challenger);
 
-			Assert.AreEqual(-1, m.WinnerIndex);
+			Assert.AreEqual(PlayerSlot.unspecified, m.WinnerSlot);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
@@ -362,10 +446,15 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match ResetScore")]
 		public void ResetScore_ResetsToZero()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
 			m.SetWinsNeeded(2);
-			m.AddPlayer(1);
-			m.AddPlayer(2);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.AddWin(PlayerSlot.Defender);
 			m.AddWin(PlayerSlot.Challenger);
 			m.ResetScore();
@@ -377,9 +466,14 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match ResetScore")]
 		public void ResetScore_SetsMatchUnfinished()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(0);
-			m.AddPlayer(1);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.AddWin(PlayerSlot.Challenger);
 			m.ResetScore();
 
@@ -390,13 +484,18 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match ResetScore")]
 		public void ResetScore_ResetsWinnerIndex()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(0);
-			m.AddPlayer(1);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.AddWin(PlayerSlot.Challenger);
 			m.ResetScore();
 
-			Assert.AreEqual(-1, m.WinnerIndex);
+			Assert.AreEqual(PlayerSlot.unspecified, m.WinnerSlot);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
@@ -405,13 +504,18 @@ namespace Tournament.Structure.Tests
 		public void RemovePlayer_ResetsScore()
 		{
 			int pIndex = 10;
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(pIndex);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(pIndex, PlayerSlot.Defender);
-			m.AddPlayer(11, PlayerSlot.Challenger);
+			m.AddPlayer(p1.Object, PlayerSlot.Defender);
+			m.AddPlayer(p2.Object, PlayerSlot.Challenger);
 			m.AddWin(PlayerSlot.Defender);
 			m.RemovePlayer(pIndex);
 
-			Assert.AreEqual(0, m.Score[0]);
+			Assert.AreEqual(0, m.Score[(int)PlayerSlot.Defender]);
 		}
 
 		[TestMethod]
@@ -431,9 +535,14 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(InactiveMatchException))]
 		public void SetWinsNeeded_ThrowsInactive_WhenCalledOnFinishedMatch()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
 			IMatch m = new Match();
-			m.AddPlayer(0);
-			m.AddPlayer(1);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
 			m.AddWin(PlayerSlot.Challenger);
 			m.SetWinsNeeded(2);
 

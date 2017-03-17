@@ -8,6 +8,7 @@ namespace Tournament.Structure.Tests
 	[TestClass]
 	public class DoubleElimBracketTests
 	{
+#if false
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB Ctor")]
@@ -646,5 +647,6 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(pIndex, b.GetLowerRound(1)[0].ChallengerIndex());
 		}
+#endif
 	}
 }

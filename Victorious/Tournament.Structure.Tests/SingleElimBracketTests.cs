@@ -8,6 +8,7 @@ namespace Tournament.Structure.Tests
 	[TestClass]
 	public class SingleElimBracketTests
 	{
+#if false
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB Ctor")]
@@ -573,5 +574,6 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(1, 2);
 		}
+#endif
 	}
 }

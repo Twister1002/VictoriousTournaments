@@ -125,7 +125,7 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Clears all Matches and rounds in the bracket.
 		/// </summary>
-		void ResetBracket();
+		//void ResetBracket();
 #endregion
 	}
 }

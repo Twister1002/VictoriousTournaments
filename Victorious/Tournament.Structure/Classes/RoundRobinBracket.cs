@@ -18,7 +18,7 @@ namespace Tournament.Structure
 		// inherits int NumberOfLowerRounds (0)
 		// inherits IMatch GrandFinal (null)
 		// inherits int NumberOfMatches
-		public int[] Scores
+		public Dictionary<int, uint> Scores
 		{ get; private set; }
 		public int MaxRounds
 		{ get; set; }
@@ -69,10 +69,10 @@ namespace Tournament.Structure
 				Players.Add(new User(um));
 			}
 
-			Scores = new int[Players.Count];
-			for (int i = 0; i < Scores.Count(); ++i)
+			Scores = new Dictionary<int, uint>();
+			for (int i = 0; i < Players.Count; ++i)
 			{
-				Scores[i] = 0;
+				Scores[Players[i].Id] = 0;
 			}
 			MaxRounds = 0;
 
@@ -80,7 +80,7 @@ namespace Tournament.Structure
 			Matches = new Dictionary<int, IMatch>();
 			foreach (MatchModel mm in _model.Matches)
 			{
-				IMatch match = new Match(mm, Players);
+				IMatch match = new Match(mm);
 				Matches.Add(match.MatchNumber, match);
 				++NumberOfMatches;
 				if (match.RoundIndex > NumberOfRounds)
@@ -88,8 +88,8 @@ namespace Tournament.Structure
 					NumberOfRounds = match.RoundIndex;
 				}
 
-				Scores[match.DefenderIndex()] += match.Score[(int)PlayerSlot.Defender];
-				Scores[match.ChallengerIndex()] += match.Score[(int)PlayerSlot.Challenger];
+				Scores[match.Players[(int)PlayerSlot.Defender].Id] += match.Score[(int)PlayerSlot.Defender];
+				Scores[match.Players[(int)PlayerSlot.Challenger].Id] += match.Score[(int)PlayerSlot.Challenger];
 			}
 		}
 		#endregion
@@ -105,11 +105,11 @@ namespace Tournament.Structure
 
 			if (null == Scores)
 			{
-				Scores = new int[Players.Count];
+				Scores = new Dictionary<int, uint>();
 			}
-			for (int i = 0; i < Scores.Count(); ++i)
+			for (int i = 0; i < Players.Count; ++i)
 			{
-				Scores[i] = 0;
+				Scores[Players[i].Id] = 0;
 			}
 
 			Matches = new Dictionary<int, IMatch>();
@@ -132,8 +132,8 @@ namespace Tournament.Structure
 					match.SetRoundIndex(r + 1);
 					match.SetMatchIndex(m + 1);
 					match.SetWinsNeeded(_winsPerMatch);
-					match.AddPlayer(m + r);
-					match.AddPlayer((Players.Count - 1 - m + r) % Players.Count);
+					match.AddPlayer(Players[m + r]);
+					match.AddPlayer(Players[(Players.Count - 1 - m + r) % Players.Count]);
 
 					Matches.Add(match.MatchNumber, match);
 				}
@@ -152,14 +152,7 @@ namespace Tournament.Structure
 			}
 
 			Matches[_matchNumber].AddWin(_slot);
-			if (_slot == PlayerSlot.Defender)
-			{
-				Scores[Matches[_matchNumber].DefenderIndex()] += 1;
-			}
-			else if (_slot == PlayerSlot.Challenger)
-			{
-				Scores[Matches[_matchNumber].ChallengerIndex()] += 1;
-			}
+			Scores[Matches[_matchNumber].Players[(int)_slot].Id] += 1;
 		}
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
@@ -173,14 +166,7 @@ namespace Tournament.Structure
 			}
 
 			Matches[_matchNumber].SubtractWin(_slot);
-			if (_slot == PlayerSlot.Defender)
-			{
-				Scores[Matches[_matchNumber].DefenderIndex()] -= 1;
-			}
-			else if (_slot == PlayerSlot.Challenger)
-			{
-				Scores[Matches[_matchNumber].ChallengerIndex()] -= 1;
-			}
+			Scores[Matches[_matchNumber].Players[(int)_slot].Id] -= 1;
 		}
 		public override void ResetMatchScore(int _matchNumber)
 		{
@@ -193,15 +179,15 @@ namespace Tournament.Structure
 				throw new KeyNotFoundException();
 			}
 
-			int defScore = Matches[_matchNumber].Score[(int)PlayerSlot.Defender];
-			int chalScore = Matches[_matchNumber].Score[(int)PlayerSlot.Challenger];
+			uint defScore = Matches[_matchNumber].Score[(int)PlayerSlot.Defender];
+			uint chalScore = Matches[_matchNumber].Score[(int)PlayerSlot.Challenger];
 
 			Matches[_matchNumber].ResetScore();
-			Scores[Matches[_matchNumber].DefenderIndex()] -= defScore;
-			Scores[Matches[_matchNumber].ChallengerIndex()] -= chalScore;
+			Scores[Matches[_matchNumber].Players[(int)PlayerSlot.Defender].Id] -= defScore;
+			Scores[Matches[_matchNumber].Players[(int)PlayerSlot.Challenger].Id] -= chalScore;
 		}
 
-		public override void ResetBracket()
+		protected override void ResetBracket()
 		{
 			base.ResetBracket();
 
