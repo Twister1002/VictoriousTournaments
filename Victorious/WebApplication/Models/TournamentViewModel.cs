@@ -61,6 +61,16 @@ namespace WebApplication.Models
             this.TournamentEndDate      = Model.TournamentRules.TournamentEndDate;
         }
 
+        public void SetModel(int id)
+        {
+            this.Model = db.GetTournamentById(id);
+        }
+
+        public void SetModel(TournamentModel model)
+        {
+            this.Model = model;
+        }
+
         public void Search(String title)
         {
             List<TournamentModel> models = new List<TournamentModel>();

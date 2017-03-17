@@ -14,7 +14,7 @@
                     <ul class="list-table-columns" data-columns="4">
                         <li class="column">Name</li>
                         <li class="column">Game</li>
-                        <li class="column">Registration Days</li>
+                        <li class="column">Days Left</li>
                         <li class="column">Start Date</li>
                     </ul>
                 </li>
@@ -25,8 +25,8 @@
                             <ul class="row-clickable" data-columns="4">
                                 <li class="column">@tournament.Title</li>
                                 <li class="column">GAME</li>
-                                <li class="column"></li>
-                                <li class="column">@*@tournament.TournamentRules.TournamentStartDate*@</li>
+                                <li class="column">@((((DateTime)tournament.TournamentRules.RegistrationEndDate) - DateTime.Now).Days)</li>
+                                <li class="column">@(((DateTime)tournament.TournamentRules.TournamentStartDate).ToShortDateString())</li>
                             </ul>
                         </a>
                     }
