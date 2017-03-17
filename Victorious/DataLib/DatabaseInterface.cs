@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -830,7 +831,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in DeleteTeam");
+                WriteException(ex);
                 return DbError.FAILED_TO_DELETE;
             }
             return DbError.SUCCESS;
@@ -856,13 +857,30 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        public DbError DeleteTeamMember(ref TeamMemberModel teamMember)
+        public DbError DeleeteTeamMember(TeamMemberModel teamMember)
         {
-
+            TeamMemberModel _teamMember = new TeamMemberModel();
+            try
+            {
+                _teamMember = context.TeamMembers.Find(teamMember.UserID);
+                context.TeamMembers.Remove(_teamMember);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
         }
 
         #endregion
 
+        private void WriteException(Exception ex, [CallerMemberName] string funcName = null)
+        {
+            Console.WriteLine("Exception " + ex + " in " + funcName);        
+        }
 
 
 

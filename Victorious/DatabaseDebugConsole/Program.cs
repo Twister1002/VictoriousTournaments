@@ -21,7 +21,7 @@ namespace DatabaseDebugConsole
             DatabaseInterface db = new DatabaseInterface();
 
             //db.Clear();
-            Seed(db);
+            //Seed(db);
             //TournamentModel tournament = db.GetTournamentById(1);
 
             //UserBracketSeedModel ubs = new UserBracketSeedModel();
@@ -128,6 +128,11 @@ namespace DatabaseDebugConsole
             //Console.WriteLine(db.GetAllTournaments()[0].Brackets.ToList()[0].BracketType.Type.ToString());
 
             //DeleteAllUsers(db);
+
+            TeamMemberModel tm = new TeamMemberModel();
+
+            db.DeleeteTeamMember(tm);
+
 
             Console.WriteLine("Done");
             Console.ReadLine();
