@@ -32,7 +32,7 @@ namespace WebApplication.Models
             SetFields();
         }
 
-        public void ApplyChanges(int SessionId)
+        public override void ApplyChanges(int SessionId)
         {
             Model.Title                                 = this.Title;
             Model.Description                           = this.Description;
@@ -50,7 +50,7 @@ namespace WebApplication.Models
             }
         }
 
-        public void SetFields()
+        public override void SetFields()
         {
             this.Title                  = Model.Title;
             this.Description            = Model.Description;

@@ -117,7 +117,7 @@ namespace WebApplication.Controllers
                 if (userExists == DbError.DOES_NOT_EXIST && emailExists == DbError.DOES_NOT_EXIST)
                 {
                     // We can then register the user
-                    viewModel.ApplyFieldChanges();
+                    viewModel.ApplyChanges();
                     UserModel userModel = viewModel.getUserModel();
 
                     DbError error = db.AddUser(ref userModel);
@@ -186,7 +186,7 @@ namespace WebApplication.Controllers
                     if (viewModel.getUserModel().UserID == (int)Session["User.UserId"])
                     {
                         // Apply the changes
-                        viewModel.ApplyFieldChanges();
+                        viewModel.ApplyChanges();
 
                         DbError error = db.UpdateUser(viewModel.getUserModel());
                         if (error == DbError.SUCCESS)
