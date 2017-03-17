@@ -174,13 +174,14 @@ namespace WebApplication.Controllers
         // POST: Tournament/Edit/5
         [HttpPost]
         [Route("Tournament/Update/{id}")]
-        public ActionResult Update(TournamentViewModel viewModel)
+        public ActionResult Update(TournamentViewModel viewModel, int id)
         {
             if (Session["User.UserId"] != null)
             {
+                viewModel.SetModel(id);
                 if (viewModel.Model.CreatedByID == (int)Session["User.UserId"])
                 {
-                    viewModel.ApplyChanges((int)Session["User.UserId."]);
+                    viewModel.ApplyChanges((int)Session["User.UserId"]);
 
                     DbError tourny = db.UpdateTournament(viewModel.Model);
                     DbError rules = db.UpdateRules(viewModel.Model.TournamentRules);
@@ -190,8 +191,8 @@ namespace WebApplication.Controllers
                         viewModel.error = ViewModel.ViewError.SUCCESS;
                         viewModel.message = "Edits to the tournament was successful";
 
-                        //Session["Message"] = viewModel.message;
-                        //Session["Message.Class"] = viewModel.error;
+                        Session["Message"] = viewModel.message;
+                        Session["Message.Class"] = viewModel.error;
 
                         return RedirectToAction("Tournament", "Tournament", new { guid = viewModel.Model.TournamentID });
                     }
