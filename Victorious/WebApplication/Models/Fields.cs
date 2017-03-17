@@ -44,6 +44,9 @@ namespace WebApplication.Models
         [StringLength(UserModel.PasswordLength)]
         [Display(Name = "Verify Password")]
         public string PasswordVerify { get; set; }
+
+        public abstract void ApplyChanges();
+        public abstract void SetFields();
     }
 
     public abstract class TournamentFields : ViewModel
@@ -77,11 +80,31 @@ namespace WebApplication.Models
         [Display(Name = "Tournament End")]
         public DateTime? TournamentEndDate { get; set; }
 
+        //[Display(Name = "Tournament End")]
+        //public List<BracketTypeModel> bracketType { get; set; };
+
         //[DataType(DataType.Text)]
         //[Display(Name = "Check-in Date")]
         //public DateTime? CheckInDateTime { get; set; }
 
         [Display(Name = "Public")]
         public bool IsPublic { get; set; }
+
+        public abstract void ApplyChanges(int userId);
+        public abstract void SetFields();
     }
+
+    public abstract class MatchFields : ViewModel {
+        [DataType(DataType.Text)]
+        public int? ChallengerScore { get; set; }
+        
+        [DataType(DataType.Text)]
+        public int? DefenderScore { get; set; }
+
+        [DataType(DataType.Text)]
+        public int? WinnerID { get; set; }
+
+        public abstract void ApplyChanges(int userId);
+        public abstract void SetFields();
+    } 
 }

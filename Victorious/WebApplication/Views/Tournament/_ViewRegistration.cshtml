@@ -1,0 +1,29 @@
+﻿@model WebApplication.Models.TournamentViewModel
+
+<div class="TournamentRegistration">
+    <div class="description">
+        @Model.Model.Description
+    </div>
+    <div class="registration">
+    @{
+        bool isUserRegistered = Model.Model.Users.Any(x => x.UserID == (int)Session["User.UserId"]);
+
+        if (isUserRegistered)
+        {
+            // Give the user the ability to un-register
+            using (Html.BeginForm("Deregister", "Tournament", FormMethod.Post, new { @tournamentVal = Model.Model.TournamentID }))
+            {
+                <button type="submit">Deregister for this tournament</button>
+            }
+        }
+        else
+        {
+            // Give the user the ability to register
+            using (Html.BeginForm("Register", "Tournament", new { @tournamentVal = Model.Model.TournamentID }, FormMethod.Post))
+            {
+                <button type="submit">Register for this tournament</button>
+            }
+        }
+    }
+    </div>
+</div>
