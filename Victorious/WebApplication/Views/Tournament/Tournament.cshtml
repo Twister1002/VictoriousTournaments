@@ -3,7 +3,6 @@
 @{
     ViewBag.Title = "Tournament";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var Bracket = Model.Tourny.Brackets[0];
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
@@ -17,81 +16,33 @@
             </div>
         }
     </div>
-    <ul class="list-table">
-        <li class="list-table-header">
-            <ul data-columns="@Bracket.NumberOfRounds">
-                @for (int i = 1; i <= Bracket.NumberOfRounds; i++)
-                {
-                    String displayTitle = " ";
-                    if (i == Bracket.NumberOfRounds)
-                    {
-                        displayTitle = "Finals";
-                    }
-                    else if (i == Bracket.NumberOfRounds - 1)
-                    {
-                        displayTitle = "Semi-Finals";
-                    }
-                    else if (i == Bracket.NumberOfRounds - 2)
-                    {
-                        displayTitle = "Quater Finals";
-                    }
+    @{
+        bool registrationStarted = (DateTime)Model.RegistrationStartDate <= DateTime.Now;
+        bool tournamentStarted = (DateTime)Model.TournamentStartDate <= DateTime.Now;
+        bool registrationEnded = (DateTime)Model.RegistrationEndDate <= DateTime.Now;
 
-                    <li class="column">@displayTitle</li>
-                }
-            </ul>
-        </li>
-        <li class="list-table-body">
-            <ul data-columns="@Bracket.NumberOfRounds">
-                @for (int roundNum = 1; roundNum <= Bracket.NumberOfRounds; roundNum++)
-                {
-                    var matches = Bracket.GetRound(roundNum);
-                    <li class="round" data-round="@roundNum">
-                        @foreach (var match in matches)
-                        {
-                            var challenger = match.ChallengerIndex() != -1 ? Bracket.Players[match.ChallengerIndex()] : new Tournament.Structure.User();
-                            var defender = match.DefenderIndex() != -1 ? Bracket.Players[match.DefenderIndex()] : new Tournament.Structure.User();
-
-                            <div class="match" data-match="@match.MatchNumber">
-                                <label class="matchNum">
-                                    Match @match.MatchNumber
-                                    @if (Session["User.UserId"] != null && (int)Session["User.UserId"] == Model.Model.CreatedByID)
-                                    {
-                                        <span class="edit">
-                                            <img class="match-edit svg-pencil svg clickable" src="~/Images/svg/pencil.svg" />
-                                        </span>
-                                    }
-                                </label>
-                                <div class="matchData">
-                                    <ul class="info">
-                                        <li class="defender" data-seed="@match.DefenderIndex()">
-                                            <label class="seed">@match.DefenderIndex()</label>
-                                            <div class="name">@defender.Name</div>
-                                        </li>
-                                        <li class="challenger" data-seed="@match.ChallengerIndex()">
-                                            <label class="seed">@match.ChallengerIndex()</label>
-                                            <div class="name">@challenger.Name</div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        }
-                    </li>
-                }
-
-            </ul>
-        </li>
-        <li class="match-edit-module">
-            <div class="module-background"></div>
-            <div class="module-close"><img class="close clickable" src="~/Images/svg/cross.svg"/></div>
-            <div class="module-content">
-                <h2>Winner Selection</h2>
-                <div class="match">
-
-                </div>
-                <div class="match-submit">
-                    <button type="button">Submit Winner</button>
-                </div>
-            </div>
-        </li>
-    </ul>
+        if (registrationStarted && !registrationEnded)
+        {
+            if (Session["User.UserId"] != null)
+            {
+                Html.RenderPartial("_ViewRegistration", Model);
+            }
+            else
+            {
+                <div class="message warning">To register for this tournament, click @Html.ActionLink("here", "Login", "Account", null, new { @class = "clickable-underline" }) to login</div>
+            }
+        }
+        else if ((registrationEnded && !tournamentStarted) /* || Model.isBracketReleased */)
+        {
+            <div class="message success">The tournament is currently being prepared. Please wait until the brackets are released.</div>
+        }
+        else if (tournamentStarted)
+        {
+            Html.RenderPartial("_ViewTournament", Model);
+        }
+        else
+        {
+            <div class="message exception">Yeah..... something went wrong with displaying the tournament</div>
+        }
+    }
 </div>

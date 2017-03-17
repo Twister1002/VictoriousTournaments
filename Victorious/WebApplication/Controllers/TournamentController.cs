@@ -263,6 +263,101 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
+        [Route("Tournament/Register/{tournamentVal}")]
+        public ActionResult Register(String tournamentVal)
+        {
+            int tournamentId = -1;
+            if (int.TryParse(tournamentVal, out tournamentId))
+            {
+                if (Session["User.UserId"] != null)
+                {
+                    // Verify the user doesn't exist in the tournament all ready
+                    // Dont want duplicates
+                    TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+                    List<UserModel> usersInTournament = db.GetAllUsersInTournament(viewModel.Model);
+                    int userCount = usersInTournament.FindAll(x => x.UserID == (int)Session["User.UserId"]).Count;
+
+                    if (userCount == 0)
+                    {
+                        // Add the user to the tournament
+                        DbError error = db.AddUserToTournament(viewModel.Model, db.GetUserById((int)Session["User.UserId"]));
+                        if (error == DbError.SUCCESS)
+                        {
+                            Session["Message"] = "You have been registered to this tournament";
+                            Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
+                        }
+                        else
+                        {
+                            Session["Message"] = "There was an error in registering you in the tournament";
+                            Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+                        }
+                    }
+                    else
+                    {
+                        Session["Message"] = "You have all ready registered for this tournament";
+                        Session["Message.Class"] = ViewModel.ViewError.WARNING;
+                    }
+                }
+                else
+                {
+                    Session["Message"] = "You must login to register for this tournament";
+                    Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+                    return RedirectToAction("Login", "Account");
+                }
+            }
+            else
+            {
+                Session["Message"] = "We don't seem to recognize this tournament.";
+                Session["Message.Class"] = ViewModel.ViewError.WARNING;
+            }
+            return RedirectToAction("Tournament", "Tournament", new { guid = tournamentId });
+        }
+
+        [HttpPost]
+        [Route("Tournament/Deregister/{id}")]
+        public ActionResult Deregister(String tournamentVal)
+        {
+            int tournamentId = -1;
+            if (int.TryParse(tournamentVal, out tournamentId))
+            {
+                if (Session["User.UserId"] != null)
+                {
+                    // We have a user logged in.
+                    //viewModel.SetModel(tournamentId);
+
+                    DbError result = DbError.NONE; //db.AddUserToTournament(viewModel.Model, db.GetUserById((int)Session["User.UserId"]));
+                    if (result == DbError.SUCCESS)
+                    {
+                        Session["Message"] = "You have registered for this tournament.";
+                        Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
+                    }
+                    else
+                    {
+                        Session["Message"] = "We were not able to register you for this tournament. Please notify the tournament administrator.";
+                        Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+                    }
+                }
+                else
+                {
+                    Session["Message"] = "You must login before you can register for a tournament.";
+                    Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+                    return RedirectToAction("Login", "Account");
+                }
+            }
+            else
+            {
+                Session["Message"] = "We don't seem to recognize this tournament.";
+                Session["Message.Class"] = ViewModel.ViewError.WARNING;
+            }
+            //return View("Tournament", viewModel);
+
+        
+            Session["Message"] = "Currently you are not able to deregister from a tournament.";
+            Session["Message.Class"] = ViewModel.ViewError.WARNING;
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
         [Route("Tournament/Ajax/Delete")]
         public JsonResult Delete(String id)
         {

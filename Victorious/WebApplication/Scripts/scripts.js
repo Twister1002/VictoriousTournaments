@@ -25,17 +25,32 @@
         var matchNum = $(this).closest(".match").data("match");
         var tournamentId = $("#Tournament").data("id");
 
-        $(".match-edit-module").addClass("open");
-        $(".match-edit-module .module-content .match")
-            .data({ "match": matchNum, "tournamentId":tournamentId })
-            .html($(this).closest(".match").html())
-            ;
+        //$(".match-edit-module").addClass("open");
+        //$(".match-edit-module .module-content .match")
+        //    .data({ "match": matchNum, "tournamentId":tournamentId })
+        //    .html($(this).closest(".match").html())
+        //    ;
+
+        $.ajax({
+            "url": "/Match/Ajax/Match",
+            "type": "POST",
+            "data": { "tournament": tournamentId, "match": matchNum},
+            "dataType": "json",
+            "success": function (json) {
+                console.log("Success");
+                console.log(json);
+            },
+            "error": function (json) {
+                console.log("error");
+                console.log(json);
+            }
+        });
     });
     $(".match-edit-module .match-submit button").on("click", function () {
         var matchData = $(".match-edit-module .module-content .match");
 
         $.ajax({
-            "url": "/Tournament/Ajax/Match/Update",
+            "url": "/Match/Ajax/Match/Update",
             "type": "POST",
             "data": { "match": matchData.data("match"), "tournamentId": matchData.data("tournamentId"), "seedWin": matchData.find("li.selected-winner").data("seed") },
             "dataType": "json",
