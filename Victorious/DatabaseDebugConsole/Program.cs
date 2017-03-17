@@ -21,7 +21,7 @@ namespace DatabaseDebugConsole
             DatabaseInterface db = new DatabaseInterface();
 
             //db.Clear();
-            //Seed(db);
+
             //TournamentModel tournament = db.GetTournamentById(1);
 
             //UserBracketSeedModel ubs = new UserBracketSeedModel();
@@ -112,7 +112,6 @@ namespace DatabaseDebugConsole
             //db.AddTournament(ref tournament);
 
 
-            //DeleteAllTournaments(db);
 
             //BracketModel bracket = new BracketModel()
             //{
@@ -127,11 +126,28 @@ namespace DatabaseDebugConsole
 
             //Console.WriteLine(db.GetAllTournaments()[0].Brackets.ToList()[0].BracketType.Type.ToString());
 
+            //DeleteAllTournaments(db);
             //DeleteAllUsers(db);
 
-            TeamMemberModel tm = new TeamMemberModel();
+            //Seed(db);
 
-            db.DeleeteTeamMember(tm);
+            UserModel user = db.GetUserById(1);
+            PrintUser(db, user);
+            user.Username = "TestUsername";
+            user.FirstName = "Ryan";
+            user.LastName = "Kelton";
+            user.PhoneNumber = "(123) 456-789";     
+            db.UpdateUser(user);
+            PrintUser(db, user);
+
+            //TournamentModel tournament = new TournamentModel();
+            //tournament = db.GetAllTournaments()[0];
+            //UserModel user = new UserModel();
+            //user = db.GetAllUsers()[0];
+            //BracketModel bracket = new BracketModel();
+            //bracket = user.Tournaments.ElementAt(0).Brackets.ElementAt(0);
+            //PrintBracket(db, bracket);
+
 
 
             Console.WriteLine("Done");
@@ -208,6 +224,31 @@ namespace DatabaseDebugConsole
                 db.AddMatch(ref match, bracket);
             }
 
+        }
+
+        static void PrintUser(DatabaseInterface db, UserModel user)
+        {
+            Console.WriteLine(user.UserID);
+            Console.WriteLine(user.FirstName);
+            Console.WriteLine(user.LastName);
+            Console.WriteLine(user.Username);
+            Console.WriteLine(user.Password);
+            Console.WriteLine(user.PhoneNumber);
+            Console.WriteLine(user.Email);
+            Console.WriteLine("Number of active tournaments: " + user.Tournaments.Count);
+            
+        }
+
+        static void PrintBracket(DatabaseInterface db, BracketModel bracket)
+        {
+            Console.WriteLine("Title: " + bracket.BracketTitle);
+            Console.WriteLine("Bracket Type: " + bracket.BracketType.Type.ToString());
+            foreach (var match in bracket.Matches)
+            {
+                Console.WriteLine("Match number: " + match.MatchNumber);
+                Console.WriteLine("Challenger: " + match.Challenger.FirstName + ' ' + match.Challenger.LastName);
+                Console.WriteLine("Defender: " + match.Defender.FirstName + ' ' + match.Defender.LastName);
+            }
         }
 
         static void PrintAllMatches(DatabaseInterface db, TournamentModel tournament)

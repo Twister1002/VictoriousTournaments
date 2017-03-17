@@ -23,15 +23,15 @@ namespace DataLib
 
             if (context.BracketTypes.Find(1) == null)
             {
-                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 1, TypeName = "Single Elimination", Type = BracketTypeModel.BracketType.SINGLE }); 
+                context.BracketTypes.Add(new BracketTypeModel() {BracketTypeID = 1, Type = BracketTypeModel.BracketType.SINGLE}); 
             }
             if (context.BracketTypes.Find(2) == null)
             {
-                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 2, TypeName = "Double Elimination", Type = BracketTypeModel.BracketType.DOUBLE });
+                context.BracketTypes.Add(new BracketTypeModel() {BracketTypeID = 2, Type = BracketTypeModel.BracketType.DOUBLE});
             }
             if (context.BracketTypes.Find(3) == null)
             {
-                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 3, TypeName = "Round Robin", Type = BracketTypeModel.BracketType.ROUNDROBIN });
+                context.BracketTypes.Add(new BracketTypeModel() {BracketTypeID = 3, Type = BracketTypeModel.BracketType.ROUNDROBIN});
             }
 
         }
@@ -534,6 +534,7 @@ namespace DataLib
         {
             try
             {
+                
                 context.Brackets.Add(bracket);
                 tournament.Brackets.Add(bracket);
                 bracket.Tournament = tournament;

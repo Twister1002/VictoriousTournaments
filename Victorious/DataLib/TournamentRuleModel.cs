@@ -12,7 +12,8 @@ namespace DataLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public TournamentRuleModel()
         {
-
+            HasEntryFee = false;
+            IsPublic = true;
         }
 
         [Key]

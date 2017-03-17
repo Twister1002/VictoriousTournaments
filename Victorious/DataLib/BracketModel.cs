@@ -29,7 +29,6 @@ namespace DataLib
 
         public ICollection<UserBracketSeedModel> UserSeeds { get; set; }
 
-        // Touthat holds this bracket.
         public TournamentModel Tournament { get; set; }
 
         [ForeignKey("BracketTypeID")]
