@@ -1,18 +1,10 @@
 ﻿<div id="navagation" class="navavation">
     <div id="logo" class="logo">Logo</div>
-    <div class="searchBar form">
-        <form method="get" action="/Tournament/Search">
-            <img class="fieldImage button-search" src="~/Images/svg/search.svg"/>
-            <input type="text" name="title" class="field" placeholder="Search Tournaments" autocomplete="off" />
-        </form>
-    </div>
     <div class="nav">
-
         <a href="/">Home</a>
         <a href="/Tournament">Tournaments</a>
         @if (Session["User.UserId"] != null)
         {
-            <a href="/Tournament/Create">Create Tournament</a>
             <a href="/Account">Account</a>
         }
         else
@@ -20,5 +12,11 @@
             <a href="/Account/Register">Register</a>
             <a href="/Account/Login">Login</a>
         }
+        <a class="searchBar">
+            <form method="get" action="/Tournament/Search">
+                <img class="fieldImage button-search" src="~/Images/svg/search.svg" />
+                <input type="text" name="title" class="field" placeholder="Search Tournaments" autocomplete="off" />
+            </form>
+        </a>
     </div>
 </div>
