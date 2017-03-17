@@ -11,10 +11,16 @@ namespace Tournament.Structure
 	public class Match : IMatch
 	{
 		#region Variables & Properties
+		public bool IsReady
+		{ get; private set; }
+		public bool IsFinished
+		{ get; private set; }
 		public ushort WinsNeeded
 		{ get; set; }
 		private int[] PlayerIndexes
 		{ get; set; }
+		public int WinnerIndex
+		{ get; private set; }
 		public ushort[] Score
 		{ get; private set; }
 		public int RoundIndex
@@ -32,7 +38,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public Match(ushort _winsNeeded, int[] _playerIndexes, ushort[] _score, int _roundIndex, int _matchIndex, int _matchNumber, List<int> _prevMatchNumbers, int _nextMatchNumber, int _nextLoserMatchNumber)
+		public Match(bool _isReady, bool _isFinished, ushort _winsNeeded, int[] _playerIndexes, int _winnerIndex, ushort[] _score, int _roundIndex, int _matchIndex, int _matchNumber, List<int> _prevMatchNumbers, int _nextMatchNumber, int _nextLoserMatchNumber)
 		{
 			if (null == _playerIndexes
 				|| null == _score
@@ -41,8 +47,15 @@ namespace Tournament.Structure
 				throw new NullReferenceException();
 			}
 
+			//IsReady = _isReady;
+			//IsFinished = _isFinished;
 			WinsNeeded = _winsNeeded;
 			PlayerIndexes = _playerIndexes;
+			IsReady = (PlayerIndexes[0] > -1 && PlayerIndexes[1] > -1)
+				? true : false;
+			WinnerIndex = _winnerIndex;
+			IsFinished = (WinnerIndex > -1)
+				? true : false;
 			Score = _score;
 			RoundIndex = _roundIndex;
 			MatchIndex = _matchIndex;
@@ -52,7 +65,7 @@ namespace Tournament.Structure
 			NextLoserMatchNumber = _nextLoserMatchNumber;
 		}
 		public Match()
-			: this(1, new int[2] { -1, -1 }, new ushort[2] { 0, 0 }, -1, -1, -1, new List<int>(), -1, -1)
+			: this(false, false, 1, new int[2] { -1, -1 }, -1, new ushort[2] { 0, 0 }, -1, -1, -1, new List<int>(), -1, -1)
 		{ }
 
 		public Match(MatchModel _m, List<IPlayer> _playerList)
@@ -62,7 +75,7 @@ namespace Tournament.Structure
 				|| null == _m.ChallengerID
 				|| null == _m.DefenderID
 				//|| null == _m.TournamentID
-				//|| null == _m.WinnerID
+				|| null == _m.WinnerID
 				|| null == _m.ChallengerScore
 				|| null == _m.DefenderScore
 				|| null == _m.RoundIndex
@@ -83,11 +96,16 @@ namespace Tournament.Structure
 			PlayerIndexes = new int[2] { -1, -1 };
 			int p1id = (int)(_m.DefenderID);
 			int p2id = (int)(_m.ChallengerID);
-			if (p1id > -1 || p2id > -1)
+			int winId = (int)(_m.WinnerID);
+			if (p1id > -1 || p2id > -1 || winId > -1)
 			{
 				// Find and set player indexes (from the PlayerList)
 				for (int i = 0; i < _playerList.Count; ++i)
 				{
+					if (winId == _playerList[i].Id)
+					{
+						WinnerIndex = i;
+					}
 					if (p1id == _playerList[i].Id)
 					{
 						PlayerIndexes[0] = i;
@@ -98,6 +116,11 @@ namespace Tournament.Structure
 					}
 				}
 			}
+
+			IsReady = (PlayerIndexes[0] > -1 && PlayerIndexes[1] > -1)
+				? true : false;
+			IsFinished = (WinnerIndex > -1)
+				? true : false;
 
 			Score = new ushort[2] { 0, 0 };
 			Score[0] = (ushort)(_m.DefenderScore);
@@ -151,12 +174,16 @@ namespace Tournament.Structure
 
 			for (int i = 0; i < 2; ++i)
 			{
-				if ((int)_slot == i ||
-					_slot == PlayerSlot.unspecified)
+				if ((int)_slot == i || _slot == PlayerSlot.unspecified)
 				{
 					if (PlayerIndexes[i] < 0)
 					{
 						PlayerIndexes[i] = _playerIndex;
+
+						if (PlayerIndexes[0] > -1 && PlayerIndexes[1] > -1)
+						{
+							IsReady = true;
+						}
 						return;
 					}
 				}
@@ -171,7 +198,9 @@ namespace Tournament.Structure
 				if (PlayerIndexes[i] == _playerIndex)
 				{
 					PlayerIndexes[i] = -1;
+
 					ResetScore();
+					IsReady = false;
 					return;
 				}
 			}
@@ -185,7 +214,9 @@ namespace Tournament.Structure
 				PlayerIndexes = new int[2];
 			}
 			PlayerIndexes[0] = PlayerIndexes[1] = -1;
+
 			ResetScore();
+			IsReady = false;
 		}
 
 		public void AddWin(PlayerSlot _slot)
@@ -195,15 +226,17 @@ namespace Tournament.Structure
 			{
 				throw new IndexOutOfRangeException();
 			}
-			for (int i = 0; i < 2; ++i)
+			if (IsFinished || !IsReady)
 			{
-				if (Score[i] >= WinsNeeded || PlayerIndexes[i] == -1)
-				{
-					throw new InactiveMatchException();
-				}
+				throw new InactiveMatchException();
 			}
 
 			Score[(int)_slot] += 1;
+			if (Score[(int)_slot] >= WinsNeeded)
+			{
+				WinnerIndex = PlayerIndexes[(int)_slot];
+				IsFinished = true;
+			}
 		}
 		public void SubtractWin(PlayerSlot _slot)
 		{
@@ -212,11 +245,20 @@ namespace Tournament.Structure
 			{
 				throw new IndexOutOfRangeException();
 			}
+			if (!IsReady)
+			{
+				throw new InactiveMatchException();
+			}
 			if (Score[(int)_slot] <= 0)
 			{
 				throw new ArgumentOutOfRangeException();
 			}
-			
+
+			if (Score[(int)_slot] == WinsNeeded)
+			{
+				IsFinished = false;
+				WinnerIndex = -1;
+			}
 			Score[(int)_slot] -= 1;
 		}
 		public void ResetScore()
@@ -225,6 +267,9 @@ namespace Tournament.Structure
 			{
 				Score = new ushort[2];
 			}
+
+			IsFinished = false;
+			WinnerIndex = -1;
 			Score[0] = Score[1] = 0;
 		}
 

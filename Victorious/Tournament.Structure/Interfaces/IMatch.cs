@@ -16,8 +16,11 @@ namespace Tournament.Structure
 	public interface IMatch
 	{
 		#region Variables & Properties
+		bool IsReady { get; }
+		bool IsFinished { get; }
 		ushort WinsNeeded { get; set; }
 		// private int[] PlayerIndexes { get; set; }
+		int WinnerIndex { get; }
 		ushort[] Score { get; }
 		int RoundIndex { get; }
 		int MatchIndex { get; }
