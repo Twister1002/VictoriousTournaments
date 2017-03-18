@@ -21,7 +21,7 @@ namespace DatabaseDebugConsole
             DatabaseInterface db = new DatabaseInterface();
 
             //db.Clear();
-            Seed(db);
+
             //TournamentModel tournament = db.GetTournamentById(1);
 
             //UserBracketSeedModel ubs = new UserBracketSeedModel();
@@ -96,12 +96,12 @@ namespace DatabaseDebugConsole
             //    PrintAllMatches(db, tournament);
             //}
 
-            TournamentModel tournament = new TournamentModel()
-            {
-                Title = "Tournament Rules Test",
-                Description = "Test Tournament",
-                CreatedByID = 1
-            };
+            //TournamentModel tournament = new TournamentModel()
+            //{
+            //    Title = "Tournament Rules Test",
+            //    Description = "Test Tournament",
+            //    CreatedByID = 1
+            //};
             //TournamentRuleModel rules = new TournamentRuleModel()
             //{
             //    RegistrationStartDate = DateTime.Now
@@ -112,7 +112,6 @@ namespace DatabaseDebugConsole
             //db.AddTournament(ref tournament);
 
 
-            //DeleteAllTournaments(db);
 
             //BracketModel bracket = new BracketModel()
             //{
@@ -126,6 +125,30 @@ namespace DatabaseDebugConsole
             //db.AddBracket(ref bracket, tournament);
 
             //Console.WriteLine(db.GetAllTournaments()[0].Brackets.ToList()[0].BracketType.Type.ToString());
+
+            //DeleteAllTournaments(db);
+            //DeleteAllUsers(db);
+
+            //Seed(db);
+
+            UserModel user = db.GetUserById(1);
+            PrintUser(db, user);
+            user.Username = "TestUsername";
+            user.FirstName = "Ryan";
+            user.LastName = "Kelton";
+            user.PhoneNumber = "(123) 456-789";     
+            db.UpdateUser(user);
+            PrintUser(db, user);
+
+            //TournamentModel tournament = new TournamentModel();
+            //tournament = db.GetAllTournaments()[0];
+            //UserModel user = new UserModel();
+            //user = db.GetAllUsers()[0];
+            //BracketModel bracket = new BracketModel();
+            //bracket = user.Tournaments.ElementAt(0).Brackets.ElementAt(0);
+            //PrintBracket(db, bracket);
+
+
 
             Console.WriteLine("Done");
             Console.ReadLine();
@@ -203,6 +226,31 @@ namespace DatabaseDebugConsole
 
         }
 
+        static void PrintUser(DatabaseInterface db, UserModel user)
+        {
+            Console.WriteLine(user.UserID);
+            Console.WriteLine(user.FirstName);
+            Console.WriteLine(user.LastName);
+            Console.WriteLine(user.Username);
+            Console.WriteLine(user.Password);
+            Console.WriteLine(user.PhoneNumber);
+            Console.WriteLine(user.Email);
+            Console.WriteLine("Number of active tournaments: " + user.Tournaments.Count);
+            
+        }
+
+        static void PrintBracket(DatabaseInterface db, BracketModel bracket)
+        {
+            Console.WriteLine("Title: " + bracket.BracketTitle);
+            Console.WriteLine("Bracket Type: " + bracket.BracketType.Type.ToString());
+            foreach (var match in bracket.Matches)
+            {
+                Console.WriteLine("Match number: " + match.MatchNumber);
+                Console.WriteLine("Challenger: " + match.Challenger.FirstName + ' ' + match.Challenger.LastName);
+                Console.WriteLine("Defender: " + match.Defender.FirstName + ' ' + match.Defender.LastName);
+            }
+        }
+
         static void PrintAllMatches(DatabaseInterface db, TournamentModel tournament)
         {
             foreach (var bracket in tournament.Brackets)
@@ -226,6 +274,20 @@ namespace DatabaseDebugConsole
             {
                 Console.WriteLine(tournament.Title);
                 if (db.DeleteTournament(tournament) == DbError.FAILED_TO_DELETE)
+                {
+                    Console.WriteLine("Error");
+                }
+            }
+        }
+
+        static void DeleteAllUsers(DatabaseInterface db)
+        {
+            List<UserModel> users = db.GetAllUsers();
+
+            foreach (var user in users)
+            {
+                Console.WriteLine(user.FirstName + ' ' + user.LastName);
+                if (db.DeleteUser(user) == DbError.FAILED_TO_DELETE)
                 {
                     Console.WriteLine("Error");
                 }

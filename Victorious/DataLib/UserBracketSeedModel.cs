@@ -25,13 +25,13 @@ namespace DataLib
         public int? Seed { get; set; }
 
         [ForeignKey("UserID")]
-        public virtual UserModel User { get; set; }
+        public UserModel User { get; set; }
 
         [ForeignKey("TournamentID")]
-        public virtual TournamentModel Tournament { get; set; }
+        public TournamentModel Tournament { get; set; }
 
         [ForeignKey("BracketID")]
-        public virtual BracketModel Bracket { get; set; }
+        public BracketModel Bracket { get; set; }
 
 
 

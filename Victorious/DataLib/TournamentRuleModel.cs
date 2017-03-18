@@ -12,7 +12,8 @@ namespace DataLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public TournamentRuleModel()
         {
-
+            HasEntryFee = false;
+            IsPublic = true;
         }
 
         [Key]
@@ -41,6 +42,10 @@ namespace DataLib
         public DateTime? TournamentStartDate { get; set; }
 
         public DateTime? TournamentEndDate { get; set; }
+
+        public DateTime? CheckInBegins { get; set; }
+
+        public DateTime? CheckInEnds { get; set; }
 
         //[ForeignKey("TournamentID")]
         //public virtual TournamentModel Tournament { get; set; }

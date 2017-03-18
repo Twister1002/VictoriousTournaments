@@ -36,6 +36,7 @@ namespace DataLib
         public DbSet<TeamMemberModel> TeamMembers { get; set; }
         public DbSet<BracketTypeModel> BracketTypes { get; set; }
         //public DbSet<UsersInTournamentsModel> UsersInTournaments { get; set; }
+        //public DbSet<UsersInTournamentsModel> UsersInTournaments { get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -50,6 +51,11 @@ namespace DataLib
             modelBuilder.Entity<BracketModel>()
                 .HasMany(e => e.Matches)
                 .WithRequired()
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<BracketModel>()
+                .HasRequired(e => e.Tournament)
+                .WithMany(e => e.Brackets)
                 .WillCascadeOnDelete(false);
 
             //modelBuilder.Entity<TournamentRuleModel>()
@@ -96,15 +102,19 @@ namespace DataLib
             //    .WithRequired()
             //    .WillCascadeOnDelete(false);
 
+            //modelBuilder.Entity<TournamentModel>()
+            //    .HasMany(e => e.Users)
+            //    .WithMany(e => e.Tournaments)
+            //    .Map(m =>
+            //    {
+            //        m.MapLeftKey("TournamentID");
+            //        m.MapRightKey("UserID");
+            //        m.ToTable("UsersTournaments");
+            //    });
+
             modelBuilder.Entity<TournamentModel>()
                 .HasMany(e => e.Users)
-                .WithMany(e => e.Tournaments)
-                .Map(m =>
-                {
-                    m.MapLeftKey("UserID");
-                    m.MapRightKey("TournamentID");
-                    m.ToTable("UsersTournaments");
-                });
+                .WithMany(e => e.Tournaments);
 
             //modelBuilder.Entity<TournamentModel>()
             //    .HasMany(e => e.Users)

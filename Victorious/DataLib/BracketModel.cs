@@ -25,15 +25,14 @@ namespace DataLib
 
         public int BracketTypeID { get; set; }     
 
-        public virtual ICollection<MatchModel> Matches { get; set; }
+        public ICollection<MatchModel> Matches { get; set; }
 
-        public virtual ICollection<UserBracketSeedModel> UserSeeds { get; set; }
+        public ICollection<UserBracketSeedModel> UserSeeds { get; set; }
 
-        // Tournament that holds this bracket.
-        public virtual TournamentModel Tournament { get; set; }
+        public TournamentModel Tournament { get; set; }
 
         [ForeignKey("BracketTypeID")]
-        public virtual BracketTypeModel BracketType { get; set; }
+        public BracketTypeModel BracketType { get; set; }
 
      
     }
