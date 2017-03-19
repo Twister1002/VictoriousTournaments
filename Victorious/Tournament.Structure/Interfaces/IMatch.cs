@@ -16,8 +16,11 @@ namespace Tournament.Structure
 	public interface IMatch
 	{
 		#region Variables & Properties
-		ushort WinsNeeded { get; set; }
+		bool IsReady { get; }
+		bool IsFinished { get; }
+		ushort WinsNeeded { get; }
 		// private int[] PlayerIndexes { get; set; }
+		int WinnerIndex { get; }
 		ushort[] Score { get; }
 		int RoundIndex { get; }
 		int MatchIndex { get; }
@@ -97,6 +100,12 @@ namespace Tournament.Structure
 		/// Resets Match score to 0-0.
 		/// </summary>
 		void ResetScore();
+
+		/// <summary>
+		/// Sets amount of wins needed to advance.
+		/// </summary>
+		/// <param name="_wins">Wins needed.</param>
+		void SetWinsNeeded(ushort _wins);
 
 		/// <summary>
 		/// Sets round index for Match.

@@ -88,6 +88,11 @@ namespace Tournament.Structure
 		#region Public Methods
 		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
+			if (_winsPerMatch < 1)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+
 			ResetBracket();
 			if (Players.Count < 2)
 			{
@@ -110,7 +115,7 @@ namespace Tournament.Structure
 					// Add new matchups per round
 					// (rounds[0] is the final match)
 					IMatch m = new Match();
-					m.WinsNeeded = _winsPerMatch;
+					m.SetWinsNeeded(_winsPerMatch);
 					roundList[r].Add(m);
 				}
 			}
