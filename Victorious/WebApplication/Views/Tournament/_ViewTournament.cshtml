@@ -2,6 +2,10 @@
 
 @{ 
     int maxRounds = 0;
+    var tourny = Model.Tourny;
+    var bracket = tourny.Brackets[0];
+    var topBracket;
+    var botBracket = bracket.GetLowerRound();
 }
 
 <ul class="list-table">

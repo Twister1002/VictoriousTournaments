@@ -94,6 +94,17 @@
         }
     });
 
+    $("#TournamentRegisteredPlayers .registeredPlayers label").on("click", function () {
+        if ($(this).hasClass("opened")) {
+            // We now need to close this
+            $(this).removeClass("opened").addClass("closed");
+        }
+        else if ($(this).hasClass("closed")) {
+            // We now need to open this
+            $(this).removeClass("closed").addClass("opened");
+        }
+    });
+
     // Form Validation
     function Validate(form) {
         var returnVal = true;
