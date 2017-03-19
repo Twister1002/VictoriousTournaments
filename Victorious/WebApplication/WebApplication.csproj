@@ -189,6 +189,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\VictoriousController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MatchController.cs" />
     <Compile Include="Controllers\TournamentController.cs" />
@@ -235,6 +236,16 @@
     <Content Include="Views\Tournament\_MatchUpdate.cshtml" />
     <Content Include="Views\Tournament\_ViewTournament.cshtml" />
     <Content Include="Views\Tournament\_ViewRegistration.cshtml" />
+    <Content Include="Views\Tournament\Administrator\_Players.cshtml" />
+    <Content Include="Styles\less\Tournament\_Tournament.less" />
+    <Content Include="Styles\less\Tournament\_Create.less" />
+    <Content Include="Styles\less\Tournament\_Edit.less" />
+    <Content Include="Styles\less\Tournament\_Search.less" />
+    <Content Include="Styles\less\Tournament\_RegisteredPlayers.less" />
+    <Content Include="Views\Tournament\Brackets\_SingleElimination.cshtml" />
+    <Content Include="Views\Tournament\Brackets\_DoubleElimination.cshtml" />
+    <Content Include="Views\Tournament\Brackets\_Swiss.cshtml" />
+    <Content Include="Views\Tournament\Brackets\_RoundRobin.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -244,6 +255,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Base\" />
     <Folder Include="Views\Match\" />
   </ItemGroup>
   <ItemGroup>

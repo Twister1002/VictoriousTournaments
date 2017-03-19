@@ -9,7 +9,7 @@ using Tournament.Structure;
 
 namespace WebApplication.Controllers
 {
-    public class TournamentController : Controller
+    public class TournamentController : VictoriousController
     {
         DatabaseInterface db = new DatabaseInterface();
 
@@ -157,7 +157,7 @@ namespace WebApplication.Controllers
                 else
                 {
                     // The tournament failed to be created
-                    viewModel.dbException = db.exception;
+                    viewModel.dbException = db.interfaceException;
                     viewModel.error = ViewModel.ViewError.EXCEPTION;
                     viewModel.message = "We could not create the tournament due to an error.";
                     return View("Create", viewModel);
@@ -200,7 +200,7 @@ namespace WebApplication.Controllers
                     {
                         viewModel.error = ViewModel.ViewError.CRITICAL;
                         viewModel.message = "Something went wrong while trying to update your tournament. Please try again or submit a ticket.";
-                        viewModel.dbException = db.exception;
+                        viewModel.dbException = db.interfaceException;
                     }
                 }
                 else
@@ -243,7 +243,7 @@ namespace WebApplication.Controllers
                     {
                         viewModel.error = ViewModel.ViewError.CRITICAL;
                         viewModel.message = "Unable to update the tournament. Please try again later.";
-                        viewModel.dbException = db.exception;
+                        viewModel.dbException = db.interfaceException;
                     }
                 }
                 else
@@ -274,8 +274,7 @@ namespace WebApplication.Controllers
                     // Verify the user doesn't exist in the tournament all ready
                     // Dont want duplicates
                     TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-                    List<UserModel> usersInTournament = db.GetAllUsersInTournament(viewModel.Model);
-                    int userCount = usersInTournament.FindAll(x => x.UserID == (int)Session["User.UserId"]).Count;
+                    int userCount = viewModel.Model.Users.Count(x => x.UserID == (int)Session["User.UserId"]);
 
                     if (userCount == 0)
                     {

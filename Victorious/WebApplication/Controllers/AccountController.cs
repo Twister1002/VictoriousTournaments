@@ -9,7 +9,7 @@ using DataLib;
 
 namespace WebApplication.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : VictoriousController
     {
         DatabaseInterface db = new DatabaseInterface();
 
@@ -131,7 +131,7 @@ namespace WebApplication.Controllers
                     else
                     {
                         // User Registration failed.
-                        viewModel.dbException = db.exception;
+                        viewModel.dbException = db.interfaceException;
                         viewModel.error = ViewModel.ViewError.CRITICAL;
                         viewModel.message = "Well... Something went wrong when creating your account: <br/>";
                         //+"<h2>Message</h2>" + db.e.Message + "<h2>Inner Exception</h2>" + db.e.InnerException;

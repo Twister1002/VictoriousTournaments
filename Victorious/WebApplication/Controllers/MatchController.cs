@@ -9,7 +9,7 @@ using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
-    public class MatchController : Controller
+    public class MatchController : VictoriousController
     {
 
         [Route("Match")]
