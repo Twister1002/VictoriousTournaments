@@ -1,0 +1,10 @@
+﻿@model WebApplication.Models.TournamentViewModel
+
+@{
+    // This has multiple brackets
+
+    foreach (var bracket in Model.Tourny.Brackets)
+    {
+        for (int round = 1; round <= bracket.NumberOfRounds;
+    }
+}

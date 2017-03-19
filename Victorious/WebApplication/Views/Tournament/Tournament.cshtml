@@ -3,6 +3,15 @@
 @{
     ViewBag.Title = "Tournament";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int userId = -1;
+    bool registrationStarted = (DateTime)Model.RegistrationStartDate <= DateTime.Now;
+    bool tournamentStarted = (DateTime)Model.TournamentStartDate <= DateTime.Now;
+    bool registrationEnded = (DateTime)Model.RegistrationEndDate <= DateTime.Now;
+    bool isLoggedIn = Session["User.UserId"] != null;
+    bool isTournyAdministrator = false;
+
+    if (isLoggedIn) { int.TryParse(Session["User.UserId"].ToString(), out userId); isTournyAdministrator = Model.Model.CreatedByID == userId; }
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
@@ -17,32 +26,29 @@
         }
     </div>
     @{
-        bool registrationStarted = (DateTime)Model.RegistrationStartDate <= DateTime.Now;
-        bool tournamentStarted = (DateTime)Model.TournamentStartDate <= DateTime.Now;
-        bool registrationEnded = (DateTime)Model.RegistrationEndDate <= DateTime.Now;
-
-        if (registrationStarted && !registrationEnded)
+        if (isTournyAdministrator)
         {
-            if (Session["User.UserId"] != null)
-            {
-                Html.RenderPartial("_ViewRegistration", Model);
-            }
-            else
-            {
-                <div class="message warning">To register for this tournament, click @Html.ActionLink("here", "Login", "Account", null, new { @class = "clickable-underline" }) to login</div>
-            }
-        }
-        else if ((registrationEnded && !tournamentStarted) /* || Model.isBracketReleased */)
-        {
-            <div class="message success">The tournament is currently being prepared. Please wait until the brackets are released.</div>
-        }
-        else if (tournamentStarted)
-        {
+            Html.RenderPartial("Administrator/_Players", Model);
             Html.RenderPartial("_ViewTournament", Model);
         }
         else
         {
-            <div class="message exception">Yeah..... something went wrong with displaying the tournament</div>
+            if (registrationStarted && !registrationEnded)
+            {
+                Html.RenderPartial("_ViewRegistration", Model);
+            }
+            else if ((registrationEnded && !tournamentStarted) /* || Model.isBracketReleased */)
+            {
+                <div class="message success">The tournament is currently being prepared. Please wait until the brackets are released.</div>
+            }
+            else if (tournamentStarted)
+            {
+                Html.RenderPartial("_ViewTournament", Model);
+            }
+            else
+            {
+                <div class="message exception">Yeah..... something went wrong with displaying the tournament</div>
+            }
         }
     }
 </div>

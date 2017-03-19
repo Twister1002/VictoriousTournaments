@@ -28,8 +28,11 @@ namespace WebApplication.Models
 
         public TournamentViewModel(TournamentModel model)
         {
-            Model = model;
-            SetFields();
+            if (model != null)
+            {
+                Model = model;
+                SetFields();
+            }
         }
 
         public override void ApplyChanges(int SessionId)
@@ -76,6 +79,13 @@ namespace WebApplication.Models
             List<TournamentModel> models = new List<TournamentModel>();
             models = db.GetAllTournaments();
 
+            if (db.interfaceException != null)
+            {
+                this.dbException = db.interfaceException;
+                this.error = ViewError.EXCEPTION;
+                this.message = "There was an error in acquiring the tournaments.";
+            }
+
             if (title != String.Empty && title != null)
             {
                 models = models.Where(t => t.Title == title).ToList();   
@@ -103,7 +113,12 @@ namespace WebApplication.Models
                 players.Add(new User(uModel));
             }
 
-            Tourny.AddSingleElimBracket(players);
+            //foreach (UserModel userModel in Model.Users)
+            //{
+            //    players.Add(new User(userModel));
+            //}
+
+            Tourny.AddDoubleElimBracket(players);
             Tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
             Tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
             Tourny.Brackets[0].AddWin(3, PlayerSlot.Challenger);

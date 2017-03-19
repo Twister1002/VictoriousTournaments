@@ -1,0 +1,122 @@
+﻿#Tournament {
+    min-width: 33em;
+
+    .content-header {
+        width: 100%;
+
+        .adminMenu div {
+            display: inline-block;
+        }
+    }
+
+    .list-table-header ul li {
+        text-align: center;
+    }
+
+    .round {
+        vertical-align: middle;
+
+        .match {
+            padding: .5em;
+
+            .matchNum {
+                position: relative;
+
+                .edit {
+                    .svg {
+                        position: absolute;
+                        right: 0em;
+                        top: 0em;
+                        width: 1.5em;
+                        height: 1.5em;
+                    }
+                }
+            }
+        }
+    }
+
+    .matchData {
+        background-color: @match-color;
+
+        .info {
+            position: relative;
+            display: block;
+            border: .1em solid @white;
+            overflow: hidden;
+
+            .defender, .challenger {
+                position: relative;
+                display: block;
+                min-width: 10em;
+                width: 100%;
+
+                &.seedHover {
+                    background-color: @color-primary-2;
+                }
+
+                .seed {
+                    display: inline-block;
+                    text-align: right;
+                    width: 1.5em;
+                    padding: .3em;
+                    border-right: .1em solid @white;
+                }
+
+                .name {
+                    display: inline-block;
+                }
+            }
+
+            .defender {
+                border-bottom: .1em solid @white;
+            }
+        }
+    }
+
+    .match-edit-module {
+        display: none;
+
+        &.open {
+            display: inline-block;
+        }
+
+        &.open, > * {
+            position: absolute;
+            top: 0em;
+            left: 0em;
+            width: 100%;
+            height: 100%;
+        }
+
+        .module-background {
+            opacity: 0.9;
+            background-color: darken(@color-primary-0, 30%);
+        }
+
+        .module-close {
+            text-align: right;
+            font-size: 3em;
+        }
+        .module-content {
+            width: 95%;
+            padding: 1em;
+            top: 10%;
+
+            .edit {
+                display:none;
+            }
+            .match-submit {
+                padding-top: 1em;
+            }
+            .info {
+                > li {
+                    width: 100%;
+
+                    &.selected-winner {
+                        background-color:@alert-orange;
+                    }
+                }
+            }
+        }
+    }
+}
