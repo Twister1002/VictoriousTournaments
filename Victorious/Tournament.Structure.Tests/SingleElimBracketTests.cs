@@ -35,7 +35,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB Ctor")]
-		public void SEBCreateBracket_CreatesNoMatches_WithLessThanTwoPlayers()
+		public void SEBCtor_CreatesNoMatches_WithLessThanTwoPlayers()
 		{
 			IBracket b = new SingleElimBracket();
 			//b.CreateBracket();
@@ -350,7 +350,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			b.Matches[1].WinsNeeded = 2;
+			b.Matches[1].SetWinsNeeded(2);
 			b.AddWin(1, PlayerSlot.Defender);
 			b.SubtractWin(1, PlayerSlot.Defender);
 
@@ -368,7 +368,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			b.Matches[1].WinsNeeded = 2;
+			b.Matches[1].SetWinsNeeded(2);
 			int pIndex = b.GetMatch(1).DefenderIndex();
 			b.AddWin(1, PlayerSlot.Defender);
 			b.AddWin(1, PlayerSlot.Challenger);
@@ -422,7 +422,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			b.Matches[1].WinsNeeded = 2;
+			b.Matches[1].SetWinsNeeded(2);
 			b.AddWin(1, PlayerSlot.Defender);
 			b.AddWin(1, PlayerSlot.Challenger);
 			b.ResetMatchScore(1);
@@ -493,7 +493,7 @@ namespace Tournament.Structure.Tests
 
 			b.AddWin(1, PlayerSlot.Defender);
 			b.AddWin(2, PlayerSlot.Defender);
-			b.Matches[3].WinsNeeded = 3;
+			b.Matches[3].SetWinsNeeded(3);
 			b.AddWin(3, PlayerSlot.Defender);
 			b.AddWin(3, PlayerSlot.Defender);
 			b.AddWin(3, PlayerSlot.Challenger);

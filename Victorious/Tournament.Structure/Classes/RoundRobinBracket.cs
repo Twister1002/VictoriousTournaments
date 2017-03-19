@@ -20,6 +20,8 @@ namespace Tournament.Structure
 		// inherits int NumberOfMatches
 		public int[] Scores
 		{ get; private set; }
+		public int MaxRounds
+		{ get; set; }
 		#endregion
 
 		#region Ctors
@@ -31,6 +33,7 @@ namespace Tournament.Structure
 			}
 
 			Players = _players;
+			MaxRounds = _numRounds;
 			ResetBracket();
 			CreateBracket();
 		}
@@ -42,6 +45,7 @@ namespace Tournament.Structure
 				Players.Add(new User());
 			}
 
+			MaxRounds = _numRounds;
 			ResetBracket();
 			CreateBracket();
 		}
@@ -70,6 +74,7 @@ namespace Tournament.Structure
 			{
 				Scores[i] = 0;
 			}
+			MaxRounds = 0;
 
 			ResetBracket();
 			Matches = new Dictionary<int, IMatch>();
@@ -110,6 +115,13 @@ namespace Tournament.Structure
 			Matches = new Dictionary<int, IMatch>();
 			int totalRounds = (0 == Players.Count % 2)
 				? Players.Count - 1 : Players.Count;
+			if (MaxRounds > 0 && MaxRounds < totalRounds)
+			{
+				// NOTE: this sets a limit on the number of created rounds
+				// it does NOT randomize the rounds
+				// should that be included in future?
+				totalRounds = MaxRounds;
+			}
 			int matchesPerRound = (int)(Players.Count * 0.5);
 			for (int r = 0; r < totalRounds; ++r, ++NumberOfRounds)
 			{
@@ -119,7 +131,7 @@ namespace Tournament.Structure
 					match.SetMatchNumber(NumberOfMatches + 1);
 					match.SetRoundIndex(r + 1);
 					match.SetMatchIndex(m + 1);
-					match.WinsNeeded = _winsPerMatch;
+					match.SetWinsNeeded(_winsPerMatch);
 					match.AddPlayer(m + r);
 					match.AddPlayer((Players.Count - 1 - m + r) % Players.Count);
 
@@ -181,9 +193,12 @@ namespace Tournament.Structure
 				throw new KeyNotFoundException();
 			}
 
-			Scores[Matches[_matchNumber].DefenderIndex()] -= Matches[_matchNumber].Score[(int)PlayerSlot.Defender];
-			Scores[Matches[_matchNumber].ChallengerIndex()] -= Matches[_matchNumber].Score[(int)PlayerSlot.Challenger];
+			int defScore = Matches[_matchNumber].Score[(int)PlayerSlot.Defender];
+			int chalScore = Matches[_matchNumber].Score[(int)PlayerSlot.Challenger];
+
 			Matches[_matchNumber].ResetScore();
+			Scores[Matches[_matchNumber].DefenderIndex()] -= defScore;
+			Scores[Matches[_matchNumber].ChallengerIndex()] -= chalScore;
 		}
 
 		public override void ResetBracket()
