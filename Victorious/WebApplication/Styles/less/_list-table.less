@@ -49,6 +49,20 @@
                 .columnwidth(6);
             }
         }
+
+        &[data-columns="7"] {
+            a, li {
+                display: inline-block;
+                .columnwidth(7);
+            }
+        }
+
+        &[data-columns="8"] {
+            a, li {
+                display: inline-block;
+                .columnwidth(8);
+            }
+        }
     }
 }
 
@@ -59,5 +73,5 @@
 }
 
 .columnwidth(@value) {
-    width: (1/@value) * 98%;
+    width: (1/@value) * 95%;
 }

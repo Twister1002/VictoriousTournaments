@@ -1,19 +1,68 @@
 ﻿@model WebApplication.Models.TournamentViewModel
 
-@{ 
-    int maxRounds = 0;
+@{
     var tourny = Model.Tourny;
     var bracket = tourny.Brackets[0];
-    var topBracket;
-    var botBracket = bracket.GetLowerRound();
+    var topRounds = bracket.NumberOfRounds;
+    var botRounds = bracket.NumberOfLowerRounds;
+    var totalRounds = Math.Max(topRounds, botRounds);
 }
 
 <ul class="list-table">
+    <li class="list-table-header">
+        <ul data-columns="@totalRounds">
+            @for (int i = 1; i <= totalRounds ; i++)
+            {
+                String displayTitle = "Round " + i;
+                if (i == totalRounds)
+                {
+                    displayTitle = "Finals";
+                }
+                else if (i == totalRounds - 1)
+                {
+                    displayTitle = "Semi-Finals";
+                }
+                else if (i == totalRounds - 2)
+                {
+                    displayTitle = "Quater Finals";
+                }
 
-    @{ 
-        // This will need to be expanded to add 2-form tournaments
-        Html.RenderPartial("Brackets/_DoubleElimination", Model);
-    }
+                <li class="column">@displayTitle</li>
+            }
+        </ul>
+    </li>
+    <li class="list-table-body">
+        @{
+            if (topRounds > 0)
+            {
+                <ul class="topBracket" data-columns="@totalRounds">
+                    @{
+                        for (int i = topRounds; i < totalRounds; i++)
+                        {
+                            // Create blank columns
+                            <li>&nbsp;</li>
+                        }
+                        Html.RenderPartial("Brackets/_SingleElimination", Model);
+                    }
+                </ul>
+            }
+
+            if (botRounds > 0)
+            {
+                <ul class="botBracket" data-columns="@totalRounds">
+                    @{
+                        for (int i = botRounds; i < totalRounds; i++)
+                        {
+                            // Create blank columns
+                        <li>&nbsp;</li>
+                        }
+
+                        Html.RenderPartial("Brackets/_DoubleElimination", Model);
+                    }
+                </ul>
+            }
+        }
+    </li>
 
     <li class="match-edit-module">
         <div class="module-background"></div>

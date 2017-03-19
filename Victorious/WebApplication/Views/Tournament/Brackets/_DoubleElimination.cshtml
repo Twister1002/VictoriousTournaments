@@ -1,10 +1,44 @@
 ﻿@model WebApplication.Models.TournamentViewModel
 
 @{
-    // This has multiple brackets
+    var loserBracket = Model.Tourny.Brackets[0];
+    var isLoggedIn = Session["User.UserId"] != null;
+    var isAdministrator = isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID;
+}
 
-    foreach (var bracket in Model.Tourny.Brackets)
-    {
-        for (int round = 1; round <= bracket.NumberOfRounds;
-    }
+@for (int roundNum = 1; roundNum <= loserBracket.NumberOfLowerRounds; roundNum++)
+{
+    var loserMatches = loserBracket.GetLowerRound(roundNum);
+
+    <li class="round" data-round="@roundNum">
+        @foreach (var match in loserMatches)
+        {
+            var challenger = match.ChallengerIndex() != -1 ? loserBracket.Players[match.ChallengerIndex()] : new Tournament.Structure.User();
+            var defender = match.DefenderIndex() != -1 ? loserBracket.Players[match.DefenderIndex()] : new Tournament.Structure.User();
+
+            <div class="match" data-match="@match.MatchNumber">
+                <label class="matchNum">
+                    Match @match.MatchNumber
+                    @if (isLoggedIn && isAdministrator)
+                    {
+                        <span class="edit">
+                            <img class="match-edit svg-pencil svg clickable" src="~/Images/svg/pencil.svg" />
+                        </span>
+                    }
+                </label>
+                <div class="matchData">
+                    <ul class="info">
+                        <li class="defender" data-seed="@match.DefenderIndex()">
+                            <label class="seed">@match.DefenderIndex()</label>
+                            <div class="name">@defender.Name</div>
+                        </li>
+                        <li class="challenger" data-seed="@match.ChallengerIndex()">
+                            <label class="seed">@match.ChallengerIndex()</label>
+                            <div class="name">@challenger.Name</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        }
+    </li>
 }
