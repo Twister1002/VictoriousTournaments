@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using DataLib;
 
 namespace WebApplication.Controllers
 {
     public class VictoriousController : Controller
     {
+        DatabaseInterface db = new DatabaseInterface();
+
         public bool UserLoggedIn()
         {
             if (Session["User.UserId"] != null)
@@ -23,9 +26,20 @@ namespace WebApplication.Controllers
         public int getUserId()
         {
             int userId = -1;
-            int.TryParse(Session["User.UserId"].ToString(), out userId);
+
+            if (UserLoggedIn())
+            {
+                int.TryParse(Session["User.UserId"].ToString(), out userId);
+            }
 
             return userId;
+        }
+
+        public UserModel getUserModel()
+        {
+            UserModel user = db.GetUserById(getUserId());
+
+            return user;
         }
     }
 }

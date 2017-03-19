@@ -80,15 +80,18 @@
             $.ajax({
                 "url": "/Tournament/Ajax/Delete",
                 "type": "POST",
-                "data": {"id": $(this).data("id")},
+                "data": {"tourny": $(this).data("id")},
                 "dataType": "json",
                 "success": function (json) {
-                    console.log("Success");
-                    console.log(json);
+                    if (json.success) {
+                        window.location.replace(json.redirect);
+                    }
+                    else {
+                        alert(json.message);
+                    }
                 },
                 "error": function (json) {
-                    console.log("error");
-                    console.log(json);
+                    alert(json.message);
                 }
             })
         }

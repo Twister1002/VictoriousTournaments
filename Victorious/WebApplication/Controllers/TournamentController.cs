@@ -102,33 +102,33 @@ namespace WebApplication.Controllers
         }
 
         // GET: Tournament/Delete/5
-        [Route("Tournament/Delete/{id}")]
-        public ActionResult Delete(int id)
-        {
-            if (Session["User.UserId"] != null)
-            {
-                TournamentViewModel viewModel = new TournamentViewModel(id);
+        //[Route("Tournament/Delete/{id}")]
+        //public ActionResult Delete(int id)
+        //{
+        //    if (Session["User.UserId"] != null)
+        //    {
+        //        TournamentViewModel viewModel = new TournamentViewModel(id);
 
-                if ((int)Session["User.UserId"] == viewModel.Model.CreatedByID)
-                {
-                    return View("Delete", viewModel);
-                }
-                else
-                {
-                    Session["Message"] = "You do not have permission to do that.";
-                    Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+        //        if ((int)Session["User.UserId"] == viewModel.Model.CreatedByID)
+        //        {
+        //            return View("Delete", viewModel);
+        //        }
+        //        else
+        //        {
+        //            Session["Message"] = "You do not have permission to do that.";
+        //            Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
 
-                    return RedirectToAction("Tournament", "Tournament", new { @guid = viewModel.Model.TournamentID });
-                }
-            }
-            else
-            {
-                Session["Message"] = "You need to login to do that";
-                Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+        //            return RedirectToAction("Tournament", "Tournament", new { @guid = viewModel.Model.TournamentID });
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Session["Message"] = "You need to login to do that";
+        //        Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
 
-                return RedirectToAction("Login", "Account");
-            }
-        }
+        //        return RedirectToAction("Login", "Account");
+        //    }
+        //}
 
         // POST: Tournament/Create
         [HttpPost]
@@ -220,47 +220,47 @@ namespace WebApplication.Controllers
         }
 
         // POST: Tournament/Delete/5
-        [HttpPost]
-        [Route("Tournament/Delete/{guid}")]
-        public ActionResult Delete(TournamentViewModel viewModel)
-        {
-            // TODO: When ability comes in, check against administrators
-            if (Session["User.UserId"] != null)
-            {
-                // Is this user authorized to make changes?
-                if (viewModel.Model.CreatedByID == (int)Session["User.UserId"])
-                {
-                    DbError tourny = db.DeleteTournament(viewModel.Model);
-                    DbError rules = db.DeleteTournamentRules(viewModel.Model.TournamentRules);
+        //[HttpPost]
+        //[Route("Tournament/Delete/{guid}")]
+        //public ActionResult Delete(TournamentViewModel viewModel)
+        //{
+        //    // TODO: When ability comes in, check against administrators
+        //    if (Session["User.UserId"] != null)
+        //    {
+        //        // Is this user authorized to make changes?
+        //        if (viewModel.Model.CreatedByID == (int)Session["User.UserId"])
+        //        {
+        //            DbError tourny = db.DeleteTournament(viewModel.Model);
+        //            DbError rules = db.DeleteTournamentRules(viewModel.Model.TournamentRules);
 
-                    if (tourny == DbError.SUCCESS && rules == DbError.SUCCESS)
-                    {
-                        viewModel.error = ViewModel.ViewError.SUCCESS;
-                        viewModel.message = "The tournament was successfully deleted.";
-                        return RedirectToAction("Index", "Account");
-                    }
-                    else
-                    {
-                        viewModel.error = ViewModel.ViewError.CRITICAL;
-                        viewModel.message = "Unable to update the tournament. Please try again later.";
-                        viewModel.dbException = db.interfaceException;
-                    }
-                }
-                else
-                {
-                    Session["Message"] = "You do not have permission to update this tournament";
-                    Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
-                    return RedirectToAction("Tournament", "Tournament", new { @id = viewModel.Model.TournamentID });
-                }
-            }
-            else
-            {
-                Session["Message"] = "You do not have permission to update this tournament";
-                Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
-            }
+        //            if (tourny == DbError.SUCCESS && rules == DbError.SUCCESS)
+        //            {
+        //                viewModel.error = ViewModel.ViewError.SUCCESS;
+        //                viewModel.message = "The tournament was successfully deleted.";
+        //                return RedirectToAction("Index", "Account");
+        //            }
+        //            else
+        //            {
+        //                viewModel.error = ViewModel.ViewError.CRITICAL;
+        //                viewModel.message = "Unable to update the tournament. Please try again later.";
+        //                viewModel.dbException = db.interfaceException;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            Session["Message"] = "You do not have permission to update this tournament";
+        //            Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+        //            return RedirectToAction("Tournament", "Tournament", new { @id = viewModel.Model.TournamentID });
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Session["Message"] = "You do not have permission to update this tournament";
+        //        Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+        //    }
 
-            return View("Delete", viewModel);
-        }
+        //    return View("Delete", viewModel);
+        //}
 
         [HttpPost]
         [Route("Tournament/Register/{tournamentVal}")]
@@ -358,26 +358,35 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Tournament/Ajax/Delete")]
-        public JsonResult Delete(String id)
+        public JsonResult Delete(String tourny)
         {
             JsonResult json = new JsonResult();
 
-            int uid = -1;
-            if (Session["User.UserId"] != null && int.TryParse(id, out uid))
+            UserModel userModel = this.getUserModel();
+
+            if (UserLoggedIn())
             {
-                TournamentViewModel model = new TournamentViewModel(uid);
-                if (model.Model.CreatedByID == (int)Session["User.UserId"])
+                TournamentViewModel model = new TournamentViewModel(int.Parse(tourny));
+                if (model.Model.CreatedByID == userModel.UserID)
                 {
-                    return Json(new { status=true, message="Tournament was deleted." });
+                    DbError result = db.DeleteTournament(model.Model);
+                    if (result == DbError.SUCCESS)
+                    {
+                        return Json(new { status = true, message = "Tournament was deleted.", redirect = Url.Action("Index", "Tournament") });
+                    }
+                    else
+                    {
+                        return Json(new { status = false, message = "Unable to delete the tournament due to an error." });
+                    }
                 }
                 else
                 {
-                    return Json(new { status = false, message = "User is not the owner of this tournament." });
+                    return Json(new { status = false, message = "You are not entitled to do this." });
                 }
             }
             else
             {
-                return Json(new { status = false, message = "User needs to login." });
+                return Json(new { status = false, message = "Please login in order to modify a tournament." });
             }
         }
 
