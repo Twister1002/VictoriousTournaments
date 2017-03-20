@@ -20,6 +20,9 @@ namespace DatabaseDebugConsole
 
             DatabaseInterface db = new DatabaseInterface();
 
+
+            #region Old Crap
+
             //db.Clear();
 
             //TournamentModel tournament = db.GetTournamentById(1);
@@ -126,13 +129,8 @@ namespace DatabaseDebugConsole
 
             //Console.WriteLine(db.GetAllTournaments()[0].Brackets.ToList()[0].BracketType.Type.ToString());
 
-            //DeleteAllTournaments(db);
-            //DeleteAllUsers(db);
 
-            //Seed(db);
 
-            UserModel user = new UserModel();
-            user = db.GetAllUsers()[0];
 
 
             //PrintUser(db, user);
@@ -143,12 +141,12 @@ namespace DatabaseDebugConsole
             //db.UpdateUser(user);
             //PrintUser(db, user);
 
-            db.AddUserToTournament(db.GetAllTournaments()[1], user, Permission.TOURNAMENT_ADMINISTRATOR);
-            db.RemoveUserFromTournament(db.GetAllTournaments()[1], user);
+            //db.AddUserToTournament(db.GetAllTournaments()[0], user, Permission.TOURNAMENT_ADMINISTRATOR);
+            //db.RemoveUserFromTournament(db.GetAllTournaments()[0], user);
 
-            PrintAllUsersInTournament(db, db.GetAllTournaments()[0]);
+            //PrintAllUsersInTournament(db, db.GetAllTournaments()[0]);
 
-            PrintAllUsersInTournament(db, db.GetAllTournaments()[1]);
+            //PrintAllUsersInTournament(db, db.GetAllTournaments()[1]);
 
             //TournamentModel tournament = new TournamentModel();
             //tournament = db.GetAllTournaments()[0];
@@ -170,9 +168,39 @@ namespace DatabaseDebugConsole
 
 
             //PrintAllBracketsInTournament(db, db.GetAllTournaments()[0]);
+            //CreateTeam(db);
+            //Console.WriteLine(db.GetAllTeams()[0].TeamMembers.Count);
+            #endregion
+
+            //DeleteAllTournaments(db);
+            //DeleteAllUsers(db);
+
+            //Seed(db);
 
 
+            UserModel user = new UserModel();
+            user = db.GetAllUsers()[0];
 
+            List<UserModel> allUsers = db.GetAllUsers().ToList();
+            List<TeamModel> allTeams = db.GetAllTeams().ToList();
+            for (int i = 0; i < 4; i++)
+            {
+                CreateTeamMember(db, allUsers[i], allTeams[0]);
+            }
+            for (int i = 4; i < 8; i++)
+            {
+                CreateTeamMember(db, allUsers[i], allTeams[1]);
+            }
+
+            PrintAllUsersOnTeam(db, allTeams[0]);
+            //PrintAllUsersOnTeam(db, allTeams[1]);
+            //CreateTeams(db, 5);
+            //CreateTeamMember(db, user);
+            //Console.WriteLine(db.GetAllTeams()[0].TeamMembers.Count);
+
+            //db.DeleteTeam(db.GetAllTeams()[0]);
+
+            //DeleteAllTeams(db);
 
             Console.WriteLine("Done");
             Console.ReadLine();
@@ -285,6 +313,7 @@ namespace DatabaseDebugConsole
             Console.WriteLine(user.Email);
             Console.WriteLine(db.GetUserPermission(user, user.Tournaments.ToList()[0]).ToString());
             Console.WriteLine("Number of active tournaments: " + user.Tournaments.Count);
+            Console.WriteLine("Number of active teams: " + user.Teams.Count);
 
         }
 
@@ -330,6 +359,14 @@ namespace DatabaseDebugConsole
             }
         }
 
+        static void PrintAllUsersOnTeam(DatabaseInterface db, TeamModel team)
+        {
+            foreach (var teamMember in team.TeamMembers)
+            {
+                PrintUser(db, teamMember.User);
+            }
+        }
+
         static void DeleteAllTournaments(DatabaseInterface db)
         {
 
@@ -358,6 +395,45 @@ namespace DatabaseDebugConsole
                 }
             }
         }
+
+        static void DeleteAllTeams(DatabaseInterface db)
+        {
+            List<TeamModel> teams = db.GetAllTeams();
+
+            foreach (var team in teams)
+            {
+                Console.WriteLine("Deleting: " + team.TeamName);
+                db.DeleteTeam(team);
+            }
+        }
+
+        static void CreateTeams(DatabaseInterface db, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                TeamModel team = new TeamModel()
+                {
+                    TeamName = "Test Team" + i
+                };
+                db.AddTeam(ref team);
+            }
+
+        }
+
+        static void CreateTeamMember(DatabaseInterface db, UserModel user, TeamModel team)
+        {
+            TeamMemberModel teamMember = new TeamMemberModel()
+            {
+                User = user,
+                Permission = Permission.TEAM_CAPTAIN,
+                DateJoined = DateTime.Now,
+                Team = team
+            };
+            db.AddTeamMember(teamMember);
+        }
+
+
+
 
     }
 }

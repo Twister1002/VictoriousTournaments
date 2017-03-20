@@ -39,6 +39,7 @@ namespace DataLib
             context.Tournaments
                 .Include(x => x.Brackets)
                 .Include(x => x.Users)
+                .Include(x => x.Teams)
                 .Load();
             //context.Users
             //    .Include(x => x.Tournaments)
@@ -48,7 +49,11 @@ namespace DataLib
                 .Load();
             context.Matches
                 .Load();
-                
+            context.Teams
+                .Include(x => x.TeamMembers)
+                .Load();
+            context.TeamMembers
+                .Load();
 
 
 
@@ -838,6 +843,31 @@ namespace DataLib
             return match;
         }
 
+
+        //public DbError RemoveUserFromMatch(MatchModel match, UserModel user)
+        //{
+
+        //    try
+        //    {
+        //        if (match.Challenger == user)
+        //            match.Challenger = null;
+        //        else if (match.Defender == user)
+        //            match.Defender = null;
+
+        //        if (match.Winner == user)
+        //            match.Winner = null;
+
+        //        context.SaveChanges();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        WriteException(ex);
+        //        throw;
+        //        return DbError.FAILED_TO_REMOVE;
+        //    }
+        //    return DbError.SUCCESS;
+        //}
+
         public DbError DeleteMatch(MatchModel match)
         {
             try
@@ -919,14 +949,30 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
+        public List<TeamModel> GetAllTeams()
+        {
+            List<TeamModel> teams = new List<TeamModel>();
+            try
+            {
+                teams = context.Teams.Include(x => x.TeamMembers).ToList();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                throw;
+            }
+            return teams;
+        }
         public DbError DeleteTeam(TeamModel team)
+
         {
             TeamModel _team = context.Teams.Find(team.TeamID);
             try
             {
                 foreach (var teamMember in _team.TeamMembers.ToList())
                 {
-
+                    DeleteTeamMember(teamMember);
                 }
                 context.Teams.Remove(_team);
                 context.SaveChanges();
@@ -940,15 +986,22 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
+
         #endregion
 
         #region TeamMembers
 
-        public DbError AddTeamMember(ref TeamMemberModel teamMember)
+        public DbError AddTeamMember(TeamMemberModel teamMember)
         {
             try
             {
                 context.TeamMembers.Add(teamMember);
+                //UserModel user = new UserModel();
+                //user = context.Users.Find(teamMember.User.UserID);
+                
+                teamMember.User.Teams.Add(context.Teams.Find(teamMember.Team.TeamID));
+                //teamMember.User.Teams.Add(teamMember.Team);
+                context.Teams.Find(teamMember.TeamID).TeamMembers.Add(teamMember);
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -960,12 +1013,32 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        public DbError DeleeteTeamMember(TeamMemberModel teamMember)
+        // Removes a TeamMember from a Team without deleteing them from the database
+        public DbError RemoveTeamMemeber(TeamMemberModel teamMember)
+        {
+            try
+            {
+                context.Teams.Find(teamMember.TeamID).TeamMembers.Remove(teamMember);
+                teamMember.DateLeft = DateTime.Now;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                throw;
+                return DbError.FAILED_TO_REMOVE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        // Removes a TeamMember from a Team and deletes them from the database
+        public DbError DeleteTeamMember(TeamMemberModel teamMember)
         {
             TeamMemberModel _teamMember = new TeamMemberModel();
             try
             {
-                _teamMember = context.TeamMembers.Find(teamMember.UserID);
+                _teamMember = context.TeamMembers.Single(x => x.Team.TeamID == teamMember.TeamID && x.User.UserID == teamMember.UserID);
                 context.TeamMembers.Remove(_teamMember);
                 context.SaveChanges();
             }

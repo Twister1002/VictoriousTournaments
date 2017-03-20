@@ -36,7 +36,6 @@ namespace DataLib
         public DbSet<TeamMemberModel> TeamMembers { get; set; }
         public DbSet<BracketTypeModel> BracketTypes { get; set; }
         public DbSet<UsersInTournamentsModel> UsersInTournaments { get; set; }
-        
 
 
 
@@ -119,6 +118,12 @@ namespace DataLib
                 .HasMany(e => e.Users)
                 .WithMany(e => e.Tournaments);
 
+            modelBuilder.Entity<TeamModel>()
+                .HasMany(e => e.TeamMembers)
+                .WithOptional()
+                .WillCascadeOnDelete(false);
+                
+
             //modelBuilder.Entity<TournamentModel>()
             //    .HasMany(e => e.Users)
             //    .WithOptional()
@@ -158,6 +163,9 @@ namespace DataLib
 
             modelBuilder.Entity<UsersInTournamentsModel>()
                 .ToTable("UsersInTournaments");
+
+            modelBuilder.Entity<TeamMemberModel>()
+                .ToTable("TeamMembers");
 
             modelBuilder.Entity<MatchModel>()
                 .HasOptional(e => e.Challenger)
