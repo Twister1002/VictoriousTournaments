@@ -118,25 +118,43 @@ namespace Tournament.Structure
 			{
 				Scores[Players[i].Id] = 0;
 			}
-
 			Matches = new Dictionary<int, IMatch>();
 			int totalRounds = (0 == Players.Count % 2)
 				? Players.Count - 1 : Players.Count;
+
+			// Randomly choose which rounds to "remove"
+			// (only applies if MaxRounds is capped)
+			List<int> roundsToRemove = new List<int>();
 			if (MaxRounds > 0 && MaxRounds < totalRounds)
 			{
-				// NOTE: this sets a limit on the number of created rounds
-				// it does NOT randomize the rounds
-				// should that be included in future?
-				totalRounds = MaxRounds;
+				int roundsDiff = totalRounds - MaxRounds;
+				Random rng = new Random();
+				while (roundsToRemove.Count < roundsDiff)
+				{
+					int randomRound = rng.Next(totalRounds);
+					if (!roundsToRemove.Contains(randomRound))
+					{
+						roundsToRemove.Add(randomRound);
+					}
+				}
 			}
+
+			// Create all the matchups:
 			int matchesPerRound = (int)(Players.Count * 0.5);
-			for (int r = 0; r < totalRounds; ++r, ++NumberOfRounds)
+			for (int r = 0; r < totalRounds; ++r)
 			{
+				if (roundsToRemove.Contains(r))
+				{
+					continue;
+				}
+				++NumberOfRounds;
+
 				for (int m = 0; m < matchesPerRound; ++m, ++NumberOfMatches)
 				{
 					IMatch match = new Match();
 					match.SetMatchNumber(NumberOfMatches + 1);
-					match.SetRoundIndex(r + 1);
+					//match.SetRoundIndex(r + 1 - roundsSkipped);
+					match.SetRoundIndex(NumberOfRounds);
 					match.SetMatchIndex(m + 1);
 					match.SetWinsNeeded(_winsPerMatch);
 					match.AddPlayer(Players[(m + r) % Players.Count]);

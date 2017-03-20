@@ -135,7 +135,7 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(maxRounds, b.NumberOfRounds);
 		}
-#if false
+		
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB AddWin")]
@@ -144,14 +144,16 @@ namespace Tournament.Structure.Tests
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
-
-			int pIndex = b.GetMatch(1).DefenderIndex();
+			
 			b.AddWin(1, PlayerSlot.Defender);
 
-			Assert.AreEqual(1, (b as RoundRobinBracket).Scores[pIndex]);
+			Assert.AreEqual((uint)1,
+				(b as RoundRobinBracket).Scores[b.GetMatch(1).Players[(int)PlayerSlot.Defender].Id]);
 		}
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
@@ -161,11 +163,12 @@ namespace Tournament.Structure.Tests
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
-			int pIndex = b.GetMatch(1).DefenderIndex();
 			b.AddWin(1, PlayerSlot.Defender);
 			try
 			{
@@ -174,7 +177,8 @@ namespace Tournament.Structure.Tests
 			catch (InactiveMatchException)
 			{ }
 
-			Assert.AreEqual(1, (b as RoundRobinBracket).Scores[pIndex]);
+			Assert.AreEqual((uint)1,
+				(b as RoundRobinBracket).Scores[b.GetMatch(1).Players[(int)PlayerSlot.Defender].Id]);
 		}
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
@@ -184,38 +188,42 @@ namespace Tournament.Structure.Tests
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
-			int pIndex = b.GetMatch(1).ChallengerIndex();
+			int pId = b.GetMatch(1).Players[(int)PlayerSlot.Challenger].Id;
 			b.AddWin(1, PlayerSlot.Challenger);
 			for (int i = 2; i <= b.NumberOfMatches; ++i)
 			{
-				if (b.Matches[i].DefenderIndex() == pIndex)
+				if (b.GetMatch(i).Players[(int)PlayerSlot.Defender].Id == pId)
 				{
 					b.AddWin(i, PlayerSlot.Defender);
 					break;
 				}
-				else if (b.Matches[i].ChallengerIndex() == pIndex)
+				else if (b.GetMatch(i).Players[(int)PlayerSlot.Challenger].Id == pId)
 				{
 					b.AddWin(i, PlayerSlot.Challenger);
 					break;
 				}
 			}
 
-			Assert.AreEqual(2, (b as RoundRobinBracket).Scores[pIndex]);
+			Assert.AreEqual((uint)2, (b as RoundRobinBracket).Scores[pId]);
 		}
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB AddWin")]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
-		public void RRBAddWin_ThrowsOutOfRange_WithBadMatchNumber()
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void RRBAddWin_ThrowsInvalidIndex_WithBadMatchNumber()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
@@ -225,13 +233,15 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB AddWin")]
-		[ExpectedException(typeof(KeyNotFoundException))]
+		[ExpectedException(typeof(MatchNotFoundException))]
 		public void RRBAddWin_ThrowsNotFound_WithBadMatchNumber()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
@@ -247,19 +257,21 @@ namespace Tournament.Structure.Tests
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
-
-			int pIndex = b.GetMatch(1).DefenderIndex();
+			
 			try
 			{
 				b.SubtractWin(1, PlayerSlot.Defender);
 			}
-			catch (ArgumentOutOfRangeException)
+			catch (ScoreException)
 			{ }
 
-			Assert.AreEqual(0, (b as RoundRobinBracket).Scores[pIndex]);
+			Assert.AreEqual((uint)0,
+				(b as RoundRobinBracket).Scores[b.GetMatch(1).Players[(int)PlayerSlot.Defender].Id]);
 		}
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
@@ -270,26 +282,30 @@ namespace Tournament.Structure.Tests
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
-			int pIndex = b.GetMatch(1).ChallengerIndex();
 			b.AddWin(1, PlayerSlot.Challenger);
 			b.SubtractWin(1, PlayerSlot.Challenger);
 
-			Assert.AreEqual(0, (b as RoundRobinBracket).Scores[pIndex]);
+			Assert.AreEqual((uint)0,
+				(b as RoundRobinBracket).Scores[b.GetMatch(1).Players[(int)PlayerSlot.Challenger].Id]);
 		}
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB SubtractWin")]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
-		public void RRBSubtractWin_ThrowsOutOfRange_WithBadMatchNumber()
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void RRBSubtractWin_ThrowsInvalidIndex_WithBadMatchNumber()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
@@ -299,13 +315,15 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB SubtractWin")]
-		[ExpectedException(typeof(KeyNotFoundException))]
+		[ExpectedException(typeof(MatchNotFoundException))]
 		public void RRBSubtractWin_ThrowsNotFound_WithBadMatchNumber()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
@@ -321,28 +339,32 @@ namespace Tournament.Structure.Tests
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
 			b.CreateBracket(2);
-			int pIndex = b.GetMatch(1).ChallengerIndex();
 			b.AddWin(1, PlayerSlot.Challenger);
 			b.AddWin(1, PlayerSlot.Challenger);
 			b.ResetMatchScore(1);
 
-			Assert.AreEqual(0, (b as RoundRobinBracket).Scores[pIndex]);
+			Assert.AreEqual((uint)0,
+				(b as RoundRobinBracket).Scores[b.GetMatch(1).Players[(int)PlayerSlot.Challenger].Id]);
 		}
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB ResetMatchScore")]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
-		public void RRBResetScore_ThrowsOutOfRange_WithBadInput()
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void RRBResetScore_ThrowsInvalidIndex_WithBadInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
@@ -352,19 +374,20 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB ResetMatchScore")]
-		[ExpectedException(typeof(KeyNotFoundException))]
+		[ExpectedException(typeof(MatchNotFoundException))]
 		public void RRBResetScore_ThrowsNotFound_WithBadInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
 			b.ResetMatchScore(b.NumberOfMatches + 1);
 			Assert.AreEqual(1, 2);
 		}
-#endif
 	}
 }
