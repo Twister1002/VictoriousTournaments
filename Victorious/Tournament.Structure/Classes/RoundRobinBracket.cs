@@ -132,7 +132,7 @@ namespace Tournament.Structure
 					match.SetRoundIndex(r + 1);
 					match.SetMatchIndex(m + 1);
 					match.SetWinsNeeded(_winsPerMatch);
-					match.AddPlayer(Players[m + r]);
+					match.AddPlayer(Players[(m + r) % Players.Count]);
 					match.AddPlayer(Players[(Players.Count - 1 - m + r) % Players.Count]);
 
 					Matches.Add(match.MatchNumber, match);

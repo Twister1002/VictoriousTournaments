@@ -456,7 +456,7 @@ namespace Tournament.Structure
 			// Check the Lower Bracket:
 			else if (LowerMatches.ContainsKey(_matchNumber))
 			{
-				if (Matches[_matchNumber].Players.Contains(_player))
+				if (LowerMatches[_matchNumber].Players.Contains(_player))
 				{
 					// Remove any advanced Players from future Matches:
 					if (LowerMatches[_matchNumber].IsFinished)

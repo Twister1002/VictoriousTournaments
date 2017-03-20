@@ -8,7 +8,6 @@ namespace Tournament.Structure.Tests
 	[TestClass]
 	public class RoundRobinBracketTests
 	{
-#if false
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB Ctor")]
@@ -36,7 +35,9 @@ namespace Tournament.Structure.Tests
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
@@ -50,15 +51,17 @@ namespace Tournament.Structure.Tests
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
 			int numMatchesForPlayerOne = 0;
 			foreach (IMatch m in b.Matches.Values)
 			{
-				if (0 == m.DefenderIndex() ||
-					0 == m.ChallengerIndex())
+				if (b.Players[0] == m.Players[(int)PlayerSlot.Defender]
+					|| b.Players[0] == m.Players[(int)PlayerSlot.Challenger])
 				{
 					++numMatchesForPlayerOne;
 				}
@@ -74,11 +77,13 @@ namespace Tournament.Structure.Tests
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
-			Assert.AreEqual(4, (b as RoundRobinBracket).Scores.Length);
+			Assert.AreEqual(4, (b as RoundRobinBracket).Scores.Count);
 		}
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
@@ -88,7 +93,9 @@ namespace Tournament.Structure.Tests
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 5; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
@@ -102,7 +109,9 @@ namespace Tournament.Structure.Tests
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 5; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
@@ -117,13 +126,15 @@ namespace Tournament.Structure.Tests
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 16; ++i)
 			{
-				pList.Add(new Mock<IPlayer>().Object);
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList, maxRounds);
 
 			Assert.AreEqual(maxRounds, b.NumberOfRounds);
 		}
-
+#if false
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB AddWin")]
