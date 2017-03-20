@@ -233,7 +233,6 @@
     <Content Include="Views\Tournament\Edit.cshtml" />
     <Content Include="Views\Tournament\Delete.cshtml" />
     <Content Include="Views\Account\Update.cshtml" />
-    <Content Include="Views\Tournament\_MatchUpdate.cshtml" />
     <Content Include="Views\Tournament\_ViewTournament.cshtml" />
     <Content Include="Views\Tournament\_ViewRegistration.cshtml" />
     <Content Include="Views\Tournament\Administrator\_Players.cshtml" />
@@ -246,6 +245,7 @@
     <Content Include="Views\Tournament\Brackets\_DoubleElimination.cshtml" />
     <Content Include="Views\Tournament\Brackets\_Swiss.cshtml" />
     <Content Include="Views\Tournament\Brackets\_RoundRobin.cshtml" />
+    <Content Include="Views\Tournament\Brackets\_Match.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,0 +1,34 @@
+﻿
+@{
+    Tournament.Structure.IPlayer Challenger = ViewBag.Challenger == null ? new Tournament.Structure.User() : ViewBag.Challenger;
+    Tournament.Structure.IPlayer Defender = ViewBag.Defender == null ? new Tournament.Structure.User() : ViewBag.Defender;
+    bool isLoggedIn = ViewBag.isLoggedIn == null ? false : ViewBag.isLoggedIn;
+    bool isAdministrator = ViewBag.isAdministrator == null ? false : ViewBag.isAdministrator;
+    bool isReady = ViewBag.isReady == null ? false : ViewBag.isReady;
+    int matchNum = ViewBag.matchNum == null ? -1 : ViewBag.matchNum;
+    string matchName = ViewBag.matchName == null ? "Match "+matchNum : ViewBag.matchName;
+}
+
+<div class="match" data-match="@matchNum">
+    <label class="matchNum">
+        @matchName
+        @if (isLoggedIn && isAdministrator && isReady)
+        {
+            <span class="edit">
+                <img class="match-edit svg-pencil svg clickable" src="~/Images/svg/pencil.svg" />
+            </span>
+        }
+    </label>
+    <div class="matchData">
+        <ul class="info">
+            <li class="defender" data-seed="@Defender.Id">
+                <label class="seed">@Defender.Id</label>
+                <div class="name">@Defender.Name</div>
+            </li>
+            <li class="challenger" data-seed="@Challenger.Id">
+                <label class="seed">@Challenger.Id</label>
+                <div class="name">@Challenger.Name</div>
+            </li>
+        </ul>
+    </div>
+</div>

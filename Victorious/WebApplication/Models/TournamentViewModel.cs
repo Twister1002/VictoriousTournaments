@@ -11,6 +11,7 @@ namespace WebApplication.Models
     public class TournamentViewModel : TournamentFields
     {
         public ITournament Tourny { get; private set; }
+        public BracketTypeModel.BracketType TournyType { get; private set; }
         public TournamentModel Model { get; private set; }
         public List<TournamentModel> SearchModels { get; private set; }
 
@@ -99,7 +100,7 @@ namespace WebApplication.Models
             Tourny = new Tournament.Structure.Tournament();
             List<IPlayer> players = new List<IPlayer>();
 
-            for (int i = 1; i <= 32; i++)
+            for (int i = 1; i <= 9; i++)
             {
                 UserModel uModel = new UserModel()
                 {
@@ -119,6 +120,7 @@ namespace WebApplication.Models
             //}
 
             Tourny.AddDoubleElimBracket(players);
+            TournyType = BracketTypeModel.BracketType.DOUBLE;
             //Tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
             //Tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
             //Tourny.Brackets[0].AddWin(3, PlayerSlot.Challenger);

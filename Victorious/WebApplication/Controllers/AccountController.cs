@@ -11,8 +11,6 @@ namespace WebApplication.Controllers
 {
     public class AccountController : VictoriousController
     {
-        DatabaseInterface db = new DatabaseInterface();
-
         [Route("Account/Logout")]
         public ActionResult Logout()
         {

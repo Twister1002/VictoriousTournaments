@@ -9,7 +9,7 @@ namespace WebApplication.Controllers
 {
     public class VictoriousController : Controller
     {
-        DatabaseInterface db = new DatabaseInterface();
+        protected DatabaseInterface db = new DatabaseInterface();
 
         public bool UserLoggedIn()
         {

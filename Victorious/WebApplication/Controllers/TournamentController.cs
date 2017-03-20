@@ -11,8 +11,6 @@ namespace WebApplication.Controllers
 {
     public class TournamentController : VictoriousController
     {
-        DatabaseInterface db = new DatabaseInterface();
-
         [Route("Tournament")]
         public ActionResult Index()
         {
