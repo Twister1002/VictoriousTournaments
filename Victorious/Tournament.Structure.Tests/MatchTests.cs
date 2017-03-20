@@ -108,8 +108,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match AddPlayer")]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
-		public void AddPlayer_ThrowsException_WithBadIndexParam()
+		[ExpectedException(typeof(InvalidSlotException))]
+		public void AddPlayer_ThrowsInvalidSlot_WithBadSlotParam()
 		{
 			IMatch m = new Match();
 			m.AddPlayer(new Mock<IPlayer>().Object, (PlayerSlot)4);
@@ -185,8 +185,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match RemovePlayer")]
-		[ExpectedException(typeof(KeyNotFoundException))]
-		public void RemovePlayer_ThrowsKeyNotFound_IfPlayerToRemoveDoesntExist()
+		[ExpectedException(typeof(PlayerNotFoundException))]
+		public void RemovePlayer_ThrowsNotFound_IfPlayerToRemoveDoesntExist()
 		{
 			IMatch m = new Match();
 			m.RemovePlayer(10);
@@ -320,8 +320,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match AddWin")]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
-		public void AddWin_ThrowsOutOfRange_WithBadInput()
+		[ExpectedException(typeof(InvalidSlotException))]
+		public void AddWin_ThrowsInvalidSlot_WithBadInput()
 		{
 			IMatch m = new Match();
 			m.AddWin((PlayerSlot)3);
@@ -419,8 +419,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match SubtractWin")]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
-		public void SubtractWin_ThrowsOutOfRange_WithBadInput()
+		[ExpectedException(typeof(InvalidSlotException))]
+		public void SubtractWin_ThrowsInvalidSlot_WithBadSlotInput()
 		{
 			IMatch m = new Match();
 			m.SubtractWin((PlayerSlot)3);
@@ -521,8 +521,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match Mutators")]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
-		public void SetWinsNeeded_ThrowsOutOfRange_WithZeroInput()
+		[ExpectedException(typeof(ScoreException))]
+		public void SetWinsNeeded_ThrowsScoreException_WithZeroInput()
 		{
 			IMatch m = new Match();
 			m.SetWinsNeeded(0);

@@ -58,8 +58,9 @@ namespace Tournament.Structure.Tests
 			IBracket b = new RoundRobinBracket(pList);
 
 			int numMatchesForPlayerOne = 0;
-			foreach (IMatch m in b.Matches.Values)
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
 			{
+				IMatch m = b.GetMatch(n);
 				if (b.Players[0] == m.Players[(int)PlayerSlot.Defender]
 					|| b.Players[0] == m.Players[(int)PlayerSlot.Challenger])
 				{

@@ -111,7 +111,14 @@ namespace Tournament.Structure.Tests
 			IBracket b = new DoubleElimBracket(pList);
 			//b.CreateBracket(2);
 
-			Assert.AreEqual(6, b.LowerMatches.Count);
+			int numLowerMatches = 0;
+			for (int r = 1; r <= b.NumberOfLowerRounds; ++r)
+			{
+				List<IMatch> round = b.GetLowerRound(r);
+				numLowerMatches += round.Count;
+			}
+
+			Assert.AreEqual(6, numLowerMatches);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -127,6 +134,12 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new DoubleElimBracket(pList);
 			//b.CreateBracket();
+			int numLowerMatches = 0;
+			for (int r = 1; r <= b.NumberOfLowerRounds; ++r)
+			{
+				List<IMatch> round = b.GetLowerRound(r);
+				numLowerMatches += round.Count;
+			}
 
 			List<IPlayer> pList2 = new List<IPlayer>();
 			for (int i = 0; i < 8; ++i)
@@ -137,8 +150,14 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b2 = new DoubleElimBracket(pList2);
 			//b.CreateBracket();
+			int numSecondLowerMatches = 0;
+			for (int r = 1; r <= b2.NumberOfLowerRounds; ++r)
+			{
+				List<IMatch> round = b2.GetLowerRound(r);
+				numSecondLowerMatches += round.Count;
+			}
 
-			Assert.AreEqual(b.LowerMatches.Count, b2.LowerMatches.Count);
+			Assert.AreEqual(numLowerMatches, numSecondLowerMatches);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -188,8 +207,9 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new DoubleElimBracket(pList);
 			//b.CreateBracket();
-
-			Assert.AreEqual(b.Matches.Count + 1, b.GetLowerRound(1)[0].MatchNumber);
+			
+			Assert.AreEqual(b.GetRound(b.NumberOfRounds)[0].MatchNumber + 1,
+				b.GetLowerRound(1)[0].MatchNumber);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -393,7 +413,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new DoubleElimBracket(pList);
 
-			b.Matches[1].SetWinsNeeded(2);
+			b.GetMatch(1).SetWinsNeeded(2);
 			b.AddWin(1, PlayerSlot.Defender);
 			b.SubtractWin(1, PlayerSlot.Defender);
 
@@ -416,7 +436,7 @@ namespace Tournament.Structure.Tests
 			b.AddWin(1, PlayerSlot.Defender);
 			b.AddWin(2, PlayerSlot.Defender);
 			int mNum = b.GetLowerRound(1)[0].MatchNumber;
-			b.LowerMatches[mNum].SetWinsNeeded(2);
+			b.GetMatch(mNum).SetWinsNeeded(2);
 			b.AddWin(mNum, PlayerSlot.Defender);
 			b.SubtractWin(mNum, PlayerSlot.Defender);
 
@@ -472,8 +492,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB SubtractWin")]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
-		public void DEBSubtractWin_ThrowsOutOfRange_WithBadMatchNumberInput()
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void DEBSubtractWin_ThrowsInvalidIndex_WithBadMatchNumberInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -490,7 +510,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB SubtractWin")]
-		[ExpectedException(typeof(KeyNotFoundException))]
+		[ExpectedException(typeof(MatchNotFoundException))]
 		public void DEBSubtractWin_ThrowsNotFound_WithBadMatchNumberInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -520,7 +540,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new DoubleElimBracket(pList);
 
-			b.Matches[1].SetWinsNeeded(2);
+			b.GetMatch(1).SetWinsNeeded(2);
 			b.AddWin(1, PlayerSlot.Defender);
 			b.AddWin(1, PlayerSlot.Challenger);
 			b.ResetMatchScore(1);
@@ -580,8 +600,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB ResetMatchScore")]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
-		public void DEBResetScore_ThrowsOutOfRange_WithBadMatchNumberInput()
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void DEBResetScore_ThrowsInvalidIndex_WithBadMatchNumberInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -598,7 +618,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB ResetMatchScore")]
-		[ExpectedException(typeof(KeyNotFoundException))]
+		[ExpectedException(typeof(MatchNotFoundException))]
 		public void DEBResetScore_ThrowsNotFound_WithBadMatchNumberInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();

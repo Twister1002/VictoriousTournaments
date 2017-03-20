@@ -15,12 +15,12 @@ namespace Tournament.Structure
 		{ get; protected set; }
 		public List<IPlayer> Players
 		{ get; protected set; }
-		public Dictionary<int, IMatch> Matches
-		{ get; protected set; }
+		protected Dictionary<int, IMatch> Matches
+		{ get; set; }
 		public int NumberOfRounds
 		{ get; protected set; }
-		public Dictionary<int, IMatch> LowerMatches
-		{ get; protected set; }
+		protected Dictionary<int, IMatch> LowerMatches
+		{ get; set; }
 		public int NumberOfLowerRounds
 		{ get; protected set; }
 		public IMatch GrandFinal

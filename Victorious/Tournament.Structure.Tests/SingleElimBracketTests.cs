@@ -300,8 +300,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB AddWin")]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
-		public void SEBAddWin_ThrowsOutOfRange_WithBadPlayerSlotParam()
+		[ExpectedException(typeof(InvalidSlotException))]
+		public void SEBAddWin_ThrowsInvalidSlot_WithBadPlayerSlotParam()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -340,8 +340,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB AddWin")]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
-		public void SEBAddWin_ThrowsOutOfRange_WhenMatchParamIsNotFound()
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void SEBAddWin_ThrowsInvalidIndex_WithNegativeMatchNum()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -360,8 +360,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB AddWin")]
-		[ExpectedException(typeof(KeyNotFoundException))]
-		public void SEBAddWin_ThrowsKeyNotFound_WhenMatchParamIsNotFound()
+		[ExpectedException(typeof(MatchNotFoundException))]
+		public void SEBAddWin_ThrowsNotFound_WhenMatchParamIsNotFound()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -392,7 +392,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			b.Matches[1].SetWinsNeeded(2);
+			b.GetMatch(1).SetWinsNeeded(2);
 			b.AddWin(1, PlayerSlot.Defender);
 			b.SubtractWin(1, PlayerSlot.Defender);
 
@@ -412,7 +412,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			b.Matches[1].SetWinsNeeded(2);
+			b.GetMatch(1).SetWinsNeeded(2);
 			b.AddWin(1, PlayerSlot.Defender);
 			b.AddWin(1, PlayerSlot.Challenger);
 			b.AddWin(1, PlayerSlot.Defender);
@@ -424,8 +424,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB SubtractWin")]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
-		public void SEBSubtractWin_ThrowsOutOfRange_WithBadMatchNumberInput()
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void SEBSubtractWin_ThrowsInvalidIndex_WithBadMatchNumberInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -472,7 +472,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			b.Matches[1].SetWinsNeeded(2);
+			b.GetMatch(1).SetWinsNeeded(2);
 			b.AddWin(1, PlayerSlot.Defender);
 			b.AddWin(1, PlayerSlot.Challenger);
 			b.ResetMatchScore(1);
@@ -482,8 +482,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB ResetMatchScore")]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
-		public void SEBResetMatchScore_ThrowsOutOfRange_WithBadMatchNumberInput()
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void SEBResetMatchScore_ThrowsInvalidIndex_WithBadMatchNumberInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -551,7 +551,7 @@ namespace Tournament.Structure.Tests
 
 			b.AddWin(1, PlayerSlot.Defender);
 			b.AddWin(2, PlayerSlot.Defender);
-			b.Matches[3].SetWinsNeeded(3);
+			b.GetMatch(3).SetWinsNeeded(3);
 			b.AddWin(3, PlayerSlot.Defender);
 			b.AddWin(3, PlayerSlot.Defender);
 			b.AddWin(3, PlayerSlot.Challenger);

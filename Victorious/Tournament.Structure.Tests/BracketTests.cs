@@ -145,8 +145,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket ReplacePlayer")]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
-		public void ReplacePlayer_ThrowsOutOfRange_WithBadIndexParam()
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void ReplacePlayer_ThrowsInvalidIndex_WithBadIndexParam()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -228,8 +228,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket RemovePlayer")]
-		[ExpectedException(typeof(KeyNotFoundException))]
-		public void RemovePlayer_ThrowsKeyNotFound_IfPlayerIsntPresent()
+		[ExpectedException(typeof(PlayerNotFoundException))]
+		public void RemovePlayer_ThrowsKNotFound_IfPlayerIsntPresent()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -301,8 +301,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket GetRound")]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
-		public void GetRound_ThrowsOutOfRange_WithBadParam()
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void GetRound_ThrowsInvalidIndex_WithBadParam()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 8; ++i)
@@ -337,8 +337,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket Accessors")]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
-		public void GetMatch_ThrowsOutOfRange_WithNegativeParam()
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void GetMatch_ThrowsInvalidIndex_WithNegativeParam()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -355,7 +355,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket Accessors")]
-		[ExpectedException(typeof(KeyNotFoundException))]
+		[ExpectedException(typeof(MatchNotFoundException))]
 		public void GetMatch_ThrowsNotFound_IfMatchNumberNotFound()
 		{
 			List<IPlayer> pList = new List<IPlayer>();

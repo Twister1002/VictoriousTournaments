@@ -17,13 +17,15 @@ namespace Tournament.Structure
 		/// <summary>
 		/// NULL if not applicable.
 		/// </summary>
-		Dictionary<int, IMatch> Matches { get; }
+		//Dictionary<int, IMatch> Matches { get; }
+
 		int NumberOfRounds { get; }
 
 		/// <summary>
 		/// NULL if not applicable.
 		/// </summary>
-		Dictionary<int, IMatch> LowerMatches { get; }
+		//Dictionary<int, IMatch> LowerMatches { get; }
+
 		int NumberOfLowerRounds { get; }
 
 		/// <summary>
