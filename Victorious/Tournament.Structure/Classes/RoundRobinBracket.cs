@@ -30,7 +30,8 @@ namespace Tournament.Structure
 		{
 			if (null == _players)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("Playerlist cannot be null!");
 			}
 
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
@@ -59,7 +60,8 @@ namespace Tournament.Structure
 		{
 			if (null == _model)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("Bracket Model cannot be null!");
 			}
 
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
@@ -149,11 +151,13 @@ namespace Tournament.Structure
 		{
 			if (_matchNumber < 1)
 			{
-				throw new IndexOutOfRangeException();
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
 			}
 			if (!Matches.ContainsKey(_matchNumber))
 			{
-				throw new KeyNotFoundException();
+				throw new MatchNotFoundException
+					("Match not found; match number may be invalid.");
 			}
 
 			Matches[_matchNumber].AddWin(_slot);
@@ -163,11 +167,13 @@ namespace Tournament.Structure
 		{
 			if (_matchNumber < 1)
 			{
-				throw new IndexOutOfRangeException();
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
 			}
 			if (!Matches.ContainsKey(_matchNumber))
 			{
-				throw new KeyNotFoundException();
+				throw new MatchNotFoundException
+					("Match not found; match number may be invalid.");
 			}
 
 			Matches[_matchNumber].SubtractWin(_slot);
@@ -177,11 +183,13 @@ namespace Tournament.Structure
 		{
 			if (_matchNumber < 1)
 			{
-				throw new IndexOutOfRangeException();
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
 			}
 			if (!Matches.ContainsKey(_matchNumber))
 			{
-				throw new KeyNotFoundException();
+				throw new MatchNotFoundException
+					("Match not found; match number may be invalid.");
 			}
 
 			uint defScore = Matches[_matchNumber].Score[(int)PlayerSlot.Defender];

@@ -44,7 +44,8 @@ namespace Tournament.Structure
 				|| null == _score
 				|| null == _prevMatchNumbers)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("There's a NULL problem with your Match constructor...");
 			}
 
 			//IsReady = _isReady;
@@ -88,7 +89,8 @@ namespace Tournament.Structure
 				|| null == _m.NextMatchNumber
 				|| null == _m.NextLoserMatchNumber)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("There's a NULL problem with the Match Model....");
 			}
 
 			WinsNeeded = (ushort)(_m.WinsNeeded);
@@ -107,7 +109,8 @@ namespace Tournament.Structure
 			Score[1] = (ushort)(_m.ChallengerScore);
 			if (Score[0] > WinsNeeded || Score[1] > WinsNeeded)
 			{
-				throw new ArgumentOutOfRangeException();
+				throw new ScoreException
+					("Score cannot be higher than Wins Needed!");
 			}
 			WinnerSlot = PlayerSlot.unspecified;
 			if (Score[(int)PlayerSlot.Defender] == WinsNeeded)
@@ -141,28 +144,20 @@ namespace Tournament.Structure
 		#endregion
 
 #region Public Methods
-#if false
-		public int DefenderIndex()
-		{
-			return PlayerIndexes[0];
-		}
-		public int ChallengerIndex()
-		{
-			return PlayerIndexes[1];
-		}
-#endif
 		public void AddPlayer(IPlayer _player, PlayerSlot _slot = PlayerSlot.unspecified)
 		{
 			if (_slot != PlayerSlot.unspecified &&
 				_slot != PlayerSlot.Defender &&
 				_slot != PlayerSlot.Challenger)
 			{
-				throw new IndexOutOfRangeException();
+				throw new InvalidSlotException
+					("PlayerSlot must be -1, 0, or 1!");
 			}
 			if ((null != Players[0] && Players[0].Id == _player.Id) ||
 				(null != Players[1] && Players[1].Id == _player.Id))
 			{
-				throw new DuplicateObjectException();
+				throw new DuplicateObjectException
+					("Match already contains this Player!");
 			}
 
 			for (int i = 0; i < 2; ++i)
@@ -182,13 +177,15 @@ namespace Tournament.Structure
 				}
 			}
 
-			throw new SlotFullException();
+			throw new SlotFullException
+				("Match cannot add Player; there is already a Player in this Slot!");
 		}
 		public void ReplacePlayer(IPlayer _newPlayer, int _oldPlayerId)
 		{
 			if (null == _newPlayer)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("New Player cannot be null!");
 			}
 
 			if (null != Players[(int)PlayerSlot.Defender] &&
@@ -203,7 +200,8 @@ namespace Tournament.Structure
 			}
 			else
 			{
-				throw new KeyNotFoundException();
+				throw new PlayerNotFoundException
+					("Player not found in this Match!");
 			}
 		}
 		public void RemovePlayer(int _playerId)
@@ -220,7 +218,8 @@ namespace Tournament.Structure
 				}
 			}
 
-			throw new KeyNotFoundException();
+			throw new PlayerNotFoundException
+				("Player not found in this Match!");
 		}
 		public void ResetPlayers()
 		{
@@ -239,11 +238,18 @@ namespace Tournament.Structure
 			if (_slot != PlayerSlot.Defender &&
 				_slot != PlayerSlot.Challenger)
 			{
-				throw new IndexOutOfRangeException();
+				throw new InvalidSlotException
+					("PlayerSlot must be 0 or 1!");
 			}
-			if (IsFinished || !IsReady)
+			if (IsFinished)
 			{
-				throw new InactiveMatchException();
+				throw new InactiveMatchException
+					("Match is finished; can't add more wins!");
+			}
+			if (!IsReady)
+			{
+				throw new InactiveMatchException
+					("Match is not begun; can't add a win!");
 			}
 
 			Score[(int)_slot] += 1;
@@ -258,15 +264,18 @@ namespace Tournament.Structure
 			if (_slot != PlayerSlot.Defender &&
 				_slot != PlayerSlot.Challenger)
 			{
-				throw new IndexOutOfRangeException();
+				throw new InvalidSlotException
+					("PlayerSlot must be 0 or 1!");
 			}
 			if (!IsReady)
 			{
-				throw new InactiveMatchException();
+				throw new InactiveMatchException
+					("Match is not begun; can't subtract wins!");
 			}
 			if (Score[(int)_slot] <= 0)
 			{
-				throw new ArgumentOutOfRangeException();
+				throw new ScoreException
+					("Score is already 0; can't subtract wins!");
 			}
 
 			if (Score[(int)_slot] == WinsNeeded)
@@ -292,11 +301,13 @@ namespace Tournament.Structure
 		{
 			if (IsFinished)
 			{
-				throw new InactiveMatchException();
+				throw new InactiveMatchException
+					("Match is finished; cannot change victory conditions.");
 			}
 			if (_wins < 1)
 			{
-				throw new ArgumentOutOfRangeException();
+				throw new ScoreException
+					("Wins Needed cannot be less than 1!");
 			}
 
 			WinsNeeded = _wins;
@@ -305,7 +316,8 @@ namespace Tournament.Structure
 		{
 			if (RoundIndex > -1)
 			{
-				throw new AlreadyAssignedException();
+				throw new AlreadyAssignedException
+					("Round Index is already set!");
 			}
 			RoundIndex = _index;
 		}
@@ -313,7 +325,8 @@ namespace Tournament.Structure
 		{
 			if (MatchIndex > -1)
 			{
-				throw new AlreadyAssignedException();
+				throw new AlreadyAssignedException
+					("Match Index is already set!");
 			}
 			MatchIndex = _index;
 		}
@@ -321,7 +334,8 @@ namespace Tournament.Structure
 		{
 			if (MatchNumber > -1)
 			{
-				throw new AlreadyAssignedException();
+				throw new AlreadyAssignedException
+					("Match Number is already set!");
 			}
 			MatchNumber = _number;
 		}
@@ -329,7 +343,8 @@ namespace Tournament.Structure
 		{
 			if (PreviousMatchNumbers.Count >= 2)
 			{
-				throw new AlreadyAssignedException();
+				throw new AlreadyAssignedException
+					("Previous Match Numbers are already set!");
 			}
 			PreviousMatchNumbers.Add(_number);
 		}
@@ -337,7 +352,8 @@ namespace Tournament.Structure
 		{
 			if (NextMatchNumber > -1)
 			{
-				throw new AlreadyAssignedException();
+				throw new AlreadyAssignedException
+					("Next Match Number is already set!");
 			}
 			NextMatchNumber = _number;
 		}
@@ -345,7 +361,8 @@ namespace Tournament.Structure
 		{
 			if (NextLoserMatchNumber > -1)
 			{
-				throw new AlreadyAssignedException();
+				throw new AlreadyAssignedException
+					("Next Loser Match Number is already set!");
 			}
 			NextLoserMatchNumber = _number;
 		}

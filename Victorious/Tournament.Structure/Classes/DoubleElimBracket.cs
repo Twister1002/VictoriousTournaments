@@ -241,7 +241,7 @@ namespace Tournament.Structure
 
 				return;
 			}
-			catch (KeyNotFoundException)
+			catch (MatchNotFoundException)
 			{
 				// Check the Grand Final:
 				if (_matchNumber == GrandFinal.MatchNumber)
@@ -292,15 +292,21 @@ namespace Tournament.Structure
 				}
 			}
 
-			throw new KeyNotFoundException();
+			throw new MatchNotFoundException
+				("Match not found; match number may be invalid.");
 		}
 
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
-			if (_matchNumber < 1 ||
-				(_slot != PlayerSlot.Defender && _slot != PlayerSlot.Challenger))
+			if (_matchNumber < 1)
 			{
-				throw new ArgumentOutOfRangeException();
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
+			}
+			if (_slot != PlayerSlot.Defender && _slot != PlayerSlot.Challenger)
+			{
+				throw new InvalidSlotException
+					("Player slot must be 0 or 1!");
 			}
 
 			// Check the Grand Final:
@@ -342,7 +348,8 @@ namespace Tournament.Structure
 			}
 			else
 			{
-				throw new KeyNotFoundException();
+				throw new MatchNotFoundException
+					("Match not found; match number may be invalid.");
 			}
 		}
 
@@ -350,7 +357,8 @@ namespace Tournament.Structure
 		{
 			if (_matchNumber < 1)
 			{
-				throw new ArgumentOutOfRangeException();
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
 			}
 
 			// Check the Grand Final:
@@ -392,12 +400,13 @@ namespace Tournament.Structure
 			}
 			else
 			{
-				throw new KeyNotFoundException();
+				throw new MatchNotFoundException
+					("Match not found; match number may be invalid.");
 			}
 		}
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 		private int CalculateTotalLowerBracketMatches(int _numPlayers)
 		{
 			if (_numPlayers < 4)
@@ -435,7 +444,7 @@ namespace Tournament.Structure
 				{
 					GrandFinal.RemovePlayer(_player.Id);
 				}
-				catch (KeyNotFoundException)
+				catch (PlayerNotFoundException)
 				{ }
 				return;
 			}
@@ -478,9 +487,10 @@ namespace Tournament.Structure
 			}
 			else
 			{
-				throw new KeyNotFoundException();
+				throw new MatchNotFoundException
+					("Recursive method called an invalid match number.");
 			}
 		}
-#endregion
+		#endregion
 	}
 }

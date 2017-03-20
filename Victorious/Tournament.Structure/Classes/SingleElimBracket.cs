@@ -26,7 +26,8 @@ namespace Tournament.Structure
 		{
 			if (null == _players)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("Playerlist cannot be null!");
 			}
 
 			BracketType = BracketTypeModel.BracketType.SINGLE;
@@ -53,7 +54,8 @@ namespace Tournament.Structure
 		{
 			if (null == _model)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("Bracket Model cannot be null!");
 			}
 
 			BracketType = BracketTypeModel.BracketType.SINGLE;
@@ -95,7 +97,8 @@ namespace Tournament.Structure
 		{
 			if (_winsPerMatch < 1)
 			{
-				throw new ArgumentOutOfRangeException();
+				throw new ScoreException
+					("Wins Per Match must be greater than 0!");
 			}
 
 			ResetBracket();
@@ -246,14 +249,20 @@ namespace Tournament.Structure
 
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
-			if (_matchNumber < 1 ||
-				(_slot != PlayerSlot.Defender && _slot != PlayerSlot.Challenger))
+			if (_matchNumber < 1)
 			{
-				throw new IndexOutOfRangeException();
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
+			}
+			if (_slot != PlayerSlot.Defender && _slot != PlayerSlot.Challenger)
+			{
+				throw new InvalidSlotException
+					("PlayerSlot must be 0 or 1!");
 			}
 			if (!Matches.ContainsKey(_matchNumber))
 			{
-				throw new KeyNotFoundException();
+				throw new MatchNotFoundException
+					("Match not found; match number may be invalid.");
 			}
 
 			Matches[_matchNumber].AddWin(_slot);
@@ -270,7 +279,7 @@ namespace Tournament.Structure
 						PlayerSlot newSlot = (1 == Matches[nmNumber].PreviousMatchNumbers.Count)
 							? PlayerSlot.Challenger : (PlayerSlot)i;
 						Matches[nmNumber].AddPlayer
-							(Matches[_matchNumber].Players[(int)_slot] , newSlot);
+							(Matches[_matchNumber].Players[(int)_slot], newSlot);
 						break;
 					}
 				}
@@ -279,14 +288,20 @@ namespace Tournament.Structure
 
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
-			if (_matchNumber < 1 ||
-				(_slot != PlayerSlot.Defender && _slot != PlayerSlot.Challenger))
+			if (_matchNumber < 1)
 			{
-				throw new IndexOutOfRangeException();
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
+			}
+			if (_slot != PlayerSlot.Defender && _slot != PlayerSlot.Challenger)
+			{
+				throw new InvalidSlotException
+					("PlayerSlot must be 0 or 1!");
 			}
 			if (null == Matches[_matchNumber])
 			{
-				throw new KeyNotFoundException();
+				throw new MatchNotFoundException
+					("Match not found; match number may be invalid.");
 			}
 
 			// If this Match is over, remove advanced Players from future Matches
@@ -305,11 +320,13 @@ namespace Tournament.Structure
 		{
 			if (_matchNumber < 1)
 			{
-				throw new IndexOutOfRangeException();
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
 			}
 			if (null == Matches[_matchNumber])
 			{
-				throw new KeyNotFoundException();
+				throw new MatchNotFoundException
+					("Match not found; match number may be invalid.");
 			}
 
 			// If this Match is over, remove advanced Players from future Matches
@@ -331,7 +348,8 @@ namespace Tournament.Structure
 			if (null == _currMatch ||
 				null == _prevRound || 0 == _prevRound.Count)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("NULL error in calling ReassignPlayers()...");
 			}
 
 			int i = 0;
@@ -373,7 +391,8 @@ namespace Tournament.Structure
 			}
 			if (!Matches.ContainsKey(_matchNumber))
 			{
-				throw new KeyNotFoundException();
+				throw new MatchNotFoundException
+					("Invalid match number called by recursive method!");
 			}
 
 			if (Matches[_matchNumber].Players.Contains(_player))
