@@ -71,6 +71,13 @@ namespace Tournament.Structure
 		void AddPlayer(IPlayer _player, PlayerSlot _slot = PlayerSlot.unspecified);
 
 		/// <summary>
+		/// Replace a Player in this Match.
+		/// </summary>
+		/// <param name="_newPlayer">New Player object to add.</param>
+		/// <param name="_oldPlayerId">ID of Player to replace.</param>
+		void ReplacePlayer(IPlayer _newPlayer, int _oldPlayerId);
+
+		/// <summary>
 		/// Remove the specified Player from the Match,
 		/// (also resets Match's score)
 		/// </summary>

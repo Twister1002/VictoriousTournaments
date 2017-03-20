@@ -76,22 +76,22 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Add a Player.
 		/// </summary>
-		/// <param name="_p">Player-type object to add.</param>
-		void AddPlayer(IPlayer _p);
+		/// <param name="_player">Player-type object to add.</param>
+		void AddPlayer(IPlayer _player);
 
 		/// <summary>
 		/// Replaces a player/slot in the playerlist
 		/// with the new indicated Player.
 		/// </summary>
-		/// <param name="_p">Player-type object to add.</param>
+		/// <param name="_player">Player-type object to add.</param>
 		/// <param name="_index">Slot in list to replace.</param>
-		void ReplacePlayer(IPlayer _p, int _index);
+		void ReplacePlayer(IPlayer _player, int _index);
 
 		/// <summary>
 		/// Remove a Player from the bracket.
 		/// </summary>
-		/// <param name="_p">Player-type object to remove.</param>
-		void RemovePlayer(IPlayer _p);
+		/// <param name="_player">Player-type object to remove.</param>
+		void RemovePlayer(IPlayer _player);
 
 		/// <summary>
 		/// Clears the bracket's player list.

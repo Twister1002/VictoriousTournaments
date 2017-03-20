@@ -43,23 +43,23 @@ namespace Tournament.Structure
 			}
 			return Players.Count;
 		}
-		public void AddPlayer(IPlayer _p)
+		public void AddPlayer(IPlayer _player)
 		{
-			if (null == _p || null == Players)
+			if (null == _player || null == Players)
 			{
 				throw new NullReferenceException();
 			}
-			if (Players.Contains(_p))
+			if (Players.Contains(_player))
 			{
 				throw new DuplicateObjectException();
 			}
 
-			Players.Add(_p);
+			Players.Add(_player);
 			ResetBracket();
 		}
-		public void ReplacePlayer(IPlayer _p, int _index)
+		public void ReplacePlayer(IPlayer _player, int _index)
 		{
-			if (null == _p)
+			if (null == _player)
 			{
 				throw new NullReferenceException();
 			}
@@ -68,15 +68,28 @@ namespace Tournament.Structure
 				throw new IndexOutOfRangeException();
 			}
 
-			Players[_index] = _p;
+			if (null != Players[_index])
+			{
+				for (int n = 1; n <= NumberOfMatches; ++n)
+				{
+					try
+					{
+						GetMatch(n).ReplacePlayer(_player, Players[_index].Id);
+					}
+					catch (KeyNotFoundException)
+					{ }
+				}
+			}
+
+			Players[_index] = _player;
 		}
-		public void RemovePlayer(IPlayer _p)
+		public void RemovePlayer(IPlayer _player)
 		{
-			if (null == _p || null == Players)
+			if (null == _player || null == Players)
 			{
 				throw new NullReferenceException();
 			}
-			if (!Players.Remove(_p))
+			if (!Players.Remove(_player))
 			{
 				throw new KeyNotFoundException();
 			}

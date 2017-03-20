@@ -160,6 +160,32 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(1, 2);
 		}
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("Bracket ReplacePlayer")]
+		[TestCategory("DoubleElimBracket")]
+		public void ReplacePlayer_ReplacesPlayerInAllMatches()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			for (int n = 1; n < b.NumberOfMatches; ++n)
+			{
+				b.AddWin(n, PlayerSlot.Defender);
+			}
+
+			Mock<IPlayer> m = new Mock<IPlayer>();
+			m.Setup(p => p.Id).Returns(9);
+			b.ReplacePlayer(m.Object, 0);
+
+			Assert.AreEqual(b.Players[0].Id, b.GrandFinal.Players[(int)PlayerSlot.Defender].Id);
+		}
 
 		[TestMethod]
 		[TestCategory("Bracket")]

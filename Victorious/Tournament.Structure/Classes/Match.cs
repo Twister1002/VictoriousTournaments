@@ -184,6 +184,28 @@ namespace Tournament.Structure
 
 			throw new SlotFullException();
 		}
+		public void ReplacePlayer(IPlayer _newPlayer, int _oldPlayerId)
+		{
+			if (null == _newPlayer)
+			{
+				throw new NullReferenceException();
+			}
+
+			if (null != Players[(int)PlayerSlot.Defender] &&
+				_oldPlayerId == Players[(int)PlayerSlot.Defender].Id)
+			{
+				Players[(int)PlayerSlot.Defender] = _newPlayer;
+			}
+			else if (null != Players[(int)PlayerSlot.Challenger] &&
+				_oldPlayerId == Players[(int)PlayerSlot.Challenger].Id)
+			{
+				Players[(int)PlayerSlot.Challenger] = _newPlayer;
+			}
+			else
+			{
+				throw new KeyNotFoundException();
+			}
+		}
 		public void RemovePlayer(int _playerId)
 		{
 			for (int i = 0; i < 2; ++i)
