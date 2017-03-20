@@ -225,16 +225,19 @@ namespace Tournament.Structure
 							(Matches[_matchNumber].Players[(int)_slot], PlayerSlot.Defender);
 					}
 
-					// "Advance" the loser
-					int nmNumber = Matches[_matchNumber].NextLoserMatchNumber;
-					for (int i = 0; i < LowerMatches[nmNumber].PreviousMatchNumbers.Count; ++i)
+					if (Matches[_matchNumber].NextLoserMatchNumber > 0)
 					{
-						if (LowerMatches[nmNumber].PreviousMatchNumbers[i] == _matchNumber)
+						// "Advance" the loser
+						int nmNumber = Matches[_matchNumber].NextLoserMatchNumber;
+						for (int i = 0; i < LowerMatches[nmNumber].PreviousMatchNumbers.Count; ++i)
 						{
-							LowerMatches[nmNumber].AddPlayer((PlayerSlot.Defender == _slot)
-								? Matches[_matchNumber].Players[(int)PlayerSlot.Challenger]
-								: Matches[_matchNumber].Players[(int)PlayerSlot.Defender]
-								, (PlayerSlot)i);
+							if (LowerMatches[nmNumber].PreviousMatchNumbers[i] == _matchNumber)
+							{
+								LowerMatches[nmNumber].AddPlayer((PlayerSlot.Defender == _slot)
+									? Matches[_matchNumber].Players[(int)PlayerSlot.Challenger]
+									: Matches[_matchNumber].Players[(int)PlayerSlot.Defender]
+									, (PlayerSlot)i);
+							}
 						}
 					}
 				}
