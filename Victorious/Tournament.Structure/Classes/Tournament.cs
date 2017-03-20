@@ -38,19 +38,25 @@ namespace Tournament.Structure
 		public Tournament()
 			: this("", "", new List<IPlayer>(), new List<IBracket>(), 0.0f, false)
 		{ }
-		public Tournament(TournamentModel _t)
+		public Tournament(TournamentModel _model)
 		{
-			Title = _t.Title;
-			Description = _t.Description;
+			if (null == _model)
+			{
+				throw new NullReferenceException
+					("Tournament model cannot be null!");
+			}
+
+			Title = _model.Title;
+			Description = _model.Description;
 
 			Players = new List<IPlayer>();
-			foreach (UserModel model in _t.Users)
+			foreach (UserModel model in _model.Users)
 			{
 				Players.Add(new User(model));
 			}
 
 			Brackets = new List<IBracket>();
-			foreach (BracketModel bModel in _t.Brackets)
+			foreach (BracketModel bModel in _model.Brackets)
 			{
 				switch ((BracketTypeModel.BracketType)bModel.BracketType.BracketTypeID)
 				{
@@ -66,10 +72,10 @@ namespace Tournament.Structure
 				}
 			}
 
-			PrizePool = (null == _t.TournamentRules.PrizePurse)
-				? 0.0f : (float)(_t.TournamentRules.PrizePurse);
-			IsPublic = (null == _t.TournamentRules.IsPublic)
-				? false : (bool)(_t.TournamentRules.IsPublic);
+			PrizePool = (null == _model.TournamentRules.PrizePurse)
+				? 0.0f : (float)(_model.TournamentRules.PrizePurse);
+			IsPublic = (null == _model.TournamentRules.IsPublic)
+				? false : (bool)(_model.TournamentRules.IsPublic);
 		}
 		#endregion
 
@@ -82,31 +88,40 @@ namespace Tournament.Structure
 			}
 			return Players.Count;
 		}
-		public void AddPlayer(IPlayer _p)
+		public void AddPlayer(IPlayer _player)
 		{
-			if (null == _p || null == Players)
+			if (null == _player)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("New Player cannot be null!");
 			}
-			if (Players.Contains(_p))
+			if (null == Players)
 			{
-				throw new DuplicateObjectException();
+				throw new NullReferenceException
+					("Playerlist is null; this shouldn't happen...");
+			}
+			if (Players.Contains(_player))
+			{
+				throw new DuplicateObjectException
+					("Tournament already contains this Player!");
 			}
 
-			Players.Add(_p);
+			Players.Add(_player);
 		}
-		public void ReplacePlayer(IPlayer _p, int _index)
+		public void ReplacePlayer(IPlayer _player, int _index)
 		{
-			if (null == _p)
+			if (null == _player)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("New Player cannot be null!");
 			}
 			if (_index < 0 || _index >= Players.Count)
 			{
-				throw new IndexOutOfRangeException();
+				throw new InvalidIndexException
+					("Can't replace; Index is out of playerlist's bounds!");
 			}
 
-			if (Players[_index].Id >= 0)
+			if (null != Players[_index])
 			{
 				int pId = Players[_index].Id;
 				foreach (IBracket bracket in Brackets)
@@ -115,23 +130,31 @@ namespace Tournament.Structure
 					{
 						if (bracket.Players[i].Id == pId)
 						{
-							bracket.ReplacePlayer(_p, i);
+							bracket.ReplacePlayer(_player, i);
 							break;
 						}
 					}
 				}
 			}
-			Players[_index] = _p;
+
+			Players[_index] = _player;
 		}
-		public void RemovePlayer(IPlayer _p)
+		public void RemovePlayer(IPlayer _player)
 		{
-			if (null == _p || null == Players)
+			if (null == _player)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("Parameter cannot be null!");
 			}
-			if (!Players.Remove(_p))
+			if (null == Players)
 			{
-				throw new KeyNotFoundException();
+				throw new NullReferenceException
+					("Playerlist is null; this shouldn't happen...");
+			}
+			if (!Players.Remove(_player))
+			{
+				throw new PlayerNotFoundException
+					("Player not found in this tournament!");
 			}
 		}
 		public void ResetPlayers()
@@ -151,28 +174,42 @@ namespace Tournament.Structure
 			}
 			return Brackets.Count;
 		}
-		public void AddBracket(IBracket _b)
+		public void AddBracket(IBracket _bracket)
 		{
-			if (null == _b || null == Brackets)
+			if (null == _bracket)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("New bracket cannot be null!");
 			}
-			if (Brackets.Contains(_b))
+			if (null == Brackets)
 			{
-				throw new DuplicateObjectException();
+				throw new NullReferenceException
+					("Bracket list is null; this shouldn't happen...");
+			}
+			if (Brackets.Contains(_bracket))
+			{
+				throw new DuplicateObjectException
+					("Tournament already contains this Bracket!");
 			}
 
-			Brackets.Add(_b);
+			Brackets.Add(_bracket);
 		}
-		public void RemoveBracket(IBracket _b)
+		public void RemoveBracket(IBracket _bracket)
 		{
-			if (null == _b || null == Brackets)
+			if (null == _bracket)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("Parameter cannot be null!");
 			}
-			if (!Brackets.Remove(_b))
+			if (null == Brackets)
 			{
-				throw new KeyNotFoundException();
+				throw new NullReferenceException
+					("Bracket list is null; this shouldn't happen...");
+			}
+			if (!Brackets.Remove(_bracket))
+			{
+				throw new BracketNotFoundException
+					("Bracket not found in this tournament!");
 			}
 		}
 		public void ResetBrackets()

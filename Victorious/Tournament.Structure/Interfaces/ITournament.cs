@@ -27,22 +27,22 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Add a Player.
 		/// </summary>
-		/// <param name="_p">Player-type object to add.</param>
-		void AddPlayer(IPlayer _p);
+		/// <param name="_player">Player-type object to add.</param>
+		void AddPlayer(IPlayer _player);
 
 		/// <summary>
 		/// Replaces a player/slot in the playerlist.
 		/// Also replaces old Player in any brackets.
 		/// </summary>
-		/// <param name="_p">Player-type object to add.</param>
+		/// <param name="_player">Player-type object to add.</param>
 		/// <param name="_index">Slot in list to replace.</param>
-		void ReplacePlayer(IPlayer _p, int _index);
+		void ReplacePlayer(IPlayer _player, int _index);
 
 		/// <summary>
 		/// Removes a Player from the tournament.
 		/// </summary>
-		/// <param name="_p">Player-type object to remove.</param>
-		void RemovePlayer(IPlayer _p);
+		/// <param name="_player">Player-type object to remove.</param>
+		void RemovePlayer(IPlayer _player);
 
 		/// <summary>
 		/// Clears the tournament's player list.
@@ -58,14 +58,14 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Add a Bracket.
 		/// </summary>
-		/// <param name="_b">Bracket-type object to add.</param>
-		void AddBracket(IBracket _b);
+		/// <param name="_bracket">Bracket-type object to add.</param>
+		void AddBracket(IBracket _bracket);
 
 		/// <summary>
 		/// Removes a Bracket from the tournament.
 		/// </summary>
-		/// <param name="_b">Bracket-type object to remove.</param>
-		void RemoveBracket(IBracket _b);
+		/// <param name="_bracket">Bracket-type object to remove.</param>
+		void RemoveBracket(IBracket _bracket);
 
 		/// <summary>
 		/// Clears the tournament's bracket list.
