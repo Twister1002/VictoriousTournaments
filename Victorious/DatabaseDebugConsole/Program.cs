@@ -20,6 +20,9 @@ namespace DatabaseDebugConsole
 
             DatabaseInterface db = new DatabaseInterface();
 
+
+            #region Old Crap
+
             //db.Clear();
 
             //TournamentModel tournament = db.GetTournamentById(1);
@@ -126,29 +129,78 @@ namespace DatabaseDebugConsole
 
             //Console.WriteLine(db.GetAllTournaments()[0].Brackets.ToList()[0].BracketType.Type.ToString());
 
-            //DeleteAllTournaments(db);
-            //DeleteAllUsers(db);
 
-            //Seed(db);
 
-            UserModel user = db.GetUserById(1);
-            PrintUser(db, user);
-            user.Username = "TestUsername";
-            user.FirstName = "Ryan";
-            user.LastName = "Kelton";
-            user.PhoneNumber = "(123) 456-789";     
-            db.UpdateUser(user);
-            PrintUser(db, user);
+
+
+            //PrintUser(db, user);
+            //user.Username = "TestUsername";
+            //user.FirstName = "Ryan";
+            //user.LastName = "Kelton";
+            //user.PhoneNumber = "(123) 456-789";
+            //db.UpdateUser(user);
+            //PrintUser(db, user);
+
+            //db.AddUserToTournament(db.GetAllTournaments()[0], user, Permission.TOURNAMENT_ADMINISTRATOR);
+            //db.RemoveUserFromTournament(db.GetAllTournaments()[0], user);
+
+            //PrintAllUsersInTournament(db, db.GetAllTournaments()[0]);
+
+            //PrintAllUsersInTournament(db, db.GetAllTournaments()[1]);
 
             //TournamentModel tournament = new TournamentModel();
             //tournament = db.GetAllTournaments()[0];
             //UserModel user = new UserModel();
             //user = db.GetAllUsers()[0];
+            //tournament = user.Tournaments.ToList()[0];
+            //Console.WriteLine(db.GetUserPermission(user, tournament).ToString());
+            //db.SetUserTournamentPermission(user, tournament, Permission.TOURNAMENT_ADMINISTRATOR);
+            //db.UpdateUserTournamentPermission(user, tournament, Permission.TOURNAMENT_STANDARD);
+            //Console.WriteLine(db.GetUserPermission(user, tournament).ToString());
+
+            //db.RemoveUserFromTournament(tournament, user);
+
+            //Console.WriteLine(tournament.Users.Count);
+
             //BracketModel bracket = new BracketModel();
             //bracket = user.Tournaments.ElementAt(0).Brackets.ElementAt(0);
             //PrintBracket(db, bracket);
 
 
+            //PrintAllBracketsInTournament(db, db.GetAllTournaments()[0]);
+            //CreateTeam(db);
+            //Console.WriteLine(db.GetAllTeams()[0].TeamMembers.Count);
+            #endregion
+
+            //DeleteAllTournaments(db);
+            //DeleteAllUsers(db);
+
+            //Seed(db);
+
+
+            UserModel user = new UserModel();
+            user = db.GetAllUsers()[0];
+
+            List<UserModel> allUsers = db.GetAllUsers().ToList();
+            List<TeamModel> allTeams = db.GetAllTeams().ToList();
+            for (int i = 0; i < 4; i++)
+            {
+                CreateTeamMember(db, allUsers[i], allTeams[0]);
+            }
+            for (int i = 4; i < 8; i++)
+            {
+                CreateTeamMember(db, allUsers[i], allTeams[1]);
+            }
+
+            PrintAllUsersOnTeam(db, allTeams[0]);
+            //PrintAllUsersOnTeam(db, allTeams[1]);
+            //CreateTeams(db, 5);
+            //CreateTeamMember(db, user);
+            //Console.WriteLine(db.GetAllTeams()[0].TeamMembers.Count);
+
+            //db.DeleteTeam(db.GetAllTeams()[0]);
+
+            //DeleteAllTeams(db);
 
             Console.WriteLine("Done");
             Console.ReadLine();
@@ -163,7 +215,7 @@ namespace DatabaseDebugConsole
             TournamentModel tournament = new TournamentModel()
             {
                 Title = "Tournament 1",
-                Description = "Test Tournament",
+                Description = "Test Tournament 1",
                 CreatedByID = 1
             };
             TournamentRuleModel rules = new TournamentRuleModel()
@@ -171,13 +223,25 @@ namespace DatabaseDebugConsole
                 RegistrationStartDate = DateTime.Now
             };
             tournament.TournamentRules = rules;
+            TournamentModel tournament2 = new TournamentModel()
+            {
+                Title = "Tournament 2",
+                Description = "Test Tournament 2",
+                CreatedByID = 1
+            };
+            TournamentRuleModel rules2 = new TournamentRuleModel()
+            {
+                RegistrationStartDate = DateTime.Now
+            };
+            tournament2.TournamentRules = rules2;
 
             db.AddTournament(ref tournament);
+            db.AddTournament(ref tournament2);
 
 
             using (StreamReader reader = new StreamReader("..\\..\\Random User Info.txt"))
             {
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 16; i++)
                 {
                     string firstName = reader.ReadLine().Split(':')[1];
                     string lastName = reader.ReadLine().Split(':')[1];
@@ -187,7 +251,11 @@ namespace DatabaseDebugConsole
                     string phoneNumber = reader.ReadLine().Split(':')[1];
                     reader.ReadLine();
                     UserModel user = new UserModel() { FirstName = firstName, LastName = lastName, Email = email, Username = username, Password = password, PhoneNumber = phoneNumber };
-                    db.AddUserToTournament(tournament, user);
+                    if (i == 0)
+                        db.AddUserToTournament(tournament, user, Permission.TOURNAMENT_ADMINISTRATOR);
+                    else
+                        db.AddUserToTournament(tournament, user, Permission.TOURNAMENT_STANDARD);
+
                     //db.AddUser(user);
                 }
             }
@@ -196,24 +264,25 @@ namespace DatabaseDebugConsole
 
             BracketModel bracket = new BracketModel()
             {
-                BracketTitle = "Bracket 1",
+                BracketTitle = "Single Elimination Bracket",
                 BracketTypeID = 1
             };
             db.AddBracket(ref bracket, tournament);
 
             BracketModel bracket2 = new BracketModel()
             {
-                BracketTitle = "Bracket 2",
+                BracketTitle = "Double Elimination Bracket",
                 BracketTypeID = 2
             };
             db.AddBracket(ref bracket2, tournament);
 
 
-            for (int i = 1; i < 11; i += 2)
+            for (int i = 1; i < 17; i += 2)
             {
                 MatchModel match = new MatchModel();
                 UserModel challenger = new UserModel();
                 UserModel defender = new UserModel();
+                match.RoundIndex = 1;
                 challenger = db.GetUserById(i);
                 match.Challenger = challenger;
                 defender = db.GetUserById(i + 1);
@@ -221,7 +290,14 @@ namespace DatabaseDebugConsole
                 match.Defender = defender;
                 db.UpdateMatch(match);
                 //db.AddMatch(match, db.GetBracketByID(1));
-                db.AddMatch(ref match, bracket);
+                if (i < 9)
+                {
+                    db.AddMatch(ref match, bracket);
+                }
+                else
+                {
+                    db.AddMatch(ref match, bracket2);
+                }
             }
 
         }
@@ -235,8 +311,26 @@ namespace DatabaseDebugConsole
             Console.WriteLine(user.Password);
             Console.WriteLine(user.PhoneNumber);
             Console.WriteLine(user.Email);
+            Console.WriteLine(db.GetUserPermission(user, user.Tournaments.ToList()[0]).ToString());
             Console.WriteLine("Number of active tournaments: " + user.Tournaments.Count);
-            
+            Console.WriteLine("Number of active teams: " + user.Teams.Count);
+
+        }
+
+        static void PrintAllUsersInTournament(DatabaseInterface db, TournamentModel tournament)
+        {
+            foreach (var user in tournament.Users)
+            {
+                PrintUser(db, user);
+            }
+        }
+
+        static void PrintAllBracketsInTournament(DatabaseInterface db, TournamentModel tournament)
+        {
+            foreach (var bracket in tournament.Brackets)
+            {
+                PrintBracket(db, bracket);
+            }
         }
 
         static void PrintBracket(DatabaseInterface db, BracketModel bracket)
@@ -262,6 +356,14 @@ namespace DatabaseDebugConsole
                     Console.WriteLine("Defender: " + match.Defender.FirstName + ' ' + match.Defender.LastName);
                 }
 
+            }
+        }
+
+        static void PrintAllUsersOnTeam(DatabaseInterface db, TeamModel team)
+        {
+            foreach (var teamMember in team.TeamMembers)
+            {
+                PrintUser(db, teamMember.User);
             }
         }
 
@@ -294,9 +396,44 @@ namespace DatabaseDebugConsole
             }
         }
 
-        static void Encrypt()
+        static void DeleteAllTeams(DatabaseInterface db)
         {
+            List<TeamModel> teams = db.GetAllTeams();
+
+            foreach (var team in teams)
+            {
+                Console.WriteLine("Deleting: " + team.TeamName);
+                db.DeleteTeam(team);
+            }
+        }
+
+        static void CreateTeams(DatabaseInterface db, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                TeamModel team = new TeamModel()
+                {
+                    TeamName = "Test Team" + i
+                };
+                db.AddTeam(ref team);
+            }
 
         }
+
+        static void CreateTeamMember(DatabaseInterface db, UserModel user, TeamModel team)
+        {
+            TeamMemberModel teamMember = new TeamMemberModel()
+            {
+                User = user,
+                Permission = Permission.TEAM_CAPTAIN,
+                DateJoined = DateTime.Now,
+                Team = team
+            };
+            db.AddTeamMember(teamMember);
+        }
+
+
+
+
     }
 }

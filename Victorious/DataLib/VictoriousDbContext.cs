@@ -14,7 +14,7 @@ namespace DataLib
             //Database.SetInitializer(new DropCreateDatabaseAlways<VictoriousDbContext>());
             //Database.CreateIfNotExists();
             //Database.SetInitializer<VictoriousDbContext>(null);
-            this.Configuration.LazyLoadingEnabled = false;
+            this.Configuration.LazyLoadingEnabled = true;
            
         }
 #elif !DEBUG
@@ -35,8 +35,8 @@ namespace DataLib
         public DbSet<TeamModel> Teams { get; set; }
         public DbSet<TeamMemberModel> TeamMembers { get; set; }
         public DbSet<BracketTypeModel> BracketTypes { get; set; }
-        //public DbSet<UsersInTournamentsModel> UsersInTournaments { get; set; }
-        //public DbSet<UsersInTournamentsModel> UsersInTournaments { get; set; }
+        public DbSet<UsersInTournamentsModel> UsersInTournaments { get; set; }
+
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -57,6 +57,8 @@ namespace DataLib
                 .HasRequired(e => e.Tournament)
                 .WithMany(e => e.Brackets)
                 .WillCascadeOnDelete(false);
+
+           
 
             //modelBuilder.Entity<TournamentRuleModel>()
             //    .HasOptional(e => e.Tournament)
@@ -116,6 +118,12 @@ namespace DataLib
                 .HasMany(e => e.Users)
                 .WithMany(e => e.Tournaments);
 
+            modelBuilder.Entity<TeamModel>()
+                .HasMany(e => e.TeamMembers)
+                .WithOptional()
+                .WillCascadeOnDelete(false);
+                
+
             //modelBuilder.Entity<TournamentModel>()
             //    .HasMany(e => e.Users)
             //    .WithOptional()
@@ -153,6 +161,12 @@ namespace DataLib
             modelBuilder.Entity<BracketTypeModel>()
                 .ToTable("BracketTypes");
 
+            modelBuilder.Entity<UsersInTournamentsModel>()
+                .ToTable("UsersInTournaments");
+
+            modelBuilder.Entity<TeamMemberModel>()
+                .ToTable("TeamMembers");
+
             modelBuilder.Entity<MatchModel>()
                 .HasOptional(e => e.Challenger)
                 .WithMany()
@@ -163,6 +177,7 @@ namespace DataLib
                 .HasOptional(e => e.Defender)
                 .WithMany()
                 .WillCascadeOnDelete(false);
+
 
 
             //modelBuilder.Entity<Match>()

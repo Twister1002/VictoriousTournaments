@@ -21,5 +21,13 @@ namespace DataLib
 
         public Permission Permission { get; set; }
 
+        [ForeignKey("UserID")]
+        public UserModel User { get; set; }
+
+        [ForeignKey("TournamentID")]
+        public TournamentModel Tournament { get; set; }
+
+
+
     }
 }
