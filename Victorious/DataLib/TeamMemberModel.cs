@@ -24,7 +24,7 @@ namespace DataLib
         [Column(Order = 2)]
         public int? TeamID { get; set; }
 
-        public TeamMemberRole? Role { get; set; }
+        public Permission? Permission { get; set; }
 
         public DateTime? DateJoined { get; set; }
 

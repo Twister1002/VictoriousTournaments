@@ -21,6 +21,7 @@ namespace DataLib
         public UserModel()
         {
             Tournaments = new Collection<TournamentModel>();
+            Teams = new Collection<TeamModel>();
         }
         [Key]
         public int UserID { get; set; }
@@ -49,5 +50,7 @@ namespace DataLib
         public DateTime? LastLogin { get; set; }
 
         public ICollection<TournamentModel> Tournaments { get; set; }
+
+        public ICollection<TeamModel> Teams { get; set; }
     }
 }

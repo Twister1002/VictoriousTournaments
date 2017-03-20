@@ -98,6 +98,7 @@
     <Compile Include="UserModel.cs" />
     <Compile Include="DatabaseInterface.cs" />
     <Compile Include="UsersInTournamentsModel.cs" />
+    <Compile Include="UsersOnTeamsModel.cs" />
     <Compile Include="VictoriousDbContext.cs" />
   </ItemGroup>
   <ItemGroup>
