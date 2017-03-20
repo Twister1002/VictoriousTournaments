@@ -198,6 +198,7 @@ namespace WebApplication.Controllers
                         else
                         {
                             // There was an error updating the account
+                            viewModel.dbException = db.interfaceException;
                             viewModel.error = ViewModel.ViewError.CRITICAL;
                             viewModel.message = "There was an error updating your account. Please try again later.";
                         }

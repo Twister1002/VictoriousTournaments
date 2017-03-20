@@ -14,7 +14,7 @@
                 if (isUserRegistered)
                 {
                     // Give the user the ability to un-register
-                    using (Html.BeginForm("Deregister", "Tournament", FormMethod.Post, new { @tournamentVal = Model.Model.TournamentID }))
+                    using (Html.BeginForm("Deregister", "Tournament", new { @tournamentVal = Model.Model.TournamentID }, FormMethod.Post))
                     {
                         <button type="submit">Deregister for this tournament</button>
                     }

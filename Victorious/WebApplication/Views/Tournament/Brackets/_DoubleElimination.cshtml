@@ -49,8 +49,8 @@
                 <li class="round" data-round="@roundNum">
                     @foreach (var match in matches)
                     {
-                        var challenger = match.ChallengerIndex() != -1 ? Bracket.Players[match.ChallengerIndex()] : new Tournament.Structure.User();
-                        var defender = match.DefenderIndex() != -1 ? Bracket.Players[match.DefenderIndex()] : new Tournament.Structure.User();
+                        var challenger = match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
+                        var defender = match.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
                         ViewBag.Challenger = challenger;
                         ViewBag.Defender = defender;
@@ -64,7 +64,7 @@
                 </li>
             }
         }
-        @{
+        @*{
             <li class="round" data-round="-1">
                 @{
                     var final = Bracket.GrandFinal;
@@ -81,7 +81,7 @@
                     Html.RenderPartial("Brackets/_Match");
                 }
             </li>
-        }
+        }*@
     </ul>
     <ul data-columns="@totalRounds">
         @{
@@ -97,8 +97,8 @@
                 <li class="round" data-round="@roundNum">
                     @foreach (var match in matches)
                     {
-                        var challenger = match.ChallengerIndex() != -1 ? Bracket.Players[match.ChallengerIndex()] : new Tournament.Structure.User();
-                        var defender = match.DefenderIndex() != -1 ? Bracket.Players[match.DefenderIndex()] : new Tournament.Structure.User();
+                        var challenger = match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
+                        var defender = match.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
                         ViewBag.Challenger = challenger;
                         ViewBag.Defender = defender;

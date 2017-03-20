@@ -277,7 +277,7 @@ namespace WebApplication.Controllers
                     if (userCount == 0)
                     {
                         // Add the user to the tournament
-                        DbError error = db.AddUserToTournament(viewModel.Model, db.GetUserById((int)Session["User.UserId"]));
+                        DbError error = db.AddUserToTournament(viewModel.Model, db.GetUserById((int)Session["User.UserId"]), Permission.TOURNAMENT_STANDARD);
                         if (error == DbError.SUCCESS)
                         {
                             Session["Message"] = "You have been registered to this tournament";
@@ -311,18 +311,18 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("Tournament/Deregister/{id}")]
+        [Route("Tournament/Deregister")]
         public ActionResult Deregister(String tournamentVal)
         {
             int tournamentId = -1;
             if (int.TryParse(tournamentVal, out tournamentId))
             {
-                if (Session["User.UserId"] != null)
+                if (this.UserLoggedIn())
                 {
                     // We have a user logged in.
-                    //viewModel.SetModel(tournamentId);
-
-                    DbError result = DbError.NONE; //db.AddUserToTournament(viewModel.Model, db.GetUserById((int)Session["User.UserId"]));
+                    TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+                    UserModel userModel = viewModel.Model.Users.First(x => x.UserID == this.getUserId());
+                    DbError result = db.RemoveUserFromTournament(viewModel.Model, userModel);
                     if (result == DbError.SUCCESS)
                     {
                         Session["Message"] = "You have registered for this tournament.";
@@ -347,10 +347,7 @@ namespace WebApplication.Controllers
                 Session["Message.Class"] = ViewModel.ViewError.WARNING;
             }
             //return View("Tournament", viewModel);
-
-        
-            Session["Message"] = "Currently you are not able to deregister from a tournament.";
-            Session["Message.Class"] = ViewModel.ViewError.WARNING;
+            
             return RedirectToAction("Index", "Home");
         }
 
@@ -402,14 +399,17 @@ namespace WebApplication.Controllers
                 TournamentViewModel viewModel = new TournamentViewModel(tournyId);
                 viewModel.ProcessTournament();
 
-                if (viewModel.Tourny.Brackets[0].GetMatch(matchId).ChallengerIndex() == seedId)
-                {
-                    winner = PlayerSlot.Challenger;
-                }
-                else
-                {
-                    winner = PlayerSlot.Defender;
-                }
+
+                return Json("No support to update yet...");
+
+                //if (viewModel.Tourny.Brackets[0].GetMatch(matchId).ChallengerIndex() == seedId)
+                //{
+                //    winner = PlayerSlot.Challenger;
+                //}
+                //else
+                //{
+                //    winner = PlayerSlot.Defender;
+                //}
 
                 if (viewModel.Model.CreatedByID == (int)Session["User.UserId"])
                 {
