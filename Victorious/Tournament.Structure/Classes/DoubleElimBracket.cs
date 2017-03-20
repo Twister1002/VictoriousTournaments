@@ -11,6 +11,7 @@ namespace Tournament.Structure
 	public class DoubleElimBracket : SingleElimBracket
 	{
 		#region Variables & Properties
+		// inherits BracketType BracketType
 		// inherits List<IPlayer> Players
 		// inherits Dictionary<int, IMatch> Matches
 		// inherits int NumberOfRounds
@@ -23,16 +24,22 @@ namespace Tournament.Structure
 		#region Ctors
 		public DoubleElimBracket(List<IPlayer> _players)
 			: base(_players)
-		{ }
+		{
+			BracketType = BracketTypeModel.BracketType.DOUBLE;
+		}
 		public DoubleElimBracket(int _numPlayers)
 			: base(_numPlayers)
-		{ }
+		{
+			BracketType = BracketTypeModel.BracketType.DOUBLE;
+		}
 		public DoubleElimBracket()
 			: this(new List<IPlayer>())
 		{ }
 		public DoubleElimBracket(BracketModel _model)
 			: base(_model)
 		{
+			BracketType = BracketTypeModel.BracketType.DOUBLE;
+
 			if (CalculateTotalLowerBracketMatches(Players.Count) > 0)
 			{
 				int numOfGrandFinal = _model.Matches.Count - 1;

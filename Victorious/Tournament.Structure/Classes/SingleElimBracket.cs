@@ -11,6 +11,7 @@ namespace Tournament.Structure
 	public class SingleElimBracket : Bracket
 	{
 		#region Variables & Properties
+		// inherits BracketType BracketType
 		// inherits List<IPlayer> Players
 		// inherits Dictionary<int, IMatch> Matches
 		// inherits int NumberOfRounds
@@ -28,6 +29,7 @@ namespace Tournament.Structure
 				throw new NullReferenceException();
 			}
 
+			BracketType = BracketTypeModel.BracketType.SINGLE;
 			Players = _players;
 			ResetBracket();
 			CreateBracket();
@@ -40,6 +42,7 @@ namespace Tournament.Structure
 				Players.Add(new User());
 			}
 
+			BracketType = BracketTypeModel.BracketType.SINGLE;
 			ResetBracket();
 			CreateBracket();
 		}
@@ -52,6 +55,8 @@ namespace Tournament.Structure
 			{
 				throw new NullReferenceException();
 			}
+
+			BracketType = BracketTypeModel.BracketType.SINGLE;
 
 			List<UserModel> userModels = _model.UserSeeds
 				.OrderBy(ubs => ubs.Seed)

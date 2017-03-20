@@ -11,6 +11,7 @@ namespace Tournament.Structure
 	public class RoundRobinBracket : Bracket
 	{
 		#region Variables & Properties
+		// inherits BracketType BracketType
 		// inherits List<IPlayer> Players
 		// inherits Dictionary<int, IMatch> Matches
 		// inherits int NumberOfRounds
@@ -32,6 +33,7 @@ namespace Tournament.Structure
 				throw new NullReferenceException();
 			}
 
+			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			Players = _players;
 			MaxRounds = _numRounds;
 			ResetBracket();
@@ -45,6 +47,7 @@ namespace Tournament.Structure
 				Players.Add(new User());
 			}
 
+			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			MaxRounds = _numRounds;
 			ResetBracket();
 			CreateBracket();
@@ -58,6 +61,8 @@ namespace Tournament.Structure
 			{
 				throw new NullReferenceException();
 			}
+
+			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 
 			List<UserModel> userModels = _model.UserSeeds
 				.OrderBy(ubs => ubs.Seed)
@@ -186,7 +191,9 @@ namespace Tournament.Structure
 			Scores[Matches[_matchNumber].Players[(int)PlayerSlot.Defender].Id] -= defScore;
 			Scores[Matches[_matchNumber].Players[(int)PlayerSlot.Challenger].Id] -= chalScore;
 		}
+		#endregion
 
+		#region Private Methods
 		protected override void ResetBracket()
 		{
 			base.ResetBracket();

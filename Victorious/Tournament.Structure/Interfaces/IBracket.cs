@@ -11,6 +11,7 @@ namespace Tournament.Structure
 	public interface IBracket
 	{
 		#region Variables & Properties
+		BracketTypeModel.BracketType BracketType { get; }
 		List<IPlayer> Players { get; }
 
 		/// <summary>
