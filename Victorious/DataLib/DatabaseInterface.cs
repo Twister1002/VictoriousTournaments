@@ -991,6 +991,7 @@ namespace DataLib
 
         #region TeamMembers
 
+        // Takes in a fully filled out TeamMember and adds it to the database
         public DbError AddTeamMember(TeamMemberModel teamMember)
         {
             try
