@@ -487,6 +487,10 @@ namespace DataLib
                 {
                     DeleteBracket(bracket);
                 }
+                foreach (var user in _tournament.Users.ToList())
+                {
+                    RemoveUserFromTournament(_tournament, user);
+                }
                 //context.Entry(tournament).State = System.Data.Entity.EntityState.Deleted;
                 //context.Tournaments.Attach(_tournament);
                 context.Tournaments.Remove(_tournament);
@@ -506,7 +510,14 @@ namespace DataLib
 
             try
             {
-                tournament.Users.Remove(user);
+                context.UsersInTournaments.Remove(context.UsersInTournaments.Single(x => x.TournamentID == tournament.TournamentID && x.UserID == user.UserID));
+                //TournamentModel _tournament = context.Tournaments.Include(x => x.Users).Single(x => x.TournamentID == tournament.TournamentID);
+                TournamentModel _tournament = context.Tournaments.Find(tournament.TournamentID);
+                UserModel _user = context.Users.Find(user.UserID);
+                context.Tournaments.Include(x => x.Users).Single(x => x.TournamentID == tournament.TournamentID).Users.Remove(_user);
+                //context.Tournaments.Remove(_tournament);
+                //tournament.Users.Remove(user);
+                //user.Tournaments.Remove(tournament);
                 context.SaveChanges();
             }
             catch (Exception ex)
