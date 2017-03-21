@@ -25,7 +25,7 @@
         var matchNum = $(this).closest(".match").data("match");
         var tournamentId = $("#Tournament").data("id");
 
-        //$(".match-edit-module").addClass("open");
+        $(".match-edit-module").addClass("open");
         //$(".match-edit-module .module-content .match")
         //    .data({ "match": matchNum, "tournamentId":tournamentId })
         //    .html($(this).closest(".match").html())
@@ -65,7 +65,7 @@
         });
     });
 
-    $(".match-edit-module").on("click", ".matchData .info li", function () {
+    $(".match-edit-module .matchData .info li").on("click", function () {
         // Remove the class
         $(this).siblings().removeClass("selected-winner");
         $(this).addClass("selected-winner");

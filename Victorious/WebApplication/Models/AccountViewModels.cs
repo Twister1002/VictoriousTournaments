@@ -35,10 +35,13 @@ namespace WebApplication.Models
 
         public override void ApplyChanges()
         {
-            //userModel.Username      = this.Username;
+            // Non null fields
+            userModel.Username      = this.Username != String.Empty ? this.Username : String.Empty;
+            userModel.Email         = this.Email != String.Empty ? this.Email : String.Empty;
+
+            // Null fields
             userModel.FirstName     = this.FirstName;
             userModel.LastName      = this.LastName;
-            userModel.Email         = this.Email;
             userModel.Password      = this.Password;
         }
 
