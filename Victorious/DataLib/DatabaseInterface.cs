@@ -666,7 +666,7 @@ namespace DataLib
             {
                 BracketModel _bracket = context.Brackets.Find(bracket.BracketID);
                 context.Entry(_bracket).CurrentValues.SetValues(bracket);
-                context.Entry(_bracket.Matches).CurrentValues.SetValues(bracket.Matches);
+                //context.Entry(_bracket.Matches).CurrentValues.SetValues(bracket.Matches);
                 //_bracket = bracket;
                 context.SaveChanges();
             }

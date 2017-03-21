@@ -179,9 +179,14 @@ namespace DatabaseDebugConsole
             TournamentModel tournament = new TournamentModel();
             tournament = db.GetAllTournaments()[0];
             UserModel user = new UserModel();
-            user = db.GetUserById(5);
-            db.RemoveUserFromTournament(tournament, user);
+            //user = db.GetUserById(5);
+            //db.RemoveUserFromTournament(tournament, user);
             PrintAllUsersInTournament(db, tournament);
+
+            BracketModel bracket = tournament.Brackets.ToList()[0];
+            bracket.BracketTitle = "Test Bracket";
+            db.UpdateBracket(bracket);
+
 
             //db.AddUserToTournament(db.GetAllTournaments().ToList()[1], user, Permission.TOURNAMENT_ADMINISTRATOR);
 
@@ -305,7 +310,7 @@ namespace DatabaseDebugConsole
                 defender = db.GetUserById(i + 1);
                 //db.AddDefender(match, defender);
                 match.Defender = defender;
-                db.UpdateMatch(match);
+                //db.UpdateMatch(match);
                 //db.AddMatch(match, db.GetBracketByID(1));
                 if (i < 9)
                 {
