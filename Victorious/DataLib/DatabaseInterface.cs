@@ -284,6 +284,7 @@ namespace DataLib
             return users;
         }
 
+        [Obsolete("Users should always be added to a tournament with a permission")]
         public DbError SetUserTournamentPermission(UserModel user, TournamentModel tournament, Permission permission)
         {
             UsersInTournamentsModel uitm = new UsersInTournamentsModel();
@@ -370,25 +371,6 @@ namespace DataLib
                 Console.WriteLine("Exception " + ex.ToString() + " in AddTournament");
                 return DbError.FAILED_TO_ADD;
             }
-            return DbError.SUCCESS;
-        }
-
-        [Obsolete("Use AddUserToTournament(TournamentModel tournament, UserModel user, Permission permission")]
-        public DbError AddUserToTournament(TournamentModel tournament, UserModel user)
-        {
-            try
-            {
-                //context.Users.Add(user);
-                tournament.Users.Add(user);
-                context.SaveChanges();
-
-            }
-            catch (Exception ex)
-            {
-                interfaceException = ex;
-                return DbError.FAILED_TO_ADD;
-            }
-
             return DbError.SUCCESS;
         }
 
@@ -683,7 +665,9 @@ namespace DataLib
             try
             {
                 BracketModel _bracket = context.Brackets.Find(bracket.BracketID);
-                _bracket = bracket;
+                context.Entry(_bracket).CurrentValues.SetValues(bracket);
+                context.Entry(_bracket.Matches).CurrentValues.SetValues(bracket.Matches);
+                //_bracket = bracket;
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -740,63 +724,13 @@ namespace DataLib
             return DbError.EXISTS;
         }
 
-        [Obsolete("Use AddMatch(ref MatchModel match, BracketModel bracket).")]
-        public DbError AddMatch(MatchModel match)
-        {
-            try
-            {
-                context.Matches.Add(match);
-
-                context.SaveChanges();
-
-            }
-            catch (Exception)
-            {
-                return DbError.FAILED_TO_ADD;
-            }
-
-            return DbError.SUCCESS;
-
-        }
-
-        [Obsolete("Use UpdateMatch.")]
-        public DbError AddDefender(MatchModel match, UserModel user)
-        {
-            try
-            {
-                match.Defender = user;
-                context.SaveChanges();
-            }
-            catch (Exception)
-            {
-                return DbError.FAILED_TO_ADD;
-            }
-
-            return DbError.SUCCESS;
-        }
-
-        [Obsolete("Use UpdateMatch.")]
-        public DbError AddChallenger(MatchModel match, UserModel user)
-        {
-            try
-            {
-                match.Challenger = user;
-                context.SaveChanges();
-            }
-            catch
-            {
-                return DbError.FAILED_TO_ADD;
-            }
-
-            return DbError.SUCCESS;
-        }
-
         public DbError UpdateMatch(MatchModel match)
         {
             try
             {
                 MatchModel _match = context.Matches.Find(match.MatchID);
-                _match = match;
+                context.Entry(_match).CurrentValues.SetValues(match);
+                //_match = match;
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -806,23 +740,6 @@ namespace DataLib
 
             }
             return DbError.SUCCESS;
-        }
-
-        [Obsolete("Use AddMatch(ref MatchModel match, BracketModel bracket)")]
-        public int AddMatch(MatchModel match, BracketModel bracket)
-        {
-            try
-            {
-                bracket.Matches.Add(match);
-                context.SaveChanges();
-            }
-            catch (Exception)
-            {
-                return -1;
-
-            }
-
-            return match.MatchID;
         }
 
         // Adds the passed-in match to the database and also adds it to the passed-in bracket's list of matches.
