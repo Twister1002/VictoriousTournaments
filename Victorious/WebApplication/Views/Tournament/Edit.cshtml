@@ -1,6 +1,6 @@
 ﻿@model WebApplication.Models.TournamentViewModel
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Update";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div id="TournamentEdit">
@@ -30,19 +30,24 @@
             <h2>Tournament Dates</h2>
             <ul>
                 <li>
-                    @Html.LabelFor(t => t.RegistrationStart)
-                    @Html.TextBoxFor(t => t.RegistrationStart, DateTime.Now.ToShortDateString(), new { @class = "datepicker" })
-                    @Html.ValidationMessageFor(t => t.RegistrationStart)
+                    @Html.LabelFor(t => t.RegistrationStartDate)
+                    @Html.TextBoxFor(t => t.RegistrationStartDate, new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.RegistrationStartDate)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.RegistrationEnd)
-                    @Html.TextBoxFor(t => t.RegistrationEnd, DateTime.Now.AddDays(1).ToShortDateString(), new { @class = "datepicker" })
-                    @Html.ValidationMessageFor(t => t.RegistrationEnd)
+                    @Html.LabelFor(t => t.RegistrationEndDate)
+                    @Html.TextBoxFor(t => t.RegistrationEndDate, new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.RegistrationEndDate)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.CheckInDateTime)
-                    @Html.TextBoxFor(t => t.CheckInDateTime, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
-                    @Html.ValidationMessageFor(t => t.CheckInDateTime)
+                    @Html.LabelFor(t => t.TournamentStartDate)
+                    @Html.TextBoxFor(t => t.TournamentStartDate, new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.TournamentStartDate)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.TournamentEndDate)
+                    @Html.TextBoxFor(t => t.TournamentEndDate, new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.TournamentEndDate)
                 </li>
             </ul>
         </div>

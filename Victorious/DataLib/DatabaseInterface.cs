@@ -201,7 +201,6 @@ namespace DataLib
             {
                 UserModel _user = context.Users.Find(user.UserID);
                 context.Entry(_user).CurrentValues.SetValues(user);
-                _user = user;
                 context.SaveChanges();
             }
             catch (Exception ex)

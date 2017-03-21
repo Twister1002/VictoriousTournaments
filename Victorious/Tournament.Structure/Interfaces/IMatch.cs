@@ -16,8 +16,11 @@ namespace Tournament.Structure
 	public interface IMatch
 	{
 		#region Variables & Properties
-		ushort WinsNeeded { get; set; }
-		// private int[] PlayerIndexes { get; set; }
+		bool IsReady { get; }
+		bool IsFinished { get; }
+		ushort WinsNeeded { get; }
+		IPlayer[] Players { get; }
+		PlayerSlot WinnerSlot { get; }
 		ushort[] Score { get; }
 		int RoundIndex { get; }
 		int MatchIndex { get; }
@@ -41,7 +44,8 @@ namespace Tournament.Structure
 		int NextLoserMatchNumber { get; }
 		#endregion
 
-		#region Methods
+#region Methods
+#if false
 		/// <summary>
 		/// Index of first (top) Player:
 		/// refers to Bracket's player list.
@@ -55,25 +59,30 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <returns>-1 if no Player is yet assigned to this slot.</returns>
 		int ChallengerIndex();
-
+#endif
 		/// <summary>
 		/// Assigns a Player to this Match.
 		/// If _slot is unspecified, player will be
 		/// assigned to first open slot.
 		/// </summary>
-		/// <param name="_playerIndex">Index of Player,
-		/// refers to Bracket's player list.</param>
+		/// <param name="_player">Player-type object to add.</param>
 		/// <param name="_slot">Slot to assign player to:
 		/// Defender or Challenger.</param>
-		void AddPlayer(int _playerIndex, PlayerSlot _slot = PlayerSlot.unspecified);
+		void AddPlayer(IPlayer _player, PlayerSlot _slot = PlayerSlot.unspecified);
+
+		/// <summary>
+		/// Replace a Player in this Match.
+		/// </summary>
+		/// <param name="_newPlayer">New Player object to add.</param>
+		/// <param name="_oldPlayerId">ID of Player to replace.</param>
+		void ReplacePlayer(IPlayer _newPlayer, int _oldPlayerId);
 
 		/// <summary>
 		/// Remove the specified Player from the Match,
 		/// (also resets Match's score)
 		/// </summary>
-		/// <param name="_playerIndex">Index of Player to remove,
-		/// refers to Bracket's player list.</param>
-		void RemovePlayer(int _playerIndex);
+		/// <param name="_playerId">ID of Player to remove.</param>
+		void RemovePlayer(int _playerId);
 
 		/// <summary>
 		/// Clears both Players from the Match.
@@ -97,6 +106,12 @@ namespace Tournament.Structure
 		/// Resets Match score to 0-0.
 		/// </summary>
 		void ResetScore();
+
+		/// <summary>
+		/// Sets amount of wins needed to advance.
+		/// </summary>
+		/// <param name="_wins">Wins needed.</param>
+		void SetWinsNeeded(ushort _wins);
 
 		/// <summary>
 		/// Sets round index for Match.
@@ -140,6 +155,6 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_number">Number of match to set.</param>
 		void SetNextLoserMatchNumber(int _number);
-		#endregion
+#endregion
 	}
 }

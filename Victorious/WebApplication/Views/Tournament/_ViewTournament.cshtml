@@ -1,0 +1,35 @@
+﻿@model WebApplication.Models.TournamentViewModel
+
+@{
+    var tourny = Model.Tourny;
+    var bracket = tourny.Brackets[0];
+}
+
+<ul class="list-table">
+    @{
+        switch (bracket.BracketType)
+        {
+            case DataLib.BracketTypeModel.BracketType.SINGLE:
+                Html.RenderPartial("Brackets/_SingleElimination", Model, new ViewDataDictionary(ViewData));
+                break;
+            case DataLib.BracketTypeModel.BracketType.DOUBLE:
+                Html.RenderPartial("Brackets/_DoubleElimination", Model, new ViewDataDictionary(ViewData));
+                break;
+            case DataLib.BracketTypeModel.BracketType.ROUNDROBIN:
+                break;
+        }
+    }
+    <li class="match-edit-module">
+        <div class="module-background"></div>
+        <div class="module-close"><img class="close clickable" src="~/Images/svg/cross.svg" /></div>
+        <div class="module-content">
+            <h2>Winner Selection</h2>
+            @{
+                Html.RenderPartial("Brackets/_Match");
+            }
+            <div class="match-submit">
+                <button type="button">Submit Winner</button>
+            </div>
+        </div>
+    </li>
+</ul>

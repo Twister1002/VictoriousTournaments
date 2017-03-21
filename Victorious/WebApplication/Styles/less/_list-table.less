@@ -1,11 +1,15 @@
 ﻿ul.list-table {
+    position: relative;
     display: table;
     width: 100%;
     min-height: 5em;
 
     ul {
-        border-bottom: .1em solid @white;
+        position:relative;
 
+        &.border {
+            border-bottom: .1em solid @white;
+        }
         &.row-clickable {
             &:hover {
                 background-color: @color-primary-4;
@@ -47,6 +51,39 @@
                 .columnwidth(6);
             }
         }
+
+        &[data-columns="7"] {
+            a, li {
+                display: inline-block;
+                .columnwidth(7);
+            }
+        }
+
+        &[data-columns="8"] {
+            a, li {
+                display: inline-block;
+                .columnwidth(8);
+            }
+        }
+
+        &[data-columns="9"] {
+            a, li {
+                display: inline-block;
+                .columnwidth(8);
+            }
+        }
+        &[data-columns="10"] {
+            a, li {
+                display: inline-block;
+                .columnwidth(10);
+            }
+        }
+        &[data-columns="11"] {
+            a, li {
+                display: inline-block;
+                .columnwidth(11);
+            }
+        }
     }
 }
 
@@ -57,5 +94,5 @@
 }
 
 .columnwidth(@value) {
-    width: (1/@value) * 98%;
+    width: (1/@value) * 95%;
 }

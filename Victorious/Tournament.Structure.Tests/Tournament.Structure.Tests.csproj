@@ -62,6 +62,7 @@
     <Compile Include="MatchTests.cs" />
     <Compile Include="TeamTests.cs" />
     <Compile Include="BracketTests.cs" />
+    <Compile Include="RoundRobinBracketTests.cs" />
     <Compile Include="UserTests.cs" />
     <Compile Include="SingleElimBracketTests.cs" />
     <Compile Include="TournamentTests.cs" />

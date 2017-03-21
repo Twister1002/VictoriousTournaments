@@ -33,22 +33,21 @@ namespace WebApplication.Models
             userModel.Tournaments = tournies.Where(t => t.CreatedByID == userModel.UserID).ToList();
         }
 
-        public void ApplyFieldChanges()
+        public override void ApplyChanges()
         {
-            userModel.Username      = this.Username;
+            //userModel.Username      = this.Username;
             userModel.FirstName     = this.FirstName;
             userModel.LastName      = this.LastName;
             userModel.Email         = this.Email;
+            userModel.Password      = this.Password;
         }
 
-        public AccountFields SetFields()
+        public override void SetFields()
         {
             this.Username   = userModel.Username;
             this.Email      = userModel.Email;
             this.LastName   = userModel.LastName;
             this.FirstName  = userModel.FirstName;
-
-            return this;
         }
 
         public UserModel getUserModel()

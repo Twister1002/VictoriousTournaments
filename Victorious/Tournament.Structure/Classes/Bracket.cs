@@ -11,14 +11,16 @@ namespace Tournament.Structure
 	public abstract class Bracket : IBracket
 	{
 		#region Variables & Properties
+		public BracketTypeModel.BracketType BracketType
+		{ get; protected set; }
 		public List<IPlayer> Players
 		{ get; protected set; }
-		public Dictionary<int, IMatch> Matches
-		{ get; protected set; }
+		protected Dictionary<int, IMatch> Matches
+		{ get; set; }
 		public int NumberOfRounds
 		{ get; protected set; }
-		public Dictionary<int, IMatch> LowerMatches
-		{ get; protected set; }
+		protected Dictionary<int, IMatch> LowerMatches
+		{ get; set; }
 		public int NumberOfLowerRounds
 		{ get; protected set; }
 		public IMatch GrandFinal
@@ -43,42 +45,71 @@ namespace Tournament.Structure
 			}
 			return Players.Count;
 		}
-		public void AddPlayer(IPlayer _p)
+		public void AddPlayer(IPlayer _player)
 		{
-			if (null == _p || null == Players)
+			if (null == _player)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("Parameter cannot be null!");
 			}
-			if (Players.Contains(_p))
+			if (null == Players)
 			{
-				throw new DuplicateObjectException();
+				throw new NullReferenceException
+					("Players is null. This shouldn't happen...");
+			}
+			if (Players.Contains(_player))
+			{
+				throw new DuplicateObjectException
+					("Bracket already contains this Player!");
 			}
 
-			Players.Add(_p);
+			Players.Add(_player);
 			ResetBracket();
 		}
-		public void ReplacePlayer(IPlayer _p, int _index)
+		public void ReplacePlayer(IPlayer _player, int _index)
 		{
-			if (null == _p)
+			if (null == _player)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("Parameter cannot be null!");
 			}
 			if (_index < 0 || _index >= Players.Count)
 			{
-				throw new IndexOutOfRangeException();
+				throw new InvalidIndexException
+					("Invalid index; outside Playerlist bounds.");
 			}
 
-			Players[_index] = _p;
-		}
-		public void RemovePlayer(IPlayer _p)
-		{
-			if (null == _p || null == Players)
+			if (null != Players[_index])
 			{
-				throw new NullReferenceException();
+				for (int n = 1; n <= NumberOfMatches; ++n)
+				{
+					try
+					{
+						GetMatch(n).ReplacePlayer(_player, Players[_index].Id);
+					}
+					catch (PlayerNotFoundException)
+					{ }
+				}
 			}
-			if (!Players.Remove(_p))
+
+			Players[_index] = _player;
+		}
+		public void RemovePlayer(IPlayer _player)
+		{
+			if (null == _player)
 			{
-				throw new KeyNotFoundException();
+				throw new NullReferenceException
+					("Parameter cannot be null!");
+			}
+			if (null == Players)
+			{
+				throw new NullReferenceException
+					("Players is null. This shouldn't happen...");
+			}
+			if (!Players.Remove(_player))
+			{
+				throw new PlayerNotFoundException
+					("Player not found in this Bracket!");
 			}
 
 			ResetBracket();
@@ -98,11 +129,13 @@ namespace Tournament.Structure
 		{
 			if (null == Matches)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("Matches doesn't exist! Create a bracket first.");
 			}
 			if (_round < 1)
 			{
-				throw new ArgumentOutOfRangeException();
+				throw new InvalidIndexException
+					("Round index cannot be less than 1!");
 			}
 
 			List<IMatch> ret = Matches.Values
@@ -115,11 +148,13 @@ namespace Tournament.Structure
 		{
 			if (null == LowerMatches)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("Lower Round doesn't exist!");
 			}
 			if (_round < 1)
 			{
-				throw new ArgumentOutOfRangeException();
+				throw new InvalidIndexException
+					("Round index cannot be less than 1!");
 			}
 
 			List<IMatch> ret = LowerMatches.Values
@@ -132,7 +167,8 @@ namespace Tournament.Structure
 		{
 			if (_matchNumber < 1)
 			{
-				throw new IndexOutOfRangeException();
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
 			}
 
 			if (null != GrandFinal &&
@@ -151,9 +187,13 @@ namespace Tournament.Structure
 				return LowerMatches[_matchNumber];
 			}
 
-			throw new KeyNotFoundException();
+			throw new MatchNotFoundException
+				("Match not found; match number may be invalid.");
 		}
-		public virtual void ResetBracket()
+		#endregion
+
+		#region Private Methods
+		protected virtual void ResetBracket()
 		{
 			Matches = null;
 			LowerMatches = null;
@@ -161,10 +201,6 @@ namespace Tournament.Structure
 			NumberOfRounds = NumberOfLowerRounds = 0;
 			NumberOfMatches = 0;
 		}
-		#endregion
-
-		#region Private Methods
-
 		#endregion
 	}
 }

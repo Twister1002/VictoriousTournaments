@@ -43,6 +43,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Json, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c6752e45808247c2, processorArchitecture=MSIL">
+      <HintPath>..\packages\JSON.1.0.1\lib\net40\Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>True</Private>
@@ -185,14 +197,18 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\VictoriousController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MatchController.cs" />
     <Compile Include="Controllers\TournamentController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helper\Helper.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Fields.cs" />
     <Compile Include="Models\HomeViewModel.cs" />
+    <Compile Include="Models\MatchViewModel.cs" />
     <Compile Include="Models\TournamentViewModel.cs" />
     <Compile Include="Models\ViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -225,6 +241,19 @@
     <Content Include="Views\Tournament\Edit.cshtml" />
     <Content Include="Views\Tournament\Delete.cshtml" />
     <Content Include="Views\Account\Update.cshtml" />
+    <Content Include="Views\Tournament\_ViewTournament.cshtml" />
+    <Content Include="Views\Tournament\_ViewRegistration.cshtml" />
+    <Content Include="Views\Tournament\Administrator\_Players.cshtml" />
+    <Content Include="Styles\less\Tournament\_Tournament.less" />
+    <Content Include="Styles\less\Tournament\_Create.less" />
+    <Content Include="Styles\less\Tournament\_Edit.less" />
+    <Content Include="Styles\less\Tournament\_Search.less" />
+    <Content Include="Styles\less\Tournament\_RegisteredPlayers.less" />
+    <Content Include="Views\Tournament\Brackets\_SingleElimination.cshtml" />
+    <Content Include="Views\Tournament\Brackets\_DoubleElimination.cshtml" />
+    <Content Include="Views\Tournament\Brackets\_Swiss.cshtml" />
+    <Content Include="Views\Tournament\Brackets\_RoundRobin.cshtml" />
+    <Content Include="Views\Tournament\Brackets\_Match.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -234,6 +263,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Base\" />
+    <Folder Include="Views\Match\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataLib\DataLib.csproj">

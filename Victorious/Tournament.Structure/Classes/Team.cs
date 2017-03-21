@@ -26,7 +26,8 @@ namespace Tournament.Structure
 		{
 			if (TeamMembers.Contains(_user))
 			{
-				throw new DuplicateObjectException();
+				throw new DuplicateObjectException
+					("Team already contains this User!");
 			}
 
 			TeamMembers.Add(_user);
@@ -35,7 +36,8 @@ namespace Tournament.Structure
 		{
 			if (!TeamMembers.Remove(_user))
 			{
-				throw new KeyNotFoundException();
+				throw new PlayerNotFoundException
+					("User not found in this team!");
 			}
 		}
 		#endregion

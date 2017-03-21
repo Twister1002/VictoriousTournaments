@@ -29,7 +29,8 @@ namespace Tournament.Structure
 				|| null == _last
 				|| null == _email)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("You've got NULL problems in your User construction...");
 			}
 
 			Id = _id;
@@ -46,7 +47,8 @@ namespace Tournament.Structure
 		{
 			if (null == _u)
 			{
-				throw new NullReferenceException();
+				throw new NullReferenceException
+					("User model cannot be null!");
 			}
 
 			Id = _u.UserID;

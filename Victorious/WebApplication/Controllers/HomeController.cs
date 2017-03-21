@@ -7,7 +7,7 @@ using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : VictoriousController
     {
         // GET: Home
         public ActionResult Index()

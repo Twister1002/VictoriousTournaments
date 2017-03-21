@@ -11,18 +11,21 @@ namespace Tournament.Structure
 	public interface IBracket
 	{
 		#region Variables & Properties
+		BracketTypeModel.BracketType BracketType { get; }
 		List<IPlayer> Players { get; }
 
 		/// <summary>
 		/// NULL if not applicable.
 		/// </summary>
-		Dictionary<int, IMatch> Matches { get; }
+		//Dictionary<int, IMatch> Matches { get; }
+
 		int NumberOfRounds { get; }
 
 		/// <summary>
 		/// NULL if not applicable.
 		/// </summary>
-		Dictionary<int, IMatch> LowerMatches { get; }
+		//Dictionary<int, IMatch> LowerMatches { get; }
+
 		int NumberOfLowerRounds { get; }
 
 		/// <summary>
@@ -76,22 +79,22 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Add a Player.
 		/// </summary>
-		/// <param name="_p">Player-type object to add.</param>
-		void AddPlayer(IPlayer _p);
+		/// <param name="_player">Player-type object to add.</param>
+		void AddPlayer(IPlayer _player);
 
 		/// <summary>
 		/// Replaces a player/slot in the playerlist
 		/// with the new indicated Player.
 		/// </summary>
-		/// <param name="_p">Player-type object to add.</param>
+		/// <param name="_player">Player-type object to add.</param>
 		/// <param name="_index">Slot in list to replace.</param>
-		void ReplacePlayer(IPlayer _p, int _index);
+		void ReplacePlayer(IPlayer _player, int _index);
 
 		/// <summary>
 		/// Remove a Player from the bracket.
 		/// </summary>
-		/// <param name="_p">Player-type object to remove.</param>
-		void RemovePlayer(IPlayer _p);
+		/// <param name="_player">Player-type object to remove.</param>
+		void RemovePlayer(IPlayer _player);
 
 		/// <summary>
 		/// Clears the bracket's player list.
@@ -125,7 +128,7 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Clears all Matches and rounds in the bracket.
 		/// </summary>
-		void ResetBracket();
+		//void ResetBracket();
 #endregion
 	}
 }

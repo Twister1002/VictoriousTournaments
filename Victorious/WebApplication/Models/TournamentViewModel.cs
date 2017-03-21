@@ -28,11 +28,14 @@ namespace WebApplication.Models
 
         public TournamentViewModel(TournamentModel model)
         {
-            Model = model;
-            SetFields();
+            if (model != null)
+            {
+                Model = model;
+                SetFields();
+            }
         }
 
-        public void ApplyChanges()
+        public override void ApplyChanges(int SessionId)
         {
             Model.Title                                 = this.Title;
             Model.Description                           = this.Description;
@@ -41,9 +44,16 @@ namespace WebApplication.Models
             Model.TournamentRules.RegistrationEndDate   = this.RegistrationEndDate;
             Model.TournamentRules.TournamentStartDate   = this.TournamentStartDate;
             Model.TournamentRules.TournamentEndDate     = this.TournamentEndDate;
+            Model.LastEditedOn = DateTime.Now;
+
+            if (Model.CreatedByID == 0 || Model.CreatedByID == null)
+            {
+                Model.CreatedByID = SessionId;
+                Model.CreatedOn = DateTime.Now;
+            }
         }
 
-        public void SetFields()
+        public override void SetFields()
         {
             this.Title                  = Model.Title;
             this.Description            = Model.Description;
@@ -54,25 +64,42 @@ namespace WebApplication.Models
             this.TournamentEndDate      = Model.TournamentRules.TournamentEndDate;
         }
 
+        public void SetModel(int id)
+        {
+            this.Model = db.GetTournamentById(id);
+        }
+
+        public void SetModel(TournamentModel model)
+        {
+            this.Model = model;
+        }
+
         public void Search(String title)
         {
             List<TournamentModel> models = new List<TournamentModel>();
             models = db.GetAllTournaments();
 
+            if (db.interfaceException != null)
+            {
+                this.dbException = db.interfaceException;
+                this.error = ViewError.EXCEPTION;
+                this.message = "There was an error in acquiring the tournaments.";
+            }
+
             if (title != String.Empty && title != null)
             {
-                models = models.Where(t => t.Title == title).ToList();   
+                models = models.Where(t => t.Title.Contains(title)).ToList();   
             }
 
             SearchModels = models;
         }
 
-        public ITournament getTournament(int id)
+        public void ProcessTournament()
         {
             Tourny = new Tournament.Structure.Tournament();
             List<IPlayer> players = new List<IPlayer>();
 
-            for (int i = 1; i <= 10; i++)
+            for (int i = 1; i <= 8; i++)
             {
                 UserModel uModel = new UserModel()
                 {
@@ -86,13 +113,22 @@ namespace WebApplication.Models
                 players.Add(new User(uModel));
             }
 
-            Tourny.AddSingleElimBracket(players);
-            Tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
-            Tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
-            Tourny.Brackets[0].AddWin(3, PlayerSlot.Challenger);
-            //tourny.Brackets[0].AddWin(7, PlayerSlot.Challenger);
+            //foreach (UserModel userModel in Model.Users)
+            //{
+            //    players.Add(new User(userModel));
+            //}
 
-            return Tourny;
+            Tourny.AddSingleElimBracket(players);
+            Tourny.AddDoubleElimBracket(players);
+            Tourny.AddRoundRobinBracket(players);
+            Tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
+            Tourny.Brackets[1].AddWin(1, PlayerSlot.Challenger);
+            Tourny.Brackets[2].AddWin(1, PlayerSlot.Challenger);
+            Tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
+            Tourny.Brackets[1].AddWin(2, PlayerSlot.Challenger);
+            Tourny.Brackets[2].AddWin(2, PlayerSlot.Challenger);
+            //Tourny.Brackets[0].AddWin(3, PlayerSlot.Challenger);
+            //tourny.Brackets[0].AddWin(7, PlayerSlot.Challenger);
         }
     }
 }
