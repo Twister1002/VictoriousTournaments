@@ -7,7 +7,7 @@
 
 <ul class="list-table">
     @{
-        switch (Model.TournyType)
+        switch (bracket.BracketType)
         {
             case DataLib.BracketTypeModel.BracketType.SINGLE:
                 Html.RenderPartial("Brackets/_SingleElimination", Model, new ViewDataDictionary(ViewData));

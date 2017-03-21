@@ -9,27 +9,27 @@
 <li class="list-table-header">
     <ul class="border" data-columns="@Bracket.NumberOfRounds">
         @for (int i = 1; i <= Bracket.NumberOfRounds; i++)
+        {
+            String displayTitle = "Round " + i;
+            if (i == Bracket.NumberOfRounds)
             {
-                String displayTitle = "Round " + i;
-                if (i == Bracket.NumberOfRounds)
-                {
-                    displayTitle = "Finals";
-                }
-                else if (i == Bracket.NumberOfRounds - 1)
-                {
-                    displayTitle = "Semi-Finals";
-                }
-                else if (i == Bracket.NumberOfRounds - 2)
-                {
-                    displayTitle = "Quarter Finals";
-                }
+                displayTitle = "Finals";
+            }
+            else if (i == Bracket.NumberOfRounds - 1)
+            {
+                displayTitle = "Semi-Finals";
+            }
+            else if (i == Bracket.NumberOfRounds - 2)
+            {
+                displayTitle = "Quarter Finals";
+            }
 
-                <li class="column">@displayTitle</li>
+            <li class="column">@displayTitle</li>
         }
     </ul>
 </li>
 <li class="list-table-body">
-    <ul data-columns="@ViewBag.totalRounds">
+    <ul data-columns="@Bracket.NumberOfRounds">
         @for (int roundNum = 1; roundNum <= Bracket.NumberOfRounds; roundNum++)
         {
             var matches = Bracket.GetRound(roundNum);

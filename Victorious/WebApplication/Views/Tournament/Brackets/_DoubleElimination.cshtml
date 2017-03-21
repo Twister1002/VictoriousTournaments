@@ -64,12 +64,12 @@
                 </li>
             }
         }
-        @*{
+        @{
             <li class="round" data-round="-1">
                 @{
                     var final = Bracket.GrandFinal;
-                    var finalChallenger = final.ChallengerIndex() != -1 ? Bracket.Players[final.ChallengerIndex()] : new Tournament.Structure.User();
-                    var finalDefender = final.DefenderIndex() != -1 ? Bracket.Players[final.DefenderIndex()] : new Tournament.Structure.User();
+                    var finalChallenger = final.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? final.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
+                    var finalDefender = final.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? final.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
                     ViewBag.Challenger = finalChallenger;
                     ViewBag.Defender = finalDefender;
@@ -81,7 +81,7 @@
                     Html.RenderPartial("Brackets/_Match");
                 }
             </li>
-        }*@
+        }
     </ul>
     <ul data-columns="@totalRounds">
         @{

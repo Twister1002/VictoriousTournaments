@@ -11,7 +11,6 @@ namespace WebApplication.Models
     public class TournamentViewModel : TournamentFields
     {
         public ITournament Tourny { get; private set; }
-        public BracketTypeModel.BracketType TournyType { get; private set; }
         public TournamentModel Model { get; private set; }
         public List<TournamentModel> SearchModels { get; private set; }
 
@@ -89,7 +88,7 @@ namespace WebApplication.Models
 
             if (title != String.Empty && title != null)
             {
-                models = models.Where(t => t.Title == title).ToList();   
+                models = models.Where(t => t.Title.Contains(title)).ToList();   
             }
 
             SearchModels = models;
@@ -100,7 +99,7 @@ namespace WebApplication.Models
             Tourny = new Tournament.Structure.Tournament();
             List<IPlayer> players = new List<IPlayer>();
 
-            for (int i = 1; i <= 9; i++)
+            for (int i = 1; i <= 8; i++)
             {
                 UserModel uModel = new UserModel()
                 {
@@ -119,10 +118,15 @@ namespace WebApplication.Models
             //    players.Add(new User(userModel));
             //}
 
+            Tourny.AddSingleElimBracket(players);
             Tourny.AddDoubleElimBracket(players);
-            TournyType = BracketTypeModel.BracketType.DOUBLE;
-            //Tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
-            //Tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
+            Tourny.AddRoundRobinBracket(players);
+            Tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
+            Tourny.Brackets[1].AddWin(1, PlayerSlot.Challenger);
+            Tourny.Brackets[2].AddWin(1, PlayerSlot.Challenger);
+            Tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
+            Tourny.Brackets[1].AddWin(2, PlayerSlot.Challenger);
+            Tourny.Brackets[2].AddWin(2, PlayerSlot.Challenger);
             //Tourny.Brackets[0].AddWin(3, PlayerSlot.Challenger);
             //tourny.Brackets[0].AddWin(7, PlayerSlot.Challenger);
         }
