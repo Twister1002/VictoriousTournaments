@@ -58,7 +58,9 @@ namespace DataLib
                 .WithMany(e => e.Brackets)
                 .WillCascadeOnDelete(false);
 
-           
+            //modelBuilder.Entity<UsersInTournamentsModel>()
+            //     .HasKey(e => e.UserID)
+            //     .HasKey(e => e.TournamentID);
 
             //modelBuilder.Entity<TournamentRuleModel>()
             //    .HasOptional(e => e.Tournament)

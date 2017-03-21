@@ -35,7 +35,7 @@ namespace WebApplication.Models
 
         public override void ApplyChanges()
         {
-            //userModel.Username      = this.Username;
+            userModel.Username = this.Username;
             userModel.FirstName     = this.FirstName;
             userModel.LastName      = this.LastName;
             userModel.Email         = this.Email;

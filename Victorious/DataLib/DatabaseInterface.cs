@@ -21,7 +21,7 @@ namespace DataLib
         public Exception interfaceException;
         public DatabaseInterface()
         {
-
+            //context.Database.Connection.Open();
             if (context.BracketTypes.Find(1) == null)
             {
                 context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 1, Type = BracketTypeModel.BracketType.SINGLE });
@@ -252,7 +252,7 @@ namespace DataLib
             UserModel user = new UserModel();
             try
             {
-                user = context.Users.SingleOrDefault(u => u.Username == username);
+                user = context.Users.Single(x => x.Username == username);
                 //if (user.Password == null || user.Email == null || user.FirstName == null || user.LastName == null)
                 //    throw new NullReferenceException();
             }
@@ -396,9 +396,10 @@ namespace DataLib
         {
             try
             {
-                context.UsersInTournaments.Add(new UsersInTournamentsModel() { Tournament = tournament, User = user, Permission = permission });
-                //context.Users.Add(user);
-                tournament.Users.Add(user);
+
+                context.UsersInTournaments.Add(new UsersInTournamentsModel() { TournamentID = tournament.TournamentID, UserID = user.UserID, Permission = permission });
+                context.Tournaments.Include(x => x.Users).Load();
+                context.Tournaments.Include(x => x.Users).Single(x => x.TournamentID == tournament.TournamentID).Users.Add(user);
                 context.SaveChanges();
 
             }
@@ -416,7 +417,7 @@ namespace DataLib
             TournamentModel tournament = new TournamentModel();
             try
             {
-                tournament = context.Tournaments.SingleOrDefault(t => t.TournamentID == id);
+                tournament = context.Tournaments.Single(t => t.TournamentID == id);
 
             }
             catch (Exception ex)
@@ -458,7 +459,9 @@ namespace DataLib
             try
             {
                 TournamentModel _tournament = context.Tournaments.Find(tournament.TournamentID);
-                _tournament = tournament;
+                context.Entry(_tournament).CurrentValues.SetValues(tournament);
+                context.Entry(_tournament.TournamentRules).CurrentValues.SetValues(tournament.TournamentRules);
+                //_tournament = tournament;
                 context.SaveChanges();
             }
             catch (Exception ex)
