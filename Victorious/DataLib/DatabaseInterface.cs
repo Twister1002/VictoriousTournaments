@@ -40,6 +40,7 @@ namespace DataLib
                 .Include(x => x.Brackets)
                 .Include(x => x.Users)
                 .Include(x => x.Teams)
+                .Include(x => x.TournamentRules)
                 .Load();
             //context.Users
             //    .Include(x => x.Tournaments)
@@ -199,7 +200,7 @@ namespace DataLib
             try
             {
                 UserModel _user = context.Users.Find(user.UserID);
-                _user = user;
+                context.Entry(_user).CurrentValues.SetValues(user);
                 context.SaveChanges();
             }
             catch (Exception ex)
