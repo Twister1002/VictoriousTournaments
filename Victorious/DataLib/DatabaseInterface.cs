@@ -25,14 +25,19 @@ namespace DataLib
             if (context.BracketTypes.Find(1) == null)
             {
                 context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 1, Type = BracketTypeModel.BracketType.SINGLE, TypeName = "Single Elimination" });
+                context.SaveChanges();
             }
             if (context.BracketTypes.Find(2) == null)
             {
                 context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 2, Type = BracketTypeModel.BracketType.DOUBLE, TypeName = "Double Elimination" });
+                context.SaveChanges();
+
             }
             if (context.BracketTypes.Find(3) == null)
             {
                 context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 3, Type = BracketTypeModel.BracketType.ROUNDROBIN, TypeName = "Round Robin" });
+                context.SaveChanges();
+
             }
 
 

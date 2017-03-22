@@ -175,7 +175,7 @@ namespace DatabaseDebugConsole
             //DeleteAllTournaments(db);
             //DeleteAllUsers(db);
 
-            //Seed(db);
+            Seed(db);
             TournamentModel tournament = new TournamentModel();
             tournament = db.GetAllTournaments()[0];
             UserModel user = new UserModel();
