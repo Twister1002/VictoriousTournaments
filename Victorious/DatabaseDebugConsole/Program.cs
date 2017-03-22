@@ -176,23 +176,45 @@ namespace DatabaseDebugConsole
             //DeleteAllUsers(db);
 
             //Seed(db);
-
-
+            TournamentModel tournament = new TournamentModel();
+            tournament = db.GetAllTournaments()[0];
             UserModel user = new UserModel();
-            user = db.GetAllUsers()[0];
+            //user = db.GetUserById(5);
+            //db.RemoveUserFromTournament(tournament, user);
+            PrintAllUsersInTournament(db, tournament);
 
-            List<UserModel> allUsers = db.GetAllUsers().ToList();
-            List<TeamModel> allTeams = db.GetAllTeams().ToList();
-            for (int i = 0; i < 4; i++)
-            {
-                CreateTeamMember(db, allUsers[i], allTeams[0]);
-            }
-            for (int i = 4; i < 8; i++)
-            {
-                CreateTeamMember(db, allUsers[i], allTeams[1]);
-            }
+            BracketModel bracket = tournament.Brackets.ToList()[0];
+            bracket.BracketTitle = "Test Bracket";
+            db.UpdateBracket(bracket);
 
-            PrintAllUsersOnTeam(db, allTeams[0]);
+
+            //db.AddUserToTournament(db.GetAllTournaments().ToList()[1], user, Permission.TOURNAMENT_ADMINISTRATOR);
+
+            //PrintUser(db, user);
+            //user.Username = "TestUsername";
+            //user.FirstName = "Ryan";
+            //user.LastName = "Kelton";
+            //user.PhoneNumber = "(123) 456-789";
+            //db.UpdateUser(user);
+            //PrintUser(db, user);
+
+
+            //List<UserModel> allUsers = db.GetAllUsers().ToList();
+            //List<TeamModel> allTeams = db.GetAllTeams().ToList();
+
+            //List<UserModel> allUsers = db.GetAllUsers().ToList();
+            //List<TeamModel> allTeams = db.GetAllTeams().ToList();
+            //for (int i = 0; i < 4; i++)
+            //{
+            //    CreateTeamMember(db, allUsers[i], allTeams[0]);
+            //}
+            //for (int i = 4; i < 8; i++)
+            //{
+            //    CreateTeamMember(db, allUsers[i], allTeams[1]);
+            //}
+
+            //PrintAllUsersOnTeam(db, allTeams[0]);
+
             //PrintAllUsersOnTeam(db, allTeams[1]);
             //CreateTeams(db, 5);
             //CreateTeamMember(db, user);
@@ -288,7 +310,7 @@ namespace DatabaseDebugConsole
                 defender = db.GetUserById(i + 1);
                 //db.AddDefender(match, defender);
                 match.Defender = defender;
-                db.UpdateMatch(match);
+                //db.UpdateMatch(match);
                 //db.AddMatch(match, db.GetBracketByID(1));
                 if (i < 9)
                 {
