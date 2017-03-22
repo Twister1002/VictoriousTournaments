@@ -12,6 +12,9 @@
     bool isTournyAdministrator = false;
 
     if (isLoggedIn) { int.TryParse(Session["User.UserId"].ToString(), out userId); isTournyAdministrator = Model.Model.CreatedByID == userId; }
+
+    ViewBag.isAdministrator = isTournyAdministrator;
+    ViewBag.isLoggedIn = isLoggedIn;
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
@@ -29,7 +32,7 @@
         if (isTournyAdministrator)
         {
             Html.RenderPartial("Administrator/_Players", Model);
-            Html.RenderPartial("_ViewTournament", Model);
+            Html.RenderPartial("_ViewTournament", Model.Tourny, new ViewDataDictionary(ViewData));
         }
         else
         {

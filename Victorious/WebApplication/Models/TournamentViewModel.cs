@@ -18,16 +18,20 @@ namespace WebApplication.Models
         {
             Model = new TournamentModel();
             Model.TournamentRules = new TournamentRuleModel();
+            Init();
         }
 
         public TournamentViewModel(int id)
         {
             Model = db.GetTournamentById(id);
+            Init();
             SetFields();
         }
 
         public TournamentViewModel(TournamentModel model)
         {
+            Init();
+
             if (model != null)
             {
                 Model = model;
@@ -35,10 +39,18 @@ namespace WebApplication.Models
             }
         }
 
+        public void Init()
+        {
+            this.BracketTypes = db.GetAllBracketTypes();
+        }
+
         public override void ApplyChanges(int SessionId)
         {
+            // Tournament Stuff
             Model.Title                                 = this.Title;
             Model.Description                           = this.Description;
+
+            // Tournament Rule Stuff
             Model.TournamentRules.IsPublic              = this.IsPublic;
             Model.TournamentRules.RegistrationStartDate = this.RegistrationStartDate;
             Model.TournamentRules.RegistrationEndDate   = this.RegistrationEndDate;
@@ -46,6 +58,10 @@ namespace WebApplication.Models
             Model.TournamentRules.TournamentEndDate     = this.TournamentEndDate;
             Model.LastEditedOn = DateTime.Now;
 
+            // Bracket Stuff
+            Model.Brackets.Add(new BracketModel() { BracketTypeID = this.BracketType });
+
+            // Tournament Creator stuff
             if (Model.CreatedByID == 0 || Model.CreatedByID == null)
             {
                 Model.CreatedByID = SessionId;
@@ -57,6 +73,7 @@ namespace WebApplication.Models
         {
             this.Title                  = Model.Title;
             this.Description            = Model.Description;
+            //this.BracketType = Model.Brackets.Where(x => x.)
             this.IsPublic               = Model.TournamentRules.IsPublic == null ? true : (bool)Model.TournamentRules.IsPublic;
             this.RegistrationStartDate  = Model.TournamentRules.RegistrationStartDate;
             this.RegistrationEndDate    = Model.TournamentRules.RegistrationEndDate;
@@ -98,37 +115,26 @@ namespace WebApplication.Models
         {
             Tourny = new Tournament.Structure.Tournament();
             List<IPlayer> players = new List<IPlayer>();
-
-            //for (int i = 1; i <= 8; i++)
-            //{
-            //    UserModel uModel = new UserModel()
-            //    {
-            //        UserID = i,
-            //        FirstName = "FirstName " + i,
-            //        LastName = "LastName " + i,
-            //        Username = "Player " + i,
-            //        Email = "Email" + i
-            //    };
-
-            //    players.Add(new User(uModel));
-            //}
-
+            
             foreach (UserModel userModel in Model.Users)
             {
                 players.Add(new User(userModel));
             }
 
-            Tourny.AddSingleElimBracket(players);
-            Tourny.AddDoubleElimBracket(players);
-            Tourny.AddRoundRobinBracket(players);
-            //Tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
-            //Tourny.Brackets[1].AddWin(1, PlayerSlot.Challenger);
-            //Tourny.Brackets[2].AddWin(1, PlayerSlot.Challenger);
-            //Tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
-            //Tourny.Brackets[1].AddWin(2, PlayerSlot.Challenger);
-            //Tourny.Brackets[2].AddWin(2, PlayerSlot.Challenger);
-            //Tourny.Brackets[0].AddWin(3, PlayerSlot.Challenger);
-            //tourny.Brackets[0].AddWin(7, PlayerSlot.Challenger);
+            switch ((int)Model.Brackets.ToList()[0].BracketTypeID)
+            {
+                case (int)BracketTypeModel.BracketType.SINGLE:
+                    Tourny.AddSingleElimBracket(players);
+                    break;
+                case (int)BracketTypeModel.BracketType.DOUBLE:
+                    Tourny.AddDoubleElimBracket(players);
+                    break;
+                case (int)BracketTypeModel.BracketType.ROUNDROBIN:
+                    Tourny.AddRoundRobinBracket(players);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

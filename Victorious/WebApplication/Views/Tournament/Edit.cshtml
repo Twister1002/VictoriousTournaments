@@ -24,6 +24,11 @@
                     @Html.CheckBoxFor(t => t.IsPublic)
                     @Html.ValidationMessageFor(t => t.IsPublic)
                 </li>
+                <li>
+                    @Html.LabelFor(t => t.BracketTypes)
+                    @Html.DropDownListFor(t => t.BracketType, new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "");
+                    @Html.ValidationMessageFor(t => t.BracketTypes)
+                </li>
             </ul>
         </div>
         <div class="section">

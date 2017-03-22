@@ -1,25 +1,19 @@
-﻿@model WebApplication.Models.TournamentViewModel
-
-@{
-    var Bracket = Model.Tourny.Brackets[1];
-    var isLoggedIn = Session["User.UserId"] != null;
-    var isAdministrator = isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID;
-}
+﻿@model Tournament.Structure.IBracket
 
 <li class="list-table-header">
-    <ul class="border" data-columns="@Bracket.NumberOfRounds">
-        @for (int i = 1; i <= Bracket.NumberOfRounds; i++)
+    <ul class="border" data-columns="@Model.NumberOfRounds">
+        @for (int i = 1; i <= Model.NumberOfRounds; i++)
         {
             String displayTitle = "Round " + i;
-            if (i == Bracket.NumberOfRounds)
+            if (i == Model.NumberOfRounds)
             {
                 displayTitle = "Finals";
             }
-            else if (i == Bracket.NumberOfRounds - 1)
+            else if (i == Model.NumberOfRounds - 1)
             {
                 displayTitle = "Semi-Finals";
             }
-            else if (i == Bracket.NumberOfRounds - 2)
+            else if (i == Model.NumberOfRounds - 2)
             {
                 displayTitle = "Quarter Finals";
             }
@@ -29,10 +23,10 @@
     </ul>
 </li>
 <li class="list-table-body">
-    <ul data-columns="@Bracket.NumberOfRounds">
-        @for (int roundNum = 1; roundNum <= Bracket.NumberOfRounds; roundNum++)
+    <ul data-columns="@Model.NumberOfRounds">
+        @for (int roundNum = 1; roundNum <= Model.NumberOfRounds; roundNum++)
         {
-            var matches = Bracket.GetRound(roundNum);
+            var matches = Model.GetRound(roundNum);
 
             <li class="round" data-round="@roundNum">
                 @foreach (var match in matches)
@@ -40,15 +34,22 @@
                     var challenger = match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
                     var defender = match.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
+                    if (challenger.Id == -1)
+                    {
+                        challenger.Name = "Winner from " + match.PreviousMatchNumbers[1];
+                    }
+                    if (defender.Id == -1)
+                    {
+                        defender.Name = "Winner from " + match.PreviousMatchNumbers[0];
+                    }
+
                     ViewBag.Players = match.Players;
                     ViewBag.Challenger = challenger;
                     ViewBag.Defender = defender;
-                    ViewBag.isLoggedIn = isLoggedIn;
-                    ViewBag.isAdministrator = isAdministrator;
                     ViewBag.matchNum = match.MatchNumber;
                     ViewBag.IsReady = match.IsReady;
 
-                    Html.RenderPartial("Brackets/_Match", new ViewDataDictionary(ViewData));
+                    Html.RenderPartial("Brackets/_Match", match, new ViewDataDictionary(ViewData));
                 }
             </li>
         }

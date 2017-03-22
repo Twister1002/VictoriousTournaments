@@ -1,18 +1,14 @@
-﻿
+﻿@model Tournament.Structure.IMatch
+
 @{
     Tournament.Structure.IPlayer Challenger = ViewBag.Challenger == null ? new Tournament.Structure.User() : ViewBag.Challenger;
     Tournament.Structure.IPlayer Defender = ViewBag.Defender == null ? new Tournament.Structure.User() : ViewBag.Defender;
-    bool isLoggedIn = ViewBag.isLoggedIn == null ? false : ViewBag.isLoggedIn;
-    bool isAdministrator = ViewBag.isAdministrator == null ? false : ViewBag.isAdministrator;
-    bool isReady = ViewBag.isReady == null ? false : ViewBag.isReady;
-    int matchNum = ViewBag.matchNum == null ? -1 : ViewBag.matchNum;
-    string matchName = ViewBag.matchName == null ? "Match "+matchNum : ViewBag.matchName;
 }
 
-<div class="match" data-match="@matchNum">
+<div class="match" data-match="@Model.MatchNumber">
     <label class="matchNum">
-        @matchName
-        @if (isLoggedIn && isAdministrator && isReady)
+        Match @Model.MatchNumber
+        @if (ViewBag.isAdministrator && Model.IsReady)
         {
             <span class="edit">
                 <img class="match-edit svg-pencil svg clickable" src="~/Images/svg/pencil.svg" />
