@@ -88,6 +88,49 @@ namespace Tournament.Structure
 			}
 			return Players.Count;
 		}
+		public void SetNewPlayerlist(List<IPlayer> _players)
+		{
+			if (null == _players)
+			{
+				throw new ArgumentNullException("_players");
+			}
+			if (null == Players)
+			{
+				Players = new List<IPlayer>();
+			}
+
+			Players.Clear();
+			Players = _players;
+			foreach (IBracket bracket in Brackets)
+			{
+				bracket.ResetPlayers();
+			}
+		}
+		public void AdvancePlayersByRanking(int _initialBracketIndex, int _newBracketIndex)
+		{
+			if (_initialBracketIndex < 0 || _initialBracketIndex >= Brackets.Count)
+			{
+				throw new InvalidIndexException
+					("Initial Bracket Index is out of range!");
+			}
+			if (_newBracketIndex < 0 || _newBracketIndex >= Brackets.Count)
+			{
+				throw new InvalidIndexException
+					("New Bracket Index is out of range!");
+			}
+			if (!Brackets[_initialBracketIndex].IsFinished)
+			{
+				throw new BracketException
+					("Can't retrieve seeds from an unfinished bracket!");
+			}
+
+			List<IPlayer> pList = new List<IPlayer>();
+			foreach (int pId in Brackets[_initialBracketIndex].Rankings)
+			{
+				pList.Add(Brackets[_initialBracketIndex].Players.Find(p => p.Id == pId));
+			}
+			Brackets[_newBracketIndex].SetNewPlayerlist(pList);
+		}
 		public void AddPlayer(IPlayer _player)
 		{
 			if (null == _player)

@@ -50,6 +50,24 @@ namespace Tournament.Structure
 			}
 			return Players.Count;
 		}
+		public void SetNewPlayerlist(List<IPlayer> _players)
+		{
+			if (null == _players)
+			{
+				throw new ArgumentNullException("_players");
+			}
+			if (null == Players)
+			{
+				Players = new List<IPlayer>();
+			}
+
+			Players.Clear();
+			foreach (IPlayer player in _players)
+			{
+				Players.Add(player);
+			}
+			ResetBracket();
+		}
 		public void AddPlayer(IPlayer _player)
 		{
 			if (null == _player)

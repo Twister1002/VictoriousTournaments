@@ -79,6 +79,13 @@ namespace Tournament.Structure
 		int NumberOfPlayers();
 
 		/// <summary>
+		/// Replace this bracket's Players (if any)
+		/// with the passed-in list.
+		/// </summary>
+		/// <param name="_players">List of Player-type objects to store.</param>
+		void SetNewPlayerlist(List<IPlayer> _players);
+
+		/// <summary>
 		/// Add a Player.
 		/// </summary>
 		/// <param name="_player">Player-type object to add.</param>
