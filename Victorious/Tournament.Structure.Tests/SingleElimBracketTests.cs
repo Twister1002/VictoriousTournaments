@@ -279,6 +279,92 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB AddWin")]
+		public void SEBAddWin_FinishedMatch_DoesNotSetBracketIsFinished()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			b.AddWin(1, PlayerSlot.Challenger);
+
+			Assert.IsFalse(b.IsFinished);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB AddWin")]
+		public void SEBAddWin_FinishedFinals_SetsBracketIsFinished()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddWin(n, PlayerSlot.Defender);
+			}
+
+			Assert.IsTrue(b.IsFinished);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB AddWin")]
+		[TestCategory("Rankings")]
+		public void SEBAddWin_FinishedMatch_AddsLoserToRankingsArray()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			b.AddWin(1, PlayerSlot.Defender);
+
+			Assert.AreEqual(b.Rankings[b.Rankings.Length - 1],
+				b.GetMatch(1).Players[(int)PlayerSlot.Challenger].Id);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB AddWin")]
+		[TestCategory("Rankings")]
+		public void SEBAddWin_FinishedBracket_AddsWinnerToTopOfRankings()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddWin(n, PlayerSlot.Defender);
+			}
+
+			Assert.AreEqual(b.Rankings[0],
+				b.GetMatch(b.NumberOfMatches).Players[(int)PlayerSlot.Defender].Id);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB AddWin")]
 		[ExpectedException(typeof(InactiveMatchException))]
 		public void SEBAddWin_ThrowsInactive_WhenMatchIsAlreadyOver()
 		{
@@ -424,6 +510,77 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB SubtractWin")]
+		public void SEBSubtractWin_ReversingFinalsVictory_SetsBracketIsNOTFinished()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddWin(n, PlayerSlot.Challenger);
+			}
+			b.SubtractWin(b.NumberOfMatches, PlayerSlot.Challenger);
+
+			Assert.IsFalse(b.IsFinished);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB SubtractWin")]
+		public void SEBSubtractWin_DoesNotToggleIsFinished_WhenVictoryIsNotReversed()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			//b.CreateBracket();
+
+			for (int n = 1; n < b.NumberOfMatches; ++n)
+			{
+				b.AddWin(n, PlayerSlot.Challenger);
+			}
+			b.GetMatch(b.NumberOfMatches).SetWinsNeeded(2);
+			b.AddWin(b.NumberOfMatches, PlayerSlot.Defender);
+			b.AddWin(b.NumberOfMatches, PlayerSlot.Challenger);
+			b.AddWin(b.NumberOfMatches, PlayerSlot.Defender);
+			b.SubtractWin(b.NumberOfMatches, PlayerSlot.Challenger);
+			// This leaves final match at 2-0 (still finished)
+
+			Assert.IsTrue(b.IsFinished);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB SubtractWin")]
+		[TestCategory("Rankings")]
+		public void SEBSubtractWin_ReactivatedMatch_UpdatesRankingsArray()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			b.AddWin(1, PlayerSlot.Defender);
+			b.SubtractWin(1, PlayerSlot.Defender);
+
+			Assert.AreEqual(-1, b.Rankings[b.Rankings.Length - 1]);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB SubtractWin")]
 		[ExpectedException(typeof(InvalidIndexException))]
 		public void SEBSubtractWin_ThrowsInvalidIndex_WithBadMatchNumberInput()
 		{
@@ -478,6 +635,28 @@ namespace Tournament.Structure.Tests
 			b.ResetMatchScore(1);
 
 			Assert.AreEqual(0, b.GetMatch(1).Score[(int)PlayerSlot.Challenger]);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB ResetMatchScore")]
+		public void SEBResetMatchScore_UpdatesRankingsArray()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddWin(n, PlayerSlot.Defender);
+			}
+			b.ResetMatchScore(1);
+
+			Assert.AreEqual(-1, b.Rankings[b.Rankings.Length - 1]);
 		}
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
