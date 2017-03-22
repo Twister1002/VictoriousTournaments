@@ -13,7 +13,11 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		public BracketTypeModel.BracketType BracketType
 		{ get; protected set; }
+		public bool IsFinished
+		{ get; protected set; }
 		public List<IPlayer> Players
+		{ get; protected set; }
+		public int[] Rankings
 		{ get; protected set; }
 		protected Dictionary<int, IMatch> Matches
 		{ get; set; }
@@ -34,6 +38,7 @@ namespace Tournament.Structure
 		public abstract void AddWin(int _matchNumber, PlayerSlot _slot);
 		public abstract void SubtractWin(int _matchNumber, PlayerSlot _slot);
 		public abstract void ResetMatchScore(int _matchNumber);
+		protected abstract void UpdateRankings();
 		#endregion
 
 		#region Public Methods
@@ -81,6 +86,7 @@ namespace Tournament.Structure
 
 			if (null != Players[_index])
 			{
+				// Replace existing Player in any Matches
 				for (int n = 1; n <= NumberOfMatches; ++n)
 				{
 					try
@@ -89,6 +95,14 @@ namespace Tournament.Structure
 					}
 					catch (PlayerNotFoundException)
 					{ }
+				}
+				// Replace existing Player in the Rankings
+				for (int i = 0; i < Rankings.Count(); ++i)
+				{
+					if (Rankings[i] == Players[_index].Id)
+					{
+						Rankings[i] = _player.Id;
+					}
 				}
 			}
 
@@ -195,11 +209,13 @@ namespace Tournament.Structure
 		#region Private Methods
 		protected virtual void ResetBracket()
 		{
+			IsFinished = false;
 			Matches = null;
 			LowerMatches = null;
 			GrandFinal = null;
 			NumberOfRounds = NumberOfLowerRounds = 0;
 			NumberOfMatches = 0;
+			Rankings = Enumerable.Repeat(-1, Players.Count).ToArray();
 		}
 		#endregion
 	}

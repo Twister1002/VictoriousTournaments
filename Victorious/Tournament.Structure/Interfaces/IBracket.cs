@@ -12,7 +12,9 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		BracketTypeModel.BracketType BracketType { get; }
+		bool IsFinished { get; }
 		List<IPlayer> Players { get; }
+		int[] Rankings { get; }
 
 		/// <summary>
 		/// NULL if not applicable.

@@ -12,7 +12,9 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		// inherits BracketType BracketType
+		// inherits bool IsFinished
 		// inherits List<IPlayer> Players
+		// inherits int[] Rankings
 		// inherits Dictionary<int, IMatch> Matches
 		// inherits int NumberOfRounds
 		// inherits Dictionary<int, IMatch> LowerMatches (null)
@@ -180,6 +182,17 @@ namespace Tournament.Structure
 
 			Matches[_matchNumber].AddWin(_slot);
 			Scores[Matches[_matchNumber].Players[(int)_slot].Id] += 1;
+
+			UpdateRankings();
+			IsFinished = true;
+			foreach (IMatch match in Matches.Values)
+			{
+				if (!match.IsFinished)
+				{
+					IsFinished = false;
+					break;
+				}
+			}
 		}
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
@@ -196,6 +209,9 @@ namespace Tournament.Structure
 
 			Matches[_matchNumber].SubtractWin(_slot);
 			Scores[Matches[_matchNumber].Players[(int)_slot].Id] -= 1;
+
+			IsFinished = false;
+			UpdateRankings();
 		}
 		public override void ResetMatchScore(int _matchNumber)
 		{
@@ -216,10 +232,21 @@ namespace Tournament.Structure
 			Matches[_matchNumber].ResetScore();
 			Scores[Matches[_matchNumber].Players[(int)PlayerSlot.Defender].Id] -= defScore;
 			Scores[Matches[_matchNumber].Players[(int)PlayerSlot.Challenger].Id] -= chalScore;
+
+			IsFinished = false;
+			UpdateRankings();
 		}
 		#endregion
 
 		#region Private Methods
+		protected override void UpdateRankings()
+		{
+			Rankings = Players
+				.Select(p => p.Id)
+				.OrderBy(id => Scores[id])
+				.ToArray();
+		}
+
 		protected override void ResetBracket()
 		{
 			base.ResetBracket();
