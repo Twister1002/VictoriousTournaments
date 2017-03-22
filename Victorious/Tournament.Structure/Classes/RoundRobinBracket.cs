@@ -243,7 +243,7 @@ namespace Tournament.Structure
 		{
 			Rankings = Players
 				.Select(p => p.Id)
-				.OrderBy(id => Scores[id])
+				.OrderByDescending(id => Scores[id])
 				.ToArray();
 		}
 
