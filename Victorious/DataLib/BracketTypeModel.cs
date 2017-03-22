@@ -28,6 +28,8 @@ namespace DataLib
         [Key]
         public int BracketTypeID { get; set; }
 
+        public string TypeName { get; set; }
+
         public BracketType Type { get; set; }
     }
 }

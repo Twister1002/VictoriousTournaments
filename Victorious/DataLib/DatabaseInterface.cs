@@ -24,15 +24,15 @@ namespace DataLib
             //context.Database.Connection.Open();
             if (context.BracketTypes.Find(1) == null)
             {
-                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 1, Type = BracketTypeModel.BracketType.SINGLE });
+                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 1, Type = BracketTypeModel.BracketType.SINGLE, TypeName = "Single Elimination" });
             }
             if (context.BracketTypes.Find(2) == null)
             {
-                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 2, Type = BracketTypeModel.BracketType.DOUBLE });
+                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 2, Type = BracketTypeModel.BracketType.DOUBLE, TypeName = "Double Elimination" });
             }
             if (context.BracketTypes.Find(3) == null)
             {
-                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 3, Type = BracketTypeModel.BracketType.ROUNDROBIN });
+                context.BracketTypes.Add(new BracketTypeModel() { BracketTypeID = 3, Type = BracketTypeModel.BracketType.ROUNDROBIN, TypeName = "Round Robin" });
             }
 
 
@@ -42,9 +42,6 @@ namespace DataLib
                 .Include(x => x.Teams)
                 .Include(x => x.TournamentRules)
                 .Load();
-            //context.Users
-            //    .Include(x => x.Tournaments)
-            //    .Load();
             context.Brackets
                 .Include(x => x.Matches)
                 .Load();
@@ -688,7 +685,6 @@ namespace DataLib
                 {
                     DeleteMatch(match);
                 }
-                //context.Brackets.Attach(bracket);
                 context.Brackets.Remove(_bracket);
                 context.SaveChanges();
             }
@@ -699,12 +695,6 @@ namespace DataLib
             }
             return DbError.SUCCESS;
         }
-
-        #endregion
-
-        #region BracketTypes
-
-
 
         #endregion
 
@@ -931,7 +921,7 @@ namespace DataLib
                 context.TeamMembers.Add(teamMember);
                 //UserModel user = new UserModel();
                 //user = context.Users.Find(teamMember.User.UserID);
-                
+
                 teamMember.User.Teams.Add(context.Teams.Find(teamMember.Team.TeamID));
                 //teamMember.User.Teams.Add(teamMember.Team);
                 context.Teams.Find(teamMember.TeamID).TeamMembers.Add(teamMember);
@@ -1008,6 +998,27 @@ namespace DataLib
         //{
 
         //}
+
+        #endregion
+
+        #region BracketTypes
+
+        public List<BracketTypeModel> GetAllBracketTypes()
+        {
+            List<BracketTypeModel> types = new List<BracketTypeModel>();
+            try
+            {
+                types = context.BracketTypes.ToList();
+            }
+            catch (Exception ex)
+            {
+                WriteException(ex);
+                types.Clear();
+                return types;
+                throw;
+            }
+            return types;
+        }
 
         #endregion
 
