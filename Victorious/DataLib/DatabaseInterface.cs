@@ -328,11 +328,17 @@ namespace DataLib
 
         public DbError TournamentExists(TournamentModel tournament)
         {
-            TournamentModel _tournament = context.Tournaments.Find(tournament.TournamentID);
-            if (tournament == null)
+            try
+            {
+                TournamentModel _tournament = context.Tournaments.Find(tournament.TournamentID);
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
-            else
-                return DbError.EXISTS;
+            }
+            return DbError.EXISTS;
         }
 
         public List<TournamentModel> GetAllTournaments()
@@ -345,8 +351,8 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
+                WriteException(ex);
                 tournaments.Clear();
-                Console.WriteLine("Exception " + ex.ToString() + " in GetAllTournaments");
                 tournaments.Add(new TournamentModel() { TournamentID = 0 });
             }
             return tournaments;
@@ -358,19 +364,17 @@ namespace DataLib
             TournamentModel _tournament = new TournamentModel();
             try
             {
-                // Tournament.TournamentRules.TournamentID isn't being properly set on insert of tournament, will be fixed
                 _tournament = tournament;
                 _rules = tournament.TournamentRules;
                 context.TournamentRules.Add(_rules);
                 context.SaveChanges();
                 context.Tournaments.Add(tournament);
-
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in AddTournament");
+                WriteException(ex);
                 return DbError.FAILED_TO_ADD;
             }
             return DbError.SUCCESS;
@@ -380,16 +384,15 @@ namespace DataLib
         {
             try
             {
-
                 context.UsersInTournaments.Add(new UsersInTournamentsModel() { TournamentID = tournament.TournamentID, UserID = user.UserID, Permission = permission });
                 context.Tournaments.Include(x => x.Users).Load();
                 context.Tournaments.Include(x => x.Users).Single(x => x.TournamentID == tournament.TournamentID).Users.Add(user);
                 context.SaveChanges();
-
             }
             catch (Exception ex)
             {
                 interfaceException = ex;
+                WriteException(ex);
                 return DbError.FAILED_TO_ADD;
             }
 
@@ -402,11 +405,11 @@ namespace DataLib
             try
             {
                 tournament = context.Tournaments.Single(t => t.TournamentID == id);
-
             }
             catch (Exception ex)
             {
                 interfaceException = ex;
+                WriteException(ex);
                 tournament.TournamentID = -1;
             }
             return tournament;
@@ -445,12 +448,12 @@ namespace DataLib
                 TournamentModel _tournament = context.Tournaments.Find(tournament.TournamentID);
                 context.Entry(_tournament).CurrentValues.SetValues(tournament);
                 context.Entry(_tournament.TournamentRules).CurrentValues.SetValues(tournament.TournamentRules);
-                //_tournament = tournament;
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception " + ex.ToString() + " in UpdateTournament");
+                interfaceException = ex;
+                WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
             return DbError.SUCCESS;
@@ -465,7 +468,6 @@ namespace DataLib
                 {
                     TournamentRuleModel _rule = context.TournamentRules.Find(tournament.TournamentRules.TournamentRulesID);
                     DeleteTournamentRules(_rule);
-
                 }
                 foreach (var bracket in _tournament.Brackets.ToList())
                 {
@@ -475,15 +477,13 @@ namespace DataLib
                 {
                     RemoveUserFromTournament(_tournament, user);
                 }
-                //context.Entry(tournament).State = System.Data.Entity.EntityState.Deleted;
-                //context.Tournaments.Attach(_tournament);
                 context.Tournaments.Remove(_tournament);
-
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception " + ex.ToString() + " in DeleteTournament");
+                interfaceException = ex;
+                WriteException(ex);
                 return DbError.FAILED_TO_DELETE;
             }
             return DbError.SUCCESS;
@@ -491,29 +491,54 @@ namespace DataLib
 
         public DbError RemoveUserFromTournament(TournamentModel tournament, UserModel user)
         {
-
             try
             {
                 context.UsersInTournaments.Remove(context.UsersInTournaments.Single(x => x.TournamentID == tournament.TournamentID && x.UserID == user.UserID));
-                //TournamentModel _tournament = context.Tournaments.Include(x => x.Users).Single(x => x.TournamentID == tournament.TournamentID);
                 TournamentModel _tournament = context.Tournaments.Find(tournament.TournamentID);
                 UserModel _user = context.Users.Find(user.UserID);
                 context.Tournaments.Include(x => x.Users).Single(x => x.TournamentID == tournament.TournamentID).Users.Remove(_user);
-                //context.Tournaments.Remove(_tournament);
-                //tournament.Users.Remove(user);
-                //user.Tournaments.Remove(tournament);
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_REMOVE;
-                throw;
             }
             return DbError.SUCCESS;
-
         }
 
+        public List<TournamentModel> FindTournaments(TournamentModel tournament, bool matchOneColumn)
+        {
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+            TournamentRuleModel rules = tournament.TournamentRules;
+            try
+            {
+                //var _tournaments = from t in context.Tournaments select t;
+
+
+                //_tournaments = context.Tournaments.Find(t => t.CreatedOn == tournament.CreatedOn || t.Title == tournament.Title || t.Description == tournament.Description
+                //    || t.TournamentRules.CheckInBegins == rules.CheckInBegins || t.TournamentRules.CheckInEnds == rules.CheckInEnds || t.TournamentRules.IsPublic == rules.IsPublic
+                //    || t.TournamentRules.NumberOfRounds == rules.NumberOfRounds || t.TournamentRules.PrizePurse == rules.PrizePurse || t.TournamentRules.RegistrationEndDate == rules.RegistrationEndDate
+                //    || t.TournamentRules.RegistrationStartDate == rules.RegistrationStartDate || t.TournamentRules.TournamentEndDate == rules.TournamentEndDate
+                //    || t.TournamentRules.TournamentStartDate == rules.TournamentStartDate);
+
+
+                //tournament = context.Tournaments.ToDictionary(string, t => t.Title).ToList();
+
+                //tournaments = context.Tournaments.Where().ToList();
+
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                tournaments.Clear();
+                tournaments.Add(new TournamentModel() { TournamentID = 0 });
+                return tournaments;
+            }
+            return tournaments;
+        }
 
         #endregion
 
@@ -525,15 +550,13 @@ namespace DataLib
             {
                 TournamentRuleModel tr = tournament.TournamentRules;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                interfaceException = ex;
+                WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
             }
-
             return DbError.EXISTS;
-
-            //TournamentRuleModel tournamentRule = context.TournamentRules.Single(t => t.TournamnetRulesID == id);
-
         }
 
         [Obsolete("Use AddRules(ref TournamentRuleModel tournamentRules, TournamentModel tournament).")]
@@ -582,12 +605,13 @@ namespace DataLib
             try
             {
                 TournamentRuleModel _tournamentRules = context.TournamentRules.Find(tournamentRules.TournamentID);
-                _tournamentRules = tournamentRules;
+                context.Entry(_tournamentRules).CurrentValues.SetValues(tournamentRules);
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception " + ex.ToString() + " in UpdateRules");
+                interfaceException = ex;
+                WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
             return DbError.SUCCESS;
@@ -599,13 +623,12 @@ namespace DataLib
             {
                 TournamentRuleModel _rules = context.TournamentRules.Find(tournamentRules.TournamentRulesID);
                 context.TournamentRules.Remove(_rules);
-                //context.TournamentRules.Attach(tournamentRules);
-                //context.TournamentRules.Remove(tournamentRules);
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception " + ex.ToString() + " in DeleteTournamentRules");
+                interfaceException = ex;
+                WriteException(ex);
                 return DbError.FAILED_TO_DELETE;
             }
             return DbError.SUCCESS;
@@ -614,24 +637,25 @@ namespace DataLib
         #endregion
 
         #region Brackets
-        public bool BracketExists(int id)
+        public DbError BracketExists(BracketModel bracket)
         {
-            BracketModel bracket = context.Brackets.Find(id);
-            if (bracket == null)
+            try
             {
-                return false;
+                BracketModel _bracket = context.Brackets.Find(bracket.BracketID);
             }
-            else
-                return true;
+            catch (Exception ex)
+            {
+                WriteException(ex);
+                return DbError.DOES_NOT_EXIST;
+            }
+            return DbError.EXISTS;
         }
-
 
         // Adds the passed-in bracket to the databaase and also adds the bracket to the passed-in tournament's list of brackets
         public DbError AddBracket(ref BracketModel bracket, TournamentModel tournament)
         {
             try
             {
-
                 context.Brackets.Add(bracket);
                 tournament.Brackets.Add(bracket);
                 bracket.Tournament = tournament;
@@ -639,10 +663,9 @@ namespace DataLib
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception " + ex.ToString() + " in AddBracket");
+                WriteException(ex);
                 return DbError.FAILED_TO_ADD;
             }
-
             return DbError.SUCCESS;
         }
 
@@ -653,12 +676,13 @@ namespace DataLib
             {
                 bracket = context.Brackets.Single(b => b.BracketID == id);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                interfaceException = ex;
                 bracket.BracketID = -1;
+                WriteException(ex);
                 return bracket;
             }
-
             return bracket;
         }
 
@@ -668,18 +692,15 @@ namespace DataLib
             {
                 BracketModel _bracket = context.Brackets.Find(bracket.BracketID);
                 context.Entry(_bracket).CurrentValues.SetValues(bracket);
-                //context.Entry(_bracket.Matches).CurrentValues.SetValues(bracket.Matches);
-                //_bracket = bracket;
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception" + ex.ToString() + " in UpdateBracket");
+                WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
             return DbError.SUCCESS;
         }
-
 
         public DbError DeleteBracket(BracketModel bracket)
         {
@@ -695,7 +716,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception " + ex.ToString() + " in DeleteBracket");
+                WriteException(ex);
                 return DbError.FAILED_TO_DELETE;
             }
             return DbError.SUCCESS;
@@ -711,11 +732,11 @@ namespace DataLib
             {
                 MatchModel _match = context.Matches.Find(match.MatchID);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
             }
-
             return DbError.EXISTS;
         }
 
@@ -725,14 +746,12 @@ namespace DataLib
             {
                 MatchModel _match = context.Matches.Find(match.MatchID);
                 context.Entry(_match).CurrentValues.SetValues(match);
-                //_match = match;
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception " + ex.ToString() + " in UpdateMatch");
+                WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
-
             }
             return DbError.SUCCESS;
         }
@@ -746,10 +765,10 @@ namespace DataLib
                 bracket.Matches.Add(match);
                 context.SaveChanges();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                WriteException(ex);
                 return DbError.ERROR;
-
             }
             return DbError.SUCCESS;
         }
@@ -766,7 +785,6 @@ namespace DataLib
                 match.MatchID = -1;
                 return match;
             }
-
             return match;
         }
 

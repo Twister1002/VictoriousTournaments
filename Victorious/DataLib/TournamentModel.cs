@@ -14,7 +14,7 @@ namespace DataLib
         public TournamentModel()
         {
             Users = new Collection<UserModel>();
-            Brackets = new Collection<BracketModel>();
+            Brackets = new Collection<BracketModel>(); // change to list
             //TournamentRules = new TournamentRuleModel();
 
         }

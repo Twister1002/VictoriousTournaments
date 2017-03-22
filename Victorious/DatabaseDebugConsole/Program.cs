@@ -175,17 +175,20 @@ namespace DatabaseDebugConsole
             //DeleteAllTournaments(db);
             //DeleteAllUsers(db);
 
-            Seed(db);
+            //Seed(db);
             TournamentModel tournament = new TournamentModel();
-            tournament = db.GetAllTournaments()[0];
-            UserModel user = new UserModel();
+            //tournament = db.GetAllTournaments()[0];
+            tournament.Title = "Tournament 1";
+            TournamentModel foundTournament = db.FindTournaments(tournament, true)[0];
+            Console.WriteLine(foundTournament.Title);
+            //UserModel user = new UserModel();
             //user = db.GetUserById(5);
             //db.RemoveUserFromTournament(tournament, user);
-            PrintAllUsersInTournament(db, tournament);
+            //PrintAllUsersInTournament(db, tournament);
 
-            BracketModel bracket = tournament.Brackets.ToList()[0];
-            bracket.BracketTitle = "Test Bracket";
-            db.UpdateBracket(bracket);
+            //BracketModel bracket = tournament.Brackets.ToList()[0];
+            //bracket.BracketTitle = "Test Bracket";
+            //db.UpdateBracket(bracket);
 
 
             //db.AddUserToTournament(db.GetAllTournaments().ToList()[1], user, Permission.TOURNAMENT_ADMINISTRATOR);
