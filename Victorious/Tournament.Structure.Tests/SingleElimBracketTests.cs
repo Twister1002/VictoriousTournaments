@@ -5,6 +5,7 @@ using Moq;
 
 namespace Tournament.Structure.Tests
 {
+	#region Bracket Creation
 	[TestClass]
 	public class SingleElimBracketTests
 	{
@@ -256,7 +257,9 @@ namespace Tournament.Structure.Tests
 
 			Assert.IsNull(b.GrandFinal);
 		}
+		#endregion
 
+		#region Bracket Progression
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB AddWin")]
@@ -782,6 +785,7 @@ namespace Tournament.Structure.Tests
 
 			Assert.IsNull(b.GetMatch(31).Players[(int)PlayerSlot.Defender]);
 		}
+		#endregion
 
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]

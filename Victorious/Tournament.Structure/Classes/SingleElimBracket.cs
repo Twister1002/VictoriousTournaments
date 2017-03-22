@@ -350,10 +350,9 @@ namespace Tournament.Structure
 			}
 
 			// If this Match is over, remove advanced Players from future Matches
-			bool needToUpdateRankings = false;
+			bool needToUpdateRankings = Matches[_matchNumber].IsFinished;
 			if (Matches[_matchNumber].IsFinished)
 			{
-				needToUpdateRankings = true;
 				RemovePlayerFromFutureMatches
 					(Matches[_matchNumber].NextMatchNumber,
 					ref Matches[_matchNumber].Players[(int)(Matches[_matchNumber].WinnerSlot)]);

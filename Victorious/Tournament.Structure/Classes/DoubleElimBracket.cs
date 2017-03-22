@@ -323,15 +323,11 @@ namespace Tournament.Structure
 					("Player slot must be 0 or 1!");
 			}
 
-			bool needToUpdateRankings = false;
+			bool needToUpdateRankings = (_slot == GetMatch(_matchNumber).WinnerSlot);
 
 			// Check the Grand Final:
 			if (GrandFinal.MatchNumber == _matchNumber)
 			{
-				if (GrandFinal.IsFinished)
-				{
-					needToUpdateRankings = true;
-				}
 				GrandFinal.SubtractWin(_slot);
 			}
 			// Check the Upper Bracket:
@@ -339,8 +335,6 @@ namespace Tournament.Structure
 			{
 				if (_slot == Matches[_matchNumber].WinnerSlot)
 				{
-					needToUpdateRankings = true;
-
 					PlayerSlot loserSlot = (_slot == PlayerSlot.Defender)
 						? PlayerSlot.Challenger : PlayerSlot.Defender;
 					// Remove any advanced Players from future matches:
@@ -359,8 +353,6 @@ namespace Tournament.Structure
 			{
 				if (_slot == LowerMatches[_matchNumber].WinnerSlot)
 				{
-					needToUpdateRankings = true;
-
 					// Remove any advanced Players from future matches:
 					RemovePlayerFromFutureMatches
 						(LowerMatches[_matchNumber].NextMatchNumber,
@@ -390,15 +382,11 @@ namespace Tournament.Structure
 					("Match number cannot be less than 1!");
 			}
 
-			bool needToUpdateRankings = false;
+			bool needToUpdateRankings = GetMatch(_matchNumber).IsFinished;
 
 			// Check the Grand Final:
 			if (GrandFinal.MatchNumber == _matchNumber)
 			{
-				if (GrandFinal.IsFinished)
-				{
-					needToUpdateRankings = true;
-				}
 				GrandFinal.ResetScore();
 			}
 			// Check the Upper Bracket:
@@ -406,8 +394,6 @@ namespace Tournament.Structure
 			{
 				if (Matches[_matchNumber].IsFinished)
 				{
-					needToUpdateRankings = true;
-
 					PlayerSlot loserSlot = (PlayerSlot.Defender == Matches[_matchNumber].WinnerSlot)
 						? PlayerSlot.Challenger : PlayerSlot.Defender;
 					// Remove any advanced Players from future Matches
@@ -426,8 +412,6 @@ namespace Tournament.Structure
 			{
 				if (LowerMatches[_matchNumber].IsFinished)
 				{
-					needToUpdateRankings = true;
-
 					// Remove any advanced Players from future Matches
 					RemovePlayerFromFutureMatches
 						(LowerMatches[_matchNumber].NextMatchNumber,
