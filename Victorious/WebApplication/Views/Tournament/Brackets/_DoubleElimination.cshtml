@@ -1,7 +1,7 @@
 ﻿@model WebApplication.Models.TournamentViewModel
 
 @{
-    var Bracket = Model.Tourny.Brackets[0];
+    var Bracket = Model.Tourny.Brackets[1];
     var topRounds = Bracket.NumberOfRounds;
     var botRounds = Bracket.NumberOfLowerRounds;
     var maxRounds = Math.Max(topRounds, botRounds);

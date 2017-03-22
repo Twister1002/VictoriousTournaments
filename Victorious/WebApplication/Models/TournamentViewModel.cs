@@ -99,34 +99,34 @@ namespace WebApplication.Models
             Tourny = new Tournament.Structure.Tournament();
             List<IPlayer> players = new List<IPlayer>();
 
-            for (int i = 1; i <= 8; i++)
-            {
-                UserModel uModel = new UserModel()
-                {
-                    UserID = i,
-                    FirstName = "FirstName " + i,
-                    LastName = "LastName " + i,
-                    Username = "Player " + i,
-                    Email = "Email" + i
-                };
-
-                players.Add(new User(uModel));
-            }
-
-            //foreach (UserModel userModel in Model.Users)
+            //for (int i = 1; i <= 8; i++)
             //{
-            //    players.Add(new User(userModel));
+            //    UserModel uModel = new UserModel()
+            //    {
+            //        UserID = i,
+            //        FirstName = "FirstName " + i,
+            //        LastName = "LastName " + i,
+            //        Username = "Player " + i,
+            //        Email = "Email" + i
+            //    };
+
+            //    players.Add(new User(uModel));
             //}
+
+            foreach (UserModel userModel in Model.Users)
+            {
+                players.Add(new User(userModel));
+            }
 
             Tourny.AddSingleElimBracket(players);
             Tourny.AddDoubleElimBracket(players);
             Tourny.AddRoundRobinBracket(players);
-            Tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
-            Tourny.Brackets[1].AddWin(1, PlayerSlot.Challenger);
-            Tourny.Brackets[2].AddWin(1, PlayerSlot.Challenger);
-            Tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
-            Tourny.Brackets[1].AddWin(2, PlayerSlot.Challenger);
-            Tourny.Brackets[2].AddWin(2, PlayerSlot.Challenger);
+            //Tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
+            //Tourny.Brackets[1].AddWin(1, PlayerSlot.Challenger);
+            //Tourny.Brackets[2].AddWin(1, PlayerSlot.Challenger);
+            //Tourny.Brackets[0].AddWin(2, PlayerSlot.Challenger);
+            //Tourny.Brackets[1].AddWin(2, PlayerSlot.Challenger);
+            //Tourny.Brackets[2].AddWin(2, PlayerSlot.Challenger);
             //Tourny.Brackets[0].AddWin(3, PlayerSlot.Challenger);
             //tourny.Brackets[0].AddWin(7, PlayerSlot.Challenger);
         }

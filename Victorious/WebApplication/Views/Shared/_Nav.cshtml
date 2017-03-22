@@ -1,11 +1,19 @@
 ﻿<div id="navagation" class="navavation">
-    @*<div id="logo" class="logo">Logo</div>*@
+    @*<div id="logo" class="logo">Tournament Bracket</div>*@
     <div class="nav">
         <a href="/">Home</a>
         <a href="/Tournament">Tournaments</a>
         @if (Session["User.UserId"] != null)
         {
-            <a href="/Account">Account</a>
+            <a href="/Account" class="list-dropdown">
+                Account
+
+                @*<ul class="hover-dropdown">
+                    <li>@Html.ActionLink("Account", "Index", "Account")</li>
+                    <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
+                </ul>*@
+            </a>
+            
         }
         else
         {

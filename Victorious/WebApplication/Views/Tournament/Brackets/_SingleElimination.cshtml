@@ -1,7 +1,7 @@
 ﻿@model WebApplication.Models.TournamentViewModel
 
 @{
-    var Bracket = Model.Tourny.Brackets[0];
+    var Bracket = Model.Tourny.Brackets[1];
     var isLoggedIn = Session["User.UserId"] != null;
     var isAdministrator = isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID;
 }
@@ -40,6 +40,7 @@
                     var challenger = match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
                     var defender = match.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
+                    ViewBag.Players = match.Players;
                     ViewBag.Challenger = challenger;
                     ViewBag.Defender = defender;
                     ViewBag.isLoggedIn = isLoggedIn;
