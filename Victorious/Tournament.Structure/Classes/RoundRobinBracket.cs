@@ -73,19 +73,14 @@ namespace Tournament.Structure
 				.Select(ubs => ubs.User)
 				.ToList();
 			Players = new List<IPlayer>();
-			foreach (UserModel um in userModels)
+			foreach (UserModel model in userModels)
 			{
-				Players.Add(new User(um));
+				Players.Add(new User(model));
 			}
 
-			Scores = new Dictionary<int, uint>();
-			for (int i = 0; i < Players.Count; ++i)
-			{
-				Scores[Players[i].Id] = 0;
-			}
 			MaxRounds = 0;
-
 			ResetBracket();
+
 			Matches = new Dictionary<int, IMatch>();
 			foreach (MatchModel mm in _model.Matches)
 			{
@@ -100,6 +95,8 @@ namespace Tournament.Structure
 				Scores[match.Players[(int)PlayerSlot.Defender].Id] += match.Score[(int)PlayerSlot.Defender];
 				Scores[match.Players[(int)PlayerSlot.Challenger].Id] += match.Score[(int)PlayerSlot.Challenger];
 			}
+
+			UpdateRankings();
 		}
 		#endregion
 
@@ -112,14 +109,6 @@ namespace Tournament.Structure
 				return;
 			}
 
-			if (null == Scores)
-			{
-				Scores = new Dictionary<int, uint>();
-			}
-			for (int i = 0; i < Players.Count; ++i)
-			{
-				Scores[Players[i].Id] = 0;
-			}
 			Matches = new Dictionary<int, IMatch>();
 			int totalRounds = (0 == Players.Count % 2)
 				? Players.Count - 1 : Players.Count;
@@ -251,7 +240,11 @@ namespace Tournament.Structure
 		{
 			base.ResetBracket();
 
-			Scores = null;
+			Scores = new Dictionary<int, uint>();
+			for (int i = 0; i < Players.Count; ++i)
+			{
+				Scores.Add(Players[i].Id, 0);
+			}
 		}
 		#endregion
 	}
