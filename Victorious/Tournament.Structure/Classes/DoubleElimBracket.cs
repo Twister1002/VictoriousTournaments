@@ -115,7 +115,8 @@ namespace Tournament.Structure
 			}
 
 			// Tie Matches Together
-			for (r = 0; r + 1 < roundList.Count; ++r)
+			bool flipSeeds = true;
+			for (r = roundList.Count - 2; r >= 0; --r)
 			{
 				bool rIndexIsEven = (0 == r % 2) ? true : false;
 				if (rIndexIsEven && roundList[r + 1].Count == roundList[r].Count)
@@ -127,8 +128,16 @@ namespace Tournament.Structure
 						int currNum = roundList[r][m].MatchNumber;
 
 						// Assign prev/next matchup indexes
-						roundList[r][m].AddPreviousMatchNumber(upperRound[m].MatchNumber);
-						Matches[upperRound[m].MatchNumber].SetNextLoserMatchNumber(currNum);
+						if (flipSeeds)
+						{
+							roundList[r][m].AddPreviousMatchNumber(upperRound[upperRound.Count - 1 - m].MatchNumber);
+							Matches[upperRound[upperRound.Count - 1 - m].MatchNumber].SetNextLoserMatchNumber(currNum);
+						}
+						else
+						{
+							roundList[r][m].AddPreviousMatchNumber(upperRound[m].MatchNumber);
+							Matches[upperRound[m].MatchNumber].SetNextLoserMatchNumber(currNum);
+						}
 						// ************* THIS ISN'T QUITE RIGHT (RE-SEED ORDER)
 
 						roundList[r][m].AddPreviousMatchNumber(roundList[r + 1][m].MatchNumber);
@@ -160,7 +169,7 @@ namespace Tournament.Structure
 			r = roundList.Count - 1;
 			if (r >= 0)
 			{
-				// We have enough teams to created a Lower Bracket.
+				// We have enough teams to have created a Lower Bracket.
 				// Manually update the first Lower round,
 				// and create a Grand Final match
 
