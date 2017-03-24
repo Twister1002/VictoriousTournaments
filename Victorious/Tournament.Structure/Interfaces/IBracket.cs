@@ -78,6 +78,9 @@ namespace Tournament.Structure
 		/// <returns>Number of Players.</returns>
 		int NumberOfPlayers();
 
+
+		void RandomizeSeeds();
+
 		/// <summary>
 		/// Replace this bracket's Players (if any)
 		/// with the passed-in list.
@@ -98,6 +101,12 @@ namespace Tournament.Structure
 		/// <param name="_player">Player-type object to add.</param>
 		/// <param name="_index">Slot in list to replace.</param>
 		void ReplacePlayer(IPlayer _player, int _index);
+
+
+		void SwapPlayers(int _index1, int _index2);
+
+
+		void ReinsertPlayer(int _oldIndex, int _newIndex);
 
 		/// <summary>
 		/// Remove a Player from the bracket.

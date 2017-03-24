@@ -50,6 +50,53 @@ namespace Tournament.Structure
 			}
 			return Players.Count;
 		}
+		public void RandomizeSeeds()
+		{
+			if (null == Players || Players.Count < 2)
+			{
+				if (null == Players)
+				{
+					Players = new List<IPlayer>();
+				}
+				ResetBracket();
+				return;
+			}
+
+			List<IPlayer> pList = new List<IPlayer>();
+
+			// Get random rolls for each player
+			// (match rolls -> player-index)
+			Random rng = new Random();
+			Dictionary<int, int> rolls = new Dictionary<int, int>();
+			for (int i = 0; i < Players.Count; ++i)
+			{
+				int rand = -1;
+				while (rand < 0 || rolls.Values.Contains(rand))
+				{
+					rand = rng.Next(Players.Count * 3);
+				}
+				rolls.Add(rand, i);
+			}
+
+			// Sort rolls in list, then add Players to new list in order
+			List<int> rollsList = rolls.Keys
+				.OrderByDescending(v => v)
+				.ToList();
+			foreach (int key in rollsList)
+			{
+				if ((Players[rolls[key]] is User))
+				{
+					pList.Add(new User(Players[rolls[key]] as User));
+				}
+				else if ((Players[rolls[key]] is Team))
+				{
+					pList.Add(new Team(Players[rolls[key]] as Team));
+				}
+			}
+
+			Players = pList;
+			ResetBracket();
+		}
 		public void SetNewPlayerlist(List<IPlayer> _players)
 		{
 			if (null == _players)
@@ -64,7 +111,14 @@ namespace Tournament.Structure
 			Players.Clear();
 			foreach (IPlayer player in _players)
 			{
-				Players.Add(player);
+				if (player is User)
+				{
+					Players.Add(new User(player as User));
+				}
+				else if (player is Team)
+				{
+					Players.Add(new Team(player as Team));
+				}
 			}
 			ResetBracket();
 		}
@@ -72,8 +126,7 @@ namespace Tournament.Structure
 		{
 			if (null == _player)
 			{
-				throw new NullReferenceException
-					("Parameter cannot be null!");
+				throw new ArgumentNullException("_player");
 			}
 			if (null == Players)
 			{
@@ -86,15 +139,21 @@ namespace Tournament.Structure
 					("Bracket already contains this Player!");
 			}
 
-			Players.Add(_player);
+			if (_player is User)
+			{
+				Players.Add(new User(_player as User));
+			}
+			else if (_player is Team)
+			{
+				Players.Add(new Team(_player as Team));
+			}
 			ResetBracket();
 		}
 		public void ReplacePlayer(IPlayer _player, int _index)
 		{
 			if (null == _player)
 			{
-				throw new NullReferenceException
-					("Parameter cannot be null!");
+				throw new ArgumentNullException("_player");
 			}
 			if (_index < 0 || _index >= Players.Count)
 			{
@@ -125,6 +184,83 @@ namespace Tournament.Structure
 			}
 
 			Players[_index] = _player;
+		}
+		public void SwapPlayers(int _index1, int _index2)
+		{
+			if (_index1 < 0 || _index1 >= Players.Count
+				|| _index2 < 0 || _index2 >= Players.Count)
+			{
+				throw new InvalidIndexException
+					("Invalid index; outside Playerlist bounds.");
+			}
+
+			if (Players[_index1] is User)
+			{
+				User tmp = new User(Players[_index1] as User);
+				Players[_index1] = new User(Players[_index2] as User);
+				Players[_index2] = new User(tmp);
+			}
+			else if (Players[_index1] is Team)
+			{
+				Team tmp = new Team(Players[_index1] as Team);
+				Players[_index1] = new Team(Players[_index2] as Team);
+				Players[_index2] = new Team(tmp);
+			}
+			ResetBracket();
+		}
+		public void ReinsertPlayer(int _oldIndex, int _newIndex)
+		{
+			if (_oldIndex < 0 || _oldIndex >= Players.Count
+				|| _newIndex < 0 || _newIndex >= Players.Count)
+			{
+				throw new InvalidIndexException
+					("Invalid index; outside Playerlist bounds.");
+			}
+			if (_oldIndex == _newIndex)
+			{
+				return;
+			}
+
+			if (Players[0] is User)
+			{
+				User tmp = new User(Players[_oldIndex] as User);
+				if (_oldIndex > _newIndex)
+				{
+					for (int i = _oldIndex; i > _newIndex; --i)
+					{
+						Players[i] = new User(Players[i - 1] as User);
+					}
+				}
+				else // _oldIndex < _newIndex
+				{
+					for (int i = _oldIndex; i < _newIndex; ++i)
+					{
+						Players[i] = new User(Players[i + 1] as User);
+					}
+				}
+				Players[_newIndex] = new User(tmp);
+			}
+			else if (Players[0] is Team)
+			{
+				Team tmp = new Team(Players[_oldIndex] as Team);
+				if (_oldIndex > _newIndex)
+				{
+					for (int i = _oldIndex; i > _newIndex; --i)
+					{
+						Players[i] = new Team(Players[i - 1] as Team);
+					}
+				}
+				else // _oldIndex < _newIndex
+				{
+					for (int i = _oldIndex; i < _newIndex; ++i)
+					{
+						Players[i] = new Team(Players[i + 1] as Team);
+					}
+				}
+				Players[_newIndex] = new Team(tmp);
+			}
+
+			ResetBracket();
 		}
 		public void RemovePlayer(IPlayer _player)
 		{

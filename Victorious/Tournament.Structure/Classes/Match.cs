@@ -68,6 +68,45 @@ namespace Tournament.Structure
 		public Match()
 			: this(false, false, 1, new IPlayer[2] { null, null }, PlayerSlot.unspecified, new ushort[2] { 0, 0 }, -1, -1, -1, new List<int>(), -1, -1)
 		{ }
+		public Match(Match _match)
+		{
+			if (null == _match)
+			{
+				throw new ArgumentNullException("_match");
+			}
+
+			this.IsReady = _match.IsReady;
+			this.IsFinished = _match.IsFinished;
+			this.WinsNeeded = _match.WinsNeeded;
+			this.WinnerSlot = _match.WinnerSlot;
+			this.RoundIndex = _match.RoundIndex;
+			this.MatchIndex = _match.MatchIndex;
+			this.MatchNumber = _match.MatchNumber;
+			this.NextMatchNumber = _match.NextMatchNumber;
+			this.NextLoserMatchNumber = _match.NextLoserMatchNumber;
+
+			this.Players = new IPlayer[2];
+			this.Score = new ushort[2];
+			for (int i = 0; i < 2; ++i)
+			{
+				if (_match.Players[i] is User)
+				{
+					this.Players[i] = new User(_match.Players[i] as User);
+				}
+				else if (_match.Players[i] is Team)
+				{
+					throw new NotImplementedException();
+				}
+
+				this.Score[i] = _match.Score[i];
+			}
+
+			this.PreviousMatchNumbers = new List<int>();
+			foreach (int num in _match.PreviousMatchNumbers)
+			{
+				this.PreviousMatchNumbers.Add(num);
+			}
+		}
 
 		public Match(MatchModel _m) // , List<IPlayer> _playerList)
 		{
@@ -143,7 +182,7 @@ namespace Tournament.Structure
 		}
 		#endregion
 
-#region Public Methods
+		#region Public Methods
 		public void AddPlayer(IPlayer _player, PlayerSlot _slot = PlayerSlot.unspecified)
 		{
 			if (_slot != PlayerSlot.unspecified &&
@@ -366,10 +405,10 @@ namespace Tournament.Structure
 			}
 			NextLoserMatchNumber = _number;
 		}
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 
-#endregion
+		#endregion
 	}
 }

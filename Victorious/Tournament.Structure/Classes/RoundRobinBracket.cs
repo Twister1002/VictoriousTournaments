@@ -37,20 +37,32 @@ namespace Tournament.Structure
 			}
 
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
-			Players = _players;
+			Players = new List<IPlayer>();
+			foreach (IPlayer p in _players)
+			{
+				if (p is User)
+				{
+					Players.Add(new User(p as User));
+				}
+				else if (p is Team)
+				{
+					Players.Add(new Team(p as Team));
+				}
+			}
+
 			MaxRounds = _numRounds;
 			ResetBracket();
 			CreateBracket();
 		}
 		public RoundRobinBracket(int _numPlayers, int _numRounds = 0)
 		{
+			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			Players = new List<IPlayer>();
 			for (int i = 0; i < _numPlayers; ++i)
 			{
 				Players.Add(new User());
 			}
 
-			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			MaxRounds = _numRounds;
 			ResetBracket();
 			CreateBracket();
