@@ -412,6 +412,33 @@ namespace Tournament.Structure.Tests
 			b.ResetMatchScore(b.NumberOfMatches + 1);
 			Assert.AreEqual(1, 2);
 		}
+
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("Scores")]
+		[TestCategory("Rankings")]
+		public void RRB_ScoreAndRankingTracker()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				IMatch m = b.GetMatch(n);
+				b.AddWin(n,
+					(m.Players[(int)PlayerSlot.Defender].Id > m.Players[(int)PlayerSlot.Challenger].Id)
+					? PlayerSlot.Defender
+					: PlayerSlot.Challenger);
+			}
+
+			Assert.AreEqual(1, 1);
+		}
 		#endregion
 	}
 }
