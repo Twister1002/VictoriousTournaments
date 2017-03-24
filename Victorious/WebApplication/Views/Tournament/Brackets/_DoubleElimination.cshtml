@@ -13,6 +13,8 @@
     int finalRound = grandFinals - 1;
     int semiFinalRound = finalRound - 1;
     int quarterFinalRound = semiFinalRound - 1;
+
+    bool isPowerOfTwo = (Model.Players.Count & (Model.Players.Count - 1)) == 0;
 }
 
 <li class="list-table-header">
@@ -28,14 +30,14 @@
             {
                 displayTitle = "Finals";
             }
-            else if (i == semiFinalRound)
-            {
-                displayTitle = "Semi-Finals";
-            }
-            else if (i == quarterFinalRound)
-            {
-                displayTitle = "Quarter Finals";
-            }
+            //else if (i == semiFinalRound)
+            //{
+            //    displayTitle = "Semi-Finals";
+            //}
+            //else if (i == quarterFinalRound)
+            //{
+            //    displayTitle = "Quarter Finals";
+            //}
 
             <li class="column">@displayTitle</li>
         }
@@ -50,60 +52,42 @@
                 // Verify if we can put things in this round
                 List<Tournament.Structure.IMatch> matches = Model.GetRound(topRoundIndex);
 
-                switch (matches.Count)
-                {
-                    case 4:
-                        if (quarterFinalRound != i)
-                        {
-                            // Skip this round
-                            <li>&nbsp;</li>
-
-                            continue;
-                        }
-                        break;
-                    case 2:
-                        if (semiFinalRound != i)
-                        {
-                            // Skip this round
-                            <li>&nbsp;</li>
-
-                            continue;
-                        }
-                        break;
-                    case 1:
-                        if (finalRound != i)
-                        {
-                            // Skip this round
-                            <li>&nbsp;</li>
-
-                            continue;
-                        }
-                        break;
-                }
-
                 <li class="round" data-round="@topRoundIndex">
-                    @foreach (var match in matches)
+
+                    @if (isPowerOfTwo && (i > 2 && i % 2 != 0))
                     {
-                        var challenger = match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
-                        var defender = match.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
-                        if (challenger.Id == -1)
+                    }
+                    else
+                    {
+                        foreach (var match in matches)
                         {
-                            challenger.Name = "Winner from " + match.PreviousMatchNumbers[1];
-                        }
-                        if (defender.Id == -1)
-                        {
-                            defender.Name = "Winner from " + match.PreviousMatchNumbers[0];
-                        }
+                            var challenger = match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
+                            var defender = match.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
-                        ViewBag.Challenger = challenger;
-                        ViewBag.Defender = defender;
+                            if (challenger.Id == -1)
+                            {
+                                if (match.Players.ElementAt(1) != null)
+                                {
+                                    challenger.Name = "Winner from " + match.PreviousMatchNumbers[1];
+                                }
+                            }
+                            if (defender.Id == -1)
+                            {
+                                if (match.Players.ElementAt(0) != null)
+                                {
+                                    defender.Name = "Winner from " + match.PreviousMatchNumbers[0];
+                                }
+                            }
 
-                        Html.RenderPartial("Brackets/_Match", match, new ViewDataDictionary(ViewData));
+                            ViewBag.Challenger = challenger;
+                            ViewBag.Defender = defender;
+
+                            Html.RenderPartial("Brackets/_Match", match, new ViewDataDictionary(ViewData));
+                        }
+                        topRoundIndex++;
                     }
                 </li>
-
-                topRoundIndex++;
             }
         }
     </ul>
@@ -124,11 +108,17 @@
 
                         if (challenger.Id == -1)
                         {
-                            challenger.Name = "Loser from " + match.PreviousMatchNumbers[1];
+                            if (match.Players.ElementAt(1) != null)
+                            {
+                                challenger.Name = "Winner from " + match.PreviousMatchNumbers[1];
+                            }
                         }
                         if (defender.Id == -1)
                         {
-                            defender.Name = "Loser from " + match.PreviousMatchNumbers[0];
+                            if (match.Players.ElementAt(0) != null)
+                            {
+                                defender.Name = "Winner from " + match.PreviousMatchNumbers[0];
+                            }
                         }
 
                         ViewBag.Challenger = challenger;

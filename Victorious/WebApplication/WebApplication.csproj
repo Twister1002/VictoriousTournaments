@@ -251,11 +251,11 @@
     <Content Include="Styles\less\Tournament\_Search.less" />
     <Content Include="Styles\less\Tournament\_RegisteredPlayers.less" />
     <Content Include="Views\Tournament\Brackets\_SingleElimination.cshtml" />
-    <Content Include="Views\Tournament\Brackets\_DoubleElimination_old.cshtml" />
     <Content Include="Views\Tournament\Brackets\_Swiss.cshtml" />
     <Content Include="Views\Tournament\Brackets\_RoundRobin.cshtml" />
     <Content Include="Views\Tournament\Brackets\_Match.cshtml" />
     <Content Include="Views\Tournament\Brackets\_DoubleElimination.cshtml" />
+    <Content Include="Views\Tournament\Administrator\_Finalize.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
