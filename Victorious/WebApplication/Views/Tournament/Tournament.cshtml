@@ -31,7 +31,7 @@
     @{
         if (isTournyAdministrator)
         {
-            if (registrationEnded)
+            if (registrationEnded && Model.Model.Brackets.ToList()[0].Matches.Count == 0)
             {
                 Html.RenderPartial("Administrator/_Finalize", Model);
             }

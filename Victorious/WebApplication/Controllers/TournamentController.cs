@@ -280,6 +280,47 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
+        [Route("Tournament/Finalize")]
+        public ActionResult Finalize(String tourny)
+        {
+            if (this.UserLoggedIn())
+            {
+                int tournyId = this.ConvertToInt(tourny);
+                TournamentViewModel viewModel = new TournamentViewModel(tournyId);
+                if (viewModel.Model.CreatedByID == getUserId())
+                {
+                    viewModel.CreateMatches();
+                    DbError result = viewModel.SaveMatches();
+
+                    if (result == DbError.SUCCESS)
+                    {
+                        Session["Message"] = "Your tournament has been finalized. No changes can be made.";
+                        Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
+                    }
+                    else
+                    {
+                        Session["Message"] = "An error occurred while trying to create the matches.";
+                        Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
+                    }
+                }
+                else
+                {
+                    Session["Message"] = "You are not permitted to do that.";
+                    Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+                }
+            }
+            else
+            {
+                Session["Message"] = "You must login before you can do that.";
+                Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Create the matches
+            return RedirectToAction("Tournament", "Tournament", new { @guid = tourny });
+        }
+
+        [HttpPost]
         [Route("Tournament/Ajax/Delete")]
         public JsonResult Delete(String tourny)
         {
