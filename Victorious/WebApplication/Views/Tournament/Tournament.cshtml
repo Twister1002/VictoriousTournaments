@@ -43,7 +43,7 @@
         {
             if (registrationStarted && !registrationEnded)
             {
-                Html.RenderPartial("_ViewRegistration", Model.Tourny, new ViewDataDictionary(ViewData));
+                Html.RenderPartial("_ViewRegistration", Model, new ViewDataDictionary(ViewData));
             }
             else if ((registrationEnded && !tournamentStarted) /* || Model.isBracketReleased */)
             {

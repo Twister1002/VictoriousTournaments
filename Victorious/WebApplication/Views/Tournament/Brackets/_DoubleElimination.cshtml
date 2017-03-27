@@ -66,20 +66,20 @@
                             var defender = match.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
                             // maybe a slight bug in previous match number's indexs? 
-                            if (challenger.Id == -1)
-                            {
-                                if (match.PreviousMatchNumbers.IndexOf(1) == -1)
-                                {
-                                    challenger.Name = "Winner from " + match.PreviousMatchNumbers[1];
-                                }
-                            }
-                            if (defender.Id == -1)
-                            {
-                                if (match.PreviousMatchNumbers.IndexOf(0) == -1)
-                                {
-                                    defender.Name = "Winner from " + match.PreviousMatchNumbers[0];
-                                }
-                            }
+                            //if (challenger.Id == -1)
+                            //{
+                            //    if (match.PreviousMatchNumbers.IndexOf(1) == -1)
+                            //    {
+                            //        challenger.Name = "Winner from " + match.PreviousMatchNumbers[1];
+                            //    }
+                            //}
+                            //if (defender.Id == -1)
+                            //{
+                            //    if (match.PreviousMatchNumbers.IndexOf(0) == -1)
+                            //    {
+                            //        defender.Name = "Winner from " + match.PreviousMatchNumbers[0];
+                            //    }
+                            //}
 
                             ViewBag.Challenger = challenger;
                             ViewBag.Defender = defender;
@@ -107,20 +107,20 @@
                         var challenger = match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
                         var defender = match.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
-                        if (challenger.Id == -1)
-                        {
-                            if (match.PreviousMatchNumbers.IndexOf(1) == -1)
-                            {
-                                challenger.Name = "Winner from " + match.PreviousMatchNumbers[1];
-                            }
-                        }
-                        if (defender.Id == -1)
-                        {
-                            if (match.PreviousMatchNumbers.IndexOf(1) == -1)
-                            {
-                                defender.Name = "Winner from " + match.PreviousMatchNumbers[0];
-                            }
-                        }
+                        //if (challenger.Id == -1)
+                        //{
+                        //    if (match.PreviousMatchNumbers.IndexOf(1) == -1)
+                        //    {
+                        //        challenger.Name = "Winner from " + match.PreviousMatchNumbers[1];
+                        //    }
+                        //}
+                        //if (defender.Id == -1)
+                        //{
+                        //    if (match.PreviousMatchNumbers.IndexOf(0) == -1)
+                        //    {
+                        //        defender.Name = "Winner from " + match.PreviousMatchNumbers[0];
+                        //    }
+                        //}
 
                         ViewBag.Challenger = challenger;
                         ViewBag.Defender = defender;
@@ -144,14 +144,14 @@
                         var challenger = Model.GrandFinal.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? Model.GrandFinal.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
                         var defender = Model.GrandFinal.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? Model.GrandFinal.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
-                        if (challenger.Id == -1)
-                        {
-                            challenger.Name = "Winner from " + Model.GrandFinal.PreviousMatchNumbers[1];
-                        }
-                        if (defender.Id == -1)
-                        {
-                            defender.Name = "Winner from " + Model.GrandFinal.PreviousMatchNumbers[0];
-                        }
+                        //if (challenger.Id == -1)
+                        //{
+                        //    challenger.Name = "Winner from " + Model.GrandFinal.PreviousMatchNumbers[1];
+                        //}
+                        //if (defender.Id == -1)
+                        //{
+                        //    defender.Name = "Winner from " + Model.GrandFinal.PreviousMatchNumbers[0];
+                        //}
 
                         ViewBag.Challenger = challenger;
                         ViewBag.Defender = defender;

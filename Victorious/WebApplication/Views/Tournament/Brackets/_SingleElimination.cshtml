@@ -36,11 +36,17 @@
 
                     if (challenger.Id == -1)
                     {
-                        challenger.Name = "Winner from " + match.PreviousMatchNumbers[1];
+                        //if (match.PreviousMatchNumbers.IndexOf(1) > -1)
+                        //{
+                        //    challenger.Name = "Winner from " + match.PreviousMatchNumbers[1];
+                        //}
                     }
                     if (defender.Id == -1)
                     {
-                        defender.Name = "Winner from " + match.PreviousMatchNumbers[0];
+                        //if (match.PreviousMatchNumbers.IndexOf(0) > -1)
+                        //{
+                        //    defender.Name = "Winner from " + match.PreviousMatchNumbers[0];
+                        //}
                     }
 
                     ViewBag.Players = match.Players;
