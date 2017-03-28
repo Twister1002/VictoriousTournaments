@@ -79,13 +79,12 @@ namespace WebApplication.Models
         [DataType(DataType.DateTime)]
         [Display(Name = "Tournament End")]
         public DateTime? TournamentEndDate { get; set; }
+        
+        public List<BracketTypeModel> BracketTypes { get; protected set; }
 
-        //[Display(Name = "Tournament End")]
-        //public List<BracketTypeModel> bracketType { get; set; };
-
-        //[DataType(DataType.Text)]
-        //[Display(Name = "Check-in Date")]
-        //public DateTime? CheckInDateTime { get; set; }
+        [Display(Name = "Bracket Type")]
+        [Required(ErrorMessage ="Select a bracket type")]
+        public int BracketType { get; set; }
 
         [Display(Name = "Public")]
         public bool IsPublic { get; set; }

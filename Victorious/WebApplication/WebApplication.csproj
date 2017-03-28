@@ -101,6 +101,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\dbo.Users.data.sql" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
@@ -250,10 +251,11 @@
     <Content Include="Styles\less\Tournament\_Search.less" />
     <Content Include="Styles\less\Tournament\_RegisteredPlayers.less" />
     <Content Include="Views\Tournament\Brackets\_SingleElimination.cshtml" />
-    <Content Include="Views\Tournament\Brackets\_DoubleElimination.cshtml" />
     <Content Include="Views\Tournament\Brackets\_Swiss.cshtml" />
     <Content Include="Views\Tournament\Brackets\_RoundRobin.cshtml" />
     <Content Include="Views\Tournament\Brackets\_Match.cshtml" />
+    <Content Include="Views\Tournament\Brackets\_DoubleElimination.cshtml" />
+    <Content Include="Views\Tournament\Administrator\_Finalize.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -262,7 +264,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Views\Base\" />
     <Folder Include="Views\Match\" />
   </ItemGroup>

@@ -2,16 +2,16 @@
 
 @{
     var playersRegistered = Model.Model.Users;
+    var userColumns = Math.Ceiling(playersRegistered.Count / 5.0);
 }
 
 
 <div id="TournamentRegisteredPlayers">
-    <h2>Registered Players</h2>
+    <h2>@playersRegistered.Count Registered Players</h2>
     <div class="registeredPlayers">
-        <label class="opened">@playersRegistered.Count Players Registered</label>
         <ul class="list-table">
             <li class="list-table-body">
-                <ul data-columns="6">
+                <ul data-columns="@userColumns">
                     @foreach (var user in playersRegistered)
                     {
                         <li>@user.Username</li>

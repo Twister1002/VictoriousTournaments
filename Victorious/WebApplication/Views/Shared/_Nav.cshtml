@@ -1,22 +1,29 @@
 ﻿<div id="navagation" class="navavation">
-    @*<div id="logo" class="logo">Logo</div>*@
-    <div class="nav">
-        <a href="/">Home</a>
-        <a href="/Tournament">Tournaments</a>
-        @if (Session["User.UserId"] != null)
-        {
-            <a href="/Account">Account</a>
-        }
-        else
-        {
-            <a href="/Account/Register">Register</a>
-            <a href="/Account/Login">Login</a>
-        }
-        <a class="searchBar">
+    @*<div id="logo" class="logo">Tournament Bracket</div>*@
+    <ul class="nav">
+        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+        <li>@Html.ActionLink("Tournaments", "Search", "Tournament")</li>
+        <li class="menu-dropdown">
+            @Html.ActionLink("Hello < User >", "Index", "Account")
+            <div class="content">
+                @if (ViewBag.isLoggedIn)
+                {
+                    @Html.ActionLink("Account", "Index", "Account");
+                    @Html.ActionLink("Create Tournament", "Create", "Tournament");
+                    @Html.ActionLink("Logout", "Logout", "Account");
+                }
+                else
+                {
+                    @Html.ActionLink("Register", "Register", "Account");
+                    @Html.ActionLink("Login", "Login", "Account");
+                }
+            </div>
+        </li>
+        <li class="searchBar">
             <form method="get" action="/Tournament/Search">
                 <img class="fieldImage button-search" src="~/Images/svg/search.svg" />
                 <input type="text" name="title" class="field" placeholder="Search Tournaments" autocomplete="off" />
             </form>
-        </a>
-    </div>
+        </li>
+    </ul>
 </div>

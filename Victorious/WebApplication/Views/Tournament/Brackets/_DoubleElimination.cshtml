@@ -1,14 +1,20 @@
-﻿@model WebApplication.Models.TournamentViewModel
+﻿@model Tournament.Structure.IBracket
 
 @{
-    var Bracket = Model.Tourny.Brackets[0];
-    var topRounds = Bracket.NumberOfRounds;
-    var botRounds = Bracket.NumberOfLowerRounds;
-    var maxRounds = Math.Max(topRounds, botRounds);
-    var totalRounds = maxRounds + 1;
+    int topRounds = Model.NumberOfRounds;
+    int botRounds = Model.NumberOfLowerRounds;
+    int maxRounds = Math.Max(topRounds, botRounds);
+    int totalRounds = maxRounds + 1;
 
-    var isLoggedIn = Session["User.UserId"] != null;
-    var isAdministrator = isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID;
+    int topRoundIndex = 1;
+    int botRoundIndex = 1;
+
+    int grandFinals = totalRounds;
+    int finalRound = grandFinals - 1;
+    int semiFinalRound = finalRound - 1;
+    int quarterFinalRound = semiFinalRound - 1;
+
+    bool isPowerOfTwo = (Model.Players.Count & (Model.Players.Count - 1)) == 0;
 }
 
 <li class="list-table-header">
@@ -16,18 +22,22 @@
         @for (int i = 1; i <= totalRounds; i++)
         {
             String displayTitle = "Round " + i;
-            if (i == totalRounds)
+            if (i == grandFinals)
+            {
+                displayTitle = "Grand Finals";
+            }
+            else if (i == finalRound)
             {
                 displayTitle = "Finals";
             }
-            else if (i == totalRounds - 1)
-            {
-                displayTitle = "Semi-Finals";
-            }
-            else if (i == totalRounds - 2)
-            {
-                displayTitle = "Quarter Finals";
-            }
+            //else if (i == semiFinalRound)
+            //{
+            //    displayTitle = "Semi-Finals";
+            //}
+            //else if (i == quarterFinalRound)
+            //{
+            //    displayTitle = "Quarter Finals";
+            //}
 
             <li class="column">@displayTitle</li>
         }
@@ -36,92 +46,120 @@
 <li class="list-table-body">
     <ul data-columns="@totalRounds">
         @{
-            // Build the upper matches
-            for (int i = topRounds; i < maxRounds; i++)
+            // Upper Bracket
+            for (int i = 1; i < totalRounds; i++)
             {
-                <li>&nbsp;</li>
-            }
+                // Verify if we can put things in this round
+                List<Tournament.Structure.IMatch> matches = Model.GetRound(topRoundIndex);
 
-            for (int roundNum = 1; roundNum <= Bracket.NumberOfRounds; roundNum++)
-            {
-                var matches = Bracket.GetRound(roundNum);
+                <li class="round" data-round="@topRoundIndex">
 
-                <li class="round" data-round="@roundNum">
-                    @foreach (var match in matches)
+                    @if (isPowerOfTwo && (i > 2 && i % 2 != 0))
                     {
-                        var challenger = match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
-                        var defender = match.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
-                        ViewBag.Challenger = challenger;
-                        ViewBag.Defender = defender;
-                        ViewBag.isLoggedIn = isLoggedIn;
-                        ViewBag.isAdministrator = isAdministrator;
-                        ViewBag.matchNum = match.MatchNumber;
-                        ViewBag.IsReady = match.IsReady;
+                    }
+                    else
+                    {
+                        foreach (var match in matches)
+                        {
+                            var challenger = match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
+                            var defender = match.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
-                        Html.RenderPartial("Brackets/_Match", new ViewDataDictionary(ViewData));
+                            // maybe a slight bug in previous match number's indexs? 
+                            //if (challenger.Id == -1)
+                            //{
+                            //    if (match.PreviousMatchNumbers.IndexOf(1) == -1)
+                            //    {
+                            //        challenger.Name = "Winner from " + match.PreviousMatchNumbers[1];
+                            //    }
+                            //}
+                            //if (defender.Id == -1)
+                            //{
+                            //    if (match.PreviousMatchNumbers.IndexOf(0) == -1)
+                            //    {
+                            //        defender.Name = "Winner from " + match.PreviousMatchNumbers[0];
+                            //    }
+                            //}
+
+                            ViewBag.Challenger = challenger;
+                            ViewBag.Defender = defender;
+
+                            Html.RenderPartial("Brackets/_Match", match, new ViewDataDictionary(ViewData));
+                        }
+                        topRoundIndex++;
                     }
                 </li>
             }
         }
-        @{
-            <li class="round" data-round="-1">
-                @{
-                    var final = Bracket.GrandFinal;
-                    var finalChallenger = final.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? final.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
-                    var finalDefender = final.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? final.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
-
-                    ViewBag.Challenger = finalChallenger;
-                    ViewBag.Defender = finalDefender;
-                    ViewBag.isLoggedIn = isLoggedIn;
-                    ViewBag.isAdministrator = isAdministrator;
-                    ViewBag.matchNum = final.MatchNumber;
-                    ViewBag.IsReady = final.IsReady;
-
-                    Html.RenderPartial("Brackets/_Match");
-                }
-            </li>
-        }
     </ul>
+
     <ul data-columns="@totalRounds">
         @{
-            // Build the lower matches
-            for (int i = botRounds; i < maxRounds; i++)
+            // Lower Bracket
+            for (int i = 1; i < totalRounds; i++)
             {
-                <li>&nbsp;</li>
-            }
-            for (int roundNum = 1; roundNum <= Bracket.NumberOfLowerRounds; roundNum++)
-            {
-                var matches = Bracket.GetLowerRound(roundNum);
+                // Verify if we can put things in this round
+                List<Tournament.Structure.IMatch> matches = Model.GetLowerRound(botRoundIndex);
 
-                <li class="round" data-round="@roundNum">
+                <li class="round" data-round="@botRoundIndex">
                     @foreach (var match in matches)
                     {
                         var challenger = match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
                         var defender = match.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
+                        //if (challenger.Id == -1)
+                        //{
+                        //    if (match.PreviousMatchNumbers.IndexOf(1) == -1)
+                        //    {
+                        //        challenger.Name = "Winner from " + match.PreviousMatchNumbers[1];
+                        //    }
+                        //}
+                        //if (defender.Id == -1)
+                        //{
+                        //    if (match.PreviousMatchNumbers.IndexOf(0) == -1)
+                        //    {
+                        //        defender.Name = "Winner from " + match.PreviousMatchNumbers[0];
+                        //    }
+                        //}
+
                         ViewBag.Challenger = challenger;
                         ViewBag.Defender = defender;
-                        ViewBag.isLoggedIn = isLoggedIn;
-                        ViewBag.isAdministrator = isAdministrator;
-                        ViewBag.matchNum = match.MatchNumber;
-                        ViewBag.matchName = null;
-                        ViewBag.IsReady = match.IsReady;
 
-                        Html.RenderPartial("Brackets/_Match", new ViewDataDictionary(ViewData));
+                        Html.RenderPartial("Brackets/_Match", match, new ViewDataDictionary(ViewData));
+                    }
+                </li>
+
+                botRoundIndex++;
+            }
+        }
+    </ul>
+    <ul class="grandFinalMatch" data-columns="@totalRounds">
+        @{
+            for (int roundNum = 1; roundNum <= totalRounds; roundNum++)
+            {
+                <li class="round">
+                    @if (roundNum == totalRounds)
+                    {
+
+                        var challenger = Model.GrandFinal.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? Model.GrandFinal.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
+                        var defender = Model.GrandFinal.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? Model.GrandFinal.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
+
+                        //if (challenger.Id == -1)
+                        //{
+                        //    challenger.Name = "Winner from " + Model.GrandFinal.PreviousMatchNumbers[1];
+                        //}
+                        //if (defender.Id == -1)
+                        //{
+                        //    defender.Name = "Winner from " + Model.GrandFinal.PreviousMatchNumbers[0];
+                        //}
+
+                        ViewBag.Challenger = challenger;
+                        ViewBag.Defender = defender;
+
+                        Html.RenderPartial("Brackets/_Match", Model.GrandFinal, new ViewDataDictionary(ViewData));
                     }
                 </li>
             }
         }
     </ul>
-    @*<ul data-columns="@totalRounds">
-            @{
-                for (int i = 1; i < totalRounds; i++)
-                {
-                    <li>&nbsp;</li>
-                }
-
-
-            }
-        </ul>*@
 </li>

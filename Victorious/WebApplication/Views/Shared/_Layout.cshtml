@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html5>
+﻿
+@{ 
+    // Set necessarry global data
+    ViewBag.isLoggedIn = Session["User.UserId"] != null ? true : false;
+
+}
+
+<!DOCTYPE html5>
 <html>
 <head>
     <title>Tournament Platform</title>
@@ -8,11 +15,10 @@
     <link href="https://fonts.googleapis.com/css?family=Arimo|Francois+One|Kanit|Quattrocento|Signika" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery-ui.min.css" />
     <link rel="stylesheet" type="text/css" href="~/Styles/css/style.css" />
-
 </head>
 <body>
     @*<div class="dev-bp"></div>*@
-    @Html.Partial("_Nav")
+    @Html.Partial("_Nav", new ViewDataDictionary(ViewData))
 
     @if (Session["Message"] != null)
     {

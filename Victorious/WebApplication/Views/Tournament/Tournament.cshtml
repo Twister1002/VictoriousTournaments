@@ -12,12 +12,15 @@
     bool isTournyAdministrator = false;
 
     if (isLoggedIn) { int.TryParse(Session["User.UserId"].ToString(), out userId); isTournyAdministrator = Model.Model.CreatedByID == userId; }
+
+    ViewBag.isAdministrator = isTournyAdministrator;
+    ViewBag.isLoggedIn = isLoggedIn;
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
     <div class="content-header">
         <h2>Tournament - @Model.Model.Title</h2>
-        @if (Session["User.UserId"] != null && (int)Session["User.UserId"] == Model.Model.CreatedByID)
+        @if (isTournyAdministrator)
         {
             <div class="adminMenu">
                 <div class="clickable-underline">@Html.ActionLink("Update", "Update", "Tournament", new { id = Model.Model.TournamentID }, null)</div>
@@ -28,14 +31,19 @@
     @{
         if (isTournyAdministrator)
         {
+            if (registrationEnded && Model.Model.Brackets.ToList()[0].Matches.Count == 0)
+            {
+                Html.RenderPartial("Administrator/_Finalize", Model);
+            }
+
             Html.RenderPartial("Administrator/_Players", Model);
-            Html.RenderPartial("_ViewTournament", Model);
+            Html.RenderPartial("_ViewTournament", Model.Tourny, new ViewDataDictionary(ViewData));
         }
         else
         {
             if (registrationStarted && !registrationEnded)
             {
-                Html.RenderPartial("_ViewRegistration", Model);
+                Html.RenderPartial("_ViewRegistration", Model, new ViewDataDictionary(ViewData));
             }
             else if ((registrationEnded && !tournamentStarted) /* || Model.isBracketReleased */)
             {
@@ -43,7 +51,7 @@
             }
             else if (tournamentStarted)
             {
-                Html.RenderPartial("_ViewTournament", Model);
+                Html.RenderPartial("_ViewTournament", Model.Tourny, new ViewDataDictionary(ViewData));
             }
             else
             {

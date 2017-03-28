@@ -41,5 +41,12 @@ namespace WebApplication.Controllers
 
             return user;
         }
+
+        public int ConvertToInt(String x)
+        {
+            int i = -1;
+            int.TryParse(x, out i);
+            return i;
+        }
     }
 }
