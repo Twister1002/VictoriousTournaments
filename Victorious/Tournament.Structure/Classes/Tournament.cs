@@ -106,7 +106,7 @@ namespace Tournament.Structure
 				bracket.ResetPlayers();
 			}
 		}
-		public void AdvancePlayersByRanking(int _initialBracketIndex, int _newBracketIndex)
+		public void AdvancePlayersByRanking(int _initialBracketIndex, int _newBracketIndex, int _numberOfPlayers = 0)
 		{
 			if (_initialBracketIndex < 0 || _initialBracketIndex >= Brackets.Count)
 			{
@@ -124,11 +124,20 @@ namespace Tournament.Structure
 					("Can't retrieve seeds from an unfinished bracket!");
 			}
 
+			int maxPlayers = (_numberOfPlayers > 0)
+				? _numberOfPlayers
+				: Brackets[_initialBracketIndex].Rankings.Length;
 			List<IPlayer> pList = new List<IPlayer>();
 			foreach (int pId in Brackets[_initialBracketIndex].Rankings)
 			{
-				pList.Add(Brackets[_initialBracketIndex].Players.Find(p => p.Id == pId));
+				pList.Add(Brackets[_initialBracketIndex].Players
+					.Find(p => p.Id == pId));
+				if (pList.Count == maxPlayers)
+				{
+					break;
+				}
 			}
+			
 			Brackets[_newBracketIndex].SetNewPlayerlist(pList);
 		}
 		public void AddPlayer(IPlayer _player)

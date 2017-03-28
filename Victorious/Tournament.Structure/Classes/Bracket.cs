@@ -330,7 +330,7 @@ namespace Tournament.Structure
 			ResetBracket();
 		}
 
-		public List<IMatch> GetRound(int _round)
+		public virtual List<IMatch> GetRound(int _round)
 		{
 			if (null == Matches)
 			{
@@ -368,7 +368,7 @@ namespace Tournament.Structure
 				.ToList();
 			return ret;
 		}
-		public IMatch GetMatch(int _matchNumber)
+		public virtual IMatch GetMatch(int _matchNumber)
 		{
 			if (_matchNumber < 1)
 			{
