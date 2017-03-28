@@ -2,51 +2,55 @@
     position: relative;
     background-color: @color-primary-1;
     width: 100%;
-    padding: 0em;
-    margin: 0em;
 
     .logo {
         background-color: green;
     }
 
     .nav {
+        position: relative;
         text-align: center;
 
-        > * {
-            display: block;
-            padding: 1em;
-            text-decoration: none;
-
+        > li {
             &:hover {
                 background-color: @color-primary-0;
                 color: inherit;
             }
-        }
-        
-        .list-dropdown {
-            ul > li {
-                display: none;
-                background-color: red;
+
+            a {
+                display: block;
+                padding: 1em;
+                color: @white;
             }
-        }
 
-        .searchBar {
-            position: relative;
+            &.menu-dropdown {
+                .content {
+                    display: none;
+                }
+            }
 
-            form {
-                padding: 0em;
-                margin: 0em;
+            &.searchBar {
+                position: relative;
 
-                .fieldImage {
-                    position: absolute;
-                    padding: 0em;
-                    height: 1.5em;
-                    width: 1.5em;
+                &:hover {
+                    background-color: inherit;
                 }
 
-                .field {
-                    width: 100%;
-                    padding: .5em 0em .5em 2em;
+                form {
+                    padding: 0em;
+                    margin: 0em;
+
+                    .fieldImage {
+                        position: absolute;
+                        padding: 0em;
+                        height: 1.5em;
+                        width: 1.5em;
+                    }
+
+                    .field {
+                        width: 100%;
+                        padding: .5em 0em .5em 2em;
+                    }
                 }
             }
         }
@@ -54,8 +58,41 @@
 
     @media screen and (min-width: @@b1) {
         .nav {
-            > * {
+            > li {
                 display: inline-block;
+
+                &.menu-dropdown {
+                    position: relative;
+                    &:hover {
+                        .content {
+                            display: block;
+                        }
+                    }
+
+                    .content {
+                        display: none;
+                        position: absolute;
+                        background-color: @color-primary-1;
+                        left: 0em;
+                        top: 3.25em;
+                        z-index: 1;
+
+                         &:hover {
+                            display:block;
+                           
+                        }
+                        > a {
+                            display:block;
+                            padding: .5em;
+                            min-width: 10em;
+                            background-color: inherit;
+                            &:hover {
+                                color: @white;
+                                background-color: @color-primary-0;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -64,16 +101,7 @@
     }
 
     @media screen and (min-width: @@b3) {
-        /*.logo {
-            width: 30%;
-        }
-        .searchBar {
-            width: 20%;
-        }
-	    .nav {
-            width: 45%;
-            display:inline-block;
-	    }*/
+
     }
 
     @media screen and (min-width: @@b4) {
