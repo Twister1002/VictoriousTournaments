@@ -245,7 +245,7 @@ namespace WebApplication.Controllers
             int tournamentId = -1;
             if (int.TryParse(tournamentVal, out tournamentId))
             {
-                if (this.UserLoggedIn())
+                if (isUserLoggedin)
                 {
                     // We have a user logged in.
                     TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
@@ -283,7 +283,7 @@ namespace WebApplication.Controllers
         [Route("Tournament/Finalize")]
         public ActionResult Finalize(String tourny)
         {
-            if (this.UserLoggedIn())
+            if (isUserLoggedin)
             {
                 int tournyId = this.ConvertToInt(tourny);
                 TournamentViewModel viewModel = new TournamentViewModel(tournyId);
@@ -328,7 +328,7 @@ namespace WebApplication.Controllers
 
             UserModel userModel = this.getUserModel();
 
-            if (UserLoggedIn())
+            if (isUserLoggedin)
             {
                 TournamentViewModel model = new TournamentViewModel(int.Parse(tourny));
                 if (model.Model.CreatedByID == userModel.UserID)

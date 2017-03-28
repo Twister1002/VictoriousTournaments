@@ -10,36 +10,40 @@ namespace WebApplication.Controllers
     public class VictoriousController : Controller
     {
         protected DatabaseInterface db = new DatabaseInterface();
+        protected UserModel userModel;
+        protected bool isUserLoggedin { get; }
 
-        public bool UserLoggedIn()
+        public VictoriousController()
         {
-            if (Session["User.UserId"] != null)
+            if (Session != null && Session["User.UserId"] != null)
             {
-                return true;
+                userModel = db.GetUserById((int)Session["User.UserId"]);
+                if (userModel.UserID > 0)
+                {
+                    isUserLoggedin = true;
+                    userModel.Password = null;
+                }
+                else
+                {
+                    userModel = null;
+                    isUserLoggedin = false;
+                }
             }
             else
             {
-                return false;
+                userModel = null;
+                isUserLoggedin = false;
             }
         }
 
         public int getUserId()
         {
-            int userId = -1;
-
-            if (UserLoggedIn())
-            {
-                int.TryParse(Session["User.UserId"].ToString(), out userId);
-            }
-
-            return userId;
+            return userModel.UserID;
         }
 
         public UserModel getUserModel()
         {
-            UserModel user = db.GetUserById(getUserId());
-
-            return user;
+            return userModel;
         }
 
         public int ConvertToInt(String x)
