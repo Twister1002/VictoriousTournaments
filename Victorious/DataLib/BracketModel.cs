@@ -23,7 +23,9 @@ namespace DataLib
 
         public string BracketTitle { get; set; }
 
-        public int BracketTypeID { get; set; }     
+        public int BracketTypeID { get; set; }
+        
+        public bool Finalized { get; set; }     
 
         public ICollection<MatchModel> Matches { get; set; }
 

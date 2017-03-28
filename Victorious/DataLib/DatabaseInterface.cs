@@ -423,16 +423,10 @@ namespace DataLib
 
             try
             {
-                //foreach (UserModel user in tournament.Users)
-                //{
-                //    list.Add(user.UserID);
-                //}
-
                 list = tournament.Users.ToList();
             }
             catch (Exception)
             {
-
                 list.Clear();
                 list.Add(new UserModel() { UserID = 0 });
                 return list;
@@ -448,6 +442,7 @@ namespace DataLib
                 TournamentModel _tournament = context.Tournaments.Find(tournament.TournamentID);
                 context.Entry(_tournament).CurrentValues.SetValues(tournament);
                 context.Entry(_tournament.TournamentRules).CurrentValues.SetValues(tournament.TournamentRules);
+                context.Entry(_tournament.Brackets).CurrentValues.SetValues(tournament.Brackets);
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -787,31 +782,6 @@ namespace DataLib
             }
             return match;
         }
-
-
-        //public DbError RemoveUserFromMatch(MatchModel match, UserModel user)
-        //{
-
-        //    try
-        //    {
-        //        if (match.Challenger == user)
-        //            match.Challenger = null;
-        //        else if (match.Defender == user)
-        //            match.Defender = null;
-
-        //        if (match.Winner == user)
-        //            match.Winner = null;
-
-        //        context.SaveChanges();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        WriteException(ex);
-        //        throw;
-        //        return DbError.FAILED_TO_REMOVE;
-        //    }
-        //    return DbError.SUCCESS;
-        //}
 
         public DbError DeleteMatch(MatchModel match)
         {
