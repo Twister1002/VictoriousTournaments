@@ -121,6 +121,19 @@ namespace WebApplication.Controllers
 
                 if (result == DbError.SUCCESS)
                 {
+                    // Lets now Register the user as an administrator
+                    DbError adminResult = db.AddUserToTournament(model, db.GetUserById((int)Session["User.UserId"]), Permission.TOURNAMENT_ADMINISTRATOR);
+                    if (adminResult == DbError.SUCCESS)
+                    {
+                        // Show a success message.
+                        Session["Message"] = "Your tournament was successfully created.";
+                        Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
+                    }
+                    else
+                    {
+                        // Create some log about this.
+                    }
+
                     return RedirectToAction("Tournament", "Tournament", new { guid = model.TournamentID });
                 }
                 else

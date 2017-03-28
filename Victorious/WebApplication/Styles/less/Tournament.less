@@ -10,12 +10,14 @@
 @media screen and (min-width: @@b1) {
     #TournamentCreate, #TournamentEdit {
         .section {
-            li {
-                width: 35%;
-                display: inline-block;
+            &.form-section {
+                li {
+                    width: 35%;
+                    display: inline-block;
 
-                input {
-                    width: 90%;
+                    input {
+                        width: 90%;
+                    }
                 }
             }
         }
@@ -25,14 +27,7 @@
         .content-header {
             > * {
                 display: inline-block;
-                width: 48%;
-            }
-
-            .adminMenu {
-                > * {
-                    width: 40%;
-                    text-align: right;
-                }
+                cursor: pointer;
             }
         }
     }
@@ -41,13 +36,14 @@
 @media screen and (min-width: @@b2) {
     #TournamentCreate, #TournamentEdit {
         .section {
-            li {
-                input {
-                    width: 80%;
-                }
+            &.form-section {
+                li {
+                    input {
+                        width: 80%;
+                    }
 
-                > input[type='checkbox'] {
-
+                    > input[type='checkbox'] {
+                    }
                 }
             }
         }

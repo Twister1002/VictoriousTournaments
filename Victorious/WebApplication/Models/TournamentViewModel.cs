@@ -13,6 +13,8 @@ namespace WebApplication.Models
         public ITournament Tourny { get; private set; }
         public TournamentModel Model { get; private set; }
         public List<TournamentModel> SearchModels { get; private set; }
+        public List<UserModel> Administrators { get; private set; }
+        public List<UserModel> Participants { get; private set; }
 
         public TournamentViewModel()
         {
@@ -24,24 +26,26 @@ namespace WebApplication.Models
         public TournamentViewModel(int id)
         {
             Model = db.GetTournamentById(id);
-            Init();
             SetFields();
+            Init();
         }
 
         public TournamentViewModel(TournamentModel model)
         {
-            Init();
-
             if (model != null)
             {
                 Model = model;
                 SetFields();
             }
+            Init();
         }
 
         public void Init()
         {
             this.BracketTypes = db.GetAllBracketTypes();
+            Administrators = new List<UserModel>();
+            Participants = new List<UserModel>();
+            GetUserPermissions();
         }
 
         public override void ApplyChanges(int SessionId)
@@ -121,6 +125,22 @@ namespace WebApplication.Models
             }
 
             SearchModels = models;
+        }
+
+        private void GetUserPermissions()
+        {
+            foreach (UserModel user in Model.Users)
+            {
+                switch(db.GetUserPermission(user, Model))
+                {
+                    case Permission.TOURNAMENT_STANDARD:
+                        Participants.Add(user);
+                        break;
+                    case Permission.TOURNAMENT_ADMINISTRATOR:
+                        Administrators.Add(user);
+                        break;
+                }
+            }
         }
 
         public void CreateMatches()
@@ -210,7 +230,7 @@ namespace WebApplication.Models
             IBracket bracket = null;
             List<IPlayer> players = new List<IPlayer>();
 
-            foreach (UserModel userModel in Model.Users)
+            foreach (UserModel userModel in Participants)
             {
                 players.Add(new User(userModel));
             }

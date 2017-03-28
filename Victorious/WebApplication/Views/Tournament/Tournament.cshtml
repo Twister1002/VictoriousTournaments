@@ -22,10 +22,10 @@
         <h2>Tournament - @Model.Model.Title</h2>
         @if (isTournyAdministrator)
         {
-            <div class="adminMenu">
-                <div class="clickable-underline">@Html.ActionLink("Update", "Update", "Tournament", new { id = Model.Model.TournamentID }, null)</div>
-                <div class="clickable-underline tournament-delete" data-id="@Model.Model.TournamentID">Delete</div>
-            </div>
+            <a href="@Url.Action("Update", "Tournament", new { id = Model.Model.TournamentID })">
+                <img src="~/Images/pencil.png" />
+            </a>
+            <img class="tournament-delete" data-id="@Model.Model.TournamentID" src="~/Images/svg/cross.svg" />
         }
     </div>
     @{
@@ -36,7 +36,7 @@
                 Html.RenderPartial("Administrator/_Finalize", Model);
             }
 
-            Html.RenderPartial("Administrator/_Players", Model);
+            //Html.RenderPartial("Administrator/_Players", Model);
             Html.RenderPartial("_ViewTournament", Model.Tourny, new ViewDataDictionary(ViewData));
         }
         else
