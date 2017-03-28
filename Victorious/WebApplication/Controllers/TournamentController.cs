@@ -245,11 +245,11 @@ namespace WebApplication.Controllers
             int tournamentId = -1;
             if (int.TryParse(tournamentVal, out tournamentId))
             {
-                if (isUserLoggedin)
+                if (Session["User.UserId"] != null)
                 {
                     // We have a user logged in.
                     TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-                    UserModel userModel = viewModel.Model.Users.First(x => x.UserID == this.getUserId());
+                    UserModel userModel = viewModel.Model.Users.First(x => x.UserID == (int)Session["User.UserId"]);
                     DbError result = db.RemoveUserFromTournament(viewModel.Model, userModel);
                     if (result == DbError.SUCCESS)
                     {
@@ -283,11 +283,11 @@ namespace WebApplication.Controllers
         [Route("Tournament/Finalize")]
         public ActionResult Finalize(String tourny)
         {
-            if (isUserLoggedin)
+            if (Session["User.UserId"] != null)
             {
                 int tournyId = this.ConvertToInt(tourny);
                 TournamentViewModel viewModel = new TournamentViewModel(tournyId);
-                if (viewModel.Model.CreatedByID == getUserId())
+                if (viewModel.Model.CreatedByID == (int)Session["User.UserId"])
                 {
                     viewModel.CreateMatches();
                     DbError result = viewModel.SaveMatches();
@@ -326,10 +326,9 @@ namespace WebApplication.Controllers
         {
             JsonResult json = new JsonResult();
 
-            UserModel userModel = this.getUserModel();
-
-            if (isUserLoggedin)
+            if (Session["User.UserId"] != null)
             {
+                UserModel userModel = this.getUserModel((int)Session["User.UserId"]);
                 TournamentViewModel model = new TournamentViewModel(int.Parse(tourny));
                 if (model.Model.CreatedByID == userModel.UserID)
                 {
