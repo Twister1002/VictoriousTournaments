@@ -169,16 +169,16 @@ namespace DataLib
             modelBuilder.Entity<TeamMemberModel>()
                 .ToTable("TeamMembers");
 
-            modelBuilder.Entity<MatchModel>()
-                .HasOptional(e => e.Challenger)
-                .WithMany()
-                .WillCascadeOnDelete(false);
+            //modelBuilder.Entity<MatchModel>()
+            //    .HasOptional(e => e.Challenger)
+            //    .WithMany()
+            //    .WillCascadeOnDelete(false);
 
 
-            modelBuilder.Entity<MatchModel>()
-                .HasOptional(e => e.Defender)
-                .WithMany()
-                .WillCascadeOnDelete(false);
+            //modelBuilder.Entity<MatchModel>()
+            //    .HasOptional(e => e.Defender)
+            //    .WithMany()
+            //    .WillCascadeOnDelete(false);
 
             //modelBuilder.Entity<MatchModel>()
             //   .HasOptional(e => e.Winner)

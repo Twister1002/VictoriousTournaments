@@ -45,9 +45,9 @@ namespace DataLib
         [StringLength(PhoneNumberLength)]
         public string PhoneNumber { get; set; }
 
-        public DateTime? CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
 
-        public DateTime? LastLogin { get; set; }
+        public DateTime LastLogin { get; set; }
 
         public ICollection<TournamentModel> Tournaments { get; set; }
 

@@ -96,6 +96,10 @@
     <Compile Include="Migrations\201703281727082_UpdatedMatchModel.Designer.cs">
       <DependentUpon>201703281727082_UpdatedMatchModel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201703281848395_SecondMatchModelUpdate.cs" />
+    <Compile Include="Migrations\201703281848395_SecondMatchModelUpdate.Designer.cs">
+      <DependentUpon>201703281848395_SecondMatchModelUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="PermissionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -125,6 +129,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703281727082_UpdatedMatchModel.resx">
       <DependentUpon>201703281727082_UpdatedMatchModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703281848395_SecondMatchModelUpdate.resx">
+      <DependentUpon>201703281848395_SecondMatchModelUpdate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

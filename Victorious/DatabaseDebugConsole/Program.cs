@@ -175,12 +175,13 @@ namespace DatabaseDebugConsole
             //DeleteAllTournaments(db);
             //DeleteAllUsers(db);
 
-            //Seed(db);
-            TournamentModel tournament = new TournamentModel();
+            Seed(db);
+            //TournamentModel tournament = new TournamentModel();
             //tournament = db.GetAllTournaments()[0];
-            tournament.Title = "Tournament 1";
-            TournamentModel foundTournament = db.FindTournaments(tournament, true)[0];
-            Console.WriteLine(foundTournament.Title);
+            //tournament.Title = "Tournament 1";
+            //TournamentModel foundTournament = db.FindTournaments(tournament, true)[0];
+            //Console.WriteLine(foundTournament.Title);
+
             //UserModel user = new UserModel();
             //user = db.GetUserById(5);
             //db.RemoveUserFromTournament(tournament, user);
@@ -237,32 +238,48 @@ namespace DatabaseDebugConsole
 
         static void Seed(DatabaseInterface db)
         {
+            UserModel admin = new UserModel
+            {
+                Username = "admin",
+                Password = "admin",
+                FirstName = "Admin",
+                LastName = "User",
+                CreatedOn = DateTime.Now,
+                LastLogin = DateTime.Now
+            };
+
             TournamentModel tournament = new TournamentModel()
             {
                 Title = "Tournament 1",
                 Description = "Test Tournament 1",
-                CreatedByID = 1
+                CreatedByID = admin.UserID
             };
             TournamentRuleModel rules = new TournamentRuleModel()
             {
-                RegistrationStartDate = DateTime.Now
+                RegistrationStartDate = DateTime.Now.Subtract(TimeSpan.FromDays(2)),
+                RegistrationEndDate = DateTime.Now.AddDays(2),
+                TournamentStartDate = DateTime.Now.AddDays(2),
+                TournamentEndDate = DateTime.Now.AddDays(3),
+                IsPublic = true
             };
             tournament.TournamentRules = rules;
-            TournamentModel tournament2 = new TournamentModel()
-            {
-                Title = "Tournament 2",
-                Description = "Test Tournament 2",
-                CreatedByID = 1
-            };
-            TournamentRuleModel rules2 = new TournamentRuleModel()
-            {
-                RegistrationStartDate = DateTime.Now
-            };
-            tournament2.TournamentRules = rules2;
+            //TournamentModel tournament2 = new TournamentModel()
+            //{
+            //    Title = "Tournament 2",
+            //    Description = "Test Tournament 2",
+            //    CreatedByID = 1
+            //};
+            //TournamentRuleModel rules2 = new TournamentRuleModel()
+            //{
+            //    RegistrationStartDate = DateTime.Now
+            //};
+            //tournament2.TournamentRules = rules2;
 
-            db.AddTournament(ref tournament);
-            db.AddTournament(ref tournament2);
+            db.AddTournament(tournament);
+            //db.AddTournament(tournament2);
 
+          
+            db.AddUserToTournament(tournament, admin, Permission.TOURNAMENT_ADMINISTRATOR);
 
             using (StreamReader reader = new StreamReader("..\\..\\Random User Info.txt"))
             {
@@ -276,10 +293,10 @@ namespace DatabaseDebugConsole
                     string phoneNumber = reader.ReadLine().Split(':')[1];
                     reader.ReadLine();
                     UserModel user = new UserModel() { FirstName = firstName, LastName = lastName, Email = email, Username = username, Password = password, PhoneNumber = phoneNumber };
-                    if (i == 0)
-                        db.AddUserToTournament(tournament, user, Permission.TOURNAMENT_ADMINISTRATOR);
-                    else
-                        db.AddUserToTournament(tournament, user, Permission.TOURNAMENT_STANDARD);
+                    //if (i == 0)
+                    //    db.AddUserToTournament(tournament, user, Permission.TOURNAMENT_ADMINISTRATOR);
+                    //else
+                    db.AddUserToTournament(tournament, user, Permission.TOURNAMENT_STANDARD);
 
                     //db.AddUser(user);
                 }
@@ -294,36 +311,38 @@ namespace DatabaseDebugConsole
             };
             db.AddBracket(ref bracket, tournament);
 
-            BracketModel bracket2 = new BracketModel()
-            {
-                BracketTitle = "Double Elimination Bracket",
-                BracketTypeID = 2
-            };
-            db.AddBracket(ref bracket2, tournament);
+            //BracketModel bracket2 = new BracketModel()
+            //{
+            //    BracketTitle = "Double Elimination Bracket",
+            //    BracketTypeID = 2
+            //};
+            //db.AddBracket(ref bracket2, tournament);
 
-
-            for (int i = 1; i < 17; i += 2)
-            {
-                MatchModel match = new MatchModel();
-                UserModel challenger = new UserModel();
-                UserModel defender = new UserModel();
-                match.RoundIndex = 1;
-                challenger = db.GetUserById(i);
-                match.Challenger = challenger;
-                defender = db.GetUserById(i + 1);
-                //db.AddDefender(match, defender);
-                match.Defender = defender;
-                //db.UpdateMatch(match);
-                //db.AddMatch(match, db.GetBracketByID(1));
-                if (i < 9)
-                {
-                    db.AddMatch(ref match, bracket);
-                }
-                else
-                {
-                    db.AddMatch(ref match, bracket2);
-                }
-            }
+            //int start = db.GetUserByUsername("admin").UserID + 1;
+            //for (int i = start; i < start + 17; i += 2)
+            //{
+            //    MatchModel match = new MatchModel();
+            //    UserModel challenger = new UserModel();
+            //    UserModel defender = new UserModel();
+            //    match.RoundIndex = 1;
+            //    challenger = db.GetUserById(i);
+            //    match.Challenger = challenger;
+            //    defender = db.GetUserById(i + 1);
+            //    match.ChallengerScore = 0;
+            //    match.DefenderScore = 0;
+            //    match.WinnerID = -1;
+            //    match.NextLoserMatchNumber = 0;
+            //    match.NextMatchNumber = 0;
+            //    match.PrevChallengerMatchNumber = 0;
+            //    match.PrevDefenderMatchNumber = 0;
+               
+            //    //db.AddDefender(match, defender);
+            //    match.Defender = defender;
+            //    //db.UpdateMatch(match);
+            //    //db.AddMatch(match, db.GetBracketByID(1));
+            //    db.AddMatch(match, bracket);
+               
+            //}
 
         }
 
@@ -440,7 +459,7 @@ namespace DatabaseDebugConsole
                 {
                     TeamName = "Test Team" + i
                 };
-                db.AddTeam(ref team);
+                db.AddTeam(team);
             }
 
         }

@@ -211,8 +211,10 @@ namespace Tournament.Structure
 		public MatchModel GetModel(int _matchId)
 		{
 			MatchModel model = new MatchModel();
-			model.ChallengerID = Players[(int)PlayerSlot.Challenger].Id;
-			model.DefenderID = Players[(int)PlayerSlot.Defender].Id;
+			model.ChallengerID = Players[(int)PlayerSlot.Challenger] == null ? 
+                -1 : Players[(int)PlayerSlot.Challenger].Id;
+			model.DefenderID = Players[(int)PlayerSlot.Defender] == null ? 
+                -1 : Players[(int)PlayerSlot.Defender].Id;
 			model.WinnerID = (PlayerSlot.unspecified == WinnerSlot)
 				? (int)WinnerSlot
 				: Players[(int)WinnerSlot].Id;

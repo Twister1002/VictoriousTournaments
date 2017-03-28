@@ -364,11 +364,14 @@ namespace DataLib
             TournamentModel _tournament = new TournamentModel();
             try
             {
+                
                 _tournament = tournament;
                 _rules = tournament.TournamentRules;
                 context.TournamentRules.Add(_rules);
+                _tournament.CreatedOn = DateTime.Now;
+                _tournament.LastEditedOn = DateTime.Now;
                 context.SaveChanges();
-                context.Tournaments.Add(tournament);
+                context.Tournaments.Add(_tournament);
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -384,6 +387,8 @@ namespace DataLib
         {
             try
             {
+                user.CreatedOn = DateTime.Now;
+                user.LastLogin = DateTime.Now;
                 context.UsersInTournaments.Add(new UsersInTournamentsModel() { TournamentID = tournament.TournamentID, UserID = user.UserID, Permission = permission });
                 context.Tournaments.Include(x => x.Users).Load();
                 context.Tournaments.Include(x => x.Users).Single(x => x.TournamentID == tournament.TournamentID).Users.Add(user);
@@ -976,7 +981,7 @@ namespace DataLib
 
         #region Permissions
 
-        public Permission GetUserPermission(UserModel user, TournamentModel tournament)
+        public Permission GetUserPermission(UserModel user, TournamentModel tournament) // Rename and seperate all get permission calls/functions
         {
             Permission permission;
             try
