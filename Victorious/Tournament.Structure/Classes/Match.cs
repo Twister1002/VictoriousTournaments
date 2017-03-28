@@ -133,10 +133,9 @@ namespace Tournament.Structure
 			}
 		}
 
-		public Match(MatchModel _m) // , List<IPlayer> _playerList)
+		public Match(MatchModel _m)
 		{
 			if (null == _m
-				//|| null == _playerList
 				|| null == _m.ChallengerID
 				|| null == _m.DefenderID
 				//|| null == _m.TournamentID
