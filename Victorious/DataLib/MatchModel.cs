@@ -12,6 +12,11 @@ namespace DataLib
         public MatchModel()
         {
             MatchNumber = -1;
+            IsBye = false;
+            MatchIndex = 0;
+            WinsNeeded = 0;
+            PrevMatchIndex = 0;
+            //next
         }
 
         [Key]
@@ -62,7 +67,7 @@ namespace DataLib
         //[ForeignKey("TournamentID")]
         //public TournamentModel Tournament { get; set; }
 
-        [ForeignKey("WinnerID")]
-        public UserModel Winner { get; set; }
+        //[ForeignKey("WinnerID")]
+        //public UserModel Winner { get; set; }
     }
 }

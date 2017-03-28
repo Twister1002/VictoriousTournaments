@@ -118,7 +118,7 @@ namespace WebApplication.Controllers
                     viewModel.ApplyChanges();
                     UserModel userModel = viewModel.getUserModel();
 
-                    DbError error = db.AddUser(ref userModel);
+                    DbError error = db.AddUser(userModel);
                     if (error == DbError.SUCCESS)
                     {
                         // User Registraion was successful

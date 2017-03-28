@@ -162,7 +162,7 @@ namespace DataLib
             return DbError.EXISTS;
         }
 
-        public DbError AddUser(ref UserModel user)
+        public DbError AddUser(UserModel user)
         {
             try
             {
@@ -358,7 +358,7 @@ namespace DataLib
             return tournaments;
         }
 
-        public DbError AddTournament(ref TournamentModel tournament)
+        public DbError AddTournament(TournamentModel tournament)
         {
             TournamentRuleModel _rules = new TournamentRuleModel();
             TournamentModel _tournament = new TournamentModel();
@@ -442,7 +442,11 @@ namespace DataLib
                 TournamentModel _tournament = context.Tournaments.Find(tournament.TournamentID);
                 context.Entry(_tournament).CurrentValues.SetValues(tournament);
                 context.Entry(_tournament.TournamentRules).CurrentValues.SetValues(tournament.TournamentRules);
-                context.Entry(_tournament.Brackets).CurrentValues.SetValues(tournament.Brackets);
+                foreach (BracketModel bracket in tournament.Brackets)
+                {
+                    UpdateBracket(bracket);
+                }
+                //context.Entry(_tournament.Brackets).State = EntityState.Modified;
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -599,7 +603,7 @@ namespace DataLib
         {
             try
             {
-                TournamentRuleModel _tournamentRules = context.TournamentRules.Find(tournamentRules.TournamentID);
+                TournamentRuleModel _tournamentRules = context.TournamentRules.Find(tournamentRules.TournamentRulesID);
                 context.Entry(_tournamentRules).CurrentValues.SetValues(tournamentRules);
                 context.SaveChanges();
             }
@@ -752,7 +756,7 @@ namespace DataLib
         }
 
         // Adds the passed-in match to the database and also adds it to the passed-in bracket's list of matches.
-        public DbError AddMatch(ref MatchModel match, BracketModel bracket)
+        public DbError AddMatch(MatchModel match, BracketModel bracket)
         {
             try
             {
@@ -841,14 +845,14 @@ namespace DataLib
                 Console.WriteLine("Exception " + ex.ToString() + " in GetUserSeedInBracket");
                 return -1;
             }
-            return ubs.Seed.Value;
+            return ubs.Seed;
         }
 
         #endregion
 
         #region Teams
 
-        public DbError AddTeam(ref TeamModel team)
+        public DbError AddTeam(TeamModel team)
         {
             try
             {

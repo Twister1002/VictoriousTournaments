@@ -180,7 +180,10 @@ namespace DataLib
                 .WithMany()
                 .WillCascadeOnDelete(false);
 
-
+            //modelBuilder.Entity<MatchModel>()
+            //   .HasOptional(e => e.Winner)
+            //   .WithOptionalPrincipal()
+            //   .WillCascadeOnDelete(false);
 
             //modelBuilder.Entity<Match>()
             //    .HasRequired(e => e.Winner)

@@ -117,7 +117,7 @@ namespace WebApplication.Controllers
                 viewModel.ApplyChanges((int)Session["User.UserId"]);
 
                 TournamentModel model = viewModel.Model;
-                DbError result = db.AddTournament(ref model);
+                DbError result = db.AddTournament(model);
 
                 if (result == DbError.SUCCESS)
                 {

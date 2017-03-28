@@ -82,9 +82,9 @@ namespace Tournament.Structure
 				|| null == _m.RoundIndex
 				|| null == _m.Challenger
 				|| null == _m.Defender
-				//|| null == _m.Tournament
-				|| null == _m.WinsNeeded
-				|| null == _m.MatchIndex
+                //|| null == _m.Tournament
+                || null == _m.WinsNeeded
+                || null == _m.MatchIndex
 				//|| null == _m.MatchNumber
 				|| null == _m.NextMatchNumber
 				|| null == _m.NextLoserMatchNumber)
