@@ -37,7 +37,8 @@ namespace Tournament.Structure
 		{ get; private set; }
 		#endregion
 
-		#region Ctors
+#region Ctors
+#if false
 		public Match(bool _isReady, bool _isFinished, ushort _winsNeeded, IPlayer[] _players, PlayerSlot _winnerSlot, ushort[] _score, int _roundIndex, int _matchIndex, int _matchNumber, List<int> _prevMatchNumbers, int _nextMatchNumber, int _nextLoserMatchNumber)
 		{
 			if (null == _players
@@ -48,10 +49,21 @@ namespace Tournament.Structure
 					("There's a NULL problem with your Match constructor...");
 			}
 
+			Players = new IPlayer[2];
+			if (_players[0] is User)
+			{
+				Players[0] = new User(_players[0] as User);
+				Players[1] = new User(_players[1] as User);
+			}
+			else if (_players[0] is Team)
+			{
+				Players[0] = new Team(_players[0] as Team);
+				Players[1] = new Team(_players[1] as Team);
+			}
+
 			//IsReady = _isReady;
 			//IsFinished = _isFinished;
 			WinsNeeded = _winsNeeded;
-			Players = _players;
 			IsReady = (null != Players[0] && null != Players[1])
 				? true : false;
 			WinnerSlot = _winnerSlot;
@@ -65,9 +77,22 @@ namespace Tournament.Structure
 			NextMatchNumber = _nextMatchNumber;
 			NextLoserMatchNumber = _nextLoserMatchNumber;
 		}
+#endif
 		public Match()
-			: this(false, false, 1, new IPlayer[2] { null, null }, PlayerSlot.unspecified, new ushort[2] { 0, 0 }, -1, -1, -1, new List<int>(), -1, -1)
-		{ }
+		{
+			IsReady = false;
+			IsFinished = false;
+			WinsNeeded = 1;
+			Players = new IPlayer[2] { null, null };
+			WinnerSlot = PlayerSlot.unspecified;
+			Score = new ushort[2] { 0, 0 };
+			RoundIndex = -1;
+			MatchIndex = -1;
+			MatchNumber = -1;
+			PreviousMatchNumbers = new List<int>();
+			NextMatchNumber = -1;
+			NextLoserMatchNumber = -1;
+		}
 		public Match(Match _match)
 		{
 			if (null == _match)
@@ -180,9 +205,47 @@ namespace Tournament.Structure
 			NextMatchNumber = (int)(_m.NextMatchNumber);
 			NextLoserMatchNumber = (int)(_m.NextLoserMatchNumber);
 		}
-		#endregion
+#endregion
 
-		#region Public Methods
+#region Public Methods
+		public MatchModel GetModel(int _matchId)
+		{
+			MatchModel model = new MatchModel();
+			model.ChallengerID = Players[(int)PlayerSlot.Challenger].Id;
+			model.DefenderID = Players[(int)PlayerSlot.Defender].Id;
+			model.WinnerID = (PlayerSlot.unspecified == WinnerSlot)
+				? (int)WinnerSlot
+				: Players[(int)WinnerSlot].Id;
+			model.ChallengerScore = Score[(int)PlayerSlot.Challenger];
+			model.DefenderScore = Score[(int)PlayerSlot.Defender];
+
+			model.MatchID = _matchId;
+			model.RoundIndex = RoundIndex;
+			model.MatchNumber = MatchNumber;
+			model.WinsNeeded = WinsNeeded;
+			model.MatchIndex = MatchIndex;
+			model.NextMatchNumber = NextMatchNumber;
+			model.NextLoserMatchNumber = NextLoserMatchNumber;
+
+			switch (PreviousMatchNumbers.Count)
+			{
+				case (2):
+					model.PrevDefenderMatchNumber = PreviousMatchNumbers[0];
+					model.PrevChallengerMatchNumber = PreviousMatchNumbers[1];
+					break;
+				case (1):
+					model.PrevDefenderMatchNumber = -1;
+					model.PrevChallengerMatchNumber = PreviousMatchNumbers[0];
+					break;
+				default:
+					model.PrevDefenderMatchNumber = -1;
+					model.PrevChallengerMatchNumber = -1;
+					break;
+			}
+
+			return model;
+		}
+
 		public void AddPlayer(IPlayer _player, PlayerSlot _slot = PlayerSlot.unspecified)
 		{
 			if (_slot != PlayerSlot.unspecified &&
@@ -405,10 +468,10 @@ namespace Tournament.Structure
 			}
 			NextLoserMatchNumber = _number;
 		}
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 
-		#endregion
+#endregion
 	}
 }

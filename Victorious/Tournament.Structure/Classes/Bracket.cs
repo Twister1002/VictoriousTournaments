@@ -92,6 +92,10 @@ namespace Tournament.Structure
 				{
 					pList.Add(new Team(Players[rolls[key]] as Team));
 				}
+				else
+				{
+					pList.Add(Players[rolls[key]]);
+				}
 			}
 
 			Players = pList;
@@ -118,6 +122,10 @@ namespace Tournament.Structure
 				else if (player is Team)
 				{
 					Players.Add(new Team(player as Team));
+				}
+				else
+				{
+					Players.Add(player);
 				}
 			}
 			ResetBracket();
@@ -146,6 +154,10 @@ namespace Tournament.Structure
 			else if (_player is Team)
 			{
 				Players.Add(new Team(_player as Team));
+			}
+			else
+			{
+				Players.Add(_player);
 			}
 			ResetBracket();
 		}
@@ -198,13 +210,19 @@ namespace Tournament.Structure
 			{
 				User tmp = new User(Players[_index1] as User);
 				Players[_index1] = new User(Players[_index2] as User);
-				Players[_index2] = new User(tmp);
+				Players[_index2] = tmp;
 			}
 			else if (Players[_index1] is Team)
 			{
 				Team tmp = new Team(Players[_index1] as Team);
 				Players[_index1] = new Team(Players[_index2] as Team);
-				Players[_index2] = new Team(tmp);
+				Players[_index2] = tmp;
+			}
+			else
+			{
+				IPlayer tmp = Players[_index1];
+				Players[_index1] = Players[_index2];
+				Players[_index2] = tmp;
 			}
 			ResetBracket();
 		}
@@ -238,7 +256,7 @@ namespace Tournament.Structure
 						Players[i] = new User(Players[i + 1] as User);
 					}
 				}
-				Players[_newIndex] = new User(tmp);
+				Players[_newIndex] = tmp;
 			}
 			else if (Players[0] is Team)
 			{
@@ -257,7 +275,26 @@ namespace Tournament.Structure
 						Players[i] = new Team(Players[i + 1] as Team);
 					}
 				}
-				Players[_newIndex] = new Team(tmp);
+				Players[_newIndex] = tmp;
+			}
+			else
+			{
+				IPlayer tmp = Players[_oldIndex];
+				if (_oldIndex > _newIndex)
+				{
+					for (int i = _oldIndex; i > _newIndex; --i)
+					{
+						Players[i] = Players[i - 1];
+					}
+				}
+				else // _oldIndex < _newIndex
+				{
+					for (int i = _oldIndex; i < _newIndex; ++i)
+					{
+						Players[i] = Players[i + 1];
+					}
+				}
+				Players[_newIndex] = tmp;
 			}
 
 			ResetBracket();

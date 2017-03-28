@@ -38,16 +38,23 @@ namespace Tournament.Structure
 
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			Players = new List<IPlayer>();
-			foreach (IPlayer p in _players)
+			if (_players.Count > 0 && _players[0] is User)
 			{
-				if (p is User)
+				foreach (IPlayer p in _players)
 				{
 					Players.Add(new User(p as User));
 				}
-				else if (p is Team)
+			}
+			else if (_players.Count > 0 && _players[0] is Team)
+			{
+				foreach (IPlayer p in _players)
 				{
 					Players.Add(new Team(p as Team));
 				}
+			}
+			else
+			{
+				Players = _players;
 			}
 
 			MaxRounds = _numRounds;

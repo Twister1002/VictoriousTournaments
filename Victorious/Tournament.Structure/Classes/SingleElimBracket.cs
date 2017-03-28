@@ -32,8 +32,30 @@ namespace Tournament.Structure
 					("Playerlist cannot be null!");
 			}
 
+			Players = new List<IPlayer>();
+			if (_players.Count > 0)
+			{
+				if (_players[0] is User)
+				{
+					foreach (IPlayer p in _players)
+					{
+						Players.Add(new User(p as User));
+					}
+				}
+				else if (_players[0] is Team)
+				{
+					foreach (IPlayer p in _players)
+					{
+						Players.Add(new Team(p as Team));
+					}
+				}
+				else
+				{
+					Players = _players;
+				}
+			}
+
 			BracketType = BracketTypeModel.BracketType.SINGLE;
-			Players = _players;
 			ResetBracket();
 			CreateBracket();
 		}

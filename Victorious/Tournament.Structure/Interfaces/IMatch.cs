@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public enum PlayerSlot
@@ -44,22 +46,10 @@ namespace Tournament.Structure
 		int NextLoserMatchNumber { get; }
 		#endregion
 
-#region Methods
-#if false
-		/// <summary>
-		/// Index of first (top) Player:
-		/// refers to Bracket's player list.
-		/// </summary>
-		/// <returns>-1 if no Player is yet assigned to this slot.</returns>
-		int DefenderIndex();
+		#region Methods
 
-		/// <summary>
-		/// Index of second (bottom) Player:
-		/// refers to Bracket's player list.
-		/// </summary>
-		/// <returns>-1 if no Player is yet assigned to this slot.</returns>
-		int ChallengerIndex();
-#endif
+		MatchModel GetModel(int _matchId);
+
 		/// <summary>
 		/// Assigns a Player to this Match.
 		/// If _slot is unspecified, player will be
