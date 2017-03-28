@@ -19,6 +19,22 @@ namespace Tournament.Structure
 			Name = _name;
 			TeamMembers = new List<User>();
 		}
+		public Team()
+		{
+			Name = "";
+			TeamMembers = new List<User>();
+		}
+		public Team(Team _team)
+		{
+			this.Id = _team.Id;
+			this.Name = _team.Name;
+
+			this.TeamMembers = new List<User>();
+			foreach (User u in _team.TeamMembers)
+			{
+				this.TeamMembers.Add(new User(u));
+			}
+		}
 		#endregion
 
 		#region Public Methods

@@ -106,4 +106,9 @@ namespace WebApplication.Models
         public abstract void ApplyChanges(int userId);
         public abstract void SetFields();
     } 
+
+    public abstract class AdministratorFields : ViewModel
+    {
+
+    }
 }

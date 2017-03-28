@@ -19,7 +19,7 @@
                     </ul>
                 </li>
                 <li class="list-table-body">
-                    @foreach (var tournament in Model.getUserModel().Tournaments)
+                    @foreach (var tournament in Model.Model.Tournaments)
                     {
                         <a href="/Tournament/@tournament.TournamentID">
                             <ul class="row-clickable" data-columns="4">
