@@ -12,7 +12,9 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		BracketTypeModel.BracketType BracketType { get; }
+		bool IsFinished { get; }
 		List<IPlayer> Players { get; }
+		int[] Rankings { get; }
 
 		/// <summary>
 		/// NULL if not applicable.
@@ -76,6 +78,16 @@ namespace Tournament.Structure
 		/// <returns>Number of Players.</returns>
 		int NumberOfPlayers();
 
+
+		void RandomizeSeeds();
+
+		/// <summary>
+		/// Replace this bracket's Players (if any)
+		/// with the passed-in list.
+		/// </summary>
+		/// <param name="_players">List of Player-type objects to store.</param>
+		void SetNewPlayerlist(List<IPlayer> _players);
+
 		/// <summary>
 		/// Add a Player.
 		/// </summary>
@@ -89,6 +101,12 @@ namespace Tournament.Structure
 		/// <param name="_player">Player-type object to add.</param>
 		/// <param name="_index">Slot in list to replace.</param>
 		void ReplacePlayer(IPlayer _player, int _index);
+
+
+		void SwapPlayers(int _index1, int _index2);
+
+
+		void ReinsertPlayer(int _oldIndex, int _newIndex);
 
 		/// <summary>
 		/// Remove a Player from the bracket.

@@ -12,7 +12,9 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		// inherits BracketType BracketType
+		// inherits bool IsFinished
 		// inherits List<IPlayer> Players
+		// inherits int[] Rankings
 		// inherits Dictionary<int, IMatch> Matches
 		// inherits int NumberOfRounds
 		// inherits Dictionary<int, IMatch> LowerMatches
@@ -113,7 +115,8 @@ namespace Tournament.Structure
 			}
 
 			// Tie Matches Together
-			for (r = 0; r + 1 < roundList.Count; ++r)
+			bool flipSeeds = true;
+			for (r = roundList.Count - 2; r >= 0; --r)
 			{
 				bool rIndexIsEven = (0 == r % 2) ? true : false;
 				if (rIndexIsEven && roundList[r + 1].Count == roundList[r].Count)
@@ -125,8 +128,16 @@ namespace Tournament.Structure
 						int currNum = roundList[r][m].MatchNumber;
 
 						// Assign prev/next matchup indexes
-						roundList[r][m].AddPreviousMatchNumber(upperRound[m].MatchNumber);
-						Matches[upperRound[m].MatchNumber].SetNextLoserMatchNumber(currNum);
+						if (flipSeeds)
+						{
+							roundList[r][m].AddPreviousMatchNumber(upperRound[upperRound.Count - 1 - m].MatchNumber);
+							Matches[upperRound[upperRound.Count - 1 - m].MatchNumber].SetNextLoserMatchNumber(currNum);
+						}
+						else
+						{
+							roundList[r][m].AddPreviousMatchNumber(upperRound[m].MatchNumber);
+							Matches[upperRound[m].MatchNumber].SetNextLoserMatchNumber(currNum);
+						}
 						// ************* THIS ISN'T QUITE RIGHT (RE-SEED ORDER)
 
 						roundList[r][m].AddPreviousMatchNumber(roundList[r + 1][m].MatchNumber);
@@ -158,7 +169,7 @@ namespace Tournament.Structure
 			r = roundList.Count - 1;
 			if (r >= 0)
 			{
-				// We have enough teams to created a Lower Bracket.
+				// We have enough teams to have created a Lower Bracket.
 				// Manually update the first Lower round,
 				// and create a Grand Final match
 
@@ -240,6 +251,12 @@ namespace Tournament.Structure
 							}
 						}
 					}
+					else
+					{
+						// Loser doesn't advance from play-in round,
+						// so update the rankings instead.
+						UpdateRankings();
+					}
 				}
 
 				return;
@@ -250,9 +267,10 @@ namespace Tournament.Structure
 				if (_matchNumber == GrandFinal.MatchNumber)
 				{
 					GrandFinal.AddWin(_slot);
-					if (_slot == GrandFinal.WinnerSlot)
+					if (GrandFinal.IsFinished)
 					{
-						// Match is over; do something???
+						IsFinished = true;
+						UpdateRankings();
 					}
 					return;
 				}
@@ -289,6 +307,8 @@ namespace Tournament.Structure
 								}
 							}
 						}
+
+						UpdateRankings();
 					}
 
 					return;
@@ -312,11 +332,12 @@ namespace Tournament.Structure
 					("Player slot must be 0 or 1!");
 			}
 
+			bool needToUpdateRankings = (_slot == GetMatch(_matchNumber).WinnerSlot);
+
 			// Check the Grand Final:
 			if (GrandFinal.MatchNumber == _matchNumber)
 			{
 				GrandFinal.SubtractWin(_slot);
-				// in future, this may affect other Brackets...
 			}
 			// Check the Upper Bracket:
 			else if (Matches.ContainsKey(_matchNumber))
@@ -354,6 +375,12 @@ namespace Tournament.Structure
 				throw new MatchNotFoundException
 					("Match not found; match number may be invalid.");
 			}
+
+			if (needToUpdateRankings)
+			{
+				IsFinished = false;
+				UpdateRankings();
+			}
 		}
 
 		public override void ResetMatchScore(int _matchNumber)
@@ -364,11 +391,12 @@ namespace Tournament.Structure
 					("Match number cannot be less than 1!");
 			}
 
+			bool needToUpdateRankings = GetMatch(_matchNumber).IsFinished;
+
 			// Check the Grand Final:
 			if (GrandFinal.MatchNumber == _matchNumber)
 			{
 				GrandFinal.ResetScore();
-				// if we start storing a "bracket winner", do more here...
 			}
 			// Check the Upper Bracket:
 			else if (Matches.ContainsKey(_matchNumber))
@@ -405,6 +433,12 @@ namespace Tournament.Structure
 			{
 				throw new MatchNotFoundException
 					("Match not found; match number may be invalid.");
+			}
+
+			if (needToUpdateRankings)
+			{
+				IsFinished = false;
+				UpdateRankings();
 			}
 		}
 		#endregion
@@ -492,6 +526,62 @@ namespace Tournament.Structure
 			{
 				throw new MatchNotFoundException
 					("Recursive method called an invalid match number.");
+			}
+		}
+
+		protected override void UpdateRankings()
+		{
+			if (GrandFinal.IsFinished)
+			{
+				// Add Final winner & loser to top of Rankings:
+				Rankings[0] = GrandFinal.Players[(int)(GrandFinal.WinnerSlot)].Id;
+				Rankings[1] = (PlayerSlot.Defender == GrandFinal.WinnerSlot)
+					? GrandFinal.Players[(int)PlayerSlot.Challenger].Id
+					: GrandFinal.Players[(int)PlayerSlot.Defender].Id;
+			}
+			else
+			{
+				Rankings[0] = Rankings[1] = -1;
+			}
+
+			for (int i = 2; i < Rankings.Count(); ++i)
+			{
+				int matchNum = NumberOfMatches - i + 1;
+				if (LowerMatches.ContainsKey(matchNum) &&
+					LowerMatches[matchNum].IsFinished)
+				{
+					// Add each Match loser to the Rankings array:
+					Rankings[i] =
+						(PlayerSlot.Defender == LowerMatches[matchNum].WinnerSlot)
+						? LowerMatches[matchNum].Players[(int)PlayerSlot.Challenger].Id
+						: LowerMatches[matchNum].Players[(int)PlayerSlot.Defender].Id;
+				}
+				else
+				{
+					// Match isn't over yet, so store "empty" val
+					Rankings[i] = -1;
+				}
+			}
+
+			// Special case check: DEB has a play-in round
+			if (Matches[1].NextLoserMatchNumber < 1)
+			{
+				foreach (IMatch match in GetRound(1))
+				{
+					// Losers in the play-in round get added to bottom of rankings:
+					int i = Rankings.Count() - match.MatchNumber;
+					if (match.IsFinished)
+					{
+						Rankings[i] =
+							(PlayerSlot.Defender == match.WinnerSlot)
+							? match.Players[(int)PlayerSlot.Challenger].Id
+							: match.Players[(int)PlayerSlot.Defender].Id;
+					}
+					else
+					{
+						Rankings[i] = -1;
+					}
+				}
 			}
 		}
 		#endregion

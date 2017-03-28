@@ -12,7 +12,9 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		// inherits BracketType BracketType
+		// inherits bool IsFinished
 		// inherits List<IPlayer> Players
+		// inherits int[] Rankings
 		// inherits Dictionary<int, IMatch> Matches
 		// inherits int NumberOfRounds
 		// inherits Dictionary<int, IMatch> LowerMatches (null)
@@ -35,20 +37,39 @@ namespace Tournament.Structure
 			}
 
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
-			Players = _players;
+			Players = new List<IPlayer>();
+			if (_players.Count > 0 && _players[0] is User)
+			{
+				foreach (IPlayer p in _players)
+				{
+					Players.Add(new User(p as User));
+				}
+			}
+			else if (_players.Count > 0 && _players[0] is Team)
+			{
+				foreach (IPlayer p in _players)
+				{
+					Players.Add(new Team(p as Team));
+				}
+			}
+			else
+			{
+				Players = _players;
+			}
+
 			MaxRounds = _numRounds;
 			ResetBracket();
 			CreateBracket();
 		}
 		public RoundRobinBracket(int _numPlayers, int _numRounds = 0)
 		{
+			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			Players = new List<IPlayer>();
 			for (int i = 0; i < _numPlayers; ++i)
 			{
 				Players.Add(new User());
 			}
 
-			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			MaxRounds = _numRounds;
 			ResetBracket();
 			CreateBracket();
@@ -71,19 +92,14 @@ namespace Tournament.Structure
 				.Select(ubs => ubs.User)
 				.ToList();
 			Players = new List<IPlayer>();
-			foreach (UserModel um in userModels)
+			foreach (UserModel model in userModels)
 			{
-				Players.Add(new User(um));
+				Players.Add(new User(model));
 			}
 
-			Scores = new Dictionary<int, uint>();
-			for (int i = 0; i < Players.Count; ++i)
-			{
-				Scores[Players[i].Id] = 0;
-			}
 			MaxRounds = 0;
-
 			ResetBracket();
+
 			Matches = new Dictionary<int, IMatch>();
 			foreach (MatchModel mm in _model.Matches)
 			{
@@ -98,6 +114,8 @@ namespace Tournament.Structure
 				Scores[match.Players[(int)PlayerSlot.Defender].Id] += match.Score[(int)PlayerSlot.Defender];
 				Scores[match.Players[(int)PlayerSlot.Challenger].Id] += match.Score[(int)PlayerSlot.Challenger];
 			}
+
+			UpdateRankings();
 		}
 		#endregion
 
@@ -110,14 +128,6 @@ namespace Tournament.Structure
 				return;
 			}
 
-			if (null == Scores)
-			{
-				Scores = new Dictionary<int, uint>();
-			}
-			for (int i = 0; i < Players.Count; ++i)
-			{
-				Scores[Players[i].Id] = 0;
-			}
 			Matches = new Dictionary<int, IMatch>();
 			int totalRounds = (0 == Players.Count % 2)
 				? Players.Count - 1 : Players.Count;
@@ -180,6 +190,17 @@ namespace Tournament.Structure
 
 			Matches[_matchNumber].AddWin(_slot);
 			Scores[Matches[_matchNumber].Players[(int)_slot].Id] += 1;
+
+			UpdateRankings();
+			IsFinished = true;
+			foreach (IMatch match in Matches.Values)
+			{
+				if (!match.IsFinished)
+				{
+					IsFinished = false;
+					break;
+				}
+			}
 		}
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
@@ -196,6 +217,9 @@ namespace Tournament.Structure
 
 			Matches[_matchNumber].SubtractWin(_slot);
 			Scores[Matches[_matchNumber].Players[(int)_slot].Id] -= 1;
+
+			IsFinished = false;
+			UpdateRankings();
 		}
 		public override void ResetMatchScore(int _matchNumber)
 		{
@@ -216,15 +240,30 @@ namespace Tournament.Structure
 			Matches[_matchNumber].ResetScore();
 			Scores[Matches[_matchNumber].Players[(int)PlayerSlot.Defender].Id] -= defScore;
 			Scores[Matches[_matchNumber].Players[(int)PlayerSlot.Challenger].Id] -= chalScore;
+
+			IsFinished = false;
+			UpdateRankings();
 		}
 		#endregion
 
 		#region Private Methods
+		protected override void UpdateRankings()
+		{
+			Rankings = Players
+				.Select(p => p.Id)
+				.OrderByDescending(id => Scores[id])
+				.ToArray();
+		}
+
 		protected override void ResetBracket()
 		{
 			base.ResetBracket();
 
-			Scores = null;
+			Scores = new Dictionary<int, uint>();
+			for (int i = 0; i < Players.Count; ++i)
+			{
+				Scores.Add(Players[i].Id, 0);
+			}
 		}
 		#endregion
 	}

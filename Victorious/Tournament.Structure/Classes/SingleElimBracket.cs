@@ -12,7 +12,9 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		// inherits BracketType BracketType
+		// inherits bool IsFinished
 		// inherits List<IPlayer> Players
+		// inherits int[] Rankings
 		// inherits Dictionary<int, IMatch> Matches
 		// inherits int NumberOfRounds
 		// inherits Dictionary<int, IMatch> LowerMatches (null)
@@ -30,8 +32,30 @@ namespace Tournament.Structure
 					("Playerlist cannot be null!");
 			}
 
+			Players = new List<IPlayer>();
+			if (_players.Count > 0)
+			{
+				if (_players[0] is User)
+				{
+					foreach (IPlayer p in _players)
+					{
+						Players.Add(new User(p as User));
+					}
+				}
+				else if (_players[0] is Team)
+				{
+					foreach (IPlayer p in _players)
+					{
+						Players.Add(new Team(p as Team));
+					}
+				}
+				else
+				{
+					Players = _players;
+				}
+			}
+
 			BracketType = BracketTypeModel.BracketType.SINGLE;
-			Players = _players;
 			ResetBracket();
 			CreateBracket();
 		}
@@ -267,21 +291,32 @@ namespace Tournament.Structure
 
 			Matches[_matchNumber].AddWin(_slot);
 
-			if (Matches[_matchNumber].Score[(int)_slot] >= Matches[_matchNumber].WinsNeeded
-				&& Matches[_matchNumber].RoundIndex < NumberOfRounds)
+			if (Matches[_matchNumber].IsFinished)
 			{
-				// Player won the match. Advance!
-				int nmNumber = Matches[_matchNumber].NextMatchNumber;
-				for (int i = 0; i < Matches[nmNumber].PreviousMatchNumbers.Count; ++i)
+				if (Matches[_matchNumber].RoundIndex < NumberOfRounds)
 				{
-					if (_matchNumber == Matches[nmNumber].PreviousMatchNumbers[i])
+					// Advance the winner to next round:
+					int nmNumber = Matches[_matchNumber].NextMatchNumber;
+					for (int i = 0; i < Matches[nmNumber].PreviousMatchNumbers.Count; ++i)
 					{
-						PlayerSlot newSlot = (1 == Matches[nmNumber].PreviousMatchNumbers.Count)
-							? PlayerSlot.Challenger : (PlayerSlot)i;
-						Matches[nmNumber].AddPlayer
-							(Matches[_matchNumber].Players[(int)_slot], newSlot);
-						break;
+						if (_matchNumber == Matches[nmNumber].PreviousMatchNumbers[i])
+						{
+							PlayerSlot newSlot = (1 == Matches[nmNumber].PreviousMatchNumbers.Count)
+								? PlayerSlot.Challenger : (PlayerSlot)i;
+							Matches[nmNumber].AddPlayer
+								(Matches[_matchNumber].Players[(int)_slot], newSlot);
+							break;
+						}
 					}
+				}
+				else
+				{
+					IsFinished = true;
+				}
+
+				if (this is SingleElimBracket)
+				{
+					UpdateRankings();
 				}
 			}
 		}
@@ -305,8 +340,10 @@ namespace Tournament.Structure
 			}
 
 			// If this Match is over, remove advanced Players from future Matches
+			bool needToUpdateRankings = false;
 			if (_slot == Matches[_matchNumber].WinnerSlot)
 			{
+				needToUpdateRankings = true;
 				RemovePlayerFromFutureMatches
 					(Matches[_matchNumber].NextMatchNumber,
 					ref Matches[_matchNumber].Players[(int)_slot]);
@@ -314,6 +351,11 @@ namespace Tournament.Structure
 
 			// Subtract a Win
 			Matches[_matchNumber].SubtractWin(_slot);
+			if (needToUpdateRankings)
+			{
+				IsFinished = false;
+				UpdateRankings();
+			}
 		}
 
 		public override void ResetMatchScore(int _matchNumber)
@@ -330,6 +372,7 @@ namespace Tournament.Structure
 			}
 
 			// If this Match is over, remove advanced Players from future Matches
+			bool needToUpdateRankings = Matches[_matchNumber].IsFinished;
 			if (Matches[_matchNumber].IsFinished)
 			{
 				RemovePlayerFromFutureMatches
@@ -339,6 +382,11 @@ namespace Tournament.Structure
 
 			// Reset Score
 			Matches[_matchNumber].ResetScore();
+			if (needToUpdateRankings)
+			{
+				IsFinished = false;
+				UpdateRankings();
+			}
 		}
 		#endregion
 
@@ -406,6 +454,38 @@ namespace Tournament.Structure
 				}
 
 				Matches[_matchNumber].RemovePlayer(_player.Id);
+			}
+		}
+
+		protected override void UpdateRankings()
+		{
+			if (Matches[NumberOfMatches].IsFinished)
+			{
+				// Add final winner to top of Rankings:
+				Rankings[0] = Matches[NumberOfMatches]
+					.Players[(int)(Matches[NumberOfMatches].WinnerSlot)].Id;
+			}
+			else
+			{
+				Rankings[0] = -1;
+			}
+
+			for (int i = 1; i < Rankings.Count(); ++i)
+			{
+				int matchNum = NumberOfMatches - i + 1;
+				if (Matches[matchNum].IsFinished)
+				{
+					// Add each Match loser to the Rankings array:
+					Rankings[i] =
+						(PlayerSlot.Defender == Matches[matchNum].WinnerSlot)
+						? Matches[matchNum].Players[(int)PlayerSlot.Challenger].Id
+						: Matches[matchNum].Players[(int)PlayerSlot.Defender].Id;
+				}
+				else
+				{
+					// Match isn't over yet, so store "empty" val
+					Rankings[i] = -1;
+				}
 			}
 		}
 		#endregion
