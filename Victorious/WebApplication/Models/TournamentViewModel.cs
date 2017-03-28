@@ -135,22 +135,7 @@ namespace WebApplication.Models
                 for (int i = 1; i <= Tourny.Brackets[0].NumberOfMatches; i++)
                 {
                     IMatch match = Tourny.Brackets[0].GetMatch(i);
-
-                    MatchModel matchModel = new MatchModel()
-                    {
-                        ChallengerID = match.Players[(int)PlayerSlot.Challenger] != null ? match.Players[(int)PlayerSlot.Challenger].Id : new Nullable<int>(),
-                        DefenderID = match.Players[(int)PlayerSlot.Defender] != null ? match.Players[(int)PlayerSlot.Defender].Id : new Nullable<int>(),
-                        WinnerID = (int)PlayerSlot.unspecified,
-                        ChallengerScore = 0,
-                        DefenderScore = 0,
-                        MatchNumber = match.MatchNumber,
-                        RoundIndex = match.RoundIndex,
-                        MatchIndex = match.MatchIndex,
-                        NextLoserMatchNumber = match.NextLoserMatchNumber,
-                        NextMatchNumber = match.NextMatchNumber,
-                        PrevChallengerMatchNumber = match.PreviousMatchNumbers.IndexOf((int)PlayerSlot.Challenger) != -1 ? match.PreviousMatchNumbers[(int)PlayerSlot.Challenger] : -1,
-                        PrevDefenderMatchNumber = match.PreviousMatchNumbers.IndexOf((int)PlayerSlot.Defender) != -1 ? match.PreviousMatchNumbers[(int)PlayerSlot.Defender] : -1
-                    };
+                    MatchModel matchModel = match.GetModel(-1);
 
                     bracket.Matches.Add(matchModel);
                 }

@@ -2,7 +2,7 @@
 @{ 
     // Set necessarry global data
     ViewBag.isLoggedIn = Session["User.UserId"] != null ? true : false;
-
+    ViewBag.Name = Session["User.Name"] != null ? Session["User.Name"] : "Guest";
 }
 
 <!DOCTYPE html5>

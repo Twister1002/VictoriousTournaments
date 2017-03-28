@@ -68,7 +68,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket AddPlayer")]
-		[ExpectedException(typeof(NullReferenceException))]
+		[ExpectedException(typeof(ArgumentNullException))]
 		public void AddPlayer_ThrowsNullRef_OnNullParam()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -127,7 +127,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket ReplacePlayer")]
-		[ExpectedException(typeof(NullReferenceException))]
+		[ExpectedException(typeof(ArgumentNullException))]
 		public void ReplacePlayer_ThrowsNullRef_OnNullParam()
 		{
 			List<IPlayer> pList = new List<IPlayer>();

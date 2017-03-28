@@ -25,6 +25,21 @@ namespace Tournament.Structure
 		int NumberOfPlayers();
 
 		/// <summary>
+		/// Clears and sets a new list of Players.
+		/// </summary>
+		/// <param name="_players">New list of Player-type objects</param>
+		void SetNewPlayerlist(List<IPlayer> _players);
+
+		/// <summary>
+		/// Copy Players from one (finished) bracket to another,
+		/// ordered by their ranking.
+		/// </summary>
+		/// <param name="_initialBracketIndex">Index of finished bracket,
+		/// in this Tournament's bracket[] array</param>
+		/// <param name="_newBracketIndex">Index of second bracket</param>
+		void AdvancePlayersByRanking(int _initialBracketIndex, int _newBracketIndex);
+
+		/// <summary>
 		/// Add a Player.
 		/// </summary>
 		/// <param name="_player">Player-type object to add.</param>

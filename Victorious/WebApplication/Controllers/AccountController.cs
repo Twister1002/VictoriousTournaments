@@ -20,6 +20,7 @@ namespace WebApplication.Controllers
 
         // GET: Account
         [Route("Account")]
+        [Route("Account/Index")]
         public ActionResult Index()
         {
             if (Session["User.UserId"] != null)
@@ -57,11 +58,12 @@ namespace WebApplication.Controllers
                 // Check the username and password
                 viewModel.setUserModel(viewModel.Username);
                 
-                if (viewModel.getUserModel() != null)
+                if (viewModel.Model != null)
                 {
-                    if (viewModel.Password == viewModel.getUserModel().Password)
+                    if (viewModel.Password == viewModel.Model.Password)
                     {
-                        Session["User.UserId"] = viewModel.getUserModel().UserID;
+                        Session["User.UserId"] = viewModel.Model.UserID;
+                        Session["User.Name"] = viewModel.Model.FirstName;
                         return RedirectToAction("Index", "Account");
                     }
                     else
@@ -116,7 +118,7 @@ namespace WebApplication.Controllers
                 {
                     // We can then register the user
                     viewModel.ApplyChanges();
-                    UserModel userModel = viewModel.getUserModel();
+                    UserModel userModel = viewModel.Model;
 
                     DbError error = db.AddUser(userModel);
                     if (error == DbError.SUCCESS)
@@ -181,16 +183,17 @@ namespace WebApplication.Controllers
                     viewModel.setUserModel((int)Session["User.UserId"]);
 
                     // Verify the user being updated is legitly the user logged in
-                    if (viewModel.getUserModel().UserID == (int)Session["User.UserId"])
+                    if (viewModel.Model.UserID == (int)Session["User.UserId"])
                     {
                         // Apply the changes
                         viewModel.ApplyChanges();
 
-                        DbError error = db.UpdateUser(viewModel.getUserModel());
+                        DbError error = db.UpdateUser(viewModel.Model);
                         if (error == DbError.SUCCESS)
                         {
                             viewModel.error = ViewModel.ViewError.SUCCESS;
                             viewModel.message = "Your account was successfully updated.";
+                            Session["User.Name"] = viewModel.FirstName;
                             Session["Message"] = viewModel.message;
                             Session["Message.Class"] = viewModel.error;
                             return RedirectToAction("Index", "Account");

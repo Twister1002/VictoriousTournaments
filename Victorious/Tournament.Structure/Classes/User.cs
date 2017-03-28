@@ -42,6 +42,19 @@ namespace Tournament.Structure
 		public User()
 			: this(-1, "", "", "", "")
 		{ }
+		public User(User _user)
+		{
+			if (null == _user)
+			{
+				throw new ArgumentNullException("_user");
+			}
+
+			this.Id = _user.Id;
+			this.Name = _user.Name;
+			this.Firstname = _user.Firstname;
+			this.Lastname = _user.Lastname;
+			this.Email = _user.Email;
+		}
 
 		public User(UserModel _u)
 		{
