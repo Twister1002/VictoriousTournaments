@@ -190,6 +190,9 @@
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\scripts.js" />
+    <Content Include="Scripts\Tournament\Edit.js" />
+    <Content Include="Scripts\Tournament\Match.js" />
+    <Content Include="Scripts\Tournament\Tournaments.js" />
     <Content Include="Styles\css\style.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -268,6 +271,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Scripts\Account\" />
     <Folder Include="Views\Match\" />
   </ItemGroup>
   <ItemGroup>

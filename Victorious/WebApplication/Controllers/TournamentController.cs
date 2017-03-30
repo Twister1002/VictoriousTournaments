@@ -412,5 +412,75 @@ namespace WebApplication.Controllers
 
             return Json(new { status = false, message = "You must login before adjusting matches" });
         }
+
+        [HttpPost]
+        [Route("Tournament/Ajax/Promote")]
+        public JsonResult Promote(String tournyVal, String userVal)
+        {
+            TournamentModel tournyModel = db.GetTournamentById(ConvertToInt(tournyVal));
+            UserModel userModel = db.GetUserById(ConvertToInt(userVal));
+
+            Permission userPermission = db.GetUserPermission(userModel, tournyModel);
+            DbError result = DbError.NONE;
+            JsonResult jsonResult;
+
+            switch (userPermission)
+            {
+                case Permission.TOURNAMENT_STANDARD:
+                    result = db.UpdateUserTournamentPermission(userModel, tournyModel, Permission.TOURNAMENT_ADMINISTRATOR);
+                    break;
+                case Permission.TOURNAMENT_ADMINISTRATOR:
+                    break;
+            }
+            
+            switch (result)
+            {
+                case DbError.SUCCESS:
+                    jsonResult = Json(new { @status = true, @message = "User was promoted successfully" });
+                    break;
+                case DbError.NONE:
+                    jsonResult = Json(new { @status = false, @message = "User can not be promoted above administrator" });
+                    break;
+                default:
+                    jsonResult = Json(new { @status = false, @message = "User was unable to be promoted" });
+                    break;
+            }
+
+            return jsonResult;
+        }
+
+        [HttpPost]
+        [Route("Tournament/Ajax/Demote")] 
+        public JsonResult Demote(String tournyVal, String userVal)
+        {
+            TournamentModel tournyModel = db.GetTournamentById(ConvertToInt(tournyVal));
+            UserModel userModel = db.GetUserById(ConvertToInt(userVal));
+
+            Permission userPermission = db.GetUserPermission(userModel, tournyModel);
+            DbError result = DbError.NONE;
+            JsonResult jsonResult;
+
+            switch (userPermission)
+            {
+                case Permission.TOURNAMENT_STANDARD:
+                    result = db.RemoveUserFromTournament(tournyModel, userModel);
+                    break;
+                case Permission.TOURNAMENT_ADMINISTRATOR:
+                    result = db.UpdateUserTournamentPermission(userModel, tournyModel, Permission.TOURNAMENT_STANDARD);
+                    break;
+            }
+
+            switch (result)
+            {
+                case DbError.SUCCESS:
+                    jsonResult = Json(new { @status = true, @message = "User was demoted / removed successfully" });
+                    break;
+                default:
+                    jsonResult = Json(new { @status = false, @message = "Could not demote successfully." });
+                    break;
+            }
+
+            return jsonResult;
+        }
     }
 }
