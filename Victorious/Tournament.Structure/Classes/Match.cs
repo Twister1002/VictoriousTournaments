@@ -210,6 +210,7 @@ namespace Tournament.Structure
 		public MatchModel GetModel(int _matchId)
 		{
 			MatchModel model = new MatchModel();
+
 			model.ChallengerID = (null != Players[(int)PlayerSlot.Challenger])
 				? Players[(int)PlayerSlot.Challenger].Id : -1;
 			model.DefenderID = (null != Players[(int)PlayerSlot.Defender])
@@ -287,8 +288,7 @@ namespace Tournament.Structure
 		{
 			if (null == _newPlayer)
 			{
-				throw new NullReferenceException
-					("New Player cannot be null!");
+				throw new ArgumentNullException("_newPlayer");
 			}
 
 			if (null != Players[(int)PlayerSlot.Defender] &&

@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using Moq;
 
+using DataLib;
+
 namespace Tournament.Structure.Tests
 {
 	[TestClass]
@@ -40,6 +42,18 @@ namespace Tournament.Structure.Tests
 		}
 #endif
 
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match GetModel")]
+		public void GetModel_ReturnsForNewMatch()
+		{
+			IMatch m = new Match();
+			MatchModel model = m.GetModel(1);
+
+			Assert.IsInstanceOfType(model, typeof(MatchModel));
+		}
+
+		#region Player Updates
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match AddPlayer")]
@@ -151,13 +165,56 @@ namespace Tournament.Structure.Tests
 
 		[TestMethod]
 		[TestCategory("Match")]
+		[TestCategory("Match ReplacePlayer")]
+		public void ReplacePlayer_Replaces()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 3; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+
+			IMatch m = new Match();
+			m.AddPlayer(pList[0]);
+			m.AddPlayer(pList[1]);
+			m.ReplacePlayer(pList[2], pList[1].Id);
+
+			Assert.AreEqual(3, m.Players[1].Id);
+		}
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match ReplacePlayer")]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void ReplacePlayer_ThrowsNullException_WithNullParam()
+		{
+			IMatch m = new Match();
+			m.ReplacePlayer(null, 1);
+
+			Assert.AreEqual(1, 2);
+		}
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match ReplacePlayer")]
+		[ExpectedException(typeof(PlayerNotFoundException))]
+		public void ReplacePlayer_ThrowsNotFound_IfIDIsNotInMatch()
+		{
+			IMatch m = new Match();
+			m.ReplacePlayer(new Mock<IPlayer>().Object, 10);
+
+			Assert.AreEqual(1, 2);
+		}
+
+		[TestMethod]
+		[TestCategory("Match")]
 		[TestCategory("Match RemovePlayer")]
 		public void RemovePlayer_Removes()
 		{
 			int pIndex = 10;
 			var p1 = new Mock<IPlayer>();
 			p1.Setup(p => p.Id).Returns(pIndex);
-			
+
 			IMatch m = new Match();
 			m.AddPlayer(p1.Object, PlayerSlot.Defender);
 			m.RemovePlayer(pIndex);
@@ -245,7 +302,9 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(false, m.IsReady);
 		}
-		
+		#endregion
+
+		#region Score Updates
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match AddWin")]
@@ -427,19 +486,34 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(1, 2);
 		}
-#if false
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match SubtractWin")]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
-		public void SubtractWin_ThrowsException_WhenScoreIsZero()
+		[ExpectedException(typeof(InactiveMatchException))]
+		public void SubtractWin_ThrowsInactiveMatch_WhenMatchIsNotReady()
 		{
 			IMatch m = new Match();
+			m.SubtractWin(PlayerSlot.Defender);
+
+			Assert.AreEqual(1, 2);
+		}
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match SubtractWin")]
+		[ExpectedException(typeof(ScoreException))]
+		public void SubtractWin_ThrowsScoreException_WhenScoreIs0()
+		{
+			IMatch m = new Match();
+			for (int i = 1; i <= 2; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				m.AddPlayer(moq.Object);
+			}
 			m.SubtractWin(PlayerSlot.Challenger);
 
 			Assert.AreEqual(1, 2);
 		}
-#endif
 
 		[TestMethod]
 		[TestCategory("Match")]
@@ -517,7 +591,9 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(0, m.Score[(int)PlayerSlot.Defender]);
 		}
+		#endregion
 
+		#region Mutators
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match Mutators")]
@@ -669,5 +745,6 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(1, 2);
 		}
+		#endregion
 	}
 }
