@@ -18,11 +18,11 @@ namespace DataLib
     {
         [Key]
         [Column(Order = 1)]
-        public int? UserID { get; set; }
+        public int UserID { get; set; }
 
         [Key]
         [Column(Order = 2)]
-        public int? TeamID { get; set; }
+        public int TeamID { get; set; }
 
         public Permission? Permission { get; set; }
 

@@ -174,7 +174,7 @@ namespace WebApplication.Models
             for (int i = 0; i < matches.Count; i++)
             {
                 MatchModel matchModel = matches[i];
-                result = db.AddMatch(ref matchModel, bracket);
+                result = db.AddMatch(matchModel, bracket);
                 if (result != DbError.SUCCESS)
                 {
                     // Loop backwards and remove all the matches that were created
