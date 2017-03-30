@@ -363,9 +363,9 @@ namespace DatabaseDebugConsole
 
         static void PrintAllUsersInTournament(DatabaseInterface db, TournamentModel tournament)
         {
-            foreach (var user in tournament.Users)
+            foreach (var user in tournament.UsersInTournament)
             {
-                PrintUser(db, user);
+                PrintUser(db, user.User);
             }
         }
 

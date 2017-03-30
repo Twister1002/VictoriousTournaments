@@ -35,8 +35,8 @@ namespace DataLib
         public DbSet<TeamModel> Teams { get; set; }
         public DbSet<TeamMemberModel> TeamMembers { get; set; }
         public DbSet<BracketTypeModel> BracketTypes { get; set; }
-        public DbSet<UsersInTournamentsModel> UsersInTournaments { get; set; }
-
+        public DbSet<UserInTournamentModel> UsersInTournaments { get; set; }
+        
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -163,7 +163,7 @@ namespace DataLib
             modelBuilder.Entity<BracketTypeModel>()
                 .ToTable("BracketTypes");
 
-            modelBuilder.Entity<UsersInTournamentsModel>()
+            modelBuilder.Entity<UserInTournamentModel>()
                 .ToTable("UsersInTournaments");
 
             modelBuilder.Entity<TeamMemberModel>()

@@ -14,7 +14,8 @@ namespace DataLib
         public TournamentModel()
         {
             Users = new Collection<UserModel>();
-            Brackets = new Collection<BracketModel>(); // change to list
+            Brackets = new Collection<BracketModel>();
+            UsersInTournament = new Collection<UserInTournamentModel>();
             //TournamentRules = new TournamentRuleModel();
 
         }
@@ -44,9 +45,12 @@ namespace DataLib
 
         public ICollection<TeamModel> Teams { get; set; }
 
+        [Obsolete("Use UsersInTournament Collection")]
         public ICollection<UserModel> Users { get; set; }
 
         public ICollection<BracketModel> Brackets { get; set; }
+
+        public ICollection<UserInTournamentModel> UsersInTournament { get; set; }
 
     }
 }

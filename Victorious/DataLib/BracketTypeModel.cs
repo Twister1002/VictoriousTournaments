@@ -17,7 +17,9 @@ namespace DataLib
         {
             SINGLE = 1,
             DOUBLE,
-            ROUNDROBIN
+            ROUNDROBIN,
+            RRGROUP,
+            GSLGROUP
         }
         public BracketTypeModel()
         {
@@ -31,5 +33,7 @@ namespace DataLib
         public string TypeName { get; set; }
 
         public BracketType Type { get; set; }
+
+        public int NumberOfGroups { get; set; }
     }
 }
