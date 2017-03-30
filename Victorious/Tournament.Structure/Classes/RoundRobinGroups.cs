@@ -70,6 +70,7 @@ namespace Tournament.Structure
 			ResetBracket();
 			CreateBracket();
 		}
+#if false
 		public RoundRobinGroups(int _numberOfPlayers, int _numberOfGroups)
 		{
 			if (_numberOfPlayers < 0)
@@ -99,6 +100,7 @@ namespace Tournament.Structure
 			ResetBracket();
 			CreateBracket();
 		}
+#endif
 		public RoundRobinGroups()
 			: this(new List<IPlayer>(), 0)
 		{ }
@@ -178,9 +180,9 @@ namespace Tournament.Structure
 			}
 			UpdateRankings();
 		}
-		#endregion
+#endregion
 
-		#region Public Methods
+#region Public Methods
 		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
 			ResetBracket();
@@ -190,6 +192,7 @@ namespace Tournament.Structure
 				return;
 			}
 
+			Groups = new List<IBracket>();
 			for (int b = 0; b < NumberOfGroups; ++b)
 			{
 				List<IPlayer> pList = new List<IPlayer>();
@@ -212,14 +215,9 @@ namespace Tournament.Structure
 
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
-
-			Groups[GetGroupIndex(_matchNumber)]
-				.AddWin(_matchNumber, _slot);
+			int groupIndex;
+			GetMatchData(ref _matchNumber, out groupIndex);
+			Groups[groupIndex].AddWin(_matchNumber, _slot);
 
 			IsFinished = true;
 			foreach (IBracket group in Groups)
@@ -234,28 +232,18 @@ namespace Tournament.Structure
 		}
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
+			int groupIndex;
+			GetMatchData(ref _matchNumber, out groupIndex);
+			Groups[groupIndex].SubtractWin(_matchNumber, _slot);
 
-			int groupIndex = GetGroupIndex(_matchNumber);
-			Groups[groupIndex]
-				.SubtractWin(_matchNumber, _slot);
-
-			IsFinished = IsFinished && Groups[groupIndex].IsFinished;
+			IsFinished = (IsFinished && Groups[groupIndex].IsFinished);
 			UpdateRankings();
 		}
 		public override void ResetMatchScore(int _matchNumber)
 		{
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
-
-			Groups[GetGroupIndex(_matchNumber)].ResetMatchScore(_matchNumber);
+			int groupIndex;
+			GetMatchData(ref _matchNumber, out groupIndex);
+			Groups[groupIndex].ResetMatchScore(_matchNumber);
 
 			IsFinished = false;
 			UpdateRankings();
@@ -270,11 +258,6 @@ namespace Tournament.Structure
 				throw new NullReferenceException
 					("No groups exist! Create a bracket first.");
 			}
-			if (_round < 1)
-			{
-				throw new InvalidIndexException
-					("Round index cannot be less than 1!");
-			}
 
 			List<IMatch> ret = new List<IMatch>();
 			foreach (IBracket group in Groups)
@@ -285,30 +268,13 @@ namespace Tournament.Structure
 		}
 		public override IMatch GetMatch(int _matchNumber)
 		{
-			int matchNum = _matchNumber;
-			foreach (IBracket group in Groups)
-			{
-				if (matchNum < 1)
-				{
-					break;
-				}
-
-				if (matchNum <= group.NumberOfMatches)
-				{
-					return group.GetMatch(matchNum);
-				}
-				else
-				{
-					matchNum -= group.NumberOfMatches;
-				}
-			}
-
-			throw new MatchNotFoundException
-				("Match not found; match number may be invalid.");
+			int groupIndex;
+			GetMatchData(ref _matchNumber, out groupIndex);
+			return Groups[groupIndex].GetMatch(_matchNumber);
 		}
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 		protected override void UpdateRankings()
 		{
 			Dictionary<int, uint> scores = new Dictionary<int, uint>();
@@ -328,32 +294,37 @@ namespace Tournament.Structure
 		{
 			base.ResetBracket();
 
-			Groups = new List<IBracket>();
+			Groups = null;
 		}
 
-		private int GetGroupIndex(int _matchNumber)
+		private void GetMatchData(ref int _matchNumber, out int _groupIndex)
 		{
-			int matchNum = _matchNumber;
-			for (int i = 0; i < Groups.Count; ++i)
+			if (_matchNumber < 1)
 			{
-				if (matchNum < 1)
+				throw new InvalidIndexException
+					("Match Number cannot be less than 1!");
+			}
+
+			for (_groupIndex = 0; _groupIndex < Groups.Count; ++_groupIndex)
+			{
+				if (_matchNumber < 1)
 				{
 					break;
 				}
 
-				if (matchNum <= Groups[i].NumberOfMatches)
+				if (_matchNumber <= Groups[_groupIndex].NumberOfMatches)
 				{
-					return i;
+					return;
 				}
 				else
 				{
-					matchNum -= Groups[i].NumberOfMatches;
+					_matchNumber -= Groups[_groupIndex].NumberOfMatches;
 				}
 			}
 
 			throw new MatchNotFoundException
 				("Match not found; match number may be invalid.");
 		}
-		#endregion
+#endregion
 	}
 }
