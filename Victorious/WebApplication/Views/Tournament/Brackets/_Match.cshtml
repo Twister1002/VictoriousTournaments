@@ -3,9 +3,11 @@
 @{
     Tournament.Structure.IPlayer Challenger = ViewBag.Challenger == null ? new Tournament.Structure.User() : ViewBag.Challenger;
     Tournament.Structure.IPlayer Defender = ViewBag.Defender == null ? new Tournament.Structure.User() : ViewBag.Defender;
+    String className = ViewBag.ClassName != null ? ViewBag.ClassName : String.Empty;
+    ViewBag.ClassName = null;
 }
 
-<div class="match" data-match="@Model.MatchNumber">
+<div class="match @className" data-match="@Model.MatchNumber">
     <label class="matchNum">
         Match @Model.MatchNumber
         @if (ViewBag.isAdministrator && Model.IsReady)

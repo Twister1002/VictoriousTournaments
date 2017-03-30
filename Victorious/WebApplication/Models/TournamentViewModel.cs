@@ -203,6 +203,16 @@ namespace WebApplication.Models
             {
                 Tourny.AddBracket(PlayerTournament());
             }
+
+            // Progress a few matches
+            //Tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
+            //Tourny.Brackets[0].AddWin(2, PlayerSlot.Defender);
+            //Tourny.Brackets[0].AddWin(3, PlayerSlot.Challenger);
+            //Tourny.Brackets[0].AddWin(4, PlayerSlot.Challenger);
+            //Tourny.Brackets[0].AddWin(5, PlayerSlot.Challenger);
+            //Tourny.Brackets[0].AddWin(6, PlayerSlot.Defender);
+            //Tourny.Brackets[0].AddWin(7, PlayerSlot.Challenger);
+            //Tourny.Brackets[0].AddWin(8, PlayerSlot.Defender);
         }
 
         private IBracket BracketTournament()

@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "Update";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    int maxUsersPerRow = 8;
+    int maxUsersPerRow = 20;
 
     int participantColumns = (int)Math.Ceiling((double)Model.Participants.Count / maxUsersPerRow);
     int adminColumns = (int)Math.Ceiling((double)Model.Administrators.Count / maxUsersPerRow);
