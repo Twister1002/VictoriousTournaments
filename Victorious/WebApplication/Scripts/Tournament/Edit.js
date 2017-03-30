@@ -9,7 +9,7 @@
             "dataType": "json",
             "success": function (json) {
                 if (json.success) {
-                    window.location.replace(json.redirect);
+                    $(this).closest(".user")
                 }
                 else {
                     alert(json.message);
@@ -29,7 +29,7 @@
             "dataType": "json",
             "success": function (json) {
                 if (json.success) {
-                    window.location.replace(json.redirect);
+                    
                 }
                 else {
                     alert(json.message);
