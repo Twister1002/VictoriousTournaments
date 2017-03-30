@@ -12,12 +12,15 @@
     <script type="text/javascript" src="~/Scripts/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script type="text/javascript" src="~/Scripts/scripts.js"></script>
+    <script type="text/javascript" src="~/Scripts/Tournament/Tournaments.js"></script>
+    <script type="text/javascript" src="~/Scripts/Tournament/Edit.js"></script>
+    <script type="text/javascript" src="~/Scripts/Tournament/Match.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Arimo|Francois+One|Kanit|Quattrocento|Signika" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery-ui.min.css" />
     <link rel="stylesheet" type="text/css" href="~/Styles/css/style.css" />
 </head>
 <body>
-    @*<div class="dev-bp"></div>*@
+    <div class="dev-bp"></div>
     @Html.Partial("_Nav", new ViewDataDictionary(ViewData))
 
     @if (Session["Message"] != null)

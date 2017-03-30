@@ -125,7 +125,7 @@
             }
         }
     </ul>
-    <ul class="grandFinalMatch" data-columns="@totalRounds">
+    <ul data-columns="@totalRounds">
         @{
             for (int roundNum = 1; roundNum <= totalRounds; roundNum++)
             {
@@ -147,6 +147,7 @@
 
                         ViewBag.Challenger = challenger;
                         ViewBag.Defender = defender;
+                        ViewBag.ClassName = "grandFinal";
 
                         Html.RenderPartial("Brackets/_Match", Model.GrandFinal, new ViewDataDictionary(ViewData));
                     }

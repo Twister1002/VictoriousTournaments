@@ -36,7 +36,6 @@ namespace Tournament.Structure
 					("Playerlist cannot be null!");
 			}
 
-			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			Players = new List<IPlayer>();
 			if (_players.Count > 0 && _players[0] is User)
 			{
@@ -57,12 +56,19 @@ namespace Tournament.Structure
 				Players = _players;
 			}
 
+			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			MaxRounds = _numRounds;
 			ResetBracket();
 			CreateBracket();
 		}
 		public RoundRobinBracket(int _numPlayers, int _numRounds = 0)
 		{
+			if (_numPlayers < 0)
+			{
+				throw new ArgumentOutOfRangeException
+					("_numPlayers", "Can't have negative players!");
+			}
+
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			Players = new List<IPlayer>();
 			for (int i = 0; i < _numPlayers; ++i)
@@ -218,7 +224,7 @@ namespace Tournament.Structure
 			Matches[_matchNumber].SubtractWin(_slot);
 			Scores[Matches[_matchNumber].Players[(int)_slot].Id] -= 1;
 
-			IsFinished = false;
+			IsFinished = IsFinished && Matches[_matchNumber].IsFinished;
 			UpdateRankings();
 		}
 		public override void ResetMatchScore(int _matchNumber)

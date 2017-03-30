@@ -55,6 +55,7 @@
     <Compile Include="Classes\User.cs" />
     <Compile Include="Classes\Team.cs" />
     <Compile Include="Classes\RoundRobinBracket.cs" />
+    <Compile Include="Classes\RoundRobinGroups.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataLib\DataLib.csproj">

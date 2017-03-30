@@ -1,0 +1,38 @@
+﻿#TournamentStandings {
+    display: none;
+    position:absolute;
+    top:0em;
+    left: -100%;
+    height: 100%;
+    width: 100%;
+
+    &.open {
+        display: block;
+        left:0%;
+        opacity: 0.9;
+        background-color: darken(@color-primary-0, 15%);
+    }
+
+    .title {
+        > * {
+            display: inline-block;
+        }
+
+        img {
+            cursor: pointer;
+        }
+    }
+
+    .standings {
+        .list-table-body {
+            ul {
+                border-bottom: 1px solid @white;
+                padding: 1em 0em;
+
+                .position-rank, .position-score, .position-name {
+                    text-align: center;
+                }
+            }
+        }
+    }
+}
