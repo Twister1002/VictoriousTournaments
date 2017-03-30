@@ -120,7 +120,7 @@
                                     isAdminColumn = false;
                                 }
 
-                                <li>
+                                <li class="userTable" data-columnType="@(isAdminColumn ? "admin" : "participant")">
                                     @for (int x = 0; x < maxUsersPerRow; x++)
                                     {
                                         DataLib.UserModel user = null;
