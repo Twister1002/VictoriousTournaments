@@ -14,7 +14,7 @@ namespace Tournament.Structure
 		BracketTypeModel.BracketType BracketType { get; }
 		bool IsFinished { get; }
 		List<IPlayer> Players { get; }
-		int[] Rankings { get; }
+		List<IPlayerScore> Rankings { get; }
 
 		/// <summary>
 		/// NULL if not applicable.

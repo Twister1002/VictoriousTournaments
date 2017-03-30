@@ -204,12 +204,14 @@ namespace Tournament.Structure
 				Groups.Add(new RoundRobinBracket(pList));
 			}
 
+			Rankings = new List<IPlayerScore>();
 			foreach (IBracket group in Groups)
 			{
 				NumberOfMatches += group.NumberOfMatches;
 				NumberOfRounds = (NumberOfRounds < group.NumberOfRounds)
 					? group.NumberOfRounds
 					: NumberOfRounds;
+				Rankings.AddRange(group.Rankings);
 			}
 		}
 
@@ -277,17 +279,28 @@ namespace Tournament.Structure
 #region Private Methods
 		protected override void UpdateRankings()
 		{
-			Dictionary<int, uint> scores = new Dictionary<int, uint>();
+			Rankings.Clear();
 			foreach (IBracket group in Groups)
 			{
-				scores = scores.Concat((group as RoundRobinBracket).Scores)
-					.ToDictionary(kv => kv.Key, kv => kv.Value);
+				Rankings.AddRange(group.Rankings);
 			}
+			Rankings.Sort((first, second) => -1 * (first.Score.CompareTo(second.Score)));
+			Rankings[0].Rank = 1;
 
-			Rankings = Players
-				.Select(p => p.Id)
-				.OrderByDescending(id => scores[id])
-				.ToArray();
+			int increment = 1;
+			for (int i = 1; i < Rankings.Count; ++i)
+			{
+				if (Rankings[i].Score == Rankings[i - 1].Score)
+				{
+					++increment;
+					Rankings[i].Rank = Rankings[i - 1].Rank;
+				}
+				else
+				{
+					Rankings[i].Rank = Rankings[i - 1].Rank + increment;
+					increment = 1;
+				}
+			}
 		}
 
 		protected override void ResetBracket()
@@ -311,7 +324,6 @@ namespace Tournament.Structure
 				{
 					break;
 				}
-
 				if (_matchNumber <= Groups[_groupIndex].NumberOfMatches)
 				{
 					return;
