@@ -30,14 +30,8 @@ namespace Tournament.Structure
 		/// <param name="_players">New list of Player-type objects</param>
 		void SetNewPlayerlist(List<IPlayer> _players);
 
-		/// <summary>
-		/// Copy Players from one (finished) bracket to another,
-		/// ordered by their ranking.
-		/// </summary>
-		/// <param name="_initialBracketIndex">Index of finished bracket,
-		/// in this Tournament's bracket[] array</param>
-		/// <param name="_newBracketIndex">Index of second bracket</param>
-		void AdvancePlayersByRanking(int _initialBracketIndex, int _newBracketIndex);
+		
+		void AdvancePlayersByRanking(int _initialBracketIndex, int _newBracketIndex, int _numberOfPlayers = 0);
 
 		/// <summary>
 		/// Add a Player.

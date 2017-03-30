@@ -93,7 +93,7 @@ namespace Tournament.Structure
 			NextMatchNumber = -1;
 			NextLoserMatchNumber = -1;
 		}
-		public Match(Match _match)
+		public Match(IMatch _match)
 		{
 			if (null == _match)
 			{
@@ -133,10 +133,9 @@ namespace Tournament.Structure
 			}
 		}
 
-		public Match(MatchModel _m) // , List<IPlayer> _playerList)
+		public Match(MatchModel _m)
 		{
 			if (null == _m
-				//|| null == _playerList
 				|| null == _m.ChallengerID
 				|| null == _m.DefenderID
 				//|| null == _m.TournamentID
@@ -211,8 +210,11 @@ namespace Tournament.Structure
 		public MatchModel GetModel(int _matchId)
 		{
 			MatchModel model = new MatchModel();
-			model.ChallengerID = Players[(int)PlayerSlot.Challenger].Id;
-			model.DefenderID = Players[(int)PlayerSlot.Defender].Id;
+
+			model.ChallengerID = (null != Players[(int)PlayerSlot.Challenger])
+				? Players[(int)PlayerSlot.Challenger].Id : -1;
+			model.DefenderID = (null != Players[(int)PlayerSlot.Defender])
+				? Players[(int)PlayerSlot.Defender].Id : -1;
 			model.WinnerID = (PlayerSlot.unspecified == WinnerSlot)
 				? (int)WinnerSlot
 				: Players[(int)WinnerSlot].Id;
@@ -286,8 +288,7 @@ namespace Tournament.Structure
 		{
 			if (null == _newPlayer)
 			{
-				throw new NullReferenceException
-					("New Player cannot be null!");
+				throw new ArgumentNullException("_newPlayer");
 			}
 
 			if (null != Players[(int)PlayerSlot.Defender] &&
