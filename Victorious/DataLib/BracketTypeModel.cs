@@ -34,6 +34,5 @@ namespace DataLib
 
         public BracketType Type { get; set; }
 
-        public int NumberOfGroups { get; set; }
     }
 }

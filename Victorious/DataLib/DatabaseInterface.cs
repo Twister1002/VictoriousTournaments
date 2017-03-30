@@ -372,7 +372,7 @@ namespace DataLib
             return DbError.SUCCESS;
         }
         
-        [Obsolete("")]
+        [Obsolete("Use AddUserToTournament(UserInTournamentModel user)")]
         public DbError AddUserToTournament(TournamentModel tournament, UserModel user, Permission permission)
         {
             try
