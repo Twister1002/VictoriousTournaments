@@ -7,13 +7,13 @@ namespace DataLib.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class UpdatedMatchModel : IMigrationMetadata
+    public sealed partial class UpdateMatchModel : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdatedMatchModel));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdateMatchModel));
         
         string IMigrationMetadata.Id
         {
-            get { return "201703281727082_UpdatedMatchModel"; }
+            get { return "201703301344386_UpdateMatchModel"; }
         }
         
         string IMigrationMetadata.Source

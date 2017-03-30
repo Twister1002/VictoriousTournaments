@@ -387,8 +387,8 @@ namespace DataLib
         {
             try
             {
-                user.CreatedOn = DateTime.Now;
-                user.LastLogin = DateTime.Now;
+                //user.CreatedOn = DateTime.Now;
+                //user.LastLogin = DateTime.Now;
                 context.UsersInTournaments.Add(new UsersInTournamentsModel() { TournamentID = tournament.TournamentID, UserID = user.UserID, Permission = permission });
                 context.Tournaments.Include(x => x.Users).Load();
                 context.Tournaments.Include(x => x.Users).Single(x => x.TournamentID == tournament.TournamentID).Users.Add(user);
@@ -763,10 +763,22 @@ namespace DataLib
         // Adds the passed-in match to the database and also adds it to the passed-in bracket's list of matches.
         public DbError AddMatch(MatchModel match, BracketModel bracket)
         {
+            MatchModel _match = new MatchModel();
             try
             {
-                context.Matches.Add(match);
-                bracket.Matches.Add(match);
+                _match = match;
+                
+                _match.Challenger = context.Users.Find(match.ChallengerID);
+                _match.Defender = context.Users.Find(match.DefenderID);
+                
+                //context.Matches.Load();
+
+                context.Matches.Add(_match);
+                context.SaveChanges();
+                bracket.Matches.Add(_match);
+                //context.SaveChanges();
+                context.Tournaments.Include(x => x.Brackets).Load();
+                //context.Users.Include(x => x.UserID).Load();
                 context.SaveChanges();
             }
             catch (Exception ex)

@@ -13,7 +13,7 @@ namespace DataLib.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201703281658512_InitialCreate"; }
+            get { return "201703301251538_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source

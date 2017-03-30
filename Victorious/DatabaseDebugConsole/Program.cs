@@ -252,7 +252,7 @@ namespace DatabaseDebugConsole
             {
                 Title = "Tournament 1",
                 Description = "Test Tournament 1",
-                CreatedByID = admin.UserID
+                //CreatedByID = db.GetUserByUsername("admin").UserID
             };
             TournamentRuleModel rules = new TournamentRuleModel()
             {
@@ -301,7 +301,7 @@ namespace DatabaseDebugConsole
                     //db.AddUser(user);
                 }
             }
-
+            tournament.CreatedByID = db.GetUserByUsername("admin").UserID;
 
 
             BracketModel bracket = new BracketModel()

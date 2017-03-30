@@ -38,8 +38,8 @@ namespace DataLib.Migrations
                 c => new
                     {
                         MatchID = c.Int(nullable: false, identity: true),
-                        ChallengerID = c.Int(),
-                        DefenderID = c.Int(),
+                        ChallengerID = c.Int(nullable: false),
+                        DefenderID = c.Int(nullable: false),
                         WinnerID = c.Int(),
                         ChallengerScore = c.Int(),
                         DefenderScore = c.Int(),

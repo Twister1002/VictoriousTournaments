@@ -15,7 +15,7 @@ namespace DataLib
             //Database.CreateIfNotExists();
             //Database.SetInitializer<VictoriousDbContext>(null);
             this.Configuration.LazyLoadingEnabled = true;
-           
+
         }
 #elif !DEBUG
         public VictoriousDbContext()
@@ -41,7 +41,7 @@ namespace DataLib
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            
+
 
             //modelBuilder.Entity<Bracket>()
             //    .HasMany(e => e.TournamentRules)
@@ -124,7 +124,7 @@ namespace DataLib
                 .HasMany(e => e.TeamMembers)
                 .WithOptional()
                 .WillCascadeOnDelete(false);
-                
+
 
             //modelBuilder.Entity<TournamentModel>()
             //    .HasMany(e => e.Users)
@@ -170,19 +170,20 @@ namespace DataLib
                 .ToTable("TeamMembers");
 
             //modelBuilder.Entity<MatchModel>()
-            //    .HasOptional(e => e.Challenger)
-            //    .WithMany()
-            //    .WillCascadeOnDelete(false);
-
 
             //modelBuilder.Entity<MatchModel>()
-            //    .HasOptional(e => e.Defender)
-            //    .WithMany()
-            //    .WillCascadeOnDelete(false);
+            //    .
 
             //modelBuilder.Entity<MatchModel>()
-            //   .HasOptional(e => e.Winner)
-            //   .WithOptionalPrincipal()
+            //    .HasRequired(e => e.Challenger)
+            //    .WithMany()
+            //    .HasForeignKey(e => e.ChallengerID)
+            //    .WillCascadeOnDelete(false) ;
+
+            //modelBuilder.Entity<MatchModel>()
+            //   .HasRequired(e => e.Defender)
+            //   .WithMany()
+            //   .HasForeignKey(e => e.DefenderID)
             //   .WillCascadeOnDelete(false);
 
             //modelBuilder.Entity<Match>()

@@ -88,17 +88,13 @@
     <Compile Include="BracketTypeModel.cs" />
     <Compile Include="DbModel.cs" />
     <Compile Include="MatchModel.cs" />
-    <Compile Include="Migrations\201703281658512_InitialCreate.cs" />
-    <Compile Include="Migrations\201703281658512_InitialCreate.Designer.cs">
-      <DependentUpon>201703281658512_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\201703301251538_InitialCreate.cs" />
+    <Compile Include="Migrations\201703301251538_InitialCreate.Designer.cs">
+      <DependentUpon>201703301251538_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201703281727082_UpdatedMatchModel.cs" />
-    <Compile Include="Migrations\201703281727082_UpdatedMatchModel.Designer.cs">
-      <DependentUpon>201703281727082_UpdatedMatchModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201703281848395_SecondMatchModelUpdate.cs" />
-    <Compile Include="Migrations\201703281848395_SecondMatchModelUpdate.Designer.cs">
-      <DependentUpon>201703281848395_SecondMatchModelUpdate.cs</DependentUpon>
+    <Compile Include="Migrations\201703301344386_UpdateMatchModel.cs" />
+    <Compile Include="Migrations\201703301344386_UpdateMatchModel.Designer.cs">
+      <DependentUpon>201703301344386_UpdateMatchModel.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="PermissionModel.cs" />
@@ -124,14 +120,11 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201703281658512_InitialCreate.resx">
-      <DependentUpon>201703281658512_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201703301251538_InitialCreate.resx">
+      <DependentUpon>201703301251538_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703281727082_UpdatedMatchModel.resx">
-      <DependentUpon>201703281727082_UpdatedMatchModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703281848395_SecondMatchModelUpdate.resx">
-      <DependentUpon>201703281848395_SecondMatchModelUpdate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201703301344386_UpdateMatchModel.resx">
+      <DependentUpon>201703301344386_UpdateMatchModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
