@@ -58,10 +58,13 @@ namespace DataLib
 
         public int? PrevChallengerMatchNumber { get; set; }
 
-        [ForeignKey("ChallengerID")]
+        //[ForeignKey("ChallengerID")]
+        [InverseProperty("ChallengerMatches")]
+
         public virtual UserModel Challenger { get; set; }
 
-        [ForeignKey("DefenderID")]
+        //[ForeignKey("DefenderID")]
+        [InverseProperty("DefenderMatches")]
 
         public virtual UserModel Defender { get; set; }
 

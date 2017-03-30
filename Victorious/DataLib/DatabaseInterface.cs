@@ -290,23 +290,7 @@ namespace DataLib
             return users;
         }
 
-        [Obsolete("Users should always be added to a tournament with a permission")]
-        public DbError SetUserTournamentPermission(UserModel user, TournamentModel tournament, Permission permission)
-        {
-            UsersInTournamentsModel uitm = new UsersInTournamentsModel();
-            try
-            {
-                context.UsersInTournaments.Add(new UsersInTournamentsModel() { User = user, Tournament = tournament, Permission = permission });
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                WriteException(ex);
-                return DbError.ERROR;
-                throw;
-            }
-            return DbError.ERROR;
-        }
+      
 
         public DbError UpdateUserTournamentPermission(UserModel user, TournamentModel tournament, Permission permission)
         {
@@ -323,7 +307,7 @@ namespace DataLib
                 return DbError.FAILED_TO_UPDATE;
                 throw;
             }
-            return DbError.ERROR;
+            return DbError.SUCCESS;
         }
 
         #endregion

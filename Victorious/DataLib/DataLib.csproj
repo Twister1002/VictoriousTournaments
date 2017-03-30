@@ -96,6 +96,10 @@
     <Compile Include="Migrations\201703301626138_AddedInverseProperty.Designer.cs">
       <DependentUpon>201703301626138_AddedInverseProperty.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201703301724172_ChangeInverses.cs" />
+    <Compile Include="Migrations\201703301724172_ChangeInverses.Designer.cs">
+      <DependentUpon>201703301724172_ChangeInverses.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="PermissionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -125,6 +129,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703301626138_AddedInverseProperty.resx">
       <DependentUpon>201703301626138_AddedInverseProperty.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703301724172_ChangeInverses.resx">
+      <DependentUpon>201703301724172_ChangeInverses.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

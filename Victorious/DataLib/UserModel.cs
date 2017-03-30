@@ -55,10 +55,8 @@ namespace DataLib
 
         public ICollection<TeamModel> Teams { get; set; }
 
-        [InverseProperty("Challenger")]
         public virtual ICollection<MatchModel> ChallengerMatches { get; set; }
 
-        [InverseProperty("Defender")]
         public virtual ICollection<MatchModel> DefenderMatches { get; set; }
 
     }

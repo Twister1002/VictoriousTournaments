@@ -171,8 +171,13 @@ namespace DataLib
 
             //modelBuilder.Entity<MatchModel>()
 
-            //modelBuilder.Entity<MatchModel>()
-            //    .
+            modelBuilder.Entity<MatchModel>()
+                .HasOptional(e => e.Challenger)
+                .WithMany(e => e.ChallengerMatches);
+
+            modelBuilder.Entity<MatchModel>()
+                .HasOptional(e => e.Defender)
+                .WithMany(e => e.DefenderMatches);
 
             //modelBuilder.Entity<MatchModel>()
             //    .HasRequired(e => e.Challenger)
