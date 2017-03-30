@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "Update";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    int maxUsersPerRow = 20;
+    int maxUsersPerRow = 15;
 
     int participantColumns = (int)Math.Ceiling((double)Model.Participants.Count / maxUsersPerRow);
     int adminColumns = (int)Math.Ceiling((double)Model.Administrators.Count / maxUsersPerRow);
@@ -11,7 +11,7 @@
     adminColumns = adminColumns < 1 ? 1 : adminColumns;
     int totalColumns = participantColumns + adminColumns;
 }
-<div id="TournamentEdit">
+<div id="TournamentEdit" data-tournament="@Model.Model.TournamentID">
     @using (Html.BeginForm("Edit", "Tournament", FormMethod.Post))
     {
         <div class="section form-section">
@@ -106,44 +106,51 @@
                     <ul data-columns="@totalColumns">
                         @{
                             int userIndex = 0;
-                            for (int i = 0; i < adminColumns; i++)
+                            bool isAdminColumn = false;
+                            for (int i = 1; i <= totalColumns; i++)
                             {
+                                if (i <= adminColumns)
+                                {
+                                    if (isAdminColumn != true) { userIndex = 0; }
+                                    isAdminColumn = true;
+                                }
+                                else
+                                {
+                                    if (isAdminColumn != false) { userIndex = 0; }
+                                    isAdminColumn = false;
+                                }
+
                                 <li>
-                                    @for (int j = 0; j < maxUsersPerRow; j++)
+                                    @for (int x = 0; x < maxUsersPerRow; x++)
                                     {
-                                        if (userIndex < Model.Administrators.Count)
+                                        DataLib.UserModel user = null;
+
+                                        if (userIndex >= (isAdminColumn ? Model.Administrators.Count : Model.Participants.Count))
                                         {
-                                            <div class="adminUser">
-                                                @Model.Administrators[userIndex].Username
-                                            </div>
+                                            user = new DataLib.UserModel();
                                         }
                                         else
                                         {
-                                            <div class="adminUser">&nbsp;</div>
+                                            user = isAdminColumn ? Model.Administrators[userIndex] : Model.Participants[userIndex];
                                         }
-
-                                        userIndex++;
-                                    }
-                                </li>
-                            }
-
-                            userIndex = 0;
-                            for (int i = 0; i < participantColumns; i++)
-                            {
-                                <li>
-                                    @for (int j = 0; j < maxUsersPerRow; j++)
-                                    {
-                                        if (userIndex < Model.Participants.Count)
-                                        {
-                                            <div class="participant">
-                                                @Model.Participants[userIndex].Username
+                                        
+                                        <div class="user" data-user="@user.UserID">
+                                            <span class="username clickable-underline">@user.Username</span>&nbsp;
+                                            @if (user.Username != null)
+                                            {
+                                            <div class="user-options">
+                                                @if (isAdminColumn)
+                                                {
+                                                    <button class="remove" type="button">Remove</button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="promote" type="button">Promote</button>
+                                                    <button class="remove" type="button">Remove</button>
+                                                }
                                             </div>
-
-                                        }
-                                        else
-                                        {
-                                            <div class="participant">&nbsp;</div>
-                                        }
+                                            }
+                                        </div>
 
                                         userIndex++;
                                     }
