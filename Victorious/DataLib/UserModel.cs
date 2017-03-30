@@ -8,7 +8,7 @@ namespace DataLib
     using System.Data.Entity.Spatial;
 
 
-    public partial class UserModel : DbModel
+    public partial class UserModel
     {
         public const int FirstNameLength = 50;
         public const int LastNameLength = 50;
@@ -22,6 +22,8 @@ namespace DataLib
         {
             Tournaments = new Collection<TournamentModel>();
             Teams = new Collection<TeamModel>();
+            ChallengerMatches = new Collection<MatchModel>();
+            DefenderMatches = new Collection<MatchModel>();
         }
         [Key]
         public int UserID { get; set; }
@@ -52,5 +54,12 @@ namespace DataLib
         public ICollection<TournamentModel> Tournaments { get; set; }
 
         public ICollection<TeamModel> Teams { get; set; }
+
+        [InverseProperty("Challenger")]
+        public virtual ICollection<MatchModel> ChallengerMatches { get; set; }
+
+        [InverseProperty("Defender")]
+        public virtual ICollection<MatchModel> DefenderMatches { get; set; }
+
     }
 }

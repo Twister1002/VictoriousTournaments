@@ -8,7 +8,7 @@ namespace DataLib
     using System.Data.Entity.Spatial;
 
 
-    public partial class BracketModel : DbModel
+    public partial class BracketModel
     {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -16,6 +16,7 @@ namespace DataLib
         {
             this.Matches = new Collection<MatchModel>();
             this.UserSeeds = new Collection<UserBracketSeedModel>();
+          
         }
 
         [Key]
@@ -36,6 +37,8 @@ namespace DataLib
         [ForeignKey("BracketTypeID")]
         public BracketTypeModel BracketType { get; set; }
 
-     
+
+
+
     }
 }

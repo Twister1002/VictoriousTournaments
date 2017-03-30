@@ -88,13 +88,13 @@
     <Compile Include="BracketTypeModel.cs" />
     <Compile Include="DbModel.cs" />
     <Compile Include="MatchModel.cs" />
-    <Compile Include="Migrations\201703301251538_InitialCreate.cs" />
-    <Compile Include="Migrations\201703301251538_InitialCreate.Designer.cs">
-      <DependentUpon>201703301251538_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\201703301545508_InitialCreate.cs" />
+    <Compile Include="Migrations\201703301545508_InitialCreate.Designer.cs">
+      <DependentUpon>201703301545508_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201703301344386_UpdateMatchModel.cs" />
-    <Compile Include="Migrations\201703301344386_UpdateMatchModel.Designer.cs">
-      <DependentUpon>201703301344386_UpdateMatchModel.cs</DependentUpon>
+    <Compile Include="Migrations\201703301626138_AddedInverseProperty.cs" />
+    <Compile Include="Migrations\201703301626138_AddedInverseProperty.Designer.cs">
+      <DependentUpon>201703301626138_AddedInverseProperty.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="PermissionModel.cs" />
@@ -120,11 +120,11 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201703301251538_InitialCreate.resx">
-      <DependentUpon>201703301251538_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201703301545508_InitialCreate.resx">
+      <DependentUpon>201703301545508_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703301344386_UpdateMatchModel.resx">
-      <DependentUpon>201703301344386_UpdateMatchModel.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201703301626138_AddedInverseProperty.resx">
+      <DependentUpon>201703301626138_AddedInverseProperty.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

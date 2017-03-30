@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq.Expressions;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Sql;
+using System.Data.SqlClient;
+using System.Data.SqlTypes;
 
 namespace DataLib
 {
@@ -766,14 +770,16 @@ namespace DataLib
             MatchModel _match = new MatchModel();
             try
             {
+                
                 _match = match;
                 
                 _match.Challenger = context.Users.Find(match.ChallengerID);
                 _match.Defender = context.Users.Find(match.DefenderID);
-                
-                //context.Matches.Load();
 
+                //context.Matches.Load();
+                context.Users.Load();
                 context.Matches.Add(_match);
+                context.Entry(_match).CurrentValues.SetValues(match);
                 context.SaveChanges();
                 bracket.Matches.Add(_match);
                 //context.SaveChanges();

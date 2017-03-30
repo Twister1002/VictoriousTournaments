@@ -116,9 +116,9 @@ namespace DataLib
             //        m.ToTable("UsersTournaments");
             //    });
 
-            modelBuilder.Entity<TournamentModel>()
-                .HasMany(e => e.Users)
-                .WithMany(e => e.Tournaments);
+            //modelBuilder.Entity<TournamentModel>()
+            //    .HasMany(e => e.Users)
+            //    .WithMany(e => e.Tournaments);
 
             modelBuilder.Entity<TeamModel>()
                 .HasMany(e => e.TeamMembers)
@@ -176,15 +176,18 @@ namespace DataLib
 
             //modelBuilder.Entity<MatchModel>()
             //    .HasRequired(e => e.Challenger)
-            //    .WithMany()
+            //    .WithMany(e => e.ChallengerMatches)
             //    .HasForeignKey(e => e.ChallengerID)
-            //    .WillCascadeOnDelete(false) ;
+            //    .WillCascadeOnDelete(false);
 
             //modelBuilder.Entity<MatchModel>()
             //   .HasRequired(e => e.Defender)
-            //   .WithMany()
+            //   .WithMany(e => e.DefenderMatches)
             //   .HasForeignKey(e => e.DefenderID)
             //   .WillCascadeOnDelete(false);
+
+            //modelBuilder.Entity<UserModel>()
+            //    .HasMany(e => e.Matches);
 
             //modelBuilder.Entity<Match>()
             //    .HasRequired(e => e.Winner)
