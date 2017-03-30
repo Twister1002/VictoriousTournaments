@@ -127,4 +127,30 @@
 
         return retrunVal;
     }
+
+    $(".tournament-standings").on("click", function () {
+        var elem = $("#TournamentStandings");
+
+        if (elem.hasClass("open")) {
+            // Close the side panel
+            elem.removeClass("open");
+        }
+        else {
+            // Open the side panel
+            elem.addClass("open");
+        }
+    });
+
+    //$(".tournament-standing-close").on("click", function () {
+    //    var elem = $("#TournamentStandings");
+
+    //    if (elem.hasClass("open")) {
+    //        // Close the side panel
+    //        elem.removeClass("open");
+    //    }
+    //    else {
+    //        // Open the side panel
+    //        elem.addClass("open");
+    //    }
+    //});
 });

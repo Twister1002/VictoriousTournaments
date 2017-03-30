@@ -258,6 +258,8 @@
     <Content Include="Views\Tournament\Brackets\_DoubleElimination.cshtml" />
     <Content Include="Views\Tournament\Administrator\_Finalize.cshtml" />
     <Content Include="Views\Administrator\Index.cshtml" />
+    <Content Include="Styles\less\Tournament\_Standings.less" />
+    <Content Include="Views\Tournament\Brackets\_Standings.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

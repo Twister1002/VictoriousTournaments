@@ -20,13 +20,17 @@
 <div id="Tournament" data-id="@Model.Model.TournamentID">
     <div class="content-header">
         <h2>Tournament - @Model.Model.Title</h2>
-        @if (isTournyAdministrator)
-        {
-            <a href="@Url.Action("Update", "Tournament", new { id = Model.Model.TournamentID })">
-                <img src="~/Images/pencil.png" />
-            </a>
-            <img class="tournament-delete" data-id="@Model.Model.TournamentID" src="~/Images/svg/cross.svg" />
-        }
+        <div class="tournament-buttons">
+            @if (isTournyAdministrator)
+            {
+                <a href="@Url.Action("Update", "Tournament", new { id = Model.Model.TournamentID })">
+                    <img src="~/Images/pencil.png" />
+                </a>
+                <img class="tournament-delete" data-id="@Model.Model.TournamentID" src="~/Images/svg/cross.svg" />
+            }
+
+            <img class="tournament-standings" src="~/Images/svg/tree.svg" />
+        </div>
     </div>
     @{
         if (isTournyAdministrator)
