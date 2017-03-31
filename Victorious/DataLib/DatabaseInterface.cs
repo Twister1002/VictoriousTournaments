@@ -62,6 +62,10 @@ namespace DataLib
                 .Load();
             context.TeamMembers
                 .Load();
+            context.Users
+                .Include(x => x.ChallengerMatches)
+                .Include(x => x.DefenderMatches)
+                .Load();
 
 
 
@@ -454,7 +458,7 @@ namespace DataLib
                 context.Entry(_tournament.TournamentRules).CurrentValues.SetValues(tournament.TournamentRules);
                 foreach (BracketModel bracket in tournament.Brackets)
                 {
-                    UpdateBracket(bracket);
+                    UpdateBracket(bracket, true);
                 }
                 //context.Entry(_tournament.Brackets).State = EntityState.Modified;
                 context.SaveChanges();
@@ -526,7 +530,8 @@ namespace DataLib
                 tournaments = context.Tournaments.SqlQuery("SELECT * FROM dbo.Tournaments LIKE @Title", new SqlParameter("@Title", "%" + title + "%")).ToList();
                 foreach (var tournament in tournaments)
                 {
-
+                    if (tournament.TournamentRules.TournamentStartDate != startDate)
+                        tournaments.Remove(tournament);
                 }
             }
             catch (Exception ex)
@@ -715,12 +720,21 @@ namespace DataLib
             return bracket;
         }
 
-        public DbError UpdateBracket(BracketModel bracket)
+        public DbError UpdateBracket(BracketModel bracket, bool updateMatches = true)
         {
             try
             {
                 BracketModel _bracket = context.Brackets.Find(bracket.BracketID);
                 context.Entry(_bracket).CurrentValues.SetValues(bracket);
+                if (updateMatches)
+                {
+                    foreach (var match in bracket.Matches)
+                    {
+                       
+                        match.Challenger = context.Users.Find(match.ChallengerID);
+                        match.Defender = context.Users.Find(match.DefenderID);
+                    }
+                }
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -786,9 +800,11 @@ namespace DataLib
         }
 
         // Adds the passed-in match to the database and also adds it to the passed-in bracket's list of matches.
+        [Obsolete]
         public DbError AddMatch(MatchModel match, BracketModel bracket)
         {
             MatchModel _match = new MatchModel();
+            throw new Exception("Don't Call this Function");
             try
             {
 
@@ -852,8 +868,10 @@ namespace DataLib
 
         #region BracketSeeds
 
+        [Obsolete]
         public DbError SetUserBracketSeed(UserBracketSeedModel userBracketSeed)
         {
+            throw new Exception("Don't use this function");
             try
             {
                 context.UserBracketSeeds.Add(userBracketSeed);
