@@ -17,7 +17,7 @@ namespace Tournament.Structure
 		{ get; protected set; }
 		public List<IPlayer> Players
 		{ get; protected set; }
-		public int[] Rankings
+		public List<IPlayerScore> Rankings
 		{ get; protected set; }
 		protected Dictionary<int, IMatch> Matches
 		{ get; set; }
@@ -49,6 +49,25 @@ namespace Tournament.Structure
 				Players = new List<IPlayer>();
 			}
 			return Players.Count;
+		}
+		public int GetPlayerSeed(int _playerId)
+		{
+			if (null == Players)
+			{
+				throw new NullReferenceException
+					("Players is null. This shouldn't happen...");
+			}
+
+			for (int i = 0; i < Players.Count; ++i)
+			{
+				if (_playerId == Players[i].Id)
+				{
+					return (i + 1);
+				}
+			}
+
+			throw new PlayerNotFoundException
+				("Player not found in this Bracket!");
 		}
 		public void RandomizeSeeds()
 		{
@@ -188,9 +207,12 @@ namespace Tournament.Structure
 				// Replace existing Player in the Rankings
 				for (int i = 0; i < Rankings.Count(); ++i)
 				{
-					if (Rankings[i] == Players[_index].Id)
+					if (Rankings[i].Id == Players[_index].Id)
 					{
-						Rankings[i] = _player.Id;
+						int score = Rankings[i].Score;
+						int rank = Rankings[i].Rank;
+						Rankings[i] = new PlayerScore
+							(_player.Id, _player.Name, score, rank);
 					}
 				}
 			}
@@ -406,7 +428,7 @@ namespace Tournament.Structure
 			GrandFinal = null;
 			NumberOfRounds = NumberOfLowerRounds = 0;
 			NumberOfMatches = 0;
-			Rankings = Enumerable.Repeat(-1, Players.Count).ToArray();
+			Rankings = null;
 		}
 		#endregion
 	}

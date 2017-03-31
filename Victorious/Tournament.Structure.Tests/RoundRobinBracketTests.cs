@@ -71,6 +71,7 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(3, numMatchesForPlayerOne);
 		}
+#if false
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB CreateBracket")]
@@ -87,6 +88,7 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(4, (b as RoundRobinBracket).Scores.Count);
 		}
+#endif
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB CreateBracket")]
@@ -139,6 +141,7 @@ namespace Tournament.Structure.Tests
 		#endregion
 
 		#region Bracket Progression
+#if false
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB AddWin")]
@@ -158,6 +161,7 @@ namespace Tournament.Structure.Tests
 			Assert.AreEqual((uint)1,
 				(b as RoundRobinBracket).Scores[b.GetMatch(1).Players[(int)PlayerSlot.Defender].Id]);
 		}
+#endif
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB AddWin")]
@@ -176,8 +180,9 @@ namespace Tournament.Structure.Tests
 			b.AddWin(1, PlayerSlot.Defender);
 
 			Assert.AreEqual(b.GetMatch(1).Players[(int)(b.GetMatch(1).WinnerSlot)].Id,
-				b.Rankings[0]);
+				b.Rankings[0].Id);
 		}
+#if false
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB AddWin")]
@@ -235,6 +240,7 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual((uint)2, (b as RoundRobinBracket).Scores[pId]);
 		}
+#endif
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB AddWin")]
@@ -272,6 +278,7 @@ namespace Tournament.Structure.Tests
 			Assert.AreEqual(1, 2);
 		}
 
+#if false
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB SubtractWin")]
@@ -285,7 +292,7 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
-			
+
 			try
 			{
 				b.SubtractWin(1, PlayerSlot.Defender);
@@ -317,6 +324,7 @@ namespace Tournament.Structure.Tests
 			Assert.AreEqual((uint)0,
 				(b as RoundRobinBracket).Scores[b.GetMatch(1).Players[(int)PlayerSlot.Challenger].Id]);
 		}
+#endif
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB SubtractWin")]
@@ -354,6 +362,7 @@ namespace Tournament.Structure.Tests
 			Assert.AreEqual(1, 2);
 		}
 
+#if false
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB ResetMatchScore")]
@@ -376,6 +385,7 @@ namespace Tournament.Structure.Tests
 			Assert.AreEqual((uint)0,
 				(b as RoundRobinBracket).Scores[b.GetMatch(1).Players[(int)PlayerSlot.Challenger].Id]);
 		}
+#endif
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
 		[TestCategory("RRB ResetMatchScore")]
@@ -439,6 +449,6 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(1, 1);
 		}
-		#endregion
+#endregion
 	}
 }

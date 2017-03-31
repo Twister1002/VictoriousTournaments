@@ -14,7 +14,7 @@ namespace Tournament.Structure
 		// inherits BracketType BracketType
 		// inherits bool IsFinished
 		// inherits List<IPlayer> Players
-		// inherits int[] Rankings
+		// inherits List<IPlayerScore> Rankings
 		// inherits Dictionary<int, IMatch> Matches
 		// inherits int NumberOfRounds
 		// inherits Dictionary<int, IMatch> LowerMatches (null)
@@ -111,6 +111,25 @@ namespace Tournament.Structure
 				if (NumberOfMatches >= totalMatches)
 				{
 					break;
+				}
+			}
+
+			Rankings = new List<IPlayerScore>();
+			if (BracketTypeModel.BracketType.SINGLE == BracketType)
+			{
+				UpdateRankings();
+				if (Matches[NumberOfMatches].IsFinished)
+				{
+					IPlayer winningPlayer = Matches[NumberOfMatches]
+						.Players[(int)Matches[NumberOfMatches].WinnerSlot];
+					Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, -1, 1));
+					IPlayer losingPlayer = Matches[NumberOfMatches].Players[
+						(PlayerSlot.Defender == Matches[NumberOfMatches].WinnerSlot)
+						? (int)PlayerSlot.Challenger
+						: (int)PlayerSlot.Defender];
+					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, 2));
+
+					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
 			}
 		}
@@ -255,6 +274,7 @@ namespace Tournament.Structure
 			#endregion
 
 			#region Set Bracket Member Variables
+			Rankings = new List<IPlayerScore>();
 			// Move bracket data to member variables (Matches dictionary)
 			NumberOfRounds = roundList.Count;
 			Matches = new Dictionary<int, IMatch>();
@@ -309,14 +329,26 @@ namespace Tournament.Structure
 						}
 					}
 				}
-				else
-				{
-					IsFinished = true;
-				}
 
-				if (this is SingleElimBracket)
+				if (BracketTypeModel.BracketType.SINGLE == BracketType)
 				{
-					UpdateRankings();
+					// Add losing Player to the Rankings:
+					int rank = (int)(Math.Pow(2, (NumberOfRounds - Matches[_matchNumber].RoundIndex)) + 1);
+					IPlayer losingPlayer = Matches[_matchNumber].Players[
+						(PlayerSlot.Defender == _slot)
+						? (int)PlayerSlot.Challenger
+						: (int)PlayerSlot.Defender];
+					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, rank));
+
+					if (NumberOfMatches == _matchNumber)
+					{
+						// Add Finals winner to the Rankings:
+						IPlayer winningPlayer = Matches[_matchNumber].Players[(int)_slot];
+						Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, -1, 1));
+						IsFinished = true;
+					}
+
+					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
 			}
 		}
@@ -459,34 +491,23 @@ namespace Tournament.Structure
 
 		protected override void UpdateRankings()
 		{
-			if (Matches[NumberOfMatches].IsFinished)
+			Rankings.Clear();
+
+			foreach (IMatch match in Matches.Values)
 			{
-				// Add final winner to top of Rankings:
-				Rankings[0] = Matches[NumberOfMatches]
-					.Players[(int)(Matches[NumberOfMatches].WinnerSlot)].Id;
-			}
-			else
-			{
-				Rankings[0] = -1;
+				if (match.IsFinished)
+				{
+					// Add losing Player to the Rankings:
+					int rank = (int)(Math.Pow(2, (NumberOfRounds - match.RoundIndex)) + 1);
+					IPlayer losingPlayer = match.Players[
+						(PlayerSlot.Defender == match.WinnerSlot)
+						? (int)PlayerSlot.Challenger
+						: (int)PlayerSlot.Defender];
+					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, rank));
+				}
 			}
 
-			for (int i = 1; i < Rankings.Count(); ++i)
-			{
-				int matchNum = NumberOfMatches - i + 1;
-				if (Matches[matchNum].IsFinished)
-				{
-					// Add each Match loser to the Rankings array:
-					Rankings[i] =
-						(PlayerSlot.Defender == Matches[matchNum].WinnerSlot)
-						? Matches[matchNum].Players[(int)PlayerSlot.Challenger].Id
-						: Matches[matchNum].Players[(int)PlayerSlot.Defender].Id;
-				}
-				else
-				{
-					// Match isn't over yet, so store "empty" val
-					Rankings[i] = -1;
-				}
-			}
+			Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 		}
 		#endregion
 	}
