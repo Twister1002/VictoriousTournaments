@@ -517,26 +517,17 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        public List<TournamentModel> FindTournaments(TournamentModel tournament, bool matchOneColumn)
+        public List<TournamentModel> FindTournaments(string title, DateTime startDate)
         {
             List<TournamentModel> tournaments = new List<TournamentModel>();
-            TournamentRuleModel rules = tournament.TournamentRules;
+            //TournamentRuleModel rules = tournament.TournamentRules;
             try
             {
-                //var _tournaments = from t in context.Tournaments select t;
+                tournaments = context.Tournaments.SqlQuery("SELECT * FROM dbo.Tournaments LIKE @Title", new SqlParameter("@Title", "%" + title + "%")).ToList();
+                foreach (var tournament in tournaments)
+                {
 
-
-                //_tournaments = context.Tournaments.Find(t => t.CreatedOn == tournament.CreatedOn || t.Title == tournament.Title || t.Description == tournament.Description
-                //    || t.TournamentRules.CheckInBegins == rules.CheckInBegins || t.TournamentRules.CheckInEnds == rules.CheckInEnds || t.TournamentRules.IsPublic == rules.IsPublic
-                //    || t.TournamentRules.NumberOfRounds == rules.NumberOfRounds || t.TournamentRules.PrizePurse == rules.PrizePurse || t.TournamentRules.RegistrationEndDate == rules.RegistrationEndDate
-                //    || t.TournamentRules.RegistrationStartDate == rules.RegistrationStartDate || t.TournamentRules.TournamentEndDate == rules.TournamentEndDate
-                //    || t.TournamentRules.TournamentStartDate == rules.TournamentStartDate);
-
-
-                //tournament = context.Tournaments.ToDictionary(string, t => t.Title).ToList();
-
-                //tournaments = context.Tournaments.Where().ToList();
-
+                }
             }
             catch (Exception ex)
             {
@@ -549,13 +540,12 @@ namespace DataLib
             return tournaments;
         }
 
-        public List<TournamentModel> FindUserInTournaments(UserModel userInfo)
+        public List<TournamentModel> FindUser(UserModel userInfo)
         {
             List<TournamentModel> tournaments = new List<TournamentModel>();
             List<UserModel> users = new List<UserModel>();
             try
             {
-
                 users = context.Users.SqlQuery("SELECT * FROM dbo.Users WHERE Username LIKE @Username AND FirstName LIKE @FirstName AND LastName LIKE @LastName",
                     new SqlParameter("@Username", "%" + userInfo.Username + "%"),
                     new SqlParameter("@FirstName", "%" + userInfo.FirstName + "%"),
