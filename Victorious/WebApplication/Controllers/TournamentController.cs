@@ -122,6 +122,11 @@ namespace WebApplication.Controllers
                 if (result == DbError.SUCCESS)
                 {
                     // Lets now Register the user as an administrator
+                    //UserInTournamentModel userInModel = new UserInTournamentModel()
+                    //{
+                    //     UserID = (int)Session["User.UserId"],
+                    //     TournamentID = 
+                    //}
                     DbError adminResult = db.AddUserToTournament(model, db.GetUserById((int)Session["User.UserId"]), Permission.TOURNAMENT_ADMINISTRATOR);
                     if (adminResult == DbError.SUCCESS)
                     {

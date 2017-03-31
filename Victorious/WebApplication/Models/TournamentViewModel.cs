@@ -73,7 +73,7 @@ namespace WebApplication.Models
             }
             
             // Tournament Creator stuff
-            if (Model.CreatedByID == 0 || Model.CreatedByID == null)
+            if (Model.CreatedByID == 0)
             {
                 Model.CreatedByID = SessionId;
                 Model.CreatedOn = DateTime.Now;
@@ -85,7 +85,7 @@ namespace WebApplication.Models
             this.Title                  = Model.Title;
             this.Description            = Model.Description;
 
-            this.IsPublic               = Model.TournamentRules.IsPublic == null ? true : (bool)Model.TournamentRules.IsPublic;
+            this.IsPublic               = Model.TournamentRules.IsPublic;
             this.RegistrationStartDate  = Model.TournamentRules.RegistrationStartDate;
             this.RegistrationEndDate    = Model.TournamentRules.RegistrationEndDate;
             this.TournamentStartDate    = Model.TournamentRules.TournamentStartDate;
@@ -129,15 +129,15 @@ namespace WebApplication.Models
 
         private void GetUserPermissions()
         {
-            foreach (UserModel user in Model.Users)
+            foreach (UserInTournamentModel user in Model.UsersInTournament)
             {
-                switch(db.GetUserPermission(user, Model))
+                switch(user.Permission)
                 {
                     case Permission.TOURNAMENT_STANDARD:
-                        Participants.Add(user);
+                        Participants.Add(user.User);
                         break;
                     case Permission.TOURNAMENT_ADMINISTRATOR:
-                        Administrators.Add(user);
+                        Administrators.Add(user.User);
                         break;
                 }
             }
@@ -146,7 +146,7 @@ namespace WebApplication.Models
         public DbError FinalizeTournament()
         {
             int bracketNum = 0;
-            BracketModel bracket = Model.Brackets.ToList()[bracketNum];
+            BracketModel bracket = Model.Brackets.ElementAt(bracketNum);
             IBracket tourny = Tourny.Brackets[bracketNum];
             DbError result;
 
@@ -178,7 +178,7 @@ namespace WebApplication.Models
                 // Save the match models
                 for (int i = 0; i < bracket.Matches.Count; i++)
                 {
-                    DbError matchSave = db.AddMatch(bracket.Matches.ToList()[i], bracket);
+                    DbError matchSave = db.AddMatch(bracket.Matches.ElementAt(i), bracket);
                     
                     if (matchSave != DbError.SUCCESS)
                     {
@@ -187,7 +187,7 @@ namespace WebApplication.Models
                         // Reverse the list and remove the matches.
                         for (int x = i; x > 0; x--)
                         {
-                            db.DeleteMatch(bracket.Matches.ToList()[x]);
+                            db.DeleteMatch(bracket.Matches.ElementAt(x));
                         }
 
                         break;
@@ -226,7 +226,7 @@ namespace WebApplication.Models
                 {
                     for (int x = i; x > 0; x--)
                     {
-                        db.RemoveUserBracketSeed(bracket.UserSeeds.ElementAt(x));
+                        db.DeleteUserBracketSeed(bracket.UserSeeds.ElementAt(x));
                     }
 
                     // Set the data
@@ -240,16 +240,19 @@ namespace WebApplication.Models
 
         public void ProcessTournament()
         {
+            int bracketNum = 0;
+            BracketModel bracket = Model.Brackets.ElementAt(bracketNum);
+
             Tourny = new Tournament.Structure.Tournament();
             Tourny.Title = Model.Title;
 
-            if (Model.Brackets.ToList()[0].Matches.Count > 0)
+            if (bracket.Matches.Count > 0)
             {
-                Tourny.AddBracket(BracketTournament());
+                Tourny.AddBracket(BracketTournament(bracket));
             }
             else
             {
-                Tourny.AddBracket(PlayerTournament());
+                Tourny.AddBracket(PlayerTournament(bracket));
             }
 
             // Progress a few matches
@@ -263,27 +266,27 @@ namespace WebApplication.Models
             //Tourny.Brackets[0].AddWin(8, PlayerSlot.Defender);
         }
 
-        private IBracket BracketTournament()
+        private IBracket BracketTournament(BracketModel bracketModel)
         {
             IBracket bracket = null;
 
-            switch ((int)Model.Brackets.ToList()[0].BracketTypeID)
+            switch ((int)bracketModel.BracketTypeID)
             {
                 case (int)BracketTypeModel.BracketType.SINGLE:
-                    bracket = new SingleElimBracket(Model.Brackets.ToList()[0]);
+                    bracket = new SingleElimBracket(bracketModel);
                     break;
                 case (int)BracketTypeModel.BracketType.DOUBLE:
-                    bracket = new DoubleElimBracket(Model.Brackets.ToList()[0]);
+                    bracket = new DoubleElimBracket(bracketModel);
                     break;
                 case (int)BracketTypeModel.BracketType.ROUNDROBIN:
-                    bracket = new RoundRobinBracket(Model.Brackets.ToList()[0]);
+                    bracket = new RoundRobinBracket(bracketModel);
                     break;
             }
 
             return bracket;
         }
 
-        private IBracket PlayerTournament()
+        private IBracket PlayerTournament(BracketModel bracketModel)
         {
             IBracket bracket = null;
             List<IPlayer> players = new List<IPlayer>();
@@ -293,7 +296,7 @@ namespace WebApplication.Models
                 players.Add(new User(userModel));
             }
 
-            switch ((int)Model.Brackets.ToList()[0].BracketTypeID)
+            switch (bracketModel.BracketTypeID)
             {
                 case (int)BracketTypeModel.BracketType.SINGLE:
                     bracket = new SingleElimBracket(players);
