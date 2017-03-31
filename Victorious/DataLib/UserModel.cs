@@ -55,9 +55,9 @@ namespace DataLib
 
         public ICollection<TeamModel> Teams { get; set; }
 
-        public virtual ICollection<MatchModel> ChallengerMatches { get; set; }
+        public ICollection<MatchModel> ChallengerMatches { get; set; }
 
-        public virtual ICollection<MatchModel> DefenderMatches { get; set; }
+        public ICollection<MatchModel> DefenderMatches { get; set; }
 
     }
 }

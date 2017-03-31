@@ -50,6 +50,7 @@ namespace DataLib
                 .Include(x => x.Users)
                 .Include(x => x.Teams)
                 .Include(x => x.TournamentRules)
+                .Include(x => x.UsersInTournament)
                 .Load();
             context.Brackets
                 .Include(x => x.Matches)
