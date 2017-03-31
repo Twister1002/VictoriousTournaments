@@ -510,6 +510,15 @@ namespace Tournament.Structure
 
 			Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 		}
+
+		protected IMatch GetMatchData(int _matchNumber, out int _nextMatchNumber, out int _nextLoserMatchNumber)
+		{
+			IMatch m = GetMatch(_matchNumber);
+			_nextMatchNumber = m.NextMatchNumber;
+			_nextLoserMatchNumber = m.NextLoserMatchNumber;
+
+			return m;
+		}
 #endregion
 	}
 }
