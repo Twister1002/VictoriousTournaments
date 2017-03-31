@@ -910,7 +910,7 @@ namespace DataLib
             {
                 interfaceException = ex;
                 WriteException(ex);
-                return DbError.FAILED_TO_REMOVE;               
+                return DbError.FAILED_TO_DELETE;               
             }
             return DbError.SUCCESS;
         }
