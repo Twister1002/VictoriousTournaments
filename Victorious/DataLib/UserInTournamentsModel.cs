@@ -14,8 +14,8 @@ namespace DataLib
         [Column(Order = 1)]
         public int UserID { get; set; }
 
-        //[Key]
-        //[Column(Order = 2)]
+        [Key]
+        [Column(Order = 2)]
         public int TournamentID { get; set; }
 
         public Permission Permission { get; set; }
@@ -23,8 +23,8 @@ namespace DataLib
         [ForeignKey("UserID")]
         public UserModel User { get; set; }
 
-        //[ForeignKey("TournamentID")]
-        //public TournamentModel Tournament { get; set; }
+        [ForeignKey("TournamentID")]
+        public TournamentModel Tournament { get; set; }
 
 
 

@@ -108,6 +108,10 @@
     <Compile Include="Migrations\201703301924000_MoveNumberOfGroups.Designer.cs">
       <DependentUpon>201703301924000_MoveNumberOfGroups.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201703302009106_ReAddTournamentToUserInTournament.cs" />
+    <Compile Include="Migrations\201703302009106_ReAddTournamentToUserInTournament.Designer.cs">
+      <DependentUpon>201703302009106_ReAddTournamentToUserInTournament.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="PermissionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -146,6 +150,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703301924000_MoveNumberOfGroups.resx">
       <DependentUpon>201703301924000_MoveNumberOfGroups.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703302009106_ReAddTournamentToUserInTournament.resx">
+      <DependentUpon>201703302009106_ReAddTournamentToUserInTournament.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

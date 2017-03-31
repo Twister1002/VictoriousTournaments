@@ -290,7 +290,7 @@ namespace DataLib
             return users;
         }
 
-      
+
 
         public DbError UpdateUserTournamentPermission(UserModel user, TournamentModel tournament, Permission permission)
         {
@@ -352,7 +352,7 @@ namespace DataLib
             TournamentRuleModel _rules = new TournamentRuleModel();
             TournamentModel _tournament = new TournamentModel();
             try
-            {               
+            {
                 _tournament = tournament;
                 _rules = tournament.TournamentRules;
                 context.TournamentRules.Add(_rules);
@@ -370,7 +370,7 @@ namespace DataLib
             }
             return DbError.SUCCESS;
         }
-        
+
         [Obsolete("Use AddUserToTournament(UserInTournamentModel user)")]
         public DbError AddUserToTournament(TournamentModel tournament, UserModel user, Permission permission)
         {
@@ -536,6 +536,36 @@ namespace DataLib
 
                 //tournaments = context.Tournaments.Where().ToList();
 
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                tournaments.Clear();
+                tournaments.Add(new TournamentModel() { TournamentID = 0 });
+                return tournaments;
+            }
+            return tournaments;
+        }
+
+        public List<TournamentModel> FindUserInTournaments(UserModel userInfo)
+        {
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+            List<UserModel> users = new List<UserModel>();
+            try
+            {
+
+                users = context.Users.SqlQuery("SELECT * FROM dbo.Users WHERE Username LIKE @Username AND FirstName LIKE @FirstName AND LastName LIKE @LastName",
+                    new SqlParameter("@Username", "%" + userInfo.Username + "%"),
+                    new SqlParameter("@FirstName", "%" + userInfo.FirstName + "%"),
+                    new SqlParameter("@LastName", "%" + userInfo.LastName + "%")).ToList();
+                foreach (var user in users)
+                {
+                    foreach (var tournament in user.Tournaments)
+                    {
+                        tournaments.Add(tournament);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -770,9 +800,9 @@ namespace DataLib
             MatchModel _match = new MatchModel();
             try
             {
-                
+
                 _match = match;
-                
+
                 _match.Challenger = context.Users.Find(match.ChallengerID);
                 _match.Defender = context.Users.Find(match.DefenderID);
 
@@ -831,22 +861,17 @@ namespace DataLib
 
         #region BracketSeeds
 
-        public DbError SetUserBracketSeed(UserModel user, BracketModel bracket, int seed)
+        public DbError SetUserBracketSeed(UserBracketSeedModel userBracketSeed)
         {
-            UserBracketSeedModel ubs = new UserBracketSeedModel();
             try
             {
-                ubs.User = user;
-                ubs.Bracket = bracket;
-                ubs.Tournament = bracket.Tournament;
-                ubs.Seed = seed;
-
-                context.UserBracketSeeds.Add(ubs);
+                context.UserBracketSeeds.Add(userBracketSeed);
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Excetption " + ex.ToString() + " in SetUserBracketSeed");
+                WriteException(ex);
+                interfaceException = ex;
                 return DbError.ERROR;
             }
 
@@ -858,17 +883,36 @@ namespace DataLib
         public int GetUserSeedInBracket(UserModel user, BracketModel bracket)
         {
             UserBracketSeedModel ubs = new UserBracketSeedModel();
+            int seed;
             try
             {
-
+                seed = context.UserBracketSeeds.Single(e => e.UserID == user.UserID && e.BracketID == bracket.BracketID).Seed;
             }
             catch (Exception ex)
             {
-
-                Console.WriteLine("Exception " + ex.ToString() + " in GetUserSeedInBracket");
+                WriteException(ex);
+                interfaceException = ex;
                 return -1;
             }
-            return ubs.Seed;
+            return seed;
+        }
+
+        public DbError DeleteUserBracketSeed(UserBracketSeedModel userBracketSeed)
+        {
+            try
+            {
+                context.UserBracketSeeds.Remove(context.UserBracketSeeds.Single(e => e.BracketID == userBracketSeed.BracketID &&
+                e.TournamentID == userBracketSeed.TournamentID &&
+                e.UserID == userBracketSeed.UserID));
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_REMOVE;               
+            }
+            return DbError.SUCCESS;
         }
 
         #endregion
@@ -996,15 +1040,19 @@ namespace DataLib
 
         #endregion
 
-
         #region Permissions
 
         public Permission GetUserPermission(UserModel user, TournamentModel tournament) // Rename and seperate all get permission calls/functions
         {
-            Permission permission;
+            Permission permission = new Permission();
             try
             {
-                permission = context.UsersInTournaments.Where(x => x.UserID == user.UserID && x.TournamentID == tournament.TournamentID).Single().Permission;
+                context.Users.Load();
+                context.Tournaments.Load();
+                context.UsersInTournaments.Load();
+                permission = context.UsersInTournaments.SingleOrDefault(e => e.UserID == user.UserID && e.TournamentID == tournament.TournamentID).Permission;
+                //permission = context.UsersInTournaments.Include(x => x.Tournament).Include(x => x.User).Single().Permission;
+                //permission = context.UsersInTournaments.Where(x => x.UserID == user.UserID && x.TournamentID == tournament.TournamentID).First().Permission;
             }
             catch (Exception ex)
             {
