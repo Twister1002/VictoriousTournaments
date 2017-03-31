@@ -173,7 +173,7 @@ namespace WebApplication.Models
         private DbError CreateMatches(BracketModel bracket, IBracket tourny)
         {
             DbError result = DbError.NONE;
-            List<MatchModel> matchModels = new List<MatchModel>();
+            //List<MatchModel> matchModels = new List<MatchModel>();
 
             // Verify if the tournament has not need finalized.
             if (bracket.Matches.Count == 0)
@@ -183,27 +183,10 @@ namespace WebApplication.Models
                 {
                     MatchModel matchModel = tourny.GetMatch(i).GetModel(-1);
 
-                    matchModels.Add(matchModel);
+                    bracket.Matches.Add(matchModel);
                 }
 
-                // Save the match models
-                for (int i = 0; i < matchModels.Count; i++)
-                {
-                    DbError matchSave = db.AddMatch(matchModels[i], bracket);
-                    
-                    if (matchSave != DbError.SUCCESS)
-                    {
-                        result = matchSave;
-
-                        // Reverse the list and remove the matches.
-                        for (int x = i; x > 0; x--)
-                        {
-                            db.DeleteMatch(matchModels[x]);
-                        }
-
-                        break;
-                    }
-                }
+                result = db.UpdateBracket(bracket);
             }
 
             return result;
@@ -212,7 +195,6 @@ namespace WebApplication.Models
         public DbError SaveSeedParticipants(BracketModel bracket, IBracket tourny)
         {
             List<IPlayer> players = Tourny.Brackets[0].Players;
-            DbError result = DbError.NONE;
 
             for (int i = 0; i < players.Count; i++)
             {
@@ -222,31 +204,13 @@ namespace WebApplication.Models
                     UserID = players[i].Id,
                     TournamentID = Model.TournamentID,
                     BracketID = bracket.BracketID,
-                    Seed = tourny.GetPlayerSeed(players[0].Id)
+                    Seed = tourny.GetPlayerSeed(players[i].Id)
                 };
 
                 bracket.UserSeeds.Add(seedModel);
             }
 
-            // Save the user seeds
-            for (int i =0; i < bracket.UserSeeds.Count; i++)
-            {
-                DbError seedSave = db.SetUserBracketSeed(bracket.UserSeeds.ElementAt(i));
-
-                if (seedSave != DbError.SUCCESS)
-                {
-                    for (int x = i; x > 0; x--)
-                    {
-                        db.DeleteUserBracketSeed(bracket.UserSeeds.ElementAt(x));
-                    }
-
-                    // Set the data
-                    result = seedSave;
-                    break;
-                }
-            }
-
-            return result;
+            return db.UpdateBracket(bracket);
         }
 
         public void ProcessTournament()
