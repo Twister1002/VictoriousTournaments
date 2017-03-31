@@ -230,7 +230,7 @@ namespace DatabaseDebugConsole
 
 
 
-          
+            SearchTournamnet(db);
 
 
 
@@ -356,7 +356,26 @@ namespace DatabaseDebugConsole
         {
             while (true)
             {
-                Console.WriteLine("Enter <Tournament  to search for. Type \"exit\" to end search");
+                Console.WriteLine("Enter <TournamentTitle> to search for. Type \"exit\" to end search");
+                string info = Console.ReadLine();
+                if (info == "exit")
+                    break;
+                else
+                {
+                    TournamentModel tournament = new TournamentModel();
+                    List<TournamentModel> list = new List<TournamentModel>();
+                    list = db.FindTournaments(info, DateTime.Today.AddDays(1));
+                    if (list.Count > 0)
+                    {
+                        Console.WriteLine("Tournaments found:");
+                        foreach (var _tournament in list)
+                        {
+                            Console.WriteLine(_tournament.Title);
+                        }
+                    }
+                    else
+                        Console.WriteLine("No tournaments found");
+                }
 
             }
         }
