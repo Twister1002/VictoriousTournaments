@@ -180,7 +180,7 @@ namespace Tournament.Structure.Tests
 			b.AddWin(1, PlayerSlot.Defender);
 
 			Assert.AreEqual(b.GetMatch(1).Players[(int)(b.GetMatch(1).WinnerSlot)].Id,
-				b.Rankings[0]);
+				b.Rankings[0].Id);
 		}
 #if false
 		[TestMethod]

@@ -308,7 +308,7 @@ namespace Tournament.Structure.Tests
 				b.AddWin(n, PlayerSlot.Defender);
 			}
 
-			Assert.AreEqual(-1, b.Rankings[3]);
+			Assert.AreEqual(0, b.Rankings.Count);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -332,7 +332,7 @@ namespace Tournament.Structure.Tests
 			}
 
 			Assert.AreEqual(b.GetMatch(4).Players[(int)PlayerSlot.Challenger].Id,
-				b.Rankings[3]);
+				b.Rankings[0].Id);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -356,7 +356,7 @@ namespace Tournament.Structure.Tests
 			}
 
 			Assert.AreEqual(b.GrandFinal.Players[(int)PlayerSlot.Challenger].Id,
-				b.Rankings[1]);
+				b.Rankings[1].Id);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -380,7 +380,7 @@ namespace Tournament.Structure.Tests
 			}
 
 			Assert.AreEqual(b.GrandFinal.Players[(int)PlayerSlot.Defender].Id,
-				b.Rankings[0]);
+				b.Rankings[0].Id);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -561,7 +561,7 @@ namespace Tournament.Structure.Tests
 			}
 			b.SubtractWin(4, PlayerSlot.Defender);
 
-			Assert.AreEqual(-1, b.Rankings[3]);
+			Assert.AreEqual(0, b.Rankings.Count);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -584,7 +584,7 @@ namespace Tournament.Structure.Tests
 			}
 			b.SubtractWin(4, PlayerSlot.Defender);
 
-			Assert.AreEqual(-1, b.Rankings[0]);
+			Assert.AreEqual(0, b.Rankings.Count);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -762,7 +762,7 @@ namespace Tournament.Structure.Tests
 			}
 			b.ResetMatchScore(1);
 
-			Assert.AreEqual(-1, b.Rankings[0]);
+			Assert.AreEqual(0, b.Rankings.Count);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]

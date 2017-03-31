@@ -267,7 +267,12 @@ namespace Tournament.Structure
 					{
 						// Loser doesn't advance from play-in round,
 						// so update the rankings instead.
-						UpdateRankings();
+						int rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
+						IPlayer losingPlayer = Matches[_matchNumber].Players[
+							(PlayerSlot.Defender == _slot)
+							? (int)PlayerSlot.Challenger
+							: (int)PlayerSlot.Defender];
+						Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, rank));
 					}
 				}
 
@@ -282,15 +287,15 @@ namespace Tournament.Structure
 					if (GrandFinal.IsFinished)
 					{
 						// Add both Players to the Rankings:
-						IPlayer winningPlayer = Matches[_matchNumber]
-							.Players[(int)_slot];
+						IPlayer winningPlayer = GrandFinal.Players[(int)_slot];
 						Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, -1, 1));
-						IPlayer losingPlayer = Matches[_matchNumber].Players[
+						IPlayer losingPlayer = GrandFinal.Players[
 							(PlayerSlot.Defender == _slot)
 							? (int)PlayerSlot.Challenger
 							: (int)PlayerSlot.Defender];
 						Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, 2));
 
+						Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 						IsFinished = true;
 					}
 					return;
@@ -588,7 +593,7 @@ namespace Tournament.Structure
 			}
 
 			// Special case check: DEB has a play-in round
-			if (Matches[0].NextLoserMatchNumber < 1)
+			if (GetMatch(1).NextLoserMatchNumber < 1)
 			{
 				int rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
 

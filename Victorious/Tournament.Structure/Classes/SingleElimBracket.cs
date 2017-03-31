@@ -115,7 +115,7 @@ namespace Tournament.Structure
 			}
 
 			Rankings = new List<IPlayerScore>();
-			if (this is SingleElimBracket)
+			if (BracketTypeModel.BracketType.SINGLE == BracketType)
 			{
 				UpdateRankings();
 				if (Matches[NumberOfMatches].IsFinished)
@@ -328,7 +328,7 @@ namespace Tournament.Structure
 					}
 				}
 
-				if (this is SingleElimBracket)
+				if (BracketTypeModel.BracketType.SINGLE == BracketType)
 				{
 					// Add losing Player to the Rankings:
 					int rank = (int)(Math.Pow(2, (NumberOfRounds - Matches[_matchNumber].RoundIndex)) + 1);
