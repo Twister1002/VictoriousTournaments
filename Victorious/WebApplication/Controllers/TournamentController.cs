@@ -122,6 +122,11 @@ namespace WebApplication.Controllers
                 if (result == DbError.SUCCESS)
                 {
                     // Lets now Register the user as an administrator
+                    //UserInTournamentModel userInModel = new UserInTournamentModel()
+                    //{
+                    //     UserID = (int)Session["User.UserId"],
+                    //     TournamentID = 
+                    //}
                     DbError adminResult = db.AddUserToTournament(model, db.GetUserById((int)Session["User.UserId"]), Permission.TOURNAMENT_ADMINISTRATOR);
                     if (adminResult == DbError.SUCCESS)
                     {
@@ -302,8 +307,7 @@ namespace WebApplication.Controllers
                 TournamentViewModel viewModel = new TournamentViewModel(tournyId);
                 if (viewModel.Model.CreatedByID == (int)Session["User.UserId"])
                 {
-                    viewModel.CreateMatches();
-                    DbError result = viewModel.SaveMatches();
+                    DbError result = viewModel.FinalizeTournament();
 
                     if (result == DbError.SUCCESS)
                     {
@@ -312,7 +316,7 @@ namespace WebApplication.Controllers
                     }
                     else
                     {
-                        Session["Message"] = "An error occurred while trying to create the matches.";
+                        Session["Message"] = "An error occurred while trying to create the matches.<br/>"+viewModel.dbException.Message;
                         Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
                     }
                 }
@@ -417,6 +421,7 @@ namespace WebApplication.Controllers
         [Route("Tournament/Ajax/Promote")]
         public JsonResult Promote(String tournyVal, String userVal)
         {
+            // TODO: Make sure the user is authorized to do this.
             TournamentModel tournyModel = db.GetTournamentById(ConvertToInt(tournyVal));
             UserModel userModel = db.GetUserById(ConvertToInt(userVal));
 
@@ -453,6 +458,7 @@ namespace WebApplication.Controllers
         [Route("Tournament/Ajax/Demote")] 
         public JsonResult Demote(String tournyVal, String userVal)
         {
+            // TODO: Make sure the user is authorized to do this.
             TournamentModel tournyModel = db.GetTournamentById(ConvertToInt(tournyVal));
             UserModel userModel = db.GetUserById(ConvertToInt(userVal));
 

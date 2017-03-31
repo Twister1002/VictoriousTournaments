@@ -14,7 +14,7 @@ namespace Tournament.Structure
 		// inherits BracketType BracketType
 		// inherits bool IsFinished
 		// inherits List<IPlayer> Players
-		// inherits int[] Rankings
+		// inherits List<IPlayerScore> Rankings
 		// inherits Dictionary<int, IMatch> Matches
 		// inherits int NumberOfRounds
 		// inherits Dictionary<int, IMatch> LowerMatches (null)
@@ -140,7 +140,7 @@ namespace Tournament.Structure
 						group.GetMatch(model.MatchNumber)
 							.SetWinsNeeded((ushort)(model.WinsNeeded));
 
-						if (model.DefenderScore <= model.ChallengerScore)
+						if (model.DefenderScore < model.ChallengerScore)
 						{
 							for (int i = 0; i < model.DefenderScore; ++i)
 							{
@@ -169,6 +169,7 @@ namespace Tournament.Structure
 			}
 
 			// Update the rankings:
+			UpdateRankings();
 			IsFinished = true;
 			foreach (IBracket group in Groups)
 			{
@@ -178,7 +179,6 @@ namespace Tournament.Structure
 					break;
 				}
 			}
-			UpdateRankings();
 		}
 #endregion
 
@@ -204,12 +204,14 @@ namespace Tournament.Structure
 				Groups.Add(new RoundRobinBracket(pList));
 			}
 
+			Rankings = new List<IPlayerScore>();
 			foreach (IBracket group in Groups)
 			{
 				NumberOfMatches += group.NumberOfMatches;
 				NumberOfRounds = (NumberOfRounds < group.NumberOfRounds)
 					? group.NumberOfRounds
 					: NumberOfRounds;
+				Rankings.AddRange(group.Rankings);
 			}
 		}
 
@@ -218,6 +220,7 @@ namespace Tournament.Structure
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			Groups[groupIndex].AddWin(_matchNumber, _slot);
+			UpdateRankings();
 
 			IsFinished = true;
 			foreach (IBracket group in Groups)
@@ -228,29 +231,46 @@ namespace Tournament.Structure
 					break;
 				}
 			}
-			UpdateRankings();
 		}
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			Groups[groupIndex].SubtractWin(_matchNumber, _slot);
+			UpdateRankings();
 
 			IsFinished = (IsFinished && Groups[groupIndex].IsFinished);
-			UpdateRankings();
 		}
 		public override void ResetMatchScore(int _matchNumber)
 		{
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			Groups[groupIndex].ResetMatchScore(_matchNumber);
+			UpdateRankings();
 
 			IsFinished = false;
-			UpdateRankings();
 		}
 
-		//public List<IMatch> GetGroup(int _group)
-		//{ }
+		public IBracket GetGroup(int _groupNumber)
+		{
+			if (null == Groups)
+			{
+				throw new NullReferenceException
+					("No groups exist! Create a bracket first.");
+			}
+			if (_groupNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Group number must be greater than 0!");
+			}
+			if (_groupNumber > Groups.Count)
+			{
+				throw new BracketNotFoundException
+					("Group not found! Invalid group number.");
+			}
+
+			return Groups[_groupNumber - 1];
+		}
 		public override List<IMatch> GetRound(int _round)
 		{
 			if (null == Groups)
@@ -277,17 +297,28 @@ namespace Tournament.Structure
 #region Private Methods
 		protected override void UpdateRankings()
 		{
-			Dictionary<int, uint> scores = new Dictionary<int, uint>();
+			Rankings.Clear();
 			foreach (IBracket group in Groups)
 			{
-				scores = scores.Concat((group as RoundRobinBracket).Scores)
-					.ToDictionary(kv => kv.Key, kv => kv.Value);
+				Rankings.AddRange(group.Rankings);
 			}
+			Rankings.Sort((first, second) => -1 * (first.Score.CompareTo(second.Score)));
+			Rankings[0].Rank = 1;
 
-			Rankings = Players
-				.Select(p => p.Id)
-				.OrderByDescending(id => scores[id])
-				.ToArray();
+			int increment = 1;
+			for (int i = 1; i < Rankings.Count; ++i)
+			{
+				if (Rankings[i].Score == Rankings[i - 1].Score)
+				{
+					++increment;
+					Rankings[i].Rank = Rankings[i - 1].Rank;
+				}
+				else
+				{
+					Rankings[i].Rank = Rankings[i - 1].Rank + increment;
+					increment = 1;
+				}
+			}
 		}
 
 		protected override void ResetBracket()
@@ -311,7 +342,6 @@ namespace Tournament.Structure
 				{
 					break;
 				}
-
 				if (_matchNumber <= Groups[_groupIndex].NumberOfMatches)
 				{
 					return;

@@ -14,7 +14,7 @@ namespace Tournament.Structure
 		BracketTypeModel.BracketType BracketType { get; }
 		bool IsFinished { get; }
 		List<IPlayer> Players { get; }
-		int[] Rankings { get; }
+		List<IPlayerScore> Rankings { get; }
 
 		/// <summary>
 		/// NULL if not applicable.
@@ -77,6 +77,9 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <returns>Number of Players.</returns>
 		int NumberOfPlayers();
+
+
+		int GetPlayerSeed(int _playerId);
 
 
 		void RandomizeSeeds();

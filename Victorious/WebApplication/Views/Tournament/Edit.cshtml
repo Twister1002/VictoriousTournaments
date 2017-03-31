@@ -6,6 +6,7 @@
 
     int participantColumns = (int)Math.Ceiling((double)Model.Participants.Count / maxUsersPerRow);
     int adminColumns = (int)Math.Ceiling((double)Model.Administrators.Count / maxUsersPerRow);
+    bool isFinalized = Model.Model.Brackets.ElementAt(0).Matches.Count != 0;
 
     participantColumns = participantColumns < 1 ? 1 : participantColumns;
     adminColumns = adminColumns < 1 ? 1 : adminColumns;
@@ -120,7 +121,7 @@
                                     isAdminColumn = false;
                                 }
 
-                                <li>
+                                <li class="userTable" data-columnType="@(isAdminColumn ? "admin" : "participant")">
                                     @for (int x = 0; x < maxUsersPerRow; x++)
                                     {
                                         DataLib.UserModel user = null;
@@ -133,10 +134,10 @@
                                         {
                                             user = isAdminColumn ? Model.Administrators[userIndex] : Model.Participants[userIndex];
                                         }
-                                        
+
                                         <div class="user" data-user="@user.UserID">
-                                            <span class="username clickable-underline">@user.Username</span>&nbsp;
-                                            @if (user.Username != null)
+                                            <span class="username @(isFinalized ? "" : "clickable-underline")">@user.Username</span>&nbsp;
+                                            @if (user.Username != null && !isFinalized)
                                             {
                                             <div class="user-options">
                                                 @if (isAdminColumn)

@@ -22,6 +22,7 @@ a:hover {
 
 a.clickable-underline, .clickable-underline {
     text-decoration: underline;
+    cursor: pointer;
 }
 
 .clickable {
@@ -71,6 +72,10 @@ label {
     background-color: grey;
 }
 
+#content {
+    width: 100%;
+}
+
 @media screen and (min-width: @@b1) {
 	.dev-bp {
         background-color: blue;
@@ -82,6 +87,10 @@ label {
 	}
 }
 @media screen and (min-width: @@b3) {
+    /*#content {
+        width: 90%;
+        margin: auto;
+    }*/
 	.dev-bp {
         background-color: yellow;
 	}

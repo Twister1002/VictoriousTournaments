@@ -337,8 +337,8 @@ namespace Tournament.Structure.Tests
 			//b.CreateBracket();
 
 			b.AddWin(1, PlayerSlot.Defender);
-
-			Assert.AreEqual(b.Rankings[b.Rankings.Length - 1],
+			
+			Assert.AreEqual(b.Rankings[0].Id,
 				b.GetMatch(1).Players[(int)PlayerSlot.Challenger].Id);
 		}
 		[TestMethod]
@@ -362,7 +362,7 @@ namespace Tournament.Structure.Tests
 				b.AddWin(n, PlayerSlot.Defender);
 			}
 
-			Assert.AreEqual(b.Rankings[0],
+			Assert.AreEqual(b.Rankings[0].Id,
 				b.GetMatch(b.NumberOfMatches).Players[(int)PlayerSlot.Defender].Id);
 		}
 		[TestMethod]
@@ -579,7 +579,7 @@ namespace Tournament.Structure.Tests
 			b.AddWin(1, PlayerSlot.Defender);
 			b.SubtractWin(1, PlayerSlot.Defender);
 
-			Assert.AreEqual(-1, b.Rankings[b.Rankings.Length - 1]);
+			Assert.AreEqual(0, b.Rankings.Count);
 		}
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
@@ -659,7 +659,7 @@ namespace Tournament.Structure.Tests
 			}
 			b.ResetMatchScore(1);
 
-			Assert.AreEqual(-1, b.Rankings[b.Rankings.Length - 1]);
+			Assert.AreEqual(1, b.Rankings.Count);
 		}
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]

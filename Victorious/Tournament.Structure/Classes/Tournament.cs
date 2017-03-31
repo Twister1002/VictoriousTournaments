@@ -126,12 +126,12 @@ namespace Tournament.Structure
 
 			int maxPlayers = (_numberOfPlayers > 0)
 				? _numberOfPlayers
-				: Brackets[_initialBracketIndex].Rankings.Length;
+				: Brackets[_initialBracketIndex].Rankings.Count;
 			List<IPlayer> pList = new List<IPlayer>();
-			foreach (int pId in Brackets[_initialBracketIndex].Rankings)
+			foreach (IPlayerScore pScore in Brackets[_initialBracketIndex].Rankings)
 			{
 				pList.Add(Brackets[_initialBracketIndex].Players
-					.Find(p => p.Id == pId));
+					.Find(p => p.Id == pScore.Id));
 				if (pList.Count == maxPlayers)
 				{
 					break;

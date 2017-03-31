@@ -127,7 +127,7 @@
     </ul>
     <ul data-columns="@totalRounds">
         @{
-            for (int roundNum = 1; roundNum <= totalRounds; roundNum++)
+            for (int roundNum = 1; roundNum <= totalRounds && Model.GrandFinal != null; roundNum++)
             {
                 <li class="round">
                     @if (roundNum == totalRounds)

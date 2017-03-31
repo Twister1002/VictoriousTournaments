@@ -6,7 +6,7 @@
 <div id="TournamentCreate">
     @using (Html.BeginForm("Create", "Tournament", FormMethod.Post))
     {
-        <div class="section">
+        <div class="section form-section">
             <h2>Basic Information</h2>
             <ul>
                 <li>
@@ -31,7 +31,7 @@
                 </li>
             </ul>
         </div>
-        <div class="section">
+        <div class="section form-section">
             <h2>Tournament Dates</h2>
             <ul>
                 <li>
@@ -56,13 +56,13 @@
                 </li>
             </ul>
         </div>
-        <div class="section">
+        <div class="section form-section">
             <h2>Tournament Rules</h2>
             <ul>
                 <li>Coming soon</li>
             </ul>
         </div>
-        <div class="section">
+        <div class="section form-section">
             <button type="submit">Create Tournament</button>
         </div>
     }
