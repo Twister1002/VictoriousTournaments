@@ -458,7 +458,7 @@ namespace DataLib
                 context.Entry(_tournament.TournamentRules).CurrentValues.SetValues(tournament.TournamentRules);
                 foreach (BracketModel bracket in tournament.Brackets)
                 {
-                    UpdateBracket(bracket, true);
+                    UpdateBracket(bracket);
                 }
                 //context.Entry(_tournament.Brackets).State = EntityState.Modified;
                 context.SaveChanges();
