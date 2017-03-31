@@ -41,14 +41,6 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Hyak.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hyak.Common.1.1.1\lib\net45\Hyak.Common.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Azure.Common, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Azure.Common.2.1.1\lib\net45\Microsoft.Azure.Common.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
       <Private>True</Private>
@@ -59,10 +51,6 @@
     </Reference>
     <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop, Version=1.0.168.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Management.Sql, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.WindowsAzure.Management.Sql.5.2.0\lib\net40\Microsoft.WindowsAzure.Management.Sql.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -100,35 +88,20 @@
     <Compile Include="BracketTypeModel.cs" />
     <Compile Include="DbModel.cs" />
     <Compile Include="MatchModel.cs" />
-    <Compile Include="Migrations\201703100236141_Initial.cs" />
-    <Compile Include="Migrations\201703100236141_Initial.Designer.cs">
-      <DependentUpon>201703100236141_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201703301545508_InitialCreate.cs" />
+    <Compile Include="Migrations\201703301545508_InitialCreate.Designer.cs">
+      <DependentUpon>201703301545508_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201703102354543_RemovedIdentity.cs" />
-    <Compile Include="Migrations\201703102354543_RemovedIdentity.Designer.cs">
-      <DependentUpon>201703102354543_RemovedIdentity.cs</DependentUpon>
+    <Compile Include="Migrations\201703301626138_AddedInverseProperty.cs" />
+    <Compile Include="Migrations\201703301626138_AddedInverseProperty.Designer.cs">
+      <DependentUpon>201703301626138_AddedInverseProperty.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201703131442531_AddedTeams.cs" />
-    <Compile Include="Migrations\201703131442531_AddedTeams.Designer.cs">
-      <DependentUpon>201703131442531_AddedTeams.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201703131732047_AddedBracketTypeModel.cs" />
-    <Compile Include="Migrations\201703131732047_AddedBracketTypeModel.Designer.cs">
-      <DependentUpon>201703131732047_AddedBracketTypeModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201703151709008_RemovedTournamentRulesFK.cs" />
-    <Compile Include="Migrations\201703151709008_RemovedTournamentRulesFK.Designer.cs">
-      <DependentUpon>201703151709008_RemovedTournamentRulesFK.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201703151740288_ReaddedTournamentRulesForeignKey.cs" />
-    <Compile Include="Migrations\201703151740288_ReaddedTournamentRulesForeignKey.Designer.cs">
-      <DependentUpon>201703151740288_ReaddedTournamentRulesForeignKey.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201703151933016_AddedBracketTypeEnum.cs" />
-    <Compile Include="Migrations\201703151933016_AddedBracketTypeEnum.Designer.cs">
-      <DependentUpon>201703151933016_AddedBracketTypeEnum.cs</DependentUpon>
+    <Compile Include="Migrations\201703301724172_ChangeInverses.cs" />
+    <Compile Include="Migrations\201703301724172_ChangeInverses.Designer.cs">
+      <DependentUpon>201703301724172_ChangeInverses.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="PermissionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TeamMemberModel.cs" />
     <Compile Include="TeamModel.cs" />
@@ -137,6 +110,7 @@
     <Compile Include="UserBracketSeedModel.cs" />
     <Compile Include="UserModel.cs" />
     <Compile Include="DatabaseInterface.cs" />
+    <Compile Include="UsersInTournamentsModel.cs" />
     <Compile Include="VictoriousDbContext.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -150,26 +124,14 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201703100236141_Initial.resx">
-      <DependentUpon>201703100236141_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201703301545508_InitialCreate.resx">
+      <DependentUpon>201703301545508_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703102354543_RemovedIdentity.resx">
-      <DependentUpon>201703102354543_RemovedIdentity.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201703301626138_AddedInverseProperty.resx">
+      <DependentUpon>201703301626138_AddedInverseProperty.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703131442531_AddedTeams.resx">
-      <DependentUpon>201703131442531_AddedTeams.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703131732047_AddedBracketTypeModel.resx">
-      <DependentUpon>201703131732047_AddedBracketTypeModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703151709008_RemovedTournamentRulesFK.resx">
-      <DependentUpon>201703151709008_RemovedTournamentRulesFK.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703151740288_ReaddedTournamentRulesForeignKey.resx">
-      <DependentUpon>201703151740288_ReaddedTournamentRulesForeignKey.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703151933016_AddedBracketTypeEnum.resx">
-      <DependentUpon>201703151933016_AddedBracketTypeEnum.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201703301724172_ChangeInverses.resx">
+      <DependentUpon>201703301724172_ChangeInverses.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

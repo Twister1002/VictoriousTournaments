@@ -2,12 +2,13 @@ namespace DataLib
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
 
-    public partial class UserModel : DbModel
+    public partial class UserModel
     {
         public const int FirstNameLength = 50;
         public const int LastNameLength = 50;
@@ -19,7 +20,10 @@ namespace DataLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public UserModel()
         {
-
+            Tournaments = new Collection<TournamentModel>();
+            Teams = new Collection<TeamModel>();
+            ChallengerMatches = new Collection<MatchModel>();
+            DefenderMatches = new Collection<MatchModel>();
         }
         [Key]
         public int UserID { get; set; }
@@ -47,16 +51,13 @@ namespace DataLib
 
         public DateTime? LastLogin { get; set; }
 
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        //public virtual ICollection<Match> Matches { get; set; }
+        public ICollection<TournamentModel> Tournaments { get; set; }
 
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        //public virtual ICollection<Match> Matches1 { get; set; }
+        public ICollection<TeamModel> Teams { get; set; }
 
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        //public virtual ICollection<Match> Matches2 { get; set; }
+        public virtual ICollection<MatchModel> ChallengerMatches { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentModel> Tournaments { get; set; }
+        public virtual ICollection<MatchModel> DefenderMatches { get; set; }
+
     }
 }

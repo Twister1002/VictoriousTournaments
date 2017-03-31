@@ -17,7 +17,7 @@ gulp.task('less', function () {
 });
 
 gulp.task('watch-less', function () {
-    return gulp.watch("Styles/less/*.less", ['less'])
+    return gulp.watch("Styles/less/*", ['less'])
     .on('change', function (event) {
         console.log("File " + event.path + " was " + event.type + ", running task...");
     });

@@ -1,0 +1,32 @@
+﻿@model Tournament.Structure.IMatch
+
+@{
+    Tournament.Structure.IPlayer Challenger = ViewBag.Challenger == null ? new Tournament.Structure.User() : ViewBag.Challenger;
+    Tournament.Structure.IPlayer Defender = ViewBag.Defender == null ? new Tournament.Structure.User() : ViewBag.Defender;
+    String className = ViewBag.ClassName != null ? ViewBag.ClassName : String.Empty;
+    ViewBag.ClassName = null;
+}
+
+<div class="match @className" data-match="@Model.MatchNumber">
+    <label class="matchNum">
+        Match @Model.MatchNumber
+        @if (ViewBag.isAdministrator && Model.IsReady)
+        {
+            <span class="edit">
+                <img class="match-edit svg-pencil svg clickable" src="~/Images/svg/pencil.svg" />
+            </span>
+        }
+    </label>
+    <div class="matchData">
+        <ul class="info">
+            <li class="defender" data-seed="@Defender.Id">
+                <label class="seed">@Defender.Id</label>
+                <div class="name">@Defender.Name</div>
+            </li>
+            <li class="challenger" data-seed="@Challenger.Id">
+                <label class="seed">@Challenger.Id</label>
+                <div class="name">@Challenger.Name</div>
+            </li>
+        </ul>
+    </div>
+</div>

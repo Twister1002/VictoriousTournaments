@@ -1,0 +1,43 @@
+﻿#TournamentEdit {
+    .section {
+        &.form-section {
+            li {
+                padding: .5em 0em;
+            }
+        }
+
+        &.user-section {
+            /*background-color: red;*/
+
+            .user {
+                position: relative;
+                padding: .5em 0em;
+                
+                &:hover {
+                    .user-options {
+                        display: block;
+                    }
+                }
+
+                .username {
+                    cursor: pointer;
+                }
+
+                .user-options {
+                    position: absolute;
+                    display: none;
+                    z-index: 1;
+
+                    &:hover {
+                        display: inline-block;
+                    }
+
+                    > button {
+                        display: inline-block;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
+}

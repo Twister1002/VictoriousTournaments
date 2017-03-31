@@ -8,7 +8,7 @@ namespace DataLib
     using System.Data.Entity.Spatial;
 
 
-    public partial class BracketModel : DbModel
+    public partial class BracketModel
     {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -16,6 +16,7 @@ namespace DataLib
         {
             this.Matches = new Collection<MatchModel>();
             this.UserSeeds = new Collection<UserBracketSeedModel>();
+          
         }
 
         [Key]
@@ -23,18 +24,21 @@ namespace DataLib
 
         public string BracketTitle { get; set; }
 
-        public int BracketTypeID { get; set; }     
+        public int BracketTypeID { get; set; }
+        
+        public bool Finalized { get; set; }     
 
-        public virtual ICollection<MatchModel> Matches { get; set; }
+        public ICollection<MatchModel> Matches { get; set; }
 
-        public virtual ICollection<UserBracketSeedModel> UserSeeds { get; set; }
+        public ICollection<UserBracketSeedModel> UserSeeds { get; set; }
 
-        // Tournament that holds this bracket.
-        public virtual TournamentModel Tournament { get; set; }
+        public TournamentModel Tournament { get; set; }
 
         [ForeignKey("BracketTypeID")]
-        public virtual BracketTypeModel BracketType { get; set; }
+        public BracketTypeModel BracketType { get; set; }
 
-     
+
+
+
     }
 }

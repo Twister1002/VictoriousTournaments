@@ -7,19 +7,24 @@ namespace DataLib
     using System.Data.SqlClient;
     using System.Data.Entity.Spatial;
 
-    public partial class MatchModel : DbModel
+    public partial class MatchModel
     {
         public MatchModel()
         {
             MatchNumber = -1;
+            IsBye = false;
+            MatchIndex = 0;
+            WinsNeeded = 0;
+            PrevMatchIndex = 0;
+            //next
         }
 
         [Key]
         public int MatchID { get; set; }
 
-        public int? ChallengerID { get; set; }
-
-        public int? DefenderID { get; set; }
+        public int ChallengerID { get; set; }
+                  
+        public int DefenderID { get; set; }
 
         public int? WinnerID { get; set; }
 
@@ -53,16 +58,20 @@ namespace DataLib
 
         public int? PrevChallengerMatchNumber { get; set; }
 
-        [ForeignKey("ChallengerID")]
+        //[ForeignKey("ChallengerID")]
+        [InverseProperty("ChallengerMatches")]
+
         public virtual UserModel Challenger { get; set; }
 
-        [ForeignKey("DefenderID")]
+        //[ForeignKey("DefenderID")]
+        [InverseProperty("DefenderMatches")]
+
         public virtual UserModel Defender { get; set; }
 
         //[ForeignKey("TournamentID")]
         //public TournamentModel Tournament { get; set; }
 
-        [ForeignKey("WinnerID")]
-        public virtual UserModel Winner { get; set; }
+        //[ForeignKey("WinnerID")]
+        //public UserModel Winner { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace DataLib
 
         public DateTime? CreatedOn { get; set; }
 
-        public virtual ICollection<TeamMemberModel> TeamMembers { get; set; }
+        public ICollection<TeamMemberModel> TeamMembers { get; set; }
 
 
 

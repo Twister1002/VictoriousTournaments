@@ -1,106 +1,57 @@
-﻿#Tournament {
-    min-width: 33em;
-    .list-table-header ul li {
-        text-align: center;
-    }
-    .round {
-        vertical-align: middle;
-        .match{
-            padding: .5em;
-
-            .matchData {
-                background-color: @match-color;
-
-                .info {
-                    position: relative;
-                    display: block;
-                    border: .1em solid @white;
-                    overflow: hidden;
-
-                    .defender, .challenger {
-                        position: relative;
-                        display:block;
-                        min-width: 10em;
-                        width: 100%;
-
-                        &.seedHover {
-                            background-color: @color-primary-2;
-                        }
-
-                        .seed {
-                            display:inline-block;
-                            text-align: right;
-                            width: 1.5em;
-                            padding: .3em;
-                            border-right: .1em solid @white;
-                        }
-                        .name { 
-                            display: inline-block;
-                        }
-                    }
-                    .defender {
-                        border-bottom: .1em solid @white;
-                    }
-                }
-            }
-        }
-    }
-}
-
-#TournamentCreate, #TournamentEdit {
-    .section {
-        li {
-            padding:.5em 0em;
-        }
-    }
-}
-
-#TournamentSearch {
-    li.list-table-body {
-        a {
-            text-decoration:none;
-            &:hover {
-                background-color: inherit;
-                color: inherit;
-            }
-        }
-
-        .column-clickable {
-            padding: 1em 0em;
-            &:hover {
-                background-color: @color-primary-4;
-                cursor: pointer;
-            }
-        }
-    }
-}
+﻿@import "Tournament/_Tournament.less";
+@import "Tournament/_Create.less";
+@import "Tournament/_Edit.less";
+@import "Tournament/_Search.less";
+@import "Tournament/_Standings.less";
 
 @media screen and (min-width: @@b1) {
-	#TournamentCreate, #TournamentEdit {
+    #TournamentCreate, #TournamentEdit {
         .section {
-            li {
-                width: 40%;
-                display:inline-block;
-            }
-        }
-	}
-}
-@media screen and (min-width: @@b2) {
-	#TournamentCreate, #TournamentEdit {
-        .section {
-            li {
-                width: 30%;
-                display:inline-block;
-                input:not([type='checkbox']) {
-                    width: 80%;
+            &.form-section {
+                li {
+                    width: 35%;
+                    display: inline-block;
+
+                    input {
+                        width: 90%;
+                    }
                 }
             }
         }
-	}
-}
-@media screen and (min-width: @@b3) {
-	
-}
-@media screen and (min-width: @@b4) {
+    }
 
+    #Tournament {
+        .content-header {
+            > * {
+                display: inline-block;
+            }
+        }
+    }
+
+    #TournamentStandings {
+        width: 75%;
+    }
+}
+
+@media screen and (min-width: @@b2) {
+    #TournamentCreate, #TournamentEdit {
+        .section {
+            &.form-section {
+                li {
+                    input {
+                        width: 80%;
+                    }
+
+                    > input[type='checkbox'] {
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (min-width: @@b3) {
+}
+
+@media screen and (min-width: @@b4) {
 }

@@ -1,0 +1,39 @@
+﻿@model Tournament.Structure.ITournament
+
+@{
+    var bracket = Model.Brackets[0];
+}
+
+<ul class="list-table">
+    @{
+        switch (bracket.BracketType)
+        {
+            case DataLib.BracketTypeModel.BracketType.SINGLE:
+                Html.RenderPartial("Brackets/_SingleElimination", bracket, new ViewDataDictionary(ViewData));
+                break;
+            case DataLib.BracketTypeModel.BracketType.DOUBLE:
+                Html.RenderPartial("Brackets/_DoubleElimination", bracket, new ViewDataDictionary(ViewData));
+                break;
+            case DataLib.BracketTypeModel.BracketType.ROUNDROBIN:
+                Html.RenderPartial("Brackets/_RoundRobin", bracket, new ViewDataDictionary(ViewData));
+                break;
+        }
+    }
+    <li class="match-edit-module">
+        <div class="module-background"></div>
+        <div class="module-close"><img class="close clickable" src="~/Images/svg/cross.svg" /></div>
+        <div class="module-content">
+            <h2>Winner Selection</h2>
+            @{
+                Html.RenderPartial("Brackets/_Match", new Tournament.Structure.Match(), new ViewDataDictionary(ViewData));
+            }
+            <div class="match-submit">
+                <button type="button">Submit Winner</button>
+            </div>
+        </div>
+    </li>
+</ul>
+
+@{ 
+    Html.RenderPartial("Brackets/_Standings", bracket, new ViewDataDictionary(ViewData));
+}

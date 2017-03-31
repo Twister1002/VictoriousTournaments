@@ -1,0 +1,23 @@
+﻿@model WebApplication.Models.TournamentViewModel
+
+@{
+    var playersRegistered = Model.Model.Users;
+    var userColumns = Math.Ceiling(playersRegistered.Count / 5.0);
+}
+
+
+<div id="TournamentRegisteredPlayers">
+    <h2>@playersRegistered.Count Registered Players</h2>
+    <div class="registeredPlayers">
+        <ul class="list-table">
+            <li class="list-table-body">
+                <ul data-columns="@userColumns">
+                    @foreach (var user in playersRegistered)
+                    {
+                        <li>@user.Username</li>
+                    }
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>

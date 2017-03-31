@@ -9,10 +9,8 @@ using DataLib;
 
 namespace WebApplication.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : VictoriousController
     {
-        DatabaseInterface db = new DatabaseInterface();
-
         [Route("Account/Logout")]
         public ActionResult Logout()
         {
@@ -22,6 +20,7 @@ namespace WebApplication.Controllers
 
         // GET: Account
         [Route("Account")]
+        [Route("Account/Index")]
         public ActionResult Index()
         {
             if (Session["User.UserId"] != null)
@@ -59,11 +58,12 @@ namespace WebApplication.Controllers
                 // Check the username and password
                 viewModel.setUserModel(viewModel.Username);
                 
-                if (viewModel.getUserModel() != null)
+                if (viewModel.Model != null)
                 {
-                    if (viewModel.Password == viewModel.getUserModel().Password)
+                    if (viewModel.Password == viewModel.Model.Password)
                     {
-                        Session["User.UserId"] = viewModel.getUserModel().UserID;
+                        Session["User.UserId"] = viewModel.Model.UserID;
+                        Session["User.Name"] = viewModel.Model.FirstName;
                         return RedirectToAction("Index", "Account");
                     }
                     else
@@ -110,16 +110,17 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
+                bool passwordsMatch = viewModel.Password == viewModel.PasswordVerify;
                 DbError userExists = db.UserUsernameExists(viewModel.Username);
                 DbError emailExists = db.UserEmailExists(viewModel.Email);
 
                 if (userExists == DbError.DOES_NOT_EXIST && emailExists == DbError.DOES_NOT_EXIST)
                 {
                     // We can then register the user
-                    viewModel.ApplyFieldChanges();
-                    UserModel userModel = viewModel.getUserModel();
+                    viewModel.ApplyChanges();
+                    UserModel userModel = viewModel.Model;
 
-                    DbError error = db.AddUser(ref userModel);
+                    DbError error = db.AddUser(userModel);
                     if (error == DbError.SUCCESS)
                     {
                         // User Registraion was successful
@@ -130,7 +131,7 @@ namespace WebApplication.Controllers
                     else
                     {
                         // User Registration failed.
-                        viewModel.dbException = db.e;
+                        viewModel.dbException = db.interfaceException;
                         viewModel.error = ViewModel.ViewError.CRITICAL;
                         viewModel.message = "Well... Something went wrong when creating your account: <br/>";
                         //+"<h2>Message</h2>" + db.e.Message + "<h2>Inner Exception</h2>" + db.e.InnerException;
@@ -182,16 +183,17 @@ namespace WebApplication.Controllers
                     viewModel.setUserModel((int)Session["User.UserId"]);
 
                     // Verify the user being updated is legitly the user logged in
-                    if (viewModel.getUserModel().UserID == (int)Session["User.UserId"])
+                    if (viewModel.Model.UserID == (int)Session["User.UserId"])
                     {
                         // Apply the changes
-                        viewModel.ApplyFieldChanges();
+                        viewModel.ApplyChanges();
 
-                        DbError error = db.UpdateUser(viewModel.getUserModel());
+                        DbError error = db.UpdateUser(viewModel.Model);
                         if (error == DbError.SUCCESS)
                         {
                             viewModel.error = ViewModel.ViewError.SUCCESS;
                             viewModel.message = "Your account was successfully updated.";
+                            Session["User.Name"] = viewModel.FirstName;
                             Session["Message"] = viewModel.message;
                             Session["Message.Class"] = viewModel.error;
                             return RedirectToAction("Index", "Account");
@@ -199,6 +201,7 @@ namespace WebApplication.Controllers
                         else
                         {
                             // There was an error updating the account
+                            viewModel.dbException = db.interfaceException;
                             viewModel.error = ViewModel.ViewError.CRITICAL;
                             viewModel.message = "There was an error updating your account. Please try again later.";
                         }
