@@ -1,35 +1,22 @@
-﻿.button-edit {
-    background-image:url("~/Images/svg/pencil.svg");
-    background-size:1.5em 1.5em;
-    width:1.5em;
-    height: 1.5em;
+﻿.icon {
+  display: inline-block;
+  width: 1.75em;
+  height: 1.75em;
+  stroke-width: 0;
+  color: @white;
 }
 
-.button-delete {
-    background-image:url("~/Images/svg/cross.svg");
-    background-size:auto;
-}
-
-.button-add {
-    background-image:url("~/Images/svg/plus.svg");
-    background-size:auto;
-}
-
-.button-accept {
-    background-image:url("~/Images/svg/checkmark.svg");
-    background-size:auto;
-}
-
-.button-search {
-    background-image:url("~/Images/svg/search.svg");
-    width:1.5em;
-    height: 1.5em;
-}
-
-.icon-pawn:after {
+[class^="icon-"], [class*=" icon-"] {
+    color: red;
+    
     &:hover {
-        color: #ff6a00;
+        color: purple;
     }
+}
 
-    color: #FFFFFF;
+.icon-trophy {
+    &:before {
+        color: purple;
+    }
+    color:red;
 }
