@@ -302,8 +302,7 @@ namespace WebApplication.Controllers
                 TournamentViewModel viewModel = new TournamentViewModel(tournyId);
                 if (viewModel.Model.CreatedByID == (int)Session["User.UserId"])
                 {
-                    viewModel.CreateMatches();
-                    DbError result = viewModel.SaveMatches();
+                    DbError result = viewModel.FinalizeTournament();
 
                     if (result == DbError.SUCCESS)
                     {

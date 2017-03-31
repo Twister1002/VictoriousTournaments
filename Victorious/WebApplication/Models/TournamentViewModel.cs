@@ -143,15 +143,21 @@ namespace WebApplication.Models
             }
         }
 
-        public void FinalizeTournament()
+        public DbError FinalizeTournament()
         {
             int bracketNum = 0;
             BracketModel bracket = Model.Brackets.ToList()[bracketNum];
             IBracket tourny = Tourny.Brackets[bracketNum];
+            DbError result;
 
             ProcessTournament();
-            CreateMatches(bracket, tourny);
-            SaveSeedParticipants(bracket, tourny);
+            result = CreateMatches(bracket, tourny);
+            if (result == DbError.SUCCESS)
+            {
+                result = SaveSeedParticipants(bracket, tourny);
+            }
+
+            return result;
         }
 
         private DbError CreateMatches(BracketModel bracket, IBracket tourny)
@@ -192,12 +198,14 @@ namespace WebApplication.Models
             return result;
         }
 
-        public void SaveSeedParticipants(BracketModel bracket, IBracket tourny)
+        public DbError SaveSeedParticipants(BracketModel bracket, IBracket tourny)
         {
             List<IPlayer> players = Tourny.Brackets[0].Players;
+            DbError result = DbError.NONE;
 
             for (int i = 0; i < players.Count; i++)
             {
+                UserModel userModel = db.GetUserById(players[i].Id);
                 UserBracketSeedModel seedModel = new UserBracketSeedModel()
                 {
                     UserID = players[i].Id,
@@ -205,7 +213,29 @@ namespace WebApplication.Models
                     BracketID = bracket.BracketID,
                     Seed = tourny.GetPlayerSeed(players[0].Id)
                 };
+
+                bracket.UserSeeds.Add(seedModel);
             }
+
+            // Save the user seeds
+            for (int i =0; i < bracket.UserSeeds.Count; i++)
+            {
+                DbError seedSave = db.SetUserBracketSeed(bracket.UserSeeds.ElementAt(i));
+
+                if (seedSave != DbError.SUCCESS)
+                {
+                    for (int x = i; x > 0; x--)
+                    {
+                        db.RemoveUserBracketSeed(bracket.UserSeeds.ElementAt(x));
+                    }
+
+                    // Set the data
+                    result = seedSave;
+                    break;
+                }
+            }
+
+            return result;
         }
 
         public void ProcessTournament()
