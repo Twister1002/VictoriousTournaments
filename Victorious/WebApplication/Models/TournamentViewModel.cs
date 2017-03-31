@@ -143,51 +143,69 @@ namespace WebApplication.Models
             }
         }
 
-        public void CreateMatches()
+        public void FinalizeTournament()
         {
+            int bracketNum = 0;
+            BracketModel bracket = Model.Brackets.ToList()[bracketNum];
+            IBracket tourny = Tourny.Brackets[bracketNum];
+
             ProcessTournament();
+            CreateMatches(bracket, tourny);
+            SaveSeedParticipants(bracket, tourny);
+        }
 
-            BracketModel bracket = Model.Brackets.ToList()[0];
-
+        private DbError CreateMatches(BracketModel bracket, IBracket tourny)
+        {
+            DbError result = DbError.NONE;
+            // Verify if the tournament has not need finalized.
             if (bracket.Matches.Count == 0)
             {
-                // Save the matches
-                for (int i = 1; i <= Tourny.Brackets[0].NumberOfMatches; i++)
+                // Add the matches to the database
+                for (int i = 1; i <= tourny.NumberOfMatches; i++)
                 {
-                    IMatch match = Tourny.Brackets[0].GetMatch(i);
+                    IMatch match = tourny.GetMatch(i);
                     MatchModel matchModel = match.GetModel(-1);
 
                     bracket.Matches.Add(matchModel);
                 }
-            }
-        }
 
-        public DbError SaveMatches()
-        {
-            // This process somehow doubles the amount of records being saved. 
-            // I believe its once for each match and all matches inside bracket.
-
-            BracketModel bracket = Model.Brackets.ToList()[0];
-            List<MatchModel> matches = bracket.Matches.ToList();
-            DbError result = DbError.NONE;
-
-            for (int i = 0; i < matches.Count; i++)
-            {
-                MatchModel matchModel = matches[i];
-                result = db.AddMatch(matchModel, bracket);
-                if (result != DbError.SUCCESS)
+                // Save the match models
+                for (int i = 0; i < bracket.Matches.Count; i++)
                 {
-                    // Loop backwards and remove all the matches that were created
-                    for (int x = i; x > 0; x--)
+                    DbError matchSave = db.AddMatch(bracket.Matches.ToList()[i], bracket);
+                    
+                    if (matchSave != DbError.SUCCESS)
                     {
-                        db.DeleteMatch(matches[x]);
-                    }
+                        result = matchSave;
 
-                    return result;
+                        // Reverse the list and remove the matches.
+                        for (int x = i; x > 0; x--)
+                        {
+                            db.DeleteMatch(bracket.Matches.ToList()[x]);
+                        }
+
+                        break;
+                    }
                 }
             }
 
             return result;
+        }
+
+        public void SaveSeedParticipants(BracketModel bracket, IBracket tourny)
+        {
+            List<IPlayer> players = Tourny.Brackets[0].Players;
+
+            for (int i = 0; i < players.Count; i++)
+            {
+                UserBracketSeedModel seedModel = new UserBracketSeedModel()
+                {
+                    UserID = players[i].Id,
+                    TournamentID = Model.TournamentID,
+                    BracketID = bracket.BracketID,
+                    Seed = tourny.GetPlayerSeed(players[0].Id)
+                };
+            }
         }
 
         public void ProcessTournament()

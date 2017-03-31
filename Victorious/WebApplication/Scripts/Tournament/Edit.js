@@ -26,7 +26,7 @@
                     }
                 }
 
-                alert(json.message);
+                //alert(json.message);
             },
             "error": function (json) {
                 alert(json.message);

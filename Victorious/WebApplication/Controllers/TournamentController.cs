@@ -417,6 +417,7 @@ namespace WebApplication.Controllers
         [Route("Tournament/Ajax/Promote")]
         public JsonResult Promote(String tournyVal, String userVal)
         {
+            // TODO: Make sure the user is authorized to do this.
             TournamentModel tournyModel = db.GetTournamentById(ConvertToInt(tournyVal));
             UserModel userModel = db.GetUserById(ConvertToInt(userVal));
 
@@ -453,6 +454,7 @@ namespace WebApplication.Controllers
         [Route("Tournament/Ajax/Demote")] 
         public JsonResult Demote(String tournyVal, String userVal)
         {
+            // TODO: Make sure the user is authorized to do this.
             TournamentModel tournyModel = db.GetTournamentById(ConvertToInt(tournyVal));
             UserModel userModel = db.GetUserById(ConvertToInt(userVal));
 
