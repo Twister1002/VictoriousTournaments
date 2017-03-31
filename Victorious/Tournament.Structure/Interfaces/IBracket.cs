@@ -79,6 +79,9 @@ namespace Tournament.Structure
 		int NumberOfPlayers();
 
 
+		int GetPlayerSeed(int _playerId);
+
+
 		void RandomizeSeeds();
 
 		/// <summary>

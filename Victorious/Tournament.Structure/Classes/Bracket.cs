@@ -50,6 +50,25 @@ namespace Tournament.Structure
 			}
 			return Players.Count;
 		}
+		public int GetPlayerSeed(int _playerId)
+		{
+			if (null == Players)
+			{
+				throw new NullReferenceException
+					("Players is null. This shouldn't happen...");
+			}
+
+			for (int i = 0; i < Players.Count; ++i)
+			{
+				if (_playerId == Players[i].Id)
+				{
+					return (i + 1);
+				}
+			}
+
+			throw new PlayerNotFoundException
+				("Player not found in this Bracket!");
+		}
 		public void RandomizeSeeds()
 		{
 			if (null == Players || Players.Count < 2)
