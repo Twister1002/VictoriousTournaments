@@ -140,7 +140,7 @@ namespace Tournament.Structure
 						group.GetMatch(model.MatchNumber)
 							.SetWinsNeeded((ushort)(model.WinsNeeded));
 
-						if (model.DefenderScore <= model.ChallengerScore)
+						if (model.DefenderScore < model.ChallengerScore)
 						{
 							for (int i = 0; i < model.DefenderScore; ++i)
 							{
@@ -169,6 +169,7 @@ namespace Tournament.Structure
 			}
 
 			// Update the rankings:
+			UpdateRankings();
 			IsFinished = true;
 			foreach (IBracket group in Groups)
 			{
@@ -178,7 +179,6 @@ namespace Tournament.Structure
 					break;
 				}
 			}
-			UpdateRankings();
 		}
 #endregion
 
@@ -220,6 +220,7 @@ namespace Tournament.Structure
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			Groups[groupIndex].AddWin(_matchNumber, _slot);
+			UpdateRankings();
 
 			IsFinished = true;
 			foreach (IBracket group in Groups)
@@ -230,29 +231,46 @@ namespace Tournament.Structure
 					break;
 				}
 			}
-			UpdateRankings();
 		}
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			Groups[groupIndex].SubtractWin(_matchNumber, _slot);
+			UpdateRankings();
 
 			IsFinished = (IsFinished && Groups[groupIndex].IsFinished);
-			UpdateRankings();
 		}
 		public override void ResetMatchScore(int _matchNumber)
 		{
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			Groups[groupIndex].ResetMatchScore(_matchNumber);
+			UpdateRankings();
 
 			IsFinished = false;
-			UpdateRankings();
 		}
 
-		//public List<IMatch> GetGroup(int _group)
-		//{ }
+		public IBracket GetGroup(int _groupNumber)
+		{
+			if (null == Groups)
+			{
+				throw new NullReferenceException
+					("No groups exist! Create a bracket first.");
+			}
+			if (_groupNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Group number must be greater than 0!");
+			}
+			if (_groupNumber > Groups.Count)
+			{
+				throw new BracketNotFoundException
+					("Group not found! Invalid group number.");
+			}
+
+			return Groups[_groupNumber - 1];
+		}
 		public override List<IMatch> GetRound(int _round)
 		{
 			if (null == Groups)
