@@ -37,6 +37,7 @@ namespace DataLib
         [ForeignKey("BracketTypeID")]
         public BracketTypeModel BracketType { get; set; }
 
+        public int NumberOfGroups { get; set; }
 
 
 

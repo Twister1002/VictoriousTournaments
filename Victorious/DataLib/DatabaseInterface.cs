@@ -294,11 +294,12 @@ namespace DataLib
 
         public DbError UpdateUserTournamentPermission(UserModel user, TournamentModel tournament, Permission permission)
         {
-            UsersInTournamentsModel uitm = new UsersInTournamentsModel();
+            UserInTournamentModel uitm = new UserInTournamentModel();
             try
             {
-                uitm = context.UsersInTournaments.Where(x => x.UserID == user.UserID && x.TournamentID == tournament.TournamentID).Single();
-                uitm.Permission = permission;
+
+                context.UsersInTournaments.Where(x => x.UserID == user.UserID).Single().Permission = permission;
+                //uitm.Permission = permission;
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -370,14 +371,15 @@ namespace DataLib
             }
             return DbError.SUCCESS;
         }
-
+        
+        [Obsolete("Use AddUserToTournament(UserInTournamentModel user)")]
         public DbError AddUserToTournament(TournamentModel tournament, UserModel user, Permission permission)
         {
             try
             {
                 //user.CreatedOn = DateTime.Now;
                 //user.LastLogin = DateTime.Now;
-                context.UsersInTournaments.Add(new UsersInTournamentsModel() { TournamentID = tournament.TournamentID, UserID = user.UserID, Permission = permission });
+                context.UsersInTournaments.Add(new UserInTournamentModel() { TournamentID = tournament.TournamentID, UserID = user.UserID, Permission = permission });
                 context.Tournaments.Include(x => x.Users).Load();
                 context.Tournaments.Include(x => x.Users).Single(x => x.TournamentID == tournament.TournamentID).Users.Add(user);
                 context.SaveChanges();
@@ -389,6 +391,23 @@ namespace DataLib
                 return DbError.FAILED_TO_ADD;
             }
 
+            return DbError.SUCCESS;
+        }
+
+        public DbError AddUserToTournament(UserInTournamentModel user)
+        {
+            try
+            {
+                context.UsersInTournaments.Add(new UserInTournamentModel() { TournamentID = user.TournamentID, UserID = user.UserID, Permission = user.Permission });
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_ADD;
+                throw;
+            }
             return DbError.SUCCESS;
         }
 

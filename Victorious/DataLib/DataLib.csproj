@@ -100,6 +100,14 @@
     <Compile Include="Migrations\201703301724172_ChangeInverses.Designer.cs">
       <DependentUpon>201703301724172_ChangeInverses.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201703301854520_UpdatedUsersInTournaments.cs" />
+    <Compile Include="Migrations\201703301854520_UpdatedUsersInTournaments.Designer.cs">
+      <DependentUpon>201703301854520_UpdatedUsersInTournaments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703301924000_MoveNumberOfGroups.cs" />
+    <Compile Include="Migrations\201703301924000_MoveNumberOfGroups.Designer.cs">
+      <DependentUpon>201703301924000_MoveNumberOfGroups.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="PermissionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -110,7 +118,7 @@
     <Compile Include="UserBracketSeedModel.cs" />
     <Compile Include="UserModel.cs" />
     <Compile Include="DatabaseInterface.cs" />
-    <Compile Include="UsersInTournamentsModel.cs" />
+    <Compile Include="UserInTournamentsModel.cs" />
     <Compile Include="VictoriousDbContext.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -132,6 +140,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703301724172_ChangeInverses.resx">
       <DependentUpon>201703301724172_ChangeInverses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703301854520_UpdatedUsersInTournaments.resx">
+      <DependentUpon>201703301854520_UpdatedUsersInTournaments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703301924000_MoveNumberOfGroups.resx">
+      <DependentUpon>201703301924000_MoveNumberOfGroups.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
