@@ -14,7 +14,7 @@ namespace Tournament.Structure
 		// inherits BracketType BracketType
 		// inherits bool IsFinished
 		// inherits List<IPlayer> Players
-		// inherits int[] Rankings
+		// inherits List<IPlayerScore> Rankings
 		// inherits Dictionary<int, IMatch> Matches
 		// inherits int NumberOfRounds
 		// inherits Dictionary<int, IMatch> LowerMatches (null)

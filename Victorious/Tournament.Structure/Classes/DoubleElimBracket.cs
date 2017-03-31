@@ -81,6 +81,8 @@ namespace Tournament.Structure
 					? (int)PlayerSlot.Challenger
 					: (int)PlayerSlot.Defender];
 				Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, 2));
+
+				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 			}
 		}
 		#endregion
