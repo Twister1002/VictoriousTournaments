@@ -54,6 +54,7 @@ namespace DataLib
                 .Load();
             context.Brackets
                 .Include(x => x.Matches)
+                .Include(x => x.UserSeeds)
                 .Load();
             context.Matches
                 .Load();
@@ -66,6 +67,7 @@ namespace DataLib
                 .Include(x => x.ChallengerMatches)
                 .Include(x => x.DefenderMatches)
                 .Load();
+
 
 
 
@@ -729,8 +731,7 @@ namespace DataLib
                 if (updateMatches)
                 {
                     foreach (var match in bracket.Matches)
-                    {
-                       
+                    {                      
                         match.Challenger = context.Users.Find(match.ChallengerID);
                         match.Defender = context.Users.Find(match.DefenderID);
                     }
