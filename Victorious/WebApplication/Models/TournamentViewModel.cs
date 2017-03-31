@@ -162,6 +162,10 @@ namespace WebApplication.Models
             {
                 result = SaveSeedParticipants(bracket, tourny);
             }
+            else
+            {
+                dbException = db.interfaceException;
+            }
 
             return result;
         }
@@ -177,8 +181,7 @@ namespace WebApplication.Models
                 // Add the matches to the database
                 for (int i = 1; i <= tourny.NumberOfMatches; i++)
                 {
-                    IMatch match = tourny.GetMatch(i);
-                    MatchModel matchModel = match.GetModel(-1);
+                    MatchModel matchModel = tourny.GetMatch(i).GetModel(-1);
 
                     matchModels.Add(matchModel);
                 }
@@ -201,8 +204,6 @@ namespace WebApplication.Models
                         break;
                     }
                 }
-
-                result = DbError.SUCCESS;
             }
 
             return result;

@@ -181,6 +181,8 @@
     <Content Include="Images\svg\twitter.svg" />
     <Content Include="Images\svg\youtube.svg" />
     <Content Include="Images\tree.png" />
+    <Content Include="Images\trophy.png" />
+    <Content Include="Images\svg\trophy.svg" />
     <Content Include="Images\tumblr.png" />
     <Content Include="Images\twitch.png" />
     <Content Include="Images\twitter.png" />
