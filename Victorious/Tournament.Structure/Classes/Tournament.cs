@@ -26,36 +26,32 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public Tournament(string _title, string _description, List<IPlayer> _players, List<IBracket> _brackets, float _pool, bool _isPublic)
-		{
-			Title = _title;
-			Description = _description;
-			Players = _players;
-			Brackets = _brackets;
-			PrizePool = _pool;
-			IsPublic = _isPublic;
-		}
 		public Tournament()
-			: this("", "", new List<IPlayer>(), new List<IBracket>(), 0.0f, false)
-		{ }
+		{
+			Title = "";
+			Description = "";
+			Players = new List<IPlayer>();
+			Brackets = new List<IBracket>();
+			PrizePool = 0.0f;
+			IsPublic = false;
+		}
 		public Tournament(TournamentModel _model)
 		{
 			if (null == _model)
 			{
-				throw new NullReferenceException
-					("Tournament model cannot be null!");
+				throw new ArgumentNullException("_model");
 			}
 
-			Title = _model.Title;
-			Description = _model.Description;
+			this.Title = _model.Title;
+			this.Description = _model.Description;
 
-			Players = new List<IPlayer>();
+			this.Players = new List<IPlayer>();
 			foreach (UserModel model in _model.Users)
 			{
 				Players.Add(new User(model));
 			}
 
-			Brackets = new List<IBracket>();
+			this.Brackets = new List<IBracket>();
 			foreach (BracketModel bModel in _model.Brackets)
 			{
 				switch ((BracketTypeModel.BracketType)bModel.BracketType.BracketTypeID)
@@ -66,16 +62,17 @@ namespace Tournament.Structure
 					case (BracketTypeModel.BracketType.DOUBLE):
 						AddBracket(new DoubleElimBracket(bModel));
 						break;
+					case (BracketTypeModel.BracketType.ROUNDROBIN):
+						AddBracket(new RoundRobinBracket(bModel));
+						break;
 					// More here eventually...
 					default:
 						break;
 				}
 			}
 
-			PrizePool = (null == _model.TournamentRules.PrizePurse)
-				? 0.0f : (float)(_model.TournamentRules.PrizePurse);
-			IsPublic = (null == _model.TournamentRules.IsPublic)
-				? false : (bool)(_model.TournamentRules.IsPublic);
+			this.PrizePool = (float)(_model.TournamentRules.PrizePurse);
+			this.IsPublic = _model.TournamentRules.IsPublic;
 		}
 		#endregion
 
@@ -137,7 +134,7 @@ namespace Tournament.Structure
 					break;
 				}
 			}
-			
+
 			Brackets[_newBracketIndex].SetNewPlayerlist(pList);
 		}
 		public void AddPlayer(IPlayer _player)
@@ -195,14 +192,14 @@ namespace Tournament.Structure
 		{
 			if (null == _player)
 			{
-				throw new NullReferenceException
-					("Parameter cannot be null!");
+				throw new ArgumentNullException("_player");
 			}
 			if (null == Players)
 			{
 				throw new NullReferenceException
 					("Playerlist is null; this shouldn't happen...");
 			}
+
 			if (!Players.Remove(_player))
 			{
 				throw new PlayerNotFoundException
@@ -230,8 +227,7 @@ namespace Tournament.Structure
 		{
 			if (null == _bracket)
 			{
-				throw new NullReferenceException
-					("New bracket cannot be null!");
+				throw new ArgumentNullException("_bracket");
 			}
 			if (null == Brackets)
 			{
@@ -250,8 +246,7 @@ namespace Tournament.Structure
 		{
 			if (null == _bracket)
 			{
-				throw new NullReferenceException
-					("Parameter cannot be null!");
+				throw new ArgumentNullException("_bracket");
 			}
 			if (null == Brackets)
 			{
@@ -278,6 +273,7 @@ namespace Tournament.Structure
 		{
 			Brackets.Add(new SingleElimBracket(_playerList));
 		}
+#if false
 		public void AddSingleElimBracket(int _numPlayers)
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -287,10 +283,12 @@ namespace Tournament.Structure
 			}
 			AddSingleElimBracket(pList);
 		}
+#endif
 		public void AddDoubleElimBracket(List<IPlayer> _playerList)
 		{
 			Brackets.Add(new DoubleElimBracket(_playerList));
 		}
+#if false
 		public void AddDoubleElimBracket(int _numPlayers)
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -300,11 +298,12 @@ namespace Tournament.Structure
 			}
 			AddDoubleElimBracket(pList);
 		}
-
+#endif
 		public void AddRoundRobinBracket(List<IPlayer> _playerList, int _numRounds = 0)
 		{
 			Brackets.Add(new RoundRobinBracket(_playerList, _numRounds));
 		}
+#if false
 		public void AddRoundRobinBracket(int _numPlayers, int _numRounds = 0)
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -314,10 +313,12 @@ namespace Tournament.Structure
 			}
 			AddRoundRobinBracket(pList, _numRounds);
 		}
+#endif
 		public void AddGroupStageBracket(List<IPlayer> _playerList, int _numGroups = 2)
 		{
-			throw new NotImplementedException();
+			Brackets.Add(new RoundRobinGroups(_playerList, _numGroups));
 		}
+#if false
 		public void AddGroupStageBracket(int _numPlayers, int _numGroups = 2)
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -327,6 +328,7 @@ namespace Tournament.Structure
 			}
 			AddGroupStageBracket(pList, _numGroups);
 		}
+#endif
 		#endregion
 		#endregion
 
