@@ -137,7 +137,7 @@ namespace Tournament.Structure
 					break;
 				}
 			}
-			
+
 			Brackets[_newBracketIndex].SetNewPlayerlist(pList);
 		}
 		public void AddPlayer(IPlayer _player)
@@ -278,6 +278,7 @@ namespace Tournament.Structure
 		{
 			Brackets.Add(new SingleElimBracket(_playerList));
 		}
+#if false
 		public void AddSingleElimBracket(int _numPlayers)
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -287,10 +288,12 @@ namespace Tournament.Structure
 			}
 			AddSingleElimBracket(pList);
 		}
+#endif
 		public void AddDoubleElimBracket(List<IPlayer> _playerList)
 		{
 			Brackets.Add(new DoubleElimBracket(_playerList));
 		}
+#if false
 		public void AddDoubleElimBracket(int _numPlayers)
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -300,11 +303,13 @@ namespace Tournament.Structure
 			}
 			AddDoubleElimBracket(pList);
 		}
+#endif
 
 		public void AddRoundRobinBracket(List<IPlayer> _playerList, int _numRounds = 0)
 		{
 			Brackets.Add(new RoundRobinBracket(_playerList, _numRounds));
 		}
+#if false
 		public void AddRoundRobinBracket(int _numPlayers, int _numRounds = 0)
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -314,10 +319,12 @@ namespace Tournament.Structure
 			}
 			AddRoundRobinBracket(pList, _numRounds);
 		}
+#endif
 		public void AddGroupStageBracket(List<IPlayer> _playerList, int _numGroups = 2)
 		{
-			throw new NotImplementedException();
+			Brackets.Add(new RoundRobinGroups(_playerList, _numGroups));
 		}
+#if false
 		public void AddGroupStageBracket(int _numPlayers, int _numGroups = 2)
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -327,6 +334,7 @@ namespace Tournament.Structure
 			}
 			AddGroupStageBracket(pList, _numGroups);
 		}
+#endif
 		#endregion
 		#endregion
 
