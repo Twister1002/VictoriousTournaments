@@ -238,10 +238,16 @@ namespace Tournament.Structure
 
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
+			base.AddWin(_matchNumber, _slot);
+
 			int nextWinnerNumber;
 			int nextLoserNumber;
 			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
+			if (!match.IsFinished)
+			{
+				return;
+			}
+#if false
 			GetMatch(_matchNumber).AddWin(_slot);
 			if (!match.IsFinished)
 			{
@@ -268,8 +274,9 @@ namespace Tournament.Structure
 				// Add winner to Rankings:
 				Rankings.Add(new PlayerScore
 					(match.Players[(int)_slot].Id, match.Players[(int)_slot].Name, -1, 1));
+				IsFinished = true;
 			}
-
+#endif
 			PlayerSlot loserSlot = (PlayerSlot.Defender == _slot)
 				? PlayerSlot.Challenger
 				: PlayerSlot.Defender;
@@ -432,6 +439,21 @@ namespace Tournament.Structure
 
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
+			if (_slot == match.WinnerSlot)
+			{
+				PlayerSlot loserSlot = (PlayerSlot.Defender == _slot)
+					? PlayerSlot.Challenger
+					: PlayerSlot.Defender;
+				RemovePlayerFromFutureMatches
+					(nextLoserNumber, ref match.Players[(int)loserSlot]);
+			}
+
+			base.SubtractWin(_matchNumber, _slot);
+#if false
 			if (_slot != PlayerSlot.Defender && _slot != PlayerSlot.Challenger)
 			{
 				throw new InvalidSlotException
@@ -463,6 +485,7 @@ namespace Tournament.Structure
 				IsFinished = false;
 				UpdateRankings();
 			}
+#endif
 #if false
 			if (_matchNumber < 1)
 			{
@@ -532,6 +555,21 @@ namespace Tournament.Structure
 			int nextWinnerNumber;
 			int nextLoserNumber;
 			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
+			if (match.IsFinished)
+			{
+				PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
+					? PlayerSlot.Challenger
+					: PlayerSlot.Defender;
+				RemovePlayerFromFutureMatches
+					(match.NextLoserMatchNumber, ref match.Players[(int)loserSlot]);
+			}
+
+			base.ResetMatchScore(_matchNumber);
+#if false
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 			bool needToUpdateRankings = false;
 
 			if (match.IsFinished)
@@ -554,6 +592,7 @@ namespace Tournament.Structure
 				IsFinished = false;
 				UpdateRankings();
 			}
+#endif
 #if false
 			if (_matchNumber < 1)
 			{
@@ -612,9 +651,9 @@ namespace Tournament.Structure
 			}
 #endif
 		}
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 		private int CalculateTotalLowerBracketMatches(int _numPlayers)
 		{
 			if (_numPlayers < 4)
@@ -771,6 +810,6 @@ namespace Tournament.Structure
 
 			Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 		}
-		#endregion
+#endregion
 	}
 }

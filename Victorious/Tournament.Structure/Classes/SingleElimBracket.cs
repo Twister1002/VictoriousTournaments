@@ -294,6 +294,64 @@ namespace Tournament.Structure
 
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
+			GetMatch(_matchNumber).AddWin(_slot);
+			if (!match.IsFinished)
+			{
+				return;
+			}
+
+			if (nextWinnerNumber > 0)
+			{
+				// Advance the winning player:
+				IMatch nextMatch = GetMatch(nextWinnerNumber);
+				for (int i = 0; i < nextMatch.PreviousMatchNumbers.Count; ++i)
+				{
+					if (_matchNumber == nextMatch.PreviousMatchNumbers[i])
+					{
+						PlayerSlot newSlot = (1 == nextMatch.PreviousMatchNumbers.Count)
+							? PlayerSlot.Challenger : (PlayerSlot)i;
+						GetMatch(nextWinnerNumber).AddPlayer(match.Players[(int)_slot], newSlot);
+						break;
+					}
+				}
+			}
+			else
+			{
+				// Add winner to Rankings:
+				Rankings.Add(new PlayerScore
+					(match.Players[(int)_slot].Id, match.Players[(int)_slot].Name, -1, 1));
+				IsFinished = true;
+			}
+
+			if (BracketTypeModel.BracketType.SINGLE == this.BracketType)
+			{
+				// Add losing player to Rankings:
+				PlayerSlot loserSlot = (PlayerSlot.Defender == _slot)
+					? PlayerSlot.Challenger
+					: PlayerSlot.Defender;
+				int rank = -1;
+				if (null != LowerMatches && LowerMatches.ContainsKey(_matchNumber))
+				{
+					rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
+				}
+				else if (null != Matches && Matches.ContainsKey(_matchNumber))
+				{
+					rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
+				}
+				else if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
+				{
+					rank = 2;
+				}
+
+				Rankings.Add(new PlayerScore
+					(match.Players[(int)loserSlot].Id, match.Players[(int)loserSlot].Name, -1, rank));
+				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+			}
+#if false
 			if (_matchNumber < 1)
 			{
 				throw new InvalidIndexException
@@ -352,10 +410,38 @@ namespace Tournament.Structure
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
 			}
+#endif
 		}
 
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
+			if (_slot != PlayerSlot.Defender && _slot != PlayerSlot.Challenger)
+			{
+				throw new InvalidSlotException
+					("Player slot must be 0 or 1!");
+			}
+
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+			bool needToUpdateRankings = false;
+
+			if (_slot == match.WinnerSlot)
+			{
+				needToUpdateRankings = true;
+				// Remove advanced players from future matches:
+				RemovePlayerFromFutureMatches
+					(nextWinnerNumber, ref match.Players[(int)_slot]);
+			}
+
+			// Subtract the win and update rankings:
+			GetMatch(_matchNumber).SubtractWin(_slot);
+			if (needToUpdateRankings)
+			{
+				IsFinished = false;
+				UpdateRankings();
+			}
+#if false
 			if (_matchNumber < 1)
 			{
 				throw new InvalidIndexException
@@ -389,10 +475,32 @@ namespace Tournament.Structure
 				IsFinished = false;
 				UpdateRankings();
 			}
+#endif
 		}
 
 		public override void ResetMatchScore(int _matchNumber)
 		{
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+			bool needToUpdateRankings = false;
+
+			if (match.IsFinished)
+			{
+				needToUpdateRankings = true;
+				// Remove advanced players from future matches:
+				RemovePlayerFromFutureMatches
+					(match.NextMatchNumber, ref match.Players[(int)match.WinnerSlot]);
+			}
+
+			// Reset score and update rankings:
+			GetMatch(_matchNumber).ResetScore();
+			if (needToUpdateRankings)
+			{
+				IsFinished = false;
+				UpdateRankings();
+			}
+#if false
 			if (_matchNumber < 1)
 			{
 				throw new InvalidIndexException
@@ -420,10 +528,11 @@ namespace Tournament.Structure
 				IsFinished = false;
 				UpdateRankings();
 			}
+#endif
 		}
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 		private void ReassignPlayers(IMatch _currMatch, List<IMatch> _prevRound)
 		{
 			if (null == _currMatch ||
