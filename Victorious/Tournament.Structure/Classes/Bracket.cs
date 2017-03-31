@@ -325,8 +325,7 @@ namespace Tournament.Structure
 		{
 			if (null == _player)
 			{
-				throw new NullReferenceException
-					("Parameter cannot be null!");
+				throw new ArgumentNullException("_player");
 			}
 			if (null == Players)
 			{

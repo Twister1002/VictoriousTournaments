@@ -210,7 +210,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket RemovePlayer")]
-		[ExpectedException(typeof(NullReferenceException))]
+		[ExpectedException(typeof(ArgumentNullException))]
 		public void RemovePlayer_ThrowsNullRef_OnNullParam()
 		{
 			List<IPlayer> pList = new List<IPlayer>();

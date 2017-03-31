@@ -59,6 +59,7 @@ namespace Tournament.Structure
 			ResetBracket();
 			CreateBracket();
 		}
+#if false
 		public RoundRobinBracket(int _numPlayers, int _numRounds = 0)
 		{
 			if (_numPlayers < 0)
@@ -78,6 +79,7 @@ namespace Tournament.Structure
 			ResetBracket();
 			CreateBracket();
 		}
+#endif
 		public RoundRobinBracket()
 			: this(new List<IPlayer>(), 0)
 		{ }
@@ -132,9 +134,9 @@ namespace Tournament.Structure
 
 			UpdateRankings();
 		}
-		#endregion
+#endregion
 
-		#region Public Methods
+#region Public Methods
 		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
 			ResetBracket();
@@ -228,6 +230,7 @@ namespace Tournament.Structure
 				}
 			}
 		}
+
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
 			if (_matchNumber < 1)
@@ -254,6 +257,7 @@ namespace Tournament.Structure
 
 			IsFinished = IsFinished && Matches[_matchNumber].IsFinished;
 		}
+
 		public override void ResetMatchScore(int _matchNumber)
 		{
 			if (_matchNumber < 1)
@@ -286,9 +290,9 @@ namespace Tournament.Structure
 
 			IsFinished = false;
 		}
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 		protected override void UpdateRankings()
 		{
 			Rankings.Sort((first, second) => -1 * (first.Score.CompareTo(second.Score)));
@@ -309,6 +313,6 @@ namespace Tournament.Structure
 				}
 			}
 		}
-		#endregion
+#endregion
 	}
 }

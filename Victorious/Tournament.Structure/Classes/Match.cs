@@ -38,46 +38,6 @@ namespace Tournament.Structure
 		#endregion
 
 #region Ctors
-#if false
-		public Match(bool _isReady, bool _isFinished, ushort _winsNeeded, IPlayer[] _players, PlayerSlot _winnerSlot, ushort[] _score, int _roundIndex, int _matchIndex, int _matchNumber, List<int> _prevMatchNumbers, int _nextMatchNumber, int _nextLoserMatchNumber)
-		{
-			if (null == _players
-				|| null == _score
-				|| null == _prevMatchNumbers)
-			{
-				throw new NullReferenceException
-					("There's a NULL problem with your Match constructor...");
-			}
-
-			Players = new IPlayer[2];
-			if (_players[0] is User)
-			{
-				Players[0] = new User(_players[0] as User);
-				Players[1] = new User(_players[1] as User);
-			}
-			else if (_players[0] is Team)
-			{
-				Players[0] = new Team(_players[0] as Team);
-				Players[1] = new Team(_players[1] as Team);
-			}
-
-			//IsReady = _isReady;
-			//IsFinished = _isFinished;
-			WinsNeeded = _winsNeeded;
-			IsReady = (null != Players[0] && null != Players[1])
-				? true : false;
-			WinnerSlot = _winnerSlot;
-			IsFinished = (PlayerSlot.Defender == WinnerSlot || PlayerSlot.Challenger == WinnerSlot)
-				? true : false;
-			Score = _score;
-			RoundIndex = _roundIndex;
-			MatchIndex = _matchIndex;
-			MatchNumber = _matchNumber;
-			PreviousMatchNumbers = _prevMatchNumbers;
-			NextMatchNumber = _nextMatchNumber;
-			NextLoserMatchNumber = _nextLoserMatchNumber;
-		}
-#endif
 		public Match()
 		{
 			IsReady = false;
@@ -120,7 +80,7 @@ namespace Tournament.Structure
 				}
 				else if (_match.Players[i] is Team)
 				{
-					throw new NotImplementedException();
+					this.Players[i] = new Team(_match.Players[i] as Team);
 				}
 
 				this.Score[i] = _match.Score[i];
@@ -132,28 +92,11 @@ namespace Tournament.Structure
 				this.PreviousMatchNumbers.Add(num);
 			}
 		}
-
 		public Match(MatchModel _m)
 		{
-			if (null == _m
-				|| null == _m.ChallengerID
-				|| null == _m.DefenderID
-				//|| null == _m.TournamentID
-				|| null == _m.WinnerID
-				|| null == _m.ChallengerScore
-				|| null == _m.DefenderScore
-				|| null == _m.RoundIndex
-				|| null == _m.Challenger
-				|| null == _m.Defender
-				//|| null == _m.Tournament
-				|| null == _m.WinsNeeded
-				|| null == _m.MatchIndex
-				//|| null == _m.MatchNumber
-				|| null == _m.NextMatchNumber
-				|| null == _m.NextLoserMatchNumber)
+			if (null == _m)
 			{
-				throw new NullReferenceException
-					("There's a NULL problem with the Match Model....");
+				throw new ArgumentNullException("_m");
 			}
 
 			WinsNeeded = (ushort)(_m.WinsNeeded);
@@ -163,7 +106,6 @@ namespace Tournament.Structure
 				? null : new User(_m.Defender);
 			Players[1] = (null == _m.Challenger)
 				? null : new User(_m.Challenger);
-
 			IsReady = (null == Players[0] || null == Players[1])
 				? false : true;
 

@@ -29,11 +29,13 @@ namespace Tournament.Structure
 		{
 			BracketType = BracketTypeModel.BracketType.DOUBLE;
 		}
+#if false
 		public DoubleElimBracket(int _numPlayers)
 			: base(_numPlayers)
 		{
 			BracketType = BracketTypeModel.BracketType.DOUBLE;
 		}
+#endif
 		public DoubleElimBracket()
 			: this(new List<IPlayer>())
 		{ }
@@ -85,9 +87,9 @@ namespace Tournament.Structure
 				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 			}
 		}
-		#endregion
+#endregion
 
-		#region Public Methods
+#region Public Methods
 		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
 			base.CreateBracket(_winsPerMatch);
@@ -477,9 +479,9 @@ namespace Tournament.Structure
 				UpdateRankings();
 			}
 		}
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 		private int CalculateTotalLowerBracketMatches(int _numPlayers)
 		{
 			if (_numPlayers < 4)
@@ -614,6 +616,6 @@ namespace Tournament.Structure
 
 			Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 		}
-		#endregion
+#endregion
 	}
 }
