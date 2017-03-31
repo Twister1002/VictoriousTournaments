@@ -316,7 +316,7 @@ namespace WebApplication.Controllers
                     }
                     else
                     {
-                        Session["Message"] = "An error occurred while trying to create the matches.";
+                        Session["Message"] = "An error occurred while trying to create the matches.<br/>"+db.interfaceException.Message;
                         Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
                     }
                 }

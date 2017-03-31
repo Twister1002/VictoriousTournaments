@@ -129,15 +129,16 @@ namespace WebApplication.Models
 
         private void GetUserPermissions()
         {
-            foreach (UserInTournamentModel user in Model.UsersInTournament)
+            foreach (UserModel user in Model.Users)
             {
-                switch(user.Permission)
+                Permission permission = db.GetUserPermission(user, Model);
+                switch(permission)
                 {
                     case Permission.TOURNAMENT_STANDARD:
-                        Participants.Add(user.User);
+                        Participants.Add(user);
                         break;
                     case Permission.TOURNAMENT_ADMINISTRATOR:
-                        Administrators.Add(user.User);
+                        Administrators.Add(user);
                         break;
                 }
             }
@@ -145,12 +146,17 @@ namespace WebApplication.Models
 
         public DbError FinalizeTournament()
         {
+            // Load the tournament first
+            ProcessTournament();
+
+            // Set variables
             int bracketNum = 0;
+            DbError result;
             BracketModel bracket = Model.Brackets.ElementAt(bracketNum);
             IBracket tourny = Tourny.Brackets[bracketNum];
-            DbError result;
+            
 
-            ProcessTournament();
+            // Process
             result = CreateMatches(bracket, tourny);
             if (result == DbError.SUCCESS)
             {
@@ -163,6 +169,8 @@ namespace WebApplication.Models
         private DbError CreateMatches(BracketModel bracket, IBracket tourny)
         {
             DbError result = DbError.NONE;
+            List<MatchModel> matchModels = new List<MatchModel>();
+
             // Verify if the tournament has not need finalized.
             if (bracket.Matches.Count == 0)
             {
@@ -172,13 +180,13 @@ namespace WebApplication.Models
                     IMatch match = tourny.GetMatch(i);
                     MatchModel matchModel = match.GetModel(-1);
 
-                    bracket.Matches.Add(matchModel);
+                    matchModels.Add(matchModel);
                 }
 
                 // Save the match models
-                for (int i = 0; i < bracket.Matches.Count; i++)
+                for (int i = 0; i < matchModels.Count; i++)
                 {
-                    DbError matchSave = db.AddMatch(bracket.Matches.ElementAt(i), bracket);
+                    DbError matchSave = db.AddMatch(matchModels[i], bracket);
                     
                     if (matchSave != DbError.SUCCESS)
                     {
@@ -187,12 +195,14 @@ namespace WebApplication.Models
                         // Reverse the list and remove the matches.
                         for (int x = i; x > 0; x--)
                         {
-                            db.DeleteMatch(bracket.Matches.ElementAt(x));
+                            db.DeleteMatch(matchModels[x]);
                         }
 
                         break;
                     }
                 }
+
+                result = DbError.SUCCESS;
             }
 
             return result;

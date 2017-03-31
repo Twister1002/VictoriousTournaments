@@ -101,7 +101,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\dbo.Brackets.data.sql" />
+    <Content Include="App_Data\dbo.BracketTypes.data.sql" />
+    <Content Include="App_Data\dbo.TournamentModelUserModels.data.sql" />
+    <Content Include="App_Data\dbo.TournamentRules.data.sql" />
+    <Content Include="App_Data\dbo.Tournaments.data.sql" />
     <Content Include="App_Data\dbo.Users.data.sql" />
+    <Content Include="App_Data\dbo.UsersInTournaments.data.sql" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
