@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using WebApplication.Models;
 using DataLib;
 using Tournament.Structure;
+using Newtonsoft.Json;
 
 namespace WebApplication.Controllers
 {
@@ -293,7 +294,7 @@ namespace WebApplication.Controllers
                 Session["Message.Class"] = ViewModel.ViewError.WARNING;
             }
             //return View("Tournament", viewModel);
-            
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -316,7 +317,7 @@ namespace WebApplication.Controllers
                     }
                     else
                     {
-                        Session["Message"] = "An error occurred while trying to create the matches.<br/>"+viewModel.dbException.Message;
+                        Session["Message"] = "An error occurred while trying to create the matches.<br/>" + viewModel.dbException.Message;
                         Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
                     }
                 }
@@ -370,52 +371,7 @@ namespace WebApplication.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("Tournament/Ajax/Match/Update")]
-        public JsonResult MatchUpdate(String match, String tournamentId, String seedWin)
-        {
-            if (Session["User.UserId"] != null)
-            {
-                int tournyId = int.Parse(tournamentId);
-                int matchId = int.Parse(match);
-                int seedId = int.Parse(seedWin);
-                PlayerSlot winner;
-
-                TournamentViewModel viewModel = new TournamentViewModel(tournyId);
-                viewModel.ProcessTournament();
-
-
-                return Json("No support to update yet...");
-
-                //if (viewModel.Tourny.Brackets[0].GetMatch(matchId).ChallengerIndex() == seedId)
-                //{
-                //    winner = PlayerSlot.Challenger;
-                //}
-                //else
-                //{
-                //    winner = PlayerSlot.Defender;
-                //}
-
-                if (viewModel.Model.CreatedByID == (int)Session["User.UserId"])
-                {
-                    try
-                    {
-                        viewModel.Tourny.Brackets[0].AddWin(matchId, winner);
-                        return Json(new { status = true, message = "Match was updated successfully" });
-                    }
-                    catch (Exception e)
-                    {
-                        return Json(new { status = false, message = "Exception thrown: "+e.Message });
-                    }
-                }
-                else
-                {
-                    return Json(new { status = false, message = "You are not allowed to update matches" });
-                }
-            }
-
-            return Json(new { status = false, message = "You must login before adjusting matches" });
-        }
+        
 
         [HttpPost]
         [Route("Tournament/Ajax/Promote")]
@@ -437,7 +393,7 @@ namespace WebApplication.Controllers
                 case Permission.TOURNAMENT_ADMINISTRATOR:
                     break;
             }
-            
+
             switch (result)
             {
                 case DbError.SUCCESS:
@@ -455,7 +411,7 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("Tournament/Ajax/Demote")] 
+        [Route("Tournament/Ajax/Demote")]
         public JsonResult Demote(String tournyVal, String userVal)
         {
             // TODO: Make sure the user is authorized to do this.
