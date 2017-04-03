@@ -140,14 +140,14 @@
         //console.log("Entered: " + $(this).data("seed"));
         var seed = $(this).data("seed");
         if (seed > -1) {
-            $(".matchData .info [data-seed='" + seed + "']").addClass("seedHover");
+            $(".matchData .info [data-seed='" + seed + "']").addClass("teamHover");
         }
     });
     $(".matchData .info li").on("mouseleave", function () {
         //console.log("Left: " + $(this).data("seed"));
         var seed = $(this).data("seed");
         if (seed > -1) {
-            $(".matchData .info [data-seed='" + seed + "']").removeClass("seedHover");
+            $(".matchData .info [data-seed='" + seed + "']").removeClass("teamHover");
         }
     });
 });
