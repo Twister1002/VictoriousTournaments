@@ -230,11 +230,27 @@ namespace DatabaseDebugConsole
 
 
 
-            SearchTournamnet(db);
+            //SearchTournamnet(db);
 
+            //GameModel game = new GameModel();
+            //game = db.GetAllGames()[0];
+            ////game.Title = "Overwatch";
+            //db.DeleteGame(game);
 
+            //foreach (var game in db.GetAllGames().ToList())
+            //{
+            //    Console.WriteLine(game.Title);
+            //}
 
-            Console.WriteLine("Done");
+            TournamentModel tournament = new TournamentModel();
+            tournament = db.GetAllTournaments().Last();
+            Console.WriteLine(tournament.Game.Title);
+            tournament.Game = db.GetAllGames()[2];
+            Console.WriteLine(db.GetAllGames()[2].Title);
+            db.UpdateTournament(tournament);
+            Console.WriteLine(tournament.Game.Title);
+
+            Console.WriteLine("\n\nDone");
             Console.ReadLine();
 
 
