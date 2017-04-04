@@ -60,16 +60,16 @@
                             // maybe a slight bug in previous match number's indexs? 
                             if (challenger.Id == -1)
                             {
-                                if (match.PreviousMatchNumbers[1] != -1)
+                                if (match.PreviousMatchNumbers[(int)Tournament.Structure.PlayerSlot.Challenger] != -1)
                                 {
-                                    challenger.Name = "Winner of " + match.PreviousMatchNumbers[1];
+                                    challenger.Name = "Winner of " + match.PreviousMatchNumbers[(int)Tournament.Structure.PlayerSlot.Challenger];
                                 }
                             }
                             if (defender.Id == -1)
                             {
-                                if (match.PreviousMatchNumbers[0] != -1)
+                                if (match.PreviousMatchNumbers[(int)Tournament.Structure.PlayerSlot.Defender] != -1)
                                 {
-                                    defender.Name = "Winner of " + match.PreviousMatchNumbers[0];
+                                    defender.Name = "Winner of " + match.PreviousMatchNumbers[(int)Tournament.Structure.PlayerSlot.Defender];
                                 }
                             }
 
@@ -102,16 +102,16 @@
                         // maybe a slight bug in previous match number's indexs? 
                         if (challenger.Id == -1)
                         {
-                            if (match.PreviousMatchNumbers[1] != -1)
+                            if (match.PreviousMatchNumbers[(int)Tournament.Structure.PlayerSlot.Challenger] != -1)
                             {
-                                challenger.Name = "Winner of " + match.PreviousMatchNumbers[1];
+                                challenger.Name = "Winner of " + match.PreviousMatchNumbers[(int)Tournament.Structure.PlayerSlot.Challenger];
                             }
                         }
                         if (defender.Id == -1)
                         {
-                            if (match.PreviousMatchNumbers[0] != -1)
+                            if (match.PreviousMatchNumbers[(int)Tournament.Structure.PlayerSlot.Defender] != -1)
                             {
-                                defender.Name = "Winner of " + match.PreviousMatchNumbers[0];
+                                defender.Name = "Winner of " + match.PreviousMatchNumbers[(int)Tournament.Structure.PlayerSlot.Defender];
                             }
                         }
 
@@ -140,16 +140,16 @@
                         // maybe a slight bug in previous match number's indexs? 
                         if (challenger.Id == -1)
                         {
-                            if (Model.GrandFinal.PreviousMatchNumbers[1] != -1)
+                            if (Model.GrandFinal.PreviousMatchNumbers[(int)Tournament.Structure.PlayerSlot.Challenger] != -1)
                             {
-                                challenger.Name = "Winner of " + Model.GrandFinal.PreviousMatchNumbers[1];
+                                challenger.Name = "Winner of " + Model.GrandFinal.PreviousMatchNumbers[(int)Tournament.Structure.PlayerSlot.Challenger];
                             }
                         }
                         if (defender.Id == -1)
                         {
-                            if (Model.GrandFinal.PreviousMatchNumbers[0] != -1)
+                            if (Model.GrandFinal.PreviousMatchNumbers[(int)Tournament.Structure.PlayerSlot.Defender] != -1)
                             {
-                                defender.Name = "Winner of " + Model.GrandFinal.PreviousMatchNumbers[0];
+                                defender.Name = "Winner of " + Model.GrandFinal.PreviousMatchNumbers[(int)Tournament.Structure.PlayerSlot.Defender];
                             }
                         }
 
