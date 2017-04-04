@@ -175,7 +175,7 @@ namespace DatabaseDebugConsole
             //DeleteAllTournaments(db);
             //DeleteAllUsers(db);
 
-            Seed(db);
+            //Seed(db);
             //TournamentModel tournament = new TournamentModel();
             //tournament = db.GetAllTournaments()[0];
             //tournament.Title = "Tournament 1";
@@ -228,6 +228,40 @@ namespace DatabaseDebugConsole
 
             //DeleteAllTeams(db);
 
+
+
+            while (true)
+            {
+                Console.WriteLine("Enter <Username>, <Firstname>, <LastName> to search for. Type \"exit\" to end search");
+
+                string info = Console.ReadLine();
+                if (info == "exit")
+                {
+                    break;
+                }
+                else
+                {
+                    UserModel user = new UserModel() { Username = info.Split(',')[0].Trim(' '), FirstName = info.Split(',')[1].Trim(' '), LastName = info.Split(',')[2].Trim(' ') };
+                    List<TournamentModel> list = new List<TournamentModel>();
+                    list = db.FindUserInTournaments(user);
+                    if (list.Count > 0)
+                    {
+                        Console.WriteLine("Tournaments found:");
+                        foreach (var tournament in list)
+                        {
+                            Console.WriteLine(tournament.Title);
+                        }
+                    }
+                    else
+                        Console.WriteLine("No tournaments found");
+                   
+                }
+
+
+            }
+
+
+
             Console.WriteLine("Done");
             Console.ReadLine();
 
@@ -278,7 +312,7 @@ namespace DatabaseDebugConsole
             db.AddTournament(tournament);
             //db.AddTournament(tournament2);
 
-          
+
             db.AddUserToTournament(tournament, admin, Permission.TOURNAMENT_ADMINISTRATOR);
 
             using (StreamReader reader = new StreamReader("..\\..\\Random User Info.txt"))
@@ -335,13 +369,13 @@ namespace DatabaseDebugConsole
             //    match.NextMatchNumber = 0;
             //    match.PrevChallengerMatchNumber = 0;
             //    match.PrevDefenderMatchNumber = 0;
-               
+
             //    //db.AddDefender(match, defender);
             //    match.Defender = defender;
             //    //db.UpdateMatch(match);
             //    //db.AddMatch(match, db.GetBracketByID(1));
             //    db.AddMatch(match, bracket);
-               
+
             //}
 
         }
@@ -363,9 +397,9 @@ namespace DatabaseDebugConsole
 
         static void PrintAllUsersInTournament(DatabaseInterface db, TournamentModel tournament)
         {
-            foreach (var user in tournament.Users)
+            foreach (var user in tournament.UsersInTournament)
             {
-                PrintUser(db, user);
+                PrintUser(db, user.User);
             }
         }
 

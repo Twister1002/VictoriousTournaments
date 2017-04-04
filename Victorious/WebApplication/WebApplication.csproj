@@ -60,6 +60,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -101,7 +105,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\dbo.Brackets.data.sql" />
+    <Content Include="App_Data\dbo.BracketTypes.data.sql" />
+    <Content Include="App_Data\dbo.TournamentModelUserModels.data.sql" />
+    <Content Include="App_Data\dbo.TournamentRules.data.sql" />
+    <Content Include="App_Data\dbo.Tournaments.data.sql" />
     <Content Include="App_Data\dbo.Users.data.sql" />
+    <Content Include="App_Data\dbo.UsersInTournaments.data.sql" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
@@ -175,6 +185,8 @@
     <Content Include="Images\svg\twitter.svg" />
     <Content Include="Images\svg\youtube.svg" />
     <Content Include="Images\tree.png" />
+    <Content Include="Images\trophy.png" />
+    <Content Include="Images\svg\trophy.svg" />
     <Content Include="Images\tumblr.png" />
     <Content Include="Images\twitch.png" />
     <Content Include="Images\twitter.png" />

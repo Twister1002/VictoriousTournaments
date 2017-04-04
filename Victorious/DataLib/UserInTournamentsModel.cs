@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataLib
 {
-    public partial class UsersInTournamentsModel
+    public partial class UserInTournamentModel
     {
         [Key]
         [Column(Order = 1)]
@@ -17,7 +17,6 @@ namespace DataLib
         [Key]
         [Column(Order = 2)]
         public int TournamentID { get; set; }
-
 
         public Permission Permission { get; set; }
 

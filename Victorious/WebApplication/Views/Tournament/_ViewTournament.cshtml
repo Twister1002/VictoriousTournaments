@@ -1,10 +1,11 @@
 ﻿@model Tournament.Structure.ITournament
 
 @{
-    var bracket = Model.Brackets[0];
+    int bracketNum = 0;
+    var bracket = Model.Brackets[bracketNum];
 }
 
-<ul class="list-table">
+<ul class="list-table bracket" data-bracketnum="@bracketNum">
     @{
         switch (bracket.BracketType)
         {

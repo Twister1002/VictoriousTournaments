@@ -4,12 +4,13 @@
     Tournament.Structure.IPlayer Challenger = ViewBag.Challenger == null ? new Tournament.Structure.User() : ViewBag.Challenger;
     Tournament.Structure.IPlayer Defender = ViewBag.Defender == null ? new Tournament.Structure.User() : ViewBag.Defender;
     String className = ViewBag.ClassName != null ? ViewBag.ClassName : String.Empty;
+    int matchId = ViewBag.MatchId != null ? ViewBag.MatchId : -1;
     ViewBag.ClassName = null;
 }
 
-<div class="match @className" data-match="@Model.MatchNumber">
-    <label class="matchNum">
-        Match @Model.MatchNumber
+<div class="match @className" data-matchid="-1" data-matchnum="@Model.MatchNumber">
+    <label class="matchHeader">
+        Match <span class="matchNum">@Model.MatchNumber</span>
         @if (ViewBag.isAdministrator && Model.IsReady)
         {
             <span class="edit">
@@ -19,13 +20,17 @@
     </label>
     <div class="matchData">
         <ul class="info">
-            <li class="defender" data-seed="@Defender.Id">
-                <label class="seed">@Defender.Id</label>
+            <li class="defender" data-userid="-1" data-seed="@Defender.Id">
+                @*<label class="seed">@Defender.Id</label>*@
                 <div class="name">@Defender.Name</div>
+                <label class="match-score">@Model.Score[(int)Tournament.Structure.PlayerSlot.Defender]</label>
+                <input type="text" class="score-edit" value="@Model.Score[(int)Tournament.Structure.PlayerSlot.Defender]"/>
             </li>
-            <li class="challenger" data-seed="@Challenger.Id">
-                <label class="seed">@Challenger.Id</label>
+            <li class="challenger" data-userid="-1" data-seed="@Challenger.Id">
+                @*<label class="seed">@Challenger.Id</label>*@
                 <div class="name">@Challenger.Name</div>
+                <label class="match-score">@Model.Score[(int)Tournament.Structure.PlayerSlot.Challenger]</label>
+                <input type="text" class="score-edit" value="@Model.Score[(int)Tournament.Structure.PlayerSlot.Challenger]" />
             </li>
         </ul>
     </div>
