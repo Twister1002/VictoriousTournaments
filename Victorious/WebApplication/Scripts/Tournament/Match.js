@@ -76,8 +76,8 @@
             "matchNum": matchData.data("matchnum"),
             "winnerId": matchData.find(".selected-winner").data("userid"),
             "winner": matchData.find(".selected-winner").hasClass("defender") ? "Defender" : "Challenger",
-            "challengerScore": -1,
-            "defenderScore": -1
+            "challengerScore": matchData.find(".challenger .score-edit").val(),
+            "defenderScore": matchData.find(".defender .score-edit").val()
         };
 
         $.ajax({
@@ -124,15 +124,15 @@
 
         // Defender Data
         defender.data("userid", json.defender.id);
-        defender.data("seed", json.defender.seed);
+        //defender.data("seed", json.defender.seed);
         defender.find(".name", defender).text(json.defender.name);
-        defender.find(".match-score", defender).text(json.defender.seed);
+        defender.find(".match-score", defender).text(json.defender.score);
 
         // Challenger Data
         challenger.data("userid", json.challenger.id);
-        challenger.data("seed", json.challenger.seed);
+        //challenger.data("seed", json.challenger.seed);
         challenger.find(".name", challenger).text(json.challenger.name);
-        challenger.find(".match-score", challenger).text(json.challenger.seed);
+        challenger.find(".match-score", challenger).text(json.challenger.score);
     }
 
     // Mouse Events

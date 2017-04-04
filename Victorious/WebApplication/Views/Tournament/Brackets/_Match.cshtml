@@ -23,12 +23,14 @@
             <li class="defender" data-userid="-1" data-seed="@Defender.Id">
                 @*<label class="seed">@Defender.Id</label>*@
                 <div class="name">@Defender.Name</div>
-                <label class="match-score">-1</label>
+                <label class="match-score">@Model.Score[(int)Tournament.Structure.PlayerSlot.Defender]</label>
+                <input type="text" class="score-edit" value="@Model.Score[(int)Tournament.Structure.PlayerSlot.Defender]"/>
             </li>
             <li class="challenger" data-userid="-1" data-seed="@Challenger.Id">
                 @*<label class="seed">@Challenger.Id</label>*@
                 <div class="name">@Challenger.Name</div>
-                <label class="match-score">-1</label>
+                <label class="match-score">@Model.Score[(int)Tournament.Structure.PlayerSlot.Challenger]</label>
+                <input type="text" class="score-edit" value="@Model.Score[(int)Tournament.Structure.PlayerSlot.Challenger]" />
             </li>
         </ul>
     </div>
