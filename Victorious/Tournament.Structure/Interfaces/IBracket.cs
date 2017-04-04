@@ -15,6 +15,7 @@ namespace Tournament.Structure
 		bool IsFinished { get; }
 		List<IPlayer> Players { get; }
 		List<IPlayerScore> Rankings { get; }
+		int MaxRounds { get; set; }
 		int NumberOfRounds { get; }
 		int NumberOfLowerRounds { get; }
 

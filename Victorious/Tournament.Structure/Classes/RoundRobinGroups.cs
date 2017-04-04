@@ -28,7 +28,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public RoundRobinGroups(List<IPlayer> _players, int _numberOfGroups)
+		public RoundRobinGroups(List<IPlayer> _players, int _numberOfGroups, int _numberOfRounds = 0)
 		{
 			if (null == _players)
 			{
@@ -67,6 +67,7 @@ namespace Tournament.Structure
 
 			//BracketType = BracketTypeModel.BracketType.RRGROUP;
 			NumberOfGroups = _numberOfGroups;
+			MaxRounds = _numberOfRounds;
 			ResetBracket();
 			CreateBracket();
 		}
@@ -102,7 +103,7 @@ namespace Tournament.Structure
 		}
 #endif
 		public RoundRobinGroups()
-			: this(new List<IPlayer>(), 0)
+			: this(new List<IPlayer>(), 0, 0)
 		{ }
 		public RoundRobinGroups(BracketModel _model)
 		{
@@ -125,6 +126,7 @@ namespace Tournament.Structure
 			}
 
 			//NumberOfGroups = _model.NumberOfGroups;
+			MaxRounds = 0; // ********************
 			ResetBracket();
 			CreateBracket();
 
@@ -201,7 +203,7 @@ namespace Tournament.Structure
 					pList.Add(Players[p + b]);
 				}
 
-				Groups.Add(new RoundRobinBracket(pList));
+				Groups.Add(new RoundRobinBracket(pList, MaxRounds));
 			}
 
 			Rankings = new List<IPlayerScore>();
