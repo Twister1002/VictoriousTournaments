@@ -54,6 +54,7 @@ namespace DataLib
                 .Load();
             context.Brackets
                 .Include(x => x.Matches)
+                .Include(x => x.UserSeeds)
                 .Load();
             context.Matches
                 .Load();
@@ -66,6 +67,7 @@ namespace DataLib
                 .Include(x => x.ChallengerMatches)
                 .Include(x => x.DefenderMatches)
                 .Load();
+
 
 
 
@@ -527,11 +529,11 @@ namespace DataLib
             //TournamentRuleModel rules = tournament.TournamentRules;
             try
             {
-                tournaments = context.Tournaments.SqlQuery("SELECT * FROM dbo.Tournaments LIKE @Title", new SqlParameter("@Title", "%" + title + "%")).ToList();
-                foreach (var tournament in tournaments)
+                List<TournamentModel> _tournaments = context.Tournaments.SqlQuery("SELECT * FROM dbo.Tournaments WHERE Title LIKE @Title", new SqlParameter("@Title", "%" + title + "%")).ToList();
+                foreach (var _tournament in _tournaments)
                 {
-                    if (tournament.TournamentRules.TournamentStartDate != startDate)
-                        tournaments.Remove(tournament);
+                    if (_tournament.TournamentRules.TournamentStartDate == startDate)
+                        tournaments.Add(_tournament);
                 }
             }
             catch (Exception ex)
@@ -729,8 +731,7 @@ namespace DataLib
                 if (updateMatches)
                 {
                     foreach (var match in bracket.Matches)
-                    {
-                       
+                    {                      
                         match.Challenger = context.Users.Find(match.ChallengerID);
                         match.Defender = context.Users.Find(match.DefenderID);
                     }
