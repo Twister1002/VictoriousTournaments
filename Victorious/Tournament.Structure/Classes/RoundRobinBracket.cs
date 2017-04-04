@@ -21,12 +21,10 @@ namespace Tournament.Structure
 		// inherits int NumberOfLowerRounds (0)
 		// inherits IMatch GrandFinal (null)
 		// inherits int NumberOfMatches
-		public int MaxRounds
-		{ get; set; }
 		#endregion
 
 		#region Ctors
-		public RoundRobinBracket(List<IPlayer> _players, int _numRounds = 0)
+		public RoundRobinBracket(List<IPlayer> _players, int _numberOfRounds = 0)
 		{
 			if (null == _players)
 			{
@@ -55,7 +53,7 @@ namespace Tournament.Structure
 			}
 
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
-			MaxRounds = _numRounds;
+			MaxRounds = _numberOfRounds;
 			ResetBracket();
 			CreateBracket();
 		}
@@ -104,7 +102,7 @@ namespace Tournament.Structure
 				Players.Add(new User(model));
 				Rankings.Add(new PlayerScore(model.UserID, model.Username, 0, 1));
 			}
-
+			
 			MaxRounds = 0;
 			ResetBracket();
 

@@ -11,6 +11,8 @@ namespace Tournament.Structure
 	public class Match : IMatch
 	{
 		#region Variables & Properties
+		public MatchModel Model
+		{ get; private set; }
 		public bool IsReady
 		{ get; private set; }
 		public bool IsFinished
@@ -29,7 +31,7 @@ namespace Tournament.Structure
 		{ get; private set; }
 		public int MatchNumber
 		{ get; private set; }
-		public List<int> PreviousMatchNumbers
+		public int[] PreviousMatchNumbers
 		{ get; private set; }
 		public int NextMatchNumber
 		{ get; private set; }
@@ -40,18 +42,27 @@ namespace Tournament.Structure
 #region Ctors
 		public Match()
 		{
+			Model = new MatchModel();
+
 			IsReady = false;
 			IsFinished = false;
 			WinsNeeded = 1;
+			Model.WinsNeeded = 1;
+
 			Players = new IPlayer[2] { null, null };
+			Model.ChallengerID = Model.DefenderID = -1;
 			WinnerSlot = PlayerSlot.unspecified;
+			Model.WinnerID = -1;
 			Score = new ushort[2] { 0, 0 };
+			Model.DefenderScore = Model.ChallengerScore = 0;
+
 			RoundIndex = -1;
 			MatchIndex = -1;
 			MatchNumber = -1;
-			PreviousMatchNumbers = new List<int>();
+			PreviousMatchNumbers = new int[2] { -1, -1 };
 			NextMatchNumber = -1;
 			NextLoserMatchNumber = -1;
+			Model.RoundIndex = Model.MatchIndex = Model.PrevChallengerMatchNumber = Model.PrevDefenderMatchNumber = Model.NextMatchNumber = Model.NextLoserMatchNumber = -1;
 		}
 		public Match(IMatch _match)
 		{
@@ -60,6 +71,7 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_match");
 			}
 
+			this.Model = _match.Model;
 			this.IsReady = _match.IsReady;
 			this.IsFinished = _match.IsFinished;
 			this.WinsNeeded = _match.WinsNeeded;
@@ -72,6 +84,7 @@ namespace Tournament.Structure
 
 			this.Players = new IPlayer[2];
 			this.Score = new ushort[2];
+			this.PreviousMatchNumbers = new int[2];
 			for (int i = 0; i < 2; ++i)
 			{
 				if (_match.Players[i] is User)
@@ -84,12 +97,7 @@ namespace Tournament.Structure
 				}
 
 				this.Score[i] = _match.Score[i];
-			}
-
-			this.PreviousMatchNumbers = new List<int>();
-			foreach (int num in _match.PreviousMatchNumbers)
-			{
-				this.PreviousMatchNumbers.Add(num);
+				this.PreviousMatchNumbers[i] = _match.PreviousMatchNumbers[i];
 			}
 		}
 		public Match(MatchModel _m)
@@ -99,19 +107,22 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_m");
 			}
 
+			this.Model = _m;
 			WinsNeeded = (ushort)(_m.WinsNeeded);
 
 			Players = new IPlayer[2];
-			Players[0] = (null == _m.Defender)
+			Players[(int)PlayerSlot.Defender] = (null == _m.Defender)
 				? null : new User(_m.Defender);
-			Players[1] = (null == _m.Challenger)
+			Players[(int)PlayerSlot.Challenger] = (null == _m.Challenger)
 				? null : new User(_m.Challenger);
 			IsReady = (null == Players[0] || null == Players[1])
 				? false : true;
 
 			Score = new ushort[2] { 0, 0 };
-			Score[0] = (ushort)(_m.DefenderScore);
-			Score[1] = (ushort)(_m.ChallengerScore);
+			Score[(int)PlayerSlot.Defender] = (null == _m.DefenderScore)
+				? (ushort)0 : (ushort)(_m.DefenderScore);
+			Score[(int)PlayerSlot.Challenger] = (null == _m.ChallengerScore)
+				? (ushort)0 : (ushort)(_m.ChallengerScore);
 			if (Score[0] > WinsNeeded || Score[1] > WinsNeeded)
 			{
 				throw new ScoreException
@@ -132,25 +143,25 @@ namespace Tournament.Structure
 			RoundIndex = (int)(_m.RoundIndex);
 			MatchIndex = (int)(_m.MatchIndex);
 			MatchNumber = _m.MatchNumber;
-
-			PreviousMatchNumbers = new List<int>();
-			if (null != _m.PrevDefenderMatchNumber)
-			{
-				PreviousMatchNumbers.Add((int)(_m.PrevDefenderMatchNumber));
-			}
-			if (null != _m.PrevChallengerMatchNumber)
-			{
-				PreviousMatchNumbers.Add((int)(_m.PrevChallengerMatchNumber));
-			}
-
 			NextMatchNumber = (int)(_m.NextMatchNumber);
 			NextLoserMatchNumber = (int)(_m.NextLoserMatchNumber);
+
+			PreviousMatchNumbers = new int[2] { -1, -1 };
+			PreviousMatchNumbers[(int)PlayerSlot.Defender] =
+				(null == _m.PrevDefenderMatchNumber)
+				? -1 : (int)(_m.PrevDefenderMatchNumber);
+			PreviousMatchNumbers[(int)PlayerSlot.Challenger] =
+				(null == _m.PrevChallengerMatchNumber)
+				? -1 : (int)(_m.PrevChallengerMatchNumber);
 		}
 #endregion
 
 #region Public Methods
+		[System.Obsolete("use Match.Model", false)]
 		public MatchModel GetModel(int _matchId)
 		{
+			return Model;
+#if false
 			MatchModel model = new MatchModel();
 
 			model.ChallengerID = (null != Players[(int)PlayerSlot.Challenger])
@@ -188,6 +199,7 @@ namespace Tournament.Structure
 			}
 
 			return model;
+#endif
 		}
 
 		public void AddPlayer(IPlayer _player, PlayerSlot _slot = PlayerSlot.unspecified)
@@ -213,6 +225,15 @@ namespace Tournament.Structure
 					if (null == Players[i])
 					{
 						Players[i] = _player;
+						switch ((PlayerSlot)i)
+						{
+							case (PlayerSlot.Defender):
+								Model.DefenderID = _player.Id;
+								break;
+							case (PlayerSlot.Challenger):
+								Model.ChallengerID = _player.Id;
+								break;
+						}
 
 						if (null != Players[0] && null != Players[1])
 						{
@@ -237,11 +258,13 @@ namespace Tournament.Structure
 				_oldPlayerId == Players[(int)PlayerSlot.Defender].Id)
 			{
 				Players[(int)PlayerSlot.Defender] = _newPlayer;
+				Model.DefenderID = _newPlayer.Id;
 			}
 			else if (null != Players[(int)PlayerSlot.Challenger] &&
 				_oldPlayerId == Players[(int)PlayerSlot.Challenger].Id)
 			{
 				Players[(int)PlayerSlot.Challenger] = _newPlayer;
+				Model.ChallengerID = _newPlayer.Id;
 			}
 			else
 			{
@@ -256,6 +279,15 @@ namespace Tournament.Structure
 				if (null != Players[i] && Players[i].Id == _playerId)
 				{
 					Players[i] = null;
+					switch ((PlayerSlot)i)
+					{
+						case (PlayerSlot.Defender):
+							Model.DefenderID = -1;
+							break;
+						case (PlayerSlot.Challenger):
+							Model.ChallengerID = -1;
+							break;
+					}
 
 					ResetScore();
 					IsReady = false;
@@ -273,6 +305,7 @@ namespace Tournament.Structure
 				Players = new IPlayer[2];
 			}
 			Players[0] = Players[1] = null;
+			Model.ChallengerID = Model.DefenderID = -1;
 
 			ResetScore();
 			IsReady = false;
@@ -298,9 +331,20 @@ namespace Tournament.Structure
 			}
 
 			Score[(int)_slot] += 1;
+			switch (_slot)
+			{
+				case (PlayerSlot.Defender):
+					Model.DefenderScore++;
+					break;
+				case (PlayerSlot.Challenger):
+					Model.ChallengerScore++;
+					break;
+			}
+
 			if (Score[(int)_slot] >= WinsNeeded)
 			{
 				WinnerSlot = _slot;
+				Model.WinnerID = Players[(int)_slot].Id;
 				IsFinished = true;
 			}
 		}
@@ -327,8 +371,19 @@ namespace Tournament.Structure
 			{
 				IsFinished = false;
 				WinnerSlot = PlayerSlot.unspecified;
+				Model.WinnerID = -1;
 			}
+
 			Score[(int)_slot] -= 1;
+			switch (_slot)
+			{
+				case (PlayerSlot.Defender):
+					Model.DefenderScore--;
+					break;
+				case (PlayerSlot.Challenger):
+					Model.ChallengerScore--;
+					break;
+			}
 		}
 		public void ResetScore()
 		{
@@ -339,7 +394,9 @@ namespace Tournament.Structure
 
 			IsFinished = false;
 			WinnerSlot = PlayerSlot.unspecified;
+			Model.WinnerID = -1;
 			Score[0] = Score[1] = 0;
+			Model.DefenderScore = Model.ChallengerScore = 0;
 		}
 
 		public void SetWinsNeeded(ushort _wins)
@@ -356,6 +413,7 @@ namespace Tournament.Structure
 			}
 
 			WinsNeeded = _wins;
+			Model.WinsNeeded = _wins;
 		}
 		public void SetRoundIndex(int _index)
 		{
@@ -364,7 +422,14 @@ namespace Tournament.Structure
 				throw new AlreadyAssignedException
 					("Round Index is already set!");
 			}
+			if (_index < 1)
+			{
+				throw new InvalidIndexException
+					("Round Index cannot be less than 1!");
+			}
+
 			RoundIndex = _index;
+			Model.RoundIndex = _index;
 		}
 		public void SetMatchIndex(int _index)
 		{
@@ -373,7 +438,14 @@ namespace Tournament.Structure
 				throw new AlreadyAssignedException
 					("Match Index is already set!");
 			}
+			if (_index < 1)
+			{
+				throw new InvalidIndexException
+					("Match Index cannot be less than 1!");
+			}
+
 			MatchIndex = _index;
+			Model.MatchIndex = _index;
 		}
 		public void SetMatchNumber(int _number)
 		{
@@ -382,16 +454,40 @@ namespace Tournament.Structure
 				throw new AlreadyAssignedException
 					("Match Number is already set!");
 			}
+			if (_number < 1)
+			{
+				throw new InvalidIndexException
+					("Match Number cannot be less than 1!");
+			}
+
 			MatchNumber = _number;
+			Model.MatchNumber = _number;
 		}
-		public void AddPreviousMatchNumber(int _number)
+		public void AddPreviousMatchNumber(int _number, PlayerSlot _slot = PlayerSlot.unspecified)
 		{
-			if (PreviousMatchNumbers.Count >= 2)
+			if (_number < 1)
+			{
+				throw new InvalidIndexException
+					("Match Number cannot be less than 1!");
+			}
+
+			if ((PlayerSlot.unspecified == _slot || PlayerSlot.Defender == _slot)
+				&& PreviousMatchNumbers[(int)PlayerSlot.Defender] < 0)
+			{
+				PreviousMatchNumbers[(int)PlayerSlot.Defender] = _number;
+				Model.PrevDefenderMatchNumber = _number;
+			}
+			else if ((PlayerSlot.unspecified == _slot || PlayerSlot.Challenger == _slot)
+				&& PreviousMatchNumbers[(int)PlayerSlot.Challenger] < 0)
+			{
+				PreviousMatchNumbers[(int)PlayerSlot.Challenger] = _number;
+				Model.PrevChallengerMatchNumber = _number;
+			}
+			else
 			{
 				throw new AlreadyAssignedException
 					("Previous Match Numbers are already set!");
 			}
-			PreviousMatchNumbers.Add(_number);
 		}
 		public void SetNextMatchNumber(int _number)
 		{
@@ -400,7 +496,14 @@ namespace Tournament.Structure
 				throw new AlreadyAssignedException
 					("Next Match Number is already set!");
 			}
+			if (_number < 1)
+			{
+				throw new InvalidIndexException
+					("Match Number cannot be less than 1!");
+			}
+
 			NextMatchNumber = _number;
+			Model.NextMatchNumber = _number;
 		}
 		public void SetNextLoserMatchNumber(int _number)
 		{
@@ -409,7 +512,14 @@ namespace Tournament.Structure
 				throw new AlreadyAssignedException
 					("Next Loser Match Number is already set!");
 			}
+			if (_number < 1)
+			{
+				throw new InvalidIndexException
+					("Match Number cannot be less than 1!");
+			}
+
 			NextLoserMatchNumber = _number;
+			Model.NextLoserMatchNumber = _number;
 		}
 #endregion
 

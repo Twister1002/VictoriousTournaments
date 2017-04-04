@@ -237,12 +237,23 @@ namespace Tournament.Structure
 							}
 						}
 
+						int playersToMove = 0;
 						foreach (int p in playerIndexes)
 						{
 							if (p >= pIndex - prevRoundMatches)
 							{
-								roundList[r][m].AddPreviousMatchNumber(prevMatchNumber);
-								roundList[r + 1][prevMatchNumber - 1].SetNextMatchNumber(roundList[r][m].MatchNumber);
+								++playersToMove;
+							}
+						}
+						for (int i = 0; i < playerIndexes.Length; ++i)
+						{
+							if (playerIndexes[i] >= pIndex - prevRoundMatches)
+							{
+								roundList[r][m].AddPreviousMatchNumber(prevMatchNumber,
+									(2 == playersToMove)
+									? (PlayerSlot)i : PlayerSlot.Challenger);
+								roundList[r + 1][prevMatchNumber - 1].SetNextMatchNumber
+									(roundList[r][m].MatchNumber);
 								++prevMatchNumber;
 							}
 						}
@@ -253,9 +264,13 @@ namespace Tournament.Structure
 				{
 					// For each match, shift/reassign all teams to the prev bracket level
 					// If prev level is abnormal, only shift 1 (or 0) teams
-					if (1 <= roundList[r][m].PreviousMatchNumbers.Count)
+					foreach (int n in roundList[r][m].PreviousMatchNumbers)
 					{
-						ReassignPlayers(roundList[r][m], roundList[r + 1]);
+						if (n > 0)
+						{
+							ReassignPlayers(roundList[r][m], roundList[r + 1]);
+							break;
+						}
 					}
 				}
 
@@ -294,6 +309,62 @@ namespace Tournament.Structure
 
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
+			GetMatch(_matchNumber).AddWin(_slot);
+			if (!match.IsFinished)
+			{
+				return;
+			}
+
+			if (nextWinnerNumber > 0)
+			{
+				// Advance the winning player:
+				IMatch nextMatch = GetMatch(nextWinnerNumber);
+				for (int i = 0; i < nextMatch.PreviousMatchNumbers.Length; ++i)
+				{
+					if (_matchNumber == nextMatch.PreviousMatchNumbers[i])
+					{
+						GetMatch(nextWinnerNumber).AddPlayer(match.Players[(int)_slot], (PlayerSlot)i);
+						break;
+					}
+				}
+			}
+			else
+			{
+				// Add winner to Rankings:
+				Rankings.Add(new PlayerScore
+					(match.Players[(int)_slot].Id, match.Players[(int)_slot].Name, -1, 1));
+				IsFinished = true;
+			}
+
+			if (BracketTypeModel.BracketType.SINGLE == this.BracketType)
+			{
+				// Add losing player to Rankings:
+				PlayerSlot loserSlot = (PlayerSlot.Defender == _slot)
+					? PlayerSlot.Challenger
+					: PlayerSlot.Defender;
+				int rank = -1;
+				if (null != LowerMatches && LowerMatches.ContainsKey(_matchNumber))
+				{
+					rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
+				}
+				else if (null != Matches && Matches.ContainsKey(_matchNumber))
+				{
+					rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
+				}
+				else if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
+				{
+					rank = 2;
+				}
+
+				Rankings.Add(new PlayerScore
+					(match.Players[(int)loserSlot].Id, match.Players[(int)loserSlot].Name, -1, rank));
+				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+			}
+#if false
 			if (_matchNumber < 1)
 			{
 				throw new InvalidIndexException
@@ -352,10 +423,38 @@ namespace Tournament.Structure
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
 			}
+#endif
 		}
 
 		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
 		{
+			if (_slot != PlayerSlot.Defender && _slot != PlayerSlot.Challenger)
+			{
+				throw new InvalidSlotException
+					("Player slot must be 0 or 1!");
+			}
+
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+			bool needToUpdateRankings = false;
+
+			if (_slot == match.WinnerSlot)
+			{
+				needToUpdateRankings = true;
+				// Remove advanced players from future matches:
+				RemovePlayerFromFutureMatches
+					(nextWinnerNumber, ref match.Players[(int)_slot]);
+			}
+
+			// Subtract the win and update rankings:
+			GetMatch(_matchNumber).SubtractWin(_slot);
+			if (needToUpdateRankings)
+			{
+				IsFinished = false;
+				UpdateRankings();
+			}
+#if false
 			if (_matchNumber < 1)
 			{
 				throw new InvalidIndexException
@@ -389,10 +488,32 @@ namespace Tournament.Structure
 				IsFinished = false;
 				UpdateRankings();
 			}
+#endif
 		}
 
 		public override void ResetMatchScore(int _matchNumber)
 		{
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+			bool needToUpdateRankings = false;
+
+			if (match.IsFinished)
+			{
+				needToUpdateRankings = true;
+				// Remove advanced players from future matches:
+				RemovePlayerFromFutureMatches
+					(match.NextMatchNumber, ref match.Players[(int)match.WinnerSlot]);
+			}
+
+			// Reset score and update rankings:
+			GetMatch(_matchNumber).ResetScore();
+			if (needToUpdateRankings)
+			{
+				IsFinished = false;
+				UpdateRankings();
+			}
+#if false
 			if (_matchNumber < 1)
 			{
 				throw new InvalidIndexException
@@ -420,10 +541,11 @@ namespace Tournament.Structure
 				IsFinished = false;
 				UpdateRankings();
 			}
+#endif
 		}
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 		private void ReassignPlayers(IMatch _currMatch, List<IMatch> _prevRound)
 		{
 			if (null == _currMatch ||
@@ -433,33 +555,28 @@ namespace Tournament.Structure
 					("NULL error in calling ReassignPlayers()...");
 			}
 
-			int i = 0;
-			if (1 <= _currMatch.PreviousMatchNumbers.Count)
+			int playersToMove = 2;
+			foreach (int n in _currMatch.PreviousMatchNumbers)
 			{
-				if (2 == _currMatch.PreviousMatchNumbers.Count)
+				if (n < 0)
 				{
-					// Reassign the higher seed (Defender)
-					foreach (IMatch match in _prevRound)
-					{
-						if (match.MatchNumber == _currMatch.PreviousMatchNumbers[i])
-						{
-							match.AddPlayer(_currMatch.Players[0]);
-							_currMatch.RemovePlayer(_currMatch.Players[0].Id);
-							++i;
-							break;
-						}
-					}
+					--playersToMove;
 				}
-
-				//Reassign the lower seed (Challenger)
-				foreach (IMatch match in _prevRound)
+			}
+			foreach (IMatch match in _prevRound)
+			{
+				for (int i = 0; i < _currMatch.PreviousMatchNumbers.Length; ++i)
 				{
 					if (match.MatchNumber == _currMatch.PreviousMatchNumbers[i])
 					{
-						match.AddPlayer(_currMatch.Players[1]);
-						_currMatch.RemovePlayer(_currMatch.Players[1].Id);
-						break;
+						match.AddPlayer(_currMatch.Players[i]);
+						_currMatch.RemovePlayer(_currMatch.Players[i].Id);
+						--playersToMove;
 					}
+				}
+				if (0 == playersToMove)
+				{
+					break;
 				}
 			}
 		}
@@ -509,6 +626,15 @@ namespace Tournament.Structure
 			}
 
 			Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+		}
+
+		protected IMatch GetMatchData(int _matchNumber, out int _nextMatchNumber, out int _nextLoserMatchNumber)
+		{
+			IMatch m = GetMatch(_matchNumber);
+			_nextMatchNumber = m.NextMatchNumber;
+			_nextLoserMatchNumber = m.NextLoserMatchNumber;
+
+			return m;
 		}
 #endregion
 	}

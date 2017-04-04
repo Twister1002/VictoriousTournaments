@@ -602,7 +602,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB SubtractWin")]
-		[ExpectedException(typeof(KeyNotFoundException))]
+		[ExpectedException(typeof(MatchNotFoundException))]
 		public void SEBSubtractWin_ThrowsNotFound_WithBadMatchNumberInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -682,7 +682,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB ResetMatchScore")]
-		[ExpectedException(typeof(KeyNotFoundException))]
+		[ExpectedException(typeof(MatchNotFoundException))]
 		public void SEBResetMatchScore_ThrowsNotFound_WithBadMatchNumberInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();

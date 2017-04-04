@@ -19,6 +19,8 @@ namespace Tournament.Structure
 		{ get; protected set; }
 		public List<IPlayerScore> Rankings
 		{ get; protected set; }
+		public int MaxRounds
+		{ get; set; }
 		protected Dictionary<int, IMatch> Matches
 		{ get; set; }
 		public int NumberOfRounds
