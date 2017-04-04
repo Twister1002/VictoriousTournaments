@@ -207,8 +207,8 @@ namespace Tournament.Structure
 				GrandFinal = new Match();
 				GrandFinal.SetMatchNumber(matchNum);
 				GrandFinal.SetWinsNeeded(_winsPerMatch);
-				GrandFinal.SetRoundIndex(0);
-				GrandFinal.SetMatchIndex(0);
+				GrandFinal.SetRoundIndex(1);
+				GrandFinal.SetMatchIndex(1);
 				GrandFinal.AddPreviousMatchNumber(Matches.Count);
 				GrandFinal.AddPreviousMatchNumber(roundList[0][0].MatchNumber);
 				// Connect Final matches to Grand Final
@@ -284,13 +284,11 @@ namespace Tournament.Structure
 			{
 				// Advance the losing player:
 				IMatch nextMatch = GetMatch(nextLoserNumber);
-				for (int i = 0; i < nextMatch.PreviousMatchNumbers.Count; ++i)
+				for (int i = 0; i < nextMatch.PreviousMatchNumbers.Length; ++i)
 				{
 					if (_matchNumber == nextMatch.PreviousMatchNumbers[i])
 					{
-						PlayerSlot newSlot = (1 == nextMatch.PreviousMatchNumbers.Count)
-							? PlayerSlot.Challenger : (PlayerSlot)i;
-						GetMatch(nextLoserNumber).AddPlayer(match.Players[(int)loserSlot], newSlot);
+						GetMatch(nextLoserNumber).AddPlayer(match.Players[(int)loserSlot], (PlayerSlot)i);
 						break;
 					}
 				}

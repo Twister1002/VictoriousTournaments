@@ -29,6 +29,10 @@ namespace Tournament.Structure
 		/// Defender, Challenger, or unspecified.
 		/// </summary>
 		PlayerSlot WinnerSlot { get; }
+
+		/// <summary>
+		/// 2-sized Array, indexes correspond to Players array.
+		/// </summary>
 		ushort[] Score { get; }
 
 		/// <summary>
@@ -48,9 +52,10 @@ namespace Tournament.Structure
 
 		/// <summary>
 		/// Match Numbers of Matches sending winners to this Match.
-		/// (list's size must be 0-2)
+		/// 2-sized Array, default values are -1.
+		/// Indexes correspond to Players array.
 		/// </summary>
-		List<int> PreviousMatchNumbers { get; }
+		int[] PreviousMatchNumbers { get; }
 
 		/// <summary>
 		/// Number of Match this winner is sent to.
@@ -150,7 +155,7 @@ namespace Tournament.Structure
 		/// (Will not add more than 2)
 		/// </summary>
 		/// <param name="_number">Number of Match to add</param>
-		void AddPreviousMatchNumber(int _number);
+		void AddPreviousMatchNumber(int _number, PlayerSlot _slot = PlayerSlot.unspecified);
 
 		/// <summary>
 		/// Sets match that winner will advance to.

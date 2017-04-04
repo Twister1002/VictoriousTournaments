@@ -31,7 +31,7 @@ namespace Tournament.Structure
 		{ get; private set; }
 		public int MatchNumber
 		{ get; private set; }
-		public List<int> PreviousMatchNumbers
+		public int[] PreviousMatchNumbers
 		{ get; private set; }
 		public int NextMatchNumber
 		{ get; private set; }
@@ -59,7 +59,7 @@ namespace Tournament.Structure
 			RoundIndex = -1;
 			MatchIndex = -1;
 			MatchNumber = -1;
-			PreviousMatchNumbers = new List<int>();
+			PreviousMatchNumbers = new int[2] { -1, -1 };
 			NextMatchNumber = -1;
 			NextLoserMatchNumber = -1;
 			Model.RoundIndex = Model.MatchIndex = Model.PrevChallengerMatchNumber = Model.PrevDefenderMatchNumber = Model.NextMatchNumber = Model.NextLoserMatchNumber = -1;
@@ -71,6 +71,7 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_match");
 			}
 
+			this.Model = _match.Model;
 			this.IsReady = _match.IsReady;
 			this.IsFinished = _match.IsFinished;
 			this.WinsNeeded = _match.WinsNeeded;
@@ -83,6 +84,7 @@ namespace Tournament.Structure
 
 			this.Players = new IPlayer[2];
 			this.Score = new ushort[2];
+			this.PreviousMatchNumbers = new int[2];
 			for (int i = 0; i < 2; ++i)
 			{
 				if (_match.Players[i] is User)
@@ -95,12 +97,7 @@ namespace Tournament.Structure
 				}
 
 				this.Score[i] = _match.Score[i];
-			}
-
-			this.PreviousMatchNumbers = new List<int>();
-			foreach (int num in _match.PreviousMatchNumbers)
-			{
-				this.PreviousMatchNumbers.Add(num);
+				this.PreviousMatchNumbers[i] = _match.PreviousMatchNumbers[i];
 			}
 		}
 		public Match(MatchModel _m)
@@ -114,16 +111,18 @@ namespace Tournament.Structure
 			WinsNeeded = (ushort)(_m.WinsNeeded);
 
 			Players = new IPlayer[2];
-			Players[0] = (null == _m.Defender)
+			Players[(int)PlayerSlot.Defender] = (null == _m.Defender)
 				? null : new User(_m.Defender);
-			Players[1] = (null == _m.Challenger)
+			Players[(int)PlayerSlot.Challenger] = (null == _m.Challenger)
 				? null : new User(_m.Challenger);
 			IsReady = (null == Players[0] || null == Players[1])
 				? false : true;
 
 			Score = new ushort[2] { 0, 0 };
-			Score[0] = (ushort)(_m.DefenderScore);
-			Score[1] = (ushort)(_m.ChallengerScore);
+			Score[(int)PlayerSlot.Defender] = (null == _m.DefenderScore)
+				? (ushort)0 : (ushort)(_m.DefenderScore);
+			Score[(int)PlayerSlot.Challenger] = (null == _m.ChallengerScore)
+				? (ushort)0 : (ushort)(_m.ChallengerScore);
 			if (Score[0] > WinsNeeded || Score[1] > WinsNeeded)
 			{
 				throw new ScoreException
@@ -144,19 +143,16 @@ namespace Tournament.Structure
 			RoundIndex = (int)(_m.RoundIndex);
 			MatchIndex = (int)(_m.MatchIndex);
 			MatchNumber = _m.MatchNumber;
-
-			PreviousMatchNumbers = new List<int>();
-			if (null != _m.PrevDefenderMatchNumber)
-			{
-				PreviousMatchNumbers.Add((int)(_m.PrevDefenderMatchNumber));
-			}
-			if (null != _m.PrevChallengerMatchNumber)
-			{
-				PreviousMatchNumbers.Add((int)(_m.PrevChallengerMatchNumber));
-			}
-
 			NextMatchNumber = (int)(_m.NextMatchNumber);
 			NextLoserMatchNumber = (int)(_m.NextLoserMatchNumber);
+
+			PreviousMatchNumbers = new int[2] { -1, -1 };
+			PreviousMatchNumbers[(int)PlayerSlot.Defender] =
+				(null == _m.PrevDefenderMatchNumber)
+				? -1 : (int)(_m.PrevDefenderMatchNumber);
+			PreviousMatchNumbers[(int)PlayerSlot.Challenger] =
+				(null == _m.PrevChallengerMatchNumber)
+				? -1 : (int)(_m.PrevChallengerMatchNumber);
 		}
 #endregion
 
@@ -467,29 +463,30 @@ namespace Tournament.Structure
 			MatchNumber = _number;
 			Model.MatchNumber = _number;
 		}
-		public void AddPreviousMatchNumber(int _number)
+		public void AddPreviousMatchNumber(int _number, PlayerSlot _slot = PlayerSlot.unspecified)
 		{
-			int count = PreviousMatchNumbers.Count;
-			if (count >= 2)
-			{
-				throw new AlreadyAssignedException
-					("Previous Match Numbers are already set!");
-			}
 			if (_number < 1)
 			{
 				throw new InvalidIndexException
 					("Match Number cannot be less than 1!");
 			}
 
-			PreviousMatchNumbers.Add(_number);
-			switch (count)
+			if ((PlayerSlot.unspecified == _slot || PlayerSlot.Defender == _slot)
+				&& PreviousMatchNumbers[(int)PlayerSlot.Defender] < 0)
 			{
-				case 0:
-					Model.PrevDefenderMatchNumber = _number;
-					break;
-				case 1:
-					Model.PrevChallengerMatchNumber = _number;
-					break;
+				PreviousMatchNumbers[(int)PlayerSlot.Defender] = _number;
+				Model.PrevDefenderMatchNumber = _number;
+			}
+			else if ((PlayerSlot.unspecified == _slot || PlayerSlot.Challenger == _slot)
+				&& PreviousMatchNumbers[(int)PlayerSlot.Challenger] < 0)
+			{
+				PreviousMatchNumbers[(int)PlayerSlot.Challenger] = _number;
+				Model.PrevChallengerMatchNumber = _number;
+			}
+			else
+			{
+				throw new AlreadyAssignedException
+					("Previous Match Numbers are already set!");
 			}
 		}
 		public void SetNextMatchNumber(int _number)

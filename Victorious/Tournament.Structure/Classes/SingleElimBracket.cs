@@ -237,12 +237,23 @@ namespace Tournament.Structure
 							}
 						}
 
+						int playersToMove = 0;
 						foreach (int p in playerIndexes)
 						{
 							if (p >= pIndex - prevRoundMatches)
 							{
-								roundList[r][m].AddPreviousMatchNumber(prevMatchNumber);
-								roundList[r + 1][prevMatchNumber - 1].SetNextMatchNumber(roundList[r][m].MatchNumber);
+								++playersToMove;
+							}
+						}
+						for (int i = 0; i < playerIndexes.Length; ++i)
+						{
+							if (playerIndexes[i] >= pIndex - prevRoundMatches)
+							{
+								roundList[r][m].AddPreviousMatchNumber(prevMatchNumber,
+									(2 == playersToMove)
+									? (PlayerSlot)i : PlayerSlot.Challenger);
+								roundList[r + 1][prevMatchNumber - 1].SetNextMatchNumber
+									(roundList[r][m].MatchNumber);
 								++prevMatchNumber;
 							}
 						}
@@ -253,9 +264,13 @@ namespace Tournament.Structure
 				{
 					// For each match, shift/reassign all teams to the prev bracket level
 					// If prev level is abnormal, only shift 1 (or 0) teams
-					if (1 <= roundList[r][m].PreviousMatchNumbers.Count)
+					foreach (int n in roundList[r][m].PreviousMatchNumbers)
 					{
-						ReassignPlayers(roundList[r][m], roundList[r + 1]);
+						if (n > 0)
+						{
+							ReassignPlayers(roundList[r][m], roundList[r + 1]);
+							break;
+						}
 					}
 				}
 
@@ -308,13 +323,11 @@ namespace Tournament.Structure
 			{
 				// Advance the winning player:
 				IMatch nextMatch = GetMatch(nextWinnerNumber);
-				for (int i = 0; i < nextMatch.PreviousMatchNumbers.Count; ++i)
+				for (int i = 0; i < nextMatch.PreviousMatchNumbers.Length; ++i)
 				{
 					if (_matchNumber == nextMatch.PreviousMatchNumbers[i])
 					{
-						PlayerSlot newSlot = (1 == nextMatch.PreviousMatchNumbers.Count)
-							? PlayerSlot.Challenger : (PlayerSlot)i;
-						GetMatch(nextWinnerNumber).AddPlayer(match.Players[(int)_slot], newSlot);
+						GetMatch(nextWinnerNumber).AddPlayer(match.Players[(int)_slot], (PlayerSlot)i);
 						break;
 					}
 				}
@@ -542,33 +555,28 @@ namespace Tournament.Structure
 					("NULL error in calling ReassignPlayers()...");
 			}
 
-			int i = 0;
-			if (1 <= _currMatch.PreviousMatchNumbers.Count)
+			int playersToMove = 2;
+			foreach (int n in _currMatch.PreviousMatchNumbers)
 			{
-				if (2 == _currMatch.PreviousMatchNumbers.Count)
+				if (n < 0)
 				{
-					// Reassign the higher seed (Defender)
-					foreach (IMatch match in _prevRound)
-					{
-						if (match.MatchNumber == _currMatch.PreviousMatchNumbers[i])
-						{
-							match.AddPlayer(_currMatch.Players[0]);
-							_currMatch.RemovePlayer(_currMatch.Players[0].Id);
-							++i;
-							break;
-						}
-					}
+					--playersToMove;
 				}
-
-				//Reassign the lower seed (Challenger)
-				foreach (IMatch match in _prevRound)
+			}
+			foreach (IMatch match in _prevRound)
+			{
+				for (int i = 0; i < _currMatch.PreviousMatchNumbers.Length; ++i)
 				{
 					if (match.MatchNumber == _currMatch.PreviousMatchNumbers[i])
 					{
-						match.AddPlayer(_currMatch.Players[1]);
-						_currMatch.RemovePlayer(_currMatch.Players[1].Id);
-						break;
+						match.AddPlayer(_currMatch.Players[i]);
+						_currMatch.RemovePlayer(_currMatch.Players[i].Id);
+						--playersToMove;
 					}
+				}
+				if (0 == playersToMove)
+				{
+					break;
 				}
 			}
 		}

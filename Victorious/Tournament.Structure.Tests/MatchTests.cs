@@ -683,7 +683,8 @@ namespace Tournament.Structure.Tests
 			m.AddPreviousMatchNumber(i);
 			m.AddPreviousMatchNumber(2);
 
-			Assert.IsTrue(m.PreviousMatchNumbers.Contains(i));
+			Assert.IsTrue(m.PreviousMatchNumbers[0] == i
+				|| m.PreviousMatchNumbers[1] == i);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
@@ -692,9 +693,9 @@ namespace Tournament.Structure.Tests
 		public void AddPreviousMatchNumber_ThrowsAlreadyAssigned_AfterMoreThanTwoCalls()
 		{
 			IMatch m = new Match();
-			m.AddPreviousMatchNumber(0);
 			m.AddPreviousMatchNumber(1);
 			m.AddPreviousMatchNumber(2);
+			m.AddPreviousMatchNumber(3);
 
 			Assert.AreEqual(1, 2);
 		}

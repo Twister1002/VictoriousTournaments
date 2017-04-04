@@ -103,7 +103,7 @@ namespace Tournament.Structure
 				Rankings.Add(new PlayerScore(model.UserID, model.Username, 0, 1));
 			}
 			
-			MaxRounds = 0; // ***************
+			MaxRounds = 0;
 			ResetBracket();
 
 			Matches = new Dictionary<int, IMatch>();

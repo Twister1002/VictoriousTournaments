@@ -65,7 +65,7 @@ namespace Tournament.Structure
 				Players = _players;
 			}
 
-			//BracketType = BracketTypeModel.BracketType.RRGROUP;
+			BracketType = BracketTypeModel.BracketType.RRGROUP;
 			NumberOfGroups = _numberOfGroups;
 			MaxRounds = _numberOfRounds;
 			ResetBracket();
@@ -113,7 +113,7 @@ namespace Tournament.Structure
 					("Bracket Model canot be null!");
 			}
 
-			//BracketType = BracketTypeModel.BracketType.RRGROUP;
+			BracketType = BracketTypeModel.BracketType.RRGROUP;
 
 			List<UserModel> userModels = _model.UserSeeds
 				.OrderBy(ubs => ubs.Seed)
@@ -125,8 +125,8 @@ namespace Tournament.Structure
 				Players.Add(new User(model));
 			}
 
-			//NumberOfGroups = _model.NumberOfGroups;
-			MaxRounds = 0; // ********************
+			NumberOfGroups = _model.NumberOfGroups;
+			MaxRounds = 0;
 			ResetBracket();
 			CreateBracket();
 
