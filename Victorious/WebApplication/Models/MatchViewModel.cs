@@ -17,10 +17,16 @@ namespace WebApplication.Models
             matchModel = new MatchModel();
         }
 
-        public MatchViewModel(int tournamentId, int matchId)
+        public MatchViewModel(int matchId)
+        {
+            matchModel = db.GetMatchById(matchId);
+        }
+
+        public MatchViewModel(int tournamentId, int bracketNum, int matchNum)
         {
             tournyModel = db.GetTournamentById(tournamentId);
-            matchModel = db.GetMatchById(matchId);
+            bracketModel = tournyModel.Brackets.ElementAt(bracketNum);
+            matchModel = tournyModel.Brackets.ElementAt(bracketNum).Matches.ElementAt(matchNum-1);
             SetFields();
         }
 

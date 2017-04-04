@@ -55,7 +55,6 @@ namespace Tournament.Structure
 			this.Lastname = _user.Lastname;
 			this.Email = _user.Email;
 		}
-
 		public User(UserModel _u)
 		{
 			if (null == _u)

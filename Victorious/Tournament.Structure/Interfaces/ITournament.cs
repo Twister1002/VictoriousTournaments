@@ -30,13 +30,19 @@ namespace Tournament.Structure
 		/// <param name="_players">New list of Player-type objects</param>
 		void SetNewPlayerlist(List<IPlayer> _players);
 
-		
+		/// <summary>
+		/// Advance Players from one Bracket to another.
+		/// Players will be seeded by their final Ranking.
+		/// </summary>
+		/// <param name="_initialBracketIndex">Finished Bracket (0-indexed)</param>
+		/// <param name="_newBracketIndex">New Bracket (0-indexed)</param>
+		/// <param name="_numberOfPlayers">How many Players to advance (0=all)</param>
 		void AdvancePlayersByRanking(int _initialBracketIndex, int _newBracketIndex, int _numberOfPlayers = 0);
 
 		/// <summary>
-		/// Add a Player.
+		/// Add a Player to this Tournament.
 		/// </summary>
-		/// <param name="_player">Player-type object to add.</param>
+		/// <param name="_player">Player-type object to add</param>
 		void AddPlayer(IPlayer _player);
 
 		/// <summary>
@@ -50,7 +56,7 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Removes a Player from the tournament.
 		/// </summary>
-		/// <param name="_player">Player-type object to remove.</param>
+		/// <param name="_player">Player-type object to remove</param>
 		void RemovePlayer(IPlayer _player);
 
 		/// <summary>
@@ -85,36 +91,36 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Adds a new SingleElimBracket to the tournament.
 		/// </summary>
-		/// <param name="_playerList">List of Players for the Bracket.</param>
+		/// <param name="_playerList">List of Players for the Bracket</param>
 		void AddSingleElimBracket(List<IPlayer> _playerList);
-
+#if false
 		/// <summary>
 		/// Adds a new SingleElimBracket to the tournament,
 		/// with a pre-sized but empty player list.
 		/// </summary>
 		/// <param name="_numPlayers">Number of empty player slots.</param>
 		void AddSingleElimBracket(int _numPlayers);
-
+#endif
 		/// <summary>
 		/// Adds a new DoubleElimBracket to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the Bracket.</param>
 		void AddDoubleElimBracket(List<IPlayer> _playerList);
-
+#if false
 		/// <summary>
 		/// Adds a new DoubleElimBracket to the tournament,
 		/// with a pre-sized but empty player list.
 		/// </summary>
 		/// <param name="_numPlayers">Number of empty player slots.</param>
 		void AddDoubleElimBracket(int _numPlayers);
-
+#endif
 		/// <summary>
 		/// Adds a new Round Robin stage to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the stage.</param>
 		/// <param name="_numRounds">Number of rounds for the stage. (matches per player)</param>
 		void AddRoundRobinBracket(List<IPlayer> _playerList, int _numRounds = 0);
-
+#if false
 		/// <summary>
 		/// Adds a new Round Robin stage to the tournament,
 		/// with a pre-sized but empty player list.
@@ -122,14 +128,14 @@ namespace Tournament.Structure
 		/// <param name="_numPlayers">Number of empty player slots.</param>
 		/// <param name="_numRounds">Number of rounds for the stage.</param>
 		void AddRoundRobinBracket(int _numPlayers, int _numRounds = 0);
-
+#endif
 		/// <summary>
 		/// Adds a new Group Stage to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the stage.</param>
 		/// <param name="_numGroups">Number of groups to divide players into.</param>
 		void AddGroupStageBracket(List<IPlayer> _playerList, int _numGroups = 2);
-
+#if false
 		/// <summary>
 		/// Adds a new Group Stage to the tournament,
 		/// with a pre-sized but empty player list.
@@ -137,6 +143,7 @@ namespace Tournament.Structure
 		/// <param name="_numPlayers">Number of empty player slots.</param>
 		/// <param name="_numGroups">Number of groups to divide players into.</param>
 		void AddGroupStageBracket(int _numPlayers, int _numGroups = 2);
+#endif
 		#endregion
 		#endregion
 	}

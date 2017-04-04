@@ -22,10 +22,27 @@ namespace Tournament.Structure
 		bool IsFinished { get; }
 		ushort WinsNeeded { get; }
 		IPlayer[] Players { get; }
+
+		/// <summary>
+		/// Slot of winning player:
+		/// Defender, Challenger, or unspecified.
+		/// </summary>
 		PlayerSlot WinnerSlot { get; }
 		ushort[] Score { get; }
+
+		/// <summary>
+		/// 1-indexed
+		/// </summary>
 		int RoundIndex { get; }
+
+		/// <summary>
+		/// 1-indexed
+		/// </summary>
 		int MatchIndex { get; }
+
+		/// <summary>
+		/// First match = 1
+		/// </summary>
 		int MatchNumber { get; }
 
 		/// <summary>
@@ -47,49 +64,52 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Methods
-
+		/// <summary>
+		/// Retrieves a MatchModel of specified Match.
+		/// </summary>
+		/// <param name="_matchId">ID of Match</param>
+		/// <returns>Model of Match</returns>
 		MatchModel GetModel(int _matchId);
 
 		/// <summary>
 		/// Assigns a Player to this Match.
-		/// If _slot is unspecified, player will be
+		/// If slot is unspecified, player will be
 		/// assigned to first open slot.
 		/// </summary>
-		/// <param name="_player">Player-type object to add.</param>
-		/// <param name="_slot">Slot to assign player to:
-		/// Defender or Challenger.</param>
+		/// <param name="_player">Player-type object to add</param>
+		/// <param name="_slot">Slot to assign player to</param>
 		void AddPlayer(IPlayer _player, PlayerSlot _slot = PlayerSlot.unspecified);
 
 		/// <summary>
 		/// Replace a Player in this Match.
 		/// </summary>
-		/// <param name="_newPlayer">New Player object to add.</param>
-		/// <param name="_oldPlayerId">ID of Player to replace.</param>
+		/// <param name="_newPlayer">New Player object to add</param>
+		/// <param name="_oldPlayerId">ID of Player to replace</param>
 		void ReplacePlayer(IPlayer _newPlayer, int _oldPlayerId);
 
 		/// <summary>
-		/// Remove the specified Player from the Match,
-		/// (also resets Match's score)
+		/// Remove the specified Player from the Match.
+		/// (Resets Match's score)
 		/// </summary>
-		/// <param name="_playerId">ID of Player to remove.</param>
+		/// <param name="_playerId">ID of Player to remove</param>
 		void RemovePlayer(int _playerId);
 
 		/// <summary>
 		/// Clears both Players from the Match.
-		/// (also resets Match's score)
+		/// (Resets Match's score)
 		/// </summary>
 		void ResetPlayers();
 
 		/// <summary>
 		/// Record one win for the specified player slot.
 		/// </summary>
-		/// <param name="_slot">Winner's slot: Defender or Challenger.</param>
+		/// <param name="_slot">Winner's slot: Defender or Challenger</param>
 		void AddWin(PlayerSlot _slot);
 
 		/// <summary>
 		/// Subtract one win from specified player slot.
 		/// </summary>
-		/// <param name="_slot">Player slot: Defender or Challenger.</param>
+		/// <param name="_slot">Player slot: Defender or Challenger</param>
 		void SubtractWin(PlayerSlot _slot);
 
 		/// <summary>
@@ -100,50 +120,49 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Sets amount of wins needed to advance.
 		/// </summary>
-		/// <param name="_wins">Wins needed.</param>
+		/// <param name="_wins">Wins needed</param>
 		void SetWinsNeeded(ushort _wins);
 
 		/// <summary>
-		/// Sets round index for Match.
-		/// Will not modify an existing value.
+		/// Sets a NEW round index for Match.
+		/// (Will not modify an existing value)
 		/// </summary>
-		/// <param name="_index">Round index (0=final round).</param>
+		/// <param name="_index">Round index (1-indexed)</param>
 		void SetRoundIndex(int _index);
 
 		/// <summary>
-		/// Sets match index inside the round.
-		/// Will not modify an existing value.
+		/// Sets a NEW match index inside the round.
+		/// (Will not modify an existing value)
 		/// </summary>
-		/// <param name="_index">Match index (0=first match).</param>
+		/// <param name="_index">Match index (1-indexed)</param>
 		void SetMatchIndex(int _index);
 
 		/// <summary>
-		/// Sets an identification number for the Match.
-		/// Will not modify an existing value.
+		/// Sets a NEW identification number for the Match.
+		/// (Will not modify an existing value)
 		/// </summary>
-		/// <param name="_number">Match Number.</param>
+		/// <param name="_number">Match Number (minimum 1)</param>
 		void SetMatchNumber(int _number);
 
 		/// <summary>
 		/// Add a match to PreviousMatchNumbers.
-		/// Will not expand list beyond Count=2.
+		/// (Will not add more than 2)
 		/// </summary>
-		/// <param name="_number">Number of match to add.</param>
+		/// <param name="_number">Number of Match to add</param>
 		void AddPreviousMatchNumber(int _number);
 
 		/// <summary>
 		/// Sets match that winner will advance to.
-		/// Will not modify an existing value.
+		/// (Will not modify an existing value)
 		/// </summary>
-		/// <param name="_number">Number of match to set.</param>
+		/// <param name="_number">Number of match to set</param>
 		void SetNextMatchNumber(int _number);
 
 		/// <summary>
 		/// Sets lower bracket match for loser to advance to.
-		/// Will not modify an existing value.
-		/// (only applicable for Double Elimination)
+		/// (Will not modify an existing value)
 		/// </summary>
-		/// <param name="_number">Number of match to set.</param>
+		/// <param name="_number">Number of match to set</param>
 		void SetNextLoserMatchNumber(int _number);
 #endregion
 	}
