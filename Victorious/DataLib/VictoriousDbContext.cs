@@ -36,7 +36,7 @@ namespace DataLib
         public DbSet<TeamMemberModel> TeamMembers { get; set; }
         public DbSet<BracketTypeModel> BracketTypes { get; set; }
         public DbSet<UserInTournamentModel> UsersInTournaments { get; set; }
-        
+        public DbSet<GameModel> Games { get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

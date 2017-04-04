@@ -230,7 +230,7 @@ namespace DatabaseDebugConsole
 
 
 
-            SearchTournamnet(db);
+            //SearchTournamnet(db);
 
 
 

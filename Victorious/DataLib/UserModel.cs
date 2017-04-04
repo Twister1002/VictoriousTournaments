@@ -51,6 +51,8 @@ namespace DataLib
 
         public DateTime? LastLogin { get; set; }
 
+        public PermissionModel SitePermission { get; set; }
+
         public ICollection<TournamentModel> Tournaments { get; set; }
 
         public ICollection<TeamModel> Teams { get; set; }

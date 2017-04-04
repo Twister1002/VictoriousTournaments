@@ -87,6 +87,7 @@
     <Compile Include="BracketModel.cs" />
     <Compile Include="BracketTypeModel.cs" />
     <Compile Include="DbModel.cs" />
+    <Compile Include="GameModel.cs" />
     <Compile Include="MatchModel.cs" />
     <Compile Include="Migrations\201703301545508_InitialCreate.cs" />
     <Compile Include="Migrations\201703301545508_InitialCreate.Designer.cs">
@@ -111,6 +112,10 @@
     <Compile Include="Migrations\201703302009106_ReAddTournamentToUserInTournament.cs" />
     <Compile Include="Migrations\201703302009106_ReAddTournamentToUserInTournament.Designer.cs">
       <DependentUpon>201703302009106_ReAddTournamentToUserInTournament.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704041828565_AddedGamesTable.cs" />
+    <Compile Include="Migrations\201704041828565_AddedGamesTable.Designer.cs">
+      <DependentUpon>201704041828565_AddedGamesTable.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="PermissionModel.cs" />
@@ -153,6 +158,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703302009106_ReAddTournamentToUserInTournament.resx">
       <DependentUpon>201703302009106_ReAddTournamentToUserInTournament.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704041828565_AddedGamesTable.resx">
+      <DependentUpon>201704041828565_AddedGamesTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

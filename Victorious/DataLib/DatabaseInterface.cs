@@ -1100,6 +1100,26 @@ namespace DataLib
 
         #endregion
 
+        #region Game
+
+        public DbError AddGame(GameModel game)
+        {
+            try
+            {
+                context.Games.Add(game);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
+        }
+
+        #endregion
+
         private void WriteException(Exception ex, [CallerMemberName] string funcName = null)
         {
             Console.WriteLine("Exception " + ex + " in " + funcName);
