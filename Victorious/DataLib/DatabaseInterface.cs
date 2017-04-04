@@ -789,6 +789,8 @@ namespace DataLib
             try
             {
                 MatchModel _match = context.Matches.Find(match.MatchID);
+                _match.Challenger = context.Users.Find(match.ChallengerID);
+                _match.Defender = context.Users.Find(match.DefenderID);
                 context.Entry(_match).CurrentValues.SetValues(match);
                 context.SaveChanges();
             }
