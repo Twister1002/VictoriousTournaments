@@ -6,13 +6,24 @@ using System.Web;
 
 namespace WebApplication.Models
 {
+
+    public enum TournamentStatus
+    {
+        OWNER,
+        ACTIVE,
+        UPCOMING,
+        PAST
+    };
+
     public class AccountViewModel : AccountFields
     {
         public UserModel Model { get; private set; }
+        public Dictionary<TournamentStatus, List<TournamentModel>> Tournaments { get; private set; }
 
         public AccountViewModel()
         {
             Model = new UserModel();
+            Init();
         }
 
         public AccountViewModel(int id)
@@ -29,8 +40,38 @@ namespace WebApplication.Models
 
         private void Init()
         {
-            List<TournamentModel> tournies = db.GetAllTournaments();
-            Model.Tournaments = tournies.Where(t => t.CreatedByID == Model.UserID).ToList();
+            Tournaments = new Dictionary<TournamentStatus, List<TournamentModel>>();
+            Tournaments[TournamentStatus.OWNER] = new List<TournamentModel>();
+            Tournaments[TournamentStatus.ACTIVE] = new List<TournamentModel>();
+            Tournaments[TournamentStatus.UPCOMING] = new List<TournamentModel>();
+            Tournaments[TournamentStatus.PAST] = new List<TournamentModel>();
+
+            // Filter the list down of tournaments
+            foreach (TournamentModel tourny in Model.Tournaments)
+            {
+                // OWner of tournament
+                if (tourny.CreatedByID == Model.UserID)
+                {
+                    Tournaments[TournamentStatus.OWNER].Add(tourny);
+                }
+                else
+                {
+                    // Active Tournament
+                    if (tourny.TournamentRules.TournamentStartDate <= DateTime.Now && 
+                        tourny.TournamentRules.TournamentEndDate > DateTime.Now)
+                    {
+                        Tournaments[TournamentStatus.ACTIVE].Add(tourny);
+                    }
+                    else if (tourny.TournamentRules.TournamentStartDate > DateTime.Now)
+                    {
+                        Tournaments[TournamentStatus.UPCOMING].Add(tourny);
+                    }
+                    else
+                    {
+                        Tournaments[TournamentStatus.PAST].Add(tourny);
+                    }
+                }
+            }
         }
 
         public override void ApplyChanges()
