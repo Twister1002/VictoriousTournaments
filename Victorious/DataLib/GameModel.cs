@@ -8,15 +8,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataLib
 {
+
     public partial class GameModel
     {
         [Key]
         public int GameID { get; set; }
 
         public string Title { get; set; }
-
-
-
 
     }
 }

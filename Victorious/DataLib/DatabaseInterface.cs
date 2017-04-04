@@ -67,6 +67,8 @@ namespace DataLib
                 .Include(x => x.ChallengerMatches)
                 .Include(x => x.DefenderMatches)
                 .Load();
+            context.Games
+                .Load();
 
 
 
@@ -1116,6 +1118,57 @@ namespace DataLib
                 interfaceException = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError UpdateGame(GameModel game)
+        {
+            try
+            {
+                GameModel _game = context.Games.Find(game.GameID);
+                context.Entry(_game).CurrentValues.SetValues(game);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public List<GameModel> GetAllGames()
+        {
+            List<GameModel> games = new List<GameModel>();
+            try
+            {
+                games = context.Games.ToList();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                games.Clear();
+                games.Add(new GameModel() { GameID = -1 });
+            }
+            return games;
+        }
+
+        public DbError DeleteGame(GameModel game)
+        {
+            GameModel _game = context.Games.Find(game.GameID);
+            try
+            {
+                context.Games.Remove(_game);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_DELETE;
             }
             return DbError.SUCCESS;
         }

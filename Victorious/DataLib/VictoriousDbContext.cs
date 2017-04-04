@@ -169,6 +169,9 @@ namespace DataLib
             modelBuilder.Entity<TeamMemberModel>()
                 .ToTable("TeamMembers");
 
+            modelBuilder.Entity<GameModel>()
+                .ToTable("Games");
+
             //modelBuilder.Entity<MatchModel>()
 
             modelBuilder.Entity<MatchModel>()
