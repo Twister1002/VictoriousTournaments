@@ -131,7 +131,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exeption " + ex.ToString() + " in UserExists");
+                WriteException(ex);
                 throw;
             }
             if (user == null)
@@ -149,7 +149,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in UserEmailExists");
+                WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
             }
 
@@ -167,7 +167,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in UserUsernameExists");
+                WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
 
             }
@@ -186,7 +186,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in AddUser");
+                WriteException(ex);
                 return DbError.FAILED_TO_ADD;
             }
             return DbError.SUCCESS;
@@ -203,7 +203,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in LogUserIn");
+                WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
 
@@ -221,7 +221,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in UpdateUser");
+                WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
 
@@ -240,7 +240,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in DeleteUser");
+                WriteException(ex);
                 return DbError.FAILED_TO_DELETE;
             }
             return DbError.SUCCESS;
@@ -256,6 +256,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
+                WriteException(ex);
                 user.UserID = -1;
             }
 
@@ -274,7 +275,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in GetUserByUsername");
+                WriteException(ex);
                 user.UserID = -1;
                 return user;
             }
@@ -293,8 +294,8 @@ namespace DataLib
             {
                 interfaceException = ex;
                 users.Clear();
-                Console.WriteLine("Exceltion " + ex.ToString() + " in GetAllUsers");
-                users.Add(new UserModel() { UserID = 0 });
+                WriteException(ex);
+                users.Add(new UserModel() { UserID = -1 });
             }
             return users;
         }
@@ -632,7 +633,8 @@ namespace DataLib
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception " + ex.ToString() + " in AddRules");
+                WriteException(ex);
+                interfaceException = ex;
                 return DbError.FAILED_TO_ADD;
             }
             return DbError.SUCCESS;
@@ -683,6 +685,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
             }
@@ -701,6 +704,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_ADD;
             }
@@ -742,6 +746,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
@@ -780,6 +785,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
             }
@@ -798,6 +804,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
@@ -831,6 +838,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.ERROR;
             }
@@ -846,6 +854,8 @@ namespace DataLib
             }
             catch (Exception)
             {
+                interfaceException = ex;
+                WriteException(ex);
                 match.MatchID = -1;
                 return match;
             }
@@ -863,7 +873,8 @@ namespace DataLib
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception " + ex.ToString() + " in DeleteMatch");
+                interfaceException = ex;
+                WriteException(ex);
                 return DbError.FAILED_TO_DELETE;
             }
             return DbError.SUCCESS;
@@ -942,7 +953,8 @@ namespace DataLib
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception " + ex.ToString() + " in AddTeam");
+                interfaceException = ex;
+                WriteException(ex);
                 team.TeamID = -1;
                 return DbError.FAILED_TO_ADD;
             }
@@ -964,6 +976,7 @@ namespace DataLib
             }
             return teams;
         }
+
         public DbError DeleteTeam(TeamModel team)
 
         {
@@ -1070,8 +1083,8 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
-                throw;
             }
             return permission;
         }
@@ -1094,17 +1107,17 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 types.Clear();
                 return types;
-                throw;
             }
             return types;
         }
 
         #endregion
 
-        #region Game
+        #region Games
 
         public DbError AddGame(GameModel game)
         {
