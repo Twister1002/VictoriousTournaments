@@ -69,7 +69,7 @@
     $(".match-edit-module .match-submit button").on("click", function () {
         var matchData = $(".match-edit-module .module-content .match")
 
-        json = {
+        jsonData = {
             "tournyId": $("#Tournament").data("id"),
             "bracketNum": $(this).closest(".bracket").data("bracketnum"),
             "matchId": matchData.data("matchid"),
@@ -83,18 +83,31 @@
         $.ajax({
             "url": "/Match/Ajax/Update",
             "type": "POST",
-            "data": { "jsonData": JSON.stringify(json) },
+            "data": { "jsonData": JSON.stringify(jsonData) },
             "dataType": "json",
             "success": function (json) {
                 json = JSON.parse(json);
                 if (json.status) {
-                    // Find the next winner match
+                    // Update the current match data
+                    currMatch = $(".list-table-body .match[data-matchnum='" + jdon.data.matchNum + "']");
+                    currMatch.find(".challenger .match-score").text(json.data.challenger.score);
+                    currMatch.find(".defender .match-score").text(json.data.defender.score);
 
-
+                    // Move the Defender
+                    if (json.data.defender.nextRound != -1) {
+                        var nextMatch = $(".list-table-body .match[data-matchnum='" + json.data.defender.nextRound + "'] .matchData ." + json.data.defender.slot);
+                        nextMatch.data("userId", json.data.defender.id);
+                        nextMatch.find(".name").text(json.data.defender.name);
+                    }
                     // Find the next loser match
+                    if (json.data.challenger.nextRound != -1) {
+                        var nextMatch = $(".list-table-body .match[data-matchnum='" + json.data.challenger.nextRound + "'] .matchData ." + json.data.challenger.slot);
+                        nextMatch.data("userId", json.data.challenger.id);
+                        nextMatch.find(".name").text(json.data.challenger.name);
+                    }
 
-
-                    
+                    // Remove the edit button
+                    $(".list-table-body .match[data-matchnum='" + jsonData.matchNum + "'] .matchHeader .edit").addClass("hide");
                 }
                 else {
 
@@ -124,30 +137,28 @@
 
         // Defender Data
         defender.data("userid", json.defender.id);
-        //defender.data("seed", json.defender.seed);
-        defender.find(".name", defender).text(json.defender.name);
-        defender.find(".match-score", defender).text(json.defender.score);
+        defender.find(".name").text(json.defender.name);
+        defender.find(".match-score").val(json.defender.score);
 
         // Challenger Data
         challenger.data("userid", json.challenger.id);
-        //challenger.data("seed", json.challenger.seed);
-        challenger.find(".name", challenger).text(json.challenger.name);
-        challenger.find(".match-score", challenger).text(json.challenger.score);
+        challenger.find(".name").text(json.challenger.name);
+        challenger.find(".match-score").val(json.challenger.score);
     }
 
     // Mouse Events
     $(".matchData .info li").on("mouseover", function () {
         //console.log("Entered: " + $(this).data("seed"));
-        var seed = $(this).data("seed");
-        if (seed > -1) {
-            $(".matchData .info [data-seed='" + seed + "']").addClass("teamHover");
+        var userid = $(this).data("userid");
+        if (userid > -1) {
+            $(".matchData .info [data-userid='" + userid + "']").addClass("teamHover");
         }
     });
     $(".matchData .info li").on("mouseleave", function () {
         //console.log("Left: " + $(this).data("seed"));
-        var seed = $(this).data("seed");
-        if (seed > -1) {
-            $(".matchData .info [data-seed='" + seed + "']").removeClass("teamHover");
+        var userid = $(this).data("userid");
+        if (userid > -1) {
+            $(".matchData .info [data-userid='" + userid + "']").removeClass("teamHover");
         }
     });
 });

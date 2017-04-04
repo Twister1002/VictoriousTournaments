@@ -72,17 +72,17 @@ namespace WebApplication.Controllers
             if (Session["User.UserId"] != null)
             {
                 TournamentViewModel tournyViewModel = new TournamentViewModel((int)json["tournyId"]);
-                PlayerSlot winner = json["winner"] == "Defender" ? PlayerSlot.Defender : PlayerSlot.Challenger;
+                PlayerSlot winPlayerSlot = json["winner"] == "Defender" ? PlayerSlot.Defender : PlayerSlot.Challenger;
                 Permission userPermission = UserPermission((int)Session["User.UserId"], tournyViewModel.Model);
 
                 if (userPermission == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
                     tournyViewModel.ProcessTournament();
-                    IBracket bracket = tournyViewModel.Tourny.Brackets.ElementAt((int)json["bracketNum"]);
-                    List<MatchModel> matches = tournyViewModel.Model.Brackets.ElementAt((int)json["bracketNum"]).Matches.ToList();
 
-                    bracket.AddWin((int)json["matchNum"], winner);
-                    MatchModel matchModel = bracket.GetMatch((int)json["matchNum"]).GetModel((int)json["matchId"]);
+                    IBracket bracket = tournyViewModel.Tourny.Brackets.ElementAt((int)json["bracketNum"]);
+                    bracket.AddWin((int)json["matchNum"], winPlayerSlot);
+
+                    MatchModel matchModel = bracket.GetMatch((int)json["matchNum"]).Model;
 
                     DbError matchResult = db.UpdateMatch(matchModel);
                     if (matchResult == DbError.SUCCESS)
@@ -90,15 +90,13 @@ namespace WebApplication.Controllers
                         // Update the next matches.
                         if (matchModel.NextMatchNumber != -1)
                         {
-                            int nextWinnerMatchId = matches.First(x => x.MatchNumber == matchModel.NextMatchNumber).MatchID;
-                            MatchModel nextWinnerMatch = bracket.GetMatch((int)matchModel.NextMatchNumber).GetModel(nextWinnerMatchId);
+                            MatchModel nextWinnerMatch = bracket.GetMatch((int)matchModel.NextMatchNumber).Model;
                             DbError nextWinnerMatchResult = db.UpdateMatch(nextWinnerMatch);
                         }
 
                         if (matchModel.NextLoserMatchNumber != -1)
                         {
-                            int nextLoserMatchId = matches.First(x => x.MatchNumber == matchModel.NextLoserMatchNumber).MatchID;
-                            MatchModel nextLoserMatch = bracket.GetMatch((int)matchModel.NextLoserMatchNumber).GetModel(nextLoserMatchId);
+                            MatchModel nextLoserMatch = bracket.GetMatch((int)matchModel.NextLoserMatchNumber).Model;
                             DbError nextLoserMatchResult = db.UpdateMatch(nextLoserMatch);
                         }
 
@@ -108,13 +106,30 @@ namespace WebApplication.Controllers
                             message = "Match was processed sucessfully",
                             data = new
                             {
-                                loser = new
+                                matchNum = matchModel.MatchNumber,
+                                defender = new
                                 {
-                                    round = matchModel.NextLoserMatchNumber
+                                    nextRound = winPlayerSlot == PlayerSlot.Defender ? matchModel.NextMatchNumber : matchModel.NextLoserMatchNumber,
+                                    name = matchModel.Defender.Username,
+                                    id = matchModel.Defender.UserID,
+                                    score = matchModel.DefenderScore,
+                                    slot = bracket
+                                            .GetMatch((int)(winPlayerSlot == PlayerSlot.Defender ? matchModel.NextMatchNumber : matchModel.NextLoserMatchNumber))
+                                            .Model
+                                            .DefenderID == matchModel.DefenderID
+                                            ? "defender" : "challenger"
                                 },
-                                winner = new
+                                challenger = new
                                 {
-                                    round = matchModel.NextMatchNumber
+                                    nextRound = winPlayerSlot == PlayerSlot.Challenger ? matchModel.NextMatchNumber : matchModel.NextLoserMatchNumber,
+                                    name = matchModel.Challenger.Username,
+                                    id = matchModel.Challenger.UserID,
+                                    score = matchModel.ChallengerScore,
+                                    slot = bracket
+                                            .GetMatch((int)(winPlayerSlot == PlayerSlot.Challenger ? matchModel.NextMatchNumber : matchModel.NextLoserMatchNumber))
+                                            .Model
+                                            .DefenderID == matchModel.DefenderID
+                                            ? "defender" : "challenger"
                                 }
                             }
                         });
