@@ -18,6 +18,7 @@ namespace Tournament.Structure
 	public interface IMatch
 	{
 		#region Variables & Properties
+		MatchModel Model { get; }
 		bool IsReady { get; }
 		bool IsFinished { get; }
 		ushort WinsNeeded { get; }
