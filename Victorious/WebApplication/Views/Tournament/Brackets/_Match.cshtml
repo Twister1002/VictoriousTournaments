@@ -12,9 +12,9 @@
 <div class="match @className" data-matchid="@Model.Model.MatchID" data-matchnum="@Model.MatchNumber">
     <label class="matchHeader">
         Match <span class="matchNum">@Model.MatchNumber</span>
-        @if (ViewBag.isAdministrator && Model.IsReady && !Model.IsFinished)
+        @if (ViewBag.isAdministrator)
         {
-            <span class="edit">
+            <span class="edit @(Model.IsReady && !Model.IsFinished ? "" : "hide")">
                 <img class="match-edit svg-pencil svg clickable" src="~/Images/svg/pencil.svg" />
             </span>
         }

@@ -133,7 +133,6 @@
                 <li class="round">
                     @if (roundNum == totalRounds)
                     {
-
                         var challenger = Model.GrandFinal.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? Model.GrandFinal.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
                         var defender = Model.GrandFinal.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? Model.GrandFinal.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 

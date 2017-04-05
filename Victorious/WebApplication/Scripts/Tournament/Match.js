@@ -1,6 +1,12 @@
 ﻿jQuery(document).ready(function () {
     var $ = jQuery;
 
+    var PlayerSlot = {
+        "-1": "unspecified",
+        "0": "defender",
+        "1": "challenger"
+    }
+
     // Match Administration
     $(".match-edit-module .matchData .info li").on("click", function () {
         // Remove the class
@@ -23,7 +29,7 @@
             "type": "POST",
             "data": { "match": matchNum, "bracket":bracketNum, "tourny": tournamentId },
             "dataType": "json",
-            "before": function() {
+            "beforeSend": function() {
                 // Clear out the match data
                 json = {
                     "matchId": -1,
@@ -31,13 +37,13 @@
                     "challenger": {
                         "seed": -1,
                         "name": "N/A",
-                        "score": -1,
+                        "score": 0,
                         "id": -1
                     },
                     "defender": {
                         "seed": -1,
                         "name": "N/A",
-                        "score": -1,
+                        "score": 0,
                         "id": -1
                     }
                 }
@@ -67,6 +73,7 @@
     });
 
     $(".match-edit-module .match-submit button").on("click", function () {
+        //$(this).attr("disable", true)
         var matchData = $(".match-edit-module .module-content .match")
 
         jsonData = {
@@ -89,21 +96,38 @@
                 json = JSON.parse(json);
                 if (json.status) {
                     // Update the current match data
-                    currMatch = $(".list-table-body .match[data-matchnum='" + jdon.data.matchNum + "']");
+                    currMatch = $(".list-table-body .match[data-matchnum='" + json.data.matchNum + "']");
                     currMatch.find(".challenger .match-score").text(json.data.challenger.score);
                     currMatch.find(".defender .match-score").text(json.data.defender.score);
 
                     // Move the Defender
                     if (json.data.defender.nextRound != -1) {
-                        var nextMatch = $(".list-table-body .match[data-matchnum='" + json.data.defender.nextRound + "'] .matchData ." + json.data.defender.slot);
-                        nextMatch.data("userId", json.data.defender.id);
-                        nextMatch.find(".name").text(json.data.defender.name);
+                        nextMatch = $(".list-table-body .match[data-matchnum='" + json.data.defender.nextRound + "']");
+                        slot = nextMatch.find("." + PlayerSlot[json.data.defender.slot]);
+                        slot.attr("data-userid", json.data.defender.id).data("userid", json.data.defender.id);
+                        slot.find(".name").text(json.data.defender.name);
+
+                        if (nextMatch.find(".defender").data("userId") != -1 && nextMatch.find(".challenger").data("userid") != -1) {
+                            nextMatch.find(".edit").removeClass("hide");
+                        }
+                        else {
+                            nextMatch.find(".edit").addClass("hide");
+                        }
                     }
+
                     // Find the next loser match
                     if (json.data.challenger.nextRound != -1) {
-                        var nextMatch = $(".list-table-body .match[data-matchnum='" + json.data.challenger.nextRound + "'] .matchData ." + json.data.challenger.slot);
-                        nextMatch.data("userId", json.data.challenger.id);
-                        nextMatch.find(".name").text(json.data.challenger.name);
+                        nextMatch = $(".list-table-body .match[data-matchnum='" + json.data.challenger.nextRound + "']");
+                        slot = nextMatch.find("." + PlayerSlot[json.data.challenger.slot]);
+                        slot.attr("data-userid", json.data.challenger.id).data("userid", json.data.challenger.id);
+                        slot.find(".name").text(json.data.challenger.name);
+
+                        if (nextMatch.find(".defender").data("userId") != -1 && nextMatch.find(".challenger").data("userid") != -1) {
+                            nextMatch.find(".edit").removeClass("hide");
+                        }
+                        else {
+                            nextMatch.find(".edit").addClass("hide");
+                        }
                     }
 
                     // Remove the edit button
@@ -131,19 +155,19 @@
         var defender = $(matchElem).find(".matchData .info .defender");
 
         // Match Data
-        matchElem.data("matchid", json.matchId);
-        matchElem.data("matchnum", json.matchNum);
+        matchElem.attr("data-matchid", json.matchId).data("matchid", json.matchId);
+        matchElem.attr("data-matchnum", json.matchNum).data("matchnum", json.matchNum);
         matchElem.find(".matchNum").html(json.matchNum);
 
         // Defender Data
-        defender.data("userid", json.defender.id);
+        defender.attr("data-userid", json.defender.id).data("userid", json.defender.id);
         defender.find(".name").text(json.defender.name);
-        defender.find(".match-score").val(json.defender.score);
+        defender.find(".score-edit").val(json.defender.score);
 
         // Challenger Data
-        challenger.data("userid", json.challenger.id);
+        challenger.attr("data-userid", json.challenger.id).data("userid", json.challenger.id);
         challenger.find(".name").text(json.challenger.name);
-        challenger.find(".match-score").val(json.challenger.score);
+        challenger.find(".score-edit").val(json.challenger.score);
     }
 
     // Mouse Events
@@ -161,4 +185,18 @@
             $(".matchData .info [data-userid='" + userid + "']").removeClass("teamHover");
         }
     });
+
+    // Set edit icons
+    (function($){
+        matches = $(".list-table-body .match ");
+        $.each(matches, function (i, e) {
+            challenger = $(e).find(".challenger");
+            defender = $(e).find(".defender");
+
+            if (challenger.data("userid") > 0 && defender.data("userid") > 0) {
+                // Enable the button
+
+            }
+        });
+    })($)
 });

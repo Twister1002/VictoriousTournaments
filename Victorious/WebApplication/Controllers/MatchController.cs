@@ -87,17 +87,89 @@ namespace WebApplication.Controllers
                     DbError matchResult = db.UpdateMatch(matchModel);
                     if (matchResult == DbError.SUCCESS)
                     {
+                        PlayerSlot forDefender = PlayerSlot.unspecified;
+                        PlayerSlot forChallenger = PlayerSlot.unspecified;
+
                         // Update the next matches.
                         if (matchModel.NextMatchNumber != -1)
                         {
                             MatchModel nextWinnerMatch = bracket.GetMatch((int)matchModel.NextMatchNumber).Model;
                             DbError nextWinnerMatchResult = db.UpdateMatch(nextWinnerMatch);
+
+                            switch (winPlayerSlot)
+                            {
+                                case PlayerSlot.Challenger:
+                                    // IF (NEXTMATCH.ID == CURRENTMATCH.ID) 
+                                    if (nextWinnerMatch.ChallengerID == matchModel.ChallengerID)
+                                    {
+                                        forChallenger = PlayerSlot.Challenger;
+                                    }
+                                    else if (nextWinnerMatch.DefenderID == matchModel.ChallengerID)
+                                    {
+                                        forChallenger = PlayerSlot.Defender;
+                                    }
+                                    else
+                                    {
+                                        forChallenger = PlayerSlot.unspecified;
+                                    }
+                                    break;
+                                case PlayerSlot.Defender:
+                                    if (nextWinnerMatch.ChallengerID == matchModel.DefenderID)
+                                    {
+                                        forDefender = PlayerSlot.Challenger;
+                                    }
+                                    else if (nextWinnerMatch.DefenderID == matchModel.DefenderID)
+                                    {
+                                        forDefender = PlayerSlot.Defender;
+                                    }
+                                    else
+                                    {
+                                        forDefender = PlayerSlot.unspecified;
+                                    }
+                                    break;
+                            }
                         }
 
                         if (matchModel.NextLoserMatchNumber != -1)
                         {
                             MatchModel nextLoserMatch = bracket.GetMatch((int)matchModel.NextLoserMatchNumber).Model;
                             DbError nextLoserMatchResult = db.UpdateMatch(nextLoserMatch);
+
+                            // INVERSE LOGIC -- We want to modify the loser, not the winner, but we're based on the winner.
+                            switch (winPlayerSlot)
+                            {
+                                // In this case, set the defender information.
+                                case PlayerSlot.Challenger:
+                                    // IF (NEXTMATCH.ID == CURRENTMATCH.ID) 
+                                    if (nextLoserMatch.ChallengerID == matchModel.DefenderID)
+                                    {
+                                        forDefender = PlayerSlot.Challenger;
+                                    }
+                                    else if (nextLoserMatch.DefenderID == matchModel.DefenderID)
+                                    {
+                                        forDefender = PlayerSlot.Defender;
+                                    }
+                                    else
+                                    {
+                                        forDefender = PlayerSlot.unspecified;
+                                    }
+                                    break;
+                                // In this case, set the challenger info.
+                                case PlayerSlot.Defender:
+                                    if (nextLoserMatch.ChallengerID == matchModel.ChallengerID)
+                                    {
+                                        forChallenger = PlayerSlot.Challenger;
+                                    }
+                                    else if (nextLoserMatch.DefenderID == matchModel.ChallengerID)
+                                    {
+                                        forChallenger = PlayerSlot.Defender;
+                                    }
+                                    else
+                                    {
+                                        forChallenger = PlayerSlot.unspecified;
+                                    }
+                                    break;
+                            }
                         }
 
                         jsonResult = JsonConvert.SerializeObject(new
@@ -113,11 +185,7 @@ namespace WebApplication.Controllers
                                     name = matchModel.Defender.Username,
                                     id = matchModel.Defender.UserID,
                                     score = matchModel.DefenderScore,
-                                    slot = bracket
-                                            .GetMatch((int)(winPlayerSlot == PlayerSlot.Defender ? matchModel.NextMatchNumber : matchModel.NextLoserMatchNumber))
-                                            .Model
-                                            .DefenderID == matchModel.DefenderID
-                                            ? "defender" : "challenger"
+                                    slot = forDefender
                                 },
                                 challenger = new
                                 {
@@ -125,11 +193,7 @@ namespace WebApplication.Controllers
                                     name = matchModel.Challenger.Username,
                                     id = matchModel.Challenger.UserID,
                                     score = matchModel.ChallengerScore,
-                                    slot = bracket
-                                            .GetMatch((int)(winPlayerSlot == PlayerSlot.Challenger ? matchModel.NextMatchNumber : matchModel.NextLoserMatchNumber))
-                                            .Model
-                                            .DefenderID == matchModel.DefenderID
-                                            ? "defender" : "challenger"
+                                    slot = forChallenger
                                 }
                             }
                         });
