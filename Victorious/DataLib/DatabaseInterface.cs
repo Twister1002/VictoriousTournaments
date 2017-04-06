@@ -852,7 +852,7 @@ namespace DataLib
             {
                 match = context.Matches.Find(id);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 interfaceException = ex;
                 WriteException(ex);
@@ -1021,7 +1021,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in AddTeam");
+                WriteException(ex);
                 return DbError.FAILED_TO_ADD;
             }
             return DbError.SUCCESS;
