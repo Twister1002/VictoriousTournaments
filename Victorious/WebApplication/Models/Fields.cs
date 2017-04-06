@@ -109,6 +109,15 @@ namespace WebApplication.Models
 
     public abstract class AdministratorFields : ViewModel
     {
+        [Display(Name ="Game")]
+        [DataType(DataType.Text)]
+        public String GameName { get; set; }
+
+        [Display(Name = "")]
+        public bool XBox { get; set; }
+        public bool PC { get; set; }
+        public bool PS3 { get; set; }
+
 
     }
 }

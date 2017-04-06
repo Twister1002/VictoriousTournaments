@@ -39,7 +39,7 @@ namespace WebApplication.Controllers
 
 
         [HttpPost]
-        [Route("Administrator/Games")]
+        [Route("Administrator/Ajax/Games")]
         public JsonResult Games(String jsonData)
         {
             return Json("No functionality for this has been made");
@@ -47,7 +47,7 @@ namespace WebApplication.Controllers
 
         private bool IsAdministrator()
         {
-            if (Session["User.UserId"] != null && (int)Session["User.UserId"] == 1)
+            if (Session["User.UserId"] != null && UserPermission() == Permission.SITE_ADMINISTRATOR)
             {
                 return true;
             }
@@ -58,6 +58,13 @@ namespace WebApplication.Controllers
 
                 return false;
             }
+        }
+
+        public Permission UserPermission()
+        {
+            UserModel userModel = db.GetUserById((int)Session["User.UserId"]);
+
+            return userModel.SitePermission.Permission;
         }
     }
 }

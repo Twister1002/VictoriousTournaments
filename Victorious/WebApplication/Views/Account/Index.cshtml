@@ -109,7 +109,7 @@
             <li class="clickable-underline">@Html.ActionLink("Update Account", "Update", "Account")</li>
             <li class="clickable-underline">@Html.ActionLink("Create Tournament", "Create", "Tournament")</li>
             <li>View Profile</li>
-            @if (Model.Model.UserID == 1 /* || Model.Model.Permission*/)
+            @if (Model.Model.SitePermission.Permission == DataLib.Permission.SITE_ADMINISTRATOR)
             {
                 <li class="clickable-underline">@Html.ActionLink("Administration", "Index", "Administrator")</li>
             }
