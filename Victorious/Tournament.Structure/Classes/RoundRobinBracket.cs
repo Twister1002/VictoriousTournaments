@@ -28,8 +28,7 @@ namespace Tournament.Structure
 		{
 			if (null == _players)
 			{
-				throw new NullReferenceException
-					("Playerlist cannot be null!");
+				throw new ArgumentNullException("_players");
 			}
 
 			Players = new List<IPlayer>();
@@ -85,28 +84,28 @@ namespace Tournament.Structure
 		{
 			if (null == _model)
 			{
-				throw new NullReferenceException
-					("Bracket Model cannot be null!");
+				throw new ArgumentNullException("_model");
 			}
 
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
+			this.IsFinalized = _model.Finalized;
 
 			List<UserModel> userModels = _model.UserSeeds
 				.OrderBy(ubs => ubs.Seed)
 				.Select(ubs => ubs.User)
 				.ToList();
-			Players = new List<IPlayer>();
-			Rankings = new List<IPlayerScore>();
+			this.Players = new List<IPlayer>();
+			this.Rankings = new List<IPlayerScore>();
 			foreach (UserModel model in userModels)
 			{
 				Players.Add(new User(model));
 				Rankings.Add(new PlayerScore(model.UserID, model.Username, 0, 1));
 			}
 			
-			MaxRounds = 0;
+			this.MaxRounds = 0;
 			ResetBracket();
 
-			Matches = new Dictionary<int, IMatch>();
+			this.Matches = new Dictionary<int, IMatch>();
 			foreach (MatchModel mm in _model.Matches)
 			{
 				IMatch match = new Match(mm);
@@ -114,7 +113,7 @@ namespace Tournament.Structure
 				++NumberOfMatches;
 				if (match.RoundIndex > NumberOfRounds)
 				{
-					NumberOfRounds = match.RoundIndex;
+					this.NumberOfRounds = match.RoundIndex;
 				}
 
 				for (int i = 0; i < Rankings.Count; ++i)
@@ -131,10 +130,19 @@ namespace Tournament.Structure
 			}
 
 			UpdateRankings();
+			this.IsFinished = true;
+			foreach (IMatch match in Matches.Values)
+			{
+				if (!match.IsFinished)
+				{
+					this.IsFinished = false;
+					break;
+				}
+			}
 		}
-#endregion
+		#endregion
 
-#region Public Methods
+		#region Public Methods
 		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
 			ResetBracket();

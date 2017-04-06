@@ -109,24 +109,24 @@ namespace Tournament.Structure
 		{
 			if (null == _model)
 			{
-				throw new NullReferenceException
-					("Bracket Model canot be null!");
+				throw new ArgumentNullException("_model");
 			}
 
-			BracketType = BracketTypeModel.BracketType.RRGROUP;
+			this.BracketType = BracketTypeModel.BracketType.RRGROUP;
+			this.IsFinalized = _model.Finalized;
 
 			List<UserModel> userModels = _model.UserSeeds
 				.OrderBy(ubs => ubs.Seed)
 				.Select(ubs => ubs.User)
 				.ToList();
-			Players = new List<IPlayer>();
+			this.Players = new List<IPlayer>();
 			foreach (UserModel model in userModels)
 			{
 				Players.Add(new User(model));
 			}
 
-			NumberOfGroups = _model.NumberOfGroups;
-			MaxRounds = 0;
+			this.NumberOfGroups = _model.NumberOfGroups;
+			this.MaxRounds = 0;
 			ResetBracket();
 			CreateBracket();
 
@@ -172,12 +172,12 @@ namespace Tournament.Structure
 
 			// Update the rankings:
 			UpdateRankings();
-			IsFinished = true;
+			this.IsFinished = true;
 			foreach (IBracket group in Groups)
 			{
 				if (!group.IsFinished)
 				{
-					IsFinished = false;
+					this.IsFinished = false;
 					break;
 				}
 			}

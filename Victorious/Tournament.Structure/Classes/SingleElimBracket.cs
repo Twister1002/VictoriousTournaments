@@ -83,13 +83,14 @@ namespace Tournament.Structure
 					("Bracket Model cannot be null!");
 			}
 
-			BracketType = BracketTypeModel.BracketType.SINGLE;
+			this.BracketType = BracketTypeModel.BracketType.SINGLE;
+			this.IsFinalized = _model.Finalized;
 
 			List<UserModel> userModels = _model.UserSeeds
 				.OrderBy(ubs => ubs.Seed)
 				.Select(ubs => ubs.User)
 				.ToList();
-			Players = new List<IPlayer>();
+			this.Players = new List<IPlayer>();
 			foreach (UserModel um in userModels)
 			{
 				Players.Add(new User(um));
@@ -98,13 +99,13 @@ namespace Tournament.Structure
 			ResetBracket();
 			int totalMatches = Players.Count - 1;
 
-			Matches = new Dictionary<int, IMatch>();
+			this.Matches = new Dictionary<int, IMatch>();
 			foreach (MatchModel mm in _model.Matches)
 			{
 				IMatch match = new Match(mm);
 				if (match.RoundIndex > NumberOfRounds)
 				{
-					NumberOfRounds = match.RoundIndex;
+					this.NumberOfRounds = match.RoundIndex;
 				}
 				Matches.Add(match.MatchNumber, match);
 
@@ -115,7 +116,7 @@ namespace Tournament.Structure
 				}
 			}
 
-			Rankings = new List<IPlayerScore>();
+			this.Rankings = new List<IPlayerScore>();
 			if (BracketTypeModel.BracketType.SINGLE == BracketType)
 			{
 				UpdateRankings();
@@ -131,6 +132,7 @@ namespace Tournament.Structure
 					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, 2));
 
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+					this.IsFinished = true;
 				}
 			}
 		}

@@ -19,7 +19,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-
+		UserModel GetModel();
 		#endregion
 	}
 }

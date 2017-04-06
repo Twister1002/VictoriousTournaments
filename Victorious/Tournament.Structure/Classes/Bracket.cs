@@ -13,6 +13,8 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		public BracketTypeModel.BracketType BracketType
 		{ get; protected set; }
+		public bool IsFinalized
+		{ get; protected set; }
 		public bool IsFinished
 		{ get; protected set; }
 		public List<IPlayer> Players

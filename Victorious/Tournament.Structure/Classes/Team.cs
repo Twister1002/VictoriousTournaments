@@ -42,6 +42,11 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		public override UserModel GetModel()
+		{
+			throw new NotImplementedException();
+		}
+#if false
 		public TeamModel GetModel()
 		{
 			TeamModel model = new TeamModel();
@@ -68,6 +73,7 @@ namespace Tournament.Structure
 
 			return model;
 		}
+#endif
 
 		public void AddMember(User _user)
 		{
@@ -87,6 +93,6 @@ namespace Tournament.Structure
 					("User not found in this team!");
 			}
 		}
-		#endregion
+#endregion
 	}
 }
