@@ -4,17 +4,15 @@
     ViewBag.Title = "Tournament";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    int userId = -1;
     bool registrationStarted = (DateTime)Model.RegistrationStartDate <= DateTime.Now;
     bool tournamentStarted = (DateTime)Model.TournamentStartDate <= DateTime.Now;
     bool registrationEnded = (DateTime)Model.RegistrationEndDate <= DateTime.Now;
     bool isLoggedIn = Session["User.UserId"] != null;
-
-    // TODO: Change this to Permission.None
-    var userPermission = isLoggedIn ? Model.UserPermission((int)Session["User.UserId"]) : DataLib.Permission.TOURNAMENT_STANDARD;
+    var userPermission = isLoggedIn ? Model.UserPermission((int)Session["User.UserId"]) : DataLib.Permission.NONE;
     
     ViewBag.Permission = userPermission;
     ViewBag.isLoggedIn = isLoggedIn;
+    ViewBag.TournamentId = Model.Model.TournamentID;
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">

@@ -1,27 +1,28 @@
 ﻿@model Tournament.Structure.ITournament
 
 @{
-    foreach (var bracket in Model.Brackets)
+    for (int i = 0; i < Model.Brackets.Count; i++)
     {
-        // TODO: Add this back in when Changes from Sean comes through. 
-        //if (!bracket.isFinalized)
-        //{
-        //    Html.RenderPartial("Administrator/_Finalize", Model);
-        //}
+        var bracket = Model.Brackets[i];
+        
+        if (!bracket.IsFinalized)
+        {
+            Html.RenderPartial("Administrator/_Finalize", new ViewDataDictionary(ViewData));
+        }
 
-        <ul class="list-table bracket" data-bracketnum="">
+        <ul class="list-table bracket" data-bracketnum="@i">
             @switch (bracket.BracketType)
-            {
-                case DataLib.BracketTypeModel.BracketType.SINGLE:
-                    Html.RenderPartial("Brackets/_SingleElimination", bracket, new ViewDataDictionary(ViewData));
-                    break;
-                case DataLib.BracketTypeModel.BracketType.DOUBLE:
-                    Html.RenderPartial("Brackets/_DoubleElimination", bracket, new ViewDataDictionary(ViewData));
-                    break;
-                case DataLib.BracketTypeModel.BracketType.ROUNDROBIN:
-                    Html.RenderPartial("Brackets/_RoundRobin", bracket, new ViewDataDictionary(ViewData));
-                    break;
-            }
+                {
+                    case DataLib.BracketTypeModel.BracketType.SINGLE:
+                        Html.RenderPartial("Brackets/_SingleElimination", bracket, new ViewDataDictionary(ViewData));
+                        break;
+                    case DataLib.BracketTypeModel.BracketType.DOUBLE:
+                        Html.RenderPartial("Brackets/_DoubleElimination", bracket, new ViewDataDictionary(ViewData));
+                        break;
+                    case DataLib.BracketTypeModel.BracketType.ROUNDROBIN:
+                        Html.RenderPartial("Brackets/_RoundRobin", bracket, new ViewDataDictionary(ViewData));
+                        break;
+                }
 
             <li class="match-edit-module">
                 <div class="module-background"></div>

@@ -444,5 +444,26 @@ namespace WebApplication.Controllers
 
             return jsonResult;
         }
+
+        [HttpPost]
+        [Route("Tournament/Ajax/Standings")]
+        public JsonResult Standings(String jsonData)
+        {
+            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
+            TournamentViewModel viewModel = new TournamentViewModel(json["tournamentId"]);
+            viewModel.ProcessTournament();
+            IBracket bracket = viewModel.Tourny.Brackets[json["bracketNum"]];
+
+            return Json(JsonConvert.SerializeObject(
+                new
+                {
+                    status = true,
+                    data = new
+                    {
+                        ranks = bracket.Rankings
+                    }
+                }
+            ));
+        }
     }
 }

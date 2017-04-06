@@ -91,8 +91,9 @@
             "type": "POST",
             "data": { "jsonData": JSON.stringify(jsonData) },
             "dataType": "json",
-            "beforeSend": function() {
-                $(".match-edit-module .match-submit button").attr("disable", true);
+            "beforeSend": function () {
+                // Disable the button
+                $(".match-edit-module .match-submit button").attr("disabled", true);
             },
             "success": function (json) {
                 json = JSON.parse(json);
@@ -146,8 +147,14 @@
                 console.log(json);
             },
             "complete": function () {
-                $(".match-edit-module .match-submit button").attr("disable", true);
+                // Remove the disabled button
+                $(".match-edit-module .match-submit button").attr("disabled", false);
+
+                // Close the module.
                 $(".match-edit-module").removeClass("open");
+
+                // Update the standings
+                UpdateStandings(jsonData.tournyId, jsonData.bracketNum);
             }
         });
     });
@@ -171,6 +178,45 @@
         challenger.attr("data-userid", json.challenger.id).data("userid", json.challenger.id);
         challenger.find(".name").text(json.challenger.name);
         challenger.find(".score-edit").val(json.challenger.score);
+    }
+
+    function UpdateStandings(tourny, bracket) {
+        jsonData = {
+            "tournamentId": tourny,
+            "bracketNum": bracket
+        }
+
+        $.ajax({
+            "url": "/Tournament/Ajax/Standings",
+            "type": "POST",
+            "data": { "jsonData": JSON.stringify(jsonData) },
+            "dataType": "json",
+            "beforeSend": function () {
+
+            },
+            "success": function (json) {
+                json = JSON.parse(json);
+                var standings = $("#TournamentStandings .standings .list-table-body");
+                if (json.status) {
+                    standings.empty();
+                    $.each(json.data.ranks, function (i, e) {
+                        html = "<ul class='border' data-columns='3'>";
+                        html += "<li class='position-rank'>"+e.Rank+"</li>";
+                        html += "<li class='position-name'>"+e.Name+"</li>";
+                        if (e.score) html += "<li class='position-score'>"+e.Score+"</li>";
+                        html += "</ul>";
+
+                        standings.append(html);
+                    });
+                }
+            },
+            "error": function (json) {
+                
+            },
+            "complete": function () {
+                
+            }
+        });
     }
 
     // Mouse Events
