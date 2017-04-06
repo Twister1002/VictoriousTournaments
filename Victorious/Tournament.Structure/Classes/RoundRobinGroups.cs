@@ -8,27 +8,29 @@ using DataLib;
 
 namespace Tournament.Structure
 {
-	public class RoundRobinGroups : Bracket
+	public class RoundRobinGroups : GroupStage
 	{
 		#region Variables & Properties
-		// inherits BracketType BracketType
-		// inherits bool IsFinalized
-		// inherits bool IsFinished
-		// inherits List<IPlayer> Players
-		// inherits List<IPlayerScore> Rankings
-		// inherits Dictionary<int, IMatch> Matches (null)
-		// inherits int NumberOfRounds
-		// inherits Dictionary<int, IMatch> LowerMatches (null)
-		// inherits int NumberOfLowerRounds (0)
-		// inherits IMatch GrandFinal (null)
-		// inherits int NumberOfMatches
+// inherits BracketType BracketType
+// inherits bool IsFinalized
+// inherits bool IsFinished
+// inherits List<IPlayer> Players
+// inherits List<IPlayerScore> Rankings
+// inherits Dictionary<int, IMatch> Matches (null)
+// inherits int NumberOfRounds
+// inherits Dictionary<int, IMatch> LowerMatches (null)
+// inherits int NumberOfLowerRounds (0)
+// inherits IMatch GrandFinal (null)
+// inherits int NumberOfMatches
+#if false
 		private List<IBracket> Groups
 		{ get; set; }
 		public int NumberOfGroups
 		{ get; set; }
-		#endregion
+#endif
+#endregion
 
-		#region Ctors
+#region Ctors
 		public RoundRobinGroups(List<IPlayer> _players, int _numberOfGroups, int _numberOfRounds = 0)
 		{
 			if (null == _players)
@@ -218,6 +220,7 @@ namespace Tournament.Structure
 			}
 		}
 
+#if false
 		public override void AddGame(int _matchNumber, IGame _game)
 		{
 			int groupIndex;
@@ -322,6 +325,7 @@ namespace Tournament.Structure
 			GetMatchData(ref _matchNumber, out groupIndex);
 			return Groups[groupIndex].GetMatch(_matchNumber);
 		}
+#endif
 #endregion
 
 #region Private Methods
@@ -351,6 +355,7 @@ namespace Tournament.Structure
 			}
 		}
 
+#if false
 		protected override void ResetBracket()
 		{
 			base.ResetBracket();
@@ -385,6 +390,7 @@ namespace Tournament.Structure
 			throw new MatchNotFoundException
 				("Match not found; match number may be invalid.");
 		}
+#endif
 #endregion
 	}
 }
