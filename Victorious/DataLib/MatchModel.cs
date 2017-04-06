@@ -60,12 +60,12 @@ namespace DataLib
         public int? PrevChallengerMatchNumber { get; set; }
 
         [InverseProperty("ChallengerMatches")]
-        public UserModel Challenger { get; set; }
+        public virtual UserModel Challenger { get; set; }
 
         [InverseProperty("DefenderMatches")]
-        public UserModel Defender { get; set; }
+        public virtual UserModel Defender { get; set; }
 
-        public ICollection<GameModel> Games { get; set; }
+        public virtual ICollection<GameModel> Games { get; set; }
 
     }
 }

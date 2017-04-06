@@ -242,24 +242,37 @@ namespace DatabaseDebugConsole
             //    Console.WriteLine(game.Title);
             //}
 
+            //TournamentModel tournament = new TournamentModel();
+            //tournament = db.GetAllTournaments().Last();
+            //Console.WriteLine(tournament.Game.Title);
+            //tournament.Game = db.GetAllGames()[2];
+            //Console.WriteLine(db.GetAllGames()[2].Title);
+            //db.UpdateTournament(tournament);
+            //Console.WriteLine(tournament.Game.Title);
+
+
             TournamentModel tournament = new TournamentModel();
             tournament = db.GetAllTournaments().Last();
-            Console.WriteLine(tournament.Game.Title);
-            tournament.Game = db.GetAllGames()[2];
-            Console.WriteLine(db.GetAllGames()[2].Title);
-            db.UpdateTournament(tournament);
-            Console.WriteLine(tournament.Game.Title);
-
+            //GameModel game = new GameModel()
+            //{
+            //    ChallengerID = tournament.Brackets.ToList()[0].Matches.ToList()[0].ChallengerID,
+            //    DefenderID = tournament.Brackets.ToList()[0].Matches.ToList()[0].DefenderID
+            //};
+            //db.AddGame(tournament.Brackets.ToList()[0].Matches.ToList()[0], game);
+            GameModel game = new GameModel();
+            game = tournament.Brackets.ToList()[0].Matches.ToList()[0].Games.ToList()[0];
+            //game.DefenderID = 7;
+            //db.UpdateGame(game);
+            db.DeleteGame(tournament.Brackets.ToList()[0].Matches.ToList()[0], game);
 
 
 
             Console.WriteLine("\n\nDone");
             Console.ReadLine();
 
-
-
         }
 
+     
         static void Search(DatabaseInterface db)
         {
             

@@ -11,7 +11,7 @@ namespace DataLib
     public partial class GameModel
     {
         [Key]
-        public int ID { get; set; }
+        public int GameID { get; set; }
 
         public int ChallengerID { get; set; }
 
@@ -19,7 +19,7 @@ namespace DataLib
 
         public int WinnerID { get; set; }
 
-        public int MatchID { get; set; }
+        public int? MatchID { get; set; }
 
         public int GameNumber { get; set; }
 
