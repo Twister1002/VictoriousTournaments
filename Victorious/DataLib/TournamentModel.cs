@@ -43,7 +43,7 @@ namespace DataLib
         public int LastEditedByID { get; set; }
 
         [ForeignKey("GameID")]
-        public GameModel Game { get; set; }
+        public GameTypeModel Game { get; set; }
 
         [ForeignKey("TournamentRulesID")]
         public TournamentRuleModel TournamentRules { get; set; }

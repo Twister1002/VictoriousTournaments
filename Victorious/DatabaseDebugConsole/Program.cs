@@ -232,7 +232,7 @@ namespace DatabaseDebugConsole
 
             //SearchTournamnet(db);
 
-            //GameModel game = new GameModel();
+            //GameTypeModel game = new GameTypeModel();
             //game = db.GetAllGames()[0];
             ////game.Title = "Overwatch";
             //db.DeleteGame(game);
@@ -250,6 +250,9 @@ namespace DatabaseDebugConsole
             db.UpdateTournament(tournament);
             Console.WriteLine(tournament.Game.Title);
 
+
+
+
             Console.WriteLine("\n\nDone");
             Console.ReadLine();
 
@@ -257,6 +260,10 @@ namespace DatabaseDebugConsole
 
         }
 
+        static void Search(DatabaseInterface db)
+        {
+            
+        }
 
         static void Seed(DatabaseInterface db)
         {

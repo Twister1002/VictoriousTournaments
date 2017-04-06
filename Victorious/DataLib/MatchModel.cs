@@ -6,7 +6,7 @@ namespace DataLib
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.SqlClient;
     using System.Data.Entity.Spatial;
-
+    using System.Collections.ObjectModel;
     public partial class MatchModel
     {
         public MatchModel()
@@ -16,6 +16,7 @@ namespace DataLib
             MatchIndex = 0;
             WinsNeeded = 0;
             PrevMatchIndex = 0;
+            Games = new Collection<GameModel>();
             //next
         }
 
@@ -58,20 +59,13 @@ namespace DataLib
 
         public int? PrevChallengerMatchNumber { get; set; }
 
-        //[ForeignKey("ChallengerID")]
         [InverseProperty("ChallengerMatches")]
+        public UserModel Challenger { get; set; }
 
-        public virtual UserModel Challenger { get; set; }
-
-        //[ForeignKey("DefenderID")]
         [InverseProperty("DefenderMatches")]
+        public UserModel Defender { get; set; }
 
-        public virtual UserModel Defender { get; set; }
+        public ICollection<GameModel> Games { get; set; }
 
-        //[ForeignKey("TournamentID")]
-        //public TournamentModel Tournament { get; set; }
-
-        //[ForeignKey("WinnerID")]
-        //public UserModel Winner { get; set; }
     }
 }

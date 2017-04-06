@@ -118,6 +118,19 @@ namespace DataLib
 
         }
 
+        // Don't use this yet
+        //public List<int> Search(object obj, string keywords)
+        //{
+        //    List<int> list = new List<int>();
+        //    var _keywords = keywords.Split(',');
+
+
+        //    if (obj.GetType() == typeof(UserModel))
+        //    {    
+        //        UserModel user = (UserModel)obj;
+        //        var result = context.Users.SqlQuery("SELECT Username FROM dbo.Users",)
+        //    }
+        //}
 
         #region Users
 
@@ -578,6 +591,7 @@ namespace DataLib
             }
             return tournaments;
         }
+
 
         #endregion
 
@@ -1117,9 +1131,9 @@ namespace DataLib
 
         #endregion
 
-        #region Games
+        #region GameTypes
 
-        public DbError AddGame(GameModel game)
+        public DbError AddGame(GameTypeModel game)
         {
             try
             {
@@ -1135,11 +1149,11 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        public DbError UpdateGame(GameModel game)
+        public DbError UpdateGame(GameTypeModel game)
         {
             try
             {
-                GameModel _game = context.Games.Find(game.GameID);
+                GameTypeModel _game = context.Games.Find(game.GameID);
                 context.Entry(_game).CurrentValues.SetValues(game);
                 context.SaveChanges();
             }
@@ -1152,9 +1166,9 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        public List<GameModel> GetAllGames()
+        public List<GameTypeModel> GetAllGames()
         {
-            List<GameModel> games = new List<GameModel>();
+            List<GameTypeModel> games = new List<GameTypeModel>();
             try
             {
                 games = context.Games.ToList();
@@ -1164,14 +1178,14 @@ namespace DataLib
                 interfaceException = ex;
                 WriteException(ex);
                 games.Clear();
-                games.Add(new GameModel() { GameID = -1 });
+                games.Add(new GameTypeModel() { GameID = -1 });
             }
             return games;
         }
 
-        public DbError DeleteGame(GameModel game)
+        public DbError DeleteGame(GameTypeModel game)
         {
-            GameModel _game = context.Games.Find(game.GameID);
+            GameTypeModel _game = context.Games.Find(game.GameID);
             try
             {
                 context.Games.Remove(_game);
