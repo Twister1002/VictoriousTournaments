@@ -72,7 +72,16 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-
+		public UserModel GetModel()
+		{
+			UserModel model = new UserModel();
+			model.UserID = this.Id;
+			model.Username = this.Name;
+			model.FirstName = this.Firstname;
+			model.LastName = this.Lastname;
+			model.Email = this.Email;
+			return model;
+		}
 		#endregion
 	}
 }
