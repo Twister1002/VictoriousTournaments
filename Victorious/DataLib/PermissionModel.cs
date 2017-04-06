@@ -8,8 +8,10 @@ namespace DataLib
 {
     public enum Permission
     {
-        // 0 = Site Permissions
-        SITE_ADMINISTRATOR = 0, SITE_STANDARD,
+        // 0 = None
+        NONE = 0,
+        // 1 = Site Permissions
+        SITE_ADMINISTRATOR = 1, SITE_STANDARD,
         // 100 = Tournament Permissions
         TOURNAMENT_ADMINISTRATOR = 100, TOURNAMENT_STANDARD,
         // 200 = Team Permissions
