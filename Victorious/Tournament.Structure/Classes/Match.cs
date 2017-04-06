@@ -11,8 +11,13 @@ namespace Tournament.Structure
 	public class Match : IMatch
 	{
 		#region Variables & Properties
+		public int Id
+		{ get; private set; }
+
+		[System.Obsolete("use .GetModel()", false)]
 		public MatchModel Model
 		{ get; private set; }
+
 		public bool IsReady
 		{ get; private set; }
 		public bool IsFinished
@@ -42,6 +47,7 @@ namespace Tournament.Structure
 #region Ctors
 		public Match()
 		{
+			Id = 0;
 			Model = new MatchModel();
 
 			IsReady = false;
@@ -71,6 +77,7 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_match");
 			}
 
+			this.Id = _match.Id;
 			this.Model = _match.Model;
 			this.IsReady = _match.IsReady;
 			this.IsFinished = _match.IsFinished;
@@ -107,6 +114,7 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_m");
 			}
 
+			this.Id = _m.MatchID;
 			this.Model = _m;
 			WinsNeeded = (ushort)(_m.WinsNeeded);
 
@@ -157,7 +165,7 @@ namespace Tournament.Structure
 #endregion
 
 #region Public Methods
-		[System.Obsolete("use Match.Model", false)]
+		[System.Obsolete("use .GetModel()", false)]
 		public MatchModel GetModel(int _matchId)
 		{
 			return Model;
@@ -200,6 +208,32 @@ namespace Tournament.Structure
 
 			return model;
 #endif
+		}
+		public MatchModel GetModel()
+		{
+			MatchModel model = new MatchModel();
+
+			model.MatchID = this.Id;
+			model.RoundIndex = this.RoundIndex;
+			model.MatchIndex = this.MatchIndex;
+			model.MatchNumber = this.MatchNumber;
+			model.NextMatchNumber = this.NextMatchNumber;
+			model.NextLoserMatchNumber = this.NextLoserMatchNumber;
+			model.PrevDefenderMatchNumber = this.PreviousMatchNumbers[(int)PlayerSlot.Defender];
+			model.PrevChallengerMatchNumber = this.PreviousMatchNumbers[(int)PlayerSlot.Challenger];
+			model.WinsNeeded = this.WinsNeeded;
+
+			model.ChallengerID = (null != Players[(int)PlayerSlot.Challenger])
+				? Players[(int)PlayerSlot.Challenger].Id : -1;
+			model.DefenderID = (null != Players[(int)PlayerSlot.Defender])
+				? Players[(int)PlayerSlot.Defender].Id : -1;
+			model.WinnerID = (PlayerSlot.unspecified == WinnerSlot)
+				? (int)this.WinnerSlot
+				: Players[(int)WinnerSlot].Id;
+			model.ChallengerScore = this.Score[(int)PlayerSlot.Challenger];
+			model.DefenderScore = this.Score[(int)PlayerSlot.Defender];
+
+			return model;
 		}
 
 		public void AddPlayer(IPlayer _player, PlayerSlot _slot = PlayerSlot.unspecified)

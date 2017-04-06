@@ -4,11 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public class Team : Player
 	{
 		#region Variables & Properties
+		// inherits int Id
+		// inherits string Name
 		public List<User> TeamMembers
 		{ get; set; }
 		#endregion
@@ -38,6 +42,39 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		public override UserModel GetModel()
+		{
+			throw new NotImplementedException();
+		}
+#if false
+		public TeamModel GetModel()
+		{
+			TeamModel model = new TeamModel();
+			model.TeamID = this.Id;
+			model.TeamName = this.Name;
+
+			List<TeamMemberModel> tMemberModels = new List<TeamMemberModel>();
+			foreach (User user in TeamMembers)
+			{
+				TeamMemberModel tmModel = new TeamMemberModel();
+				tmModel.UserID = user.Id;
+				tmModel.TeamID = this.Id;
+				tmModel.Team = model;
+
+				tmModel.User = new UserModel();
+				tmModel.User.UserID = user.Id;
+				tmModel.User.Username = user.Name;
+				tmModel.User.FirstName = user.Firstname;
+				tmModel.User.LastName = user.Lastname;
+				tmModel.User.Email = user.Email;
+
+				tMemberModels.Add(tmModel);
+			}
+
+			return model;
+		}
+#endif
+
 		public void AddMember(User _user)
 		{
 			if (TeamMembers.Contains(_user))
@@ -56,6 +93,6 @@ namespace Tournament.Structure
 					("User not found in this team!");
 			}
 		}
-		#endregion
+#endregion
 	}
 }

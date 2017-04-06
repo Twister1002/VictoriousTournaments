@@ -42,14 +42,15 @@ namespace Tournament.Structure
 		public DoubleElimBracket(BracketModel _model)
 			: base(_model)
 		{
-			BracketType = BracketTypeModel.BracketType.DOUBLE;
+			this.IsFinished = false;
+			this.BracketType = BracketTypeModel.BracketType.DOUBLE;
 
 			if (CalculateTotalLowerBracketMatches(Players.Count) > 0)
 			{
 				int numOfGrandFinal = _model.Matches.Count - 1;
 				int i = 0;
 
-				LowerMatches = new Dictionary<int, IMatch>();
+				this.LowerMatches = new Dictionary<int, IMatch>();
 				foreach (MatchModel mm in _model.Matches)
 				{
 					if (i >= Matches.Count
@@ -58,14 +59,14 @@ namespace Tournament.Structure
 						IMatch match = new Match(mm);
 						if (match.RoundIndex > NumberOfLowerRounds)
 						{
-							NumberOfLowerRounds = match.RoundIndex;
+							this.NumberOfLowerRounds = match.RoundIndex;
 						}
 						LowerMatches.Add(match.MatchNumber, match);
 						++NumberOfMatches;
 					}
 					else if (i == numOfGrandFinal)
 					{
-						GrandFinal = new Match(mm);
+						this.GrandFinal = new Match(mm);
 						++NumberOfMatches;
 					}
 
@@ -85,6 +86,7 @@ namespace Tournament.Structure
 				Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, 2));
 
 				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+				this.IsFinished = true;
 			}
 		}
 		#endregion

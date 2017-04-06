@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	/// <summary>
@@ -17,7 +19,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-
+		UserModel GetModel();
 		#endregion
 	}
 }
