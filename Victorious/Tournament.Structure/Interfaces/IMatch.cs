@@ -18,6 +18,7 @@ namespace Tournament.Structure
 	public interface IMatch
 	{
 		#region Variables & Properties
+		int Id { get; }
 		MatchModel Model { get; }
 		bool IsReady { get; }
 		bool IsFinished { get; }
@@ -76,6 +77,7 @@ namespace Tournament.Structure
 		/// <param name="_matchId">ID of Match</param>
 		/// <returns>Model of Match</returns>
 		MatchModel GetModel(int _matchId);
+		MatchModel GetModel();
 
 		/// <summary>
 		/// Assigns a Player to this Match.
