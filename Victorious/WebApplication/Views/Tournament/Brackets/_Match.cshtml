@@ -1,7 +1,6 @@
 ﻿@model Tournament.Structure.IMatch
 
 @{
-    
     Tournament.Structure.IPlayer Challenger = ViewBag.Challenger == null ? new Tournament.Structure.User() : ViewBag.Challenger;
     Tournament.Structure.IPlayer Defender = ViewBag.Defender == null ? new Tournament.Structure.User() : ViewBag.Defender;
     String className = ViewBag.ClassName != null ? ViewBag.ClassName : String.Empty;
@@ -12,7 +11,7 @@
 <div class="match @className" data-matchid="@Model.Model.MatchID" data-matchnum="@Model.MatchNumber">
     <label class="matchHeader">
         Match <span class="matchNum">@Model.MatchNumber</span>
-        @if (ViewBag.isAdministrator)
+        @if (ViewBag.Permission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
         {
             <span class="edit @(Model.IsReady && !Model.IsFinished ? "" : "hide")">
                 <img class="match-edit svg-pencil svg clickable" src="~/Images/svg/pencil.svg" />

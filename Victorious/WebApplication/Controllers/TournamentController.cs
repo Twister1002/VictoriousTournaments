@@ -167,7 +167,7 @@ namespace WebApplication.Controllers
             if (Session["User.UserId"] != null)
             {
                 viewModel.SetModel(id);
-                if (viewModel.Model.CreatedByID == (int)Session["User.UserId"])
+                if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
                     viewModel.ApplyChanges((int)Session["User.UserId"]);
 
@@ -219,7 +219,7 @@ namespace WebApplication.Controllers
                     // Verify the user doesn't exist in the tournament all ready
                     // Dont want duplicates
                     TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-                    int userCount = viewModel.Model.Users.Count(x => x.UserID == (int)Session["User.UserId"]);
+                    int userCount = viewModel.Model.UsersInTournament.Count(x => x.UserID == (int)Session["User.UserId"]);
 
                     if (userCount == 0)
                     {
@@ -306,7 +306,7 @@ namespace WebApplication.Controllers
             {
                 int tournyId = this.ConvertToInt(tourny);
                 TournamentViewModel viewModel = new TournamentViewModel(tournyId);
-                if (viewModel.Model.CreatedByID == (int)Session["User.UserId"])
+                if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
                     DbError result = viewModel.FinalizeTournament();
 

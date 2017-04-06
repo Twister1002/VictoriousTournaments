@@ -36,22 +36,12 @@ namespace WebApplication.Controllers
                         name = viewModel.matchModel.Challenger.Username,
                         id = viewModel.matchModel.Challenger.UserID,
                         score = viewModel.matchModel.ChallengerScore
-                        //seed = viewModel.bracketModel.UserSeeds.First(x =>
-                        //    x.TournamentID == ConvertToInt(tourny) &&
-                        //    x.BracketID == viewModel.bracketModel.BracketID &&
-                        //    x.UserID == viewModel.matchModel.Challenger.UserID
-                        //)
                     },
                     defender = new
                     {
                         name = viewModel.matchModel.Defender.Username,
                         id = viewModel.matchModel.Defender.UserID,
                         score = viewModel.matchModel.DefenderScore
-                    //    seed = viewModel.bracketModel.UserSeeds.First(x =>
-                    //        x.TournamentID == ConvertToInt(tourny) &&
-                    //        x.BracketID == viewModel.bracketModel.BracketID &&
-                    //        x.UserID == viewModel.matchModel.Defender.UserID
-                    //)
                     },
                     matchId = viewModel.matchModel.MatchID,
                     matchNum = viewModel.matchModel.MatchNumber

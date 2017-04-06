@@ -73,7 +73,6 @@
     });
 
     $(".match-edit-module .match-submit button").on("click", function () {
-        //$(this).attr("disable", true)
         var matchData = $(".match-edit-module .module-content .match")
 
         jsonData = {
@@ -92,6 +91,9 @@
             "type": "POST",
             "data": { "jsonData": JSON.stringify(jsonData) },
             "dataType": "json",
+            "beforeSend": function() {
+                $(".match-edit-module .match-submit button").attr("disable", true);
+            },
             "success": function (json) {
                 json = JSON.parse(json);
                 if (json.status) {
@@ -144,6 +146,7 @@
                 console.log(json);
             },
             "complete": function () {
+                $(".match-edit-module .match-submit button").attr("disable", true);
                 $(".match-edit-module").removeClass("open");
             }
         });
