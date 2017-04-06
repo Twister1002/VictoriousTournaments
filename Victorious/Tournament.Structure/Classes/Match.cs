@@ -28,6 +28,8 @@ namespace Tournament.Structure
 		{ get; private set; }
 		public PlayerSlot WinnerSlot
 		{ get; private set; }
+		public List<IGame> Games
+		{ get; private set; }
 		public ushort[] Score
 		{ get; private set; }
 		public int RoundIndex
@@ -59,6 +61,7 @@ namespace Tournament.Structure
 			Model.ChallengerID = Model.DefenderID = -1;
 			WinnerSlot = PlayerSlot.unspecified;
 			Model.WinnerID = -1;
+			Games = new List<IGame>();
 			Score = new ushort[2] { 0, 0 };
 			Model.DefenderScore = Model.ChallengerScore = 0;
 
@@ -105,6 +108,12 @@ namespace Tournament.Structure
 
 				this.Score[i] = _match.Score[i];
 				this.PreviousMatchNumbers[i] = _match.PreviousMatchNumbers[i];
+			}
+
+			this.Games = new List<IGame>();
+			foreach (IGame game in _match.Games)
+			{
+				this.Games.Add(game);
 			}
 		}
 		public Match(MatchModel _m)
@@ -345,79 +354,36 @@ namespace Tournament.Structure
 			IsReady = false;
 		}
 
-		public void AddWin(PlayerSlot _slot)
+		public void AddGame(IGame _game)
 		{
-			if (_slot != PlayerSlot.Defender &&
-				_slot != PlayerSlot.Challenger)
+			if (null == _game)
 			{
-				throw new InvalidSlotException
-					("PlayerSlot must be 0 or 1!");
-			}
-			if (IsFinished)
-			{
-				throw new InactiveMatchException
-					("Match is finished; can't add more wins!");
-			}
-			if (!IsReady)
-			{
-				throw new InactiveMatchException
-					("Match is not begun; can't add a win!");
+				throw new ArgumentNullException("_game");
 			}
 
-			Score[(int)_slot] += 1;
-			switch (_slot)
+			if (_game.GameNumber <= 0)
 			{
-				case (PlayerSlot.Defender):
-					Model.DefenderScore++;
-					break;
-				case (PlayerSlot.Challenger):
-					Model.ChallengerScore++;
-					break;
+				_game.GameNumber = Games.Count + 1;
+			}
+			foreach (IGame game in Games)
+			{
+				if (game.Id == _game.Id || game.GameNumber == _game.GameNumber)
+				{
+					throw new DuplicateObjectException
+						("New game cannot match an existing game!");
+				}
 			}
 
-			if (Score[(int)_slot] >= WinsNeeded)
-			{
-				WinnerSlot = _slot;
-				Model.WinnerID = Players[(int)_slot].Id;
-				IsFinished = true;
-			}
+			AddWin(_game.WinnerSlot);
+			Games.Add(_game);
 		}
-		public void SubtractWin(PlayerSlot _slot)
+		public IGame RemoveLastGame()
 		{
-			if (_slot != PlayerSlot.Defender &&
-				_slot != PlayerSlot.Challenger)
-			{
-				throw new InvalidSlotException
-					("PlayerSlot must be 0 or 1!");
-			}
-			if (!IsReady)
-			{
-				throw new InactiveMatchException
-					("Match is not begun; can't subtract wins!");
-			}
-			if (Score[(int)_slot] <= 0)
-			{
-				throw new ScoreException
-					("Score is already 0; can't subtract wins!");
-			}
+			IGame lastGame = Games[Games.Count - 1];
+			SubtractWin(Games[Games.Count - 1].WinnerSlot);
+			Games.RemoveAt(Games.Count - 1);
 
-			if (Score[(int)_slot] == WinsNeeded)
-			{
-				IsFinished = false;
-				WinnerSlot = PlayerSlot.unspecified;
-				Model.WinnerID = -1;
-			}
-
-			Score[(int)_slot] -= 1;
-			switch (_slot)
-			{
-				case (PlayerSlot.Defender):
-					Model.DefenderScore--;
-					break;
-				case (PlayerSlot.Challenger):
-					Model.ChallengerScore--;
-					break;
-			}
+			return lastGame;
 		}
 		public void ResetScore()
 		{
@@ -429,6 +395,7 @@ namespace Tournament.Structure
 			IsFinished = false;
 			WinnerSlot = PlayerSlot.unspecified;
 			Model.WinnerID = -1;
+			Games.Clear();
 			Score[0] = Score[1] = 0;
 			Model.DefenderScore = Model.ChallengerScore = 0;
 		}
@@ -555,10 +522,83 @@ namespace Tournament.Structure
 			NextLoserMatchNumber = _number;
 			Model.NextLoserMatchNumber = _number;
 		}
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
+		public void AddWin(PlayerSlot _slot)
+		{
+			if (_slot != PlayerSlot.Defender &&
+				_slot != PlayerSlot.Challenger)
+			{
+				throw new InvalidSlotException
+					("PlayerSlot must be 0 or 1!");
+			}
+			if (IsFinished)
+			{
+				throw new InactiveMatchException
+					("Match is finished; can't add more wins!");
+			}
+			if (!IsReady)
+			{
+				throw new InactiveMatchException
+					("Match is not begun; can't add a win!");
+			}
 
-#endregion
+			Score[(int)_slot] += 1;
+			switch (_slot)
+			{
+				case (PlayerSlot.Defender):
+					Model.DefenderScore++;
+					break;
+				case (PlayerSlot.Challenger):
+					Model.ChallengerScore++;
+					break;
+			}
+
+			if (Score[(int)_slot] >= WinsNeeded)
+			{
+				WinnerSlot = _slot;
+				Model.WinnerID = Players[(int)_slot].Id;
+				IsFinished = true;
+			}
+		}
+		public void SubtractWin(PlayerSlot _slot)
+		{
+			if (_slot != PlayerSlot.Defender &&
+				_slot != PlayerSlot.Challenger)
+			{
+				throw new InvalidSlotException
+					("PlayerSlot must be 0 or 1!");
+			}
+			if (!IsReady)
+			{
+				throw new InactiveMatchException
+					("Match is not begun; can't subtract wins!");
+			}
+			if (Score[(int)_slot] <= 0)
+			{
+				throw new ScoreException
+					("Score is already 0; can't subtract wins!");
+			}
+
+			if (Score[(int)_slot] == WinsNeeded)
+			{
+				IsFinished = false;
+				WinnerSlot = PlayerSlot.unspecified;
+				Model.WinnerID = -1;
+			}
+
+			Score[(int)_slot] -= 1;
+			switch (_slot)
+			{
+				case (PlayerSlot.Defender):
+					Model.DefenderScore--;
+					break;
+				case (PlayerSlot.Challenger):
+					Model.ChallengerScore--;
+					break;
+			}
+		}
+		#endregion
 	}
 }

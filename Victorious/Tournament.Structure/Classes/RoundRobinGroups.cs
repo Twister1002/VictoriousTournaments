@@ -217,6 +217,33 @@ namespace Tournament.Structure
 			}
 		}
 
+		public override void AddGame(int _matchNumber, IGame _game)
+		{
+			int groupIndex;
+			GetMatchData(ref _matchNumber, out groupIndex);
+			Groups[groupIndex].AddGame(_matchNumber, _game);
+			UpdateRankings();
+
+			IsFinished = true;
+			foreach (IBracket group in Groups)
+			{
+				if (!group.IsFinished)
+				{
+					IsFinished = false;
+					break;
+				}
+			}
+		}
+		public override void RemoveLastGame(int _matchNumber)
+		{
+			int groupIndex;
+			GetMatchData(ref _matchNumber, out groupIndex);
+			Groups[groupIndex].RemoveLastGame(_matchNumber);
+			UpdateRankings();
+
+			IsFinished = (IsFinished && Groups[groupIndex].IsFinished);
+		}
+
 		public override void AddWin(int _matchNumber, PlayerSlot _slot)
 		{
 			int groupIndex;

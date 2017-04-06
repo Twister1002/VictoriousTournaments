@@ -39,12 +39,16 @@ namespace Tournament.Structure
 		/// <param name="_winsPerMatch">"Games" needed to win each match</param>
 		void CreateBracket(ushort _winsPerMatch = 1);
 
+		void AddGame(int _matchNumer, IGame _game);
+		void RemoveLastGame(int _matchNumber);
+
 		/// <summary>
 		/// Record one win for the specified match.
 		/// Advances Player if the Match is over.
 		/// </summary>
 		/// <param name="_matchNumber">Number of specified match</param>
 		/// <param name="_slot">Winning player's slot: Defender or Challenger</param>
+		[System.Obsolete("use AddGame(int, IGame) instead", false)]
 		void AddWin(int _matchNumber, PlayerSlot _slot);
 
 		/// <summary>
@@ -53,6 +57,7 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_matchNumber">Number of specified match</param>
 		/// <param name="_slot">Player slot: Defender or Challenger</param>
+		[System.Obsolete("use RemoveLastGame(int) instead", false)]
 		void SubtractWin(int _matchNumber, PlayerSlot _slot);
 
 		/// <summary>

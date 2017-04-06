@@ -31,6 +31,8 @@ namespace Tournament.Structure
 		/// </summary>
 		PlayerSlot WinnerSlot { get; }
 
+		List<IGame> Games { get; }
+
 		/// <summary>
 		/// 2-sized Array, indexes correspond to Players array.
 		/// </summary>
@@ -108,16 +110,21 @@ namespace Tournament.Structure
 		/// </summary>
 		void ResetPlayers();
 
+		void AddGame(IGame _game);
+		IGame RemoveLastGame();
+
 		/// <summary>
 		/// Record one win for the specified player slot.
 		/// </summary>
 		/// <param name="_slot">Winner's slot: Defender or Challenger</param>
+		[System.Obsolete("use AddGame(IGame) instead", false)]
 		void AddWin(PlayerSlot _slot);
 
 		/// <summary>
 		/// Subtract one win from specified player slot.
 		/// </summary>
 		/// <param name="_slot">Player slot: Defender or Challenger</param>
+		[System.Obsolete("use RemoveLastGame() instead", false)]
 		void SubtractWin(PlayerSlot _slot);
 
 		/// <summary>
