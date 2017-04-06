@@ -13,11 +13,8 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		public int Id
 		{ get; private set; }
-
-		[System.Obsolete("use .GetModel()", false)]
 		public MatchModel Model
 		{ get; private set; }
-
 		public bool IsReady
 		{ get; private set; }
 		public bool IsFinished
@@ -174,7 +171,6 @@ namespace Tournament.Structure
 #endregion
 
 #region Public Methods
-		[System.Obsolete("use .GetModel()", false)]
 		public MatchModel GetModel(int _matchId)
 		{
 			return Model;

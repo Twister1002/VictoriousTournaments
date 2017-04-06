@@ -12,6 +12,7 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		// inherits BracketType BracketType
+		// inherits bool IsFinalized
 		// inherits bool IsFinished
 		// inherits List<IPlayer> Players
 		// inherits List<IPlayerScore> Rankings

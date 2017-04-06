@@ -19,7 +19,10 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		int Id { get; }
+
+		[System.Obsolete("use .GetModel()", false)]
 		MatchModel Model { get; }
+
 		bool IsReady { get; }
 		bool IsFinished { get; }
 		ushort WinsNeeded { get; }
@@ -78,6 +81,7 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_matchId">ID of Match</param>
 		/// <returns>Model of Match</returns>
+		[System.Obsolete("use .GetModel()", false)]
 		MatchModel GetModel(int _matchId);
 		MatchModel GetModel();
 
