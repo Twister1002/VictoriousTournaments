@@ -336,7 +336,7 @@ namespace Tournament.Structure
 			AddRoundRobinBracket(pList, _numRounds);
 		}
 #endif
-		public void AddRRGroupStageBracket(List<IPlayer> _playerList, int _numGroups = 2)
+		public void AddRRGroupStage(List<IPlayer> _playerList, int _numGroups = 2)
 		{
 			Brackets.Add(new RoundRobinGroups(_playerList, _numGroups));
 		}

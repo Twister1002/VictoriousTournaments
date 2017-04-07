@@ -134,7 +134,7 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_playerList">List of Players for the stage.</param>
 		/// <param name="_numGroups">Number of groups to divide players into.</param>
-		void AddRRGroupStageBracket(List<IPlayer> _playerList, int _numGroups = 2);
+		void AddRRGroupStage(List<IPlayer> _playerList, int _numGroups = 2);
 #if false
 		void AddRRGroupStageBracket(int _numPlayers, int _numGroups = 2);
 #endif

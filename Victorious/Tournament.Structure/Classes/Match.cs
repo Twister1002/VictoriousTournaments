@@ -298,12 +298,20 @@ namespace Tournament.Structure
 			{
 				Players[(int)PlayerSlot.Defender] = _newPlayer;
 				Model.DefenderID = _newPlayer.Id;
+				foreach (IGame game in Games)
+				{
+					game.PlayerIDs[(int)PlayerSlot.Defender] = _newPlayer.Id;
+				}
 			}
 			else if (null != Players[(int)PlayerSlot.Challenger] &&
 				_oldPlayerId == Players[(int)PlayerSlot.Challenger].Id)
 			{
 				Players[(int)PlayerSlot.Challenger] = _newPlayer;
 				Model.ChallengerID = _newPlayer.Id;
+				foreach (IGame game in Games)
+				{
+					game.PlayerIDs[(int)PlayerSlot.Challenger] = _newPlayer.Id;
+				}
 			}
 			else
 			{

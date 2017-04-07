@@ -57,7 +57,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-
+		
 		#endregion
 	}
 }
