@@ -284,10 +284,19 @@ namespace WebApplication.Models
 
         public Permission UserPermission(int userId)
         {
-            return Model.UsersInTournament.First(x =>
+            UserInTournamentModel model = 
+                Model.UsersInTournament.FirstOrDefault(x =>
                 x.TournamentID == Model.TournamentID &&
-                x.UserID == userId)
-                .Permission;
+                x.UserID == userId);
+
+            if (model != null)
+            {
+                return model.Permission;
+            }
+            else
+            {
+                return Permission.NONE;
+            }
         }
     }
 }
