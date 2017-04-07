@@ -182,7 +182,7 @@ namespace WebApplication.Models
                 // Add the matches to the database
                 for (int i = 1; i <= tourny.NumberOfMatches; i++)
                 {
-                    MatchModel matchModel = tourny.GetMatch(i).GetModel(-1);
+                    MatchModel matchModel = tourny.GetMatch(i).GetModel();
 
                     bracket.Matches.Add(matchModel);
                 }
