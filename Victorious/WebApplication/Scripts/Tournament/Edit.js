@@ -10,6 +10,7 @@
             "data": { "tournyVal": $("#TournamentEdit").data("tournament"), "userVal": userElement.data("user") },
             "dataType": "json",
             "success": function (json) {
+                json = JSON.parse(json);
                 if (json.status) {
                     // Move the current user down off the list.\
                     var userColumn = userElement.closest(".userTable").data("columntype");
@@ -29,6 +30,7 @@
                 //alert(json.message);
             },
             "error": function (json) {
+                json = JSON.parse(json);
                 alert(json.message);
             }
         });
@@ -41,6 +43,7 @@
             "data": { "tournyVal": $("#TournamentEdit").data("tournament"), "userVal": $(this).closest(".user").data("user") },
             "dataType": "json",
             "success": function (json) {
+                json = JSON.parse(json);
                 if (json.status) {
                     // Move the current user down off the list.
                     var user = $(this).closest(".user");
@@ -60,6 +63,7 @@
                 alert(json.message);
             },
             "error": function (json) {
+                json = JSON.parse(json);
                 alert(json.message);
             }
         });
