@@ -67,21 +67,8 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Number of Match to modify</param>
 		void RemoveLastGame(int _matchNumber);
 
-		/// <summary>
-		/// Record one win for the specified match.
-		/// Advances Player if the Match is over.
-		/// </summary>
-		/// <param name="_matchNumber">Number of specified match</param>
-		/// <param name="_slot">Winning player's slot: Defender or Challenger</param>
 		[System.Obsolete("use AddGame(int, IGame) instead", false)]
 		void AddWin(int _matchNumber, PlayerSlot _slot);
-
-		/// <summary>
-		/// Remove one win for the specified match.
-		/// Resets any affected "future" matches.
-		/// </summary>
-		/// <param name="_matchNumber">Number of specified match</param>
-		/// <param name="_slot">Player slot: Defender or Challenger</param>
 		[System.Obsolete("use RemoveLastGame(int) instead", false)]
 		void SubtractWin(int _matchNumber, PlayerSlot _slot);
 
@@ -158,7 +145,7 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_playerId">ID of Player to remove</param>
 		void RemovePlayer(int _playerId);
-		[System.Obsolete("use RemovePlayer(int) instead", false)]
+		[System.Obsolete("use RemovePlayer(int ID) instead", false)]
 		void RemovePlayer(IPlayer _player);
 
 		/// <summary>

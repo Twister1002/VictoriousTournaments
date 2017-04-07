@@ -136,7 +136,7 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Delete/un-record the most recent Game.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>IGame that was removed</returns>
 		IGame RemoveLastGame();
 
 		[System.Obsolete("use AddGame(IGame) instead", false)]
