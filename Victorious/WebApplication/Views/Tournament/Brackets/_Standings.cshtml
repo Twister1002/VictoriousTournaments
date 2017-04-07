@@ -18,18 +18,25 @@
             </ul>
         </li>
         <li class="list-table-body">
-            @for (int i = 0; i < Model.Rankings.Count; i++)
+            @if (Model.Rankings != null)
             {
-                Tournament.Structure.IPlayerScore rank = Model.Rankings[i];
+                for (int i = 0; i < Model.Rankings.Count; i++)
+                {
+                    Tournament.Structure.IPlayerScore rank = Model.Rankings[i];
 
-                <ul class="border" data-columns="3">
-                    <li class="position-rank">@rank.Rank</li>
-                    <li class="position-name">@rank.Name</li>
-                    @if (Model.BracketType == DataLib.BracketTypeModel.BracketType.ROUNDROBIN)
-                    {
-                        <li class="position-score">@rank.Score</li>
-                    }
-                </ul>
+                    <ul class="border" data-columns="3">
+                        <li class="position-rank">@rank.Rank</li>
+                        <li class="position-name">@rank.Name</li>
+                        @if (Model.BracketType == DataLib.BracketTypeModel.BracketType.ROUNDROBIN)
+                        {
+                            <li class="position-score">@rank.Score</li>
+                        }
+                    </ul>
+                }
+            }
+            else
+            {
+                <div>No data is available yet.</div>
             }
         </li>
     </ul>

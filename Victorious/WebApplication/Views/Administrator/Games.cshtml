@@ -1,0 +1,40 @@
+﻿@model WebApplication.Models.AdministratorViewModel
+
+<div id="AdministratorGames">
+    <h2>Games</h2>
+    <div>
+        <ul class="list-table">
+            <li class="list-table-header">
+                <ul data-columns="3">
+                    <li>Name</li>
+                    <li>Platforms</li>
+                    <li>&nbsp;</li>
+                </ul>
+            </li>
+            <li class="list-table-body border">
+                @{
+                    foreach (var game in Model.Games)
+                    {
+                        <ul data-columns="3">
+                            <li class="gameTitle">@game.Title</li>
+                            <li class="gamePlatforms">Unknown</li>
+                            <li class="gameDelete"><img class="icon icon-cross" src="~/Images/svg/cross.svg" /></li>
+                        </ul>
+                    }
+                }
+            </li>
+            <li class="list-table-input">
+                <ul data-columns="3">
+                    <li class="gameTitle">
+                        @Html.LabelFor(x => x.GameName)
+                        @Html.TextBoxFor(x => x.GameName)
+                    </li>
+                    <li class="gamePlatforms">CHECKBOXES</li>
+                    <li class="GameAdd">
+                        <button type="button" class="GameAddButton">Add Game</button>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>

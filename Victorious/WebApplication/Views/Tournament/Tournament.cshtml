@@ -4,24 +4,22 @@
     ViewBag.Title = "Tournament";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    int userId = -1;
     bool registrationStarted = (DateTime)Model.RegistrationStartDate <= DateTime.Now;
     bool tournamentStarted = (DateTime)Model.TournamentStartDate <= DateTime.Now;
     bool registrationEnded = (DateTime)Model.RegistrationEndDate <= DateTime.Now;
     bool isLoggedIn = Session["User.UserId"] != null;
-    bool isTournyAdministrator = false;
-
-    if (isLoggedIn) { int.TryParse(Session["User.UserId"].ToString(), out userId); isTournyAdministrator = Model.Model.CreatedByID == userId; }
-
-    ViewBag.isAdministrator = isTournyAdministrator;
+    var userPermission = isLoggedIn ? Model.UserPermission((int)Session["User.UserId"]) : DataLib.Permission.NONE;
+    
+    ViewBag.Permission = userPermission;
     ViewBag.isLoggedIn = isLoggedIn;
+    ViewBag.TournamentId = Model.Model.TournamentID;
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
     <div class="content-header">
         <h2>Tournament - @Model.Model.Title</h2>
         <div class="tournament-buttons">
-            @if (isTournyAdministrator)
+            @if (userPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
             {
                 <a href="@Url.Action("Update", "Tournament", new { id = Model.Model.TournamentID })">
                     <img src="~/Images/pencil.png" />
@@ -33,14 +31,8 @@
         </div>
     </div>
     @{
-        if (isTournyAdministrator)
+        if (userPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
         {
-            if (registrationEnded && Model.Model.Brackets.ToList()[0].Matches.Count == 0)
-            {
-                Html.RenderPartial("Administrator/_Finalize", Model);
-            }
-
-            //Html.RenderPartial("Administrator/_Players", Model);
             Html.RenderPartial("_ViewTournament", Model.Tourny, new ViewDataDictionary(ViewData));
         }
         else

@@ -230,39 +230,27 @@ namespace DatabaseDebugConsole
 
 
 
-            while (true)
-            {
-                Console.WriteLine("Enter <Username>, <Firstname>, <LastName> to search for. Type \"exit\" to end search");
+            //SearchTournamnet(db);
 
-                string info = Console.ReadLine();
-                if (info == "exit")
-                {
-                    break;
-                }
-                else
-                {
-                    UserModel user = new UserModel() { Username = info.Split(',')[0].Trim(' '), FirstName = info.Split(',')[1].Trim(' '), LastName = info.Split(',')[2].Trim(' ') };
-                    List<TournamentModel> list = new List<TournamentModel>();
-                    list = db.FindUserInTournaments(user);
-                    if (list.Count > 0)
-                    {
-                        Console.WriteLine("Tournaments found:");
-                        foreach (var tournament in list)
-                        {
-                            Console.WriteLine(tournament.Title);
-                        }
-                    }
-                    else
-                        Console.WriteLine("No tournaments found");
-                   
-                }
+            //GameModel game = new GameModel();
+            //game = db.GetAllGames()[0];
+            ////game.Title = "Overwatch";
+            //db.DeleteGame(game);
 
+            //foreach (var game in db.GetAllGames().ToList())
+            //{
+            //    Console.WriteLine(game.Title);
+            //}
 
-            }
+            TournamentModel tournament = new TournamentModel();
+            tournament = db.GetAllTournaments().Last();
+            Console.WriteLine(tournament.Game.Title);
+            tournament.Game = db.GetAllGames()[2];
+            Console.WriteLine(db.GetAllGames()[2].Title);
+            db.UpdateTournament(tournament);
+            Console.WriteLine(tournament.Game.Title);
 
-
-
-            Console.WriteLine("Done");
+            Console.WriteLine("\n\nDone");
             Console.ReadLine();
 
 
@@ -378,6 +366,67 @@ namespace DatabaseDebugConsole
 
             //}
 
+        }
+
+        static void SearchTournamnet(DatabaseInterface db)
+        {
+            while (true)
+            {
+                Console.WriteLine("Enter <TournamentTitle> to search for. Type \"exit\" to end search");
+                string info = Console.ReadLine();
+                if (info == "exit")
+                    break;
+                else
+                {
+                    TournamentModel tournament = new TournamentModel();
+                    List<TournamentModel> list = new List<TournamentModel>();
+                    list = db.FindTournaments(info, DateTime.Today.AddDays(1));
+                    if (list.Count > 0)
+                    {
+                        Console.WriteLine("Tournaments found:");
+                        foreach (var _tournament in list)
+                        {
+                            Console.WriteLine(_tournament.Title);
+                        }
+                    }
+                    else
+                        Console.WriteLine("No tournaments found");
+                }
+
+            }
+        }
+
+        static void SearchUser(DatabaseInterface db)
+        {
+            while (true)
+            {
+                Console.WriteLine("Enter <Username>, <Firstname>, <LastName> to search for. Type \"exit\" to end search");
+
+                string info = Console.ReadLine();
+                if (info == "exit")
+                {
+                    break;
+                }
+                else
+                {
+                    UserModel user = new UserModel() { Username = info.Split(',')[0].Trim(' '), FirstName = info.Split(',')[1].Trim(' '), LastName = info.Split(',')[2].Trim(' ') };
+                    List<TournamentModel> list = new List<TournamentModel>();
+                    list = db.FindUser(user);
+                    if (list.Count > 0)
+                    {
+                        Console.WriteLine("Tournaments found:");
+                        foreach (var tournament in list)
+                        {
+                            Console.WriteLine(tournament.Title);
+                        }
+                    }
+                    else
+                        Console.WriteLine("No tournaments found");
+
+                }
+
+
+            }
         }
 
         static void PrintUser(DatabaseInterface db, UserModel user)

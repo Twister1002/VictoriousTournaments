@@ -194,6 +194,7 @@
     <Content Include="package.json" />
     <None Include="Properties\PublishProfiles\IIS.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
+    <Content Include="Scripts\Administrator\Games.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />
     <Content Include="Scripts\jquery-3.1.1.slim.js" />
@@ -275,6 +276,9 @@
     <Content Include="Views\Administrator\Index.cshtml" />
     <Content Include="Styles\less\Tournament\_Standings.less" />
     <Content Include="Views\Tournament\Brackets\_Standings.cshtml" />
+    <Content Include="Views\Administrator\Games.cshtml" />
+    <Content Include="Styles\less\Administrator\Administrator.less" />
+    <Content Include="Styles\less\Administrator\Games.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

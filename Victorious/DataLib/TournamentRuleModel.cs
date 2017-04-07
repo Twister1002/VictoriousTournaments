@@ -6,6 +6,10 @@ namespace DataLib
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
+    public enum Platform
+    {
+        PC, Xbox, Xbox_360, Xbox_One, Nintendo_64, GameCube, Wii, Wii_U, Switch, PS1, PS2, PS3, PS4
+    }
 
     public partial class TournamentRuleModel
     {
@@ -46,6 +50,9 @@ namespace DataLib
         public DateTime? CheckInBegins { get; set; }
 
         public DateTime? CheckInEnds { get; set; }
+
+        public Platform Platform { get; set; }
+
 
         //[ForeignKey("TournamentID")]
         //public virtual TournamentModel Tournament { get; set; }

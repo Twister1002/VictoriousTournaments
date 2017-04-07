@@ -54,6 +54,7 @@ namespace DataLib
                 .Load();
             context.Brackets
                 .Include(x => x.Matches)
+                .Include(x => x.UserSeeds)
                 .Load();
             context.Matches
                 .Load();
@@ -66,6 +67,9 @@ namespace DataLib
                 .Include(x => x.ChallengerMatches)
                 .Include(x => x.DefenderMatches)
                 .Load();
+            context.Games
+                .Load();
+
 
 
 
@@ -127,7 +131,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exeption " + ex.ToString() + " in UserExists");
+                WriteException(ex);
                 throw;
             }
             if (user == null)
@@ -145,7 +149,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in UserEmailExists");
+                WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
             }
 
@@ -163,7 +167,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in UserUsernameExists");
+                WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
 
             }
@@ -182,7 +186,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in AddUser");
+                WriteException(ex);
                 return DbError.FAILED_TO_ADD;
             }
             return DbError.SUCCESS;
@@ -199,7 +203,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in LogUserIn");
+                WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
 
@@ -217,7 +221,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in UpdateUser");
+                WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
 
@@ -236,7 +240,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in DeleteUser");
+                WriteException(ex);
                 return DbError.FAILED_TO_DELETE;
             }
             return DbError.SUCCESS;
@@ -252,6 +256,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
+                WriteException(ex);
                 user.UserID = -1;
             }
 
@@ -270,7 +275,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in GetUserByUsername");
+                WriteException(ex);
                 user.UserID = -1;
                 return user;
             }
@@ -289,8 +294,8 @@ namespace DataLib
             {
                 interfaceException = ex;
                 users.Clear();
-                Console.WriteLine("Exceltion " + ex.ToString() + " in GetAllUsers");
-                users.Add(new UserModel() { UserID = 0 });
+                WriteException(ex);
+                users.Add(new UserModel() { UserID = -1 });
             }
             return users;
         }
@@ -527,11 +532,11 @@ namespace DataLib
             //TournamentRuleModel rules = tournament.TournamentRules;
             try
             {
-                tournaments = context.Tournaments.SqlQuery("SELECT * FROM dbo.Tournaments LIKE @Title", new SqlParameter("@Title", "%" + title + "%")).ToList();
-                foreach (var tournament in tournaments)
+                List<TournamentModel> _tournaments = context.Tournaments.SqlQuery("SELECT * FROM dbo.Tournaments WHERE Title LIKE @Title", new SqlParameter("@Title", "%" + title + "%")).ToList();
+                foreach (var _tournament in _tournaments)
                 {
-                    if (tournament.TournamentRules.TournamentStartDate != startDate)
-                        tournaments.Remove(tournament);
+                    if (_tournament.TournamentRules.TournamentStartDate == startDate)
+                        tournaments.Add(_tournament);
                 }
             }
             catch (Exception ex)
@@ -628,7 +633,8 @@ namespace DataLib
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception " + ex.ToString() + " in AddRules");
+                WriteException(ex);
+                interfaceException = ex;
                 return DbError.FAILED_TO_ADD;
             }
             return DbError.SUCCESS;
@@ -679,6 +685,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
             }
@@ -697,6 +704,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_ADD;
             }
@@ -729,8 +737,7 @@ namespace DataLib
                 if (updateMatches)
                 {
                     foreach (var match in bracket.Matches)
-                    {
-                       
+                    {                      
                         match.Challenger = context.Users.Find(match.ChallengerID);
                         match.Defender = context.Users.Find(match.DefenderID);
                     }
@@ -739,6 +746,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
@@ -777,6 +785,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
             }
@@ -788,11 +797,14 @@ namespace DataLib
             try
             {
                 MatchModel _match = context.Matches.Find(match.MatchID);
+                _match.Challenger = context.Users.Find(match.ChallengerID);
+                _match.Defender = context.Users.Find(match.DefenderID);
                 context.Entry(_match).CurrentValues.SetValues(match);
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
@@ -826,6 +838,7 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.ERROR;
             }
@@ -839,8 +852,10 @@ namespace DataLib
             {
                 match = context.Matches.Find(id);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                interfaceException = ex;
+                WriteException(ex);
                 match.MatchID = -1;
                 return match;
             }
@@ -858,7 +873,8 @@ namespace DataLib
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception " + ex.ToString() + " in DeleteMatch");
+                interfaceException = ex;
+                WriteException(ex);
                 return DbError.FAILED_TO_DELETE;
             }
             return DbError.SUCCESS;
@@ -937,7 +953,8 @@ namespace DataLib
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception " + ex.ToString() + " in AddTeam");
+                interfaceException = ex;
+                WriteException(ex);
                 team.TeamID = -1;
                 return DbError.FAILED_TO_ADD;
             }
@@ -959,6 +976,7 @@ namespace DataLib
             }
             return teams;
         }
+
         public DbError DeleteTeam(TeamModel team)
 
         {
@@ -1003,7 +1021,7 @@ namespace DataLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                Console.WriteLine("Exception " + ex.ToString() + " in AddTeam");
+                WriteException(ex);
                 return DbError.FAILED_TO_ADD;
             }
             return DbError.SUCCESS;
@@ -1065,8 +1083,8 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
-                throw;
             }
             return permission;
         }
@@ -1089,12 +1107,83 @@ namespace DataLib
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 types.Clear();
                 return types;
-                throw;
             }
             return types;
+        }
+
+        #endregion
+
+        #region Games
+
+        public DbError AddGame(GameModel game)
+        {
+            try
+            {
+                context.Games.Add(game);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError UpdateGame(GameModel game)
+        {
+            try
+            {
+                GameModel _game = context.Games.Find(game.GameID);
+                context.Entry(_game).CurrentValues.SetValues(game);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public List<GameModel> GetAllGames()
+        {
+            List<GameModel> games = new List<GameModel>();
+            try
+            {
+                games = context.Games.ToList();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                games.Clear();
+                games.Add(new GameModel() { GameID = -1 });
+            }
+            return games;
+        }
+
+        public DbError DeleteGame(GameModel game)
+        {
+            GameModel _game = context.Games.Find(game.GameID);
+            try
+            {
+                context.Games.Remove(_game);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
         }
 
         #endregion

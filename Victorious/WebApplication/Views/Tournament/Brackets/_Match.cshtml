@@ -8,25 +8,25 @@
     ViewBag.ClassName = null;
 }
 
-<div class="match @className" data-matchid="-1" data-matchnum="@Model.MatchNumber">
+<div class="match @className" data-matchid="@Model.Model.MatchID" data-matchnum="@Model.MatchNumber">
     <label class="matchHeader">
         Match <span class="matchNum">@Model.MatchNumber</span>
-        @if (ViewBag.isAdministrator && Model.IsReady)
+        @if (ViewBag.Permission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
         {
-            <span class="edit">
+            <span class="edit @(Model.IsReady && !Model.IsFinished ? "" : "hide")">
                 <img class="match-edit svg-pencil svg clickable" src="~/Images/svg/pencil.svg" />
             </span>
         }
     </label>
     <div class="matchData">
         <ul class="info">
-            <li class="defender" data-userid="-1" data-seed="@Defender.Id">
+            <li class="defender" data-userid="@Defender.Id">
                 @*<label class="seed">@Defender.Id</label>*@
                 <div class="name">@Defender.Name</div>
                 <label class="match-score">@Model.Score[(int)Tournament.Structure.PlayerSlot.Defender]</label>
                 <input type="text" class="score-edit" value="@Model.Score[(int)Tournament.Structure.PlayerSlot.Defender]"/>
             </li>
-            <li class="challenger" data-userid="-1" data-seed="@Challenger.Id">
+            <li class="challenger" data-userid="@Challenger.Id">
                 @*<label class="seed">@Challenger.Id</label>*@
                 <div class="name">@Challenger.Name</div>
                 <label class="match-score">@Model.Score[(int)Tournament.Structure.PlayerSlot.Challenger]</label>

@@ -60,12 +60,13 @@ namespace WebApplication.Models
             Model.TournamentRules.RegistrationEndDate   = this.RegistrationEndDate;
             Model.TournamentRules.TournamentStartDate   = this.TournamentStartDate;
             Model.TournamentRules.TournamentEndDate     = this.TournamentEndDate;
+            Model.LastEditedByID = SessionId;
             Model.LastEditedOn = DateTime.Now;
 
             // Update bracket info
             if (Model.Brackets.Count > 0)
             {
-                Model.Brackets.ToList()[0].BracketTypeID = this.BracketType;
+                Model.Brackets.ElementAt(0).BracketTypeID = this.BracketType;
             }
             else
             {
@@ -151,30 +152,27 @@ namespace WebApplication.Models
 
             // Set variables
             int bracketNum = 0;
-            DbError result;
             BracketModel bracket = Model.Brackets.ElementAt(bracketNum);
             IBracket tourny = Tourny.Brackets[bracketNum];
-            
 
             // Process
-            result = CreateMatches(bracket, tourny);
-            if (result == DbError.SUCCESS)
+            try
             {
-                result = SaveSeedParticipants(bracket, tourny);
+                CreateMatches(bracket, tourny);
+                SaveSeedParticipants(bracket, tourny);
+                bracket.Finalized = true;
             }
-            else
+            catch (Exception e)
             {
-                dbException = db.interfaceException;
+                this.dbException = e;
+                return DbError.ERROR;
             }
 
-            return result;
+            return db.UpdateBracket(bracket);
         }
 
-        private DbError CreateMatches(BracketModel bracket, IBracket tourny)
+        private void CreateMatches(BracketModel bracket, IBracket tourny)
         {
-            DbError result = DbError.NONE;
-            //List<MatchModel> matchModels = new List<MatchModel>();
-
             // Verify if the tournament has not need finalized.
             if (bracket.Matches.Count == 0)
             {
@@ -185,14 +183,10 @@ namespace WebApplication.Models
 
                     bracket.Matches.Add(matchModel);
                 }
-
-                result = db.UpdateBracket(bracket);
             }
-
-            return result;
         }
 
-        public DbError SaveSeedParticipants(BracketModel bracket, IBracket tourny)
+        public void SaveSeedParticipants(BracketModel bracket, IBracket tourny)
         {
             List<IPlayer> players = Tourny.Brackets[0].Players;
 
@@ -209,8 +203,6 @@ namespace WebApplication.Models
 
                 bracket.UserSeeds.Add(seedModel);
             }
-
-            return db.UpdateBracket(bracket);
         }
 
         public void ProcessTournament()
@@ -285,6 +277,14 @@ namespace WebApplication.Models
             }
 
             return bracket;
+        }
+
+        public Permission UserPermission(int userId)
+        {
+            return Model.UsersInTournament.First(x =>
+                x.TournamentID == Model.TournamentID &&
+                x.UserID == userId)
+                .Permission;
         }
     }
 }
