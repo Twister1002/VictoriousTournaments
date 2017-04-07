@@ -91,45 +91,17 @@
     <Compile Include="GameModel.cs" />
     <Compile Include="GameTypeModel.cs" />
     <Compile Include="MatchModel.cs" />
-    <Compile Include="Migrations\201703301545508_InitialCreate.cs" />
-    <Compile Include="Migrations\201703301545508_InitialCreate.Designer.cs">
-      <DependentUpon>201703301545508_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\201704071643155_InitialCreate.cs" />
+    <Compile Include="Migrations\201704071643155_InitialCreate.Designer.cs">
+      <DependentUpon>201704071643155_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201703301626138_AddedInverseProperty.cs" />
-    <Compile Include="Migrations\201703301626138_AddedInverseProperty.Designer.cs">
-      <DependentUpon>201703301626138_AddedInverseProperty.cs</DependentUpon>
+    <Compile Include="Migrations\201704071841006_AddedTournamentRowVersion.cs" />
+    <Compile Include="Migrations\201704071841006_AddedTournamentRowVersion.Designer.cs">
+      <DependentUpon>201704071841006_AddedTournamentRowVersion.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201703301724172_ChangeInverses.cs" />
-    <Compile Include="Migrations\201703301724172_ChangeInverses.Designer.cs">
-      <DependentUpon>201703301724172_ChangeInverses.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201703301854520_UpdatedUsersInTournaments.cs" />
-    <Compile Include="Migrations\201703301854520_UpdatedUsersInTournaments.Designer.cs">
-      <DependentUpon>201703301854520_UpdatedUsersInTournaments.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201703301924000_MoveNumberOfGroups.cs" />
-    <Compile Include="Migrations\201703301924000_MoveNumberOfGroups.Designer.cs">
-      <DependentUpon>201703301924000_MoveNumberOfGroups.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201703302009106_ReAddTournamentToUserInTournament.cs" />
-    <Compile Include="Migrations\201703302009106_ReAddTournamentToUserInTournament.Designer.cs">
-      <DependentUpon>201703302009106_ReAddTournamentToUserInTournament.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201704041828565_AddedGamesTable.cs" />
-    <Compile Include="Migrations\201704041828565_AddedGamesTable.Designer.cs">
-      <DependentUpon>201704041828565_AddedGamesTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201704041930177_RenamedGamesTable.cs" />
-    <Compile Include="Migrations\201704041930177_RenamedGamesTable.Designer.cs">
-      <DependentUpon>201704041930177_RenamedGamesTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201704042000462_AddedPlatformEnum.cs" />
-    <Compile Include="Migrations\201704042000462_AddedPlatformEnum.Designer.cs">
-      <DependentUpon>201704042000462_AddedPlatformEnum.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201704062048561_AddedGames.cs" />
-    <Compile Include="Migrations\201704062048561_AddedGames.Designer.cs">
-      <DependentUpon>201704062048561_AddedGames.cs</DependentUpon>
+    <Compile Include="Migrations\201704071907561_UpdatedMatchModel.cs" />
+    <Compile Include="Migrations\201704071907561_UpdatedMatchModel.Designer.cs">
+      <DependentUpon>201704071907561_UpdatedMatchModel.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="PermissionModel.cs" />
@@ -155,35 +127,14 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201703301545508_InitialCreate.resx">
-      <DependentUpon>201703301545508_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201704071643155_InitialCreate.resx">
+      <DependentUpon>201704071643155_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703301626138_AddedInverseProperty.resx">
-      <DependentUpon>201703301626138_AddedInverseProperty.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201704071841006_AddedTournamentRowVersion.resx">
+      <DependentUpon>201704071841006_AddedTournamentRowVersion.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703301724172_ChangeInverses.resx">
-      <DependentUpon>201703301724172_ChangeInverses.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703301854520_UpdatedUsersInTournaments.resx">
-      <DependentUpon>201703301854520_UpdatedUsersInTournaments.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703301924000_MoveNumberOfGroups.resx">
-      <DependentUpon>201703301924000_MoveNumberOfGroups.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703302009106_ReAddTournamentToUserInTournament.resx">
-      <DependentUpon>201703302009106_ReAddTournamentToUserInTournament.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201704041828565_AddedGamesTable.resx">
-      <DependentUpon>201704041828565_AddedGamesTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201704041930177_RenamedGamesTable.resx">
-      <DependentUpon>201704041930177_RenamedGamesTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201704042000462_AddedPlatformEnum.resx">
-      <DependentUpon>201704042000462_AddedPlatformEnum.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201704062048561_AddedGames.resx">
-      <DependentUpon>201704062048561_AddedGames.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201704071907561_UpdatedMatchModel.resx">
+      <DependentUpon>201704071907561_UpdatedMatchModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -15,6 +15,7 @@ namespace DataLib.Migrations
                         BracketTitle = c.String(),
                         BracketTypeID = c.Int(nullable: false),
                         Finalized = c.Boolean(nullable: false),
+                        NumberOfGroups = c.Int(nullable: false),
                         Tournament_TournamentID = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.BracketID)
@@ -56,14 +57,16 @@ namespace DataLib.Migrations
                         NextLoserMatchNumber = c.Int(),
                         PrevDefenderMatchNumber = c.Int(),
                         PrevChallengerMatchNumber = c.Int(),
+                        Challenger_UserID = c.Int(),
+                        Defender_UserID = c.Int(),
                         BracketModel_BracketID = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.MatchID)
-                .ForeignKey("dbo.Users", t => t.ChallengerID)
-                .ForeignKey("dbo.Users", t => t.DefenderID)
+                .ForeignKey("dbo.Users", t => t.Challenger_UserID)
+                .ForeignKey("dbo.Users", t => t.Defender_UserID)
                 .ForeignKey("dbo.Brackets", t => t.BracketModel_BracketID)
-                .Index(t => t.ChallengerID)
-                .Index(t => t.DefenderID)
+                .Index(t => t.Challenger_UserID)
+                .Index(t => t.Defender_UserID)
                 .Index(t => t.BracketModel_BracketID);
             
             CreateTable(
@@ -79,6 +82,7 @@ namespace DataLib.Migrations
                         PhoneNumber = c.String(maxLength: 15, fixedLength: true),
                         CreatedOn = c.DateTime(),
                         LastLogin = c.DateTime(),
+                        SitePermission_Permission = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.UserID);
             
@@ -123,6 +127,7 @@ namespace DataLib.Migrations
                     {
                         TournamentID = c.Int(nullable: false, identity: true),
                         TournamentRulesID = c.Int(),
+                        GameTypeID = c.Int(),
                         Title = c.String(nullable: false),
                         Description = c.String(unicode: false, storeType: "text"),
                         CreatedOn = c.DateTime(nullable: false),
@@ -132,8 +137,19 @@ namespace DataLib.Migrations
                         LastEditedByID = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.TournamentID)
+                .ForeignKey("dbo.GameTypes", t => t.GameTypeID)
                 .ForeignKey("dbo.TournamentRules", t => t.TournamentRulesID)
-                .Index(t => t.TournamentRulesID);
+                .Index(t => t.TournamentRulesID)
+                .Index(t => t.GameTypeID);
+            
+            CreateTable(
+                "dbo.GameTypes",
+                c => new
+                    {
+                        GameTypeID = c.Int(nullable: false, identity: true),
+                        Title = c.String(),
+                    })
+                .PrimaryKey(t => t.GameTypeID);
             
             CreateTable(
                 "dbo.TournamentRules",
@@ -152,8 +168,40 @@ namespace DataLib.Migrations
                         TournamentEndDate = c.DateTime(),
                         CheckInBegins = c.DateTime(),
                         CheckInEnds = c.DateTime(),
+                        Platform = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.TournamentRulesID);
+            
+            CreateTable(
+                "dbo.UsersInTournaments",
+                c => new
+                    {
+                        UserID = c.Int(nullable: false),
+                        TournamentID = c.Int(nullable: false),
+                        Permission = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => new { t.UserID, t.TournamentID })
+                .ForeignKey("dbo.Tournaments", t => t.TournamentID, cascadeDelete: true)
+                .ForeignKey("dbo.Users", t => t.UserID, cascadeDelete: true)
+                .Index(t => t.UserID)
+                .Index(t => t.TournamentID);
+            
+            CreateTable(
+                "dbo.Games",
+                c => new
+                    {
+                        GameID = c.Int(nullable: false, identity: true),
+                        ChallengerID = c.Int(nullable: false),
+                        DefenderID = c.Int(nullable: false),
+                        WinnerID = c.Int(nullable: false),
+                        MatchID = c.Int(),
+                        GameNumber = c.Int(nullable: false),
+                        ChallengerScore = c.Int(nullable: false),
+                        DefenderScore = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.GameID)
+                .ForeignKey("dbo.Matches", t => t.MatchID)
+                .Index(t => t.MatchID);
             
             CreateTable(
                 "dbo.UserBracketSeeds",
@@ -176,20 +224,6 @@ namespace DataLib.Migrations
                 .Index(t => t.BracketModel_BracketID);
             
             CreateTable(
-                "dbo.UsersInTournaments",
-                c => new
-                    {
-                        UserID = c.Int(nullable: false),
-                        TournamentID = c.Int(nullable: false),
-                        Permission = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => new { t.UserID, t.TournamentID })
-                .ForeignKey("dbo.Tournaments", t => t.TournamentID, cascadeDelete: true)
-                .ForeignKey("dbo.Users", t => t.UserID, cascadeDelete: true)
-                .Index(t => t.UserID)
-                .Index(t => t.TournamentID);
-            
-            CreateTable(
                 "dbo.TournamentModelUserModels",
                 c => new
                     {
@@ -206,20 +240,22 @@ namespace DataLib.Migrations
         
         public override void Down()
         {
-            DropForeignKey("dbo.UsersInTournaments", "UserID", "dbo.Users");
-            DropForeignKey("dbo.UsersInTournaments", "TournamentID", "dbo.Tournaments");
             DropForeignKey("dbo.UserBracketSeeds", "BracketModel_BracketID", "dbo.Brackets");
             DropForeignKey("dbo.UserBracketSeeds", "UserID", "dbo.Users");
             DropForeignKey("dbo.UserBracketSeeds", "TournamentID", "dbo.Tournaments");
             DropForeignKey("dbo.UserBracketSeeds", "BracketID", "dbo.Brackets");
             DropForeignKey("dbo.Brackets", "Tournament_TournamentID", "dbo.Tournaments");
             DropForeignKey("dbo.Matches", "BracketModel_BracketID", "dbo.Brackets");
-            DropForeignKey("dbo.Matches", "DefenderID", "dbo.Users");
-            DropForeignKey("dbo.Matches", "ChallengerID", "dbo.Users");
+            DropForeignKey("dbo.Games", "MatchID", "dbo.Matches");
+            DropForeignKey("dbo.Matches", "Defender_UserID", "dbo.Users");
+            DropForeignKey("dbo.Matches", "Challenger_UserID", "dbo.Users");
+            DropForeignKey("dbo.UsersInTournaments", "UserID", "dbo.Users");
+            DropForeignKey("dbo.UsersInTournaments", "TournamentID", "dbo.Tournaments");
             DropForeignKey("dbo.TournamentModelUserModels", "UserModel_UserID", "dbo.Users");
             DropForeignKey("dbo.TournamentModelUserModels", "TournamentModel_TournamentID", "dbo.Tournaments");
             DropForeignKey("dbo.Tournaments", "TournamentRulesID", "dbo.TournamentRules");
             DropForeignKey("dbo.Teams", "TournamentModel_TournamentID", "dbo.Tournaments");
+            DropForeignKey("dbo.Tournaments", "GameTypeID", "dbo.GameTypes");
             DropForeignKey("dbo.Teams", "UserModel_UserID", "dbo.Users");
             DropForeignKey("dbo.TeamMembers", "TeamModel_TeamID", "dbo.Teams");
             DropForeignKey("dbo.TeamMembers", "UserID", "dbo.Users");
@@ -227,12 +263,14 @@ namespace DataLib.Migrations
             DropForeignKey("dbo.Brackets", "BracketTypeID", "dbo.BracketTypes");
             DropIndex("dbo.TournamentModelUserModels", new[] { "UserModel_UserID" });
             DropIndex("dbo.TournamentModelUserModels", new[] { "TournamentModel_TournamentID" });
-            DropIndex("dbo.UsersInTournaments", new[] { "TournamentID" });
-            DropIndex("dbo.UsersInTournaments", new[] { "UserID" });
             DropIndex("dbo.UserBracketSeeds", new[] { "BracketModel_BracketID" });
             DropIndex("dbo.UserBracketSeeds", new[] { "BracketID" });
             DropIndex("dbo.UserBracketSeeds", new[] { "TournamentID" });
             DropIndex("dbo.UserBracketSeeds", new[] { "UserID" });
+            DropIndex("dbo.Games", new[] { "MatchID" });
+            DropIndex("dbo.UsersInTournaments", new[] { "TournamentID" });
+            DropIndex("dbo.UsersInTournaments", new[] { "UserID" });
+            DropIndex("dbo.Tournaments", new[] { "GameTypeID" });
             DropIndex("dbo.Tournaments", new[] { "TournamentRulesID" });
             DropIndex("dbo.TeamMembers", new[] { "TeamModel_TeamID" });
             DropIndex("dbo.TeamMembers", new[] { "TeamID" });
@@ -240,14 +278,16 @@ namespace DataLib.Migrations
             DropIndex("dbo.Teams", new[] { "TournamentModel_TournamentID" });
             DropIndex("dbo.Teams", new[] { "UserModel_UserID" });
             DropIndex("dbo.Matches", new[] { "BracketModel_BracketID" });
-            DropIndex("dbo.Matches", new[] { "DefenderID" });
-            DropIndex("dbo.Matches", new[] { "ChallengerID" });
+            DropIndex("dbo.Matches", new[] { "Defender_UserID" });
+            DropIndex("dbo.Matches", new[] { "Challenger_UserID" });
             DropIndex("dbo.Brackets", new[] { "Tournament_TournamentID" });
             DropIndex("dbo.Brackets", new[] { "BracketTypeID" });
             DropTable("dbo.TournamentModelUserModels");
-            DropTable("dbo.UsersInTournaments");
             DropTable("dbo.UserBracketSeeds");
+            DropTable("dbo.Games");
+            DropTable("dbo.UsersInTournaments");
             DropTable("dbo.TournamentRules");
+            DropTable("dbo.GameTypes");
             DropTable("dbo.Tournaments");
             DropTable("dbo.TeamMembers");
             DropTable("dbo.Teams");

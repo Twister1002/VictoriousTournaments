@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Data.Sql;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
+using System.Data.Entity.Infrastructure;
 
 namespace DataLib
 {
@@ -16,7 +17,7 @@ namespace DataLib
     // Use FAILED_TO_DELETE only when something is being deleted from database, otherwise user FAILED_TO_ADD
     public enum DbError
     {
-        ERROR = -1, NONE = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_REMOVE, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS
+        ERROR = -1, NONE = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_REMOVE, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS, CONCURRENCY_ERROR
     };
 
     public class DatabaseInterface : IDisposable
@@ -74,7 +75,7 @@ namespace DataLib
                 .Load();
 
 
-
+            
 
         }
         // DO NOT EVER CALL THIS FUNCTION OUTSIDE THE DEBUG PROJECT
@@ -323,16 +324,18 @@ namespace DataLib
             UserInTournamentModel uitm = new UserInTournamentModel();
             try
             {
-
-                context.UsersInTournaments.Where(x => x.UserID == user.UserID).Single().Permission = permission;
+                uitm = context.UsersInTournaments.Where(x => x.TournamentID == tournament.TournamentID && x.UserID == user.UserID).Single();
+                uitm.Permission = permission;
+                //context.UsersInTournaments.Where(x => x.UserID == user.UserID).Single().Permission = permission;
                 //uitm.Permission = permission;
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
+                interfaceException = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
-                throw;
+               
             }
             return DbError.SUCCESS;
         }
@@ -483,6 +486,19 @@ namespace DataLib
                 }
                 //context.Entry(_tournament.Brackets).State = EntityState.Modified;
                 context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException ce)
+            {
+                //interfaceException = ce;
+                //WriteException(ce);
+                //var entry = ce.Entries.Single();
+                //var currentValues = entry.Entity;
+                //var databaseValues = entry.GetDatabaseValues();
+                //var resolvedValues = databaseValues.Clone();
+                interfaceException = ce;
+                WriteException(ce);
+                return DbError.CONCURRENCY_ERROR;
+               
             }
             catch (Exception ex)
             {
@@ -1261,6 +1277,8 @@ namespace DataLib
         }
 
         #endregion
+
+
 
         private void WriteException(Exception ex, [CallerMemberName] string funcName = null)
         {

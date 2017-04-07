@@ -14,7 +14,7 @@ namespace DataLib
             MatchNumber = -1;
             IsBye = false;
             MatchIndex = 0;
-            WinsNeeded = 0;
+            MaxGames = 0;
             PrevMatchIndex = 0;
             Games = new Collection<GameModel>();
             //next
@@ -45,7 +45,7 @@ namespace DataLib
 
         public TimeSpan? MatchDuration { get; set; }
 
-        public int? WinsNeeded { get; set; }
+        public int? MaxGames { get; set; }
 
         public int? MatchIndex { get; set; }
 

@@ -7,13 +7,13 @@ namespace DataLib.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class UpdatedUsersInTournaments : IMigrationMetadata
+    public sealed partial class InitialCreate : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdatedUsersInTournaments));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(InitialCreate));
         
         string IMigrationMetadata.Id
         {
-            get { return "201703301854520_UpdatedUsersInTournaments"; }
+            get { return "201704071643155_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source

@@ -22,35 +22,41 @@ namespace DataLib.Tests
         }
 
         [TestMethod]
-        public void Test_UsernameExists()
+        public void Username_Exists()
         {
             var db = new DatabaseInterface();
-            
+            var result = db.UserUsernameExists("keltonr01");
+
+            Assert.AreEqual(DbError.EXISTS, result);
         }
 
         [TestMethod]
-        public void Test_AddUser_and_UsernameExists()
+        public void Username_Does_Not_Exist()
         {
-            var dbInterface = new DatabaseInterface();
+            var db = new DatabaseInterface();
+            var result = db.UserUsernameExists("asdf");
+
+            Assert.AreEqual(DbError.DOES_NOT_EXIST, result);
+        }
+
+        [TestMethod]
+        public void Test_AddUser()
+        {
+            var db = new DatabaseInterface();
             var user = new UserModel()
             {
                 FirstName = "Ryan",
                 LastName = "Kelton",
-                Username = "keltonr01",
+                Username = Guid.NewGuid().ToString(),
                 Password = "1234",
                 SitePermission = new PermissionModel()
                 {
                     Permission = Permission.SITE_ADMINISTRATOR
                 }
             };
-            if (dbInterface.UserUsernameExists(user.Username) == DbError.DOES_NOT_EXIST)
-            {
-                user.Username = "keltonr02";
-                dbInterface.AddUser(user); 
-            }
-
-            var result = dbInterface.GetUserByUsername("keltonr01");
-            Assert.AreEqual(user, result);
+            
+            var result = db.AddUser(user);
+            Assert.AreEqual(DbError.SUCCESS, result);
         }
     }
 }
