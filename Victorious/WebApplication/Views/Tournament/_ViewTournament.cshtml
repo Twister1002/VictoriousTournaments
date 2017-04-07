@@ -4,8 +4,9 @@
     for (int i = 0; i < Model.Brackets.Count; i++)
     {
         var bracket = Model.Brackets[i];
-        
-        if (!bracket.IsFinalized)
+        ViewBag.isFinalized = bracket.IsFinalized;
+
+        if (!bracket.IsFinalized && ViewBag.Permission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
         {
             Html.RenderPartial("Administrator/_Finalize", new ViewDataDictionary(ViewData));
         }

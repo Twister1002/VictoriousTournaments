@@ -9,7 +9,7 @@
     bool registrationEnded = (DateTime)Model.RegistrationEndDate <= DateTime.Now;
     bool isLoggedIn = Session["User.UserId"] != null;
     var userPermission = isLoggedIn ? Model.UserPermission((int)Session["User.UserId"]) : DataLib.Permission.NONE;
-    
+
     ViewBag.Permission = userPermission;
     ViewBag.isLoggedIn = isLoggedIn;
     ViewBag.TournamentId = Model.Model.TournamentID;
@@ -26,8 +26,10 @@
                 </a>
                 <img class="tournament-delete" data-id="@Model.Model.TournamentID" src="~/Images/svg/cross.svg" />
             }
-            @*<svg class="icon icon-trophy"><use xlink:href="#icon-trophy"></use></svg>*@
-            <img class="tournament-standings" src="~/Images/svg/trophy.svg" />
+            <img class="icon icon-tropy tournament-standings" src="~/Images/svg/trophy.svg" />
+            @*<a href="@Url.Action("Reset", "Tournament", new { id= Model.Model.TournamentID})">
+                <img class="icon icon-loop2 tournament-reset" src="~/Images/svg/loop2.svg" />
+            </a>*@
         </div>
         <h3 class="gameTitle">@(Model.Model.GameType != null ? Model.Model.GameType.Title : "")</h3>
     </div>
