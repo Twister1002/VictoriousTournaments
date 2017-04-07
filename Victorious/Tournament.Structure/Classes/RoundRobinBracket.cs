@@ -361,9 +361,19 @@ namespace Tournament.Structure
 
 			IsFinished = false;
 		}
-#endregion
 
-#region Private Methods
+		public override void ResetMatches()
+		{
+			base.ResetMatches();
+			foreach (IPlayerScore ps in Rankings)
+			{
+				ps.Rank = 1;
+				ps.Score = 0;
+			}
+		}
+		#endregion
+
+		#region Private Methods
 		protected override void UpdateRankings()
 		{
 			Rankings.Sort((first, second) => -1 * (first.Score.CompareTo(second.Score)));

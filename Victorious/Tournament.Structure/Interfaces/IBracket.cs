@@ -190,6 +190,11 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Match Number of the desired Match</param>
 		/// <returns>Specified Match object</returns>
 		IMatch GetMatch(int _matchNumber);
+
+		/// <summary>
+		/// Resets every Match to a pre-play state (no games played).
+		/// </summary>
+		void ResetMatches();
 #endregion
 	}
 }

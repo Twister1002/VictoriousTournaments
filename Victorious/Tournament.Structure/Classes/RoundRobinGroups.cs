@@ -226,9 +226,15 @@ namespace Tournament.Structure
 				Rankings.AddRange(group.Rankings);
 			}
 		}
-#endregion
 
-#region Private Methods
+		public override void ResetMatches()
+		{
+			base.ResetMatches();
+			UpdateRankings();
+		}
+		#endregion
+
+		#region Private Methods
 		protected override void UpdateRankings()
 		{
 			Rankings.Clear();

@@ -634,6 +634,12 @@ namespace Tournament.Structure
 			}
 #endif
 		}
+
+		public override void ResetMatches()
+		{
+			base.ResetMatches();
+			Rankings.Clear();
+		}
 		#endregion
 
 		#region Private Methods
