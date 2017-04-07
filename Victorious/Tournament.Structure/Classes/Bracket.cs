@@ -39,6 +39,8 @@ namespace Tournament.Structure
 
 		#region Abstract Methods
 		public abstract void CreateBracket(ushort _winsPerMatch = 1);
+		public abstract void AddGame(int _matchNumber, IGame _game);
+		public abstract void RemoveLastGame(int _matchNumber);
 		public abstract void AddWin(int _matchNumber, PlayerSlot _slot);
 		public abstract void SubtractWin(int _matchNumber, PlayerSlot _slot);
 		public abstract void ResetMatchScore(int _matchNumber);
@@ -324,6 +326,26 @@ namespace Tournament.Structure
 			}
 
 			ResetBracket();
+		}
+		public void RemovePlayer(int _playerId)
+		{
+			if (null == Players)
+			{
+				throw new NullReferenceException
+					("Playerlist is null. This shouldn't happen...");
+			}
+
+			for (int i = 0; i < Players.Count; ++i)
+			{
+				if (Players[i].Id == _playerId)
+				{
+					Players.RemoveAt(i);
+					ResetBracket();
+					return;
+				}
+			}
+			throw new PlayerNotFoundException
+				("Player not found in this Bracket!");
 		}
 		public void RemovePlayer(IPlayer _player)
 		{

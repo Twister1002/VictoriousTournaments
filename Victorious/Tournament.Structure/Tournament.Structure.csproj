@@ -45,6 +45,10 @@
     <Compile Include="Classes\SingleElimBracket.cs" />
     <Compile Include="Classes\DoubleElimBracket.cs" />
     <Compile Include="Classes\Exceptions.cs" />
+    <Compile Include="Classes\Game.cs" />
+    <Compile Include="Classes\GroupStage.cs" />
+    <Compile Include="Interfaces\IGroupStage.cs" />
+    <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Interfaces\IBracket.cs" />
     <Compile Include="Interfaces\IMatch.cs" />
     <Compile Include="Interfaces\IPlayer.cs" />
@@ -64,9 +68,6 @@
       <Project>{59636ed1-650e-4319-aabe-aed047a9feb5}</Project>
       <Name>DataLib</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

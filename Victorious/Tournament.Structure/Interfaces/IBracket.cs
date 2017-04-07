@@ -12,11 +12,26 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		BracketTypeModel.BracketType BracketType { get; }
+
+		/// <summary>
+		/// Is Bracket creation finalized; ready to play?
+		/// </summary>
 		bool IsFinalized { get; }
+
+		/// <summary>
+		/// Is Bracket play finished & winner determined?
+		/// </summary>
 		bool IsFinished { get; }
+
 		List<IPlayer> Players { get; }
 		List<IPlayerScore> Rankings { get; }
+
+		/// <summary>
+		/// Limit on the number of rounds;
+		/// for RoundRobin-type brackets.
+		/// </summary>
 		int MaxRounds { get; set; }
+
 		int NumberOfRounds { get; }
 		int NumberOfLowerRounds { get; }
 
@@ -40,11 +55,25 @@ namespace Tournament.Structure
 		void CreateBracket(ushort _winsPerMatch = 1);
 
 		/// <summary>
+		/// Add/record a finished Game.
+		/// </summary>
+		/// <param name="_matchNumer">Match to contain this Game</param>
+		/// <param name="_game">Game-type object to add</param>
+		void AddGame(int _matchNumer, IGame _game);
+
+		/// <summary>
+		/// Delete/un-record a Match's most recent Game.
+		/// </summary>
+		/// <param name="_matchNumber">Number of Match to modify</param>
+		void RemoveLastGame(int _matchNumber);
+
+		/// <summary>
 		/// Record one win for the specified match.
 		/// Advances Player if the Match is over.
 		/// </summary>
 		/// <param name="_matchNumber">Number of specified match</param>
 		/// <param name="_slot">Winning player's slot: Defender or Challenger</param>
+		[System.Obsolete("use AddGame(int, IGame) instead", false)]
 		void AddWin(int _matchNumber, PlayerSlot _slot);
 
 		/// <summary>
@@ -53,6 +82,7 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_matchNumber">Number of specified match</param>
 		/// <param name="_slot">Player slot: Defender or Challenger</param>
+		[System.Obsolete("use RemoveLastGame(int) instead", false)]
 		void SubtractWin(int _matchNumber, PlayerSlot _slot);
 
 		/// <summary>
@@ -65,7 +95,7 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Gets the number of Players in the Bracket.
 		/// </summary>
-		/// <returns>Number of Players</returns>
+		/// <returns>Count of Players</returns>
 		int NumberOfPlayers();
 
 		/// <summary>
@@ -106,7 +136,7 @@ namespace Tournament.Structure
 		void ReplacePlayer(IPlayer _player, int _index);
 
 		/// <summary>
-		/// Swaps two Players' positions.
+		/// Swaps two Players' seeds/positions.
 		/// (Deletes all Matches)
 		/// </summary>
 		/// <param name="_index1">P1's index (0-indexed)</param>
@@ -114,7 +144,7 @@ namespace Tournament.Structure
 		void SwapPlayers(int _index1, int _index2);
 
 		/// <summary>
-		/// Moves a Player's position in the playerlist,
+		/// Moves a Player's seed/position in the playerlist,
 		/// adjusting all other Players.
 		/// (Deletes all Matches)
 		/// </summary>
@@ -126,7 +156,9 @@ namespace Tournament.Structure
 		/// Remove a Player from the bracket.
 		/// (Deletes all Matches)
 		/// </summary>
-		/// <param name="_player">Player-type object to remove</param>
+		/// <param name="_playerId">ID of Player to remove</param>
+		void RemovePlayer(int _playerId);
+		[System.Obsolete("use RemovePlayer(int) instead", false)]
 		void RemovePlayer(IPlayer _player);
 
 		/// <summary>

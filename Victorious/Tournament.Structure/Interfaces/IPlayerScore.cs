@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 
 namespace Tournament.Structure
 {
+	/// <summary>
+	/// These objects are used in Bracket Ranking systems.
+	/// </summary>
 	public interface IPlayerScore
 	{
-		string Name { get; }
+		#region Variables & Properties
 		int Id { get; }
+		string Name { get; }
 
 		/// <summary>
 		/// -1 when not applicable. (should not be displayed)
@@ -21,5 +25,6 @@ namespace Tournament.Structure
 		/// Example: Rank 5-8 returns 5.
 		/// </summary>
 		int Rank { get; set; }
+		#endregion
 	}
 }

@@ -8,10 +8,11 @@ using DataLib;
 
 namespace Tournament.Structure
 {
-	public class RoundRobinGroups : Bracket
+	public class RoundRobinGroups : GroupStage
 	{
 		#region Variables & Properties
 		// inherits BracketType BracketType
+		// inherits bool IsFinalized
 		// inherits bool IsFinished
 		// inherits List<IPlayer> Players
 		// inherits List<IPlayerScore> Rankings
@@ -21,10 +22,8 @@ namespace Tournament.Structure
 		// inherits int NumberOfLowerRounds (0)
 		// inherits IMatch GrandFinal (null)
 		// inherits int NumberOfMatches
-		private List<IBracket> Groups
-		{ get; set; }
-		public int NumberOfGroups
-		{ get; set; }
+		// inherits List<IBracket> Groups
+		// inherits int NumberOfGroups
 		#endregion
 
 		#region Ctors
@@ -182,13 +181,13 @@ namespace Tournament.Structure
 				}
 			}
 		}
-#endregion
+		#endregion
 
-#region Public Methods
+		#region Public Methods
 		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
 			ResetBracket();
-			if (Players.Count < 2 || 
+			if (Players.Count < 2 ||
 				NumberOfGroups > (Players.Count / 2) || NumberOfGroups < 2)
 			{
 				return;
@@ -216,87 +215,9 @@ namespace Tournament.Structure
 				Rankings.AddRange(group.Rankings);
 			}
 		}
+		#endregion
 
-		public override void AddWin(int _matchNumber, PlayerSlot _slot)
-		{
-			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			Groups[groupIndex].AddWin(_matchNumber, _slot);
-			UpdateRankings();
-
-			IsFinished = true;
-			foreach (IBracket group in Groups)
-			{
-				if (!group.IsFinished)
-				{
-					IsFinished = false;
-					break;
-				}
-			}
-		}
-		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
-		{
-			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			Groups[groupIndex].SubtractWin(_matchNumber, _slot);
-			UpdateRankings();
-
-			IsFinished = (IsFinished && Groups[groupIndex].IsFinished);
-		}
-		public override void ResetMatchScore(int _matchNumber)
-		{
-			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			Groups[groupIndex].ResetMatchScore(_matchNumber);
-			UpdateRankings();
-
-			IsFinished = false;
-		}
-
-		public IBracket GetGroup(int _groupNumber)
-		{
-			if (null == Groups)
-			{
-				throw new NullReferenceException
-					("No groups exist! Create a bracket first.");
-			}
-			if (_groupNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Group number must be greater than 0!");
-			}
-			if (_groupNumber > Groups.Count)
-			{
-				throw new BracketNotFoundException
-					("Group not found! Invalid group number.");
-			}
-
-			return Groups[_groupNumber - 1];
-		}
-		public override List<IMatch> GetRound(int _round)
-		{
-			if (null == Groups)
-			{
-				throw new NullReferenceException
-					("No groups exist! Create a bracket first.");
-			}
-
-			List<IMatch> ret = new List<IMatch>();
-			foreach (IBracket group in Groups)
-			{
-				ret.AddRange(group.GetRound(_round));
-			}
-			return ret;
-		}
-		public override IMatch GetMatch(int _matchNumber)
-		{
-			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			return Groups[groupIndex].GetMatch(_matchNumber);
-		}
-#endregion
-
-#region Private Methods
+		#region Private Methods
 		protected override void UpdateRankings()
 		{
 			Rankings.Clear();
@@ -322,41 +243,6 @@ namespace Tournament.Structure
 				}
 			}
 		}
-
-		protected override void ResetBracket()
-		{
-			base.ResetBracket();
-
-			Groups = null;
-		}
-
-		private void GetMatchData(ref int _matchNumber, out int _groupIndex)
-		{
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match Number cannot be less than 1!");
-			}
-
-			for (_groupIndex = 0; _groupIndex < Groups.Count; ++_groupIndex)
-			{
-				if (_matchNumber < 1)
-				{
-					break;
-				}
-				if (_matchNumber <= Groups[_groupIndex].NumberOfMatches)
-				{
-					return;
-				}
-				else
-				{
-					_matchNumber -= Groups[_groupIndex].NumberOfMatches;
-				}
-			}
-
-			throw new MatchNotFoundException
-				("Match not found; match number may be invalid.");
-		}
-#endregion
+		#endregion
 	}
 }

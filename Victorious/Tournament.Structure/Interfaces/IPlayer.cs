@@ -19,6 +19,10 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Create a Model for this Match.
+		/// </summary>
+		/// <returns>UserModel-type object</returns>
 		UserModel GetModel();
 		#endregion
 	}
