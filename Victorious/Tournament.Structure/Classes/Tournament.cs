@@ -54,21 +54,7 @@ namespace Tournament.Structure
 			this.Brackets = new List<IBracket>();
 			foreach (BracketModel bModel in _model.Brackets)
 			{
-				switch ((BracketTypeModel.BracketType)bModel.BracketType.BracketTypeID)
-				{
-					case (BracketTypeModel.BracketType.SINGLE):
-						AddBracket(new SingleElimBracket(bModel));
-						break;
-					case (BracketTypeModel.BracketType.DOUBLE):
-						AddBracket(new DoubleElimBracket(bModel));
-						break;
-					case (BracketTypeModel.BracketType.ROUNDROBIN):
-						AddBracket(new RoundRobinBracket(bModel));
-						break;
-					// More here eventually...
-					default:
-						break;
-				}
+				AddBracket(RestoreBracket(bModel));
 			}
 
 			this.PrizePool = (float)(_model.TournamentRules.PrizePurse);
@@ -241,6 +227,28 @@ namespace Tournament.Structure
 			}
 
 			Brackets.Add(_bracket);
+		}
+		public IBracket RestoreBracket(BracketModel _model)
+		{
+			IBracket ret = null;
+			switch (_model.BracketType.Type)
+			{
+				case (BracketTypeModel.BracketType.SINGLE):
+					ret = new SingleElimBracket(_model);
+					break;
+				case (BracketTypeModel.BracketType.DOUBLE):
+					ret = new DoubleElimBracket(_model);
+					break;
+				case (BracketTypeModel.BracketType.ROUNDROBIN):
+					ret = new RoundRobinBracket(_model);
+					break;
+				case (BracketTypeModel.BracketType.RRGROUP):
+					ret = new RoundRobinGroups(_model);
+					break;
+				default:
+					throw new NotImplementedException();
+			}
+			return ret;
 		}
 		public void RemoveBracket(IBracket _bracket)
 		{

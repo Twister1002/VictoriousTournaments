@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public interface ITournament
@@ -75,6 +77,8 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_bracket">Bracket-type object to add.</param>
 		void AddBracket(IBracket _bracket);
+
+		IBracket RestoreBracket(BracketModel _model);
 
 		/// <summary>
 		/// Removes a Bracket from the tournament.
