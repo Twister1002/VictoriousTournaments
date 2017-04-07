@@ -141,6 +141,13 @@ namespace Tournament.Structure
 						group.GetMatch(model.MatchNumber)
 							.SetWinsNeeded((ushort)(model.WinsNeeded));
 
+						List<GameModel> gModelList = model.Games
+							.OrderBy(g => g.GameNumber).ToList();
+						foreach (GameModel gmodel in gModelList)
+						{
+							group.AddGame(model.MatchNumber, new Game(gmodel));
+						}
+#if false
 						if (model.DefenderScore < model.ChallengerScore)
 						{
 							for (int i = 0; i < model.DefenderScore; ++i)
@@ -163,7 +170,7 @@ namespace Tournament.Structure
 								group.AddWin(model.MatchNumber, PlayerSlot.Defender);
 							}
 						}
-
+#endif
 						break;
 					}
 				}
@@ -181,9 +188,9 @@ namespace Tournament.Structure
 				}
 			}
 		}
-		#endregion
+#endregion
 
-		#region Public Methods
+#region Public Methods
 		public override void CreateBracket(ushort _winsPerMatch = 1)
 		{
 			ResetBracket();
@@ -215,9 +222,9 @@ namespace Tournament.Structure
 				Rankings.AddRange(group.Rankings);
 			}
 		}
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 		protected override void UpdateRankings()
 		{
 			Rankings.Clear();
@@ -243,6 +250,6 @@ namespace Tournament.Structure
 				}
 			}
 		}
-		#endregion
+#endregion
 	}
 }
