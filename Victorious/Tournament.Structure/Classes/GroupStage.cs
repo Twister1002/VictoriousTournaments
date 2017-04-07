@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tournament.Structure
 {
-	public abstract class GroupStage : Bracket
+	public abstract class GroupStage : Bracket, IGroupStage
 	{
 		#region Variables & Properties
 		// inherits BracketType BracketType
