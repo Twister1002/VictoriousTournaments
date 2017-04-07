@@ -8,7 +8,7 @@
     <div class="tournaments">
         <h2>Tournaments</h2>
         <div class="personal">
-            <label>Your Tournaments</label>
+            <label>Managing</label>
             <ul class="list-table">
                 <li class="list-table-header">
                     <ul class="list-table-columns" data-columns="3">
@@ -18,7 +18,7 @@
                     </ul>
                 </li>
                 <li class="list-table-body">
-                    @foreach (var tournament in Model.Tournaments[WebApplication.Models.TournamentStatus.OWNER])
+                    @foreach (var tournament in Model.Tournaments[WebApplication.Models.TournamentStatus.ADMIN])
                     {
                         <a href="/Tournament/@tournament.TournamentID">
                             <ul class="row-clickable" data-columns="3">
@@ -32,7 +32,7 @@
             </ul>
         </div>
         <div class="active">
-            <label>Active Tournaments</label>
+            <label>Active</label>
             <ul class="list-table">
                 <li class="list-table-header">
                     <ul class="list-table-columns" data-columns="2">
@@ -54,7 +54,7 @@
             </ul>
         </div>
         <div class="upcoming">
-            <label>Upcoming Tournaments</label>
+            <label>Upcoming</label>
             <ul class="list-table">
                 <li class="list-table-header">
                     <ul class="list-table-columns" data-columns="3">
@@ -78,7 +78,7 @@
             </ul>
         </div>
         <div class="past">
-            <label>Past Tournaments</label>
+            <label>Past</label>
             <ul class="list-table">
                 <li class="list-table-header">
                     <ul class="list-table-columns" data-columns="3">

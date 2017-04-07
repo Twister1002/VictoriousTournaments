@@ -79,7 +79,7 @@ namespace WebApplication.Controllers
             {
                 TournamentViewModel viewModel = new TournamentViewModel(db.GetTournamentById(id));
 
-                if (viewModel.Model != null && viewModel.Model.CreatedByID == (int)Session["User.UserId"])
+                if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
                     return View("Edit", viewModel);
                 }
@@ -339,6 +339,32 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
+        [Route("Tournament/Reset")]
+        public ActionResult Reset(String id)
+        {
+            return null;
+
+            int tournamentId = ConvertToInt(id);
+            TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+
+            if (Session["User.UserId"] != null)
+            {
+                if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+                {
+                    viewModel.ProcessTournament();
+                }
+                else
+                {
+
+                }
+            }
+            else
+            {
+
+            }
+        }
+
+        [HttpPost]
         [Route("Tournament/Ajax/Delete")]
         public JsonResult Delete(String tourny)
         {
@@ -377,37 +403,42 @@ namespace WebApplication.Controllers
         [Route("Tournament/Ajax/Promote")]
         public JsonResult Promote(String tournyVal, String userVal)
         {
-            // TODO: Make sure the user is authorized to do this.
+            dynamic jsonResult = new { };
             TournamentModel tournyModel = db.GetTournamentById(ConvertToInt(tournyVal));
             UserModel userModel = db.GetUserById(ConvertToInt(userVal));
 
-            Permission userPermission = db.GetUserPermission(userModel, tournyModel);
-            DbError result = DbError.NONE;
-            JsonResult jsonResult;
-
-            switch (userPermission)
+            if (Session["User.UserId"] != null && (int)Session["User.UserId"] == tournyModel.CreatedByID)
             {
-                case Permission.TOURNAMENT_STANDARD:
-                    result = db.UpdateUserTournamentPermission(userModel, tournyModel, Permission.TOURNAMENT_ADMINISTRATOR);
-                    break;
-                case Permission.TOURNAMENT_ADMINISTRATOR:
-                    break;
-            }
+                Permission userPermission = db.GetUserPermission(userModel, tournyModel);
+                DbError result = DbError.NONE;
 
-            switch (result)
+                switch (userPermission)
+                {
+                    case Permission.TOURNAMENT_STANDARD:
+                        result = db.UpdateUserTournamentPermission(userModel, tournyModel, Permission.TOURNAMENT_ADMINISTRATOR);
+                        break;
+                    case Permission.TOURNAMENT_ADMINISTRATOR:
+                        break;
+                }
+
+                switch (result)
+                {
+                    case DbError.SUCCESS:
+                        jsonResult = new { status = true, message = "User was promoted successfully" };
+                        break;
+                    case DbError.NONE:
+                        jsonResult = new { status = false, message = "User can not be promoted above administrator" };
+                        break;
+                    default:
+                        jsonResult = new { status = false, message = "User was unable to be promoted" };
+                        break;
+                }
+            }
+            else
             {
-                case DbError.SUCCESS:
-                    jsonResult = Json(new { @status = true, @message = "User was promoted successfully" });
-                    break;
-                case DbError.NONE:
-                    jsonResult = Json(new { @status = false, @message = "User can not be promoted above administrator" });
-                    break;
-                default:
-                    jsonResult = Json(new { @status = false, @message = "User was unable to be promoted" });
-                    break;
+                jsonResult = new { status = false, message = "You do not have permissions to do this" };
             }
-
-            return jsonResult;
+            return Json(JsonConvert.SerializeObject(jsonResult));
         }
 
         [HttpPost]
@@ -415,34 +446,41 @@ namespace WebApplication.Controllers
         public JsonResult Demote(String tournyVal, String userVal)
         {
             // TODO: Make sure the user is authorized to do this.
+            dynamic jsonResult;
             TournamentModel tournyModel = db.GetTournamentById(ConvertToInt(tournyVal));
             UserModel userModel = db.GetUserById(ConvertToInt(userVal));
 
-            Permission userPermission = db.GetUserPermission(userModel, tournyModel);
-            DbError result = DbError.NONE;
-            JsonResult jsonResult;
-
-            switch (userPermission)
+            if (Session["User.UserId"] != null && (int)Session["User.UserId"] == tournyModel.CreatedByID)
             {
-                case Permission.TOURNAMENT_STANDARD:
-                    result = db.RemoveUserFromTournament(tournyModel, userModel);
-                    break;
-                case Permission.TOURNAMENT_ADMINISTRATOR:
-                    result = db.UpdateUserTournamentPermission(userModel, tournyModel, Permission.TOURNAMENT_STANDARD);
-                    break;
+                Permission userPermission = db.GetUserPermission(userModel, tournyModel);
+                DbError result = DbError.NONE;
+                
+                switch (userPermission)
+                {
+                    case Permission.TOURNAMENT_STANDARD:
+                        result = db.RemoveUserFromTournament(tournyModel, userModel);
+                        break;
+                    case Permission.TOURNAMENT_ADMINISTRATOR:
+                        result = db.UpdateUserTournamentPermission(userModel, tournyModel, Permission.TOURNAMENT_STANDARD);
+                        break;
+                }
+
+                switch (result)
+                {
+                    case DbError.SUCCESS:
+                        jsonResult = new { status = true, message = "User was demoted / removed successfully" };
+                        break;
+                    default:
+                        jsonResult = new { status = false, message = "Could not demote successfully." };
+                        break;
+                }
+            }
+            else
+            {
+                jsonResult = new { status = false, message = "You do not have permissions to do this" };
             }
 
-            switch (result)
-            {
-                case DbError.SUCCESS:
-                    jsonResult = Json(new { @status = true, @message = "User was demoted / removed successfully" });
-                    break;
-                default:
-                    jsonResult = Json(new { @status = false, @message = "Could not demote successfully." });
-                    break;
-            }
-
-            return jsonResult;
+            return Json(JsonConvert.SerializeObject(jsonResult));
         }
 
         [HttpPost]

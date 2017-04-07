@@ -7,6 +7,7 @@
     int participantColumns = (int)Math.Ceiling((double)Model.Participants.Count / maxUsersPerRow);
     int adminColumns = (int)Math.Ceiling((double)Model.Administrators.Count / maxUsersPerRow);
     bool isFinalized = Model.Model.Brackets.ElementAt(0).Matches.Count != 0;
+    DataLib.Permission UserPermission = Model.UserPermission((int)Session["User.UserId"]);
 
     participantColumns = participantColumns < 1 ? 1 : participantColumns;
     adminColumns = adminColumns < 1 ? 1 : adminColumns;
@@ -138,17 +139,26 @@
                                             <span class="username @(isFinalized ? "" : "clickable-underline")">@user.Username</span>&nbsp;
                                             @if (user.Username != null && !isFinalized)
                                             {
-                                            <div class="user-options">
-                                                @if (isAdminColumn)
-                                                {
-                                                    <button class="remove" type="button">Remove</button>
-                                                }
-                                                else
-                                                {
-                                                    <button class="promote" type="button">Promote</button>
-                                                    <button class="remove" type="button">Remove</button>
-                                                }
-                                            </div>
+                                                <div class="user-options">
+                                                    @if (isAdminColumn)
+                                                    {
+                                                        if (Model.Model.CreatedByID == (int)Session["User.UserId"])
+                                                        {
+                                                            <button class="remove" type="button">Remove</button>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (Model.Model.CreatedByID == (int)Session["User.UserId"])
+                                                        {
+                                                            <button class="promote" type="button">Promote</button>
+                                                        }
+                                                        if (UserPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
+                                                        {
+                                                            <button class="remove" type="button">Remove</button>
+                                                        }
+                                                    }
+                                                </div>
                                             }
                                         </div>
 
@@ -164,5 +174,5 @@
         <div class="section">
             <button type="submit">Accept Changes</button>
         </div>
-                            }
+    }
 </div>
