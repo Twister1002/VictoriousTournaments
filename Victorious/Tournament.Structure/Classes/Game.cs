@@ -69,17 +69,17 @@ namespace Tournament.Structure
 
 			this.PlayerIDs = new int[2] { _model.DefenderID, _model.ChallengerID };
 			this.Score = new int[2] { _model.DefenderScore, _model.ChallengerScore };
-			switch (_model.WinnerID)
+			if (_model.WinnerID == PlayerIDs[(int)PlayerSlot.Defender])
 			{
-				case (PlayerIDs[(int)PlayerSlot.Defender]):
-					this.WinnerSlot = PlayerSlot.Defender;
-					break;
-				case (PlayerIDs[(int)PlayerSlot.Challenger]):
-					this.WinnerSlot = PlayerSlot.Challenger;
-					break;
-				default:
-					this.WinnerSlot = PlayerSlot.unspecified;
-					break;
+				this.WinnerSlot = PlayerSlot.Defender;
+			}
+			else if (_model.WinnerID == PlayerIDs[(int)PlayerSlot.Challenger])
+			{
+				this.WinnerSlot = PlayerSlot.Challenger;
+			}
+			else
+			{
+				this.WinnerSlot = PlayerSlot.unspecified;
 			}
 		}
 		#endregion
