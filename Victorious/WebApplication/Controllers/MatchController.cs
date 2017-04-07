@@ -73,6 +73,8 @@ namespace WebApplication.Controllers
                     bracket.AddWin((int)json["matchNum"], winPlayerSlot);
 
                     MatchModel matchModel = bracket.GetMatch((int)json["matchNum"]).GetModel();
+                    UserModel matchDefender = db.GetUserById(matchModel.DefenderID);
+                    UserModel matchChallenger = db.GetUserById(matchModel.ChallengerID);
 
                     DbError matchResult = db.UpdateMatch(matchModel);
                     if (matchResult == DbError.SUCCESS)
@@ -172,16 +174,16 @@ namespace WebApplication.Controllers
                                 defender = new
                                 {
                                     nextRound = winPlayerSlot == PlayerSlot.Defender ? matchModel.NextMatchNumber : matchModel.NextLoserMatchNumber,
-                                    name = matchModel.Defender.Username,
-                                    id = matchModel.Defender.UserID,
+                                    name = matchDefender.Username,
+                                    id = matchDefender.UserID,
                                     score = matchModel.DefenderScore,
                                     slot = forDefender
                                 },
                                 challenger = new
                                 {
                                     nextRound = winPlayerSlot == PlayerSlot.Challenger ? matchModel.NextMatchNumber : matchModel.NextLoserMatchNumber,
-                                    name = matchModel.Challenger.Username,
-                                    id = matchModel.Challenger.UserID,
+                                    name = matchChallenger.Username,
+                                    id = matchChallenger.UserID,
                                     score = matchModel.ChallengerScore,
                                     slot = forChallenger
                                 }
