@@ -51,15 +51,15 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Generates the bracket (rounds & matches).
 		/// </summary>
-		/// <param name="_winsPerMatch">"Games" needed to win each match</param>
-		void CreateBracket(ushort _winsPerMatch = 1);
+		/// <param name="_gamesPerMatch">Max games played each match</param>
+		void CreateBracket(ushort _gamesPerMatch = 1);
 
 		/// <summary>
 		/// Add/record a finished Game.
 		/// </summary>
 		/// <param name="_matchNumer">Match to contain this Game</param>
 		/// <param name="_game">Game-type object to add</param>
-		void AddGame(int _matchNumer, IGame _game);
+		void AddGame(int _matchNumber, IGame _game);
 
 		/// <summary>
 		/// Delete/un-record a Match's most recent Game.

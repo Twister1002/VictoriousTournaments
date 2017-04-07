@@ -33,6 +33,8 @@ namespace Tournament.Structure
 		/// </summary>
 		bool IsFinished { get; }
 
+		ushort MaxGames { get; }
+		[System.Obsolete("use MaxGames instead", false)]
 		ushort WinsNeeded { get; }
 		IPlayer[] Players { get; }
 
@@ -87,11 +89,6 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Methods
-		/// <summary>
-		/// Retrieves a MatchModel of specified Match.
-		/// </summary>
-		/// <param name="_matchId">ID of Match</param>
-		/// <returns>Model of Match</returns>
 		[System.Obsolete("use .GetModel()", false)]
 		MatchModel GetModel(int _matchId);
 
@@ -142,17 +139,8 @@ namespace Tournament.Structure
 		/// <returns></returns>
 		IGame RemoveLastGame();
 
-		/// <summary>
-		/// Record one win for the specified player slot.
-		/// </summary>
-		/// <param name="_slot">Winner's slot: Defender or Challenger</param>
 		[System.Obsolete("use AddGame(IGame) instead", false)]
 		void AddWin(PlayerSlot _slot);
-
-		/// <summary>
-		/// Subtract one win from specified player slot.
-		/// </summary>
-		/// <param name="_slot">Player slot: Defender or Challenger</param>
 		[System.Obsolete("use RemoveLastGame() instead", false)]
 		void SubtractWin(PlayerSlot _slot);
 
@@ -162,9 +150,12 @@ namespace Tournament.Structure
 		void ResetScore();
 
 		/// <summary>
-		/// Sets amount of wins needed to advance.
+		/// Set the max number of Games to play this Match.
 		/// </summary>
-		/// <param name="_wins">Wins needed</param>
+		/// <param name="_numberOfGames">How many games this match may last</param>
+		void SetMaxGames(ushort _numberOfGames);
+
+		[System.Obsolete("use SetMaxGames() instead", false)]
 		void SetWinsNeeded(ushort _wins);
 
 		/// <summary>

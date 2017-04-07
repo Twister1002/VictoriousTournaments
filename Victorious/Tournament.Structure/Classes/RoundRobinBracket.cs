@@ -144,7 +144,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		public override void CreateBracket(ushort _winsPerMatch = 1)
+		public override void CreateBracket(ushort _gamesPerMatch = 1)
 		{
 			ResetBracket();
 			if (Players.Count < 2)
@@ -194,7 +194,7 @@ namespace Tournament.Structure
 					match.SetMatchNumber(NumberOfMatches + 1);
 					match.SetRoundIndex(NumberOfRounds);
 					match.SetMatchIndex(m + 1);
-					match.SetWinsNeeded(_winsPerMatch);
+					match.SetMaxGames(_gamesPerMatch);
 					match.AddPlayer(Players[(m + r) % Players.Count]);
 					match.AddPlayer(Players[(Players.Count - 1 - m + r) % Players.Count]);
 

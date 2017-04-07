@@ -19,6 +19,8 @@ namespace Tournament.Structure
 		{ get; private set; }
 		public bool IsFinished
 		{ get; private set; }
+		public ushort MaxGames
+		{ get; private set; }
 		public ushort WinsNeeded
 		{ get; private set; }
 		public IPlayer[] Players
@@ -51,7 +53,7 @@ namespace Tournament.Structure
 
 			IsReady = false;
 			IsFinished = false;
-			WinsNeeded = 1;
+			MaxGames = WinsNeeded = 1;
 			Model.WinsNeeded = 1;
 
 			Players = new IPlayer[2] { null, null };
@@ -82,6 +84,8 @@ namespace Tournament.Structure
 			this.IsReady = _match.IsReady;
 			this.IsFinished = _match.IsFinished;
 			this.WinsNeeded = _match.WinsNeeded;
+			this.MaxGames = (_match.MaxGames > 0)
+				? _match.MaxGames : (ushort)(2 * _match.WinsNeeded - 1);
 			this.WinnerSlot = _match.WinnerSlot;
 			this.RoundIndex = _match.RoundIndex;
 			this.MatchIndex = _match.MatchIndex;
@@ -122,7 +126,8 @@ namespace Tournament.Structure
 
 			this.Id = _m.MatchID;
 			this.Model = _m;
-			WinsNeeded = (ushort)(_m.WinsNeeded);
+			this.SetWinsNeeded((ushort)(_m.WinsNeeded));
+			//this.MaxGames = _m.MaxGames;
 
 			Players = new IPlayer[2];
 			Players[(int)PlayerSlot.Defender] = (null == _m.Defender)
@@ -404,6 +409,23 @@ namespace Tournament.Structure
 			Model.DefenderScore = Model.ChallengerScore = 0;
 		}
 
+		public void SetMaxGames(ushort _numberOfGames)
+		{
+			if (IsFinished)
+			{
+				throw new InactiveMatchException
+					("Match is finished; cannot change victory conditions.");
+			}
+			if (_numberOfGames < 1)
+			{
+				throw new ScoreException
+					("Total games cannot be less than 1!");
+			}
+
+			MaxGames = _numberOfGames;
+			WinsNeeded = (ushort)(_numberOfGames / 2 + 1);
+			Model.WinsNeeded = this.WinsNeeded;
+		}
 		public void SetWinsNeeded(ushort _wins)
 		{
 			if (IsFinished)
@@ -419,6 +441,7 @@ namespace Tournament.Structure
 
 			WinsNeeded = _wins;
 			Model.WinsNeeded = _wins;
+			MaxGames = (ushort)(2 * _wins - 1);
 		}
 		public void SetRoundIndex(int _index)
 		{
@@ -559,7 +582,9 @@ namespace Tournament.Structure
 					break;
 			}
 
-			if (Score[(int)_slot] >= WinsNeeded)
+			int winsNeeded = (MaxGames > 0)
+				? MaxGames / 2 + 1 : WinsNeeded;
+			if (Score[(int)_slot] >= winsNeeded)
 			{
 				WinnerSlot = _slot;
 				Model.WinnerID = Players[(int)_slot].Id;
@@ -585,7 +610,7 @@ namespace Tournament.Structure
 					("Score is already 0; can't subtract wins!");
 			}
 
-			if (Score[(int)_slot] == WinsNeeded)
+			if (WinnerSlot == _slot)
 			{
 				IsFinished = false;
 				WinnerSlot = PlayerSlot.unspecified;

@@ -140,12 +140,12 @@ namespace Tournament.Structure
 #endregion
 
 #region Public Methods
-		public override void CreateBracket(ushort _winsPerMatch = 1)
+		public override void CreateBracket(ushort _gamesPerMatch = 1)
 		{
-			if (_winsPerMatch < 1)
+			if (_gamesPerMatch < 1)
 			{
 				throw new ScoreException
-					("Wins Per Match must be greater than 0!");
+					("Games Per Match must be greater than 0!");
 			}
 
 			ResetBracket();
@@ -170,7 +170,7 @@ namespace Tournament.Structure
 					// Add new matchups per round
 					// (rounds[0] is the final match)
 					IMatch m = new Match();
-					m.SetWinsNeeded(_winsPerMatch);
+					m.SetMaxGames(_gamesPerMatch);
 					roundList[r].Add(m);
 				}
 			}

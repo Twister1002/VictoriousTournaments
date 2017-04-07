@@ -138,6 +138,8 @@ namespace Tournament.Structure
 						.Contains((int)(model.DefenderID)))
 					{
 						// Update Match's score:
+						//group.GetMatch(model.MatchNumber)
+						//	.SetMaxGames((ushort)(model.MaxGames));
 						group.GetMatch(model.MatchNumber)
 							.SetWinsNeeded((ushort)(model.WinsNeeded));
 
@@ -191,7 +193,7 @@ namespace Tournament.Structure
 #endregion
 
 #region Public Methods
-		public override void CreateBracket(ushort _winsPerMatch = 1)
+		public override void CreateBracket(ushort _gamesPerMatch = 1)
 		{
 			ResetBracket();
 			if (Players.Count < 2 ||
@@ -209,7 +211,9 @@ namespace Tournament.Structure
 					pList.Add(Players[p + b]);
 				}
 
-				Groups.Add(new RoundRobinBracket(pList, MaxRounds));
+				IBracket newGroup = new RoundRobinBracket(pList, MaxRounds);
+				newGroup.CreateBracket(_gamesPerMatch);
+				Groups.Add(newGroup);
 			}
 
 			Rankings = new List<IPlayerScore>();

@@ -38,7 +38,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Abstract Methods
-		public abstract void CreateBracket(ushort _winsPerMatch = 1);
+		public abstract void CreateBracket(ushort _gamesPerMatch = 1);
 		public abstract void AddGame(int _matchNumber, IGame _game);
 		public abstract void RemoveLastGame(int _matchNumber);
 		public abstract void AddWin(int _matchNumber, PlayerSlot _slot);
