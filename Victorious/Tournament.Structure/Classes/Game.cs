@@ -58,14 +58,47 @@ namespace Tournament.Structure
 		{ }
 		public Game(GameModel _model)
 		{
-			throw new NotImplementedException();
+			if (null == _model)
+			{
+				throw new ArgumentNullException("_model");
+			}
+
+			this.Id = _model.GameID;
+			this.MatchId = (int)(_model.MatchID);
+			this.GameNumber = _model.GameNumber;
+
+			this.PlayerIDs = new int[2] { _model.DefenderID, _model.ChallengerID };
+			this.Score = new int[2] { _model.DefenderScore, _model.ChallengerScore };
+			switch (_model.WinnerID)
+			{
+				case (PlayerIDs[(int)PlayerSlot.Defender]):
+					this.WinnerSlot = PlayerSlot.Defender;
+					break;
+				case (PlayerIDs[(int)PlayerSlot.Challenger]):
+					this.WinnerSlot = PlayerSlot.Challenger;
+					break;
+				default:
+					this.WinnerSlot = PlayerSlot.unspecified;
+					break;
+			}
 		}
 		#endregion
 
 		#region Public Methods
 		public GameModel GetModel()
 		{
-			throw new NotImplementedException();
+			GameModel model = new GameModel();
+			model.GameID = this.Id;
+			model.ChallengerID = this.PlayerIDs[(int)PlayerSlot.Challenger];
+			model.DefenderID = this.PlayerIDs[(int)PlayerSlot.Defender];
+			model.WinnerID = (PlayerSlot.unspecified == this.WinnerSlot)
+				? -1 : this.PlayerIDs[(int)WinnerSlot];
+			model.MatchID = this.MatchId;
+			model.GameNumber = this.GameNumber;
+			model.ChallengerScore = this.Score[(int)PlayerSlot.Challenger];
+			model.DefenderScore = this.Score[(int)PlayerSlot.Defender];
+
+			return model;
 		}
 		#endregion
 	}
