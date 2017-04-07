@@ -57,6 +57,7 @@ namespace DataLib
                 .Include(x => x.UserSeeds)
                 .Load();
             context.Matches
+                .Include(x => x.Games)
                 .Load();
             context.Teams
                 .Include(x => x.TeamMembers)
@@ -66,6 +67,8 @@ namespace DataLib
             context.Users
                 .Include(x => x.ChallengerMatches)
                 .Include(x => x.DefenderMatches)
+                .Load();
+            context.GameTypes
                 .Load();
             context.Games
                 .Load();
@@ -118,6 +121,19 @@ namespace DataLib
 
         }
 
+        // Don't use this yet
+        //public List<int> Search(object obj, string keywords)
+        //{
+        //    List<int> list = new List<int>();
+        //    var _keywords = keywords.Split(',');
+
+
+        //    if (obj.GetType() == typeof(UserModel))
+        //    {    
+        //        UserModel user = (UserModel)obj;
+        //        var result = context.Users.SqlQuery("SELECT Username FROM dbo.Users",)
+        //    }
+        //}
 
         #region Users
 
@@ -579,6 +595,7 @@ namespace DataLib
             return tournaments;
         }
 
+
         #endregion
 
         #region TournamentRules
@@ -737,7 +754,7 @@ namespace DataLib
                 if (updateMatches)
                 {
                     foreach (var match in bracket.Matches)
-                    {                      
+                    {
                         match.Challenger = context.Users.Find(match.ChallengerID);
                         match.Defender = context.Users.Find(match.DefenderID);
                     }
@@ -935,7 +952,7 @@ namespace DataLib
             {
                 interfaceException = ex;
                 WriteException(ex);
-                return DbError.FAILED_TO_DELETE;               
+                return DbError.FAILED_TO_DELETE;
             }
             return DbError.SUCCESS;
         }
@@ -1119,12 +1136,13 @@ namespace DataLib
 
         #region Games
 
-        public DbError AddGame(GameModel game)
+        public DbError AddGame(MatchModel match, GameModel game)
         {
             try
             {
                 context.Games.Add(game);
-                context.SaveChanges();
+                match.Games.Add(game);
+                context.SaveChanges(); 
             }
             catch (Exception ex)
             {
@@ -1152,29 +1170,85 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        public List<GameModel> GetAllGames()
+
+        public DbError DeleteGame(MatchModel match, GameModel game)
         {
-            List<GameModel> games = new List<GameModel>();
             try
             {
-                games = context.Games.ToList();
+                match.Games.Remove(game);
+                GameModel _game = context.Games.Find(game.GameID);
+                context.Games.Remove(_game);
+                context.SaveChanges();
             }
             catch (Exception ex)
             {
                 interfaceException = ex;
                 WriteException(ex);
-                games.Clear();
-                games.Add(new GameModel() { GameID = -1 });
+                return DbError.FAILED_TO_DELETE;
             }
-            return games;
+            return DbError.SUCCESS;
         }
 
-        public DbError DeleteGame(GameModel game)
+        #endregion
+
+        #region GameTypes
+
+        public DbError AddGameType(GameTypeModel gameType)
         {
-            GameModel _game = context.Games.Find(game.GameID);
             try
             {
-                context.Games.Remove(_game);
+                context.GameTypes.Add(gameType);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError UpdateGameType(GameTypeModel gameType)
+        {
+            try
+            {
+                GameTypeModel _gameType = context.GameTypes.Find(gameType.GameTypeID);
+                context.Entry(_gameType).CurrentValues.SetValues(gameType);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public List<GameTypeModel> GetAllGameTypes()
+        {
+            List<GameTypeModel> gameTypes = new List<GameTypeModel>();
+            try
+            {
+                gameTypes = context.GameTypes.ToList();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                gameTypes.Clear();
+                gameTypes.Add(new GameTypeModel() { GameTypeID = -1 });
+            }
+            return gameTypes;
+        }
+
+        public DbError DeleteGameType(GameTypeModel gameType)
+        {
+            GameTypeModel _gameType = context.GameTypes.Find(gameType.GameTypeID);
+            try
+            {
+                context.GameTypes.Remove(_gameType);
                 context.SaveChanges();
             }
             catch (Exception ex)
