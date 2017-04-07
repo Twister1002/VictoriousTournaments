@@ -24,7 +24,7 @@
                 <a href="@Url.Action("Update", "Tournament", new { id = Model.Model.TournamentID })">
                     <img src="~/Images/pencil.png" />
                 </a>
-                <img class="tournament-delete" data-id="@Model.Model.TournamentID" src="~/Images/svg/cross.svg" />
+                <img class="icon icon-cross tournament-delete" data-id="@Model.Model.TournamentID" src="~/Images/svg/cross.svg" />
             }
             <img class="icon icon-tropy tournament-standings" src="~/Images/svg/trophy.svg" />
             @*<a href="@Url.Action("Reset", "Tournament", new { id= Model.Model.TournamentID})">
@@ -57,5 +57,7 @@
                 <div class="message exception">Yeah..... something went wrong with displaying the tournament</div>
             }
         }
+
+        Html.RenderPartial("Brackets/_Standings", Model.Tourny, new ViewDataDictionary(ViewData));
     }
 </div>
