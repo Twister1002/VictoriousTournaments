@@ -191,6 +191,10 @@ namespace Tournament.Structure
 				throw new PlayerNotFoundException
 					("Player not found in this tournament!");
 			}
+			foreach (IBracket bracket in Brackets)
+			{
+				bracket.RemovePlayer(_player);
+			}
 		}
 		public void ResetPlayers()
 		{
@@ -198,7 +202,12 @@ namespace Tournament.Structure
 			{
 				Players = new List<IPlayer>();
 			}
+
 			Players.Clear();
+			foreach (IBracket bracket in Brackets)
+			{
+				bracket.ResetPlayers();
+			}
 		}
 
 		public int NumberOfBrackets()
@@ -230,6 +239,11 @@ namespace Tournament.Structure
 		}
 		public IBracket RestoreBracket(BracketModel _model)
 		{
+			if (null == _model)
+			{
+				throw new ArgumentNullException("_model");
+			}
+
 			IBracket ret = null;
 			switch (_model.BracketType.Type)
 			{
@@ -322,12 +336,12 @@ namespace Tournament.Structure
 			AddRoundRobinBracket(pList, _numRounds);
 		}
 #endif
-		public void AddGroupStageBracket(List<IPlayer> _playerList, int _numGroups = 2)
+		public void AddRRGroupStageBracket(List<IPlayer> _playerList, int _numGroups = 2)
 		{
 			Brackets.Add(new RoundRobinGroups(_playerList, _numGroups));
 		}
 #if false
-		public void AddGroupStageBracket(int _numPlayers, int _numGroups = 2)
+		public void AddRRGroupStageBracket(int _numPlayers, int _numGroups = 2)
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < _numPlayers; ++i)

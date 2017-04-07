@@ -23,8 +23,16 @@ namespace Tournament.Structure
 		[System.Obsolete("use .GetModel()", false)]
 		MatchModel Model { get; }
 
+		/// <summary>
+		/// Is the Match set/ready to play?
+		/// </summary>
 		bool IsReady { get; }
+
+		/// <summary>
+		/// Is the Match finished/won?
+		/// </summary>
 		bool IsFinished { get; }
+
 		ushort WinsNeeded { get; }
 		IPlayer[] Players { get; }
 
@@ -34,6 +42,9 @@ namespace Tournament.Structure
 		/// </summary>
 		PlayerSlot WinnerSlot { get; }
 
+		/// <summary>
+		/// List of completed/recorded Games.
+		/// </summary>
 		List<IGame> Games { get; }
 
 		/// <summary>
@@ -52,7 +63,7 @@ namespace Tournament.Structure
 		int MatchIndex { get; }
 
 		/// <summary>
-		/// First match = 1
+		/// First Match = 1
 		/// </summary>
 		int MatchNumber { get; }
 
@@ -83,6 +94,11 @@ namespace Tournament.Structure
 		/// <returns>Model of Match</returns>
 		[System.Obsolete("use .GetModel()", false)]
 		MatchModel GetModel(int _matchId);
+
+		/// <summary>
+		/// Create a Model for this Match.
+		/// </summary>
+		/// <returns>MatchModel-type object</returns>
 		MatchModel GetModel();
 
 		/// <summary>
@@ -114,7 +130,16 @@ namespace Tournament.Structure
 		/// </summary>
 		void ResetPlayers();
 
+		/// <summary>
+		/// Add/record a finished Game.
+		/// </summary>
+		/// <param name="_game">Game-type object to add</param>
 		void AddGame(IGame _game);
+
+		/// <summary>
+		/// Delete/un-record the most recent Game.
+		/// </summary>
+		/// <returns></returns>
 		IGame RemoveLastGame();
 
 		/// <summary>
