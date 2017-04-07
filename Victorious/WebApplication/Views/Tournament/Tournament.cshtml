@@ -17,7 +17,7 @@
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
     <div class="content-header">
-        <h2>Tournament - @Model.Model.Title</h2>
+        <h2 class="tournamentTitle">Tournament - @Model.Model.Title</h2>
         <div class="tournament-buttons">
             @if (userPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
             {
@@ -29,6 +29,7 @@
             @*<svg class="icon icon-trophy"><use xlink:href="#icon-trophy"></use></svg>*@
             <img class="tournament-standings" src="~/Images/svg/trophy.svg" />
         </div>
+        <h3 class="gameTitle">@(Model.Model.Game != null ? Model.Model.Game.Title : "")</h3>
     </div>
     @{
         if (userPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)

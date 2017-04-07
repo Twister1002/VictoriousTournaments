@@ -279,6 +279,7 @@
     <Content Include="Views\Administrator\Games.cshtml" />
     <Content Include="Styles\less\Administrator\Administrator.less" />
     <Content Include="Styles\less\Administrator\Games.less" />
+    <Content Include="Styles\less\Administrator.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

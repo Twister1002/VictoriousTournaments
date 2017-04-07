@@ -43,6 +43,7 @@ namespace WebApplication.Models
         public void Init()
         {
             this.BracketTypes = db.GetAllBracketTypes();
+            this.GameTypes = db.GetAllGames();
             Administrators = new List<UserModel>();
             Participants = new List<UserModel>();
             GetUserPermissions();
@@ -53,6 +54,7 @@ namespace WebApplication.Models
             // Tournament Stuff
             Model.Title                                 = this.Title;
             Model.Description                           = this.Description;
+            Model.GameID                                = this.GameType;
 
             // Tournament Rule Stuff
             Model.TournamentRules.IsPublic              = this.IsPublic;
@@ -85,6 +87,7 @@ namespace WebApplication.Models
         {
             this.Title                  = Model.Title;
             this.Description            = Model.Description;
+            this.GameType               = Model.GameID;
 
             this.IsPublic               = Model.TournamentRules.IsPublic;
             this.RegistrationStartDate  = Model.TournamentRules.RegistrationStartDate;

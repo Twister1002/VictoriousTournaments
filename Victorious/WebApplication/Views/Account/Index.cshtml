@@ -23,7 +23,7 @@
                         <a href="/Tournament/@tournament.TournamentID">
                             <ul class="row-clickable" data-columns="3">
                                 <li class="column">@tournament.Title</li>
-                                <li class="column">GAME</li>
+                                <li class="column">@(tournament.Game != null ? tournament.Game.Title : "None")</li>
                                 <li class="column">@(((DateTime)tournament.TournamentRules.TournamentStartDate).ToShortDateString())</li>
                             </ul>
                         </a>

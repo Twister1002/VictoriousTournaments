@@ -20,14 +20,19 @@
                     @Html.ValidationMessageFor(t => t.Description)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.IsPublic)
-                    @Html.CheckBoxFor(t => t.IsPublic)
-                    @Html.ValidationMessageFor(t => t.IsPublic)
+                    @Html.LabelFor(t => t.GameType)
+                    @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameID", "Title"), "")
+                    @Html.ValidationMessageFor(t => t.GameType)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.BracketType)
                     @Html.DropDownListFor(t => t.BracketType, new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "")
                     @Html.ValidationMessageFor(t => t.BracketType)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.IsPublic)
+                    @Html.CheckBoxFor(t => t.IsPublic)
+                    @Html.ValidationMessageFor(t => t.IsPublic)
                 </li>
             </ul>
         </div>
@@ -54,12 +59,6 @@
                     @Html.TextBoxFor(t => t.TournamentEndDate, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.TournamentEndDate)
                 </li>
-            </ul>
-        </div>
-        <div class="section form-section">
-            <h2>Tournament Rules</h2>
-            <ul>
-                <li>Coming soon</li>
             </ul>
         </div>
         <div class="section form-section">
