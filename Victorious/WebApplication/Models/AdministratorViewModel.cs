@@ -8,11 +8,11 @@ namespace WebApplication.Models
 {
     public class AdministratorViewModel : AdministratorFields
     {
-        public List<GameModel> Games { get; private set; }
+        public List<GameTypeModel> Games { get; private set; }
 
         public AdministratorViewModel()
         {
-            Games = db.GetAllGames();
+            Games = db.GetAllGameTypes();
         }
     }
 }

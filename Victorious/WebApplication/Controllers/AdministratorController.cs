@@ -48,19 +48,19 @@ namespace WebApplication.Controllers
             if (IsAdministrator())
             {
                 Dictionary<string, string> json = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
-                GameModel gameModel = new GameModel();
+                GameTypeModel gameModel = new GameTypeModel();
                 DbError result = DbError.NONE;
 
                 if (json["function"] == "add")
                 {
                     gameModel.Title = json["title"];
-                    result = db.AddGame(gameModel);
-                    gameModel = db.GetAllGames().First(x => x.Title == json["title"]);
+                    result = db.AddGameType(gameModel);
+                    gameModel = db.GetAllGameTypes().First(x => x.Title == json["title"]);
                 }
                 else if (json["function"] == "delete")
                 {
-                    gameModel = db.GetAllGames().First(x => x.Title == json["title"]);
-                    result = db.DeleteGame(gameModel);
+                    gameModel = db.GetAllGameTypes().First(x => x.Title == json["title"]);
+                    result = db.DeleteGameType(gameModel);
                 }
 
                 if (result == DbError.SUCCESS)

@@ -110,7 +110,7 @@
                         slot.attr("data-userid", json.data.defender.id).data("userid", json.data.defender.id);
                         slot.find(".name").text(json.data.defender.name);
 
-                        if (nextMatch.find(".defender").data("userId") != -1 && nextMatch.find(".challenger").data("userid") != -1) {
+                        if (nextMatch.find(".defender").data("userid") != -1 && nextMatch.find(".challenger").data("userid") != -1) {
                             nextMatch.find(".edit").removeClass("hide");
                         }
                         else {
@@ -125,7 +125,7 @@
                         slot.attr("data-userid", json.data.challenger.id).data("userid", json.data.challenger.id);
                         slot.find(".name").text(json.data.challenger.name);
 
-                        if (nextMatch.find(".defender").data("userId") != -1 && nextMatch.find(".challenger").data("userid") != -1) {
+                        if (nextMatch.find(".defender").data("userid") != -1 && nextMatch.find(".challenger").data("userid") != -1) {
                             nextMatch.find(".edit").removeClass("hide");
                         }
                         else {

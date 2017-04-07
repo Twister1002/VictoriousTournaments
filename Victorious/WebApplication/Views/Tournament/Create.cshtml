@@ -21,7 +21,7 @@
                 </li>
                 <li>
                     @Html.LabelFor(t => t.GameType)
-                    @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameID", "Title"), "")
+                    @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "")
                     @Html.ValidationMessageFor(t => t.GameType)
                 </li>
                 <li>

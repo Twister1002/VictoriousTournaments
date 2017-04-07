@@ -29,7 +29,7 @@
             @*<svg class="icon icon-trophy"><use xlink:href="#icon-trophy"></use></svg>*@
             <img class="tournament-standings" src="~/Images/svg/trophy.svg" />
         </div>
-        <h3 class="gameTitle">@(Model.Model.Game != null ? Model.Model.Game.Title : "")</h3>
+        <h3 class="gameTitle">@(Model.Model.GameType != null ? Model.Model.GameType.Title : "")</h3>
     </div>
     @{
         if (userPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
