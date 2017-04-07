@@ -5,7 +5,7 @@ namespace DataLib
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    partial class VictoriousDbContext : DbContext
+    public partial class VictoriousDbContext : DbContext
     {
 #if DEBUG
         public VictoriousDbContext()
