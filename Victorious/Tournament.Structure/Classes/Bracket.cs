@@ -327,6 +327,26 @@ namespace Tournament.Structure
 
 			ResetBracket();
 		}
+		public void RemovePlayer(int _playerId)
+		{
+			if (null == Players)
+			{
+				throw new NullReferenceException
+					("Playerlist is null. This shouldn't happen...");
+			}
+
+			for (int i = 0; i < Players.Count; ++i)
+			{
+				if (Players[i].Id == _playerId)
+				{
+					Players.RemoveAt(i);
+					ResetBracket();
+					return;
+				}
+			}
+			throw new PlayerNotFoundException
+				("Player not found in this Bracket!");
+		}
 		public void RemovePlayer(IPlayer _player)
 		{
 			if (null == _player)

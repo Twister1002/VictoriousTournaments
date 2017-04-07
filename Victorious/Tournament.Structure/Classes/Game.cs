@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public class Game : IGame
@@ -54,10 +56,17 @@ namespace Tournament.Structure
 		public Game()
 			: this(-1, 0)
 		{ }
+		public Game(GameModel _model)
+		{
+			throw new NotImplementedException();
+		}
 		#endregion
 
 		#region Public Methods
-		
+		public GameModel GetModel()
+		{
+			throw new NotImplementedException();
+		}
 		#endregion
 	}
 }

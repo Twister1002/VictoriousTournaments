@@ -156,7 +156,9 @@ namespace Tournament.Structure
 		/// Remove a Player from the bracket.
 		/// (Deletes all Matches)
 		/// </summary>
-		/// <param name="_player">Player-type object to remove</param>
+		/// <param name="_playerId">ID of Player to remove</param>
+		void RemovePlayer(int _playerId);
+		[System.Obsolete("use RemovePlayer(int) instead", false)]
 		void RemovePlayer(IPlayer _player);
 
 		/// <summary>
