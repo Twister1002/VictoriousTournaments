@@ -15,7 +15,7 @@
                 @{
                     foreach (var game in Model.Games)
                     {
-                        <ul data-columns="3">
+                        <ul class="game" data-columns="3" data-gameid="@game.GameTypeID">
                             <li class="gameTitle">@game.Title</li>
                             <li class="gamePlatforms">Unknown</li>
                             <li class="gameDelete"><img class="icon icon-cross" src="~/Images/svg/cross.svg" /></li>
@@ -27,10 +27,10 @@
                 <ul data-columns="3">
                     <li class="gameTitle">
                         @Html.LabelFor(x => x.GameName)
-                        @Html.TextBoxFor(x => x.GameName)
+                        @Html.TextBoxFor(x => x.GameName, null, new { @class = "field" })
                     </li>
                     <li class="gamePlatforms">CHECKBOXES</li>
-                    <li class="GameAdd">
+                    <li class="gameAdd">
                         <button type="button" class="GameAddButton">Add Game</button>
                     </li>
                 </ul>

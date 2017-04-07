@@ -24,7 +24,7 @@ namespace DataLib
 
         public int? TournamentRulesID { get; set; }
 
-        public int? GameID { get; set; }
+        public int? GameTypeID { get; set; }
 
         [Required]
         public string Title { get; set; }
@@ -42,8 +42,8 @@ namespace DataLib
 
         public int LastEditedByID { get; set; }
 
-        [ForeignKey("GameID")]
-        public GameModel Game { get; set; }
+        [ForeignKey("GameTypeID")]
+        public GameTypeModel GameType { get; set; }
 
         [ForeignKey("TournamentRulesID")]
         public TournamentRuleModel TournamentRules { get; set; }

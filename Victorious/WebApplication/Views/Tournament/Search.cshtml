@@ -23,7 +23,7 @@
                     <a href="/Tournament/@tournyModel.TournamentID">
                         <ul class="list-table-columns column-clickable" data-columns="4">
                             <li>@tournyModel.Title</li>
-                            <li>GAME</li>
+                            <li>@(tournyModel.GameType != null ? tournyModel.GameType.Title : "None")</li>
                             <li>@(((DateTime)tournyModel.TournamentRules.TournamentStartDate).ToShortDateString())</li>
                             <li>@((bool)tournyModel.TournamentRules.IsPublic ? "Public" : "Private")</li>
                         </ul>

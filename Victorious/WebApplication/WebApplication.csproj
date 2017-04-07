@@ -106,7 +106,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\dbo.Brackets.data.sql" />
-    <Content Include="App_Data\dbo.BracketTypes.data.sql" />
     <Content Include="App_Data\dbo.TournamentModelUserModels.data.sql" />
     <Content Include="App_Data\dbo.TournamentRules.data.sql" />
     <Content Include="App_Data\dbo.Tournaments.data.sql" />
@@ -279,6 +278,7 @@
     <Content Include="Views\Administrator\Games.cshtml" />
     <Content Include="Styles\less\Administrator\Administrator.less" />
     <Content Include="Styles\less\Administrator\Games.less" />
+    <Content Include="Styles\less\Administrator.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

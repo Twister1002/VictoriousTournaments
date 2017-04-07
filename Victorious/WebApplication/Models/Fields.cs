@@ -81,10 +81,15 @@ namespace WebApplication.Models
         public DateTime? TournamentEndDate { get; set; }
         
         public List<BracketTypeModel> BracketTypes { get; protected set; }
+        public List<GameTypeModel> GameTypes { get; protected set; }
 
         [Display(Name = "Bracket Type")]
         [Required(ErrorMessage ="Select a bracket type")]
         public int BracketType { get; set; }
+
+        [Display(Name ="Game")]
+        [Required(ErrorMessage ="Select a game")]
+        public int? GameType { get; set; }
 
         [Display(Name = "Public")]
         public bool IsPublic { get; set; }
