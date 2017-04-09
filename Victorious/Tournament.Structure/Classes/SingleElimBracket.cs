@@ -137,9 +137,9 @@ namespace Tournament.Structure
 				}
 			}
 		}
-#endregion
+		#endregion
 
-#region Public Methods
+		#region Public Methods
 		public override void CreateBracket(ushort _gamesPerMatch = 1)
 		{
 			if (_gamesPerMatch < 1)
@@ -154,7 +154,7 @@ namespace Tournament.Structure
 				return;
 			}
 
-#region Create the Bracket
+			#region Create the Bracket
 			int totalMatches = Players.Count - 1;
 			int numMatches = 0;
 			List<List<IMatch>> roundList = new List<List<IMatch>>();
@@ -205,9 +205,9 @@ namespace Tournament.Structure
 				}
 				// Else: round is abnormal. Ignore it for now (we'll handle it later)
 			}
-#endregion
+			#endregion
 
-#region Assign the Players
+			#region Assign the Players
 			// Assign top two seeds to final match
 			int pIndex = 0;
 			roundList[0][0].AddPlayer(Players[pIndex++]);
@@ -290,9 +290,9 @@ namespace Tournament.Structure
 					}
 				}
 			}
-#endregion
+			#endregion
 
-#region Set Bracket Member Variables
+			#region Set Bracket Member Variables
 			Rankings = new List<IPlayerScore>();
 			// Move bracket data to member variables (Matches dictionary)
 			NumberOfRounds = roundList.Count;
@@ -307,7 +307,7 @@ namespace Tournament.Structure
 				}
 			}
 			NumberOfMatches = Matches.Count;
-#endregion
+			#endregion
 		}
 
 		public override void AddGame(int _matchNumber, IGame _game)
@@ -733,6 +733,6 @@ namespace Tournament.Structure
 
 			return m;
 		}
-#endregion
+		#endregion
 	}
 }

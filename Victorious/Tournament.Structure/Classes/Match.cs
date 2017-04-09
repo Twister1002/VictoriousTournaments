@@ -54,7 +54,8 @@ namespace Tournament.Structure
 			IsReady = false;
 			IsFinished = false;
 			MaxGames = WinsNeeded = 1;
-			Model.WinsNeeded = 1;
+			Model.MaxGames = 1;
+			//Model.WinsNeeded = 1;
 
 			Players = new IPlayer[2] { null, null };
 			Model.ChallengerID = Model.DefenderID = -1;
@@ -126,8 +127,11 @@ namespace Tournament.Structure
 
 			this.Id = _m.MatchID;
 			this.Model = _m;
+			this.SetMaxGames((ushort)(_m.MaxGames));
+#if false
 			this.SetWinsNeeded((ushort)(_m.WinsNeeded));
-			//this.MaxGames = _m.MaxGames;
+			this.MaxGames = _m.MaxGames;
+#endif
 
 			Players = new IPlayer[2];
 			Players[(int)PlayerSlot.Defender] = (null == _m.Defender)
@@ -231,7 +235,9 @@ namespace Tournament.Structure
 			model.NextLoserMatchNumber = this.NextLoserMatchNumber;
 			model.PrevDefenderMatchNumber = this.PreviousMatchNumbers[(int)PlayerSlot.Defender];
 			model.PrevChallengerMatchNumber = this.PreviousMatchNumbers[(int)PlayerSlot.Challenger];
-			model.WinsNeeded = this.WinsNeeded;
+			model.MaxGames = (this.MaxGames > 0)
+				? this.MaxGames : (this.WinsNeeded * 2 - 1);
+			//model.WinsNeeded = this.WinsNeeded;
 
 			model.ChallengerID = (null != Players[(int)PlayerSlot.Challenger])
 				? Players[(int)PlayerSlot.Challenger].Id : -1;
@@ -423,8 +429,9 @@ namespace Tournament.Structure
 			}
 
 			MaxGames = _numberOfGames;
+			Model.MaxGames = this.MaxGames;
 			WinsNeeded = (ushort)(_numberOfGames / 2 + 1);
-			Model.WinsNeeded = this.WinsNeeded;
+			//Model.WinsNeeded = this.WinsNeeded;
 		}
 		public void SetWinsNeeded(ushort _wins)
 		{
@@ -440,8 +447,9 @@ namespace Tournament.Structure
 			}
 
 			WinsNeeded = _wins;
-			Model.WinsNeeded = _wins;
+			//Model.WinsNeeded = _wins;
 			MaxGames = (ushort)(2 * _wins - 1);
+			Model.MaxGames = MaxGames;
 		}
 		public void SetRoundIndex(int _index)
 		{
@@ -549,9 +557,9 @@ namespace Tournament.Structure
 			NextLoserMatchNumber = _number;
 			Model.NextLoserMatchNumber = _number;
 		}
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 		public void AddWin(PlayerSlot _slot)
 		{
 			if (_slot != PlayerSlot.Defender &&
@@ -583,7 +591,7 @@ namespace Tournament.Structure
 			}
 
 			int winsNeeded = (MaxGames > 0)
-				? MaxGames / 2 + 1 : WinsNeeded;
+				? MaxGames / 2 + 1 : this.WinsNeeded;
 			if (Score[(int)_slot] >= winsNeeded)
 			{
 				WinnerSlot = _slot;
@@ -628,6 +636,6 @@ namespace Tournament.Structure
 					break;
 			}
 		}
-		#endregion
+#endregion
 	}
 }
