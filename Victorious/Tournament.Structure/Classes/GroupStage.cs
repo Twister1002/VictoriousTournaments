@@ -27,6 +27,23 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		public override void AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
+		{
+			int groupIndex;
+			GetMatchData(ref _matchNumber, out groupIndex);
+			Groups[groupIndex].AddGame(_matchNumber, _defenderScore, _challengerScore);
+			UpdateRankings();
+
+			IsFinished = true;
+			foreach (IBracket group in Groups)
+			{
+				if (!group.IsFinished)
+				{
+					IsFinished = false;
+					break;
+				}
+			}
+		}
 		public override void AddGame(int _matchNumber, IGame _game)
 		{
 			int groupIndex;

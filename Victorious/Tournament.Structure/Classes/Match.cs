@@ -19,9 +19,7 @@ namespace Tournament.Structure
 		{ get; private set; }
 		public bool IsFinished
 		{ get; private set; }
-		public ushort MaxGames
-		{ get; private set; }
-		public ushort WinsNeeded
+		public int MaxGames
 		{ get; private set; }
 		public IPlayer[] Players
 		{ get; private set; }
@@ -29,7 +27,7 @@ namespace Tournament.Structure
 		{ get; private set; }
 		public List<IGame> Games
 		{ get; private set; }
-		public ushort[] Score
+		public int[] Score
 		{ get; private set; }
 		public int RoundIndex
 		{ get; private set; }
@@ -53,16 +51,15 @@ namespace Tournament.Structure
 
 			IsReady = false;
 			IsFinished = false;
-			MaxGames = WinsNeeded = 1;
+			MaxGames = 1;
 			Model.MaxGames = 1;
-			//Model.WinsNeeded = 1;
 
 			Players = new IPlayer[2] { null, null };
 			Model.ChallengerID = Model.DefenderID = -1;
 			WinnerSlot = PlayerSlot.unspecified;
 			Model.WinnerID = -1;
 			Games = new List<IGame>();
-			Score = new ushort[2] { 0, 0 };
+			Score = new int[2] { 0, 0 };
 			Model.DefenderScore = Model.ChallengerScore = 0;
 
 			RoundIndex = -1;
@@ -84,9 +81,7 @@ namespace Tournament.Structure
 			this.Model = _match.Model;
 			this.IsReady = _match.IsReady;
 			this.IsFinished = _match.IsFinished;
-			this.WinsNeeded = _match.WinsNeeded;
-			this.MaxGames = (_match.MaxGames > 0)
-				? _match.MaxGames : (ushort)(2 * _match.WinsNeeded - 1);
+			this.MaxGames = _match.MaxGames;
 			this.WinnerSlot = _match.WinnerSlot;
 			this.RoundIndex = _match.RoundIndex;
 			this.MatchIndex = _match.MatchIndex;
@@ -95,7 +90,7 @@ namespace Tournament.Structure
 			this.NextLoserMatchNumber = _match.NextLoserMatchNumber;
 
 			this.Players = new IPlayer[2];
-			this.Score = new ushort[2];
+			this.Score = new int[2];
 			this.PreviousMatchNumbers = new int[2];
 			for (int i = 0; i < 2; ++i)
 			{
@@ -108,14 +103,15 @@ namespace Tournament.Structure
 					this.Players[i] = new Team(_match.Players[i] as Team);
 				}
 
-				this.Score[i] = _match.Score[i];
+				//this.Score[i] = _match.Score[i];
 				this.PreviousMatchNumbers[i] = _match.PreviousMatchNumbers[i];
 			}
 
 			this.Games = new List<IGame>();
-			foreach (IGame game in _match.Games)
+			foreach (IGame game in _match.Games.OrderBy(g => g.GameNumber))
 			{
-				this.Games.Add(game);
+				//this.Games.Add(game);
+				this.AddGame(game);
 			}
 		}
 		public Match(MatchModel _m)
@@ -127,11 +123,9 @@ namespace Tournament.Structure
 
 			this.Id = _m.MatchID;
 			this.Model = _m;
-			this.SetMaxGames((ushort)(_m.MaxGames));
-#if false
-			this.SetWinsNeeded((ushort)(_m.WinsNeeded));
-			this.MaxGames = _m.MaxGames;
-#endif
+			this.MaxGames = (null == _m.MaxGames)
+				? 1 : (int)(_m.MaxGames);
+			int winsNeeded = MaxGames / 2 + 1;
 
 			Players = new IPlayer[2];
 			Players[(int)PlayerSlot.Defender] = (null == _m.Defender)
@@ -141,22 +135,27 @@ namespace Tournament.Structure
 			IsReady = (null == Players[0] || null == Players[1])
 				? false : true;
 
-			Score = new ushort[2] { 0, 0 };
-			Score[(int)PlayerSlot.Defender] = (null == _m.DefenderScore)
-				? (ushort)0 : (ushort)(_m.DefenderScore);
-			Score[(int)PlayerSlot.Challenger] = (null == _m.ChallengerScore)
-				? (ushort)0 : (ushort)(_m.ChallengerScore);
-			if (Score[0] > WinsNeeded || Score[1] > WinsNeeded)
+			Games = new List<IGame>();
+			Score = new int[2] { 0, 0 };
+			foreach (GameModel model in _m.Games.OrderBy(m => m.GameNumber))
+			{
+				this.AddGame(new Game(model));
+			}
+			//Score[(int)PlayerSlot.Defender] = (null == _m.DefenderScore)
+			//	? 0 : (int)(_m.DefenderScore);
+			//Score[(int)PlayerSlot.Challenger] = (null == _m.ChallengerScore)
+			//	? 0 : (int)(_m.ChallengerScore);
+			if (Score[0] > winsNeeded || Score[1] > winsNeeded)
 			{
 				throw new ScoreException
-					("Score cannot be higher than Wins Needed!");
+					("Score cannot be higher than the match allows!");
 			}
 			WinnerSlot = PlayerSlot.unspecified;
-			if (Score[(int)PlayerSlot.Defender] == WinsNeeded)
+			if (Score[(int)PlayerSlot.Defender] == winsNeeded)
 			{
 				WinnerSlot = PlayerSlot.Defender;
 			}
-			else if (Score[(int)PlayerSlot.Challenger] == WinsNeeded)
+			else if (Score[(int)PlayerSlot.Challenger] == winsNeeded)
 			{
 				WinnerSlot = PlayerSlot.Challenger;
 			}
@@ -235,9 +234,7 @@ namespace Tournament.Structure
 			model.NextLoserMatchNumber = this.NextLoserMatchNumber;
 			model.PrevDefenderMatchNumber = this.PreviousMatchNumbers[(int)PlayerSlot.Defender];
 			model.PrevChallengerMatchNumber = this.PreviousMatchNumbers[(int)PlayerSlot.Challenger];
-			model.MaxGames = (this.MaxGames > 0)
-				? this.MaxGames : (this.WinsNeeded * 2 - 1);
-			//model.WinsNeeded = this.WinsNeeded;
+			model.MaxGames = this.MaxGames;
 
 			model.ChallengerID = (null != Players[(int)PlayerSlot.Challenger])
 				? Players[(int)PlayerSlot.Challenger].Id : -1;
@@ -248,6 +245,23 @@ namespace Tournament.Structure
 				: Players[(int)WinnerSlot].Id;
 			model.ChallengerScore = this.Score[(int)PlayerSlot.Challenger];
 			model.DefenderScore = this.Score[(int)PlayerSlot.Defender];
+
+			model.Games = new List<GameModel>();
+			foreach (IGame game in this.Games)
+			{
+				GameModel gm = new GameModel();
+				gm.GameID = game.Id;
+				gm.ChallengerID = game.PlayerIDs[(int)PlayerSlot.Challenger];
+				gm.DefenderID = game.PlayerIDs[(int)PlayerSlot.Defender];
+				gm.WinnerID = (PlayerSlot.unspecified == game.WinnerSlot)
+					? (int)(game.WinnerSlot) : game.PlayerIDs[(int)(game.WinnerSlot)];
+				gm.MatchID = this.Id;
+				gm.GameNumber = game.GameNumber;
+				gm.ChallengerScore = game.Score[(int)PlayerSlot.Challenger];
+				gm.DefenderScore = game.Score[(int)PlayerSlot.Defender];
+
+				model.Games.Add(gm);
+			}
 
 			return model;
 		}
@@ -369,6 +383,43 @@ namespace Tournament.Structure
 			IsReady = false;
 		}
 
+		public void AddGame(int _defenderScore, int _challengerScore)
+		{
+			if (!IsReady)
+			{
+				throw new InactiveMatchException
+					("Cannot add games to an inactive match!");
+			}
+			if (_defenderScore < 0 || _challengerScore < 0)
+			{
+				throw new ScoreException
+					("Score cannot be negative!");
+			}
+
+			IGame game = new Game(this.Id, (Games.Count + 1));
+			for (int i = 0; i < 2; ++i)
+			{
+				game.PlayerIDs[i] = this.Players[i].Id;
+			}
+			game.Score[(int)PlayerSlot.Defender] = _defenderScore;
+			game.Score[(int)PlayerSlot.Challenger] = _challengerScore;
+			if (_defenderScore > _challengerScore)
+			{
+				game.WinnerSlot = PlayerSlot.Defender;
+			}
+			else if (_challengerScore > _defenderScore)
+			{
+				game.WinnerSlot = PlayerSlot.Challenger;
+			}
+			else
+			{
+				throw new NotImplementedException
+					("Tie Games are not (yet) supported!");
+			}
+
+			AddWin(game.WinnerSlot);
+			Games.Add(game);
+		}
 		public void AddGame(IGame _game)
 		{
 			if (null == _game)
@@ -395,6 +446,12 @@ namespace Tournament.Structure
 		}
 		public IGame RemoveLastGame()
 		{
+			if (0 == Games.Count)
+			{
+				throw new GameNotFoundException
+					("No Games to remove!");
+			}
+
 			IGame lastGame = Games[Games.Count - 1];
 			SubtractWin(Games[Games.Count - 1].WinnerSlot);
 			Games.RemoveAt(Games.Count - 1);
@@ -405,7 +462,7 @@ namespace Tournament.Structure
 		{
 			if (null == Score)
 			{
-				Score = new ushort[2];
+				Score = new int[2];
 			}
 
 			IsFinished = false;
@@ -416,7 +473,7 @@ namespace Tournament.Structure
 			Model.DefenderScore = Model.ChallengerScore = 0;
 		}
 
-		public void SetMaxGames(ushort _numberOfGames)
+		public void SetMaxGames(int _numberOfGames)
 		{
 			if (IsFinished)
 			{
@@ -431,26 +488,6 @@ namespace Tournament.Structure
 
 			MaxGames = _numberOfGames;
 			Model.MaxGames = this.MaxGames;
-			WinsNeeded = (ushort)(_numberOfGames / 2 + 1);
-			//Model.WinsNeeded = this.WinsNeeded;
-		}
-		public void SetWinsNeeded(ushort _wins)
-		{
-			if (IsFinished)
-			{
-				throw new InactiveMatchException
-					("Match is finished; cannot change victory conditions.");
-			}
-			if (_wins < 1)
-			{
-				throw new ScoreException
-					("Wins Needed cannot be less than 1!");
-			}
-
-			WinsNeeded = _wins;
-			//Model.WinsNeeded = _wins;
-			MaxGames = (ushort)(2 * _wins - 1);
-			Model.MaxGames = MaxGames;
 		}
 		public void SetRoundIndex(int _index)
 		{
@@ -591,8 +628,7 @@ namespace Tournament.Structure
 					break;
 			}
 
-			int winsNeeded = (MaxGames > 0)
-				? MaxGames / 2 + 1 : this.WinsNeeded;
+			int winsNeeded = MaxGames / 2 + 1;
 			if (Score[(int)_slot] >= winsNeeded)
 			{
 				WinnerSlot = _slot;

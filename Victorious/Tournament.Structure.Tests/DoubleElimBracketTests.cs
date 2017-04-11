@@ -8,7 +8,8 @@ namespace Tournament.Structure.Tests
 	[TestClass]
 	public class DoubleElimBracketTests
 	{
-		#region Bracket Creation
+#if false
+#region Bracket Creation
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB Ctor")]
@@ -229,7 +230,7 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(b.NumberOfMatches, b.GrandFinal.MatchNumber);
 		}
-		#endregion
+#endregion
 
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -266,7 +267,7 @@ namespace Tournament.Structure.Tests
 			Assert.AreEqual(2, b.GetLowerRound(1).Count);
 		}
 
-		#region Bracket Progression
+#region Bracket Progression
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB AddWin")]
@@ -905,6 +906,7 @@ namespace Tournament.Structure.Tests
 
 			Assert.IsNotNull(b.GetLowerRound(1)[0].Players[(int)PlayerSlot.Challenger]);
 		}
-		#endregion
+#endregion
+#endif
 	}
 }

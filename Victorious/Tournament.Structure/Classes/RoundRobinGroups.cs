@@ -138,10 +138,10 @@ namespace Tournament.Structure
 						.Contains((int)(model.DefenderID)))
 					{
 						// Update Match's score:
-						//group.GetMatch(model.MatchNumber)
-						//	.SetMaxGames((ushort)(model.MaxGames));
 						group.GetMatch(model.MatchNumber)
-							.SetWinsNeeded((ushort)(model.WinsNeeded));
+							.SetMaxGames((ushort)(model.MaxGames));
+						//group.GetMatch(model.MatchNumber)
+						//	.SetWinsNeeded((ushort)(model.WinsNeeded));
 
 						List<GameModel> gModelList = model.Games
 							.OrderBy(g => g.GameNumber).ToList();
@@ -190,10 +190,10 @@ namespace Tournament.Structure
 				}
 			}
 		}
-#endregion
+		#endregion
 
-#region Public Methods
-		public override void CreateBracket(ushort _gamesPerMatch = 1)
+		#region Public Methods
+		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			ResetBracket();
 			if (Players.Count < 2 ||
@@ -260,6 +260,6 @@ namespace Tournament.Structure
 				}
 			}
 		}
-#endregion
+		#endregion
 	}
 }

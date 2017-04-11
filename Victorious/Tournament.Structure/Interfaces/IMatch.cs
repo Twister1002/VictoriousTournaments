@@ -33,9 +33,7 @@ namespace Tournament.Structure
 		/// </summary>
 		bool IsFinished { get; }
 
-		ushort MaxGames { get; }
-		[System.Obsolete("use MaxGames instead", false)]
-		ushort WinsNeeded { get; }
+		int MaxGames { get; }
 		IPlayer[] Players { get; }
 
 		/// <summary>
@@ -52,7 +50,7 @@ namespace Tournament.Structure
 		/// <summary>
 		/// 2-sized Array, indexes correspond to Players array.
 		/// </summary>
-		ushort[] Score { get; }
+		int[] Score { get; }
 
 		/// <summary>
 		/// 1-indexed
@@ -127,6 +125,8 @@ namespace Tournament.Structure
 		/// </summary>
 		void ResetPlayers();
 
+		void AddGame(int _defenderScore, int _challengerScore);
+
 		/// <summary>
 		/// Add/record a finished Game.
 		/// </summary>
@@ -153,10 +153,7 @@ namespace Tournament.Structure
 		/// Set the max number of Games to play this Match.
 		/// </summary>
 		/// <param name="_numberOfGames">How many games this match may last</param>
-		void SetMaxGames(ushort _numberOfGames);
-
-		[System.Obsolete("use SetMaxGames() instead", false)]
-		void SetWinsNeeded(ushort _wins);
+		void SetMaxGames(int _numberOfGames);
 
 		/// <summary>
 		/// Sets a NEW round index for Match.
