@@ -31,16 +31,6 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(1, 2);
 		}
-		[TestMethod]
-		[TestCategory("Match")]
-		[TestCategory("Match Ctor")]
-		[TestCategory("MatchModel")]
-		public void MatchModelCtor_HandlesAnEmptyModel()
-		{
-			IMatch m = new Match(new MatchModel());
-
-			Assert.IsInstanceOfType(m, typeof(IMatch));
-		}
 
 		[TestMethod]
 		[TestCategory("Match")]
