@@ -51,15 +51,15 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Generates the bracket (rounds & matches).
 		/// </summary>
-		/// <param name="_winsPerMatch">"Games" needed to win each match</param>
-		void CreateBracket(ushort _winsPerMatch = 1);
+		/// <param name="_gamesPerMatch">Max games played each match</param>
+		void CreateBracket(ushort _gamesPerMatch = 1);
 
 		/// <summary>
 		/// Add/record a finished Game.
 		/// </summary>
 		/// <param name="_matchNumer">Match to contain this Game</param>
 		/// <param name="_game">Game-type object to add</param>
-		void AddGame(int _matchNumer, IGame _game);
+		void AddGame(int _matchNumber, IGame _game);
 
 		/// <summary>
 		/// Delete/un-record a Match's most recent Game.
@@ -67,21 +67,8 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Number of Match to modify</param>
 		void RemoveLastGame(int _matchNumber);
 
-		/// <summary>
-		/// Record one win for the specified match.
-		/// Advances Player if the Match is over.
-		/// </summary>
-		/// <param name="_matchNumber">Number of specified match</param>
-		/// <param name="_slot">Winning player's slot: Defender or Challenger</param>
 		[System.Obsolete("use AddGame(int, IGame) instead", false)]
 		void AddWin(int _matchNumber, PlayerSlot _slot);
-
-		/// <summary>
-		/// Remove one win for the specified match.
-		/// Resets any affected "future" matches.
-		/// </summary>
-		/// <param name="_matchNumber">Number of specified match</param>
-		/// <param name="_slot">Player slot: Defender or Challenger</param>
 		[System.Obsolete("use RemoveLastGame(int) instead", false)]
 		void SubtractWin(int _matchNumber, PlayerSlot _slot);
 
@@ -158,7 +145,7 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_playerId">ID of Player to remove</param>
 		void RemovePlayer(int _playerId);
-		[System.Obsolete("use RemovePlayer(int) instead", false)]
+		[System.Obsolete("use RemovePlayer(int ID) instead", false)]
 		void RemovePlayer(IPlayer _player);
 
 		/// <summary>
@@ -190,6 +177,11 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Match Number of the desired Match</param>
 		/// <returns>Specified Match object</returns>
 		IMatch GetMatch(int _matchNumber);
+
+		/// <summary>
+		/// Resets every Match to a pre-play state (no games played).
+		/// </summary>
+		void ResetMatches();
 #endregion
 	}
 }

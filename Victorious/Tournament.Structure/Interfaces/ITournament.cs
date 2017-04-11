@@ -61,7 +61,7 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_playerId">ID of Player to remove</param>
 		void RemovePlayer(int _playerId);
-		[System.Obsolete("use RemovePlayer(int) instead", false)]
+		[System.Obsolete("use RemovePlayer(int ID) instead", false)]
 		void RemovePlayer(IPlayer _player);
 
 		/// <summary>

@@ -93,9 +93,9 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		public override void CreateBracket(ushort _winsPerMatch = 1)
+		public override void CreateBracket(ushort _gamesPerMatch = 1)
 		{
-			base.CreateBracket(_winsPerMatch);
+			base.CreateBracket(_gamesPerMatch);
 			if (0 == NumberOfMatches)
 			{
 				return;
@@ -117,7 +117,7 @@ namespace Tournament.Structure
 					// Add new matchups per round
 					// (rounds[0] is the final match)
 					IMatch m = new Match();
-					m.SetWinsNeeded(_winsPerMatch);
+					m.SetMaxGames(_gamesPerMatch);
 					roundList[r].Add(m);
 				}
 				++r;
@@ -209,7 +209,7 @@ namespace Tournament.Structure
 				// Create a Grand Final
 				GrandFinal = new Match();
 				GrandFinal.SetMatchNumber(matchNum);
-				GrandFinal.SetWinsNeeded(_winsPerMatch);
+				GrandFinal.SetMaxGames(_gamesPerMatch);
 				GrandFinal.SetRoundIndex(1);
 				GrandFinal.SetMatchIndex(1);
 				GrandFinal.AddPreviousMatchNumber(Matches.Count);

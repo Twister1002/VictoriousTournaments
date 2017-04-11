@@ -138,9 +138,18 @@ namespace Tournament.Structure
 						.Contains((int)(model.DefenderID)))
 					{
 						// Update Match's score:
+						//group.GetMatch(model.MatchNumber)
+						//	.SetMaxGames((ushort)(model.MaxGames));
 						group.GetMatch(model.MatchNumber)
 							.SetWinsNeeded((ushort)(model.WinsNeeded));
 
+						List<GameModel> gModelList = model.Games
+							.OrderBy(g => g.GameNumber).ToList();
+						foreach (GameModel gmodel in gModelList)
+						{
+							group.AddGame(model.MatchNumber, new Game(gmodel));
+						}
+#if false
 						if (model.DefenderScore < model.ChallengerScore)
 						{
 							for (int i = 0; i < model.DefenderScore; ++i)
@@ -163,7 +172,7 @@ namespace Tournament.Structure
 								group.AddWin(model.MatchNumber, PlayerSlot.Defender);
 							}
 						}
-
+#endif
 						break;
 					}
 				}
@@ -181,10 +190,10 @@ namespace Tournament.Structure
 				}
 			}
 		}
-		#endregion
+#endregion
 
-		#region Public Methods
-		public override void CreateBracket(ushort _winsPerMatch = 1)
+#region Public Methods
+		public override void CreateBracket(ushort _gamesPerMatch = 1)
 		{
 			ResetBracket();
 			if (Players.Count < 2 ||
@@ -202,7 +211,9 @@ namespace Tournament.Structure
 					pList.Add(Players[p + b]);
 				}
 
-				Groups.Add(new RoundRobinBracket(pList, MaxRounds));
+				IBracket newGroup = new RoundRobinBracket(pList, MaxRounds);
+				newGroup.CreateBracket(_gamesPerMatch);
+				Groups.Add(newGroup);
 			}
 
 			Rankings = new List<IPlayerScore>();
@@ -214,6 +225,12 @@ namespace Tournament.Structure
 					: NumberOfRounds;
 				Rankings.AddRange(group.Rankings);
 			}
+		}
+
+		public override void ResetMatches()
+		{
+			base.ResetMatches();
+			UpdateRankings();
 		}
 		#endregion
 
@@ -243,6 +260,6 @@ namespace Tournament.Structure
 				}
 			}
 		}
-		#endregion
+#endregion
 	}
 }

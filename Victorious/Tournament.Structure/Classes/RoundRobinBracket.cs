@@ -144,7 +144,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		public override void CreateBracket(ushort _winsPerMatch = 1)
+		public override void CreateBracket(ushort _gamesPerMatch = 1)
 		{
 			ResetBracket();
 			if (Players.Count < 2)
@@ -194,7 +194,7 @@ namespace Tournament.Structure
 					match.SetMatchNumber(NumberOfMatches + 1);
 					match.SetRoundIndex(NumberOfRounds);
 					match.SetMatchIndex(m + 1);
-					match.SetWinsNeeded(_winsPerMatch);
+					match.SetMaxGames(_gamesPerMatch);
 					match.AddPlayer(Players[(m + r) % Players.Count]);
 					match.AddPlayer(Players[(Players.Count - 1 - m + r) % Players.Count]);
 
@@ -361,9 +361,19 @@ namespace Tournament.Structure
 
 			IsFinished = false;
 		}
-#endregion
 
-#region Private Methods
+		public override void ResetMatches()
+		{
+			base.ResetMatches();
+			foreach (IPlayerScore ps in Rankings)
+			{
+				ps.Rank = 1;
+				ps.Score = 0;
+			}
+		}
+		#endregion
+
+		#region Private Methods
 		protected override void UpdateRankings()
 		{
 			Rankings.Sort((first, second) => -1 * (first.Score.CompareTo(second.Score)));

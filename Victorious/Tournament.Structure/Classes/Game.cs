@@ -14,7 +14,7 @@ namespace Tournament.Structure
 		public int Id
 		{ get; private set; }
 		public int MatchId
-		{ get; private set; }
+		{ get; set; }
 		public int GameNumber
 		{ get; set; }
 		public int[] PlayerIDs

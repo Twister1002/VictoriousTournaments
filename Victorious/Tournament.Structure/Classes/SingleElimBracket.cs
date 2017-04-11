@@ -137,15 +137,15 @@ namespace Tournament.Structure
 				}
 			}
 		}
-#endregion
+		#endregion
 
-#region Public Methods
-		public override void CreateBracket(ushort _winsPerMatch = 1)
+		#region Public Methods
+		public override void CreateBracket(ushort _gamesPerMatch = 1)
 		{
-			if (_winsPerMatch < 1)
+			if (_gamesPerMatch < 1)
 			{
 				throw new ScoreException
-					("Wins Per Match must be greater than 0!");
+					("Games Per Match must be greater than 0!");
 			}
 
 			ResetBracket();
@@ -154,7 +154,7 @@ namespace Tournament.Structure
 				return;
 			}
 
-#region Create the Bracket
+			#region Create the Bracket
 			int totalMatches = Players.Count - 1;
 			int numMatches = 0;
 			List<List<IMatch>> roundList = new List<List<IMatch>>();
@@ -170,7 +170,7 @@ namespace Tournament.Structure
 					// Add new matchups per round
 					// (rounds[0] is the final match)
 					IMatch m = new Match();
-					m.SetWinsNeeded(_winsPerMatch);
+					m.SetMaxGames(_gamesPerMatch);
 					roundList[r].Add(m);
 				}
 			}
@@ -205,9 +205,9 @@ namespace Tournament.Structure
 				}
 				// Else: round is abnormal. Ignore it for now (we'll handle it later)
 			}
-#endregion
+			#endregion
 
-#region Assign the Players
+			#region Assign the Players
 			// Assign top two seeds to final match
 			int pIndex = 0;
 			roundList[0][0].AddPlayer(Players[pIndex++]);
@@ -290,9 +290,9 @@ namespace Tournament.Structure
 					}
 				}
 			}
-#endregion
+			#endregion
 
-#region Set Bracket Member Variables
+			#region Set Bracket Member Variables
 			Rankings = new List<IPlayerScore>();
 			// Move bracket data to member variables (Matches dictionary)
 			NumberOfRounds = roundList.Count;
@@ -307,7 +307,7 @@ namespace Tournament.Structure
 				}
 			}
 			NumberOfMatches = Matches.Count;
-#endregion
+			#endregion
 		}
 
 		public override void AddGame(int _matchNumber, IGame _game)
@@ -634,6 +634,12 @@ namespace Tournament.Structure
 			}
 #endif
 		}
+
+		public override void ResetMatches()
+		{
+			base.ResetMatches();
+			Rankings.Clear();
+		}
 		#endregion
 
 		#region Private Methods
@@ -727,6 +733,6 @@ namespace Tournament.Structure
 
 			return m;
 		}
-#endregion
+		#endregion
 	}
 }
