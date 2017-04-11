@@ -298,5 +298,78 @@ namespace WebApplication.Models
                 return Permission.NONE;
             }
         }
+
+        public Dictionary<String, dynamic> ChangePermission(int actionUserId, int userId, String action)
+        {
+            Dictionary<String, dynamic> result = new Dictionary<String, dynamic>();
+            UserInTournamentModel userInTournamentModel = Model.UsersInTournament.First(x => x.UserID == userId);
+            int permissionString = -1;
+            dynamic permissionActions = new { Demote = false, Promote = false, Remove = false };
+
+            if (UserPermission(actionUserId) == Permission.TOURNAMENT_ADMINISTRATOR)
+            {
+                DbError dbResult = DbError.NONE;
+
+                switch (action)
+                {
+                    case "promote":
+                        // Only the creator can do this
+                        if (Model.CreatedByID == actionUserId)
+                        {
+                            // Process the request
+                            if (userInTournamentModel.Permission == Permission.TOURNAMENT_STANDARD)
+                            {
+                                dbResult = db.UpdateUserTournamentPermission(userInTournamentModel.User, Model, Permission.TOURNAMENT_ADMINISTRATOR);
+                                permissionString = 2;
+                                permissionActions = new { Demote = true };
+                            }
+                        }
+                        break;
+                    case "demote":
+                        if (userInTournamentModel.Permission == Permission.TOURNAMENT_ADMINISTRATOR &&
+                            Model.CreatedByID == actionUserId)
+                        {
+                            // Only the creator can do this
+                            // Demote to a regular participant
+                            dbResult = db.UpdateUserTournamentPermission(userInTournamentModel.User, Model, Permission.TOURNAMENT_STANDARD);
+                            permissionString = 1;
+                            permissionActions = new { Promote = true, Remove = true };
+                        }
+                        else if (userInTournamentModel.Permission == Permission.TOURNAMENT_STANDARD)
+                        {
+                            // Remove this user
+                            dbResult = db.RemoveUserFromTournament(Model, userInTournamentModel.User);
+                            permissionString = 0;
+                        }
+
+                        break;
+                }
+
+                switch (dbResult)
+                {
+                    case DbError.SUCCESS:
+                        result["status"] = true;
+                        result["message"] = "The action to " + action + " was successful";
+                        result["permissionChange"] = permissionString;
+                        result["actions"] = permissionActions;
+                        break;
+                    case DbError.NONE:
+                        result["status"] = false;
+                        result["message"] = "No action was taken.";
+                        break;
+                    default:
+                        result["status"] = false;
+                        result["message"] = "Failed to "+action+" the selected user.";
+                        break;
+                }
+            }
+            else
+            {
+                result["status"] = false;
+                result["message"] = "You do not have permission to do this.";
+            }
+
+            return result;
+        }
     }
 }

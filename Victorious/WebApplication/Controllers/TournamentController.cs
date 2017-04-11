@@ -397,90 +397,28 @@ namespace WebApplication.Controllers
             }
         }
 
-        
-
         [HttpPost]
-        [Route("Tournament/Ajax/Promote")]
-        public JsonResult Promote(String tournyVal, String userVal)
+        [Route("Tournament/Ajax/PermissionChange")]
+        public JsonResult PermissionChange(String jsonData)
         {
-            dynamic jsonResult = new { };
-            TournamentModel tournyModel = db.GetTournamentById(ConvertToInt(tournyVal));
-            UserModel userModel = db.GetUserById(ConvertToInt(userVal));
+            Dictionary<string, string> json = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
 
-            if (Session["User.UserId"] != null && (int)Session["User.UserId"] == tournyModel.CreatedByID)
+            if (Session["User.UserId"] != null)
             {
-                Permission userPermission = db.GetUserPermission(userModel, tournyModel);
-                DbError result = DbError.NONE;
+                TournamentViewModel viewModel = new TournamentViewModel(ConvertToInt(json["tournyVal"]));
 
-                switch (userPermission)
-                {
-                    case Permission.TOURNAMENT_STANDARD:
-                        result = db.UpdateUserTournamentPermission(userModel, tournyModel, Permission.TOURNAMENT_ADMINISTRATOR);
-                        break;
-                    case Permission.TOURNAMENT_ADMINISTRATOR:
-                        break;
-                }
+                Dictionary<String, dynamic> permissionChange = viewModel.ChangePermission((int)Session["User.UserId"], ConvertToInt(json["userVal"]), json["action"]);
 
-                switch (result)
-                {
-                    case DbError.SUCCESS:
-                        jsonResult = new { status = true, message = "User was promoted successfully" };
-                        break;
-                    case DbError.NONE:
-                        jsonResult = new { status = false, message = "User can not be promoted above administrator" };
-                        break;
-                    default:
-                        jsonResult = new { status = false, message = "User was unable to be promoted" };
-                        break;
-                }
+                return Json(JsonConvert.SerializeObject(permissionChange));
             }
             else
             {
-                jsonResult = new { status = false, message = "You do not have permissions to do this" };
-            }
-            return Json(JsonConvert.SerializeObject(jsonResult));
-        }
-
-        [HttpPost]
-        [Route("Tournament/Ajax/Demote")]
-        public JsonResult Demote(String tournyVal, String userVal)
-        {
-            // TODO: Make sure the user is authorized to do this.
-            dynamic jsonResult;
-            TournamentModel tournyModel = db.GetTournamentById(ConvertToInt(tournyVal));
-            UserModel userModel = db.GetUserById(ConvertToInt(userVal));
-
-            if (Session["User.UserId"] != null && (int)Session["User.UserId"] == tournyModel.CreatedByID)
-            {
-                Permission userPermission = db.GetUserPermission(userModel, tournyModel);
-                DbError result = DbError.NONE;
-                
-                switch (userPermission)
+                return Json(JsonConvert.SerializeObject(new
                 {
-                    case Permission.TOURNAMENT_STANDARD:
-                        result = db.RemoveUserFromTournament(tournyModel, userModel);
-                        break;
-                    case Permission.TOURNAMENT_ADMINISTRATOR:
-                        result = db.UpdateUserTournamentPermission(userModel, tournyModel, Permission.TOURNAMENT_STANDARD);
-                        break;
-                }
-
-                switch (result)
-                {
-                    case DbError.SUCCESS:
-                        jsonResult = new { status = true, message = "User was demoted / removed successfully" };
-                        break;
-                    default:
-                        jsonResult = new { status = false, message = "Could not demote successfully." };
-                        break;
-                }
+                    status = false,
+                    message = "You must be logged in to do this action"
+                }));
             }
-            else
-            {
-                jsonResult = new { status = false, message = "You do not have permissions to do this" };
-            }
-
-            return Json(JsonConvert.SerializeObject(jsonResult));
         }
 
         [HttpPost]
