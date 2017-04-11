@@ -40,7 +40,7 @@ namespace DataLib.Tests
         }
 
         [TestMethod]
-        public void Test_AddUser()
+        public void Add_User()
         {
             var db = new DatabaseInterface();
             var user = new UserModel()
@@ -57,6 +57,19 @@ namespace DataLib.Tests
             
             var result = db.AddUser(user);
             Assert.AreEqual(DbError.SUCCESS, result);
+        }
+
+        [TestMethod]
+        public void Update_User_Permission()
+        {
+            var db = new DatabaseInterface();
+
+            db.UpdateUserTournamentPermission(db.GetUserById(1), db.GetTournamentById(1), Permission.TOURNAMENT_STANDARD);
+            var result = db.GetUserPermission(db.GetUserById(1), db.GetTournamentById(1));
+
+            Assert.AreEqual(Permission.TOURNAMENT_STANDARD, result);
+
+
         }
     }
 }
