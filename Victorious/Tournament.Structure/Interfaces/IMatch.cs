@@ -125,6 +125,8 @@ namespace Tournament.Structure
 		/// </summary>
 		void ResetPlayers();
 
+		void AddGame(int _defenderScore, int _challengerScore);
+
 		/// <summary>
 		/// Add/record a finished Game.
 		/// </summary>

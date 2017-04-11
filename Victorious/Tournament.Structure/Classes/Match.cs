@@ -383,6 +383,46 @@ namespace Tournament.Structure
 			IsReady = false;
 		}
 
+		public void AddGame(int _defenderScore, int _challengerScore)
+		{
+			if (_defenderScore < 0 || _challengerScore < 0)
+			{
+				throw new ScoreException
+					("Score cannot be negative!");
+			}
+
+			int gameNumber = 1;
+			foreach (IGame g in Games)
+			{
+				if (g.GameNumber >= gameNumber)
+				{
+					gameNumber = g.GameNumber + 1;
+				}
+			}
+			IGame game = new Game(this.Id, gameNumber);
+			for (int i = 0; i < 2; ++i)
+			{
+				game.PlayerIDs[i] = (null == this.Players[i])
+					? -1 : this.Players[i].Id;
+			}
+			game.Score[(int)PlayerSlot.Defender] = _defenderScore;
+			game.Score[(int)PlayerSlot.Challenger] = _challengerScore;
+			if (_defenderScore > _challengerScore)
+			{
+				game.WinnerSlot = PlayerSlot.Defender;
+			}
+			else if (_challengerScore > _defenderScore)
+			{
+				game.WinnerSlot = PlayerSlot.Challenger;
+			}
+			else
+			{
+				game.WinnerSlot = PlayerSlot.unspecified;
+			}
+
+			AddWin(game.WinnerSlot);
+			Games.Add(game);
+		}
 		public void AddGame(IGame _game)
 		{
 			if (null == _game)
