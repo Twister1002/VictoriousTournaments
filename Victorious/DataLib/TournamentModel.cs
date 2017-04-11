@@ -42,6 +42,9 @@ namespace DataLib
 
         public int LastEditedByID { get; set; }
 
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
+
         [ForeignKey("GameTypeID")]
         public GameTypeModel GameType { get; set; }
 
