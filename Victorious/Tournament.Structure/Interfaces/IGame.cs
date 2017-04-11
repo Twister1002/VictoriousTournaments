@@ -10,7 +10,7 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		int Id { get; }
-		int MatchId { get; }
+		int MatchId { get; set; }
 
 		/// <summary>
 		/// Number of Game within this Match.

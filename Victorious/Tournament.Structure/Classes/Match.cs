@@ -376,10 +376,11 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_game");
 			}
 
-			if (_game.GameNumber <= 0)
-			{
-				_game.GameNumber = Games.Count + 1;
-			}
+			_game.MatchId = this.Id;
+			_game.GameNumber = (_game.GameNumber > 0)
+				? _game.GameNumber : (Games.Count + 1);
+			_game.PlayerIDs[(int)PlayerSlot.Defender] = this.Players[(int)PlayerSlot.Defender].Id;
+			_game.PlayerIDs[(int)PlayerSlot.Challenger] = this.Players[(int)PlayerSlot.Challenger].Id;
 			foreach (IGame game in Games)
 			{
 				if (game.Id == _game.Id || game.GameNumber == _game.GameNumber)

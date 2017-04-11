@@ -101,4 +101,12 @@ namespace Tournament.Structure
 
 		protected BracketException(SerializationInfo info, StreamingContext context) { }
 	}
+	public class GameException : Exception, ISerializable
+	{
+		public GameException() { }
+		public GameException(string message) { }
+		public GameException(string message, Exception inner) { }
+
+		protected GameException(SerializationInfo info, StreamingContext context) { }
+	}
 }
