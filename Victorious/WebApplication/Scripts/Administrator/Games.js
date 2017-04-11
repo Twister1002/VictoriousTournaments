@@ -46,6 +46,8 @@
                         html += "</ul>";
 
                         table.append(html);
+
+                        $(".gameTitle input").val('');
                     }
                     else if (json.function == "delete") {
                         table.find(".game[data-gameid='" + json.data.model.GameID + "']").remove();

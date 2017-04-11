@@ -11,64 +11,64 @@
 <div id="TournamentEdit" data-tournament="@Model.Model.TournamentID">
     @using (Html.BeginForm("Edit", "Tournament", FormMethod.Post))
     {
-    <div class="section form-section">
-        <h2>Basic Information</h2>
-        <ul>
-            <li>
-                @Html.LabelFor(t => t.Title)
-                @Html.TextBoxFor(t => t.Title)
-                @Html.ValidationMessageFor(t => t.Title)
-            </li>
-            <li>
-                @Html.LabelFor(t => t.Description)
-                @Html.TextBoxFor(t => t.Description)
-                @Html.ValidationMessageFor(t => t.Description)
-            </li>
-            <li>
-                @Html.LabelFor(t => t.GameType)
-                @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "")
-                @Html.ValidationMessageFor(t => t.GameType)
-            </li>
-            <li>
-                @Html.LabelFor(t => t.BracketType)
-                @Html.DropDownListFor(t => t.BracketType, new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "")
-                @Html.ValidationMessageFor(t => t.BracketType)
-            </li>
-            <li>
-                @Html.LabelFor(t => t.IsPublic)
-                @Html.CheckBoxFor(t => t.IsPublic)
-                @Html.ValidationMessageFor(t => t.IsPublic)
-            </li>
-        </ul>
-    </div>
-    <div class="section form-section">
-        <h2>Tournament Dates</h2>
-        <ul>
-            <li>
-                @Html.LabelFor(t => t.RegistrationStartDate)
-                @Html.TextBoxFor(t => t.RegistrationStartDate, new { @class = "datepicker" })
-                @Html.ValidationMessageFor(t => t.RegistrationStartDate)
-            </li>
-            <li>
-                @Html.LabelFor(t => t.RegistrationEndDate)
-                @Html.TextBoxFor(t => t.RegistrationEndDate, new { @class = "datepicker" })
-                @Html.ValidationMessageFor(t => t.RegistrationEndDate)
-            </li>
-            <li>
-                @Html.LabelFor(t => t.TournamentStartDate)
-                @Html.TextBoxFor(t => t.TournamentStartDate, new { @class = "datepicker" })
-                @Html.ValidationMessageFor(t => t.TournamentStartDate)
-            </li>
-            <li>
-                @Html.LabelFor(t => t.TournamentEndDate)
-                @Html.TextBoxFor(t => t.TournamentEndDate, new { @class = "datepicker" })
-                @Html.ValidationMessageFor(t => t.TournamentEndDate)
-            </li>
-        </ul>
-    </div>
-    <div class="section">
-        <button type="submit">Accept Changes</button>
-    </div>
+        <div class="section form-section">
+            <h2>Basic Information</h2>
+            <ul>
+                <li>
+                    @Html.LabelFor(t => t.Title)
+                    @Html.TextBoxFor(t => t.Title)
+                    @Html.ValidationMessageFor(t => t.Title)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.Description)
+                    @Html.TextBoxFor(t => t.Description)
+                    @Html.ValidationMessageFor(t => t.Description)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.GameType)
+                    @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "")
+                    @Html.ValidationMessageFor(t => t.GameType)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.BracketType)
+                    @Html.DropDownListFor(t => t.BracketType, new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "")
+                    @Html.ValidationMessageFor(t => t.BracketType)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.IsPublic)
+                    @Html.CheckBoxFor(t => t.IsPublic)
+                    @Html.ValidationMessageFor(t => t.IsPublic)
+                </li>
+            </ul>
+        </div>
+        <div class="section form-section">
+            <h2>Tournament Dates</h2>
+            <ul>
+                <li>
+                    @Html.LabelFor(t => t.RegistrationStartDate)
+                    @Html.TextBoxFor(t => t.RegistrationStartDate, new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.RegistrationStartDate)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.RegistrationEndDate)
+                    @Html.TextBoxFor(t => t.RegistrationEndDate, new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.RegistrationEndDate)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.TournamentStartDate)
+                    @Html.TextBoxFor(t => t.TournamentStartDate, new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.TournamentStartDate)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.TournamentEndDate)
+                    @Html.TextBoxFor(t => t.TournamentEndDate, new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.TournamentEndDate)
+                </li>
+            </ul>
+        </div>
+        <div class="section">
+            <button type="submit">Accept Changes</button>
+        </div>
     }
 
     <div class="section user-section">
@@ -84,34 +84,34 @@
             <li class="list-table-body">
                 @foreach (var user in Model.Administrators) // Display the Admins first
                 {
-                <ul class="user border" data-user="@user.UserID" data-columns="3">
-                    <li class="name">@user.Username</li>
-                    <li class="permission">Admin</li>
-                    <li class="actions">
-                        @if (userId == Model.Model.CreatedByID)
-                        {
-                        <button class="demote">Demote</button>
-                        }
-                    </li>
-                </ul>
+                    <ul class="user border" data-user="@user.UserID" data-columns="3">
+                        <li class="name">@user.Username</li>
+                        <li class="permission">Admin</li>
+                        <li class="actions">
+                            @if (userId == Model.Model.CreatedByID)
+                            {
+                                <button class="demote">Demote</button>
+                            }
+                        </li>
+                    </ul>
                 }
 
                 @foreach (var user in Model.Participants) // Display the Admins Second
                 {
-                <ul class="user border" data-user="@user.UserID" data-columns="3">
-                    <li class="name">@user.Username</li>
-                    <li class="permission">Participant</li>
-                    <li class="actions">
-                        @if (userId == Model.Model.CreatedByID)
-                        {
-                        <button class="promote">Promote</button>
-                        }
-                        @if (UserPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
-                        {
-                        <button class="demote">Remove</button>
-                        }
-                    </li>
-                </ul>
+                    <ul class="user border" data-user="@user.UserID" data-columns="3">
+                        <li class="name">@user.Username</li>
+                        <li class="permission">Participant</li>
+                        <li class="actions">
+                            @if (userId == Model.Model.CreatedByID)
+                            {
+                                <button class="promote">Promote</button>
+                            }
+                            @if (UserPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
+                            {
+                                <button class="demote">Remove</button>
+                            }
+                        </li>
+                    </ul>
                 }
             </li>
         </ul>
