@@ -22,14 +22,11 @@
             @if (userPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
             {
                 <a href="@Url.Action("Update", "Tournament", new { id = Model.Model.TournamentID })">
-                    <img src="~/Images/pencil.png" />
+                    <span class="icon icon-pencil"></span>
                 </a>
-                <img class="icon icon-cross tournament-delete" data-id="@Model.Model.TournamentID" src="~/Images/svg/cross.svg" />
+                <span class="icon icon-cross tournament-delete" data-id="@Model.Model.TournamentID"></span>
             }
-            <img class="icon icon-tropy tournament-standings" src="~/Images/svg/trophy.svg" />
-            @*<a href="@Url.Action("Reset", "Tournament", new { id= Model.Model.TournamentID})">
-                <img class="icon icon-loop2 tournament-reset" src="~/Images/svg/loop2.svg" />
-            </a>*@
+            <span class="icon icon-trophy tournament-standings"></span>
         </div>
         <h3 class="gameTitle">@(Model.Model.GameType != null ? Model.Model.GameType.Title : "")</h3>
     </div>
@@ -44,7 +41,7 @@
             {
                 Html.RenderPartial("_ViewRegistration", Model, new ViewDataDictionary(ViewData));
             }
-            else if ((registrationEnded && !tournamentStarted) /* || Model.isBracketReleased */)
+            else if (registrationEnded && !tournamentStarted)
             {
                 <div class="message success">The tournament is currently being prepared. Please wait until the brackets are released.</div>
             }

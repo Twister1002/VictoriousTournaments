@@ -14,7 +14,7 @@
         @if (ViewBag.Permission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
         {
             <span class="edit @(ViewBag.isFinalized && Model.IsReady && !Model.IsFinished ? "" : "hide")">
-                <img class="match-edit svg-pencil svg clickable" src="~/Images/svg/pencil.svg" />
+                <span class="icon icon-pencil match-edit clickable"></span>
             </span>
         }
     </label>
