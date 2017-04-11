@@ -15,6 +15,7 @@ namespace WebApplication.Models
         public List<TournamentModel> SearchModels { get; private set; }
         public List<UserModel> Administrators { get; private set; }
         public List<UserModel> Participants { get; private set; }
+        public String titleSearch = "";
 
         public TournamentViewModel()
         {
@@ -116,16 +117,11 @@ namespace WebApplication.Models
             List<TournamentModel> models = new List<TournamentModel>();
             models = db.GetAllTournaments();
 
-            if (db.interfaceException != null)
-            {
-                this.dbException = db.interfaceException;
-                this.error = ViewError.EXCEPTION;
-                this.message = "There was an error in acquiring the tournaments.";
-            }
-
             if (title != String.Empty && title != null)
             {
-                models = models.Where(t => t.Title.Contains(title)).ToList();   
+                titleSearch = title;
+
+                models = models.Where(t => t.Title.Contains(title)).ToList();
             }
 
             SearchModels = models;

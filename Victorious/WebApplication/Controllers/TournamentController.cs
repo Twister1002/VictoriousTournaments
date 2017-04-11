@@ -24,7 +24,7 @@ namespace WebApplication.Controllers
         {
             TournamentViewModel model = new TournamentViewModel();
             model.Search(title);
-
+            
             return View("Search", model);
         }
 
