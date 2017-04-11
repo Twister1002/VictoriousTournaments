@@ -60,6 +60,14 @@ namespace Tournament.Structure
 		protected InvalidSlotException(SerializationInfo info, StreamingContext context) { }
 	}
 
+	public class GameNotFoundException : Exception, ISerializable
+	{
+		public GameNotFoundException() { }
+		public GameNotFoundException(string message) { }
+		public GameNotFoundException(string message, Exception inner) { }
+
+		protected GameNotFoundException(SerializationInfo info, StreamingContext context) { }
+	}
 	public class MatchNotFoundException : Exception, ISerializable
 	{
 		public MatchNotFoundException() { }
@@ -100,13 +108,5 @@ namespace Tournament.Structure
 		public BracketException(string message, Exception inner) { }
 
 		protected BracketException(SerializationInfo info, StreamingContext context) { }
-	}
-	public class GameException : Exception, ISerializable
-	{
-		public GameException() { }
-		public GameException(string message) { }
-		public GameException(string message, Exception inner) { }
-
-		protected GameException(SerializationInfo info, StreamingContext context) { }
 	}
 }

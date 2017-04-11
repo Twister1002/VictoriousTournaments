@@ -391,15 +391,7 @@ namespace Tournament.Structure
 					("Score cannot be negative!");
 			}
 
-			int gameNumber = 1;
-			foreach (IGame g in Games)
-			{
-				if (g.GameNumber >= gameNumber)
-				{
-					gameNumber = g.GameNumber + 1;
-				}
-			}
-			IGame game = new Game(this.Id, gameNumber);
+			IGame game = new Game(this.Id, (Games.Count + 1));
 			for (int i = 0; i < 2; ++i)
 			{
 				game.PlayerIDs[i] = (null == this.Players[i])
@@ -417,7 +409,8 @@ namespace Tournament.Structure
 			}
 			else
 			{
-				game.WinnerSlot = PlayerSlot.unspecified;
+				throw new NotImplementedException
+					("Tie Games are not (yet) supported!");
 			}
 
 			AddWin(game.WinnerSlot);
@@ -449,6 +442,12 @@ namespace Tournament.Structure
 		}
 		public IGame RemoveLastGame()
 		{
+			if (0 == Games.Count)
+			{
+				throw new GameNotFoundException
+					("No Games to remove!");
+			}
+
 			IGame lastGame = Games[Games.Count - 1];
 			SubtractWin(Games[Games.Count - 1].WinnerSlot);
 			Games.RemoveAt(Games.Count - 1);
