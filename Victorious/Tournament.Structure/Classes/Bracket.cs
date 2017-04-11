@@ -97,7 +97,7 @@ namespace Tournament.Structure
 			for (int i = 0; i < Players.Count; ++i)
 			{
 				int rand = -1;
-				while (rand < 0 || rolls.Values.Contains(rand))
+				while (rand < 0 || rolls.ContainsKey(rand))
 				{
 					rand = rng.Next(Players.Count * 3);
 				}
