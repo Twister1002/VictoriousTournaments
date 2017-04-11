@@ -236,7 +236,7 @@
     });
 
     // Set edit icons
-    (function($){
+    (function ($) {
         matches = $(".list-table-body .match ");
         $.each(matches, function (i, e) {
             challenger = $(e).find(".challenger");
@@ -247,5 +247,5 @@
 
             }
         });
-    })($)
+    })($);
 });

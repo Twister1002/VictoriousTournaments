@@ -133,16 +133,15 @@ namespace WebApplication.Models
 
         private void GetUserPermissions()
         {
-            foreach (UserModel user in Model.Users)
+            foreach (UserInTournamentModel user in Model.UsersInTournament)
             {
-                Permission permission = db.GetUserPermission(user, Model);
-                switch(permission)
+                switch(user.Permission)
                 {
                     case Permission.TOURNAMENT_STANDARD:
-                        Participants.Add(user);
+                        Participants.Add(user.User);
                         break;
                     case Permission.TOURNAMENT_ADMINISTRATOR:
-                        Administrators.Add(user);
+                        Administrators.Add(user.User);
                         break;
                 }
             }

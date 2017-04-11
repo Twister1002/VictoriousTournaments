@@ -224,7 +224,13 @@ namespace WebApplication.Controllers
                     if (userCount == 0)
                     {
                         // Add the user to the tournament
-                        DbError error = db.AddUserToTournament(viewModel.Model, db.GetUserById((int)Session["User.UserId"]), Permission.TOURNAMENT_STANDARD);
+                        DbError error = db.AddUserToTournament(new UserInTournamentModel()
+                        {
+                            TournamentID = viewModel.Model.TournamentID,
+                            UserID = (int)Session["User.UserId"],
+                            Permission = Permission.TOURNAMENT_STANDARD
+                        });
+
                         if (error == DbError.SUCCESS)
                         {
                             Session["Message"] = "You have been registered to this tournament";
@@ -268,7 +274,7 @@ namespace WebApplication.Controllers
                 {
                     // We have a user logged in.
                     TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-                    UserModel userModel = viewModel.Model.Users.First(x => x.UserID == (int)Session["User.UserId"]);
+                    UserModel userModel = viewModel.Model.UsersInTournament.First(x => x.UserID == (int)Session["User.UserId"]).User;
                     DbError result = db.RemoveUserFromTournament(viewModel.Model, userModel);
                     if (result == DbError.SUCCESS)
                     {
