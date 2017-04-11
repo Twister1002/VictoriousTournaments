@@ -57,8 +57,11 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Add/record a finished Game.
 		/// </summary>
-		/// <param name="_matchNumer">Match to contain this Game</param>
-		/// <param name="_game">Game-type object to add</param>
+		/// <param name="_matchNumber">Match to contain this Game</param>
+		/// <param name="_defenderScore">Score for Defender-slot Player</param>
+		/// <param name="_challengerScore">Score for Challenger-slot Player</param>
+		void AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
+		[System.Obsolete("use AddGame(int, int, int) instead", false)]
 		void AddGame(int _matchNumber, IGame _game);
 
 		/// <summary>
@@ -67,7 +70,7 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Number of Match to modify</param>
 		void RemoveLastGame(int _matchNumber);
 
-		[System.Obsolete("use AddGame(int, IGame) instead", false)]
+		[System.Obsolete("use AddGame(int, int, int) instead", false)]
 		void AddWin(int _matchNumber, PlayerSlot _slot);
 		[System.Obsolete("use RemoveLastGame(int) instead", false)]
 		void SubtractWin(int _matchNumber, PlayerSlot _slot);
