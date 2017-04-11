@@ -138,10 +138,10 @@ namespace Tournament.Structure
 						.Contains((int)(model.DefenderID)))
 					{
 						// Update Match's score:
-						//group.GetMatch(model.MatchNumber)
-						//	.SetMaxGames((ushort)(model.MaxGames));
 						group.GetMatch(model.MatchNumber)
-							.SetWinsNeeded((ushort)(model.WinsNeeded));
+							.SetMaxGames((ushort)(model.MaxGames));
+						//group.GetMatch(model.MatchNumber)
+						//	.SetWinsNeeded((ushort)(model.WinsNeeded));
 
 						List<GameModel> gModelList = model.Games
 							.OrderBy(g => g.GameNumber).ToList();
