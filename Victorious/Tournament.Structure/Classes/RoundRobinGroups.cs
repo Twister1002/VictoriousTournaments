@@ -190,10 +190,10 @@ namespace Tournament.Structure
 				}
 			}
 		}
-#endregion
+		#endregion
 
-#region Public Methods
-		public override void CreateBracket(ushort _gamesPerMatch = 1)
+		#region Public Methods
+		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			ResetBracket();
 			if (Players.Count < 2 ||
@@ -260,6 +260,6 @@ namespace Tournament.Structure
 				}
 			}
 		}
-#endregion
+		#endregion
 	}
 }

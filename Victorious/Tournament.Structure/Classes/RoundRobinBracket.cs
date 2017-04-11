@@ -144,7 +144,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		public override void CreateBracket(ushort _gamesPerMatch = 1)
+		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			ResetBracket();
 			if (Players.Count < 2)

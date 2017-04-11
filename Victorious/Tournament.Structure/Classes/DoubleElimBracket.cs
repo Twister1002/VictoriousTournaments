@@ -93,7 +93,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		public override void CreateBracket(ushort _gamesPerMatch = 1)
+		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			base.CreateBracket(_gamesPerMatch);
 			if (0 == NumberOfMatches)

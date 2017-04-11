@@ -52,7 +52,7 @@ namespace Tournament.Structure
 		/// Generates the bracket (rounds & matches).
 		/// </summary>
 		/// <param name="_gamesPerMatch">Max games played each match</param>
-		void CreateBracket(ushort _gamesPerMatch = 1);
+		void CreateBracket(int _gamesPerMatch = 1);
 
 		/// <summary>
 		/// Add/record a finished Game.
