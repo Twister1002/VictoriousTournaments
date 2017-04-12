@@ -53,16 +53,16 @@ namespace WebApplication.Models
         public override void ApplyChanges(int SessionId)
         {
             // Tournament Stuff
-            Model.Title                                 = this.Title;
-            Model.Description                           = this.Description;
-            Model.GameTypeID                            = this.GameType;
+            Model.Title = this.Title;
+            Model.Description = this.Description;
+            Model.GameTypeID = this.GameType;
 
             // Tournament Rule Stuff
-            Model.TournamentRules.IsPublic              = this.IsPublic;
+            Model.TournamentRules.IsPublic = this.IsPublic;
             Model.TournamentRules.RegistrationStartDate = this.RegistrationStartDate;
-            Model.TournamentRules.RegistrationEndDate   = this.RegistrationEndDate;
-            Model.TournamentRules.TournamentStartDate   = this.TournamentStartDate;
-            Model.TournamentRules.TournamentEndDate     = this.TournamentEndDate;
+            Model.TournamentRules.RegistrationEndDate = this.RegistrationEndDate;
+            Model.TournamentRules.TournamentStartDate = this.TournamentStartDate;
+            Model.TournamentRules.TournamentEndDate = this.TournamentEndDate;
             Model.LastEditedByID = SessionId;
             Model.LastEditedOn = DateTime.Now;
 
@@ -75,7 +75,7 @@ namespace WebApplication.Models
             {
                 Model.Brackets.Add(new BracketModel() { BracketTypeID = this.BracketType, Tournament = Model });
             }
-            
+
             // Tournament Creator stuff
             if (Model.CreatedByID == 0)
             {
@@ -86,19 +86,19 @@ namespace WebApplication.Models
 
         public override void SetFields()
         {
-            this.Title                  = Model.Title;
-            this.Description            = Model.Description;
-            this.GameType               = Model.GameTypeID;
+            this.Title = Model.Title;
+            this.Description = Model.Description;
+            this.GameType = Model.GameTypeID;
 
-            this.IsPublic               = Model.TournamentRules.IsPublic;
-            this.RegistrationStartDate  = Model.TournamentRules.RegistrationStartDate;
-            this.RegistrationEndDate    = Model.TournamentRules.RegistrationEndDate;
-            this.TournamentStartDate    = Model.TournamentRules.TournamentStartDate;
-            this.TournamentEndDate      = Model.TournamentRules.TournamentEndDate;
+            this.IsPublic = Model.TournamentRules.IsPublic;
+            this.RegistrationStartDate = Model.TournamentRules.RegistrationStartDate;
+            this.RegistrationEndDate = Model.TournamentRules.RegistrationEndDate;
+            this.TournamentStartDate = Model.TournamentRules.TournamentStartDate;
+            this.TournamentEndDate = Model.TournamentRules.TournamentEndDate;
 
-            if (this.BracketType != Model.Brackets.ToList()[0].BracketTypeID)
+            if (this.BracketType != Model.Brackets.ElementAt(0).BracketTypeID)
             {
-                this.BracketType = Model.Brackets.ToList()[0].BracketTypeID;
+                this.BracketType = Model.Brackets.ElementAt(0).BracketTypeID;
             }
         }
 
@@ -131,7 +131,7 @@ namespace WebApplication.Models
         {
             foreach (UserInTournamentModel user in Model.UsersInTournament)
             {
-                switch(user.Permission)
+                switch (user.Permission)
                 {
                     case Permission.TOURNAMENT_STANDARD:
                         Participants.Add(user.User);
@@ -279,9 +279,8 @@ namespace WebApplication.Models
 
         public Permission UserPermission(int userId)
         {
-            UserInTournamentModel model = 
+            UserInTournamentModel model =
                 Model.UsersInTournament.FirstOrDefault(x =>
-                x.TournamentID == Model.TournamentID &&
                 x.UserID == userId);
 
             if (model != null)
@@ -354,7 +353,7 @@ namespace WebApplication.Models
                         break;
                     default:
                         result["status"] = false;
-                        result["message"] = "Failed to "+action+" the selected user.";
+                        result["message"] = "Failed to " + action + " the selected user.";
                         break;
                 }
             }
