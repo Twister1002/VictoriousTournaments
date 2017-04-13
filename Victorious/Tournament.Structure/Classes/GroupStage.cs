@@ -132,7 +132,11 @@ namespace Tournament.Structure
 		{
 			base.ResetBracket();
 
-			Groups = null;
+			if (null == Groups)
+			{
+				Groups = new List<IBracket>();
+			}
+			Groups.Clear();
 		}
 		protected void GetMatchData(ref int _matchNumber, out int _groupIndex)
 		{

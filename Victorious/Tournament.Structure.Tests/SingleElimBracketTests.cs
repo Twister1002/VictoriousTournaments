@@ -226,8 +226,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB CreateBracket")]
-		[ExpectedException(typeof(NullReferenceException))]
-		public void SEBCreateBracket_SetsLowerRoundsToNull()
+		public void SEBCreateBracket_SetsLowerRoundsToEmptyDict()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -238,8 +237,8 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			var x = b.GetLowerRound(1);
-			Assert.AreEqual(1, 2);
+			List<IMatch> lowerRound1 = b.GetLowerRound(1);
+			Assert.AreEqual(0, lowerRound1.Count);
 		}
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
@@ -758,8 +757,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("Bracket Accessors")]
-		[ExpectedException(typeof(NullReferenceException))]
-		public void SEBGetLowerRound_ThrowsNullRef()
+		public void SEBGetLowerRound_ReturnsEmptyList()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -769,9 +767,9 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SingleElimBracket(pList);
-			var x = b.GetLowerRound(1);
+			List<IMatch> lowerRound1 = b.GetLowerRound(1);
 
-			Assert.AreEqual(1, 2);
+			Assert.AreEqual(0, lowerRound1.Count);
 		}
 	}
 }

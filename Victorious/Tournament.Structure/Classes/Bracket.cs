@@ -434,13 +434,26 @@ namespace Tournament.Structure
 		#region Private Methods
 		protected virtual void ResetBracket()
 		{
+			if (null == Matches)
+			{
+				Matches = new Dictionary<int, IMatch>();
+			}
+			if (null == LowerMatches)
+			{
+				LowerMatches = new Dictionary<int, IMatch>();
+			}
+			if (null == Rankings)
+			{
+				Rankings = new List<IPlayerScore>();
+			}
+
 			IsFinished = false;
-			Matches = null;
-			LowerMatches = null;
+			Matches.Clear();
+			LowerMatches.Clear();
 			GrandFinal = null;
 			NumberOfRounds = NumberOfLowerRounds = 0;
 			NumberOfMatches = 0;
-			Rankings = null;
+			Rankings.Clear();
 		}
 		#endregion
 	}
