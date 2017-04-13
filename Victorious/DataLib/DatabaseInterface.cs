@@ -10,6 +10,7 @@ using System.Data.Sql;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Core.Objects;
 
 namespace DataLib
 {
@@ -75,7 +76,7 @@ namespace DataLib
                 .Load();
 
 
-            
+
 
         }
         // DO NOT EVER CALL THIS FUNCTION OUTSIDE THE DEBUG PROJECT
@@ -322,7 +323,7 @@ namespace DataLib
                 interfaceException = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
-               
+
             }
             return DbError.SUCCESS;
         }
@@ -477,7 +478,7 @@ namespace DataLib
                 interfaceException = ce;
                 WriteException(ce);
                 return DbError.CONCURRENCY_ERROR;
-               
+
             }
             catch (Exception ex)
             {
@@ -535,6 +536,64 @@ namespace DataLib
                 return DbError.FAILED_TO_REMOVE;
             }
             return DbError.SUCCESS;
+        }
+
+        /// <summary>
+        /// Takes in a Dictionary of strings in which the key is the name of the parameter being searched for
+        /// and the value is the value of that parameter.
+        /// </summary>
+        /// <param name="searchParams"></param>
+        /// <returns></returns>
+        public List<TournamentModel> FindTournaments(Dictionary<string, string> searchParams)
+        {
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+
+            try
+            {
+                List<SqlParameter> sqlparams = new List<SqlParameter>();
+                string query = string.Empty;
+                //string tournamentIdQuery = "SELECT TournamentID FROM dbo.Tournaments AS Tournament  ";
+                //string rulesIdQuery = "SELECT TournamentID FROM TournamentRules WHERE TournamentStartDate = @StartDate";
+
+                //string[] queries = new string[] { "Tournament.Title = @Title", "Tournament.StartDate = @StartDate" };  
+                if (searchParams.ContainsKey("Title"))
+                {
+                    sqlparams.Add(new SqlParameter("@Title", searchParams["Title"]));
+                    query = "SELECT TournamentID FROM Tournaments WHERE Title = @Title";
+                }
+                if (searchParams.ContainsKey("StartDate"))
+                {                  
+                    sqlparams.Add(new SqlParameter("@StartDate", DateTime.Parse(searchParams["TournamentStartDate"])));
+                    if (searchParams.ContainsKey("Title"))
+                        query += "UNION SELECT TournamentID FROM TournamentRules WHERE TournamentStartDate = @StartDate";
+                    else
+                        query = "SELECT TournamentID FROM TournamentRules WHERE TournamentStartDate = @StartDate";
+                }
+                tournaments = context.Tournaments.SqlQuery(query, sqlparams).ToList();
+                //if (searchParams.ContainsKey("GameTypeID"))
+                //{
+                //    sqlparams.Add(new SqlParameter("@Game", searchParams["Game"]));
+                //    foreach (var tournament in tournaments)
+                //    {
+                //        if (tournament)
+                //    }
+                //}
+
+
+
+
+                //List < TournamentModel > _tournaments = context.Tournaments.SqlQuery("SELECT * FROM dbo.Tournaments WHERE Title LIKE @Title", new SqlParameter("@Title", "%" + title + "%")).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                tournaments.Clear();
+                tournaments.Add(new TournamentModel() { TournamentID = 0 });
+            }
+            return tournaments;
+
         }
 
         public List<TournamentModel> FindTournaments(string title, DateTime startDate)
@@ -1130,7 +1189,7 @@ namespace DataLib
             {
                 context.Games.Add(game);
                 match.Games.Add(game);
-                context.SaveChanges(); 
+                context.SaveChanges();
             }
             catch (Exception ex)
             {
