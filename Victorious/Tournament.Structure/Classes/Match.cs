@@ -340,6 +340,36 @@ namespace Tournament.Structure
 			IsReady = false;
 		}
 
+		public GameModel AddGame(int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			if (!IsReady)
+			{
+				throw new InactiveMatchException
+					("Cannot add games to an inactive match!");
+			}
+			if (_defenderScore < 0 || _challengerScore < 0)
+			{
+				throw new ScoreException
+					("Score cannot be negative!");
+			}
+
+			IGame game = new Game(this.Id, (Games.Count + 1));
+			for (int i = 0; i < 2; ++i)
+			{
+				game.PlayerIDs[i] = this.Players[i].Id;
+			}
+			game.Score[(int)PlayerSlot.Defender] = _defenderScore;
+			game.Score[(int)PlayerSlot.Challenger] = _challengerScore;
+			game.WinnerSlot = _winnerSlot;
+
+			if (PlayerSlot.Defender == _winnerSlot ||
+				PlayerSlot.Challenger == _winnerSlot)
+			{
+				AddWin(game.WinnerSlot);
+			}
+			Games.Add(game);
+			return game.GetModel();
+		}
 		public GameModel AddGame(int _defenderScore, int _challengerScore)
 		{
 			if (!IsReady)
@@ -377,30 +407,6 @@ namespace Tournament.Structure
 			AddWin(game.WinnerSlot);
 			Games.Add(game);
 			return game.GetModel();
-		}
-		public void AddGame(IGame _game)
-		{
-			if (null == _game)
-			{
-				throw new ArgumentNullException("_game");
-			}
-
-			_game.MatchId = this.Id;
-			_game.GameNumber = (_game.GameNumber > 0)
-				? _game.GameNumber : (Games.Count + 1);
-			_game.PlayerIDs[(int)PlayerSlot.Defender] = this.Players[(int)PlayerSlot.Defender].Id;
-			_game.PlayerIDs[(int)PlayerSlot.Challenger] = this.Players[(int)PlayerSlot.Challenger].Id;
-			foreach (IGame game in Games)
-			{
-				if (game.Id == _game.Id || game.GameNumber == _game.GameNumber)
-				{
-					throw new DuplicateObjectException
-						("New game cannot match an existing game!");
-				}
-			}
-
-			AddWin(_game.WinnerSlot);
-			Games.Add(_game);
 		}
 		public IGame RemoveLastGame()
 		{
@@ -553,9 +559,33 @@ namespace Tournament.Structure
 			NextLoserMatchNumber = _number;
 			Model.NextLoserMatchNumber = _number;
 		}
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
+		private void AddGame(IGame _game)
+		{
+			if (null == _game)
+			{
+				throw new ArgumentNullException("_game");
+			}
+
+			_game.MatchId = this.Id;
+			_game.GameNumber = (_game.GameNumber > 0)
+				? _game.GameNumber : (Games.Count + 1);
+			_game.PlayerIDs[(int)PlayerSlot.Defender] = this.Players[(int)PlayerSlot.Defender].Id;
+			_game.PlayerIDs[(int)PlayerSlot.Challenger] = this.Players[(int)PlayerSlot.Challenger].Id;
+			foreach (IGame game in Games)
+			{
+				if (game.Id == _game.Id || game.GameNumber == _game.GameNumber)
+				{
+					throw new DuplicateObjectException
+						("New game cannot match an existing game!");
+				}
+			}
+
+			AddWin(_game.WinnerSlot);
+			Games.Add(_game);
+		}
 		private void AddWin(PlayerSlot _slot)
 		{
 			if (_slot != PlayerSlot.Defender &&
@@ -591,6 +621,12 @@ namespace Tournament.Structure
 			{
 				WinnerSlot = _slot;
 				Model.WinnerID = Players[(int)_slot].Id;
+				IsFinished = true;
+			}
+			else if (Score[0] + Score[1] >= MaxGames)
+			{
+				WinnerSlot = PlayerSlot.unspecified;
+				Model.WinnerID = -1;
 				IsFinished = true;
 			}
 		}

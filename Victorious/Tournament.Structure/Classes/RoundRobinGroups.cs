@@ -27,7 +27,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public RoundRobinGroups(List<IPlayer> _players, int _numberOfGroups, int _numberOfRounds = 0)
+		public RoundRobinGroups(List<IPlayer> _players, int _numberOfGroups, int _maxGamesPerMatch = 1, int _numberOfRounds = 0)
 		{
 			if (null == _players)
 			{
@@ -68,7 +68,7 @@ namespace Tournament.Structure
 			NumberOfGroups = _numberOfGroups;
 			MaxRounds = _numberOfRounds;
 			ResetBracket();
-			CreateBracket();
+			CreateBracket(_maxGamesPerMatch);
 		}
 #if false
 		public RoundRobinGroups(int _numberOfPlayers, int _numberOfGroups)
@@ -132,6 +132,8 @@ namespace Tournament.Structure
 			// Find & update every Match:
 			foreach (MatchModel model in _model.Matches)
 			{
+				RestoreMatch(model.MatchNumber, model);
+#if false
 				foreach (IBracket group in Groups)
 				{
 					if (group.Players.Select(p => p.Id).ToList()
@@ -176,6 +178,7 @@ namespace Tournament.Structure
 						break;
 					}
 				}
+#endif
 			}
 
 			// Update the rankings:
@@ -196,6 +199,11 @@ namespace Tournament.Structure
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			ResetBracket();
+			if (_gamesPerMatch < 1)
+			{
+				throw new BracketException
+					("Games Per Match must be positive!");
+			}
 			if (Players.Count < 2 ||
 				NumberOfGroups > (Players.Count / 2) || NumberOfGroups < 2)
 			{
@@ -211,8 +219,7 @@ namespace Tournament.Structure
 					pList.Add(Players[p + b]);
 				}
 
-				IBracket newGroup = new RoundRobinBracket(pList, MaxRounds);
-				newGroup.CreateBracket(_gamesPerMatch);
+				IBracket newGroup = new RoundRobinBracket(pList, _gamesPerMatch, MaxRounds);
 				Groups.Add(newGroup);
 			}
 

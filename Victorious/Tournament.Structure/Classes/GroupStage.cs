@@ -29,6 +29,32 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		public override void RestoreMatch(int _matchNumber, MatchModel _model)
+		{
+			int groupIndex;
+			GetMatchData(ref _matchNumber, out groupIndex);
+			Groups[groupIndex].RestoreMatch(_matchNumber, _model);
+		}
+
+		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			int groupIndex;
+			GetMatchData(ref _matchNumber, out groupIndex);
+			GameModel gameModel = Groups[groupIndex].AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
+			UpdateRankings();
+
+			IsFinished = true;
+			foreach (IBracket group in Groups)
+			{
+				if (!group.IsFinished)
+				{
+					IsFinished = false;
+					break;
+				}
+			}
+
+			return gameModel;
+		}
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
 		{
 			int groupIndex;
@@ -47,23 +73,6 @@ namespace Tournament.Structure
 			}
 
 			return gameModel;
-		}
-		public override void AddGame(int _matchNumber, IGame _game)
-		{
-			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			Groups[groupIndex].AddGame(_matchNumber, _game);
-			UpdateRankings();
-
-			IsFinished = true;
-			foreach (IBracket group in Groups)
-			{
-				if (!group.IsFinished)
-				{
-					IsFinished = false;
-					break;
-				}
-			}
 		}
 		public override void RemoveLastGame(int _matchNumber)
 		{
@@ -124,6 +133,13 @@ namespace Tournament.Structure
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			return Groups[groupIndex].GetMatch(_matchNumber);
+		}
+		public override void ResetMatches()
+		{
+			foreach (IBracket group in Groups)
+			{
+				group.ResetMatches();
+			}
 		}
 		#endregion
 
