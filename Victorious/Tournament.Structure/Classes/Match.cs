@@ -179,49 +179,6 @@ namespace Tournament.Structure
 #endregion
 
 #region Public Methods
-		public MatchModel GetModel(int _matchId)
-		{
-			return Model;
-#if false
-			MatchModel model = new MatchModel();
-
-			model.ChallengerID = (null != Players[(int)PlayerSlot.Challenger])
-				? Players[(int)PlayerSlot.Challenger].Id : -1;
-			model.DefenderID = (null != Players[(int)PlayerSlot.Defender])
-				? Players[(int)PlayerSlot.Defender].Id : -1;
-			model.WinnerID = (PlayerSlot.unspecified == WinnerSlot)
-				? (int)WinnerSlot
-				: Players[(int)WinnerSlot].Id;
-			model.ChallengerScore = Score[(int)PlayerSlot.Challenger];
-			model.DefenderScore = Score[(int)PlayerSlot.Defender];
-
-			model.MatchID = _matchId;
-			model.RoundIndex = RoundIndex;
-			model.MatchNumber = MatchNumber;
-			model.WinsNeeded = WinsNeeded;
-			model.MatchIndex = MatchIndex;
-			model.NextMatchNumber = NextMatchNumber;
-			model.NextLoserMatchNumber = NextLoserMatchNumber;
-
-			switch (PreviousMatchNumbers.Count)
-			{
-				case (2):
-					model.PrevDefenderMatchNumber = PreviousMatchNumbers[0];
-					model.PrevChallengerMatchNumber = PreviousMatchNumbers[1];
-					break;
-				case (1):
-					model.PrevDefenderMatchNumber = -1;
-					model.PrevChallengerMatchNumber = PreviousMatchNumbers[0];
-					break;
-				default:
-					model.PrevDefenderMatchNumber = -1;
-					model.PrevChallengerMatchNumber = -1;
-					break;
-			}
-
-			return model;
-#endif
-		}
 		public MatchModel GetModel()
 		{
 			MatchModel model = new MatchModel();
@@ -598,7 +555,7 @@ namespace Tournament.Structure
 #endregion
 
 #region Private Methods
-		public void AddWin(PlayerSlot _slot)
+		private void AddWin(PlayerSlot _slot)
 		{
 			if (_slot != PlayerSlot.Defender &&
 				_slot != PlayerSlot.Challenger)
@@ -636,7 +593,7 @@ namespace Tournament.Structure
 				IsFinished = true;
 			}
 		}
-		public void SubtractWin(PlayerSlot _slot)
+		private void SubtractWin(PlayerSlot _slot)
 		{
 			if (_slot != PlayerSlot.Defender &&
 				_slot != PlayerSlot.Challenger)

@@ -202,28 +202,6 @@ namespace Tournament.Structure
 			throw new PlayerNotFoundException
 				("Player not found in this tournament!");
 		}
-		public void RemovePlayer(IPlayer _player)
-		{
-			if (null == _player)
-			{
-				throw new ArgumentNullException("_player");
-			}
-			if (null == Players)
-			{
-				throw new NullReferenceException
-					("Playerlist is null; this shouldn't happen...");
-			}
-
-			if (!Players.Remove(_player))
-			{
-				throw new PlayerNotFoundException
-					("Player not found in this tournament!");
-			}
-			foreach (IBracket bracket in Brackets)
-			{
-				bracket.RemovePlayer(_player);
-			}
-		}
 		public void ResetPlayers()
 		{
 			if (null == Players)

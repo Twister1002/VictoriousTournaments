@@ -92,9 +92,6 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Methods
-		[System.Obsolete("use .GetModel()", false)]
-		MatchModel GetModel(int _matchId);
-
 		/// <summary>
 		/// Create a Model for this Match.
 		/// </summary>
@@ -145,11 +142,6 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <returns>IGame that was removed</returns>
 		IGame RemoveLastGame();
-
-		[System.Obsolete("use AddGame(IGame) instead", false)]
-		void AddWin(PlayerSlot _slot);
-		[System.Obsolete("use RemoveLastGame() instead", false)]
-		void SubtractWin(PlayerSlot _slot);
 
 		/// <summary>
 		/// Resets Match score to 0-0.

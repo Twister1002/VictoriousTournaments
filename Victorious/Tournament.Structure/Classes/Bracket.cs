@@ -42,8 +42,6 @@ namespace Tournament.Structure
 		public abstract void AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
 		public abstract void AddGame(int _matchNumber, IGame _game);
 		public abstract void RemoveLastGame(int _matchNumber);
-		public abstract void AddWin(int _matchNumber, PlayerSlot _slot);
-		public abstract void SubtractWin(int _matchNumber, PlayerSlot _slot);
 		public abstract void ResetMatchScore(int _matchNumber);
 		protected abstract void UpdateRankings();
 		#endregion
@@ -347,25 +345,6 @@ namespace Tournament.Structure
 			}
 			throw new PlayerNotFoundException
 				("Player not found in this Bracket!");
-		}
-		public void RemovePlayer(IPlayer _player)
-		{
-			if (null == _player)
-			{
-				throw new ArgumentNullException("_player");
-			}
-			if (null == Players)
-			{
-				throw new NullReferenceException
-					("Players is null. This shouldn't happen...");
-			}
-			if (!Players.Remove(_player))
-			{
-				throw new PlayerNotFoundException
-					("Player not found in this Bracket!");
-			}
-
-			ResetBracket();
 		}
 		public void ResetPlayers()
 		{

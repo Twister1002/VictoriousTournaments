@@ -86,11 +86,6 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Number of Match to modify</param>
 		void RemoveLastGame(int _matchNumber);
 
-		[System.Obsolete("use AddGame(int, int, int) instead", false)]
-		void AddWin(int _matchNumber, PlayerSlot _slot);
-		[System.Obsolete("use RemoveLastGame(int) instead", false)]
-		void SubtractWin(int _matchNumber, PlayerSlot _slot);
-
 		/// <summary>
 		/// Reset score for the specified match.
 		/// Resets any affected "future" matches.
@@ -164,8 +159,6 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_playerId">ID of Player to remove</param>
 		void RemovePlayer(int _playerId);
-		[System.Obsolete("use RemovePlayer(int ID) instead", false)]
-		void RemovePlayer(IPlayer _player);
 
 		/// <summary>
 		/// Clears the bracket's player list.
