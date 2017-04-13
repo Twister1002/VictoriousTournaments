@@ -112,6 +112,11 @@ namespace WebApplication.Models
             this.Model = model;
         }
 
+        public void ReloadModel()
+        {
+            SetModel(Model.TournamentID);
+        }
+
         public void Search(String title)
         {
             List<TournamentModel> models = new List<TournamentModel>();

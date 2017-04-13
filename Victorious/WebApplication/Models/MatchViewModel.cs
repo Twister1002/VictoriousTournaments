@@ -3,45 +3,61 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Tournament.Structure;
 
 namespace WebApplication.Models
 {
     public class MatchViewModel : MatchFields
     {
-        public MatchModel matchModel { get; private set; }
-        public BracketModel bracketModel { get; private set; }
-        public TournamentModel tournyModel { get; private set; }
+        public MatchModel Model { get; private set; }
+        public IMatch Match { get; private set; }
 
         public MatchViewModel()
         {
-            matchModel = new MatchModel();
+            Model = new MatchModel();
+        }
+
+        public MatchViewModel(IMatch match)
+        {
+            Match = match;
+            Model = Match.GetModel();
         }
 
         public MatchViewModel(int matchId)
         {
-            matchModel = db.GetMatchById(matchId);
-        }
-
-        public MatchViewModel(int tournamentId, int bracketNum, int matchNum)
-        {
-            tournyModel = db.GetTournamentById(tournamentId);
-            bracketModel = tournyModel.Brackets.ElementAt(bracketNum);
-            matchModel = tournyModel.Brackets.ElementAt(bracketNum).Matches.ElementAt(matchNum-1);
-            SetFields();
+            Model = db.GetMatchById(matchId);
+            Match = new Match(Model);
         }
 
         public override void ApplyChanges(int userId)
         {
-            matchModel.ChallengerScore  = this.ChallengerScore;
-            matchModel.DefenderScore    = this.DefenderScore;
-            matchModel.WinnerID         = this.WinnerID;
+            Model.ChallengerScore = this.ChallengerScore;
+            Model.DefenderScore = this.DefenderScore;
+            Model.WinnerID = this.WinnerID;
         }
 
         public override void SetFields()
         {
-            this.ChallengerScore    = matchModel.ChallengerScore;
-            this.DefenderScore      = matchModel.DefenderScore;
-            this.WinnerID           = matchModel.WinnerID;
+            this.ChallengerScore = Model.ChallengerScore;
+            this.DefenderScore = Model.DefenderScore;
+            this.WinnerID = Model.WinnerID;
+        }
+
+        public void AddGame(int defenderScore, int challengerScore)
+        {
+            Match.AddGame(defenderScore, challengerScore);
+
+            db.AddGame(Model, new GameModel()
+            {
+                ChallengerID = Model.ChallengerID,
+                DefenderID = Model.DefenderID,
+                ChallengerScore = challengerScore,
+                DefenderScore = defenderScore,
+                GameID = -1,
+                MatchID = Model.MatchID,
+                WinnerID = -1,
+                GameNumber = -1
+            });
         }
     }
 }
