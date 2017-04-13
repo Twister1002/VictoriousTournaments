@@ -9,7 +9,7 @@ namespace WebApplication.Models
 
     public enum TournamentStatus
     {
-        OWNER,
+        ADMIN,
         ACTIVE,
         UPCOMING,
         PAST
@@ -41,7 +41,7 @@ namespace WebApplication.Models
         private void Init()
         {
             Tournaments = new Dictionary<TournamentStatus, List<TournamentModel>>();
-            Tournaments[TournamentStatus.OWNER] = new List<TournamentModel>();
+            Tournaments[TournamentStatus.ADMIN] = new List<TournamentModel>();
             Tournaments[TournamentStatus.ACTIVE] = new List<TournamentModel>();
             Tournaments[TournamentStatus.UPCOMING] = new List<TournamentModel>();
             Tournaments[TournamentStatus.PAST] = new List<TournamentModel>();
@@ -50,9 +50,9 @@ namespace WebApplication.Models
             foreach (TournamentModel tourny in Model.Tournaments)
             {
                 // OWner of tournament
-                if (tourny.CreatedByID == Model.UserID)
+                if (tourny.UsersInTournament.Single(x=>x.UserID == Model.UserID).Permission == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
-                    Tournaments[TournamentStatus.OWNER].Add(tourny);
+                    Tournaments[TournamentStatus.ADMIN].Add(tourny);
                 }
                 else
                 {

@@ -10,6 +10,27 @@
         &.border {
             border-bottom: .1em solid @white;
         }
+
+        &.options {
+            padding-bottom: 1.5em;
+        }
+
+        &.form {
+            input, select {
+                border: 0em;
+                border-bottom: .1em solid @white;
+                padding: .5em 0em .5em 1em;
+                background-color: inherit;
+                color: @white;
+                width: 92%;
+                .placeholder(@white);
+
+                option {
+                    color: @black;
+                }
+            }
+        }
+
         &.row-clickable {
             &:hover {
                 background-color: @color-primary-4;

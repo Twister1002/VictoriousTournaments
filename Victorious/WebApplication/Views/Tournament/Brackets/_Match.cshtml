@@ -13,8 +13,8 @@
         Match <span class="matchNum">@Model.MatchNumber</span>
         @if (ViewBag.Permission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
         {
-            <span class="edit @(Model.IsReady && !Model.IsFinished ? "" : "hide")">
-                <img class="match-edit svg-pencil svg clickable" src="~/Images/svg/pencil.svg" />
+            <span class="edit @(ViewBag.isFinalized && Model.IsReady && !Model.IsFinished ? "" : "hide")">
+                <span class="icon icon-pencil match-edit clickable"></span>
             </span>
         }
     </label>

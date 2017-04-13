@@ -2,15 +2,11 @@
 @{
     ViewBag.Title = "Update";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    int maxUsersPerRow = 15;
 
-    int participantColumns = (int)Math.Ceiling((double)Model.Participants.Count / maxUsersPerRow);
-    int adminColumns = (int)Math.Ceiling((double)Model.Administrators.Count / maxUsersPerRow);
     bool isFinalized = Model.Model.Brackets.ElementAt(0).Matches.Count != 0;
+    int userId = Session["User.UserId"] != null ? (int)Session["User.UserId"] : -1;
+    DataLib.Permission UserPermission = Model.UserPermission((int)Session["User.UserId"]);
 
-    participantColumns = participantColumns < 1 ? 1 : participantColumns;
-    adminColumns = adminColumns < 1 ? 1 : adminColumns;
-    int totalColumns = participantColumns + adminColumns;
 }
 <div id="TournamentEdit" data-tournament="@Model.Model.TournamentID">
     @using (Html.BeginForm("Edit", "Tournament", FormMethod.Post))
@@ -30,12 +26,12 @@
                 </li>
                 <li>
                     @Html.LabelFor(t => t.GameType)
-                    @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "")
+                    @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---")
                     @Html.ValidationMessageFor(t => t.GameType)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.BracketType)
-                    @Html.DropDownListFor(t => t.BracketType, new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "")
+                    @Html.DropDownListFor(t => t.BracketType, new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---")
                     @Html.ValidationMessageFor(t => t.BracketType)
                 </li>
                 <li>
@@ -50,119 +46,74 @@
             <ul>
                 <li>
                     @Html.LabelFor(t => t.RegistrationStartDate)
-                    @Html.TextBoxFor(t => t.RegistrationStartDate, new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.RegistrationStartDate, Model.RegistrationStartDate.Value.ToShortDateString().ToString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.RegistrationStartDate)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.RegistrationEndDate)
-                    @Html.TextBoxFor(t => t.RegistrationEndDate, new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.RegistrationEndDate, Model.RegistrationEndDate.Value.ToShortDateString().ToString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.RegistrationEndDate)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.TournamentStartDate)
-                    @Html.TextBoxFor(t => t.TournamentStartDate, new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.TournamentStartDate, Model.TournamentStartDate.Value.ToShortDateString().ToString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.TournamentStartDate)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.TournamentEndDate)
-                    @Html.TextBoxFor(t => t.TournamentEndDate, new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.TournamentEndDate, Model.TournamentEndDate.Value.ToShortDateString().ToString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.TournamentEndDate)
-                </li>
-            </ul>
-        </div>
-        <div class="section user-section">
-            <h2>User Information</h2>
-            <ul class="list-table">
-                <li class="list-table-header">
-                    <ul class="border" data-columns="@totalColumns">
-                        @{
-                            for (int i = 0; i < adminColumns; i++)
-                            {
-                                if (i == 0)
-                                {
-                                    <li>Admins</li>
-                                }
-                                else
-                                {
-                                    <li></li>
-                                }
-                            }
-                            for (int i = 0; i < participantColumns; i++)
-                            {
-
-                                if (i == 0)
-                                {
-                                    <li>Participants</li>
-                                }
-                                else
-                                {
-                                    <li></li>
-                                }
-                            }
-                        }
-                    </ul>
-                </li>
-                <li class="list-table-body">
-                    <ul data-columns="@totalColumns">
-                        @{
-                            int userIndex = 0;
-                            bool isAdminColumn = false;
-                            for (int i = 1; i <= totalColumns; i++)
-                            {
-                                if (i <= adminColumns)
-                                {
-                                    if (isAdminColumn != true) { userIndex = 0; }
-                                    isAdminColumn = true;
-                                }
-                                else
-                                {
-                                    if (isAdminColumn != false) { userIndex = 0; }
-                                    isAdminColumn = false;
-                                }
-
-                                <li class="userTable" data-columnType="@(isAdminColumn ? "admin" : "participant")">
-                                    @for (int x = 0; x < maxUsersPerRow; x++)
-                                    {
-                                        DataLib.UserModel user = null;
-
-                                        if (userIndex >= (isAdminColumn ? Model.Administrators.Count : Model.Participants.Count))
-                                        {
-                                            user = new DataLib.UserModel();
-                                        }
-                                        else
-                                        {
-                                            user = isAdminColumn ? Model.Administrators[userIndex] : Model.Participants[userIndex];
-                                        }
-
-                                        <div class="user" data-user="@user.UserID">
-                                            <span class="username @(isFinalized ? "" : "clickable-underline")">@user.Username</span>&nbsp;
-                                            @if (user.Username != null && !isFinalized)
-                                            {
-                                            <div class="user-options">
-                                                @if (isAdminColumn)
-                                                {
-                                                    <button class="remove" type="button">Remove</button>
-                                                }
-                                                else
-                                                {
-                                                    <button class="promote" type="button">Promote</button>
-                                                    <button class="remove" type="button">Remove</button>
-                                                }
-                                            </div>
-                                            }
-                                        </div>
-
-                                        userIndex++;
-                                    }
-                                </li>
-                            }
-                        }
-                    </ul>
                 </li>
             </ul>
         </div>
         <div class="section">
             <button type="submit">Accept Changes</button>
         </div>
+    }
+
+    <div class="section user-section">
+        <h2>User Information</h2>
+        <ul class="list-table">
+            <li class="list-table-header">
+                <ul class="border" data-columns="3">
+                    <li>Name</li>
+                    <li>Involvement</li>
+                    <li>Actions</li>
+                </ul>
+            </li>
+            <li class="list-table-body">
+                @foreach (var user in Model.Administrators) // Display the Admins first
+                {
+                    <ul class="user border" data-user="@user.UserID" data-columns="3">
+                        <li class="name">@user.Username</li>
+                        <li class="permission">Admin</li>
+                        <li class="actions">
+                            @if (userId == Model.Model.CreatedByID && user.UserID != userId)
+                            {
+                                <button class="demote">Demote</button>
                             }
+                        </li>
+                    </ul>
+                }
+
+                @foreach (var user in Model.Participants) // Display the Admins Second
+                {
+                    <ul class="user border" data-user="@user.UserID" data-columns="3">
+                        <li class="name">@user.Username</li>
+                        <li class="permission">Participant</li>
+                        <li class="actions">
+                            @if (userId == Model.Model.CreatedByID)
+                            {
+                                <button class="promote">Promote</button>
+                            }
+                            @if (UserPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
+                            {
+                                <button class="demote">Remove</button>
+                            }
+                        </li>
+                    </ul>
+                }
+            </li>
+        </ul>
+    </div>
 </div>

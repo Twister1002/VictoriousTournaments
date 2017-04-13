@@ -7,12 +7,19 @@
 <div id="TournamentSearch">
     <h2>Find A Tournament</h2>
     <ul class="list-table">
+        <li>
+            <ul class="options form" data-columns="3">
+                <li>@Html.TextBoxFor(x => x.Title, Model.titleSearch, new { @class="field", placeholder="Search By Title"})</li>
+                <li>@Html.DropDownListFor(x => x.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---")</li>
+                <li>@Html.TextBoxFor(t => t.TournamentStartDate, new { @class = "datepicker", placeholder="Start Date" } )</li>
+            </ul>
+        </li>
         <li class="list-table-header">
             <ul class="border list-table-columns" data-columns="4">
                 <li>Title</li>
                 <li>Game</li>
                 <li>Start Date</li>
-                <li> </li>
+                <li>Registration</li>
             </ul>
         </li>
         <li class="list-table-body">
@@ -32,7 +39,7 @@
             }
             else
             {
-                <ul data-columns="1">
+                <ul class="list-table-columns" data-columns="1">
                     <li>
                         No tournaments found.
                     </li>

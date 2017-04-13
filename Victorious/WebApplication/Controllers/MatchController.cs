@@ -72,7 +72,9 @@ namespace WebApplication.Controllers
                     IBracket bracket = tournyViewModel.Tourny.Brackets.ElementAt((int)json["bracketNum"]);
                     bracket.AddWin((int)json["matchNum"], winPlayerSlot);
 
-                    MatchModel matchModel = bracket.GetMatch((int)json["matchNum"]).Model;
+                    MatchModel matchModel = bracket.GetMatch((int)json["matchNum"]).GetModel();
+                    UserModel matchDefender = db.GetUserById(matchModel.DefenderID);
+                    UserModel matchChallenger = db.GetUserById(matchModel.ChallengerID);
 
                     DbError matchResult = db.UpdateMatch(matchModel);
                     if (matchResult == DbError.SUCCESS)
@@ -83,7 +85,7 @@ namespace WebApplication.Controllers
                         // Update the next matches.
                         if (matchModel.NextMatchNumber != -1)
                         {
-                            MatchModel nextWinnerMatch = bracket.GetMatch((int)matchModel.NextMatchNumber).Model;
+                            MatchModel nextWinnerMatch = bracket.GetMatch((int)matchModel.NextMatchNumber).GetModel();
                             DbError nextWinnerMatchResult = db.UpdateMatch(nextWinnerMatch);
 
                             switch (winPlayerSlot)
@@ -122,7 +124,7 @@ namespace WebApplication.Controllers
 
                         if (matchModel.NextLoserMatchNumber != -1)
                         {
-                            MatchModel nextLoserMatch = bracket.GetMatch((int)matchModel.NextLoserMatchNumber).Model;
+                            MatchModel nextLoserMatch = bracket.GetMatch((int)matchModel.NextLoserMatchNumber).GetModel();
                             DbError nextLoserMatchResult = db.UpdateMatch(nextLoserMatch);
 
                             // INVERSE LOGIC -- We want to modify the loser, not the winner, but we're based on the winner.
@@ -172,16 +174,16 @@ namespace WebApplication.Controllers
                                 defender = new
                                 {
                                     nextRound = winPlayerSlot == PlayerSlot.Defender ? matchModel.NextMatchNumber : matchModel.NextLoserMatchNumber,
-                                    name = matchModel.Defender.Username,
-                                    id = matchModel.Defender.UserID,
+                                    name = matchDefender.Username,
+                                    id = matchDefender.UserID,
                                     score = matchModel.DefenderScore,
                                     slot = forDefender
                                 },
                                 challenger = new
                                 {
                                     nextRound = winPlayerSlot == PlayerSlot.Challenger ? matchModel.NextMatchNumber : matchModel.NextLoserMatchNumber,
-                                    name = matchModel.Challenger.Username,
-                                    id = matchModel.Challenger.UserID,
+                                    name = matchChallenger.Username,
+                                    id = matchChallenger.UserID,
                                     score = matchModel.ChallengerScore,
                                     slot = forChallenger
                                 }

@@ -4,8 +4,9 @@
     for (int i = 0; i < Model.Brackets.Count; i++)
     {
         var bracket = Model.Brackets[i];
-        
-        if (!bracket.IsFinalized)
+        ViewBag.isFinalized = bracket.IsFinalized;
+
+        if (!bracket.IsFinalized && ViewBag.Permission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
         {
             Html.RenderPartial("Administrator/_Finalize", new ViewDataDictionary(ViewData));
         }
@@ -26,7 +27,7 @@
 
             <li class="match-edit-module">
                 <div class="module-background"></div>
-                <div class="module-close"><img class="close clickable" src="~/Images/svg/cross.svg" /></div>
+                <div class="module-close"><span class="icon icon-cross close clickable"></span></div>
                 <div class="module-content">
                     <h2>Winner Selection</h2>
                     @{ Html.RenderPartial("Brackets/_Match", new Tournament.Structure.Match(), new ViewDataDictionary(ViewData)); }
@@ -36,7 +37,5 @@
                 </div>
             </li>
         </ul>
-
-        Html.RenderPartial("Brackets/_Standings", bracket, new ViewDataDictionary(ViewData));
     }
 }

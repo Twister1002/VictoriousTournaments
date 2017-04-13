@@ -101,7 +101,13 @@
   <ItemGroup>
     <Compile Include="Controllers\AccountControllerUnit.cs" />
     <Compile Include="Controllers\MockHttpSession.cs" />
+    <Compile Include="Controllers\AdministratorControllerUnit.cs" />
+    <Compile Include="Controllers\MatchControllerUnit.cs" />
+    <Compile Include="Controllers\TournamentControllerUnit.cs" />
     <Compile Include="Models\AccountViewModelUnit.cs" />
+    <Compile Include="Models\TournamentViewModelUnit.cs" />
+    <Compile Include="Models\AdministratorViewModelUnit.cs" />
+    <Compile Include="Models\MatchViewModelUnit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
