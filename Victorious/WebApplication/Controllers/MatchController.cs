@@ -23,9 +23,10 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Match/Ajax/Match")]
-        public JsonResult MatchInfo(String match, String bracket, String tourny)
+        public JsonResult MatchInfo(String jsonData)
         {
-            MatchViewModel viewModel = new MatchViewModel(ConvertToInt(match));
+            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
+            MatchViewModel viewModel = new MatchViewModel(json["matchId"]);
 
             String jsonResult = JsonConvert.SerializeObject(new {
                 status = true,
@@ -72,104 +73,148 @@ namespace WebApplication.Controllers
 
                     PlayerSlot winPlayerSlot = json["winner"] == "Defender" ? PlayerSlot.Defender : PlayerSlot.Challenger;
                     IBracket bracket = tournyViewModel.Tourny.Brackets.ElementAt(ConvertToInt(json["bracketNum"]));
-                    bracket.AddGame(ConvertToInt(json["matchNum"]), ConvertToInt(json["defenderScore"]), ConvertToInt(json["challengerScore"]));
+                    GameModel gameModel = bracket.AddGame(ConvertToInt(json["matchNum"]), ConvertToInt(json["defenderScore"]), ConvertToInt(json["challengerScore"]));
 
                     IMatch currentMatch = bracket.GetMatch(ConvertToInt(json["matchNum"]));
                     IMatch nextWinnerMatch = null;
                     IMatch nextLoserMatch = null;
-                    
+
                     UserModel matchDefender = currentMatch.Players[(int)PlayerSlot.Defender].GetModel();
                     UserModel matchChallenger = currentMatch.Players[(int)PlayerSlot.Challenger].GetModel();
 
-                    dynamic nextWinnerMatchData = new { };
-                    dynamic nextLoserMatchData = new { };
+                    dynamic nextWinnerMatchData = null;
+                    dynamic nextLoserMatchData = null;
 
-                    DbError matchResult = db.UpdateMatch(currentMatch.GetModel());
-                    if (matchResult == DbError.SUCCESS)
+                    DbError gameResult = db.AddGame(currentMatch.GetModel(), gameModel);
+                    if (gameResult == DbError.SUCCESS)
                     {
-                        // Update the next matches.
-                        if (currentMatch.GetModel().NextMatchNumber != -1)
+                        DbError matchResult = db.UpdateMatch(currentMatch.GetModel());
+                        if (matchResult == DbError.SUCCESS)
                         {
-                            nextWinnerMatch = bracket.GetMatch((int)currentMatch.GetModel().NextMatchNumber);
-                            DbError nextMatchResults = db.UpdateMatch(nextWinnerMatch.GetModel());
-
-                            nextWinnerMatchData = new
+                            // Update the next matches.
+                            if (currentMatch.GetModel().NextMatchNumber != -1)
                             {
-                                matchNum = nextWinnerMatch.MatchNumber,
-                                matchId = nextWinnerMatch.Id,
-                                challenger = new
-                                {
-                                    id = nextWinnerMatch.Players[(int)PlayerSlot.Challenger].Id,
-                                    name = nextWinnerMatch.Players[(int)PlayerSlot.Challenger].Name,
-                                    score = nextWinnerMatch.Score[(int)PlayerSlot.Challenger]
-                                },
-                                defender = new
-                                {
-                                    id = nextWinnerMatch.Players[(int)PlayerSlot.Defender].Id,
-                                    name = nextWinnerMatch.Players[(int)PlayerSlot.Defender].Name,
-                                    score = nextWinnerMatch.Score[(int)PlayerSlot.Defender]
-                                }
-                            };
-                        }
+                                nextWinnerMatch = bracket.GetMatch((int)currentMatch.GetModel().NextMatchNumber);
+                                DbError nextMatchResults = db.UpdateMatch(nextWinnerMatch.GetModel());
 
-                        if (currentMatch.GetModel().NextLoserMatchNumber != -1)
-                        {
-                            nextLoserMatch = bracket.GetMatch((int)currentMatch.GetModel().NextLoserMatchNumber);
-                            DbError nextLoserMatchResult = db.UpdateMatch(nextLoserMatch.GetModel());
-                            nextLoserMatchData = new
-                            {
-                                matchNum = nextLoserMatch.MatchNumber,
-                                matchId = nextLoserMatch.Id,
-                                challenger = new
-                                {
-                                    id = nextLoserMatch.Players[(int)PlayerSlot.Challenger].Id,
-                                    name = nextLoserMatch.Players[(int)PlayerSlot.Challenger].Name,
-                                    score = nextLoserMatch.Score[(int)PlayerSlot.Challenger]
-                                },
-                                defender = new
-                                {
-                                    id = nextLoserMatch.Players[(int)PlayerSlot.Defender].Id,
-                                    name = nextLoserMatch.Players[(int)PlayerSlot.Defender].Name,
-                                    score = nextLoserMatch.Score[(int)PlayerSlot.Defender]
-                                }
-                            };
-                        }
+                                IPlayer challenger = nextWinnerMatch.Players[(int)PlayerSlot.Challenger] != null ? 
+                                    nextWinnerMatch.Players[(int)PlayerSlot.Challenger] : 
+                                    new User(-1, "Match "+nextWinnerMatch.PreviousMatchNumbers[(int)PlayerSlot.Challenger], "", "", "");
+                                IPlayer defender = nextWinnerMatch.Players[(int)PlayerSlot.Defender] != null ? 
+                                    nextWinnerMatch.Players[(int)PlayerSlot.Defender] :
+                                    new User(-1, "Match " + nextWinnerMatch.PreviousMatchNumbers[(int)PlayerSlot.Defender], "", "", "");
 
-                        jsonResult = new
-                        {
-                            status = true,
-                            message = "Match was processed sucessfully",
-                            data = new
-                            {
-                                currentMatch = new
+                                nextWinnerMatchData = new
                                 {
+                                    matchNum = nextWinnerMatch.MatchNumber,
+                                    matchId = nextWinnerMatch.Id,
+                                    isReady = nextWinnerMatch.IsReady,
+                                    isFinished = nextWinnerMatch.IsFinished,
                                     challenger = new
                                     {
-                                        id = currentMatch.Players[(int)PlayerSlot.Challenger].Id,
-                                        name = currentMatch.Players[(int)PlayerSlot.Challenger].Name,
-                                        score = currentMatch.Score[(int)PlayerSlot.Challenger]
+                                        id = challenger.Id,
+                                        name = challenger.Name,
+                                        score = nextWinnerMatch.Score[(int)PlayerSlot.Challenger]
                                     },
                                     defender = new
                                     {
-                                        id = currentMatch.Players[(int)PlayerSlot.Defender].Id,
-                                        name = currentMatch.Players[(int)PlayerSlot.Defender].Name,
-                                        score = currentMatch.Score[(int)PlayerSlot.Defender]
-                                    },
-                                    hasGames = true,
-                                    isFinished = currentMatch.IsFinished
-                                },
-                                nextWinnerMatch = nextWinnerMatchData,
-                                nextLoserMatch = nextLoserMatchData,
+                                        id = defender.Id,
+                                        name = defender.Name,
+                                        score = nextWinnerMatch.Score[(int)PlayerSlot.Defender]
+                                    }
+                                };
                             }
-                        };
+
+                            if (currentMatch.GetModel().NextLoserMatchNumber != -1)
+                            {
+                                nextLoserMatch = bracket.GetMatch((int)currentMatch.GetModel().NextLoserMatchNumber);
+                                DbError nextLoserMatchResult = db.UpdateMatch(nextLoserMatch.GetModel());
+
+                                IPlayer challenger = nextLoserMatch.Players[(int)PlayerSlot.Challenger] != null ?
+                                    nextLoserMatch.Players[(int)PlayerSlot.Challenger] :
+                                    new User(-1, "Match " + nextLoserMatch.PreviousMatchNumbers[(int)PlayerSlot.Challenger], "", "", "");
+                                IPlayer defender = nextLoserMatch.Players[(int)PlayerSlot.Defender] != null ?
+                                    nextLoserMatch.Players[(int)PlayerSlot.Defender] :
+                                    new User(-1, "Match " + nextLoserMatch.PreviousMatchNumbers[(int)PlayerSlot.Defender], "", "", "");
+
+                                nextLoserMatchData = new
+                                {
+                                    matchNum = nextLoserMatch.MatchNumber,
+                                    matchId = nextLoserMatch.Id,
+                                    isReady = nextLoserMatch.IsReady,
+                                    isFinished = nextLoserMatch.IsFinished,
+                                    challenger = new
+                                    {
+                                        id = challenger.Id,
+                                        name = challenger.Name,
+                                        score = nextLoserMatch.Score[(int)PlayerSlot.Challenger]
+                                    },
+                                    defender = new
+                                    {
+                                        id = defender.Id,
+                                        name = defender.Name,
+                                        score = nextLoserMatch.Score[(int)PlayerSlot.Defender]
+                                    }
+                                };
+                            }
+
+                            jsonResult = new
+                            {
+                                status = true,
+                                message = "Match was processed sucessfully",
+                                data = new
+                                {
+                                    currentMatch = new
+                                    {
+                                        matchNum = currentMatch.MatchNumber,
+                                        matchId = currentMatch.Id,
+                                        isReady = currentMatch.IsReady,
+                                        isFinished = currentMatch.IsFinished,
+                                        hasGames = currentMatch.Games.Count > 0,
+                                        challenger = new
+                                        {
+                                            id = currentMatch.Players[(int)PlayerSlot.Challenger].Id,
+                                            name = currentMatch.Players[(int)PlayerSlot.Challenger].Name,
+                                            score = currentMatch.Score[(int)PlayerSlot.Challenger]
+                                        },
+                                        defender = new
+                                        {
+                                            id = currentMatch.Players[(int)PlayerSlot.Defender].Id,
+                                            name = currentMatch.Players[(int)PlayerSlot.Defender].Name,
+                                            score = currentMatch.Score[(int)PlayerSlot.Defender]
+                                        },
+                                        
+                                    },
+                                    nextWinnerMatch = nextWinnerMatchData,
+                                    nextLoserMatch = nextLoserMatchData,
+                                }
+                            };
+                        }
+                        else
+                        {
+                            jsonResult = new
+                            {
+                                status = false,
+                                message = "There was an unexpected error.",
+                                data = new
+                                {
+                                    exception = new
+                                    {
+                                        message = db.interfaceException.Message,
+                                        innerMessage = db.interfaceException.InnerException
+                                    }
+                                }
+                            };
+                        }
                     }
                     else
                     {
                         jsonResult = new
                         {
                             status = false,
-                            message = "There was an unexpected error.",
-                            data = new {
+                            message = "There was an error in creating the game.",
+                            data = new
+                            {
                                 exception = new
                                 {
                                     message = db.interfaceException.Message,

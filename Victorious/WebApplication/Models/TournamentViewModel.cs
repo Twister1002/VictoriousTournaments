@@ -381,6 +381,17 @@ namespace WebApplication.Models
                 {
                     if (!bracket.IsFinished)
                     {
+                        // Delete the games first
+                        for (int i = 1; i <= bracket.NumberOfMatches; i++)
+                        {
+                            IMatch match = bracket.GetMatch(i);
+
+                            foreach (IGame game in match.Games)
+                            {
+                                db.DeleteGame(match.GetModel(), game.GetModel());
+                            }
+                        }
+
                         bracket.ResetMatches();
                         for (int i = 1; i <= bracket.NumberOfMatches; i++)
                         {

@@ -20,14 +20,18 @@
 
     $(".match .matchHeader .edit").on("click", function () {
         var matchElem = $(this).closest(".match");
-        var bracketNum = $(matchElem).closest(".bracket").data("bracketnum");
-        var matchNum = $(matchElem, ".match").data("matchnum");
-        var tournamentId = $("#Tournament").data("id");
+
+        var jsonData = {
+            "bracketNum": $(matchElem).closest(".bracket").data("bracketnum"),
+            "matchNum": $(matchElem).data("matchnum"),
+            "tournamentId": $("#Tournament").data("id"),
+            "matchId": $(matchElem).data("matchid")
+        };
         
         $.ajax({
             "url": "/Match/Ajax/Match",
             "type": "POST",
-            "data": { "match": matchNum, "bracket":bracketNum, "tourny": tournamentId },
+            "data": { "jsonData": JSON.stringify(jsonData) },
             "dataType": "json",
             "beforeSend": function() {
                 // Clear out the match data
@@ -98,43 +102,77 @@
             "success": function (json) {
                 json = JSON.parse(json);
                 if (json.status) {
-                    // Update the current match data
-                    currMatch = $(".list-table-body .match[data-matchnum='" + json.data.matchNum + "']");
-                    currMatch.find(".challenger .match-score").text(json.data.challenger.score);
-                    currMatch.find(".defender .match-score").text(json.data.defender.score);
 
-                    // Move the Defender
-                    if (json.data.defender.nextRound != -1) {
-                        nextMatch = $(".list-table-body .match[data-matchnum='" + json.data.defender.nextRound + "']");
-                        slot = nextMatch.find("." + PlayerSlot[json.data.defender.slot]);
-                        slot.attr("data-userid", json.data.defender.id).data("userid", json.data.defender.id);
-                        slot.find(".name").text(json.data.defender.name);
+                    if (json.data.currentMatch) {
+                        var matchData = json.data.currentMatch;
+                        var match = $(".list-table-body .match[data-matchnum='" + matchData.matchNum + "']");
 
-                        if (nextMatch.find(".defender").data("userid") != -1 && nextMatch.find(".challenger").data("userid") != -1) {
-                            nextMatch.find(".edit").removeClass("hide");
+                        $(match).find(".challenger .match-score").text(matchData.challenger.score);
+                        $(match).find(".defender .match-score").text(matchData.defender.score);
+
+                        if (matchData.isFinished) {
+                            match.find(".edit").removeClass("hide");
                         }
                         else {
-                            nextMatch.find(".edit").addClass("hide");
+                            match.find(".edit").addClass("hide");
                         }
                     }
+                    if (json.data.nextWinnerMatch) {
+                        var matchData = json.data.nextWinnerMatch;
+                        var match = $(".list-table-body .match[data-matchnum='" + matchData.matchNum + "']");
 
-                    // Find the next loser match
-                    if (json.data.challenger.nextRound != -1) {
-                        nextMatch = $(".list-table-body .match[data-matchnum='" + json.data.challenger.nextRound + "']");
-                        slot = nextMatch.find("." + PlayerSlot[json.data.challenger.slot]);
-                        slot.attr("data-userid", json.data.challenger.id).data("userid", json.data.challenger.id);
-                        slot.find(".name").text(json.data.challenger.name);
+                        // Set the names
+                        $(match)
+                            .find(".challenger")
+                            .attr("data-userid", matchData.challenger.id)
+                            .data("userid", matchData.challenger.id)
+                            .find(".name").text(matchData.challenger.name);
+                        
+                        $(match)
+                            .find(".defender")
+                            .attr("data-userid", matchData.defender.id)
+                            .data("userid", matchData.defender.id)
+                            .find(".name").text(matchData.defender.name);
 
-                        if (nextMatch.find(".defender").data("userid") != -1 && nextMatch.find(".challenger").data("userid") != -1) {
-                            nextMatch.find(".edit").removeClass("hide");
+                        // Set the scores
+                        $(match).find(".challenger .match-score").text(matchData.challenger.score);
+                        $(match).find(".defender .match-score").text(matchData.defender.score);
+
+                        if (matchData.isReady) {
+                            match.find(".edit").addClass("hide");
                         }
                         else {
-                            nextMatch.find(".edit").addClass("hide");
+                            match.find(".edit").removeClass("hide");
                         }
                     }
+                    if (json.data.nextLoserMatch) {
+                        var matchData = json.data.nextLoserMatch;
+                        var match = $(".list-table-body .match[data-matchnum='" + matchData.matchNum + "']");
 
-                    // Remove the edit button
-                    $(".list-table-body .match[data-matchnum='" + jsonData.matchNum + "'] .matchHeader .edit").addClass("hide");
+                        // Set the names
+                        (match)
+                            .find(".challenger")
+                            .attr("data-userid", matchData.challenger.id)
+                            .data("userid", matchData.challenger.id)
+                            .find(".name").text(matchData.challenger.name);
+
+                        $(match)
+                            .find(".defender")
+                            .attr("data-userid", matchData.defender.id)
+                            .data("userid", matchData.defender.id)
+                            .find(".name").text(matchData.defender.name);
+
+                        // Set the scores
+                        $(match).find(".challenger .match-score").text(matchData.challenger.score);
+                        $(match).find(".defender .match-score").text(matchData.defender.score);
+
+                        if (matchData.isReady) {
+                            match.find(".edit").addClass("hide");
+                        }
+                        else {
+                            match.find(".edit").removeClass("hide");
+                        }
+                    }
                 }
                 else {
 
