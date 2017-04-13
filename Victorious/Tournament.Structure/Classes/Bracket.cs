@@ -426,7 +426,7 @@ namespace Tournament.Structure
 		{
 			for (int n = 1; n <= NumberOfMatches; ++n)
 			{
-				GetMatch(n).ResetScore();
+				ResetMatchScore(n);
 			}
 		}
 		#endregion
