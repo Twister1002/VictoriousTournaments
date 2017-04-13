@@ -99,9 +99,11 @@
     });
 
     (function ($) {
-        $("#RegistrationStartDate")
-            .datepicker("setDate", $(this).val())
-            //.datepicker("option", "minDate", "-1m")
-            .trigger("change");
+        if ($("#RegistrationStartDate").length > 0) {
+            $("#RegistrationStartDate")
+                .datepicker("setDate", $(this).val())
+                //.datepicker("option", "minDate", "-1m")
+                .trigger("change");
+        }
     })($);
 });
