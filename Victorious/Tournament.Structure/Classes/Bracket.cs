@@ -463,7 +463,8 @@ namespace Tournament.Structure
 				IMatch match = GetMatch(n);
 				for (int i = 0; i < 2; ++i)
 				{
-					if (match.PreviousMatchNumbers[i] > -1)
+					if (match.PreviousMatchNumbers[i] > -1 &&
+						null != match.Players[i])
 					{
 						GetMatch(n).RemovePlayer(match.Players[i].Id);
 					}
