@@ -70,7 +70,8 @@ namespace WebApplication.Controllers
                     tournyViewModel.ProcessTournament();
 
                     IBracket bracket = tournyViewModel.Tourny.Brackets.ElementAt((int)json["bracketNum"]);
-                    bracket.AddWin((int)json["matchNum"], winPlayerSlot);
+                    bracket.AddGame(json["matchNum"], ConvertToInt(json["defenderScore"]), ConvertToInt(json["challengerScore"]));
+                    
 
                     MatchModel matchModel = bracket.GetMatch((int)json["matchNum"]).GetModel();
                     UserModel matchDefender = db.GetUserById(matchModel.DefenderID);
