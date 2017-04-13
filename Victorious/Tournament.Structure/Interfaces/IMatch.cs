@@ -133,7 +133,10 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_defenderScore">Score for first Player</param>
 		/// <param name="_challengerScore">Score for second Player</param>
+		/// <param name="_winnerSlot">Slot of winner (Defender/Challenger)</param>
 		/// <returns>Model of the new Game</returns>
+		GameModel AddGame(int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
+		[System.Obsolete("use AddGame(int, int, PlayerSlot) instead", false)]
 		GameModel AddGame(int _defenderScore, int _challengerScore);
 
 		/// <summary>

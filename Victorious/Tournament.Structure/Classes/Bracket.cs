@@ -39,6 +39,7 @@ namespace Tournament.Structure
 
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
+		public abstract GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
 		public abstract GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
 		public abstract void RemoveLastGame(int _matchNumber);
 		public abstract void ResetMatchScore(int _matchNumber);

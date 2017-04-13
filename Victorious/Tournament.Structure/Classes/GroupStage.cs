@@ -36,6 +36,25 @@ namespace Tournament.Structure
 			Groups[groupIndex].RestoreMatch(_matchNumber, _model);
 		}
 
+		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			int groupIndex;
+			GetMatchData(ref _matchNumber, out groupIndex);
+			GameModel gameModel = Groups[groupIndex].AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
+			UpdateRankings();
+
+			IsFinished = true;
+			foreach (IBracket group in Groups)
+			{
+				if (!group.IsFinished)
+				{
+					IsFinished = false;
+					break;
+				}
+			}
+
+			return gameModel;
+		}
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
 		{
 			int groupIndex;

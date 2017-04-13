@@ -203,6 +203,49 @@ namespace Tournament.Structure
 			}
 		}
 
+		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			if (_matchNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
+			}
+			if (!Matches.ContainsKey(_matchNumber))
+			{
+				throw new MatchNotFoundException
+					("Match not found; match number may be invalid.");
+			}
+
+			GameModel gameModel = Matches[_matchNumber].AddGame(_defenderScore, _challengerScore, _winnerSlot);
+			if (_defenderScore == _challengerScore)
+			{
+				throw new NotImplementedException
+					("Tie games are not (yet) supported!");
+			}
+			PlayerSlot gameWinnerSlot = (_defenderScore > _challengerScore)
+				? PlayerSlot.Defender : PlayerSlot.Challenger;
+			for (int i = 0; i < Rankings.Count; ++i)
+			{
+				if (Rankings[i].Id == Matches[_matchNumber].Players[(int)gameWinnerSlot].Id)
+				{
+					Rankings[i].Score += 1;
+					break;
+				}
+			}
+			UpdateRankings();
+
+			IsFinished = true;
+			foreach (IMatch match in Matches.Values)
+			{
+				if (!match.IsFinished)
+				{
+					IsFinished = false;
+					break;
+				}
+			}
+
+			return gameModel;
+		}
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
 		{
 			if (_matchNumber < 1)

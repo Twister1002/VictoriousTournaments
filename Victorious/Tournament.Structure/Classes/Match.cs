@@ -340,6 +340,36 @@ namespace Tournament.Structure
 			IsReady = false;
 		}
 
+		public GameModel AddGame(int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			if (!IsReady)
+			{
+				throw new InactiveMatchException
+					("Cannot add games to an inactive match!");
+			}
+			if (_defenderScore < 0 || _challengerScore < 0)
+			{
+				throw new ScoreException
+					("Score cannot be negative!");
+			}
+
+			IGame game = new Game(this.Id, (Games.Count + 1));
+			for (int i = 0; i < 2; ++i)
+			{
+				game.PlayerIDs[i] = this.Players[i].Id;
+			}
+			game.Score[(int)PlayerSlot.Defender] = _defenderScore;
+			game.Score[(int)PlayerSlot.Challenger] = _challengerScore;
+			game.WinnerSlot = _winnerSlot;
+
+			if (PlayerSlot.Defender == _winnerSlot ||
+				PlayerSlot.Challenger == _winnerSlot)
+			{
+				AddWin(game.WinnerSlot);
+			}
+			Games.Add(game);
+			return game.GetModel();
+		}
 		public GameModel AddGame(int _defenderScore, int _challengerScore)
 		{
 			if (!IsReady)
