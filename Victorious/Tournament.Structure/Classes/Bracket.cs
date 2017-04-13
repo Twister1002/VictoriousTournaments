@@ -460,6 +460,14 @@ namespace Tournament.Structure
 		{
 			for (int n = 1; n <= NumberOfMatches; ++n)
 			{
+				IMatch match = GetMatch(n);
+				for (int i = 0; i < 2; ++i)
+				{
+					if (match.PreviousMatchNumbers[i] > -1)
+					{
+						GetMatch(n).RemovePlayer(match.Players[i].Id);
+					}
+				}
 				GetMatch(n).ResetScore();
 			}
 		}
