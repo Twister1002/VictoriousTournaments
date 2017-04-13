@@ -186,9 +186,7 @@ namespace DataLib
                 interfaceException = ex;
                 WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
-
             }
-
             return DbError.EXISTS;
         }
 
@@ -223,7 +221,6 @@ namespace DataLib
                 WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
-
             return DbError.SUCCESS;
         }
 
@@ -241,7 +238,6 @@ namespace DataLib
                 WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
-
             return DbError.SUCCESS;
         }
 
@@ -251,7 +247,6 @@ namespace DataLib
             try
             {
                 context.Users.Remove(_user);
-
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -276,7 +271,6 @@ namespace DataLib
                 WriteException(ex);
                 user.UserID = -1;
             }
-
             return user;
         }
 
@@ -286,8 +280,6 @@ namespace DataLib
             try
             {
                 user = context.Users.Single(x => x.Username == username);
-                //if (user.Password == null || user.Email == null || user.FirstName == null || user.LastName == null)
-                //    throw new NullReferenceException();
             }
             catch (Exception ex)
             {
@@ -296,7 +288,6 @@ namespace DataLib
                 user.UserID = -1;
                 return user;
             }
-
             return user;
         }
 
@@ -317,8 +308,6 @@ namespace DataLib
             return users;
         }
 
-
-
         public DbError UpdateUserTournamentPermission(UserModel user, TournamentModel tournament, Permission permission)
         {
             UserInTournamentModel uitm = new UserInTournamentModel();
@@ -326,8 +315,6 @@ namespace DataLib
             {
                 uitm = context.UsersInTournaments.Where(x => x.TournamentID == tournament.TournamentID && x.UserID == user.UserID).Single();
                 uitm.Permission = permission;
-                //context.UsersInTournaments.Where(x => x.UserID == user.UserID).Single().Permission = permission;
-                //uitm.Permission = permission;
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -416,7 +403,6 @@ namespace DataLib
                 WriteException(ex);
                 return DbError.FAILED_TO_ADD;
             }
-
             return DbError.SUCCESS;
         }
 
@@ -451,7 +437,6 @@ namespace DataLib
                 tournament.TournamentID = -1;
             }
             return tournament;
-
         }
 
         [Obsolete("Use 'Users' collection of tournament")]
@@ -489,12 +474,6 @@ namespace DataLib
             }
             catch (DbUpdateConcurrencyException ce)
             {
-                //interfaceException = ce;
-                //WriteException(ce);
-                //var entry = ce.Entries.Single();
-                //var currentValues = entry.Entity;
-                //var databaseValues = entry.GetDatabaseValues();
-                //var resolvedValues = databaseValues.Clone();
                 interfaceException = ce;
                 WriteException(ce);
                 return DbError.CONCURRENCY_ERROR;
@@ -852,7 +831,6 @@ namespace DataLib
             throw new Exception("Don't Call this Function");
             try
             {
-
                 _match = match;
 
                 _match.Challenger = context.Users.Find(match.ChallengerID);
@@ -900,7 +878,6 @@ namespace DataLib
             try
             {
                 MatchModel _match = context.Matches.Find(match.MatchID);
-                //context.Matches.Attach(match);
                 context.Matches.Remove(_match);
                 context.SaveChanges();
             }
@@ -1121,11 +1098,6 @@ namespace DataLib
             }
             return permission;
         }
-
-        //public Permission GetUserPermission(UserModel user, TeamModel team)
-        //{
-
-        //}
 
         #endregion
 
