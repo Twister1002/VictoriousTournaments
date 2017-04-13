@@ -116,7 +116,7 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new RoundRobinBracket(pList, maxRounds);
+			IBracket b = new RoundRobinBracket(pList, 1, maxRounds);
 
 			Assert.AreEqual(maxRounds, b.NumberOfRounds);
 		}

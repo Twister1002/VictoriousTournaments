@@ -246,44 +246,6 @@ namespace Tournament.Structure
 
 			return gameModel;
 		}
-		public override void AddGame(int _matchNumber, IGame _game)
-		{
-			if (null == _game)
-			{
-				throw new ArgumentNullException("_game");
-			}
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
-			if (!Matches.ContainsKey(_matchNumber))
-			{
-				throw new MatchNotFoundException
-					("Match not found; match number may be invalid.");
-			}
-
-			Matches[_matchNumber].AddGame(_game);
-			for (int i = 0; i < Rankings.Count; ++i)
-			{
-				if (Rankings[i].Id == Matches[_matchNumber].Players[(int)(_game.WinnerSlot)].Id)
-				{
-					Rankings[i].Score = Rankings[i].Score + 1;
-					break;
-				}
-			}
-			UpdateRankings();
-
-			IsFinished = true;
-			foreach (IMatch match in Matches.Values)
-			{
-				if (!match.IsFinished)
-				{
-					IsFinished = false;
-					break;
-				}
-			}
-		}
 		public override void RemoveLastGame(int _matchNumber)
 		{
 			if (_matchNumber < 1)

@@ -132,6 +132,8 @@ namespace Tournament.Structure
 			// Find & update every Match:
 			foreach (MatchModel model in _model.Matches)
 			{
+				RestoreMatch(model.MatchNumber, model);
+#if false
 				foreach (IBracket group in Groups)
 				{
 					if (group.Players.Select(p => p.Id).ToList()
@@ -176,6 +178,7 @@ namespace Tournament.Structure
 						break;
 					}
 				}
+#endif
 			}
 
 			// Update the rankings:
@@ -211,8 +214,7 @@ namespace Tournament.Structure
 					pList.Add(Players[p + b]);
 				}
 
-				IBracket newGroup = new RoundRobinBracket(pList, MaxRounds);
-				newGroup.CreateBracket(_gamesPerMatch);
+				IBracket newGroup = new RoundRobinBracket(pList, _gamesPerMatch, MaxRounds);
 				Groups.Add(newGroup);
 			}
 

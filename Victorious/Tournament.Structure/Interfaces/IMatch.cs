@@ -135,8 +135,6 @@ namespace Tournament.Structure
 		/// <param name="_challengerScore">Score for second Player</param>
 		/// <returns>Model of the new Game</returns>
 		GameModel AddGame(int _defenderScore, int _challengerScore);
-		[System.Obsolete("use AddGame(int, int) instead", false)]
-		void AddGame(IGame _game);
 
 		/// <summary>
 		/// Delete/un-record the most recent Game.

@@ -378,30 +378,6 @@ namespace Tournament.Structure
 			Games.Add(game);
 			return game.GetModel();
 		}
-		public void AddGame(IGame _game)
-		{
-			if (null == _game)
-			{
-				throw new ArgumentNullException("_game");
-			}
-
-			_game.MatchId = this.Id;
-			_game.GameNumber = (_game.GameNumber > 0)
-				? _game.GameNumber : (Games.Count + 1);
-			_game.PlayerIDs[(int)PlayerSlot.Defender] = this.Players[(int)PlayerSlot.Defender].Id;
-			_game.PlayerIDs[(int)PlayerSlot.Challenger] = this.Players[(int)PlayerSlot.Challenger].Id;
-			foreach (IGame game in Games)
-			{
-				if (game.Id == _game.Id || game.GameNumber == _game.GameNumber)
-				{
-					throw new DuplicateObjectException
-						("New game cannot match an existing game!");
-				}
-			}
-
-			AddWin(_game.WinnerSlot);
-			Games.Add(_game);
-		}
 		public IGame RemoveLastGame()
 		{
 			if (0 == Games.Count)
@@ -553,9 +529,33 @@ namespace Tournament.Structure
 			NextLoserMatchNumber = _number;
 			Model.NextLoserMatchNumber = _number;
 		}
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
+		private void AddGame(IGame _game)
+		{
+			if (null == _game)
+			{
+				throw new ArgumentNullException("_game");
+			}
+
+			_game.MatchId = this.Id;
+			_game.GameNumber = (_game.GameNumber > 0)
+				? _game.GameNumber : (Games.Count + 1);
+			_game.PlayerIDs[(int)PlayerSlot.Defender] = this.Players[(int)PlayerSlot.Defender].Id;
+			_game.PlayerIDs[(int)PlayerSlot.Challenger] = this.Players[(int)PlayerSlot.Challenger].Id;
+			foreach (IGame game in Games)
+			{
+				if (game.Id == _game.Id || game.GameNumber == _game.GameNumber)
+				{
+					throw new DuplicateObjectException
+						("New game cannot match an existing game!");
+				}
+			}
+
+			AddWin(_game.WinnerSlot);
+			Games.Add(_game);
+		}
 		private void AddWin(PlayerSlot _slot)
 		{
 			if (_slot != PlayerSlot.Defender &&

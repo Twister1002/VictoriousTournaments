@@ -40,13 +40,46 @@ namespace Tournament.Structure
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
 		public abstract GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
-		public abstract void AddGame(int _matchNumber, IGame _game);
 		public abstract void RemoveLastGame(int _matchNumber);
 		public abstract void ResetMatchScore(int _matchNumber);
 		protected abstract void UpdateRankings();
 		#endregion
 
 		#region Public Methods
+		public virtual void RestoreMatch(int _matchNumber, MatchModel _model)
+		{
+			if (_matchNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
+			}
+			if (null == _model)
+			{
+				throw new ArgumentNullException("_model");
+			}
+
+			if (null != GrandFinal &&
+				GrandFinal.MatchNumber == _matchNumber)
+			{
+				GrandFinal = new Match(_model);
+			}
+			else if (null != Matches &&
+				Matches.ContainsKey(_matchNumber))
+			{
+				Matches[_matchNumber] = new Match(_model);
+			}
+			else if (null != LowerMatches &&
+				LowerMatches.ContainsKey(_matchNumber))
+			{
+				LowerMatches[_matchNumber] = new Match(_model);
+			}
+			else
+			{
+				throw new MatchNotFoundException
+					("Match not found; match number may be invalid.");
+			}
+		}
+
 		public int NumberOfPlayers()
 		{
 			if (null == Players)
