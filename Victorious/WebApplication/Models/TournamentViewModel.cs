@@ -365,5 +365,31 @@ namespace WebApplication.Models
 
             return result;
         }
+        
+        //Only the creator can reset the brackets
+        public bool ResetBrackets(int sessionUser)
+        {
+            if (sessionUser == Model.CreatedByID)
+            {
+                ProcessTournament();
+                foreach (IBracket bracket in Tourny.Brackets)
+                {
+                    if (!bracket.IsFinished)
+                    {
+                        bracket.ResetMatches();
+                        for (int i = 1; i <= bracket.NumberOfMatches; i++)
+                        {
+                            IMatch match = bracket.GetMatch(i);
+                            db.UpdateMatch(match.GetModel());
+                        }
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

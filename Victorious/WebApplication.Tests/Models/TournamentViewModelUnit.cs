@@ -99,7 +99,6 @@ namespace WebApplication.Tests.Models
         {
             // Arrange
             int userId = 7;
-            Permission permission = Permission.TOURNAMENT_STANDARD;
 
             TournamentModel model = CreateModel();
             TournamentViewModel viewModel = new TournamentViewModel(model);

@@ -2,8 +2,7 @@
 @{
     ViewBag.Title = "Update";
     Layout = "~/Views/Shared/_Layout.cshtml";
-
-    bool isFinalized = Model.Model.Brackets.ElementAt(0).Matches.Count != 0;
+    
     int userId = Session["User.UserId"] != null ? (int)Session["User.UserId"] : -1;
     DataLib.Permission UserPermission = Model.UserPermission((int)Session["User.UserId"]);
 

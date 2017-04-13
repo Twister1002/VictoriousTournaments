@@ -24,7 +24,7 @@ namespace WebApplication.Controllers
         {
             TournamentViewModel model = new TournamentViewModel();
             model.Search(title);
-            
+
             return View("Search", model);
         }
 
@@ -345,62 +345,39 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("Tournament/Reset")]
-        public ActionResult Reset(String id)
-        {
-            return null;
-
-            int tournamentId = ConvertToInt(id);
-            TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-
-            if (Session["User.UserId"] != null)
-            {
-                if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
-                {
-                    viewModel.ProcessTournament();
-                }
-                else
-                {
-
-                }
-            }
-            else
-            {
-
-            }
-        }
-
-        [HttpPost]
         [Route("Tournament/Ajax/Delete")]
-        public JsonResult Delete(String tourny)
+        public JsonResult Delete(String jsonData)
         {
-            JsonResult json = new JsonResult();
+            dynamic jsonResult = new { };
+            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<string, int>>(jsonData);
 
             if (Session["User.UserId"] != null)
             {
                 UserModel userModel = this.getUserModel((int)Session["User.UserId"]);
-                TournamentViewModel model = new TournamentViewModel(int.Parse(tourny));
+                TournamentViewModel model = new TournamentViewModel(json["tourny"]);
                 if (model.Model.CreatedByID == userModel.UserID)
                 {
                     DbError result = db.DeleteTournament(model.Model);
                     if (result == DbError.SUCCESS)
                     {
-                        return Json(new { status = true, message = "Tournament was deleted.", redirect = Url.Action("Index", "Tournament") });
+                        jsonResult = new { status = true, message = "Tournament was deleted.", redirect = Url.Action("Index", "Tournament") };
                     }
                     else
                     {
-                        return Json(new { status = false, message = "Unable to delete the tournament due to an error." });
+                        jsonResult = new { status = false, message = "Unable to delete the tournament due to an error." };
                     }
                 }
                 else
                 {
-                    return Json(new { status = false, message = "You are not entitled to do this." });
+                    jsonResult = new { status = false, message = "You are not entitled to do this." };
                 }
             }
             else
             {
-                return Json(new { status = false, message = "Please login in order to modify a tournament." });
+                jsonResult = new { status = false, message = "Please login in order to modify a tournament." };
             }
+
+            return Json(JsonConvert.SerializeObject(jsonResult));
         }
 
         [HttpPost]
@@ -446,6 +423,50 @@ namespace WebApplication.Controllers
                     }
                 }
             ));
+        }
+
+        [HttpPost]
+        [Route("Tournament/Ajax/Reset")]
+        public JsonResult Reset(String jsonData)
+        {
+            dynamic jsonResult = new { };
+            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<string, int>>(jsonData);
+
+            if (Session["User.UserId"] != null)
+            {
+                TournamentViewModel viewModel = new TournamentViewModel(json["tournyNum"]);
+                bool result = viewModel.ResetBrackets((int)Session["User.UserId"]);
+
+                if (result)
+                {
+                    Session["Message"] = "The bracket has been reset.";
+                    Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
+                    jsonResult = new
+                    {
+                        status = true,
+                        redirect = Url.Action("Tournament", "Tournament", new { guid = viewModel.Model.TournamentID })
+                    };
+                }
+                else
+                {
+                    Session["Message"] = "The bracket failed to reset.";
+                    Session["Message.Class"] = ViewModel.ViewError.WARNING;
+                    jsonResult = new
+                    {
+                        status = true
+                    };
+                }
+            }
+            else
+            {
+                jsonResult = new
+                {
+                    status = false,
+                    redirect = Url.Action("Login", "Account")
+                };
+            }
+
+            return Json(JsonConvert.SerializeObject(jsonResult));
         }
     }
 }
