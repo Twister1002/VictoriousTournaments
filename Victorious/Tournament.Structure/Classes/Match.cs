@@ -623,6 +623,12 @@ namespace Tournament.Structure
 				Model.WinnerID = Players[(int)_slot].Id;
 				IsFinished = true;
 			}
+			else if (Score[0] + Score[1] >= MaxGames)
+			{
+				WinnerSlot = PlayerSlot.unspecified;
+				Model.WinnerID = -1;
+				IsFinished = true;
+			}
 		}
 		private void SubtractWin(PlayerSlot _slot)
 		{

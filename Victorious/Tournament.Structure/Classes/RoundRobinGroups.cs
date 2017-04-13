@@ -199,6 +199,11 @@ namespace Tournament.Structure
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			ResetBracket();
+			if (_gamesPerMatch < 1)
+			{
+				throw new BracketException
+					("Games Per Match must be positive!");
+			}
 			if (Players.Count < 2 ||
 				NumberOfGroups > (Players.Count / 2) || NumberOfGroups < 2)
 			{
