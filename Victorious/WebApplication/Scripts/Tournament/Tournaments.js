@@ -3,14 +3,19 @@
 
     // Tournament Deletion
     $(".tournament-delete").on("click", function () {
+        var jsonData = {
+            "tourny": $(this).closest("#Tournament").data("id")
+        };
+
         if (confirm("Are you sure you want to delete this tournament? This can no be reverted.")) {
             $.ajax({
                 "url": "/Tournament/Ajax/Delete",
                 "type": "POST",
-                "data": { "tourny": $(this).data("id") },
+                "data": { "jsonData": JSON.stringify(jsonData) },
                 "dataType": "json",
                 "success": function (json) {
-                    if (json.success) {
+                    json = JSON.parse(json);
+                    if (json.status) {
                         window.location.replace(json.redirect);
                     }
                     else {
@@ -18,9 +23,48 @@
                     }
                 },
                 "error": function (json) {
+                    json = JSON.parse(json);
                     alert(json.message);
                 }
             });
+        }
+    });
+
+    // Redirect to update
+    $(".tournament-update").on("click", function () {
+        window.location.replace("/Tournament/Update/" + $(this).closest("#Tournament").data("id"));
+    });
+
+    // Reset the brackets
+    $(".tournament-reset").on("click", function () {
+        var jsonData = {
+            "tournyNum": $(this).closest("#Tournament").data("id")
+        };
+
+        if (confirm("Are you sure you want to reset non-finished brackets?")) {
+            $.ajax({
+                "url": "/Tournament/Ajax/Reset",
+                "type": "POST",
+                "data": { "jsonData": JSON.stringify(jsonData) },
+                "dataType": "json",
+                "success": function (json) {
+                    json = JSON.parse(json);
+                    if (json.status) {
+                        window.location.replace(json.redirect);
+                    }
+                    else {
+                        alert(json.message);
+                    }
+                },
+                "error": function (json) {
+                    json = JSON.parse(json);
+
+                    console.log("Error");
+                }
+            });
+        }
+        else {
+            return false;
         }
     });
 

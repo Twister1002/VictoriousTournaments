@@ -21,10 +21,12 @@
         <div class="tournament-buttons">
             @if (userPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
             {
-                <a href="@Url.Action("Update", "Tournament", new { id = Model.Model.TournamentID })">
-                    <span class="icon icon-pencil"></span>
-                </a>
-                <span class="icon icon-cross tournament-delete" data-id="@Model.Model.TournamentID"></span>
+                <span class="icon icon-pencil tournament-update"></span>
+                <span class="icon icon-cross tournament-delete"></span>
+            }
+            @if (isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
+            {
+                <span class="icon icon-loop2 tournament-reset"></span>
             }
             <span class="icon icon-trophy tournament-standings"></span>
         </div>
