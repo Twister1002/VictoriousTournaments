@@ -203,7 +203,7 @@ namespace Tournament.Structure
 			}
 		}
 
-		public override void AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
+		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
 		{
 			if (_matchNumber < 1)
 			{
@@ -216,7 +216,7 @@ namespace Tournament.Structure
 					("Match not found; match number may be invalid.");
 			}
 
-			Matches[_matchNumber].AddGame(_defenderScore, _challengerScore);
+			GameModel gameModel = Matches[_matchNumber].AddGame(_defenderScore, _challengerScore);
 			if (_defenderScore == _challengerScore)
 			{
 				throw new NotImplementedException
@@ -243,6 +243,8 @@ namespace Tournament.Structure
 					break;
 				}
 			}
+
+			return gameModel;
 		}
 		public override void AddGame(int _matchNumber, IGame _game)
 		{
