@@ -484,14 +484,6 @@ namespace Tournament.Structure
 		public override void ResetMatches()
 		{
 			base.ResetMatches();
-			for (int n = 1; n <= NumberOfMatches; ++n)
-			{
-				IMatch match = GetMatch(n);
-				if (!(Matches.ContainsKey(n) && 1 == match.RoundIndex))
-				{
-					GetMatch(n).ResetPlayers();
-				}
-			}
 			Rankings.Clear();
 		}
 		#endregion
