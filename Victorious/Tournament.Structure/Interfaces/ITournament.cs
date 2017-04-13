@@ -23,7 +23,7 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Gets the number of Players in the tournament.
 		/// </summary>
-		/// <returns>Number of Players</returns>
+		/// <returns>Players.Count</returns>
 		int NumberOfPlayers();
 
 		/// <summary>

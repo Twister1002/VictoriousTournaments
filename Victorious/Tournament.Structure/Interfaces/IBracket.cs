@@ -23,7 +23,15 @@ namespace Tournament.Structure
 		/// </summary>
 		bool IsFinished { get; }
 
+		/// <summary>
+		/// Players list, ordered by seed.
+		/// </summary>
 		List<IPlayer> Players { get; }
+
+		/// <summary>
+		/// Ordered Rankings list, containing:
+		/// Player ID, name, score, and rank.
+		/// </summary>
 		List<IPlayerScore> Rankings { get; }
 
 		/// <summary>
@@ -32,7 +40,15 @@ namespace Tournament.Structure
 		/// </summary>
 		int MaxRounds { get; set; }
 
+		/// <summary>
+		/// Number of rounds in the upper bracket.
+		/// (if "upper" is N/A, this is total rounds)
+		/// </summary>
 		int NumberOfRounds { get; }
+
+		/// <summary>
+		/// Returns 0 if there is no lower bracket.
+		/// </summary>
 		int NumberOfLowerRounds { get; }
 
 		/// <summary>
@@ -182,7 +198,7 @@ namespace Tournament.Structure
 		IMatch GetMatch(int _matchNumber);
 
 		/// <summary>
-		/// Resets every Match to a pre-play state (no games played).
+		/// Resets EVERY Match to a pre-play state (no games played).
 		/// </summary>
 		void ResetMatches();
 #endregion

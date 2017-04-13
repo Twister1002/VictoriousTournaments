@@ -20,7 +20,7 @@ namespace Tournament.Structure
 
 		#region Public Methods
 		/// <summary>
-		/// Create a Model for this Match.
+		/// Create a Model for this Player.
 		/// </summary>
 		/// <returns>UserModel-type object</returns>
 		UserModel GetModel();

@@ -33,7 +33,12 @@ namespace Tournament.Structure
 		/// </summary>
 		bool IsFinished { get; }
 
+		/// <summary>
+		/// Max number of games that MAY be played.
+		/// (ex: BO3 = 3 max games)
+		/// </summary>
 		int MaxGames { get; }
+
 		IPlayer[] Players { get; }
 
 		/// <summary>
@@ -43,7 +48,7 @@ namespace Tournament.Structure
 		PlayerSlot WinnerSlot { get; }
 
 		/// <summary>
-		/// List of completed/recorded Games.
+		/// Ordered list of completed/recorded Games.
 		/// </summary>
 		List<IGame> Games { get; }
 
@@ -125,12 +130,14 @@ namespace Tournament.Structure
 		/// </summary>
 		void ResetPlayers();
 
-		void AddGame(int _defenderScore, int _challengerScore);
-
 		/// <summary>
-		/// Add/record a finished Game.
+		/// Add a Game to the Match.
+		/// Score and match state will also udpate.
 		/// </summary>
-		/// <param name="_game">Game-type object to add</param>
+		/// <param name="_defenderScore">Score for first Player</param>
+		/// <param name="_challengerScore">Score for second Player</param>
+		void AddGame(int _defenderScore, int _challengerScore);
+		[System.Obsolete("use AddGame(int, int) instead", false)]
 		void AddGame(IGame _game);
 
 		/// <summary>
