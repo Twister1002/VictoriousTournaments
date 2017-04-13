@@ -23,7 +23,7 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Gets the number of Players in the tournament.
 		/// </summary>
-		/// <returns>Number of Players</returns>
+		/// <returns>Players.Count</returns>
 		int NumberOfPlayers();
 
 		/// <summary>
@@ -61,8 +61,6 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_playerId">ID of Player to remove</param>
 		void RemovePlayer(int _playerId);
-		[System.Obsolete("use RemovePlayer(int ID) instead", false)]
-		void RemovePlayer(IPlayer _player);
 
 		/// <summary>
 		/// Clears the tournament's player list.

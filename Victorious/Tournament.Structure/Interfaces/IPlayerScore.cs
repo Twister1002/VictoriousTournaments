@@ -22,7 +22,7 @@ namespace Tournament.Structure
 
 		/// <summary>
 		/// In the case of a "ranged" rank, returns the minimum.
-		/// Example: Rank 5-8 returns 5.
+		/// Ex: Rank 5-8 returns 5.
 		/// </summary>
 		int Rank { get; set; }
 		#endregion

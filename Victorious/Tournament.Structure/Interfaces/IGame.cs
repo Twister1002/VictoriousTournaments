@@ -10,10 +10,15 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		int Id { get; }
+
+		/// <summary>
+		/// ID of this game's Match.
+		/// </summary>
 		int MatchId { get; set; }
 
 		/// <summary>
 		/// Number of Game within this Match.
+		/// First game = 1
 		/// </summary>
 		int GameNumber { get; set; }
 

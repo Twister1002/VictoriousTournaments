@@ -70,33 +70,6 @@ namespace Tournament.Structure
 
 			IsFinished = (IsFinished && Groups[groupIndex].IsFinished);
 		}
-
-		public override void AddWin(int _matchNumber, PlayerSlot _slot)
-		{
-			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			Groups[groupIndex].AddWin(_matchNumber, _slot);
-			UpdateRankings();
-
-			IsFinished = true;
-			foreach (IBracket group in Groups)
-			{
-				if (!group.IsFinished)
-				{
-					IsFinished = false;
-					break;
-				}
-			}
-		}
-		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
-		{
-			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			Groups[groupIndex].SubtractWin(_matchNumber, _slot);
-			UpdateRankings();
-
-			IsFinished = (IsFinished && Groups[groupIndex].IsFinished);
-		}
 		public override void ResetMatchScore(int _matchNumber)
 		{
 			int groupIndex;

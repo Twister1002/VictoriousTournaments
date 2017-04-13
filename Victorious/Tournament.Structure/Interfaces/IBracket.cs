@@ -23,7 +23,15 @@ namespace Tournament.Structure
 		/// </summary>
 		bool IsFinished { get; }
 
+		/// <summary>
+		/// Players list, ordered by seed.
+		/// </summary>
 		List<IPlayer> Players { get; }
+
+		/// <summary>
+		/// Ordered Rankings list, containing:
+		/// Player ID, name, score, and rank.
+		/// </summary>
 		List<IPlayerScore> Rankings { get; }
 
 		/// <summary>
@@ -32,7 +40,15 @@ namespace Tournament.Structure
 		/// </summary>
 		int MaxRounds { get; set; }
 
+		/// <summary>
+		/// Number of rounds in the upper bracket.
+		/// (if "upper" is N/A, this is total rounds)
+		/// </summary>
 		int NumberOfRounds { get; }
+
+		/// <summary>
+		/// Returns 0 if there is no lower bracket.
+		/// </summary>
 		int NumberOfLowerRounds { get; }
 
 		/// <summary>
@@ -69,11 +85,6 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_matchNumber">Number of Match to modify</param>
 		void RemoveLastGame(int _matchNumber);
-
-		[System.Obsolete("use AddGame(int, int, int) instead", false)]
-		void AddWin(int _matchNumber, PlayerSlot _slot);
-		[System.Obsolete("use RemoveLastGame(int) instead", false)]
-		void SubtractWin(int _matchNumber, PlayerSlot _slot);
 
 		/// <summary>
 		/// Reset score for the specified match.
@@ -148,8 +159,6 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_playerId">ID of Player to remove</param>
 		void RemovePlayer(int _playerId);
-		[System.Obsolete("use RemovePlayer(int ID) instead", false)]
-		void RemovePlayer(IPlayer _player);
 
 		/// <summary>
 		/// Clears the bracket's player list.
@@ -182,7 +191,7 @@ namespace Tournament.Structure
 		IMatch GetMatch(int _matchNumber);
 
 		/// <summary>
-		/// Resets every Match to a pre-play state (no games played).
+		/// Resets EVERY Match to a pre-play state (no games played).
 		/// </summary>
 		void ResetMatches();
 #endregion
