@@ -415,35 +415,6 @@ namespace Tournament.Structure
 				IsFinished = false;
 				UpdateRankings();
 			}
-#if false
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
-			if (null == Matches[_matchNumber])
-			{
-				throw new MatchNotFoundException
-					("Match not found; match number may be invalid.");
-			}
-
-			// If this Match is over, remove advanced Players from future Matches
-			bool needToUpdateRankings = Matches[_matchNumber].IsFinished;
-			if (Matches[_matchNumber].IsFinished)
-			{
-				RemovePlayerFromFutureMatches
-					(Matches[_matchNumber].NextMatchNumber,
-					ref Matches[_matchNumber].Players[(int)(Matches[_matchNumber].WinnerSlot)]);
-			}
-
-			// Reset Score
-			Matches[_matchNumber].ResetScore();
-			if (needToUpdateRankings)
-			{
-				IsFinished = false;
-				UpdateRankings();
-			}
-#endif
 		}
 
 		public override void ResetMatches()
