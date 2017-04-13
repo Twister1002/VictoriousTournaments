@@ -27,7 +27,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public RoundRobinGroups(List<IPlayer> _players, int _numberOfGroups, int _numberOfRounds = 0)
+		public RoundRobinGroups(List<IPlayer> _players, int _numberOfGroups, int _maxGamesPerMatch = 1, int _numberOfRounds = 0)
 		{
 			if (null == _players)
 			{
@@ -68,7 +68,7 @@ namespace Tournament.Structure
 			NumberOfGroups = _numberOfGroups;
 			MaxRounds = _numberOfRounds;
 			ResetBracket();
-			CreateBracket();
+			CreateBracket(_maxGamesPerMatch);
 		}
 #if false
 		public RoundRobinGroups(int _numberOfPlayers, int _numberOfGroups)

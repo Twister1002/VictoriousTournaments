@@ -25,8 +25,8 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public DoubleElimBracket(List<IPlayer> _players)
-			: base(_players)
+		public DoubleElimBracket(List<IPlayer> _players, int _maxGamesPerMatch = 1)
+			: base(_players, _maxGamesPerMatch)
 		{
 			BracketType = BracketTypeModel.BracketType.DOUBLE;
 		}

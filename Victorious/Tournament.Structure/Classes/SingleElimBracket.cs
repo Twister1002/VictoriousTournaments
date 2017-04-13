@@ -25,7 +25,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public SingleElimBracket(List<IPlayer> _players)
+		public SingleElimBracket(List<IPlayer> _players, int _maxGamesPerMatch = 1)
 		{
 			if (null == _players)
 			{
@@ -57,7 +57,7 @@ namespace Tournament.Structure
 
 			BracketType = BracketTypeModel.BracketType.SINGLE;
 			ResetBracket();
-			CreateBracket();
+			CreateBracket(_maxGamesPerMatch);
 		}
 #if false
 		public SingleElimBracket(int _numPlayers)

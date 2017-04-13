@@ -297,9 +297,9 @@ namespace Tournament.Structure
 		}
 
 		#region Bracket Creation Methods
-		public void AddSingleElimBracket(List<IPlayer> _playerList)
+		public void AddSingleElimBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1)
 		{
-			Brackets.Add(new SingleElimBracket(_playerList));
+			Brackets.Add(new SingleElimBracket(_playerList, _maxGamesPerMatch));
 		}
 #if false
 		public void AddSingleElimBracket(int _numPlayers)
@@ -312,9 +312,9 @@ namespace Tournament.Structure
 			AddSingleElimBracket(pList);
 		}
 #endif
-		public void AddDoubleElimBracket(List<IPlayer> _playerList)
+		public void AddDoubleElimBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1)
 		{
-			Brackets.Add(new DoubleElimBracket(_playerList));
+			Brackets.Add(new DoubleElimBracket(_playerList, _maxGamesPerMatch));
 		}
 #if false
 		public void AddDoubleElimBracket(int _numPlayers)
@@ -327,9 +327,9 @@ namespace Tournament.Structure
 			AddDoubleElimBracket(pList);
 		}
 #endif
-		public void AddRoundRobinBracket(List<IPlayer> _playerList, int _numRounds = 0)
+		public void AddRoundRobinBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1, int _numRounds = 0)
 		{
-			Brackets.Add(new RoundRobinBracket(_playerList, _numRounds));
+			Brackets.Add(new RoundRobinBracket(_playerList, _maxGamesPerMatch, _numRounds));
 		}
 #if false
 		public void AddRoundRobinBracket(int _numPlayers, int _numRounds = 0)
@@ -342,9 +342,9 @@ namespace Tournament.Structure
 			AddRoundRobinBracket(pList, _numRounds);
 		}
 #endif
-		public void AddRRGroupStage(List<IPlayer> _playerList, int _numGroups = 2)
+		public void AddRRGroupStage(List<IPlayer> _playerList, int _numGroups = 2, int _maxGamesPerMatch = 1, int _maxRounds = 0)
 		{
-			Brackets.Add(new RoundRobinGroups(_playerList, _numGroups));
+			Brackets.Add(new RoundRobinGroups(_playerList, _numGroups, _maxGamesPerMatch, _maxRounds));
 		}
 #if false
 		public void AddRRGroupStageBracket(int _numPlayers, int _numGroups = 2)

@@ -25,7 +25,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public RoundRobinBracket(List<IPlayer> _players, int _numberOfRounds = 0)
+		public RoundRobinBracket(List<IPlayer> _players, int _maxGamesPerMatch = 1, int _numberOfRounds = 0)
 		{
 			if (null == _players)
 			{
@@ -55,7 +55,7 @@ namespace Tournament.Structure
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			MaxRounds = _numberOfRounds;
 			ResetBracket();
-			CreateBracket();
+			CreateBracket(_maxGamesPerMatch);
 		}
 #if false
 		public RoundRobinBracket(int _numPlayers, int _numRounds = 0)
