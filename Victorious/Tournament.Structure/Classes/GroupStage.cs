@@ -134,6 +134,13 @@ namespace Tournament.Structure
 			GetMatchData(ref _matchNumber, out groupIndex);
 			return Groups[groupIndex].GetMatch(_matchNumber);
 		}
+		public override void ResetMatches()
+		{
+			foreach (IBracket group in Groups)
+			{
+				group.ResetMatches();
+			}
+		}
 		#endregion
 
 		#region Private Methods

@@ -460,7 +460,7 @@ namespace Tournament.Structure
 		{
 			for (int n = 1; n <= NumberOfMatches; ++n)
 			{
-				ResetMatchScore(n);
+				GetMatch(n).ResetScore();
 			}
 		}
 		#endregion
