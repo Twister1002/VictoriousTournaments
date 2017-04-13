@@ -184,25 +184,6 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("RoundRobinGroups")]
 		[TestCategory("RRG Overloaded Accessors")]
-		[ExpectedException(typeof(NullReferenceException))]
-		public void RRGGetRound_ThrowsNullRef_WithNoGroups()
-		{
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 1; i <= 4; ++i)
-			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i);
-				pList.Add(moq.Object);
-			}
-			IBracket b = new RoundRobinGroups(pList, 2);
-			b.RemovePlayer(pList[0].Id);
-
-			b.GetRound(1);
-			Assert.AreEqual(1, 2);
-		}
-		[TestMethod]
-		[TestCategory("RoundRobinGroups")]
-		[TestCategory("RRG Overloaded Accessors")]
 		[ExpectedException(typeof(InvalidIndexException))]
 		public void RRGGetRound_ThrowsInvalidIndex_WithNegativeRound()
 		{

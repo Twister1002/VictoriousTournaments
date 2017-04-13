@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public abstract class GroupStage : Bracket, IGroupStage
@@ -27,11 +29,11 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		public override void AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
+		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
 		{
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
-			Groups[groupIndex].AddGame(_matchNumber, _defenderScore, _challengerScore);
+			GameModel gameModel = Groups[groupIndex].AddGame(_matchNumber, _defenderScore, _challengerScore);
 			UpdateRankings();
 
 			IsFinished = true;
@@ -43,6 +45,8 @@ namespace Tournament.Structure
 					break;
 				}
 			}
+
+			return gameModel;
 		}
 		public override void AddGame(int _matchNumber, IGame _game)
 		{
@@ -128,7 +132,11 @@ namespace Tournament.Structure
 		{
 			base.ResetBracket();
 
-			Groups = null;
+			if (null == Groups)
+			{
+				Groups = new List<IBracket>();
+			}
+			Groups.Clear();
 		}
 		protected void GetMatchData(ref int _matchNumber, out int _groupIndex)
 		{

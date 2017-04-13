@@ -340,7 +340,7 @@ namespace Tournament.Structure
 			IsReady = false;
 		}
 
-		public void AddGame(int _defenderScore, int _challengerScore)
+		public GameModel AddGame(int _defenderScore, int _challengerScore)
 		{
 			if (!IsReady)
 			{
@@ -376,6 +376,7 @@ namespace Tournament.Structure
 
 			AddWin(game.WinnerSlot);
 			Games.Add(game);
+			return game.GetModel();
 		}
 		public void AddGame(IGame _game)
 		{

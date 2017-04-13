@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public interface IGame
@@ -30,6 +32,14 @@ namespace Tournament.Structure
 		PlayerSlot WinnerSlot { get; set; }
 
 		int[] Score { get; set; }
+		#endregion
+
+		#region Public Methods
+		/// <summary>
+		/// Get a Model of this Game.
+		/// </summary>
+		/// <returns>GameModel</returns>
+		GameModel GetModel();
 		#endregion
 	}
 }

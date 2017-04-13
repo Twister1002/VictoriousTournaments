@@ -39,7 +39,7 @@ namespace Tournament.Structure
 
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
-		public abstract void AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
+		public abstract GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
 		public abstract void AddGame(int _matchNumber, IGame _game);
 		public abstract void RemoveLastGame(int _matchNumber);
 		public abstract void ResetMatchScore(int _matchNumber);
@@ -434,13 +434,26 @@ namespace Tournament.Structure
 		#region Private Methods
 		protected virtual void ResetBracket()
 		{
+			if (null == Matches)
+			{
+				Matches = new Dictionary<int, IMatch>();
+			}
+			if (null == LowerMatches)
+			{
+				LowerMatches = new Dictionary<int, IMatch>();
+			}
+			if (null == Rankings)
+			{
+				Rankings = new List<IPlayerScore>();
+			}
+
 			IsFinished = false;
-			Matches = null;
-			LowerMatches = null;
+			Matches.Clear();
+			LowerMatches.Clear();
 			GrandFinal = null;
 			NumberOfRounds = NumberOfLowerRounds = 0;
 			NumberOfMatches = 0;
-			Rankings = null;
+			Rankings.Clear();
 		}
 		#endregion
 	}
