@@ -35,6 +35,10 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Get a Model of this Game.
+		/// </summary>
+		/// <returns>GameModel</returns>
 		GameModel GetModel();
 		#endregion
 	}

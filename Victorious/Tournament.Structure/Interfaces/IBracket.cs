@@ -76,6 +76,7 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Match to contain this Game</param>
 		/// <param name="_defenderScore">Score for Defender-slot Player</param>
 		/// <param name="_challengerScore">Score for Challenger-slot Player</param>
+		/// <returns>Model of the new Game</returns>
 		GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
 		[System.Obsolete("use AddGame(int, int, int) instead", false)]
 		void AddGame(int _matchNumber, IGame _game);
