@@ -221,7 +221,31 @@ namespace Tournament.Structure
 		{ }
 		public GSLGroups(BracketModel _model)
 		{
-			throw new NotImplementedException();
+			if (null == _model)
+			{
+				throw new ArgumentNullException("_model");
+			}
+
+			List<UserModel> userModels = _model.UserSeeds
+				.OrderBy(ubs => ubs.Seed)
+				.Select(ubs => ubs.User)
+				.ToList();
+			this.Players = new List<IPlayer>();
+			foreach (UserModel model in userModels)
+			{
+				Players.Add(new User(model));
+			}
+
+			this.BracketType = BracketTypeModel.BracketType.GSLGROUP;
+			this.IsFinalized = _model.Finalized;
+			this.NumberOfGroups = _model.NumberOfGroups;
+			ResetBracket();
+			CreateBracket();
+
+			foreach (MatchModel model in _model.Matches)
+			{
+				RestoreMatch(model.MatchNumber, model);
+			}
 		}
 		#endregion
 
@@ -239,7 +263,7 @@ namespace Tournament.Structure
 				(NumberOfGroups * 4 != Players.Count && NumberOfGroups * 8 != Players.Count))
 			{
 				throw new BracketException
-					("Incorrect amount of Players Per Group!");
+					("Must have 4 or 8 Players Per Group!");
 			}
 
 			for (int b = 0; b < NumberOfGroups; ++b)

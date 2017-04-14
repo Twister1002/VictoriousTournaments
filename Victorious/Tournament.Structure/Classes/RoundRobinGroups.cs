@@ -111,9 +111,6 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_model");
 			}
 
-			this.BracketType = BracketTypeModel.BracketType.RRGROUP;
-			this.IsFinalized = _model.Finalized;
-
 			List<UserModel> userModels = _model.UserSeeds
 				.OrderBy(ubs => ubs.Seed)
 				.Select(ubs => ubs.User)
@@ -124,6 +121,8 @@ namespace Tournament.Structure
 				Players.Add(new User(model));
 			}
 
+			this.BracketType = BracketTypeModel.BracketType.RRGROUP;
+			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
 			this.MaxRounds = 0;
 			ResetBracket();
