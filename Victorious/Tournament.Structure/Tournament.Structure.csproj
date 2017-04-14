@@ -63,7 +63,7 @@
     <Compile Include="Classes\Team.cs" />
     <Compile Include="Classes\RoundRobinBracket.cs" />
     <Compile Include="Classes\RoundRobinGroups.cs" />
-    <Compile Include="SwissBracket.cs" />
+    <Compile Include="Classes\SwissBracket.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataLib\DataLib.csproj">

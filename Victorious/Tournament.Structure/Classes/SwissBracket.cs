@@ -61,8 +61,9 @@ namespace Tournament.Structure
 			: this(new List<IPlayer>())
 		{ }
 		public SwissBracket(BracketModel _model)
+			: base(_model)
 		{
-			throw new NotImplementedException();
+			//BracketType = BracketTypeModel.BracketType.SWISS;
 		}
 		#endregion
 
