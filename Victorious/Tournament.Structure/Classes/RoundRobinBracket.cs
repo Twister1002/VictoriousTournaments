@@ -79,7 +79,7 @@ namespace Tournament.Structure
 		}
 #endif
 		public RoundRobinBracket()
-			: this(new List<IPlayer>(), 0)
+			: this(new List<IPlayer>())
 		{ }
 		public RoundRobinBracket(BracketModel _model)
 		{

@@ -436,7 +436,6 @@ namespace Tournament.Structure
 
 			for (int r = 1; r <= NumberOfLowerRounds; ++r)
 			{
-				int numberFinishedMatches = 0;
 				List<IMatch> round = GetLowerRound(r);
 				int rank = NumberOfMatches - round[0].MatchNumber + 2;
 
@@ -444,7 +443,6 @@ namespace Tournament.Structure
 				{
 					if (match.IsFinished)
 					{
-						++numberFinishedMatches;
 						// Add losing Player to the Rankings:
 						IPlayer losingPlayer = match.Players[
 							(PlayerSlot.Defender == match.WinnerSlot)
@@ -452,10 +450,6 @@ namespace Tournament.Structure
 							: (int)PlayerSlot.Defender];
 						Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, rank));
 					}
-				}
-				if (numberFinishedMatches < 2)
-				{
-					break;
 				}
 			}
 

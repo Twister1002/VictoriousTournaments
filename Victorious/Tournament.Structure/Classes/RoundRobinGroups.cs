@@ -210,7 +210,6 @@ namespace Tournament.Structure
 				return;
 			}
 
-			Groups = new List<IBracket>();
 			for (int b = 0; b < NumberOfGroups; ++b)
 			{
 				List<IPlayer> pList = new List<IPlayer>();
@@ -219,11 +218,9 @@ namespace Tournament.Structure
 					pList.Add(Players[p + b]);
 				}
 
-				IBracket newGroup = new RoundRobinBracket(pList, _gamesPerMatch, MaxRounds);
-				Groups.Add(newGroup);
+				Groups.Add(new RoundRobinBracket(pList, _gamesPerMatch, MaxRounds));
 			}
 
-			Rankings = new List<IPlayerScore>();
 			foreach (IBracket group in Groups)
 			{
 				NumberOfMatches += group.NumberOfMatches;

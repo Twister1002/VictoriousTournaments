@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\GSLGroups.cs" />
     <Compile Include="Classes\Bracket.cs" />
     <Compile Include="Classes\Match.cs" />
     <Compile Include="Classes\SingleElimBracket.cs" />
