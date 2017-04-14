@@ -65,7 +65,7 @@ namespace DataLib
         [InverseProperty("DefenderMatches")]
         public virtual UserModel Defender { get; set; }
 
-        public virtual ICollection<GameModel> Games { get; set; }
+        public ICollection<GameModel> Games { get; set; }
 
     }
 }

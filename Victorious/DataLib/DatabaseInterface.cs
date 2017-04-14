@@ -1217,12 +1217,46 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
+        public List<GameModel> GetAllGamesInMatch(MatchModel match)
+        {
+            List<GameModel> games = new List<GameModel>();
+            try
+            {
 
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                games.Clear();
+                games.Add(new GameModel() { GameID = -1 });
+            }
+            return games;
+        }
+
+        [Obsolete("Use DeleteGame(GameModel game)")]
         public DbError DeleteGame(MatchModel match, GameModel game)
         {
             try
             {
                 match.Games.Remove(game);
+                GameModel _game = context.Games.Find(game.GameID);
+                context.Games.Remove(_game);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError DeleteGame(GameModel game)
+        {
+            try
+            {
                 GameModel _game = context.Games.Find(game.GameID);
                 context.Games.Remove(_game);
                 context.SaveChanges();
