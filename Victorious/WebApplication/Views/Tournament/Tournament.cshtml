@@ -9,10 +9,6 @@
     bool registrationEnded = (DateTime)Model.RegistrationEndDate <= DateTime.Now;
     bool isLoggedIn = Session["User.UserId"] != null;
     var userPermission = isLoggedIn ? Model.UserPermission((int)Session["User.UserId"]) : DataLib.Permission.NONE;
-
-    ViewBag.Permission = userPermission;
-    ViewBag.isLoggedIn = isLoggedIn;
-    ViewBag.TournamentId = Model.Model.TournamentID;
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
@@ -24,39 +20,64 @@
                 <span class="icon icon-pencil tournament-update"></span>
                 <span class="icon icon-cross tournament-delete"></span>
             }
-            @if (isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
-            {
-                <span class="icon icon-loop2 tournament-reset"></span>
-            }
-            <span class="icon icon-trophy tournament-standings"></span>
         </div>
         <h3 class="gameTitle">@(Model.Model.GameType != null ? Model.Model.GameType.Title : "")</h3>
     </div>
-    @{
-        if (userPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
-        {
-            Html.RenderPartial("_ViewTournament", Model.Tourny, new ViewDataDictionary(ViewData));
-        }
-        else
-        {
-            if (registrationStarted && !registrationEnded)
-            {
-                Html.RenderPartial("_ViewRegistration", Model, new ViewDataDictionary(ViewData));
-            }
-            else if (registrationEnded && !tournamentStarted)
-            {
-                <div class="message success">The tournament is currently being prepared. Please wait until the brackets are released.</div>
-            }
-            else if (tournamentStarted)
-            {
-                Html.RenderPartial("_ViewTournament", Model.Tourny, new ViewDataDictionary(ViewData));
-            }
-            else
-            {
-                <div class="message exception">Yeah..... something went wrong with displaying the tournament</div>
-            }
-        }
+    @for (int i = 0; i < Model.Tourny.Brackets.Count; i++)
+    {
+        // Tournament View
+        var Bracket = Model.Tourny.Brackets[i];
+        String bracketName = "";
 
-        Html.RenderPartial("Brackets/_Standings", Model.Tourny, new ViewDataDictionary(ViewData));
+        <div class="bracket" data-bracketnum="@i">
+            <div class="bracket-info">
+                @switch (Bracket.BracketType)
+                {
+                    case DataLib.BracketTypeModel.BracketType.SINGLE:
+                        bracketName = "Single";
+                        <div class="name">Single Elemination</div>
+                        break;
+                    case DataLib.BracketTypeModel.BracketType.DOUBLE:
+                        bracketName = "Double";
+                        <div class="name">Double Elemination</div>
+                        break;
+                    case DataLib.BracketTypeModel.BracketType.ROUNDROBIN:
+                        bracketName = "RoundRobin";
+                        <div class="name">Round Robin</div>
+                        break;
+                }
+            </div>
+            <div class="options">
+                @if (isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
+                {
+                    <span class="icon icon-loop2 tournament-reset"></span>
+                }
+                <span class="icon icon-trophy tournament-standings"></span>
+                @if (!Bracket.IsFinalized)
+                {
+                    Html.RenderPartial("Administrator/_Finalize");
+                }
+            </div>
+
+            <ul class="list-table bracket">
+                @{
+                    var bracketViewModel = new WebApplication.Models.BracketViewModel(Bracket);
+                    Html.RenderPartial("Brackets/Shared/_Header", bracketViewModel);
+                    Html.RenderPartial("Brackets/" + bracketName, bracketViewModel);
+                }
+
+                <li class="match-edit-module">
+                    <div class="module-background"></div>
+                    <div class="module-close"><span class="icon icon-cross close clickable"></span></div>
+                    <div class="module-content">
+                        <h2>Winner Selection</h2>
+                        @{ Html.RenderPartial("Brackets/Shared/_Match", new Tournament.Structure.Match(), new ViewDataDictionary(ViewData)); }
+                        <div class="match-submit">
+                            <button type="button">Submit Winner</button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
     }
 </div>

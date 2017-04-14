@@ -210,6 +210,7 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdministratorViewModel.cs" />
+    <Compile Include="Models\BracketViewModel.cs" />
     <Compile Include="Models\Fields.cs" />
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Models\MatchViewModel.cs" />
@@ -246,28 +247,35 @@
     <Content Include="Views\Tournament\Delete.cshtml" />
     <Content Include="Views\Account\Update.cshtml" />
     <Content Include="Views\Tournament\_ViewTournament.cshtml" />
-    <Content Include="Views\Tournament\_ViewRegistration.cshtml" />
+    <Content Include="Views\Tournament\Registration.cshtml" />
     <Content Include="Views\Tournament\Administrator\_Players.cshtml" />
     <Content Include="Styles\less\Tournament\_Tournament.less" />
     <Content Include="Styles\less\Tournament\_Create.less" />
     <Content Include="Styles\less\Tournament\_Edit.less" />
     <Content Include="Styles\less\Tournament\_Search.less" />
     <Content Include="Styles\less\Tournament\_RegisteredPlayers.less" />
-    <Content Include="Views\Tournament\Brackets\_SingleElimination.cshtml" />
-    <Content Include="Views\Tournament\Brackets\_Swiss.cshtml" />
-    <Content Include="Views\Tournament\Brackets\_RoundRobin.cshtml" />
-    <Content Include="Views\Tournament\Brackets\_Match.cshtml" />
-    <Content Include="Views\Tournament\Brackets\_DoubleElimination.cshtml" />
+    <Content Include="Views\Tournament\old_Brackets\_SingleElimination.cshtml" />
+    <Content Include="Views\Tournament\old_Brackets\_Swiss.cshtml" />
+    <Content Include="Views\Tournament\old_Brackets\_RoundRobin.cshtml" />
+    <Content Include="Views\Tournament\old_Brackets\_Match.cshtml" />
+    <Content Include="Views\Tournament\old_Brackets\_DoubleElimination.cshtml" />
     <Content Include="Views\Tournament\Administrator\_Finalize.cshtml" />
     <Content Include="Views\Administrator\Index.cshtml" />
     <Content Include="Styles\less\Tournament\_Standings.less" />
-    <Content Include="Views\Tournament\Brackets\_Standings.cshtml" />
+    <Content Include="Views\Tournament\old_Brackets\_Standings.cshtml" />
     <Content Include="Views\Administrator\Games.cshtml" />
     <Content Include="Styles\less\Administrator\Administrator.less" />
     <Content Include="Styles\less\Administrator\Games.less" />
     <Content Include="Styles\less\Administrator.less" />
     <Content Include="Styles\less\Tournament\_Match.less" />
-    <Content Include="Views\Tournament\Brackets\_Games.cshtml" />
+    <Content Include="Views\Tournament\old_Brackets\_Games.cshtml" />
+    <Content Include="Views\Tournament\Brackets\Shared\_Header.cshtml" />
+    <Content Include="Views\Tournament\Brackets\Single.cshtml" />
+    <Content Include="Views\Tournament\Brackets\Double.cshtml" />
+    <Content Include="Views\Tournament\Brackets\Swiss.cshtml" />
+    <Content Include="Views\Tournament\Brackets\RoundRobin.cshtml" />
+    <Content Include="Views\Tournament\Brackets\Shared\_Match.cshtml" />
+    <Content Include="Views\Tournament\Brackets\Shared\_Game.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
