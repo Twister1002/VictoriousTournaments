@@ -18,9 +18,22 @@ namespace Tournament.Structure
 	public interface IMatch
 	{
 		#region Variables & Properties
+		int Id { get; }
+
+		[System.Obsolete("use .GetModel()", false)]
+		MatchModel Model { get; }
+
+		/// <summary>
+		/// Is the Match set/ready to play?
+		/// </summary>
 		bool IsReady { get; }
+
+		/// <summary>
+		/// Is the Match finished/won?
+		/// </summary>
 		bool IsFinished { get; }
-		ushort WinsNeeded { get; }
+
+		int MaxGames { get; }
 		IPlayer[] Players { get; }
 
 		/// <summary>
@@ -28,7 +41,16 @@ namespace Tournament.Structure
 		/// Defender, Challenger, or unspecified.
 		/// </summary>
 		PlayerSlot WinnerSlot { get; }
-		ushort[] Score { get; }
+
+		/// <summary>
+		/// List of completed/recorded Games.
+		/// </summary>
+		List<IGame> Games { get; }
+
+		/// <summary>
+		/// 2-sized Array, indexes correspond to Players array.
+		/// </summary>
+		int[] Score { get; }
 
 		/// <summary>
 		/// 1-indexed
@@ -41,15 +63,16 @@ namespace Tournament.Structure
 		int MatchIndex { get; }
 
 		/// <summary>
-		/// First match = 1
+		/// First Match = 1
 		/// </summary>
 		int MatchNumber { get; }
 
 		/// <summary>
 		/// Match Numbers of Matches sending winners to this Match.
-		/// (list's size must be 0-2)
+		/// 2-sized Array, default values are -1.
+		/// Indexes correspond to Players array.
 		/// </summary>
-		List<int> PreviousMatchNumbers { get; }
+		int[] PreviousMatchNumbers { get; }
 
 		/// <summary>
 		/// Number of Match this winner is sent to.
@@ -64,12 +87,14 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Methods
-		/// <summary>
-		/// Retrieves a MatchModel of specified Match.
-		/// </summary>
-		/// <param name="_matchId">ID of Match</param>
-		/// <returns>Model of Match</returns>
+		[System.Obsolete("use .GetModel()", false)]
 		MatchModel GetModel(int _matchId);
+
+		/// <summary>
+		/// Create a Model for this Match.
+		/// </summary>
+		/// <returns>MatchModel-type object</returns>
+		MatchModel GetModel();
 
 		/// <summary>
 		/// Assigns a Player to this Match.
@@ -100,16 +125,23 @@ namespace Tournament.Structure
 		/// </summary>
 		void ResetPlayers();
 
-		/// <summary>
-		/// Record one win for the specified player slot.
-		/// </summary>
-		/// <param name="_slot">Winner's slot: Defender or Challenger</param>
-		void AddWin(PlayerSlot _slot);
+		void AddGame(int _defenderScore, int _challengerScore);
 
 		/// <summary>
-		/// Subtract one win from specified player slot.
+		/// Add/record a finished Game.
 		/// </summary>
-		/// <param name="_slot">Player slot: Defender or Challenger</param>
+		/// <param name="_game">Game-type object to add</param>
+		void AddGame(IGame _game);
+
+		/// <summary>
+		/// Delete/un-record the most recent Game.
+		/// </summary>
+		/// <returns>IGame that was removed</returns>
+		IGame RemoveLastGame();
+
+		[System.Obsolete("use AddGame(IGame) instead", false)]
+		void AddWin(PlayerSlot _slot);
+		[System.Obsolete("use RemoveLastGame() instead", false)]
 		void SubtractWin(PlayerSlot _slot);
 
 		/// <summary>
@@ -118,10 +150,10 @@ namespace Tournament.Structure
 		void ResetScore();
 
 		/// <summary>
-		/// Sets amount of wins needed to advance.
+		/// Set the max number of Games to play this Match.
 		/// </summary>
-		/// <param name="_wins">Wins needed</param>
-		void SetWinsNeeded(ushort _wins);
+		/// <param name="_numberOfGames">How many games this match may last</param>
+		void SetMaxGames(int _numberOfGames);
 
 		/// <summary>
 		/// Sets a NEW round index for Match.
@@ -149,7 +181,7 @@ namespace Tournament.Structure
 		/// (Will not add more than 2)
 		/// </summary>
 		/// <param name="_number">Number of Match to add</param>
-		void AddPreviousMatchNumber(int _number);
+		void AddPreviousMatchNumber(int _number, PlayerSlot _slot = PlayerSlot.unspecified);
 
 		/// <summary>
 		/// Sets match that winner will advance to.

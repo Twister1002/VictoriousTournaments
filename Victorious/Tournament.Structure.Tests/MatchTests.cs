@@ -17,40 +17,43 @@ namespace Tournament.Structure.Tests
 		{
 			IMatch m = new Match();
 
-			Assert.AreEqual(1, m.WinsNeeded);
-		}
-#if false
-		[TestMethod]
-		[TestCategory("Match")]
-		[TestCategory("Match Ctor")]
-		public void MatchOverloadedCtor_Constructs()
-		{
-			ushort[] sc = new ushort[2] { 1, 1 };
-			IMatch m = new Match(true, false, 2, new int[2] { 0, 1 }, -1, sc, 1, 1, 1, new List<int>(), 0, 0);
-
-			Assert.AreEqual(sc, m.Score);
+			Assert.AreEqual(1, m.MaxGames);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match Ctor")]
-		[ExpectedException(typeof(NullReferenceException))]
-		public void MatchOverloadedCtor_ThrowsNullRef_OnNullParams()
+		[TestCategory("MatchModel")]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void MatchModelCtor_ThrowsExceptionOnNullParam()
 		{
-			IMatch m = new Match(false, false, 2, null, -1, null, 0, 0, 0, null, 0, 0);
+			MatchModel mod = null;
+			IMatch m = new Match(mod);
 
 			Assert.AreEqual(1, 2);
 		}
-#endif
 
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match GetModel")]
-		public void GetModel_ReturnsForNewMatch()
+		[TestCategory("MatchModel")]
+		public void GetModel_AddsDefaultPlayerIDs_WhenMatchIsMissingPlayers()
 		{
 			IMatch m = new Match();
-			MatchModel model = m.GetModel(1);
+			MatchModel model = m.GetModel();
 
-			Assert.IsInstanceOfType(model, typeof(MatchModel));
+			Assert.AreEqual(-1, model.ChallengerID);
+		}
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match GetModel")]
+		[TestCategory("MatchModel")]
+		public void GetModel_CorrectlyCopiesMatchData()
+		{
+			IMatch m = new Match();
+			m.SetMaxGames(3);
+			MatchModel model = m.GetModel();
+
+			Assert.AreEqual(m.MaxGames, model.MaxGames);
 		}
 
 		#region Player Updates
@@ -68,7 +71,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match AddPlayer")]
-		public void AddPlayer_DoesNotActivateMatch()
+		public void AddPlayer_DoesNotSetMatchIsReady()
 		{
 			IMatch m = new Match();
 			m.AddPlayer(new Mock<IPlayer>().Object);
@@ -94,7 +97,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match AddPlayer")]
-		public void AddPlayer_SecondPlayerActivatesMatch()
+		public void AddPlayer_SecondPlayerSetsMatchIsReady()
 		{
 			var p1 = new Mock<IPlayer>();
 			p1.Setup(p => p.Id).Returns(10);
@@ -110,7 +113,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match AddPlayer")]
-		public void AddPlayer_AddsSecondPlayer()
+		public void AddPlayer_OverloadedMethodAddsPlayerToCorrectSlot()
 		{
 			var p2 = new Mock<IPlayer>();
 
@@ -179,9 +182,9 @@ namespace Tournament.Structure.Tests
 			IMatch m = new Match();
 			m.AddPlayer(pList[0]);
 			m.AddPlayer(pList[1]);
-			m.ReplacePlayer(pList[2], pList[1].Id);
+			m.ReplacePlayer(pList[2], pList[(int)PlayerSlot.Challenger].Id);
 
-			Assert.AreEqual(3, m.Players[1].Id);
+			Assert.AreEqual(pList[2].Id, m.Players[(int)PlayerSlot.Challenger].Id);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
@@ -211,31 +214,31 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match RemovePlayer")]
 		public void RemovePlayer_Removes()
 		{
-			int pIndex = 10;
+			int playerId = 10;
 			var p1 = new Mock<IPlayer>();
-			p1.Setup(p => p.Id).Returns(pIndex);
+			p1.Setup(p => p.Id).Returns(playerId);
 
 			IMatch m = new Match();
 			m.AddPlayer(p1.Object, PlayerSlot.Defender);
-			m.RemovePlayer(pIndex);
+			m.RemovePlayer(playerId);
 
 			Assert.IsNull(m.Players[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
 		[TestCategory("Match RemovePlayer")]
-		public void RemovePlayer_SetsMatchInactive()
+		public void RemovePlayer_SetsMatchNotReady()
 		{
-			int pIndex = 10;
+			int playerId = 10;
 			var p1 = new Mock<IPlayer>();
-			p1.Setup(p => p.Id).Returns(pIndex);
+			p1.Setup(p => p.Id).Returns(playerId);
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
 			IMatch m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.RemovePlayer(pIndex);
+			m.RemovePlayer(playerId);
 
 			Assert.AreEqual(false, m.IsReady);
 		}
@@ -307,212 +310,236 @@ namespace Tournament.Structure.Tests
 		#region Score Updates
 		[TestMethod]
 		[TestCategory("Match")]
-		[TestCategory("Match AddWin")]
-		public void AddWin_AddsAWin()
+		[TestCategory("Match AddGame")]
+		[TestCategory("Game")]
+		public void AddGame_AddsToGameList()
 		{
 			var p1 = new Mock<IPlayer>();
 			p1.Setup(p => p.Id).Returns(10);
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
-
 			IMatch m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.AddWin(PlayerSlot.Defender);
 
+			m.AddGame(0, 1);
+			Assert.AreEqual(1, m.Games.Count);
+		}
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match AddGame")]
+		[TestCategory("Game")]
+		public void AddGame_UpdatesScore()
+		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+			IMatch m = new Match();
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
+
+			m.AddGame(1, 0);
 			Assert.AreEqual(1, m.Score[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
-		[TestCategory("Match AddWin")]
-		public void AddWin_SetsMatchFinishedCorrectly()
-		{
-			var p1 = new Mock<IPlayer>();
-			p1.Setup(p => p.Id).Returns(10);
-			var p2 = new Mock<IPlayer>();
-			p2.Setup(p => p.Id).Returns(20);
-
-			IMatch m = new Match();
-			m.AddPlayer(p1.Object);
-			m.AddPlayer(p2.Object);
-			m.AddWin(PlayerSlot.Challenger);
-
-			Assert.AreEqual(true, m.IsFinished);
-		}
-		[TestMethod]
-		[TestCategory("Match")]
-		[TestCategory("Match AddWin")]
-		public void AddWin_SetsWinnerIndex_IfMatchIsOver()
-		{
-			var p1 = new Mock<IPlayer>();
-			p1.Setup(p => p.Id).Returns(10);
-			var p2 = new Mock<IPlayer>();
-			p2.Setup(p => p.Id).Returns(20);
-
-			IMatch m = new Match();
-			m.AddPlayer(p1.Object);
-			m.AddPlayer(p2.Object);
-			PlayerSlot wSlot = PlayerSlot.Challenger;
-			m.AddWin(wSlot);
-
-			Assert.AreEqual(wSlot, m.WinnerSlot);
-		}
-		[TestMethod]
-		[TestCategory("Match")]
-		[TestCategory("Match AddWin")]
-		public void AddWin_DoesNotSetMatchFinishedIncorrectly()
-		{
-			var p1 = new Mock<IPlayer>();
-			p1.Setup(p => p.Id).Returns(10);
-			var p2 = new Mock<IPlayer>();
-			p2.Setup(p => p.Id).Returns(20);
-
-			IMatch m = new Match();
-			m.AddPlayer(p1.Object);
-			m.AddPlayer(p2.Object);
-			m.SetWinsNeeded(2);
-			m.AddWin(PlayerSlot.Defender);
-			m.AddWin(PlayerSlot.Challenger);
-
-			Assert.AreEqual(false, m.IsFinished);
-		}
-		[TestMethod]
-		[TestCategory("Match")]
-		[TestCategory("Match AddWin")]
-		[ExpectedException(typeof(InvalidSlotException))]
-		public void AddWin_ThrowsInvalidSlot_WithBadInput()
-		{
-			IMatch m = new Match();
-			m.AddWin((PlayerSlot)3);
-
-			Assert.AreEqual(1, 2);
-		}
-		[TestMethod]
-		[TestCategory("Match")]
-		[TestCategory("Match AddWin")]
+		[TestCategory("Match AddGame")]
+		[TestCategory("Game")]
 		[ExpectedException(typeof(InactiveMatchException))]
-		public void AddWin_ThrowsInactiveMatch_WithNotEnoughPlayersInMatch()
+		public void AddGame_ThrowsInactiveIfMatchIsFinished()
 		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
 			IMatch m = new Match();
-			m.AddPlayer(new Mock<IPlayer>().Object);
-			m.AddWin(PlayerSlot.Defender);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
+
+			m.AddGame(1, 0);
+			m.AddGame(0, 1);
 
 			Assert.AreEqual(1, 2);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
-		[TestCategory("Match AddWin")]
+		[TestCategory("Match AddGame")]
+		[TestCategory("Game")]
 		[ExpectedException(typeof(InactiveMatchException))]
-		public void AddWin_ThrowsInactiveMatch_IfMatchIsAlreadyWon()
+		public void AddGame_ThrowsInactiveIfTooFewPlayers()
+		{
+			var p1 = new Mock<IPlayer>();
+			IMatch m = new Match();
+			m.AddPlayer(p1.Object);
+
+			m.AddGame(1, 0);
+
+			Assert.AreEqual(1, 2);
+		}
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match AddGame")]
+		[TestCategory("Game")]
+		public void AddGame_AddsCorrectlyAfterMaxGamesIsIncreased()
 		{
 			var p1 = new Mock<IPlayer>();
 			p1.Setup(p => p.Id).Returns(10);
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
-
 			IMatch m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.AddWin(PlayerSlot.Defender);
-			m.AddWin(PlayerSlot.Defender);
+			m.SetMaxGames(3);
+
+			m.AddGame(1, 0);
+			m.AddGame(1, 0);
+			Assert.AreEqual(2, m.Score[(int)PlayerSlot.Defender]);
+		}
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match AddGame")]
+		[TestCategory("Game")]
+		public void AddGame_CorrectlySetsMatchIsFinished()
+		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+			IMatch m = new Match();
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
+			m.SetMaxGames(3);
+
+			m.AddGame(1, 0);
+			m.AddGame(1, 0);
+			Assert.IsTrue(m.IsFinished);
+		}
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match AddGame")]
+		[TestCategory("Game")]
+		public void AddGame_CorrectlySetsWinnerSlot()
+		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+			IMatch m = new Match();
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
+			m.SetMaxGames(3);
+
+			m.AddGame(1, 0);
+			m.AddGame(1, 0);
+			Assert.AreEqual(PlayerSlot.Defender, m.WinnerSlot);
+		}
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match AddGame")]
+		[TestCategory("Game")]
+		[ExpectedException(typeof(NotImplementedException))]
+		public void AddGame_ThrowsExceptionIfScoreIsTied()
+		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+			IMatch m = new Match();
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
+
+			m.AddGame(1, 1);
 
 			Assert.AreEqual(1, 2);
 		}
 
 		[TestMethod]
 		[TestCategory("Match")]
-		[TestCategory("Match SubtractWin")]
-		public void SubtractWin_Subtracts()
+		[TestCategory("Match RemoveLastGame")]
+		[TestCategory("Game")]
+		[ExpectedException(typeof(GameNotFoundException))]
+		public void RemoveLastGame_ThrowsNotFound_WhenMatchHasNoGames()
 		{
-			var p1 = new Mock<IPlayer>();
-			p1.Setup(p => p.Id).Returns(10);
-			var p2 = new Mock<IPlayer>();
-			p2.Setup(p => p.Id).Returns(20);
-
 			IMatch m = new Match();
-			m.SetWinsNeeded(3);
-			m.AddPlayer(p1.Object);
-			m.AddPlayer(p2.Object);
-			m.AddWin(PlayerSlot.Challenger);
-			m.AddWin(PlayerSlot.Challenger);
-			m.SubtractWin(PlayerSlot.Challenger);
+			m.RemoveLastGame();
 
-			Assert.AreEqual(1, m.Score[(int)PlayerSlot.Challenger]);
+			Assert.AreEqual(1, 2);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
-		[TestCategory("Match SubtractWin")]
-		public void SubtractWin_SetsFinishedToFalse()
+		[TestCategory("Match RemoveLastGame")]
+		[TestCategory("Game")]
+		public void RemoveLastGame_ReturnsRemovedGame()
 		{
 			var p1 = new Mock<IPlayer>();
-			p1.Setup(p => p.Id).Returns(10);
 			var p2 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
 			p2.Setup(p => p.Id).Returns(20);
-
 			IMatch m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.AddWin(PlayerSlot.Challenger);
-			m.SubtractWin(PlayerSlot.Challenger);
 
-			Assert.AreEqual(false, m.IsFinished);
+			m.AddGame(1, 0);
+			var g = m.RemoveLastGame();
+			Assert.IsInstanceOfType(g, typeof(IGame));
 		}
 		[TestMethod]
 		[TestCategory("Match")]
-		[TestCategory("Match SubtractWin")]
-		public void SubtractWin_ResetsWinnerIndex()
+		[TestCategory("Match RemoveLastGame")]
+		[TestCategory("Game")]
+		public void RemoveLastGame_CorrectlySetsMatchIsNotFinished()
 		{
 			var p1 = new Mock<IPlayer>();
-			p1.Setup(p => p.Id).Returns(10);
 			var p2 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
 			p2.Setup(p => p.Id).Returns(20);
-
 			IMatch m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.AddWin(PlayerSlot.Challenger);
-			m.SubtractWin(PlayerSlot.Challenger);
 
+			m.AddGame(1, 0);
+			m.RemoveLastGame();
+			Assert.IsFalse(m.IsFinished);
+		}
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match RemoveLastGame")]
+		[TestCategory("Game")]
+		public void RemoveLastGame_ResetsWinnerSlot()
+		{
+			var p1 = new Mock<IPlayer>();
+			var p2 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			p2.Setup(p => p.Id).Returns(20);
+			IMatch m = new Match();
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
+
+			m.AddGame(1, 0);
+			m.RemoveLastGame();
 			Assert.AreEqual(PlayerSlot.unspecified, m.WinnerSlot);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
-		[TestCategory("Match SubtractWin")]
-		[ExpectedException(typeof(InvalidSlotException))]
-		public void SubtractWin_ThrowsInvalidSlot_WithBadSlotInput()
+		[TestCategory("Match RemoveLastGame")]
+		[TestCategory("Game")]
+		public void RemoveLastGame_OnlyRemovesOneGame()
 		{
+			var p1 = new Mock<IPlayer>();
+			var p2 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			p2.Setup(p => p.Id).Returns(20);
 			IMatch m = new Match();
-			m.SubtractWin((PlayerSlot)3);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
+			m.SetMaxGames(3);
 
-			Assert.AreEqual(1, 2);
-		}
-		[TestMethod]
-		[TestCategory("Match")]
-		[TestCategory("Match SubtractWin")]
-		[ExpectedException(typeof(InactiveMatchException))]
-		public void SubtractWin_ThrowsInactiveMatch_WhenMatchIsNotReady()
-		{
-			IMatch m = new Match();
-			m.SubtractWin(PlayerSlot.Defender);
-
-			Assert.AreEqual(1, 2);
-		}
-		[TestMethod]
-		[TestCategory("Match")]
-		[TestCategory("Match SubtractWin")]
-		[ExpectedException(typeof(ScoreException))]
-		public void SubtractWin_ThrowsScoreException_WhenScoreIs0()
-		{
-			IMatch m = new Match();
-			for (int i = 1; i <= 2; ++i)
-			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i);
-				m.AddPlayer(moq.Object);
-			}
-			m.SubtractWin(PlayerSlot.Challenger);
-
-			Assert.AreEqual(1, 2);
+			m.AddGame(1, 0);
+			m.AddGame(0, 2);
+			m.AddGame(5, 4);
+			m.RemoveLastGame();
+			Assert.AreEqual(2, m.Games.Count);
 		}
 
 		[TestMethod]
@@ -526,14 +553,34 @@ namespace Tournament.Structure.Tests
 			p2.Setup(p => p.Id).Returns(20);
 
 			IMatch m = new Match();
-			m.SetWinsNeeded(2);
+			m.SetMaxGames(3);
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.AddWin(PlayerSlot.Defender);
-			m.AddWin(PlayerSlot.Challenger);
+			m.AddGame(1, 0);
+			m.AddGame(25, 90);
 			m.ResetScore();
 
 			Assert.AreEqual(0, m.Score[(int)PlayerSlot.Challenger]);
+		}
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match ResetScore")]
+		public void ResetScore_ClearsGamesList()
+		{
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(10);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
+			IMatch m = new Match();
+			m.SetMaxGames(3);
+			m.AddPlayer(p1.Object);
+			m.AddPlayer(p2.Object);
+			m.AddGame(1, 0);
+			m.AddGame(25, 90);
+			m.ResetScore();
+
+			Assert.AreEqual(0, m.Games.Count);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
@@ -546,12 +593,14 @@ namespace Tournament.Structure.Tests
 			p2.Setup(p => p.Id).Returns(20);
 
 			IMatch m = new Match();
+			m.SetMaxGames(3);
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.AddWin(PlayerSlot.Challenger);
+			m.AddGame(1, 0);
+			m.AddGame(90, 89);
 			m.ResetScore();
 
-			Assert.AreEqual(false, m.IsFinished);
+			Assert.IsFalse(m.IsFinished);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
@@ -564,9 +613,11 @@ namespace Tournament.Structure.Tests
 			p2.Setup(p => p.Id).Returns(20);
 
 			IMatch m = new Match();
+			m.SetMaxGames(3);
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.AddWin(PlayerSlot.Challenger);
+			m.AddGame(1, 0);
+			m.AddGame(90, 89);
 			m.ResetScore();
 
 			Assert.AreEqual(PlayerSlot.unspecified, m.WinnerSlot);
@@ -577,19 +628,39 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match ResetScore")]
 		public void RemovePlayer_ResetsScore()
 		{
-			int pIndex = 10;
+			int playerId = 10;
 			var p1 = new Mock<IPlayer>();
-			p1.Setup(p => p.Id).Returns(pIndex);
+			p1.Setup(p => p.Id).Returns(playerId);
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
 			IMatch m = new Match();
 			m.AddPlayer(p1.Object, PlayerSlot.Defender);
 			m.AddPlayer(p2.Object, PlayerSlot.Challenger);
-			m.AddWin(PlayerSlot.Defender);
-			m.RemovePlayer(pIndex);
+			m.AddGame(1, 0);
+			m.RemovePlayer(playerId);
 
 			Assert.AreEqual(0, m.Score[(int)PlayerSlot.Defender]);
+		}
+		[TestMethod]
+		[TestCategory("Match")]
+		[TestCategory("Match RemovePlayer")]
+		[TestCategory("Match ResetScore")]
+		public void RemovePlayer_ResetScore_ClearsGamesList()
+		{
+			int playerId = 10;
+			var p1 = new Mock<IPlayer>();
+			p1.Setup(p => p.Id).Returns(playerId);
+			var p2 = new Mock<IPlayer>();
+			p2.Setup(p => p.Id).Returns(20);
+
+			IMatch m = new Match();
+			m.AddPlayer(p1.Object, PlayerSlot.Defender);
+			m.AddPlayer(p2.Object, PlayerSlot.Challenger);
+			m.AddGame(1, 0);
+			m.RemovePlayer(playerId);
+
+			Assert.AreEqual(0, m.Games.Count);
 		}
 		#endregion
 
@@ -598,10 +669,10 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match")]
 		[TestCategory("Match Mutators")]
 		[ExpectedException(typeof(ScoreException))]
-		public void SetWinsNeeded_ThrowsScoreException_WithZeroInput()
+		public void SetMaxGames_ThrowsScoreException_WithZeroInput()
 		{
 			IMatch m = new Match();
-			m.SetWinsNeeded(0);
+			m.SetMaxGames(0);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -619,8 +690,8 @@ namespace Tournament.Structure.Tests
 			IMatch m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.AddWin(PlayerSlot.Challenger);
-			m.SetWinsNeeded(2);
+			m.AddGame(1, 0);
+			m.SetMaxGames(5);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -683,7 +754,8 @@ namespace Tournament.Structure.Tests
 			m.AddPreviousMatchNumber(i);
 			m.AddPreviousMatchNumber(2);
 
-			Assert.IsTrue(m.PreviousMatchNumbers.Contains(i));
+			Assert.IsTrue(m.PreviousMatchNumbers[0] == i
+				|| m.PreviousMatchNumbers[1] == i);
 		}
 		[TestMethod]
 		[TestCategory("Match")]
@@ -692,9 +764,9 @@ namespace Tournament.Structure.Tests
 		public void AddPreviousMatchNumber_ThrowsAlreadyAssigned_AfterMoreThanTwoCalls()
 		{
 			IMatch m = new Match();
-			m.AddPreviousMatchNumber(0);
 			m.AddPreviousMatchNumber(1);
 			m.AddPreviousMatchNumber(2);
+			m.AddPreviousMatchNumber(3);
 
 			Assert.AreEqual(1, 2);
 		}

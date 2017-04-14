@@ -59,8 +59,7 @@ namespace Tournament.Structure
 		{
 			if (null == _u)
 			{
-				throw new NullReferenceException
-					("User model cannot be null!");
+				throw new ArgumentNullException("_u");
 			}
 
 			Id = _u.UserID;
@@ -72,7 +71,16 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-
+		public override UserModel GetModel()
+		{
+			UserModel model = new UserModel();
+			model.UserID = this.Id;
+			model.Username = this.Name;
+			model.FirstName = this.Firstname;
+			model.LastName = this.Lastname;
+			model.Email = this.Email;
+			return model;
+		}
 		#endregion
 	}
 }

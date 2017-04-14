@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public interface ITournament
@@ -55,12 +57,16 @@ namespace Tournament.Structure
 
 		/// <summary>
 		/// Removes a Player from the tournament.
+		/// Also removes from all brackets.
 		/// </summary>
-		/// <param name="_player">Player-type object to remove</param>
+		/// <param name="_playerId">ID of Player to remove</param>
+		void RemovePlayer(int _playerId);
+		[System.Obsolete("use RemovePlayer(int ID) instead", false)]
 		void RemovePlayer(IPlayer _player);
 
 		/// <summary>
 		/// Clears the tournament's player list.
+		/// Also clears all bracket playerlists.
 		/// </summary>
 		void ResetPlayers();
 
@@ -75,6 +81,14 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_bracket">Bracket-type object to add.</param>
 		void AddBracket(IBracket _bracket);
+
+		/// <summary>
+		/// Re-creates the correct type of IBracket
+		/// from the passed-in BracketModel.
+		/// </summary>
+		/// <param name="_model">BracketModel-type object</param>
+		/// <returns>Correct type of Bracket</returns>
+		IBracket RestoreBracket(BracketModel _model);
 
 		/// <summary>
 		/// Removes a Bracket from the tournament.
@@ -94,55 +108,37 @@ namespace Tournament.Structure
 		/// <param name="_playerList">List of Players for the Bracket</param>
 		void AddSingleElimBracket(List<IPlayer> _playerList);
 #if false
-		/// <summary>
-		/// Adds a new SingleElimBracket to the tournament,
-		/// with a pre-sized but empty player list.
-		/// </summary>
-		/// <param name="_numPlayers">Number of empty player slots.</param>
 		void AddSingleElimBracket(int _numPlayers);
 #endif
+
 		/// <summary>
 		/// Adds a new DoubleElimBracket to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the Bracket.</param>
 		void AddDoubleElimBracket(List<IPlayer> _playerList);
 #if false
-		/// <summary>
-		/// Adds a new DoubleElimBracket to the tournament,
-		/// with a pre-sized but empty player list.
-		/// </summary>
-		/// <param name="_numPlayers">Number of empty player slots.</param>
 		void AddDoubleElimBracket(int _numPlayers);
 #endif
+
 		/// <summary>
 		/// Adds a new Round Robin stage to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the stage.</param>
-		/// <param name="_numRounds">Number of rounds for the stage. (matches per player)</param>
+		/// <param name="_numRounds">Limit of rounds for the stage.
+		/// 0 = no limit (default round robin)</param>
 		void AddRoundRobinBracket(List<IPlayer> _playerList, int _numRounds = 0);
 #if false
-		/// <summary>
-		/// Adds a new Round Robin stage to the tournament,
-		/// with a pre-sized but empty player list.
-		/// </summary>
-		/// <param name="_numPlayers">Number of empty player slots.</param>
-		/// <param name="_numRounds">Number of rounds for the stage.</param>
 		void AddRoundRobinBracket(int _numPlayers, int _numRounds = 0);
 #endif
+
 		/// <summary>
-		/// Adds a new Group Stage to the tournament.
+		/// Adds a new Round Robin Group Stage to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the stage.</param>
 		/// <param name="_numGroups">Number of groups to divide players into.</param>
-		void AddGroupStageBracket(List<IPlayer> _playerList, int _numGroups = 2);
+		void AddRRGroupStage(List<IPlayer> _playerList, int _numGroups = 2);
 #if false
-		/// <summary>
-		/// Adds a new Group Stage to the tournament,
-		/// with a pre-sized but empty player list.
-		/// </summary>
-		/// <param name="_numPlayers">Number of empty player slots.</param>
-		/// <param name="_numGroups">Number of groups to divide players into.</param>
-		void AddGroupStageBracket(int _numPlayers, int _numGroups = 2);
+		void AddRRGroupStageBracket(int _numPlayers, int _numGroups = 2);
 #endif
 		#endregion
 		#endregion

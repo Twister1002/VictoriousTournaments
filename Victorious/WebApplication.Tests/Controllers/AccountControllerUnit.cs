@@ -1,4 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using System.Web;
+using System.Web.Mvc;
 using WebApplication.Controllers;
 
 namespace WebApplication.Tests.Controllers
@@ -6,28 +9,33 @@ namespace WebApplication.Tests.Controllers
     [TestClass]
     public class AccountControllerUnit
     {
-        [TestMethod]
-        public void AccountController_Logout_DestroysAllSessions()
+        private class FakeAccountController : AccountController
         {
-            // Arrange
-            AccountController controller = new AccountController();
+            public FakeAccountController() : base()
+            {
 
-            // Act
-            
+            }
 
-            // Assert
+            public void setSession(string name, object value)
+            {
+                Session[name] = value;
+            }
         }
 
-        [TestMethod]
-        public void AccountController_Index_Returns_LoginRedirect()
-        {
-            // Arrange
-            AccountController controller = new AccountController();
+        //[TestMethod]
+        //[TestCategory("AccountController")]
+        //[TestCategory("Controllers")]
+        //public void AccountController_Index_Returns_LoginRedirect()
+        //{
+        //    // Arrange
+        //    AccountController controller = new FakeAccountController();
+        //    controller.Session["User.UserId"] = null;
 
-            // Act
+        //    // Act
+        //    ViewResult result = controller.Index() as ViewResult;
 
-
-            // Assert
-        }
+        //    // Assert
+        //    Assert.AreEqual("Omg", result.ViewName);
+        //}
     }
 }

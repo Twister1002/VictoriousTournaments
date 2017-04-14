@@ -81,10 +81,15 @@ namespace WebApplication.Models
         public DateTime? TournamentEndDate { get; set; }
         
         public List<BracketTypeModel> BracketTypes { get; protected set; }
+        public List<GameTypeModel> GameTypes { get; protected set; }
 
         [Display(Name = "Bracket Type")]
         [Required(ErrorMessage ="Select a bracket type")]
         public int BracketType { get; set; }
+
+        [Display(Name ="Game")]
+        [Required(ErrorMessage ="Select a game")]
+        public int? GameType { get; set; }
 
         [Display(Name = "Public")]
         public bool IsPublic { get; set; }
@@ -109,6 +114,15 @@ namespace WebApplication.Models
 
     public abstract class AdministratorFields : ViewModel
     {
+        [Display(Name ="Game")]
+        [DataType(DataType.Text)]
+        public String GameName { get; set; }
+
+        [Display(Name = "")]
+        public bool XBox { get; set; }
+        public bool PC { get; set; }
+        public bool PS3 { get; set; }
+
 
     }
 }

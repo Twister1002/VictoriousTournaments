@@ -1,33 +1,35 @@
-﻿@model Tournament.Structure.IBracket
+﻿@model Tournament.Structure.ITournament
 
 
 <div id="TournamentStandings">
     <div class="title">
         <h2>Tournament Standings</h2>
-        <img class="tournament-standings" src="~/Images/svg/cross.svg" />
+        <span class="icon icon-cross tournament-standings"></span>
     </div>
+    @foreach (var bracket in Model.Brackets)
+    {
     <ul class="list-table standings">
         <li class="list-table-header">
             <ul class="border" data-columns="3">
                 <li>Rank</li>
                 <li>Name</li>
-                @if (Model.BracketType == DataLib.BracketTypeModel.BracketType.ROUNDROBIN)
+                @if (bracket.BracketType == DataLib.BracketTypeModel.BracketType.ROUNDROBIN)
                 {
                     <li>RR Score</li>
                 }
             </ul>
         </li>
         <li class="list-table-body">
-            @if (Model.Rankings != null)
+            @if (bracket.Rankings != null)
             {
-                for (int i = 0; i < Model.Rankings.Count; i++)
+                for (int i = 0; i < bracket.Rankings.Count; i++)
                 {
-                    Tournament.Structure.IPlayerScore rank = Model.Rankings[i];
+                    Tournament.Structure.IPlayerScore rank = bracket.Rankings[i];
 
                     <ul class="border" data-columns="3">
                         <li class="position-rank">@rank.Rank</li>
                         <li class="position-name">@rank.Name</li>
-                        @if (Model.BracketType == DataLib.BracketTypeModel.BracketType.ROUNDROBIN)
+                        @if (bracket.BracketType == DataLib.BracketTypeModel.BracketType.ROUNDROBIN)
                         {
                             <li class="position-score">@rank.Score</li>
                         }
@@ -40,4 +42,5 @@
             }
         </li>
     </ul>
+    }
 </div>

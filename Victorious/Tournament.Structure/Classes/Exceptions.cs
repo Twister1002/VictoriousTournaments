@@ -60,6 +60,14 @@ namespace Tournament.Structure
 		protected InvalidSlotException(SerializationInfo info, StreamingContext context) { }
 	}
 
+	public class GameNotFoundException : Exception, ISerializable
+	{
+		public GameNotFoundException() { }
+		public GameNotFoundException(string message) { }
+		public GameNotFoundException(string message, Exception inner) { }
+
+		protected GameNotFoundException(SerializationInfo info, StreamingContext context) { }
+	}
 	public class MatchNotFoundException : Exception, ISerializable
 	{
 		public MatchNotFoundException() { }

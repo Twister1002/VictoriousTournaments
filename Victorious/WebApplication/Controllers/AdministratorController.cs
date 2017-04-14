@@ -1,4 +1,5 @@
 ﻿using DataLib;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,15 +40,58 @@ namespace WebApplication.Controllers
 
 
         [HttpPost]
-        [Route("Administrator/Games")]
+        [Route("Administrator/Ajax/Games")]
         public JsonResult Games(String jsonData)
         {
-            return Json("No functionality for this has been made");
+            dynamic jsonReturn = new { status = false, message = "No action was taken" };
+
+            if (IsAdministrator())
+            {
+                Dictionary<string, string> json = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
+                GameTypeModel gameModel = new GameTypeModel();
+                DbError result = DbError.NONE;
+
+                if (json["function"] == "add")
+                {
+                    gameModel.Title = json["title"];
+                    result = db.AddGameType(gameModel);
+                    gameModel = db.GetAllGameTypes().First(x => x.Title == json["title"]);
+                }
+                else if (json["function"] == "delete")
+                {
+                    gameModel = db.GetAllGameTypes().First(x => x.Title == json["title"]);
+                    result = db.DeleteGameType(gameModel);
+                }
+
+                if (result == DbError.SUCCESS)
+                {
+                    jsonReturn = new {
+                        status = true,
+                        function = json["function"],
+                        message = "Was able to " + json["function"] + " successfully",
+                        data = new
+                        {
+                            model = gameModel
+                        }
+                    };
+                }
+                else
+                {
+                    jsonReturn = new
+                    {
+                        status = false,
+                        message = "An error occured while taking action",
+                        Exception = db.interfaceException.Message
+                    };
+                }
+            }
+
+            return Json(JsonConvert.SerializeObject(jsonReturn));
         }
 
         private bool IsAdministrator()
         {
-            if (Session["User.UserId"] != null && (int)Session["User.UserId"] == 1)
+            if (Session["User.UserId"] != null && UserPermission() == Permission.SITE_ADMINISTRATOR)
             {
                 return true;
             }
@@ -58,6 +102,13 @@ namespace WebApplication.Controllers
 
                 return false;
             }
+        }
+
+        public Permission UserPermission()
+        {
+            UserModel userModel = db.GetUserById((int)Session["User.UserId"]);
+
+            return userModel.SitePermission.Permission;
         }
     }
 }

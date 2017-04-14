@@ -4,13 +4,20 @@
 
     .content-header {
         width: 100%;
-
+        .tournamentTitle {
+            margin-bottom: 0em;
+        }
         .tournament-buttons {
             display: inline-block;
 
             > * {
                 cursor: pointer;
             }
+        }
+
+        .gameTitle {
+            margin-top: 0em;
+            /*background-color: red;*/
         }
     }
 
@@ -27,18 +34,36 @@
     .match {
         position: relative;
         padding: .5em;
-        /*height: 100%;*/
-        .matchNum {
+        /*.matchNum {
             position: relative;
 
             .edit {
                 width: 1em;
                 height: 1em;
 
+                &.hide {
+                    img {
+                        display: none;
+                    }
+                    display:none;
+                }
+
                 .svg {
                     position: absolute;
                     right: 0em;
                     top: 0em;
+                }
+            }
+        }*/
+        .matchHeader {
+            .edit {
+                &.hide {
+                    display: none;
+                }
+
+                .img {
+                    position: relative;
+                    right: 0em;
                 }
             }
         }
@@ -151,9 +176,9 @@
 
                     .score-edit {
                         right: 0em;
-                        position:absolute;
+                        position: absolute;
                         display: inline-block;
-                        width:2em;
+                        width: 2em;
                         height: 100%;
                         padding: .25em;
                     }

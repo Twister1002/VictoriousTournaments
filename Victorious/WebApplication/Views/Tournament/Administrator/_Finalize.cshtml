@@ -1,12 +1,7 @@
-﻿@model WebApplication.Models.TournamentViewModel
-
-@{  
-
-}
-
+﻿
 <div id="TournamentFinalize">
     <h2>Finalize Tournament</h2>
-    @using (Html.BeginForm("Finalize", "Tournament", new { tourny = Model.Model.TournamentID }, FormMethod.Post))
+    @using (Html.BeginForm("Finalize", "Tournament", new { tourny = ViewBag.TournamentId }, FormMethod.Post))
     {
         <button type = "submit">Finalize Tournament</button>
     }

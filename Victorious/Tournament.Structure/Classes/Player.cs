@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DataLib;
+
 namespace Tournament.Structure
 {
 	public abstract class Player : IPlayer
@@ -16,7 +18,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		
+		public abstract UserModel GetModel();
 		#endregion
 	}
 }

@@ -45,6 +45,10 @@
     <Compile Include="Classes\SingleElimBracket.cs" />
     <Compile Include="Classes\DoubleElimBracket.cs" />
     <Compile Include="Classes\Exceptions.cs" />
+    <Compile Include="Classes\Game.cs" />
+    <Compile Include="Classes\GroupStage.cs" />
+    <Compile Include="Interfaces\IGroupStage.cs" />
+    <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Interfaces\IBracket.cs" />
     <Compile Include="Interfaces\IMatch.cs" />
     <Compile Include="Interfaces\IPlayer.cs" />

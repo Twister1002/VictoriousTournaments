@@ -4,43 +4,35 @@
     ViewBag.Title = "Tournament";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    int userId = -1;
     bool registrationStarted = (DateTime)Model.RegistrationStartDate <= DateTime.Now;
     bool tournamentStarted = (DateTime)Model.TournamentStartDate <= DateTime.Now;
     bool registrationEnded = (DateTime)Model.RegistrationEndDate <= DateTime.Now;
     bool isLoggedIn = Session["User.UserId"] != null;
-    bool isTournyAdministrator = false;
+    var userPermission = isLoggedIn ? Model.UserPermission((int)Session["User.UserId"]) : DataLib.Permission.NONE;
 
-    if (isLoggedIn) { int.TryParse(Session["User.UserId"].ToString(), out userId); isTournyAdministrator = Model.Model.CreatedByID == userId; }
-
-    ViewBag.isAdministrator = isTournyAdministrator;
+    ViewBag.Permission = userPermission;
     ViewBag.isLoggedIn = isLoggedIn;
+    ViewBag.TournamentId = Model.Model.TournamentID;
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
     <div class="content-header">
-        <h2>Tournament - @Model.Model.Title</h2>
+        <h2 class="tournamentTitle">Tournament - @Model.Model.Title</h2>
         <div class="tournament-buttons">
-            @if (isTournyAdministrator)
+            @if (userPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
             {
                 <a href="@Url.Action("Update", "Tournament", new { id = Model.Model.TournamentID })">
-                    <img src="~/Images/pencil.png" />
+                    <span class="icon icon-pencil"></span>
                 </a>
-                <img class="tournament-delete" data-id="@Model.Model.TournamentID" src="~/Images/svg/cross.svg" />
+                <span class="icon icon-cross tournament-delete" data-id="@Model.Model.TournamentID"></span>
             }
-            @*<svg class="icon icon-trophy"><use xlink:href="#icon-trophy"></use></svg>*@
-            <img class="tournament-standings" src="~/Images/svg/trophy.svg" />
+            <span class="icon icon-trophy tournament-standings"></span>
         </div>
+        <h3 class="gameTitle">@(Model.Model.GameType != null ? Model.Model.GameType.Title : "")</h3>
     </div>
     @{
-        if (isTournyAdministrator)
+        if (userPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
         {
-            if (registrationEnded && Model.Model.Brackets.ToList()[0].Matches.Count == 0)
-            {
-                Html.RenderPartial("Administrator/_Finalize", Model);
-            }
-
-            //Html.RenderPartial("Administrator/_Players", Model);
             Html.RenderPartial("_ViewTournament", Model.Tourny, new ViewDataDictionary(ViewData));
         }
         else
@@ -49,7 +41,7 @@
             {
                 Html.RenderPartial("_ViewRegistration", Model, new ViewDataDictionary(ViewData));
             }
-            else if ((registrationEnded && !tournamentStarted) /* || Model.isBracketReleased */)
+            else if (registrationEnded && !tournamentStarted)
             {
                 <div class="message success">The tournament is currently being prepared. Please wait until the brackets are released.</div>
             }
@@ -62,5 +54,7 @@
                 <div class="message exception">Yeah..... something went wrong with displaying the tournament</div>
             }
         }
+
+        Html.RenderPartial("Brackets/_Standings", Model.Tourny, new ViewDataDictionary(ViewData));
     }
 </div>

@@ -12,9 +12,26 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		BracketTypeModel.BracketType BracketType { get; }
+
+		/// <summary>
+		/// Is Bracket creation finalized; ready to play?
+		/// </summary>
+		bool IsFinalized { get; }
+
+		/// <summary>
+		/// Is Bracket play finished & winner determined?
+		/// </summary>
 		bool IsFinished { get; }
+
 		List<IPlayer> Players { get; }
 		List<IPlayerScore> Rankings { get; }
+
+		/// <summary>
+		/// Limit on the number of rounds;
+		/// for RoundRobin-type brackets.
+		/// </summary>
+		int MaxRounds { get; set; }
+
 		int NumberOfRounds { get; }
 		int NumberOfLowerRounds { get; }
 
@@ -34,23 +51,28 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Generates the bracket (rounds & matches).
 		/// </summary>
-		/// <param name="_winsPerMatch">"Games" needed to win each match</param>
-		void CreateBracket(ushort _winsPerMatch = 1);
+		/// <param name="_gamesPerMatch">Max games played each match</param>
+		void CreateBracket(int _gamesPerMatch = 1);
 
 		/// <summary>
-		/// Record one win for the specified match.
-		/// Advances Player if the Match is over.
+		/// Add/record a finished Game.
 		/// </summary>
-		/// <param name="_matchNumber">Number of specified match</param>
-		/// <param name="_slot">Winning player's slot: Defender or Challenger</param>
+		/// <param name="_matchNumber">Match to contain this Game</param>
+		/// <param name="_defenderScore">Score for Defender-slot Player</param>
+		/// <param name="_challengerScore">Score for Challenger-slot Player</param>
+		void AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
+		[System.Obsolete("use AddGame(int, int, int) instead", false)]
+		void AddGame(int _matchNumber, IGame _game);
+
+		/// <summary>
+		/// Delete/un-record a Match's most recent Game.
+		/// </summary>
+		/// <param name="_matchNumber">Number of Match to modify</param>
+		void RemoveLastGame(int _matchNumber);
+
+		[System.Obsolete("use AddGame(int, int, int) instead", false)]
 		void AddWin(int _matchNumber, PlayerSlot _slot);
-
-		/// <summary>
-		/// Remove one win for the specified match.
-		/// Resets any affected "future" matches.
-		/// </summary>
-		/// <param name="_matchNumber">Number of specified match</param>
-		/// <param name="_slot">Player slot: Defender or Challenger</param>
+		[System.Obsolete("use RemoveLastGame(int) instead", false)]
 		void SubtractWin(int _matchNumber, PlayerSlot _slot);
 
 		/// <summary>
@@ -63,7 +85,7 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Gets the number of Players in the Bracket.
 		/// </summary>
-		/// <returns>Number of Players</returns>
+		/// <returns>Count of Players</returns>
 		int NumberOfPlayers();
 
 		/// <summary>
@@ -104,7 +126,7 @@ namespace Tournament.Structure
 		void ReplacePlayer(IPlayer _player, int _index);
 
 		/// <summary>
-		/// Swaps two Players' positions.
+		/// Swaps two Players' seeds/positions.
 		/// (Deletes all Matches)
 		/// </summary>
 		/// <param name="_index1">P1's index (0-indexed)</param>
@@ -112,7 +134,7 @@ namespace Tournament.Structure
 		void SwapPlayers(int _index1, int _index2);
 
 		/// <summary>
-		/// Moves a Player's position in the playerlist,
+		/// Moves a Player's seed/position in the playerlist,
 		/// adjusting all other Players.
 		/// (Deletes all Matches)
 		/// </summary>
@@ -124,7 +146,9 @@ namespace Tournament.Structure
 		/// Remove a Player from the bracket.
 		/// (Deletes all Matches)
 		/// </summary>
-		/// <param name="_player">Player-type object to remove</param>
+		/// <param name="_playerId">ID of Player to remove</param>
+		void RemovePlayer(int _playerId);
+		[System.Obsolete("use RemovePlayer(int ID) instead", false)]
 		void RemovePlayer(IPlayer _player);
 
 		/// <summary>
@@ -156,6 +180,11 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Match Number of the desired Match</param>
 		/// <returns>Specified Match object</returns>
 		IMatch GetMatch(int _matchNumber);
+
+		/// <summary>
+		/// Resets every Match to a pre-play state (no games played).
+		/// </summary>
+		void ResetMatches();
 #endregion
 	}
 }
