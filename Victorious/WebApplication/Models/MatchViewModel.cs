@@ -26,7 +26,14 @@ namespace WebApplication.Models
         public MatchViewModel(int matchId)
         {
             Model = db.GetMatchById(matchId);
-            Match = new Match(Model);
+            if (Model != null)
+            {
+                Match = new Match(Model);
+            }
+            else
+            {
+                Match = new Match();
+            }
         }
 
         public override void ApplyChanges(int userId)

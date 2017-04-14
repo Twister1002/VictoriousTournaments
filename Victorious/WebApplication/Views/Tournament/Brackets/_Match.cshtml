@@ -11,12 +11,19 @@
 <div class="match @className" data-matchid="@Model.Model.MatchID" data-matchnum="@Model.MatchNumber">
     <label class="matchHeader">
         Match <span class="matchNum">@Model.MatchNumber</span>
-        @if (ViewBag.Permission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
+        @if (ViewBag.Permission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR && ViewBag.isFinalized)
         {
-            <span class="edit @(ViewBag.isFinalized && Model.IsReady && !Model.IsFinished ? "" : "hide")">
+            <span class="edit @(Model.IsReady && !Model.IsFinished ? "" : "hide")">
                 <span class="icon icon-pencil match-edit clickable"></span>
             </span>
         }
+        @*else if (ViewBag.Permission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR && !ViewBag.isFinalized)
+        {
+            <span class="pre-edit">
+                <span class="icon icon-pencil match-edit clickable"></span>
+                <div class="max-matches">Best of <select><option>1</option><option>2</option></select></div>
+            </span>
+        }*@
     </label>
     <div class="matchData">
         <ul class="info">
@@ -24,7 +31,7 @@
                 @*<label class="seed">@Defender.Id</label>*@
                 <div class="name">@Defender.Name</div>
                 <label class="match-score">@Model.Score[(int)Tournament.Structure.PlayerSlot.Defender]</label>
-                <input type="text" class="score-edit" value="@Model.Score[(int)Tournament.Structure.PlayerSlot.Defender]"/>
+                <input type="text" class="score-edit" value="@Model.Score[(int)Tournament.Structure.PlayerSlot.Defender]" />
             </li>
             <li class="challenger" data-userid="@Challenger.Id">
                 @*<label class="seed">@Challenger.Id</label>*@

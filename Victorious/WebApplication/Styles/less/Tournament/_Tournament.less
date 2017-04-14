@@ -17,7 +17,6 @@
 
         .gameTitle {
             margin-top: 0em;
-            /*background-color: red;*/
         }
     }
 
@@ -34,27 +33,6 @@
     .match {
         position: relative;
         padding: .5em;
-        /*.matchNum {
-            position: relative;
-
-            .edit {
-                width: 1em;
-                height: 1em;
-
-                &.hide {
-                    img {
-                        display: none;
-                    }
-                    display:none;
-                }
-
-                .svg {
-                    position: absolute;
-                    right: 0em;
-                    top: 0em;
-                }
-            }
-        }*/
         .matchHeader {
             .edit {
                 &.hide {
@@ -128,76 +106,6 @@
         &.grandFinal {
             position: relative;
             top: -35%;
-        }
-    }
-
-
-    .match-edit-module {
-        display: none;
-
-        &.open {
-            display: inline-block;
-        }
-
-        &.open, > * {
-            position: absolute;
-            top: 0em;
-            left: 0em;
-            width: 100%;
-            height: 100%;
-        }
-
-        .module-background {
-            opacity: 0.9;
-            background-color: darken(@color-primary-0, 30%);
-        }
-
-        .module-close {
-            text-align: right;
-            font-size: 3em;
-        }
-
-        .module-content {
-            width: 95%;
-            padding: 1em;
-            top: 10%;
-
-            .edit {
-                display: none;
-            }
-
-            .match {
-                width: 50%;
-
-                .challenger, .defender {
-                    .match-score {
-                        display: none;
-                    }
-
-                    .score-edit {
-                        right: 0em;
-                        position: absolute;
-                        display: inline-block;
-                        width: 2em;
-                        height: 100%;
-                        padding: .25em;
-                    }
-                }
-            }
-
-            .match-submit {
-                padding-top: 1em;
-            }
-
-            .info {
-                > li {
-                    width: 100%;
-
-                    &.selected-winner {
-                        background-color: @alert-orange;
-                    }
-                }
-            }
         }
     }
 }

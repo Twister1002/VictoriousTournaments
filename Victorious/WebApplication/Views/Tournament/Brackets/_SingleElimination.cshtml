@@ -18,7 +18,22 @@
                 displayTitle = "Quarter Finals";
             }
 
-            <li class="column">@displayTitle</li>
+            <li class="column">
+                @displayTitle
+
+                @if (!Model.IsFinalized && ViewBag.Permission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
+                {
+                    <div class="best-of-wins">
+                        Best of
+                        <select>
+                            @for (int o = 1; o <= 10; o++)
+                            {
+                                <option value="@o">@o</option>
+                            }
+                        </select>
+                    </div>
+                }
+            </li>
         }
     </ul>
 </li>
@@ -34,7 +49,7 @@
                     var challenger = match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Challenger] : new Tournament.Structure.User();
                     var defender = match.Players[(int)Tournament.Structure.PlayerSlot.Defender] != null ? match.Players[(int)Tournament.Structure.PlayerSlot.Defender] : new Tournament.Structure.User();
 
-                    // maybe a slight bug in previous match number's indexs? 
+                    // maybe a slight bug in previous match number's indexs?
                     if (challenger.Id == -1)
                     {
                         if (match.PreviousMatchNumbers[(int)Tournament.Structure.PlayerSlot.Challenger] != -1)

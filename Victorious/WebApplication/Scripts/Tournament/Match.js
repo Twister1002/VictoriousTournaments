@@ -18,6 +18,12 @@
         $(".match-edit-module").removeClass("open");
     });
 
+    // When the tournament is not finalized
+    $(".match .matchHeader .pre-edit").on("click", function () {
+
+    });
+
+    // When the tournament is finalized
     $(".match .matchHeader .edit").on("click", function () {
         var matchElem = $(this).closest(".match");
 

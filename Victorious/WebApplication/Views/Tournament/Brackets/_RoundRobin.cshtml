@@ -8,7 +8,21 @@
     <ul class="border" data-columns="@rounds">
         @for (int i = 1; i <= rounds; i++)
         {
-            <li class="column">Round @i</li>
+            <li class="column">
+                Round @i
+                @if (!Model.IsFinalized && ViewBag.Permission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
+                {
+                    <div class="best-of-wins">
+                        Best of
+                        <select>
+                            @for (int o = 1; o <= 10; o++)
+                            {
+                                <option value="@o">@o</option>
+                            }
+                        </select>
+                    </div>
+                }
+            </li>
         }
     </ul>
 </li>

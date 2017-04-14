@@ -266,6 +266,8 @@
     <Content Include="Styles\less\Administrator\Administrator.less" />
     <Content Include="Styles\less\Administrator\Games.less" />
     <Content Include="Styles\less\Administrator.less" />
+    <Content Include="Styles\less\Tournament\_Match.less" />
+    <Content Include="Views\Tournament\Brackets\_Games.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
