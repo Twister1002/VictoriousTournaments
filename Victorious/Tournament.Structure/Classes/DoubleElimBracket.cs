@@ -220,7 +220,6 @@ namespace Tournament.Structure
 
 				// Move new bracket data to member variables (LowerMatches dictionary)
 				NumberOfLowerRounds = roundList.Count;
-				LowerMatches = new Dictionary<int, IMatch>();
 				for (r = 0; r < roundList.Count; ++r)
 				{
 					for (int m = 0; m < roundList[r].Count; ++m)
@@ -231,11 +230,6 @@ namespace Tournament.Structure
 					}
 				}
 				NumberOfMatches += (LowerMatches.Count + 1);
-			}
-			else
-			{
-				LowerMatches = null;
-				GrandFinal = null;
 			}
 		}
 

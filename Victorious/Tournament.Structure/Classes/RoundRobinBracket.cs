@@ -156,13 +156,11 @@ namespace Tournament.Structure
 			{
 				return;
 			}
-			Rankings = new List<IPlayerScore>();
 			foreach (IPlayer player in Players)
 			{
 				Rankings.Add(new PlayerScore(player.Id, player.Name, 0, 1));
 			}
-
-			Matches = new Dictionary<int, IMatch>();
+			
 			int totalRounds = (0 == Players.Count % 2)
 				? Players.Count - 1 : Players.Count;
 
