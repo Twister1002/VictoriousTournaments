@@ -33,8 +33,11 @@ namespace DataLib.Tests
         public void Delete_Game_Returns_Success()
         {
             var db = new DatabaseInterface();
-            var bracket = db.GetBracketByID(1);
-            //var result = db.DeleteGame(bracket.Matches[0])
+            var game = db.GetAllGamesInMatch(match)[0];
+            var result = db.DeleteGame(game);
+
+            Assert.AreEqual(DbError.SUCCESS, result);
+
         }
 
     }

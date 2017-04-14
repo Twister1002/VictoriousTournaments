@@ -51,7 +51,7 @@ namespace DataLib.Tests
                 Password = "1234",
                 SitePermission = new PermissionModel()
                 {
-                    Permission = Permission.SITE_ADMINISTRATOR
+                    Permission = Permission.SITE_STANDARD
                 }
             };
             

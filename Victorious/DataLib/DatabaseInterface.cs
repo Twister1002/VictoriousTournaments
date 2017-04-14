@@ -309,25 +309,6 @@ namespace DataLib
             return users;
         }
 
-        public DbError UpdateUserTournamentPermission(UserModel user, TournamentModel tournament, Permission permission)
-        {
-            UserInTournamentModel uitm = new UserInTournamentModel();
-            try
-            {
-                uitm = context.UsersInTournaments.Where(x => x.TournamentID == tournament.TournamentID && x.UserID == user.UserID).Single();
-                uitm.Permission = permission;
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                interfaceException = ex;
-                WriteException(ex);
-                return DbError.FAILED_TO_UPDATE;
-
-            }
-            return DbError.SUCCESS;
-        }
-
         #endregion
 
         #region Tournaments
@@ -1138,15 +1119,85 @@ namespace DataLib
 
         #region Permissions
 
-        public Permission GetUserPermission(UserModel user, TournamentModel tournament) // Rename and seperate all get permission calls/functions
+        public Permission GetUserSitePermission(UserModel user)
         {
-            Permission permission = new Permission();
+            Permission permission = Permission.NONE;
+            try
+            {
+                permission = context.Users.Find(user.UserID).SitePermission.Permission;
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return permission;
+            }
+            return permission;
+        }
+
+        public Permission GetUserTournamentPermission(UserModel user, TournamentModel tournament)
+        {
+            Permission permission = Permission.NONE;
             try
             {
                 context.Users.Load();
                 context.Tournaments.Load();
                 context.UsersInTournaments.Load();
                 permission = context.UsersInTournaments.SingleOrDefault(e => e.UserID == user.UserID && e.TournamentID == tournament.TournamentID).Permission;
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return permission;
+            }
+            return permission;
+        }
+
+        public DbError UpdateUserTournamentPermission(UserModel user, TournamentModel tournament, Permission permission)
+        {
+            UserInTournamentModel uitm = new UserInTournamentModel();
+            try
+            {
+                uitm = context.UsersInTournaments.Where(x => x.TournamentID == tournament.TournamentID && x.UserID == user.UserID).Single();
+                uitm.Permission = permission;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError UpdateUserSitePermission(UserModel user, Permission permission)
+        {
+            try
+            {
+                UserModel _user = context.Users.Find(user.UserID);
+                _user.SitePermission.Permission = permission;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+
+        [Obsolete ("Use GetUserTournamentPermission or GetUserSitePermission")]
+        public Permission GetUserPermission(UserModel user, TournamentModel tournament) // Rename and seperate all get permission calls/functions
+        {
+            Permission permission = new Permission();
+            try
+            {
+               
                 //permission = context.UsersInTournaments.Include(x => x.Tournament).Include(x => x.User).Single().Permission;
                 //permission = context.UsersInTournaments.Where(x => x.UserID == user.UserID && x.TournamentID == tournament.TournamentID).First().Permission;
             }
@@ -1222,7 +1273,7 @@ namespace DataLib
             List<GameModel> games = new List<GameModel>();
             try
             {
-
+                games = match.Games.ToList();
             }
             catch (Exception ex)
             {
