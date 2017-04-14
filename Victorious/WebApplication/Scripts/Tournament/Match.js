@@ -111,10 +111,10 @@
                         $(match).find(".defender .match-score").text(matchData.defender.score);
 
                         if (matchData.isFinished) {
-                            match.find(".edit").removeClass("hide");
+                            match.find(".edit").addClass("hide");
                         }
                         else {
-                            match.find(".edit").addClass("hide");
+                            match.find(".edit").removeClass("hide");
                         }
                     }
                     if (json.data.nextWinnerMatch) {
@@ -139,10 +139,10 @@
                         $(match).find(".defender .match-score").text(matchData.defender.score);
 
                         if (matchData.isReady) {
-                            match.find(".edit").addClass("hide");
+                            match.find(".edit").removeClass("hide");
                         }
                         else {
-                            match.find(".edit").removeClass("hide");
+                            match.find(".edit").addClass("hide");
                         }
                     }
                     if (json.data.nextLoserMatch) {
@@ -167,10 +167,10 @@
                         $(match).find(".defender .match-score").text(matchData.defender.score);
 
                         if (matchData.isReady) {
-                            match.find(".edit").addClass("hide");
+                            match.find(".edit").removeClass("hide");
                         }
                         else {
-                            match.find(".edit").removeClass("hide");
+                            match.find(".edit").addClass("hide");
                         }
                     }
                 }
