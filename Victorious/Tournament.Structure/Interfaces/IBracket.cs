@@ -195,6 +195,13 @@ namespace Tournament.Structure
 		IMatch GetMatch(int _matchNumber);
 
 		/// <summary>
+		/// Set the max number of Games per Match for one round.
+		/// </summary>
+		/// <param name="_roundIndex">Round of Matches to modify</param>
+		/// <param name="_maxGamesPerMatch">How many Games each Match may last</param>
+		void SetMaxGamesForWholeRound(int _roundIndex, int _maxGamesPerMatch);
+
+		/// <summary>
 		/// Resets EVERY Match to a pre-play state (no games played).
 		/// </summary>
 		void ResetMatches();
