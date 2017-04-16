@@ -347,6 +347,11 @@ namespace Tournament.Structure
 				throw new InactiveMatchException
 					("Cannot add games to an inactive match!");
 			}
+			if (PlayerSlot.unspecified == _winnerSlot)
+			{
+				throw new NotImplementedException
+					("No ties allowed / enter a winner slot!");
+			}
 			if (_defenderScore < 0 || _challengerScore < 0)
 			{
 				throw new ScoreException

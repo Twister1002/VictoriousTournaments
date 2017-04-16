@@ -264,7 +264,7 @@ namespace Tournament.Structure.Tests
 			IBracket b = new DoubleElimBracket(pList);
 			for (int n = 1; n < b.NumberOfMatches; ++n)
 			{
-				b.AddGame(n, 1, 0);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
 
 			Mock<IPlayer> m = new Mock<IPlayer>();
