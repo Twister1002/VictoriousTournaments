@@ -771,5 +771,23 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(0, lowerRound1.Count);
 		}
+
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SetMaxGamesForWholeLowerRound")]
+		public void SEBSMGFWLR_DoesNothing()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			b.SetMaxGamesForWholeLowerRound(1, 3);
+			Assert.AreEqual(1, b.GetRound(1)[0].MaxGames);
+		}
 	}
 }

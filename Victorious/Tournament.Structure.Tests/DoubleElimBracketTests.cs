@@ -841,5 +841,80 @@ namespace Tournament.Structure.Tests
 			Assert.IsNotNull(b.GetLowerRound(1)[0].Players[(int)PlayerSlot.Challenger]);
 		}
 #endregion
+
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("SetMaxGamesForWholeRound")]
+		public void DEBSMGFWR_UpdatesCorrectUpperBracketRound()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 16; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			int games = 5;
+			int round = 2;
+			b.SetMaxGamesForWholeRound(round, games);
+			Assert.AreEqual(games, b.GetRound(round)[1].MaxGames);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("SetMaxGamesForWholeRound")]
+		public void DEBSMGFWR_DoesNotUpdateLowerBracketRound()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 16; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			int round = 2;
+			b.SetMaxGamesForWholeRound(round, 5);
+			Assert.AreEqual(1, b.GetLowerRound(round)[0].MaxGames);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("SetMaxGamesForWholeLowerRound")]
+		public void DEBSMGFWLR_CorrectlyUpdatesLowerBracketRound()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 16; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			int round = 2;
+			int games = 5;
+			b.SetMaxGamesForWholeLowerRound(round, games);
+			Assert.AreEqual(games, b.GetLowerRound(round)[1].MaxGames);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("SetMaxGamesForWholeRound")]
+		public void DEBSMGFWLR_DoesNotUpdateUpperBracketRound()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 16; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			int round = 2;
+			b.SetMaxGamesForWholeLowerRound(round, 5);
+			Assert.AreEqual(1, b.GetRound(round)[0].MaxGames);
+		}
 	}
 }

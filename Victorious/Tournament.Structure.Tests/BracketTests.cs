@@ -590,5 +590,61 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(1, 2);
 		}
+
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("SetMaxGamesForWholeRound")]
+		public void SMGFWR_UpdatesSingleElimBrackets()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 16; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			int games = 5;
+			b.SetMaxGamesForWholeRound(2, games);
+			Assert.AreEqual(games, b.GetRound(2)[1].MaxGames);
+		}
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("SetMaxGamesForWholeRound")]
+		[ExpectedException(typeof(ScoreException))]
+		public void SMGFWR_ThrowsScoreExcept_IfInputIsNegative()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			b.SetMaxGamesForWholeRound(1, 0);
+			Assert.AreEqual(1, 2);
+		}
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("SetMaxGamesForWholeRound")]
+		[ExpectedException(typeof(InactiveMatchException))]
+		public void SMGFWR_ThrowsInactiveMatch_IfAffectedMatchIsFinished()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			b.AddGame(2, 1, 0, PlayerSlot.Defender);
+			b.SetMaxGamesForWholeRound(1, 3);
+			Assert.AreEqual(1, 2);
+		}
 	}
 }
