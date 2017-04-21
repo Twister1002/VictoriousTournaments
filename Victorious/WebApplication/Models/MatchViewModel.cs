@@ -14,6 +14,7 @@ namespace WebApplication.Models
 
         public MatchViewModel()
         {
+            Match = new Match();
             Model = new MatchModel();
         }
 
@@ -50,21 +51,14 @@ namespace WebApplication.Models
             this.WinnerID = Model.WinnerID;
         }
 
-        public void AddGame(int defenderScore, int challengerScore)
+        public IPlayer Challenger()
         {
-            Match.AddGame(defenderScore, challengerScore);
+            return Match.Players[(int)PlayerSlot.Challenger] != null ? Match.Players[(int)PlayerSlot.Challenger] : new User() { Name = "Unknown Challenger" };
+        }
 
-            db.AddGame(Model, new GameModel()
-            {
-                ChallengerID = Model.ChallengerID,
-                DefenderID = Model.DefenderID,
-                ChallengerScore = challengerScore,
-                DefenderScore = defenderScore,
-                GameID = -1,
-                MatchID = Model.MatchID,
-                WinnerID = -1,
-                GameNumber = -1
-            });
+        public IPlayer Defender()
+        {
+            return Match.Players[(int)PlayerSlot.Defender] != null ? Match.Players[(int)PlayerSlot.Defender] : new User() { Name = "Unknown Defender" };
         }
     }
 }

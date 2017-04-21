@@ -212,6 +212,7 @@
     <Compile Include="Models\AdministratorViewModel.cs" />
     <Compile Include="Models\BracketViewModel.cs" />
     <Compile Include="Models\Fields.cs" />
+    <Compile Include="Models\GameViewModel.cs" />
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Models\MatchViewModel.cs" />
     <Compile Include="Models\TournamentViewModel.cs" />

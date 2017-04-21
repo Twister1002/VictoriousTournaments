@@ -1,1 +1,36 @@
-﻿
+﻿@model WebApplication.Models.MatchViewModel
+
+@{
+
+}
+
+<div id="TournamentMatch" class="match" data-id="@Model.Model.MatchID" data-matchnum="@Model.Model.MatchNumber">
+    <label>@Model.Model.MatchNumber</label>
+    <div class="overview">
+        <div class="defender">
+            <div class="name">
+                @Model.Challenger().Name
+            </div>
+            <div class="score">
+                @Model.DefenderScore
+            </div>
+        </div>
+        <div class="challenger">
+            <div class="name">
+                @Model.Defender().Name
+            </div>
+            <div class="score">
+                @Model.ChallengerScore
+            </div>
+        </div>
+    </div>
+
+    <div class="details">View Details</div>
+
+    <div class="games">
+        @foreach (var Game in Model.Match.Games)
+        {
+            Html.RenderPartial("Brackets/Shared/_Game", new WebApplication.Models.GameViewModel(Game));
+        }
+    </div>
+</div>

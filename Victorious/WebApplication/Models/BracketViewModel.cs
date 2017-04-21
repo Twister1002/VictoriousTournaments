@@ -21,5 +21,27 @@ namespace WebApplication.Models
         {
             Bracket = bracket;
         }
+
+        public int TotalRounds()
+        {
+            if (Bracket.GrandFinal != null)
+            {
+                return Bracket.NumberOfRounds + 1;
+            }
+            else
+            {
+                return Bracket.NumberOfRounds;
+            }
+        }
+
+        public List<IMatch> UpperMatches(int round)
+        {
+            return Bracket.GetRound(round);
+        }
+
+        public List<IMatch> LowerMatches(int round)
+        {
+            return Bracket.GetLowerRound(round);
+        }
     }
 }

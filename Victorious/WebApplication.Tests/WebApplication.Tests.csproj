@@ -105,6 +105,7 @@
     <Compile Include="Controllers\MatchControllerUnit.cs" />
     <Compile Include="Controllers\TournamentControllerUnit.cs" />
     <Compile Include="Models\AccountViewModelUnit.cs" />
+    <Compile Include="Models\BracketViewModelUnit.cs" />
     <Compile Include="Models\TournamentViewModelUnit.cs" />
     <Compile Include="Models\AdministratorViewModelUnit.cs" />
     <Compile Include="Models\MatchViewModelUnit.cs" />
@@ -114,6 +115,10 @@
     <ProjectReference Include="..\DataLib\DataLib.csproj">
       <Project>{59636ED1-650E-4319-AABE-AED047A9FEB5}</Project>
       <Name>DataLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tournament.Structure\Tournament.Structure.csproj">
+      <Project>{2de53f49-9b50-489d-8fe3-8fc10e1efd57}</Project>
+      <Name>Tournament.Structure</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebApplication\WebApplication.csproj">
       <Project>{CE4C5D0C-EC20-454F-8223-7755E1EE8B0B}</Project>

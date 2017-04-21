@@ -1,3 +1,14 @@
 ﻿@model WebApplication.Models.BracketViewModel
 
-Header function
+@{ 
+    int rounds = Model.TotalRounds();
+}
+
+<li class="list-table-header">
+    <ul data-columns="@rounds">
+        @for (int i = 1; i <= rounds; i++)
+        {
+            <li>Round @i</li>
+        }
+    </ul>
+</li>

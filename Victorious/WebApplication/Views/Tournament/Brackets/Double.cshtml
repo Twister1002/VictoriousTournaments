@@ -1,7 +1,11 @@
 ﻿@model WebApplication.Models.BracketViewModel
 
 @{
-
+    int rounds = Model.TotalRounds();
 }
 
-Double
+<li class="list-table-body">
+    <ul data-columns="@rounds">
+        <li></li>
+    </ul>
+</li>

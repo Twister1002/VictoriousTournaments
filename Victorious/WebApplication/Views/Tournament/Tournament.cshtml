@@ -35,30 +35,28 @@
                 {
                     case DataLib.BracketTypeModel.BracketType.SINGLE:
                         bracketName = "Single";
-                        <div class="name">Single Elemination</div>
                         break;
                     case DataLib.BracketTypeModel.BracketType.DOUBLE:
                         bracketName = "Double";
-                        <div class="name">Double Elemination</div>
                         break;
                     case DataLib.BracketTypeModel.BracketType.ROUNDROBIN:
                         bracketName = "RoundRobin";
-                        <div class="name">Round Robin</div>
                         break;
                 }
-            </div>
-            <div class="options">
-                @if (isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
-                {
-                    <span class="icon icon-loop2 tournament-reset"></span>
-                }
-                <span class="icon icon-trophy tournament-standings"></span>
-                @if (!Bracket.IsFinalized)
-                {
-                    Html.RenderPartial("Administrator/_Finalize");
-                }
-            </div>
 
+                <div class="name">@bracketName</div>
+                <div class="options">
+                    @if (isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
+                    {
+                        <span class="icon icon-loop2 tournament-reset"></span>
+                    }
+                    <span class="icon icon-trophy tournament-standings"></span>
+                </div>
+            </div>
+            @if (!Bracket.IsFinalized && isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
+            {
+                Html.RenderPartial("Administrator/_Finalize");
+            }
             <ul class="list-table bracket">
                 @{
                     var bracketViewModel = new WebApplication.Models.BracketViewModel(Bracket);
@@ -71,7 +69,9 @@
                     <div class="module-close"><span class="icon icon-cross close clickable"></span></div>
                     <div class="module-content">
                         <h2>Winner Selection</h2>
-                        @{ Html.RenderPartial("Brackets/Shared/_Match", new Tournament.Structure.Match(), new ViewDataDictionary(ViewData)); }
+                        @{ 
+                            Html.RenderPartial("Brackets/Shared/_Match", new WebApplication.Models.MatchViewModel(), new ViewDataDictionary(ViewData)); 
+                        }
                         <div class="match-submit">
                             <button type="button">Submit Winner</button>
                         </div>
