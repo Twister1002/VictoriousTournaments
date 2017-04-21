@@ -37,28 +37,24 @@ namespace WebApplication.Models
             }
         }
 
-        public override void ApplyChanges(int userId)
-        {
-            Model.ChallengerScore = this.ChallengerScore;
-            Model.DefenderScore = this.DefenderScore;
-            Model.WinnerID = this.WinnerID;
-        }
-
-        public override void SetFields()
-        {
-            this.ChallengerScore = Model.ChallengerScore;
-            this.DefenderScore = Model.DefenderScore;
-            this.WinnerID = Model.WinnerID;
-        }
-
         public IPlayer Challenger()
         {
             return Match.Players[(int)PlayerSlot.Challenger] != null ? Match.Players[(int)PlayerSlot.Challenger] : new User() { Name = "Unknown Challenger" };
         }
 
+        public int ChallengerScore()
+        {
+            return Match.Score[(int)PlayerSlot.Challenger];
+        }
+
         public IPlayer Defender()
         {
             return Match.Players[(int)PlayerSlot.Defender] != null ? Match.Players[(int)PlayerSlot.Defender] : new User() { Name = "Unknown Defender" };
+        }
+
+        public int DefenderScore()
+        {
+            return Match.Score[(int)PlayerSlot.Defender];
         }
     }
 }

@@ -9,18 +9,18 @@
     <div class="overview">
         <div class="defender">
             <div class="name">
-                @Model.Challenger().Name
+                @Model.Defender().Name
             </div>
             <div class="score">
-                @Model.DefenderScore
+                @Model.DefenderScore()
             </div>
         </div>
         <div class="challenger">
             <div class="name">
-                @Model.Defender().Name
+                @Model.Challenger().Name
             </div>
             <div class="score">
-                @Model.ChallengerScore
+                @Model.ChallengerScore()
             </div>
         </div>
     </div>
