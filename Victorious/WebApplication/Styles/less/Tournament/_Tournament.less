@@ -6,13 +6,10 @@
         width: 100%;
         .tournamentTitle {
             margin-bottom: 0em;
+            padding: 0em;
         }
         .tournament-buttons {
             display: inline-block;
-
-            > * {
-                cursor: pointer;
-            }
         }
 
         .gameTitle {
@@ -20,92 +17,12 @@
         }
     }
 
-    .list-table-header ul li {
-        text-align: center;
-    }
-
-    .round {
-        vertical-align: middle;
+    .match-edit-module {
+        display: none;
+        position: absolute;
+        top: 0em;
+        width: 100%;
+        background-color: green;
         height: 100%;
-        position: relative;
-    }
-
-    .match {
-        position: relative;
-        padding: .5em;
-        .matchHeader {
-            .edit {
-                &.hide {
-                    display: none;
-                }
-
-                .img {
-                    position: relative;
-                    right: 0em;
-                }
-            }
-        }
-
-        .matchData {
-            background-color: @match-color;
-            width: 100%;
-
-            .info {
-                position: relative;
-                display: block;
-                border: .1em solid @white;
-                overflow: hidden;
-
-                .defender, .challenger {
-                    position: relative;
-                    display: block;
-                    width: 100%;
-                    height: 1.75em;
-                    overflow: hidden;
-
-                    &.teamHover {
-                        background-color: @color-primary-2;
-                    }
-
-                    .seed {
-                        display: inline-block;
-                        text-align: right;
-                        width: 1.5em;
-                        padding: .3em;
-                        border-right: .1em solid @white;
-                    }
-
-                    .name {
-                        overflow: hidden;
-                        display: inline-block;
-                        padding: .2em;
-                        /*background-color: red;*/
-                    }
-
-                    .match-score {
-                        position: absolute;
-                        display: inline-block;
-                        text-align: right;
-                        padding: .25em;
-                        width: 1.5em;
-                        border-left: .1em solid @white;
-                        right: 0em;
-                    }
-
-                    .score-edit {
-                        display: none;
-                    }
-                }
-
-                .defender {
-                    border-bottom: .1em solid @white;
-                }
-            }
-        }
-
-        &.grandFinal {
-            position: relative;
-            top: -35%;
-        }
     }
 }

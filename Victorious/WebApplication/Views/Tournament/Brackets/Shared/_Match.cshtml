@@ -4,8 +4,14 @@
 
 }
 
-<div id="TournamentMatch" class="match" data-id="@Model.Model.MatchID" data-matchnum="@Model.Model.MatchNumber">
-    <label>@Model.Model.MatchNumber</label>
+<div class="TournamentMatch" data-id="@Model.Model.MatchID" data-matchnum="@Model.Model.MatchNumber">
+    <label>Match @Model.Model.MatchNumber</label>
+    <div class="options">
+        @if (Model.Match.IsReady && !Model.Match.IsFinished)
+        {
+            <span class="icon icon-pencil"></span>
+        }
+    </div>
     <div class="overview">
         <div class="defender">
             <div class="name">
@@ -13,6 +19,9 @@
             </div>
             <div class="score">
                 @Model.DefenderScore()
+            </div>
+            <div class="score-edit">
+                <input type="text" name="gameScore" maxlength="3" />
             </div>
         </div>
         <div class="challenger">
@@ -22,10 +31,16 @@
             <div class="score">
                 @Model.ChallengerScore()
             </div>
+            <div class="score-edit">
+                <input type="text" name="gameScore" maxlength="3" />
+            </div>
         </div>
     </div>
 
-    <div class="details">View Details</div>
+    @if (Model.Match.IsReady)
+    {
+        <div class="details clickable clickable-underline">Details</div>
+    }
 
     <div class="games">
         @foreach (var Game in Model.Match.Games)

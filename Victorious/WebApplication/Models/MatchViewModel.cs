@@ -39,22 +39,40 @@ namespace WebApplication.Models
 
         public IPlayer Challenger()
         {
-            return Match.Players[(int)PlayerSlot.Challenger] != null ? Match.Players[(int)PlayerSlot.Challenger] : new User() { Name = "Unknown Challenger" };
-        }
+            IPlayer player = Match.Players[(int)PlayerSlot.Challenger];
+            if (player == null)
+            {
+                player = new User()
+                {
+                      Name = "Winner from "+Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger]
+                };
+            }
 
-        public int ChallengerScore()
-        {
-            return Match.Score[(int)PlayerSlot.Challenger];
+            return player;
         }
 
         public IPlayer Defender()
         {
-            return Match.Players[(int)PlayerSlot.Defender] != null ? Match.Players[(int)PlayerSlot.Defender] : new User() { Name = "Unknown Defender" };
+            IPlayer player = Match.Players[(int)PlayerSlot.Defender];
+            if (player == null)
+            {
+                player = new User()
+                {
+                    Name = "Winner from " + Match.PreviousMatchNumbers[(int)PlayerSlot.Defender]
+                };
+            }
+
+            return player;
         }
 
         public int DefenderScore()
         {
             return Match.Score[(int)PlayerSlot.Defender];
+        }
+
+        public int ChallengerScore()
+        {
+            return Match.Score[(int)PlayerSlot.Challenger];
         }
     }
 }

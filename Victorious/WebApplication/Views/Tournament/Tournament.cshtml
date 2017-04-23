@@ -44,20 +44,22 @@
                         break;
                 }
 
-                <div class="name">@bracketName</div>
+                <h3 class="name">@bracketName</h3>
                 <div class="options">
-                    @if (isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
-                    {
-                        <span class="icon icon-loop2 tournament-reset"></span>
+                    @if (Bracket.IsFinalized) { 
+                        if (isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
+                        {
+                            <span class="icon icon-loop2 tournament-reset"></span>
+                        }
+                        <span class="icon icon-trophy tournament-standings"></span>
                     }
-                    <span class="icon icon-trophy tournament-standings"></span>
                 </div>
             </div>
             @if (!Bracket.IsFinalized && isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
             {
                 Html.RenderPartial("Administrator/_Finalize");
             }
-            <ul class="list-table bracket">
+            <ul class="list-table bracket-data">
                 @{
                     var bracketViewModel = new WebApplication.Models.BracketViewModel(Bracket);
                     Html.RenderPartial("Brackets/Shared/_Header", bracketViewModel);

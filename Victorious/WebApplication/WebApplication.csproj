@@ -277,6 +277,8 @@
     <Content Include="Views\Tournament\Brackets\RoundRobin.cshtml" />
     <Content Include="Views\Tournament\Brackets\Shared\_Match.cshtml" />
     <Content Include="Views\Tournament\Brackets\Shared\_Game.cshtml" />
+    <Content Include="Styles\less\Tournament\_Game.less" />
+    <Content Include="Styles\less\Tournament\_Bracket.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
