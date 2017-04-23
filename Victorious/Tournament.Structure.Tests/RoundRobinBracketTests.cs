@@ -138,7 +138,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
-			b.AddGame(1, 1, 0);
+			b.AddGame(1, 1, 0, PlayerSlot.Defender);
 			Assert.AreEqual(b.GetMatch(1).Players[(int)(b.GetMatch(1).WinnerSlot)].Id,
 				b.Rankings[0].Id);
 		}
@@ -157,7 +157,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
-			b.AddGame(-1, 1, 0);
+			b.AddGame(-1, 1, 0, PlayerSlot.Defender);
 			Assert.AreEqual(1, 2);
 		}
 		[TestMethod]
@@ -175,7 +175,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
-			b.AddGame(b.NumberOfMatches + 1, 0, 1);
+			b.AddGame(b.NumberOfMatches + 1, 0, 1, PlayerSlot.Challenger);
 			Assert.AreEqual(1, 2);
 		}
 
@@ -272,11 +272,11 @@ namespace Tournament.Structure.Tests
 				IMatch m = b.GetMatch(n);
 				if (m.Players[(int)PlayerSlot.Defender].Id > m.Players[(int)PlayerSlot.Challenger].Id)
 				{
-					b.AddGame(n, 1, 0);
+					b.AddGame(n, 1, 0, PlayerSlot.Defender);
 				}
 				else
 				{
-					b.AddGame(n, 0, 1);
+					b.AddGame(n, 0, 1, PlayerSlot.Challenger);
 				}
 			}
 

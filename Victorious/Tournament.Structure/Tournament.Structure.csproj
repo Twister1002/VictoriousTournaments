@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\GSLGroups.cs" />
     <Compile Include="Classes\Bracket.cs" />
     <Compile Include="Classes\Match.cs" />
     <Compile Include="Classes\SingleElimBracket.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="Classes\Team.cs" />
     <Compile Include="Classes\RoundRobinBracket.cs" />
     <Compile Include="Classes\RoundRobinGroups.cs" />
+    <Compile Include="Classes\SwissBracket.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataLib\DataLib.csproj">

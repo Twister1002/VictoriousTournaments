@@ -456,6 +456,52 @@ namespace Tournament.Structure
 			throw new MatchNotFoundException
 				("Match not found; match number may be invalid.");
 		}
+		public void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
+		{
+			if (_maxGamesPerMatch < 1)
+			{
+				throw new ScoreException
+					("Games per match cannot be less than 1!");
+			}
+
+			List<IMatch> round = GetRound(_round);
+			foreach (IMatch match in round)
+			{
+				if (match.IsFinished)
+				{
+					throw new InactiveMatchException
+						("One or more matches in this round is already finished!");
+				}
+			}
+
+			foreach (IMatch match in round)
+			{
+				GetMatch(match.MatchNumber).SetMaxGames(_maxGamesPerMatch);
+			}
+		}
+		public void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch)
+		{
+			if (_maxGamesPerMatch < 1)
+			{
+				throw new ScoreException
+					("Games per match cannot be less than 1!");
+			}
+
+			List<IMatch> round = GetLowerRound(_round);
+			foreach (IMatch match in round)
+			{
+				if (match.IsFinished)
+				{
+					throw new InactiveMatchException
+						("One or more matches in this round is already finished!");
+				}
+			}
+
+			foreach (IMatch match in round)
+			{
+				GetMatch(match.MatchNumber).SetMaxGames(_maxGamesPerMatch);
+			}
+		}
 		public virtual void ResetMatches()
 		{
 			for (int n = 1; n <= NumberOfMatches; ++n)
@@ -463,7 +509,8 @@ namespace Tournament.Structure
 				IMatch match = GetMatch(n);
 				for (int i = 0; i < 2; ++i)
 				{
-					if (match.PreviousMatchNumbers[i] > -1)
+					if (match.PreviousMatchNumbers[i] > -1 &&
+						null != match.Players[i])
 					{
 						GetMatch(n).RemovePlayer(match.Players[i].Id);
 					}

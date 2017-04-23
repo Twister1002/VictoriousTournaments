@@ -111,9 +111,6 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_model");
 			}
 
-			this.BracketType = BracketTypeModel.BracketType.RRGROUP;
-			this.IsFinalized = _model.Finalized;
-
 			List<UserModel> userModels = _model.UserSeeds
 				.OrderBy(ubs => ubs.Seed)
 				.Select(ubs => ubs.User)
@@ -124,6 +121,8 @@ namespace Tournament.Structure
 				Players.Add(new User(model));
 			}
 
+			this.BracketType = BracketTypeModel.BracketType.RRGROUP;
+			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
 			this.MaxRounds = 0;
 			ResetBracket();
@@ -210,7 +209,6 @@ namespace Tournament.Structure
 				return;
 			}
 
-			Groups = new List<IBracket>();
 			for (int b = 0; b < NumberOfGroups; ++b)
 			{
 				List<IPlayer> pList = new List<IPlayer>();
@@ -219,11 +217,9 @@ namespace Tournament.Structure
 					pList.Add(Players[p + b]);
 				}
 
-				IBracket newGroup = new RoundRobinBracket(pList, _gamesPerMatch, MaxRounds);
-				Groups.Add(newGroup);
+				Groups.Add(new RoundRobinBracket(pList, _gamesPerMatch, MaxRounds));
 			}
 
-			Rankings = new List<IPlayerScore>();
 			foreach (IBracket group in Groups)
 			{
 				NumberOfMatches += group.NumberOfMatches;

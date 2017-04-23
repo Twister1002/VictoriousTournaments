@@ -215,7 +215,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new RoundRobinGroups(pList, 2);
 
-			b.AddGame(1, 0, 1);
+			b.AddGame(1, 0, 1, PlayerSlot.Challenger);
 			Assert.AreEqual(1, b.GetMatch(1).Score[(int)PlayerSlot.Challenger]);
 		}
 		[TestMethod]
@@ -233,7 +233,7 @@ namespace Tournament.Structure.Tests
 			IBracket b = new RoundRobinGroups(pList, 2);
 
 			int matchNum = b.NumberOfMatches;
-			b.AddGame(matchNum, 0, 1);
+			b.AddGame(matchNum, 0, 1, PlayerSlot.Challenger);
 			Assert.AreEqual(1, b.GetMatch(matchNum).Score[(int)PlayerSlot.Challenger]);
 		}
 		[TestMethod]
@@ -252,7 +252,7 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n <= b.NumberOfMatches; ++n)
 			{
-				b.AddGame(n, 1, 0);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
 			Assert.IsTrue(b.IsFinished);
 		}
@@ -271,7 +271,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new RoundRobinGroups(pList, 2);
 
-			b.AddGame(1, 0, 1);
+			b.AddGame(1, 0, 1, PlayerSlot.Challenger);
 			b.RemoveLastGame(1);
 			Assert.AreEqual(0, b.GetMatch(1).Score[(int)PlayerSlot.Challenger]);
 		}
@@ -290,7 +290,7 @@ namespace Tournament.Structure.Tests
 			IBracket b = new RoundRobinGroups(pList, 2);
 
 			int matchNum = b.NumberOfMatches;
-			b.AddGame(matchNum, 0, 1);
+			b.AddGame(matchNum, 0, 1, PlayerSlot.Challenger);
 			b.RemoveLastGame(matchNum);
 			Assert.AreEqual(0, b.GetMatch(matchNum).Score[(int)PlayerSlot.Challenger]);
 		}
@@ -309,7 +309,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new RoundRobinGroups(pList, 2);
 
-			b.AddGame(1, 0, 1);
+			b.AddGame(1, 0, 1, PlayerSlot.Challenger);
 			b.ResetMatchScore(1);
 			Assert.AreEqual(0, b.GetMatch(1).Score[(int)PlayerSlot.Challenger]);
 		}
@@ -328,7 +328,7 @@ namespace Tournament.Structure.Tests
 			IBracket b = new RoundRobinGroups(pList, 2);
 
 			int matchNum = b.NumberOfMatches;
-			b.AddGame(matchNum, 0, 1);
+			b.AddGame(matchNum, 0, 1, PlayerSlot.Challenger);
 			b.ResetMatchScore(matchNum);
 			Assert.AreEqual(0, b.GetMatch(matchNum).Score[(int)PlayerSlot.Challenger]);
 		}
