@@ -189,6 +189,7 @@
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\scripts.js" />
+    <Content Include="Scripts\Tournament\Bracket.js" />
     <Content Include="Scripts\Tournament\Edit.js" />
     <Content Include="Scripts\Tournament\Match.js" />
     <Content Include="Scripts\Tournament\Tournaments.js" />
@@ -254,7 +255,6 @@
     <Content Include="Styles\less\Tournament\_Create.less" />
     <Content Include="Styles\less\Tournament\_Edit.less" />
     <Content Include="Styles\less\Tournament\_Search.less" />
-    <Content Include="Styles\less\Tournament\_RegisteredPlayers.less" />
     <Content Include="Views\Tournament\old_Brackets\_SingleElimination.cshtml" />
     <Content Include="Views\Tournament\old_Brackets\_Swiss.cshtml" />
     <Content Include="Views\Tournament\old_Brackets\_RoundRobin.cshtml" />
@@ -279,6 +279,7 @@
     <Content Include="Views\Tournament\Brackets\Shared\_Game.cshtml" />
     <Content Include="Styles\less\Tournament\_Game.less" />
     <Content Include="Styles\less\Tournament\_Bracket.less" />
+    <Content Include="Views\Tournament\Brackets\Shared\_Standings.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

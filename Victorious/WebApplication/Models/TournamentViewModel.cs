@@ -148,7 +148,7 @@ namespace WebApplication.Models
             }
         }
 
-        public DbError FinalizeTournament()
+        public DbError FinalizeTournament(Dictionary<String, int> roundData)
         {
             // Load the tournament first
             ProcessTournament();
@@ -157,12 +157,18 @@ namespace WebApplication.Models
             int bracketNum = 0;
             BracketModel bracket = Model.Brackets.ElementAt(bracketNum);
             IBracket tourny = Tourny.Brackets[bracketNum];
+             foreach(KeyValuePair<String, int> data in roundData) {
+                tourny.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
+                tourny.SetMaxGamesForWholeLowerRound(int.Parse(data.Key), data.Value);
+            }
 
             // Process
             try
             {
                 CreateMatches(bracket, tourny);
                 SaveSeedParticipants(bracket, tourny);
+
+                // Recall the bracket
                 bracket.Finalized = true;
             }
             catch (Exception e)
@@ -183,7 +189,7 @@ namespace WebApplication.Models
                 for (int i = 1; i <= tourny.NumberOfMatches; i++)
                 {
                     MatchModel matchModel = tourny.GetMatch(i).GetModel();
-
+                    
                     bracket.Matches.Add(matchModel);
                 }
             }

@@ -1,0 +1,15 @@
+﻿@model WebApplication.Models.BracketViewModel
+
+<li>
+    <div class="TournamentStandings">
+        @foreach (var data in Model.Bracket.Rankings)
+        {
+            <div class="rank">
+                <div class="position">@data.Rank</div>
+                <div class="name">@data.Name</div>
+                <div class="score">@data.Score</div>
+            </div>
+        }
+    </div>
+</li>
+

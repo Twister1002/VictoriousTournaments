@@ -35,83 +35,33 @@
         window.location.replace("/Tournament/Update/" + $(this).closest("#Tournament").data("id"));
     });
 
-    // Reset the brackets
-    $(".tournament-reset").on("click", function () {
-        var jsonData = {
-            "tournyNum": $(this).closest("#Tournament").data("id")
-        };
-
-        if (confirm("Are you sure you want to reset non-finished brackets?")) {
-            $.ajax({
-                "url": "/Tournament/Ajax/Reset",
-                "type": "POST",
-                "data": { "jsonData": JSON.stringify(jsonData) },
-                "dataType": "json",
-                "success": function (json) {
-                    json = JSON.parse(json);
-                    if (json.status) {
-                        window.location.replace(json.redirect);
-                    }
-                    else {
-                        alert(json.message);
-                    }
-                },
-                "error": function (json) {
-                    json = JSON.parse(json);
-
-                    console.log("Error");
-                }
-            });
-        }
-        else {
-            return false;
-        }
-    });
 
     // Finalize Tournament 
     $(".tournamentFinalizeButton").on("click", function () {
+        var roundData = {};
         var jsonData = {
-            "tournyVal": $("#Tournament").data("id")+"",
-            "roundData": new Array()
+            "tournyVal": $("#Tournament").data("id"),
+            "bracketVal": $(".bracket").data("bracketnum"),
         };
 
         $.each($(".header-rounds li"), function (i, e) {
-            //data = {};
-            //data[i+1] = $(e).find(".bestOfMatches").val();
-
-            //jsonData.roundData.push(data);
-
-            jsonData.roundData.push($(e).find(".bestOfMatches").val());
+            roundData[i + 1] = $(e).find(".bestOfMatches").val();
         });
 
-        $.ajax.tr
         $.ajax({
             "url": "/Tournament/Ajax/Finalize",
             "type": "POST",
-            "data": { "jsonData": JSON.stringify(jsonData) },
+            "data": { "jsonData": JSON.stringify(jsonData), "roundData": roundData },
             "dataType": "json",
             "success": function (json) {
                 json = JSON.parse(json);
+                location.replace(json.redirect);
                 console.log(json);
             },
             "error": function (json) {
                 console.log(json);
             }
         });
-    });
-
-    // View tournament standings
-    $(".tournament-standings").on("click", function () {
-        var elem = $("#TournamentStandings");
-
-        if (elem.hasClass("open")) {
-            // Close the side panel
-            elem.removeClass("open");
-        }
-        else {
-            // Open the side panel
-            elem.addClass("open");
-        }
     });
 
     // Update the Date selections

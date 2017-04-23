@@ -7,31 +7,15 @@
         "1": "challenger"
     }
 
-    // Match Administration
-    $(".match-edit-module .matchData .info li").on("click", function () {
-        // Remove the class
-        $(this).siblings().removeClass("selected-winner");
-        $(this).addClass("selected-winner");
-    });
-
-    $(".match-edit-module .module-close .close").on("click", function () {
-        $(".match-edit-module").removeClass("open");
-    });
-
-    // When the tournament is not finalized
-    $(".match .matchHeader .pre-edit").on("click", function () {
-
-    });
-
     // When the tournament is finalized
-    $(".match .matchHeader .edit").on("click", function () {
-        var matchElem = $(this).closest(".match");
+    $(".TournamentMatch .options .edit").on("click", function () {
+        var matchElem = $(this).closest(".TournamentMatch");
 
         var jsonData = {
-            "bracketNum": $(matchElem).closest(".bracket").data("bracketnum"),
+            "matchId": $(matchElem).data("id"),
             "matchNum": $(matchElem).data("matchnum"),
-            "tournamentId": $("#Tournament").data("id"),
-            "matchId": $(matchElem).data("matchid")
+            "bracketNum": $(matchElem).closest(".bracket").data("bracketnum"),
+            "tournamentId": $("#Tournament").data("id")
         };
         
         $.ajax({
@@ -280,16 +264,16 @@
     });
 
     // Set edit icons
-    (function ($) {
-        matches = $(".list-table-body .match ");
-        $.each(matches, function (i, e) {
-            challenger = $(e).find(".challenger");
-            defender = $(e).find(".defender");
+    //(function ($) {
+    //    matches = $(".list-table-body .match ");
+    //    $.each(matches, function (i, e) {
+    //        challenger = $(e).find(".challenger");
+    //        defender = $(e).find(".defender");
 
-            if (challenger.data("userid") > 0 && defender.data("userid") > 0) {
-                // Enable the button
+    //        if (challenger.data("userid") > 0 && defender.data("userid") > 0) {
+    //            // Enable the button
 
-            }
-        });
-    })($);
+    //        }
+    //    });
+    //})($);
 });
