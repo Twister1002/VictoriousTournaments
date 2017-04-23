@@ -308,9 +308,11 @@ namespace WebApplication.Controllers
         [Route("Tournament/Ajax/Finalize")]
         public JsonResult Finalize(String jsonData)
         {
-            dynamic jsonResult = new { status=false, message="Not yet supported", redirect="" };
             Dictionary<String, dynamic> json = JsonConvert.DeserializeObject<Dictionary<String, dynamic>>(jsonData);
-            
+
+            bool status = false;
+            String message = "No action was taken";
+            String redirect = redirect = Url.Action("Tournament", "Tournament", new { guid = json["tournyVal"] });
 
             if (Session["User.UserId"] != null)
             {
@@ -325,29 +327,38 @@ namespace WebApplication.Controllers
 
                     if (result == DbError.SUCCESS)
                     {
-                        Session["Message"] = "Your tournament has been finalized. No changes can be made.";
+                        status = true;
+                        message = "Your tournament has been finalized. No changes can be made.";
+
+                        Session["Message"] = message;
                         Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
                     }
                     else
                     {
-                        Session["Message"] = "An error occurred while trying to create the matches.<br/>" + viewModel.dbException.Message;
+                        message = "An error occurred while trying to create the matches.<br/>" + viewModel.dbException.Message;
+
+                        Session["Message"] = message;
                         Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
                     }
                 }
                 else
                 {
-                    Session["Message"] = "You are not permitted to do that.";
+                    message = "You are not permitted to do that.";
+
+                    Session["Message"] = message;
                     Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
                 }
             }
             else
             {
-                Session["Message"] = "You must login before you can do that.";
+                message = "You must login to do that.";
+                redirect = Url.Action("Login", "Account");
+
+                Session["Message"] = message;
                 Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
-                return RedirectToAction("Login", "Account");
             }
 
-            return Json(JsonConvert.SerializeObject(jsonResult));
+            return Json(JsonConvert.SerializeObject(new { status = status, message = message, redirect = redirect }));
         }
 
         //[HttpPost]
