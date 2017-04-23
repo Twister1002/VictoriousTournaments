@@ -68,6 +68,38 @@
         }
     });
 
+    // Finalize Tournament 
+    $(".tournamentFinalizeButton").on("click", function () {
+        var jsonData = {
+            "tournyVal": $("#Tournament").data("id")+"",
+            "roundData": new Array()
+        };
+
+        $.each($(".header-rounds li"), function (i, e) {
+            //data = {};
+            //data[i+1] = $(e).find(".bestOfMatches").val();
+
+            //jsonData.roundData.push(data);
+
+            jsonData.roundData.push($(e).find(".bestOfMatches").val());
+        });
+
+        $.ajax.tr
+        $.ajax({
+            "url": "/Tournament/Ajax/Finalize",
+            "type": "POST",
+            "data": { "jsonData": JSON.stringify(jsonData) },
+            "dataType": "json",
+            "success": function (json) {
+                json = JSON.parse(json);
+                console.log(json);
+            },
+            "error": function (json) {
+                console.log(json);
+            }
+        });
+    });
+
     // View tournament standings
     $(".tournament-standings").on("click", function () {
         var elem = $("#TournamentStandings");

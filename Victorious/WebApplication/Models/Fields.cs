@@ -98,6 +98,12 @@ namespace WebApplication.Models
         public abstract void SetFields();
     }
 
+    public abstract class BracketFields : ViewModel
+    {
+        [Display(Name = "Best Of ")]
+        public int BestOfMatches { get; set; }
+    }
+
     public abstract class MatchFields : ViewModel {
 
     } 

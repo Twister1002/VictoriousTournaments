@@ -5,10 +5,18 @@
 }
 
 <li class="list-table-header bracket-header">
-    <ul data-columns="@rounds">
+    <ul class="header-rounds" data-columns="@rounds">
         @for (int i = 1; i <= rounds; i++)
         {
-            <li>Round @i</li>
+            <li>
+                Round @i
+                @if (!Model.Bracket.IsFinalized)
+                {
+                    <div>
+                        @Html.DropDownList("bestOfMatches", Enumerable.Range(1, 15).Select(n => new SelectListItem() { Text = n.ToString(), Value = n.ToString() }),  new { @class="bestOfMatches" })
+                    </div>
+                }
+            </li>
         }
     </ul>
 </li>

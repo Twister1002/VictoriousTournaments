@@ -55,13 +55,15 @@
                     }
                 </div>
             </div>
-            @if (!Bracket.IsFinalized && isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
-            {
-                Html.RenderPartial("Administrator/_Finalize");
-            }
             <ul class="list-table bracket-data">
                 @{
                     var bracketViewModel = new WebApplication.Models.BracketViewModel(Bracket);
+                    
+                    if (!Bracket.IsFinalized && isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
+                    {
+                        Html.RenderPartial("Administrator/_Finalize");
+                    }
+
                     Html.RenderPartial("Brackets/Shared/_Header", bracketViewModel);
                     Html.RenderPartial("Brackets/" + bracketName, bracketViewModel);
                 }

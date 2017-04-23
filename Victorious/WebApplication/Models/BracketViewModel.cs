@@ -7,7 +7,7 @@ using Tournament.Structure;
 
 namespace WebApplication.Models
 {
-    public class BracketViewModel : ViewModel
+    public class BracketViewModel : BracketFields
     {
         public IBracket Bracket { get; private set; }
         public BracketModel Model { get; private set; }

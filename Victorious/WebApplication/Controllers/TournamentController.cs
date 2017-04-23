@@ -305,15 +305,22 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("Tournament/Finalize")]
-        public ActionResult Finalize(String tourny)
+        [Route("Tournament/Ajax/Finalize")]
+        public JsonResult Finalize(String jsonData)
         {
+            dynamic jsonResult = new { status=false, message="Not yet supported", redirect="" };
+            Dictionary<String, dynamic> json = JsonConvert.DeserializeObject<Dictionary<String, dynamic>>(jsonData);
+            
+
             if (Session["User.UserId"] != null)
             {
-                int tournyId = this.ConvertToInt(tourny);
-                TournamentViewModel viewModel = new TournamentViewModel(tournyId);
+                // Load the tournament
+                TournamentViewModel viewModel = new TournamentViewModel(ConvertToInt(json["tournyVal"]));
                 if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
+                    // Set the round best of matches
+
+
                     DbError result = viewModel.FinalizeTournament();
 
                     if (result == DbError.SUCCESS)
@@ -340,9 +347,48 @@ namespace WebApplication.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Create the matches
-            return RedirectToAction("Tournament", "Tournament", new { @guid = tourny });
+            return Json(JsonConvert.SerializeObject(jsonResult));
         }
+
+        //[HttpPost]
+        //[Route("Tournament/Finalize")]
+        //public ActionResult Finalize(String tourny)
+        //{
+        //    if (Session["User.UserId"] != null)
+        //    {
+        //        int tournyId = this.ConvertToInt(tourny);
+        //        TournamentViewModel viewModel = new TournamentViewModel(tournyId);
+        //        if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+        //        {
+        //            DbError result = viewModel.FinalizeTournament();
+
+        //            if (result == DbError.SUCCESS)
+        //            {
+        //                Session["Message"] = "Your tournament has been finalized. No changes can be made.";
+        //                Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
+        //            }
+        //            else
+        //            {
+        //                Session["Message"] = "An error occurred while trying to create the matches.<br/>" + viewModel.dbException.Message;
+        //                Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            Session["Message"] = "You are not permitted to do that.";
+        //            Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Session["Message"] = "You must login before you can do that.";
+        //        Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+        //        return RedirectToAction("Login", "Account");
+        //    }
+
+        //    // Create the matches
+        //    return RedirectToAction("Tournament", "Tournament", new { @guid = tourny });
+        //}
 
         [HttpPost]
         [Route("Tournament/Ajax/Delete")]
