@@ -1,19 +1,16 @@
 ﻿@model WebApplication.Models.MatchViewModel
 
-@{
-
-}
-
 <div class="TournamentMatch" data-id="@Model.Model.MatchID" data-matchnum="@Model.Model.MatchNumber">
-    <label>Match @Model.Model.MatchNumber</label>
+    <label class="matchNum">@Model.Model.MatchNumber</label>
     <div class="options">
         @if (Model.Match.IsReady && !Model.Match.IsFinished)
         {
             <span class="icon icon-pencil edit"></span>
         }
+        <span class="icon icon-plus add-game"></span>
     </div>
     <div class="overview">
-        <div class="defender">
+        <div class="defender" data-id="@Model.Defender().Id">
             <div class="name">
                 @Model.Defender().Name
             </div>
@@ -24,7 +21,7 @@
                 <input type="text" name="gameScore" maxlength="3" />
             </div>
         </div>
-        <div class="challenger">
+        <div class="challenger" data-id="@Model.Challenger().Id">
             <div class="name">
                 @Model.Challenger().Name
             </div>
@@ -43,9 +40,20 @@
     }
 
     <div class="games">
-        @foreach (var Game in Model.Match.Games)
+        @foreach (var game in Model.Match.Games)
         {
-            Html.RenderPartial("Brackets/Shared/_Game", new WebApplication.Models.GameViewModel(Game));
+            Html.RenderPartial("Brackets/Shared/_Game", new WebApplication.Models.GameViewModel(game));
         }
+
+        @*@for (int i = 0; i < Model.Match.MaxGames; i++)
+        {
+            var gameModel = new WebApplication.Models.GameViewModel();
+            if (Model.Match.Games.Count > i && Model.Match.Games[i] != null)
+            {
+                gameModel = new WebApplication.Models.GameViewModel(Model.Match.Games[i]);
+            }
+
+            Html.RenderPartial("Brackets/Shared/_Game", gameModel);
+        }*@
     </div>
 </div>

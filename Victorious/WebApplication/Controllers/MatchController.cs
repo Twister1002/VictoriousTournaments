@@ -45,7 +45,8 @@ namespace WebApplication.Controllers
                         score = viewModel.Model.DefenderScore
                     },
                     matchId = viewModel.Model.MatchID,
-                    matchNum = viewModel.Model.MatchNumber
+                    matchNum = viewModel.Model.MatchNumber,
+                    maxGames = viewModel.Model.MaxGames
                 }
                 
             });

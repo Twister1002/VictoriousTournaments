@@ -1,7 +1,7 @@
 ﻿jQuery(document).ready(function () {
 
     // Show the standings
-    $(".bracket-info .options .tournament-standings").on("click", function () {
+    $(".bracket .bracket-info .options .tournament-standings").on("click", function () {
         var elem = $(".TournamentStandings");
 
         if (elem.hasClass("open")) {
@@ -12,6 +12,10 @@
             // Open the side panel
             elem.addClass("open");
         }
+    });
+
+    $(".TournamentStandings .options .close").on("click", function () {
+        $(this).closest(".TournamentStandings").removeClass("open");
     });
 
     // Reset the brackets

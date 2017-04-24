@@ -7,6 +7,26 @@
         "1": "challenger"
     }
 
+    // Mouse Events
+    $(".TournamentMatch .overview .defender, .TournamentMatch .overview .challenger").on("mouseover", function () {
+        //console.log("Entered: " + $(this).data("seed"));
+        var userid = $(this).data("id");
+        if (userid > -1) {
+            $(".TournamentMatch .overview [data-id='" + userid + "']").addClass("teamHover");
+        }
+    });
+    $(".TournamentMatch .overview .defender, .TournamentMatch .overview .challenger").on("mouseleave", function () {
+        //console.log("Left: " + $(this).data("seed"));
+        var userid = $(this).data("id");
+        if (userid > -1) {
+            $(".TournamentMatch .overview [data-id='" + userid + "']").removeClass("teamHover");
+        }
+    });
+
+    $(".match-edit-module .options .close").on("click", function () {
+        $(this).closest(".match-edit-module").removeClass("open");
+    });
+
     // When the tournament is finalized
     $(".TournamentMatch .options .edit").on("click", function () {
         var matchElem = $(this).closest(".TournamentMatch");
@@ -65,9 +85,7 @@
         });
     });
 
-    $(".match-edit-module .options .close").on("click", function () {
-        $(this).closest(".match-edit-module").removeClass("open");
-    });
+    
 
     $(".match-edit-module .match-submit button").on("click", function () {
         var matchData = $(".match-edit-module .module-content .match")
@@ -191,9 +209,9 @@
     });
 
     function SetMatchData(json) {
-        var matchElem = $(".module-content .match");
-        var challenger = $(matchElem).find(".matchData .info .challenger");
-        var defender = $(matchElem).find(".matchData .info .defender");
+        var matchElem = $(".module-content .TournamentMatch");
+        var challenger = $(matchElem).find(".challenger");
+        var defender = $(matchElem).find(".defender");
 
         // Match Data
         matchElem.attr("data-matchid", json.matchId).data("matchid", json.matchId);
@@ -250,33 +268,5 @@
         });
     }
 
-    // Mouse Events
-    $(".matchData .info li").on("mouseover", function () {
-        //console.log("Entered: " + $(this).data("seed"));
-        var userid = $(this).data("userid");
-        if (userid > -1) {
-            $(".matchData .info [data-userid='" + userid + "']").addClass("teamHover");
-        }
-    });
-    $(".matchData .info li").on("mouseleave", function () {
-        //console.log("Left: " + $(this).data("seed"));
-        var userid = $(this).data("userid");
-        if (userid > -1) {
-            $(".matchData .info [data-userid='" + userid + "']").removeClass("teamHover");
-        }
-    });
-
-    // Set edit icons
-    //(function ($) {
-    //    matches = $(".list-table-body .match ");
-    //    $.each(matches, function (i, e) {
-    //        challenger = $(e).find(".challenger");
-    //        defender = $(e).find(".defender");
-
-    //        if (challenger.data("userid") > 0 && defender.data("userid") > 0) {
-    //            // Enable the button
-
-    //        }
-    //    });
-    //})($);
+    
 });

@@ -14,7 +14,8 @@ namespace WebApplication.Models
 
         public GameViewModel()
         {
-
+            Game = new Game();
+            Model = Game.GetModel();
         }
 
         public GameViewModel(GameModel model)

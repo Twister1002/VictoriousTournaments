@@ -8,9 +8,16 @@
 
     .options {
         display: inline-block;
-        /*position: absolute;
-        top: 0em;
-        right: 0em;*/
+        
+        .add-game {
+            display: none;
+        }
+    }
+
+    .matchNum {
+        &:before {
+            content: "Match ";
+        }
     }
 
     .overview {
@@ -24,7 +31,7 @@
             padding: .1em;
             overflow: hidden;
 
-            &:hover {
+            &.teamHover {
                 background-color: @color-primary-0;
             }
 
@@ -54,7 +61,7 @@
     }
 
     .games {
-
+        display: none;
     }
 
     /*&.grandFinal {

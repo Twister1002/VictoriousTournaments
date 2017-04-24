@@ -1,15 +1,28 @@
 ﻿@model WebApplication.Models.BracketViewModel
 
 <li class="TournamentStandings">
-    <div class="standings">
-        @foreach (var data in Model.Bracket.Rankings)
-        {
-            <div class="rank">
-                <div class="position">@data.Rank</div>
-                <div class="name">@data.Name</div>
-                <div class="score">@data.Score</div>
-            </div>
-        }
+    <label>Standings</label>
+    <div class="options">
+        <span class="icon icon-cross close"></span>
     </div>
+    <ul class="list-table standings">
+        <li class="list-table-header">
+            <ul data-columns="3">
+                <li>Rank</li>
+                <li>Name</li>
+                <li>Score</li>
+            </ul>
+        </li>
+        <li class="list-table-body">
+            <ul data-columns="3">
+                @foreach (var data in Model.Bracket.Rankings)
+                {
+                    <li class="position">@data.Rank</li>
+                    <li class="name">@data.Name</li>
+                    <li class="score">@data.Score</li>
+                }
+            </ul>
+        </li>
+    </ul>
 </li>
 
