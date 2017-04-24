@@ -10,7 +10,6 @@
     // When the tournament is finalized
     $(".TournamentMatch .options .edit").on("click", function () {
         var matchElem = $(this).closest(".TournamentMatch");
-
         var jsonData = {
             "matchId": $(matchElem).data("id"),
             "matchNum": $(matchElem).data("matchnum"),
@@ -64,6 +63,10 @@
                 $(".match-edit-module .match .selected-winner").removeClass("selected-winner");
             }
         });
+    });
+
+    $(".match-edit-module .options .close").on("click", function () {
+        $(this).closest(".match-edit-module").removeClass("open");
     });
 
     $(".match-edit-module .match-submit button").on("click", function () {

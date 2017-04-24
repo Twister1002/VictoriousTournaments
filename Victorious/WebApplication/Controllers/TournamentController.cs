@@ -306,10 +306,9 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Tournament/Ajax/Finalize")]
-        public JsonResult Finalize(String jsonData)
+        public JsonResult Finalize(String jsonData, Dictionary<String, int> roundData)
         {
-            Dictionary<String, dynamic> json = JsonConvert.DeserializeObject<Dictionary<String, dynamic>>(jsonData);
-
+            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
             bool status = false;
             String message = "No action was taken";
             String redirect = redirect = Url.Action("Tournament", "Tournament", new { guid = json["tournyVal"] });
@@ -317,13 +316,10 @@ namespace WebApplication.Controllers
             if (Session["User.UserId"] != null)
             {
                 // Load the tournament
-                TournamentViewModel viewModel = new TournamentViewModel(ConvertToInt(json["tournyVal"]));
+                TournamentViewModel viewModel = new TournamentViewModel(json["tournyVal"]);
                 if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
-                    // Set the round best of matches
-
-
-                    DbError result = viewModel.FinalizeTournament();
+                    DbError result = viewModel.FinalizeTournament(roundData);
 
                     if (result == DbError.SUCCESS)
                     {

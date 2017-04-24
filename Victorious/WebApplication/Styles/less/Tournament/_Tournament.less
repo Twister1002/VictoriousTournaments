@@ -18,11 +18,36 @@
     }
 
     .match-edit-module {
+        &.open {
+            display: block;
+        }
+
         display: none;
         position: absolute;
         top: 0em;
         width: 100%;
         background-color: green;
         height: 100%;
+
+        .module-content {
+            padding: 1em;
+
+            .editHeader {
+                h2 {
+                    display:inline-block;
+                }
+                .options {
+                    display:inline-block;
+                }
+            }
+
+            .overview {
+                display: none;
+            }
+
+            .games {
+                display: block;
+            }
+        }
     }
 }

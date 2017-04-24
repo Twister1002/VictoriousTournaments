@@ -2,7 +2,7 @@
 
     // Show the standings
     $(".bracket-info .options .tournament-standings").on("click", function () {
-        var elem = $("#TournamentStandings");
+        var elem = $(".TournamentStandings");
 
         if (elem.hasClass("open")) {
             // Close the side panel

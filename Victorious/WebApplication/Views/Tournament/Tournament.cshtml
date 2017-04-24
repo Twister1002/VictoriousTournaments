@@ -9,6 +9,8 @@
     bool registrationEnded = (DateTime)Model.RegistrationEndDate <= DateTime.Now;
     bool isLoggedIn = Session["User.UserId"] != null;
     var userPermission = isLoggedIn ? Model.UserPermission((int)Session["User.UserId"]) : DataLib.Permission.NONE;
+
+    ViewBag.Permission = userPermission;
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
@@ -70,10 +72,14 @@
                 }
 
                 <li class="match-edit-module">
-                    <div class="module-background"></div>
-                    <div class="module-close"><span class="icon icon-cross close clickable"></span></div>
                     <div class="module-content">
-                        <h2>Winner Selection</h2>
+                        <div class="editHeader">
+                            <h2>Winner Selection</h2>
+                            <div class="options">
+                                <span class="icon icon-cross close"></span>
+                            </div>
+                        </div>
+                        
                         @{ 
                             Html.RenderPartial("Brackets/Shared/_Match", new WebApplication.Models.MatchViewModel(), new ViewDataDictionary(ViewData)); 
                         }
