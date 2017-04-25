@@ -123,15 +123,10 @@ namespace Tournament.Structure
 				UpdateRankings();
 				if (Matches[NumberOfMatches].IsFinished)
 				{
+					// Add Finals winner to Rankings:
 					IPlayer winningPlayer = Matches[NumberOfMatches]
 						.Players[(int)Matches[NumberOfMatches].WinnerSlot];
 					Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, -1, 1));
-					IPlayer losingPlayer = Matches[NumberOfMatches].Players[
-						(PlayerSlot.Defender == Matches[NumberOfMatches].WinnerSlot)
-						? (int)PlayerSlot.Challenger
-						: (int)PlayerSlot.Defender];
-					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, 2));
-
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 					this.IsFinished = true;
 				}
