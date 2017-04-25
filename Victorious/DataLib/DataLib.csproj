@@ -107,6 +107,7 @@
     <Compile Include="TeamModel.cs" />
     <Compile Include="TournamentModel.cs" />
     <Compile Include="TournamentRuleModel.cs" />
+    <Compile Include="TournamentUserModel.cs" />
     <Compile Include="UserBracketSeedModel.cs" />
     <Compile Include="UserModel.cs" />
     <Compile Include="DatabaseInterface.cs" />

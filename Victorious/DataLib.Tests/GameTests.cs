@@ -13,6 +13,7 @@ namespace DataLib.Tests
         [TestInitialize]
         public void TestSetup()
         {
+            db = new DatabaseInterface();
             bracket = db.GetBracketByID(1);
             match = new MatchModel();
             match = db.GetMatchById(1);
@@ -22,7 +23,8 @@ namespace DataLib.Tests
 
         [TestMethod]
         public void Add_NumGames_To_Match()
-        {          
+        {        
+              
             db = new DatabaseInterface();
 
             var result = 0;
