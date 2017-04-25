@@ -68,36 +68,151 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("Match/Ajax/Update/old")]
+        [Route("Match/Ajax/Update")]
         public JsonResult MatchUpdate(String jsonIds, List<GameViewModel> games)
         {
             bool status = false;
             String message = "No action taken";
             object data = new { };
 
-            if (Session["User.UserId"] != null)
+            //if (Session["User.UserId"] != null)
+            if (true)
             {
                 Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonIds);
                 TournamentViewModel tournamentModel = new TournamentViewModel(json["tournamentId"]);
 
-                if (tournamentModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+                //if (tournamentModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+                if (true)
                 {
                     tournamentModel.ProcessTournament();
                     IBracket bracket = tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]);
                     IMatch match = bracket.GetMatch(json["matchNum"]);
+                    BracketViewModel bracketModel = new BracketViewModel(bracket);
+                    MatchViewModel matchModel = new MatchViewModel(match);
 
                     // Verify these matches exists
                     foreach (GameViewModel gameModel in games)
                     {
-                        if (match.Games.ElementAt(gameModel.Game.GameNumber) == null)
+                        if (!match.Games.Contains(gameModel.Game))
                         {
                             // We need to add this game.
-                            match.AddGame(gameModel.Game.Score[(int)PlayerSlot.Defender], gameModel.Game.Score[(int)PlayerSlot.Challenger]);
+                            PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
+                            GameModel addedGameModel = bracket.AddGame(match.MatchNumber, gameModel.DefenderScore, gameModel.ChallengerScore, winner);
+
+                            // Update the games in the database
+                            DbError gameUpdate = db.AddGame(matchModel.Model, addedGameModel);
+                            if (gameUpdate != DbError.SUCCESS)
+                            {
+                                message = "Failed to update a game.";
+                                return Json(JsonConvert.SerializeObject(new
+                                {
+                                    status = status,
+                                    message = message
+                                }));
+                            }
                         }
                     }
 
+                    // Load the next models
+                    MatchViewModel winnerMatchModel = matchModel.Match.NextMatchNumber != -1 ? new MatchViewModel(bracket.GetMatch(matchModel.Match.NextMatchNumber)) : null;
+                    MatchViewModel loserMatchModel = matchModel.Match.NextLoserMatchNumber != -1 ? new MatchViewModel(bracket.GetMatch(matchModel.Match.NextLoserMatchNumber)) : null;
+
+                    // Update the bracket in the database
+                    DbError bracketUpdate = db.UpdateBracket(bracketModel.Model);
+
+                    // Update the matches in the database
+                    object currentMatchData = new { };
+                    object winnerMatchData = new { };
+                    object loserMatchData = new { };
+                    DbError currentMatchUpdate = db.UpdateMatch(matchModel.Model);
+                    DbError winnerMatchUpdate = winnerMatchModel != null ? db.UpdateMatch(winnerMatchModel.Model) : DbError.NONE;
+                    DbError loserMatchUpdate = loserMatchModel != null ? db.UpdateMatch(loserMatchModel.Model) : DbError.NONE;
+
+                    if (currentMatchUpdate == DbError.SUCCESS)
+                    {
+                        status = true;
+                        message = "Current match was updated";
+
+                        currentMatchData = new
+                        {
+                            matchId = matchModel.Match.Id,
+                            defender = new
+                            {
+                                score = matchModel.Match.Score[(int)PlayerSlot.Defender]
+                            },
+                            challenger = new
+                            {
+                                score = matchModel.Match.Score[(int)PlayerSlot.Challenger]
+                            }
+                        };
+                    }
+                    if (winnerMatchUpdate == DbError.SUCCESS)
+                    {
+                        IPlayer defender = winnerMatchModel.Match.Players[(int)PlayerSlot.Defender] == null ?
+                            new User() { Name = "Winner from " + winnerMatchModel.Model.PrevDefenderMatchNumber } :
+                            winnerMatchModel.Match.Players[(int)PlayerSlot.Defender];
+
+                        IPlayer challenger = winnerMatchModel.Match.Players[(int)PlayerSlot.Challenger] == null ?
+                            new User() { Name = "Winner from " + winnerMatchModel.Model.PrevChallengerMatchNumber } :
+                            winnerMatchModel.Match.Players[(int)PlayerSlot.Challenger];
+
+                        winnerMatchData = new
+                        {
+                            matchId = winnerMatchModel.Match.Id,
+                            defender = new
+                            {
+                                id = defender.Id,
+                                name = defender.Name,
+                                score = winnerMatchModel.Match.Score[(int)PlayerSlot.Defender]
+                            },
+                            challenger = new
+                            {
+                                id = challenger.Id,
+                                name = challenger.Name,
+                                score = winnerMatchModel.Match.Score[(int)PlayerSlot.Challenger]
+                            }
+                        };
+                    }
+                    if (loserMatchUpdate == DbError.SUCCESS)
+                    {
+                        IPlayer defender = loserMatchModel.Match.Players[(int)PlayerSlot.Defender] == null ?
+                            new User() { Name = "Winner from " + loserMatchModel.Model.PrevDefenderMatchNumber } :
+                            loserMatchModel.Match.Players[(int)PlayerSlot.Defender];
+
+                        IPlayer challenger = loserMatchModel.Match.Players[(int)PlayerSlot.Challenger] == null ?
+                            new User() { Name = "Winner from " + loserMatchModel.Model.PrevChallengerMatchNumber } :
+                            loserMatchModel.Match.Players[(int)PlayerSlot.Challenger];
+
+                        loserMatchData = new
+                        {
+                            matchId = loserMatchModel.Match.Id,
+                            defender = new
+                            {
+                                id = defender.Id,
+                                name = defender.Name,
+                                score = loserMatchModel.Match.Score[(int)PlayerSlot.Defender]
+                            },
+                            challenger = new
+                            {
+                                id = defender.Id,
+                                name = defender.Name,
+                                score = loserMatchModel.Match.Score[(int)PlayerSlot.Challenger]
+                            }
+                        };
+                    }
+
                     // Prepare data
-                    
+                    data = new
+                    {
+                        status = status,
+                        message = message,
+                        data = new
+                        {
+                            currentMatch = currentMatchData,
+                            winnerMatch = winnerMatchData,
+                            loserMatch = loserMatchData
+                        }
+                    };
                 }
                 else
                 {
@@ -109,7 +224,12 @@ namespace WebApplication.Controllers
                 message = "You must login to do this action."; 
             }
 
-            return Json("No action is taken");
+            return Json(JsonConvert.SerializeObject(new
+            {
+                status = status,
+                message = message,
+                data = data
+            }));
         }
 
         [HttpPost]

@@ -62,6 +62,8 @@
                 json = JSON.parse(json);
 
                 if (json.status) {
+                    // Add the plus button
+
                     $.each(json.data.matchData, function (i, e) {
                         AddGameToDetails(e, matchElem.find(".TournamentGames .list-table-body"));
                     });
@@ -105,7 +107,7 @@
         $.ajax({
             "url": "/Match/Ajax/Update",
             "type": "POST",
-            "data": { "jsonIds": jsonData, "games": gameData },
+            "data": { "jsonIds": JSON.stringify(jsonData), "games": gameData },
             "dataType": "json",
             "beforeSend": function () {
 

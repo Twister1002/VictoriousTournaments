@@ -20,6 +20,7 @@ namespace WebApplication.Models
         public BracketViewModel(IBracket bracket)
         {
             Bracket = bracket;
+            Model = null;
         }
 
         public int TotalRounds()

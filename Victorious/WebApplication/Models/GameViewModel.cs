@@ -9,7 +9,7 @@ namespace WebApplication.Models
 {
     public class GameViewModel : GameFields
     {
-        private GameModel Model;
+        public GameModel Model { get; private set; }
         public IGame Game { get; private set; }
 
         public GameViewModel()
