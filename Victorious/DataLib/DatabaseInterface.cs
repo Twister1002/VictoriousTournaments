@@ -543,7 +543,7 @@ namespace DataLib
                     query = "SELECT TournamentID FROM Tournaments WHERE Title = @Title";
                 }
                 if (searchParams.ContainsKey("StartDate"))
-                {                  
+                {
                     sqlparams.Add(new SqlParameter("@StartDate", DateTime.Parse(searchParams["TournamentStartDate"])));
                     if (searchParams.ContainsKey("Title"))
                         query += "UNION SELECT TournamentID FROM TournamentRules WHERE TournamentStartDate = @StartDate";
@@ -827,7 +827,7 @@ namespace DataLib
 
         #endregion
 
-        #region Match
+        #region Matches
 
         public DbError MatchExists(MatchModel match)
         {
@@ -1191,13 +1191,13 @@ namespace DataLib
         }
 
 
-        [Obsolete ("Use GetUserTournamentPermission or GetUserSitePermission")]
+        [Obsolete("Use GetUserTournamentPermission or GetUserSitePermission")]
         public Permission GetUserPermission(UserModel user, TournamentModel tournament) // Rename and seperate all get permission calls/functions
         {
             Permission permission = new Permission();
             try
             {
-               
+
                 //permission = context.UsersInTournaments.Include(x => x.Tournament).Include(x => x.User).Single().Permission;
                 //permission = context.UsersInTournaments.Where(x => x.UserID == user.UserID && x.TournamentID == tournament.TournamentID).First().Permission;
             }
@@ -1393,7 +1393,6 @@ namespace DataLib
         }
 
         #endregion
-
 
 
         private void WriteException(Exception ex, [CallerMemberName] string funcName = null)
