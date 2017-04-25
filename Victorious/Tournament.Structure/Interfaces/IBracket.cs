@@ -85,6 +85,17 @@ namespace Tournament.Structure
 		GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
 
 		/// <summary>
+		/// Replaces a Game with new data.
+		/// </summary>
+		/// <param name="_matchNumber">Match to contain this Game</param>
+		/// <param name="_gameNumber">Game Number to replace</param>
+		/// <param name="_defenderScore">Score for Defender-slot Player</param>
+		/// <param name="_challengerScore">Score for Challenger-slot Player</param>
+		/// <param name="_winnerSlot">Slot of winner (Defender/Challenger)</param>
+		/// <returns>Model of the new Game</returns>
+		GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
+
+		/// <summary>
 		/// Delete/un-record a Match's most recent Game.
 		/// </summary>
 		/// <param name="_matchNumber">Number of Match to modify</param>

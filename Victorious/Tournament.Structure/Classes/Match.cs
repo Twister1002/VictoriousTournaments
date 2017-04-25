@@ -43,7 +43,7 @@ namespace Tournament.Structure
 		{ get; private set; }
 		#endregion
 
-#region Ctors
+		#region Ctors
 		public Match()
 		{
 			Id = 0;
@@ -176,9 +176,9 @@ namespace Tournament.Structure
 				(null == _m.PrevChallengerMatchNumber)
 				? -1 : (int)(_m.PrevChallengerMatchNumber);
 		}
-#endregion
+		#endregion
 
-#region Public Methods
+		#region Public Methods
 		public MatchModel GetModel()
 		{
 			MatchModel model = new MatchModel();
@@ -413,19 +413,56 @@ namespace Tournament.Structure
 			Games.Add(game);
 			return game.GetModel();
 		}
-		public IGame RemoveLastGame()
+		public GameModel UpdateGame(int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			if (0 == Games.Count)
+			if (_gameNumber < 1)
 			{
-				throw new GameNotFoundException
-					("No Games to remove!");
+				throw new InvalidIndexException
+					("Game Number must be positive!");
+			}
+			if (PlayerSlot.unspecified == _winnerSlot)
+			{
+				throw new NotImplementedException
+					("No ties allowed / enter a winner slot!");
+			}
+			if (_defenderScore < 0 || _challengerScore < 0)
+			{
+				throw new ScoreException
+					("Score cannot be negative!");
 			}
 
-			IGame lastGame = Games[Games.Count - 1];
-			SubtractWin(Games[Games.Count - 1].WinnerSlot);
-			Games.RemoveAt(Games.Count - 1);
+			for (int g = 0; g < Games.Count; ++g)
+			{
+				if (Games[g].GameNumber == _gameNumber)
+				{
+					RemoveGame(g);
 
-			return lastGame;
+					IGame game = new Game(this.Id, _gameNumber);
+					for (int i = 0; i < 2; ++i)
+					{
+						game.PlayerIDs[i] = this.Players[i].Id;
+					}
+					game.Score[(int)PlayerSlot.Defender] = _defenderScore;
+					game.Score[(int)PlayerSlot.Challenger] = _challengerScore;
+					game.WinnerSlot = _winnerSlot;
+
+					if (PlayerSlot.Defender == _winnerSlot ||
+						PlayerSlot.Challenger == _winnerSlot)
+					{
+						AddWin(game.WinnerSlot);
+					}
+					Games.Add(game);
+					Games.Sort((first, second) => first.GameNumber.CompareTo(second.GameNumber));
+					return (game.GetModel());
+				}
+			}
+
+			throw new GameNotFoundException
+				("Game not found; Game Number may be invalid!");
+		}
+		public IGame RemoveLastGame()
+		{
+			return (RemoveGame(Games.Count - 1));
 		}
 		public void ResetScore()
 		{
@@ -591,6 +628,25 @@ namespace Tournament.Structure
 			AddWin(_game.WinnerSlot);
 			Games.Add(_game);
 		}
+		private IGame RemoveGame(int _index)
+		{
+			if (0 == Games.Count)
+			{
+				throw new GameNotFoundException
+					("No Games to remove!");
+			}
+			if (_index < 0 || _index >= Games.Count)
+			{
+				throw new InvalidIndexException
+					("Game index is out of range!");
+			}
+
+			IGame removedGame = Games[_index];
+			SubtractWin(Games[_index].WinnerSlot);
+			Games.RemoveAt(_index);
+
+			return removedGame;
+		}
 		private void AddWin(PlayerSlot _slot)
 		{
 			if (_slot != PlayerSlot.Defender &&
@@ -672,6 +728,6 @@ namespace Tournament.Structure
 					break;
 			}
 		}
-#endregion
+		#endregion
 	}
 }

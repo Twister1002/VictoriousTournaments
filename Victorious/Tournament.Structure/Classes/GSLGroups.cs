@@ -56,15 +56,34 @@ namespace Tournament.Structure
 				--NumberOfMatches;
 			}
 
+#if false
 			public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+			{
+				GameModel gameModel = null;
+				if (GetMatch(_matchNumber).NextMatchNumber <= NumberOfMatches)
+				{
+					gameModel = base.AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
+				}
+				else
+				{
+					gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
+					AddWinEffects(_matchNumber, _winnerSlot);
+				}
+				return gameModel;
+			}
+#endif
+			#endregion
+
+			#region Private Methods
+			protected override void AddWinEffects(int _matchNumber, PlayerSlot _slot)
 			{
 				if (GetMatch(_matchNumber).NextMatchNumber <= NumberOfMatches)
 				{
-					// Case 1: Not a final/endpoint match.
-					return base.AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
+					// Case 1: Not a final/endpoint match. Treat like a DEB:
+					base.AddWinEffects(_matchNumber, _slot);
+					return;
 				}
 
-				GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
 				int nextWinnerNumber;
 				int nextLoserNumber;
 				IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
@@ -111,12 +130,8 @@ namespace Tournament.Structure
 
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
-
-				return gameModel;
 			}
-			#endregion
 
-			#region Private Methods
 			protected override void RemovePlayerFromFutureMatches(int _matchNumber, ref IPlayer _player)
 			{
 				if (_matchNumber > NumberOfMatches)
