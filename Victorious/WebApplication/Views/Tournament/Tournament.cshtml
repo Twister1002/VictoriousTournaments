@@ -71,7 +71,7 @@
                     Html.RenderPartial("Brackets/Shared/_Standings", bracketViewModel);
                 }
 
-                <li class="match-edit-module">
+                @*<li class="match-edit-module">
                     <div class="module-content">
                         <div class="editHeader">
                             <h2>Match Details</h2>
@@ -79,15 +79,14 @@
                                 <span class="icon icon-cross close"></span>
                             </div>
                         </div>
-                        
                         @{ 
                             Html.RenderPartial("Brackets/Shared/_Match", new WebApplication.Models.MatchViewModel(), new ViewDataDictionary(ViewData)); 
                         }
                         <div class="match-submit">
-                            <button type="button">Save Games</button>
+                            <button type="button">Update Games</button>
                         </div>
                     </div>
-                </li>
+                </li>*@
             </ul>
         </div>
     }

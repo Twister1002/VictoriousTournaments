@@ -1,26 +1,11 @@
 ﻿@model WebApplication.Models.GameViewModel
 
-<div class="game" data-gameid="@Model.Game.Id" data-gamenumber="@Model.Game.GameNumber">
-        <div class="defender">
-            <div class="name">
-                Defender Name
-            </div>
-            <div class="score">
-                Defender Score
-            </div>
-            <div class="score-edit">
-                <input type="text" name="gameScore" maxlength="3" />
-            </div>
-        </div>
-        <div class="challenger">
-            <div class="name">
-                Challenger
-            </div>
-            <div class="score">
-                Challenger Score
-            </div>
-            <div class="score-edit">
-                <input type="text" name="gameScore" maxlength="3" />
-            </div>
-        </div>
-</div>
+<li class="game-number">
+    Game @Model.Game.GameNumber
+</li>
+<li class="score">
+    <input type="text" name="defender-score" maxlength="3" value="-1" />
+</li>
+<li class="score">
+    <input type="text" name="challenger-score" maxlength="3" value="-1" />
+</li>

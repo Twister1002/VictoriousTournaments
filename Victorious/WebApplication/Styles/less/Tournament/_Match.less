@@ -1,18 +1,6 @@
 ﻿.TournamentMatch {
     position: relative;
-    padding: 0em 0em;
-
-    label {
-        display:inline-block;
-    }
-
-    .options {
-        display: inline-block;
-        
-        .add-game {
-            display: none;
-        }
-    }
+    padding: .5em .2em;
 
     .matchNum {
         &:before {
@@ -43,7 +31,6 @@
                 line-height: 1.5em;
                 text-align: right;
                 padding: 0em .25em;
-                /*background-color: red;*/
                 border-left: 1px solid @white;
             }
             .score-edit {
@@ -58,10 +45,6 @@
 
     .details {
         text-align:center;
-    }
-
-    .games {
-        display: none;
     }
 
     /*&.grandFinal {

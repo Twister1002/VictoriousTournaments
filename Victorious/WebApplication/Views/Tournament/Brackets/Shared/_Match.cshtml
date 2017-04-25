@@ -2,13 +2,7 @@
 
 <div class="TournamentMatch" data-id="@Model.Model.MatchID" data-matchnum="@Model.Model.MatchNumber">
     <label class="matchNum">@Model.Model.MatchNumber</label>
-    <div class="options">
-        @if (Model.Match.IsReady && !Model.Match.IsFinished)
-        {
-            <span class="icon icon-pencil edit"></span>
-        }
-        <span class="icon icon-plus add-game"></span>
-    </div>
+
     <div class="overview">
         <div class="defender" data-id="@Model.Defender().Id">
             <div class="name">
@@ -39,21 +33,24 @@
         <div class="details clickable clickable-underline">Details</div>
     }
 
-    <div class="games">
-        @foreach (var game in Model.Match.Games)
-        {
-            Html.RenderPartial("Brackets/Shared/_Game", new WebApplication.Models.GameViewModel(game));
-        }
-
-        @*@for (int i = 0; i < Model.Match.MaxGames; i++)
-        {
-            var gameModel = new WebApplication.Models.GameViewModel();
-            if (Model.Match.Games.Count > i && Model.Match.Games[i] != null)
-            {
-                gameModel = new WebApplication.Models.GameViewModel(Model.Match.Games[i]);
-            }
-
-            Html.RenderPartial("Brackets/Shared/_Game", gameModel);
-        }*@
+    <div class="TournamentGames">
+        <h2>Match @Model.Match.MatchNumber Details</h2>
+        <div class="options">
+            <span class="icon icon-cross close"></span>
+            <span class="icon icon-plus add-game"></span>
+        </div>
+        <ul class="list-table">
+            <li class="list-table-header">
+                <ul data-columns="3">
+                    <li> </li>
+                    <li class="defender-name name">@Model.Defender().Name</li>
+                    <li class="challenger-name name">@Model.Challenger().Name</li>
+                </ul>
+            </li>
+            <li class="list-table-body games" data-max="@Model.Match.MaxGames">
+                
+            </li>
+        </ul>
+        <button type="button" class="update-games">Update Games</button>
     </div>
 </div>

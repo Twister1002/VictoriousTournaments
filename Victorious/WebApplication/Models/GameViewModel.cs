@@ -7,7 +7,7 @@ using Tournament.Structure;
 
 namespace WebApplication.Models
 {
-    public class GameViewModel
+    public class GameViewModel : GameFields
     {
         private GameModel Model;
         public IGame Game { get; private set; }

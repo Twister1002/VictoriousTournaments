@@ -1,3 +1,46 @@
-﻿.TournamentGame {
+﻿.TournamentGames {
+    position: absolute;
+    background-color: red;
+    z-index: 1;
+    min-width: 13em;
+    padding: .5em .1em;
+    width: 100%;
+    display: none;
 
+    &.open {
+        display: block;
+    }
+
+    h2 {
+        display: inline-block;
+    }
+
+    .options {
+        display: inline-block;
+        
+        .add-game {
+            &.hide {
+                display: none;
+            }
+        }
+    }
+
+    .name {
+        text-align: center;
+    }
+
+    .score {
+        text-align: center;
+
+        input {
+            width: 2.5em;
+        }
+
+        &.no-edit {
+            input {
+                background-color: inherit;
+                border: none;
+            }
+        }
+    }
 }

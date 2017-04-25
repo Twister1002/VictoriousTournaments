@@ -28,25 +28,38 @@ namespace WebApplication.Controllers
             Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
             MatchViewModel viewModel = new MatchViewModel(json["matchId"]);
 
+            Dictionary<int, object> matchData = new Dictionary<int, object>();
+            foreach (IGame game in viewModel.Match.Games)
+            {
+                matchData.Add(game.GameNumber,
+                    new {
+                        gameNum = game.GameNumber,
+                        scores = game.Score,
+                    }
+                );
+            }
+
             String jsonResult = JsonConvert.SerializeObject(new {
                 status = true,
                 data = new 
                 {
-                    challenger = new
-                    {
-                        name = viewModel.Model.Challenger.Username,
-                        id = viewModel.Model.Challenger.UserID,
-                        score = viewModel.Model.ChallengerScore
-                    },
-                    defender = new
-                    {
-                        name = viewModel.Model.Defender.Username,
-                        id = viewModel.Model.Defender.UserID,
-                        score = viewModel.Model.DefenderScore
-                    },
-                    matchId = viewModel.Model.MatchID,
-                    matchNum = viewModel.Model.MatchNumber,
-                    maxGames = viewModel.Model.MaxGames
+                    //challenger = new
+                    //{
+                    //    name = viewModel.Model.Challenger.Username,
+                    //    id = viewModel.Model.Challenger.UserID,
+                    //    score = viewModel.Model.ChallengerScore
+                    //},
+                    //defender = new
+                    //{
+                    //    name = viewModel.Model.Defender.Username,
+                    //    id = viewModel.Model.Defender.UserID,
+                    //    score = viewModel.Model.DefenderScore
+                    //},
+                    matchData = matchData,
+                    matchId = viewModel.Match.Id,
+                    matchNum = viewModel.Match.MatchNumber,
+                    maxGames = viewModel.Match.MaxGames,
+                    isFinished = viewModel.Match.IsFinished
                 }
                 
             });
@@ -55,11 +68,56 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("Match/Ajax/Update")]
-        public JsonResult MatchUpdate(String jsonData)
+        [Route("Match/Ajax/Update/old")]
+        public JsonResult MatchUpdate(String jsonIds, List<GameViewModel> games)
+        {
+            bool status = false;
+            String message = "No action taken";
+            object data = new { };
+
+            if (Session["User.UserId"] != null)
+            {
+                Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonIds);
+                TournamentViewModel tournamentModel = new TournamentViewModel(json["tournamentId"]);
+
+                if (tournamentModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+                {
+                    tournamentModel.ProcessTournament();
+                    IBracket bracket = tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]);
+                    IMatch match = bracket.GetMatch(json["matchNum"]);
+
+                    // Verify these matches exists
+                    foreach (GameViewModel gameModel in games)
+                    {
+                        if (match.Games.ElementAt(gameModel.Game.GameNumber) == null)
+                        {
+                            // We need to add this game.
+                            match.AddGame(gameModel.Game.Score[(int)PlayerSlot.Defender], gameModel.Game.Score[(int)PlayerSlot.Challenger]);
+                        }
+                    }
+
+                    // Prepare data
+                    
+                }
+                else
+                {
+                    message = "You are not authorized to do this.";
+                }
+            }
+            else
+            {
+                message = "You must login to do this action."; 
+            }
+
+            return Json("No action is taken");
+        }
+
+        [HttpPost]
+        [Route("Match/Ajax/Update/old")]
+        public JsonResult MatchUpdate(string jsonData)
         {
             dynamic jsonResult = new { };
-            Dictionary<string, string> json = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
+            Dictionary<string, string> json = JsonConvert.DeserializeObject<Dictionary<String, string>>(jsonData);
 
             if (Session["User.UserId"] != null)
             {

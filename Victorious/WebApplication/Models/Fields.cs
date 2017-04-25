@@ -108,6 +108,12 @@ namespace WebApplication.Models
 
     } 
 
+    public abstract class GameFields : ViewModel
+    {
+        public int ChallengerScore { get; set; }
+        public int DefenderScore { get; set; }
+    }
+
     public abstract class AdministratorFields : ViewModel
     {
         [Display(Name ="Game")]

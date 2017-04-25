@@ -7,7 +7,7 @@
 <div id="TournamentSearch">
     <h2>Find A Tournament</h2>
     <ul class="list-table">
-        <li>
+        <li class="list-table-header">
             <ul class="options form" data-columns="3">
                 <li>@Html.TextBoxFor(x => x.Title, Model.titleSearch, new { @class="field", placeholder="Search By Title"})</li>
                 <li>@Html.DropDownListFor(x => x.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---")</li>
