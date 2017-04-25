@@ -201,8 +201,8 @@ namespace Tournament.Structure
 			if (_numberOfGroups * 4 != _players.Count &&
 				_numberOfGroups * 8 != _players.Count)
 			{
-				throw new ArgumentOutOfRangeException
-					("_numberOfGroups", "Must have 4 or 8 players per group!");
+				throw new BracketException
+					("Must have 4 or 8 players per group!");
 			}
 
 			Players = new List<IPlayer>();
@@ -290,6 +290,14 @@ namespace Tournament.Structure
 				}
 
 				Groups.Add(new GSLBracket(pList, _gamesPerMatch));
+			}
+
+			foreach (IBracket group in Groups)
+			{
+				NumberOfMatches += group.NumberOfMatches;
+				NumberOfRounds = (NumberOfRounds < group.NumberOfRounds)
+					? group.NumberOfRounds
+					: this.NumberOfRounds;
 			}
 		}
 

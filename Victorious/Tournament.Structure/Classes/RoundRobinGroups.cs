@@ -225,7 +225,7 @@ namespace Tournament.Structure
 				NumberOfMatches += group.NumberOfMatches;
 				NumberOfRounds = (NumberOfRounds < group.NumberOfRounds)
 					? group.NumberOfRounds
-					: NumberOfRounds;
+					: this.NumberOfRounds;
 				Rankings.AddRange(group.Rankings);
 			}
 		}
