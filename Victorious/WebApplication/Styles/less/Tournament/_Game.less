@@ -1,8 +1,9 @@
 ﻿.TournamentGames {
     position: absolute;
-    background-color: red;
+    opacity: .95;
+    background-color: black;
     z-index: 1;
-    min-width: 13em;
+    min-width: 14em;
     padding: .5em .1em;
     width: 100%;
     display: none;
@@ -41,6 +42,12 @@
                 background-color: inherit;
                 border: none;
             }
+        }
+    }
+
+    .update-games {
+        &.hide {
+            display: none;
         }
     }
 }

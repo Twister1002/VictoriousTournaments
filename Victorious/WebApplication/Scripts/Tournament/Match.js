@@ -4,7 +4,10 @@
     var PlayerSlot = {
         "-1": "unspecified",
         "0": "defender",
-        "1": "challenger"
+        "1": "challenger",
+        "unspecified": -1,
+        "defender": 0,
+        "challenger": 1,
     }
 
     // Mouse Events
@@ -30,14 +33,16 @@
     // Add games to the match
     $(".TournamentGames .options .add-game").on("click", function () {
         // Add a new line to the game data
-        var gameList = $(this).closest(".TournamentGames").find(".list-table-body");
+        var gameList = $(this).closest(".TournamentGames");
         var maxGames = gameList.data("max");
-        var gamesListed = gameList.find("ul").length;
+        var gamesListed = gameList.find(".list-table-body ul").length;
 
         jsonData = {
             "gameNum": gamesListed + 1,
-            "defenderScore": "",
-            "challengerScore": ""
+            "scores": {
+                0: "",
+                1: "",
+            }
         }
 
         AddGameToDetails(jsonData, gameList);
@@ -62,11 +67,20 @@
                 json = JSON.parse(json);
 
                 if (json.status) {
-                    // Add the plus button
+                    // Remove all games
+                    matchElem.find(".TournamentGames .list-table-body").empty();
 
+                    // Add the currently fetched games
                     $.each(json.data.matchData, function (i, e) {
-                        AddGameToDetails(e, matchElem.find(".TournamentGames .list-table-body"));
+                        AddGameToDetails(e, matchElem.find(".TournamentGames"));
                     });
+
+                    if (CanAddGames(matchElem.find(".TournamentGames")) && !json.data.finished) {
+                        matchElem.find(".options .add-game").removeClass("hide");
+                    }
+                    else {
+                        matchElem.find(".options .add-game").addClass("hide");
+                    }
                 }
                 else {
                     alert(json.message);
@@ -110,10 +124,32 @@
             "data": { "jsonIds": JSON.stringify(jsonData), "games": gameData },
             "dataType": "json",
             "beforeSend": function () {
-
+                
             },
             "success": function (json) {
                 json = JSON.parse(json);
+
+                if (json.status) {
+                    console.log(json.message);
+
+                    if (json.data.currentMatch) {
+                        match = $(".TournamentMatch[data-id='" + json.data.currentMatch.matchId + "']");
+                        MatchUpdate(json.data.currentMatch, match);
+                    }
+                    if (json.data.winnerMatch) {
+                        match = $(".TournamentMatch[data-id='" + json.data.winnerMatch.matchId + "']");
+                        MatchUpdate(json.data.winnerMatch, match);
+                    }
+                    if (json.data.loserMatch) {
+                        match = $(".TournamentMatch[data-id='" + json.data.loserMatch.matchId + "']");
+                        MatchUpdate(json.data.loserMatch, match);
+                    }
+
+                    UpdateStandings(jsonData.tournamentId, jsonData.bracketNum);
+                }
+                else {
+                    console.log("Error in updating");
+                }
 
                 console.log(json);
             },
@@ -126,153 +162,80 @@
         });
     });
 
-    // Helper method to add games to details
-    function AddGameToDetails(data, element) {
-        html = "<ul data-columns='3'>";
-        html += "<li class='game-number'>Game " + data.gameNum + "</li>";
-        html += "<li class='score'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defenderScore + "' /></li>";
-        html += "<li class='score'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challengerScore + "' /></li>";
-        html += "</ul>";
+    function MatchUpdate(json, $match) {
+        overview = $match.find(".overview");
+        games = $match.find(".TournamentGames");
 
-        if (element.find("ul").length >= element.data("max")) {
-            // Remove the add button
-            element.closest(".TournamentGames").find(".options .add-game").addClass("hide");
+        // Update the Match data
+        overview.find(".defender .name").text(json.defender.name);
+        overview.find(".defender .score").text(json.defender.score);
+        overview.find(".challenger .name").text(json.challenger.name);
+        overview.find(".challenger .score").text(json.challenger.score);
+
+        // Update the Game data 
+        games.find(".defender-name").text(json.defender.name);
+        games.find(".challenger-name").text(json.challenger.name);
+
+        // Verify if the match is ready
+        if (json.ready) {
+            // Show the details button
+            $match.find(".details").removeClass("hide");
         }
         else {
-            element.append(html);
-            if (element.find("ul").length >= element.data("max")) {
-                element.closest(".TournamentGames").find(".options .add-game").addClass("hide");
-            }
+            $match.find(".details").addClass("hide");
+        }
+
+        // Verify if the users can add more games
+        if (CanAddGames(games)) {
+            games.find(".options .add-game").removeClass("hide");
+        }
+        else {
+            games.find(".options .add-game").addClass("hide");
+        }
+
+        // Verify the match is finished
+        if (json.finished) {
+            games.find(".update-games").addClass("hide");
+        }
+        else {
+            games.find(".update-games").removeClass("hide");
         }
     }
 
+    // Helper method to add games to details
+    function AddGameToDetails(data, $games) {
+        html = "<ul data-columns='3'>";
+        html += "<li class='game-number'>Game " + data.gameNum + "</li>";
+        html += "<li class='score'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.scores[PlayerSlot["defender"]] + "' /></li>";
+        html += "<li class='score'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.scores[PlayerSlot["challenger"]] + "' /></li>";
+        html += "</ul>";
 
-    //$(".match-edit-module .match-submit button").on("click", function () {
-    //    var matchData = $(".match-edit-module .module-content .match")
-
-    //    jsonData = {
-    //        "tournyId": $("#Tournament").data("id"),
-    //        "bracketNum": $(this).closest(".bracket").data("bracketnum"),
-    //        "matchId": matchData.data("matchid"),
-    //        "matchNum": matchData.data("matchnum"),
-    //        "winnerId": matchData.find(".selected-winner").data("userid"),
-    //        "winner": matchData.find(".selected-winner").hasClass("defender") ? "Defender" : "Challenger",
-    //        "challengerScore": matchData.find(".challenger .score-edit").val(),
-    //        "defenderScore": matchData.find(".defender .score-edit").val()
-    //    };
-
-    //    $.ajax({
-    //        "url": "/Match/Ajax/Update",
-    //        "type": "POST",
-    //        "data": { "jsonData": JSON.stringify(jsonData) },
-    //        "dataType": "json",
-    //        "beforeSend": function () {
-    //            // Disable the button
-    //            $(".match-edit-module .match-submit button").attr("disabled", true);
-    //        },
-    //        "success": function (json) {
-    //            json = JSON.parse(json);
-    //            if (json.status) {
-
-    //                if (json.data.currentMatch) {
-    //                    var matchData = json.data.currentMatch;
-    //                    var match = $(".list-table-body .match[data-matchnum='" + matchData.matchNum + "']");
-
-    //                    $(match).find(".challenger .match-score").text(matchData.challenger.score);
-    //                    $(match).find(".defender .match-score").text(matchData.defender.score);
-
-    //                    if (matchData.isFinished) {
-    //                        match.find(".edit").addClass("hide");
-    //                    }
-    //                    else {
-    //                        match.find(".edit").removeClass("hide");
-    //                    }
-    //                }
-    //                if (json.data.nextWinnerMatch) {
-    //                    var matchData = json.data.nextWinnerMatch;
-    //                    var match = $(".list-table-body .match[data-matchnum='" + matchData.matchNum + "']");
-
-    //                    // Set the names
-    //                    $(match)
-    //                        .find(".challenger")
-    //                        .attr("data-userid", matchData.challenger.id)
-    //                        .data("userid", matchData.challenger.id)
-    //                        .find(".name").text(matchData.challenger.name);
-
-    //                    $(match)
-    //                        .find(".defender")
-    //                        .attr("data-userid", matchData.defender.id)
-    //                        .data("userid", matchData.defender.id)
-    //                        .find(".name").text(matchData.defender.name);
-
-    //                    // Set the scores
-    //                    $(match).find(".challenger .match-score").text(matchData.challenger.score);
-    //                    $(match).find(".defender .match-score").text(matchData.defender.score);
-
-    //                    if (matchData.isReady) {
-    //                        match.find(".edit").removeClass("hide");
-    //                    }
-    //                    else {
-    //                        match.find(".edit").addClass("hide");
-    //                    }
-    //                }
-    //                if (json.data.nextLoserMatch) {
-    //                    var matchData = json.data.nextLoserMatch;
-    //                    var match = $(".list-table-body .match[data-matchnum='" + matchData.matchNum + "']");
-
-    //                    // Set the names
-    //                    (match)
-    //                        .find(".challenger")
-    //                        .attr("data-userid", matchData.challenger.id)
-    //                        .data("userid", matchData.challenger.id)
-    //                        .find(".name").text(matchData.challenger.name);
-
-    //                    $(match)
-    //                        .find(".defender")
-    //                        .attr("data-userid", matchData.defender.id)
-    //                        .data("userid", matchData.defender.id)
-    //                        .find(".name").text(matchData.defender.name);
-
-    //                    // Set the scores
-    //                    $(match).find(".challenger .match-score").text(matchData.challenger.score);
-    //                    $(match).find(".defender .match-score").text(matchData.defender.score);
-
-    //                    if (matchData.isReady) {
-    //                        match.find(".edit").removeClass("hide");
-    //                    }
-    //                    else {
-    //                        match.find(".edit").addClass("hide");
-    //                    }
-    //                }
-    //            }
-    //            else {
-
-    //            }
-    //            console.log("Success");
-    //            console.log(json);
-    //        },
-    //        "error": function (json) {
-    //            console.log("error");
-    //            console.log(json);
-    //        },
-    //        "complete": function () {
-    //            // Remove the disabled button
-    //            $(".match-edit-module .match-submit button").attr("disabled", false);
-
-    //            // Close the module.
-    //            $(".match-edit-module").removeClass("open");
-
-    //            // Update the standings
-    //            UpdateStandings(jsonData.tournyId, jsonData.bracketNum);
-    //        }
-    //    });
-    //});
-
-    function UpdateStandings(tourny, bracket) {
-        jsonData = {
-            "tournamentId": tourny,
-            "bracketNum": bracket
+        if (CanAddGames($games)) {
+            $games.find(".list-table-body").append(html);
+            if (!CanAddGames($games)) {
+                $games.find(".options .add-game").addClass("hide");
+            }
         }
+        else {
+            // Remove the add button
+            $games.find(".options .add-game").addClass("hide");
+        }
+    }
+
+    function CanAddGames($games) {
+        if ($games.find(".list-table-body ul").length >= $games.find(".list-table-body").data("max")) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    function UpdateStandings(tournyId, bracket) {
+        jsonData = {
+            "tournamentId": tournyId,
+            "bracketNum": bracket
+        };
 
         $.ajax({
             "url": "/Tournament/Ajax/Standings",
@@ -284,14 +247,15 @@
             },
             "success": function (json) {
                 json = JSON.parse(json);
-                var standings = $("#TournamentStandings .standings .list-table-body");
+                var standings = $(".TournamentStandings .standings .list-table-body");
                 if (json.status) {
                     standings.empty();
+
                     $.each(json.data.ranks, function (i, e) {
-                        html = "<ul class='border' data-columns='3'>";
-                        html += "<li class='position-rank'>" + e.Rank + "</li>";
-                        html += "<li class='position-name'>" + e.Name + "</li>";
-                        if (e.score) html += "<li class='position-score'>" + e.Score + "</li>";
+                        html = "<ul class='position' data-columns='3'>";
+                        html += "<li class='rank'>" + e.Rank + "</li>";
+                        html += "<li class='name'>" + e.Name + "</li>";
+                        if (e.score > -1) html += "<li class='score'>" + e.Score + "</li>";
                         html += "</ul>";
 
                         standings.append(html);

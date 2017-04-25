@@ -28,10 +28,7 @@
         </div>
     </div>
 
-    @if (Model.Match.IsReady)
-    {
-        <div class="details clickable clickable-underline">Details</div>
-    }
+    <div class="details @(Model.Match.IsReady ? "" : "hide") clickable clickable-underline">Details</div>
 
     <div class="TournamentGames">
         <h2>Match @Model.Match.MatchNumber Details</h2>
@@ -51,6 +48,7 @@
                 
             </li>
         </ul>
-        <button type="button" class="update-games">Update Games</button>
+       
+        <button type="button" class="update-games  @(Model.Match.IsFinished ? "hide" : "")">Update Games</button>
     </div>
 </div>

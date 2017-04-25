@@ -1,5 +1,10 @@
 ﻿@model WebApplication.Models.BracketViewModel
 
+@{ 
+    int columns = 3;
+    bool usePoints = Model.Bracket.BracketType == DataLib.BracketTypeModel.BracketType.DOUBLE || Model.Bracket.BracketType == DataLib.BracketTypeModel.BracketType.SINGLE ? false : true;
+}
+
 <li class="TournamentStandings">
     <label>Standings</label>
     <div class="options">
@@ -7,21 +12,27 @@
     </div>
     <ul class="list-table standings">
         <li class="list-table-header">
-            <ul data-columns="3">
-                <li>Rank</li>
-                <li>Name</li>
-                <li>Score</li>
+            <ul data-columns="@columns">
+                <li class="rank">Rank</li>
+                <li class="name">Name</li>
+                @if (usePoints)
+                {
+                    <li score="score">Score</li>
+                }
             </ul>
         </li>
         <li class="list-table-body">
-            <ul data-columns="3">
-                @foreach (var data in Model.Bracket.Rankings)
-                {
-                    <li class="position">@data.Rank</li>
+            @foreach (var data in Model.Bracket.Rankings)
+            {
+                <ul class="position" data-columns="@columns">
+                    <li class="rank">@data.Rank</li>
                     <li class="name">@data.Name</li>
-                    <li class="score">@data.Score</li>
-                }
-            </ul>
+                    @if (usePoints)
+                    {
+                        <li class="score">@data.Score</li>
+                    }
+                </ul>
+            }  
         </li>
     </ul>
 </li>
