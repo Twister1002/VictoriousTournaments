@@ -14,6 +14,12 @@
         overflow: hidden;
 
         .defender, .challenger {
+            &[data-id='-1'] {
+                .name {
+                    font-style:italic;
+                }
+            }
+
             white-space:nowrap;
             position: relative;
             padding: .1em;

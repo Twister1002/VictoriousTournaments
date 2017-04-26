@@ -169,8 +169,11 @@
         // Update the Match data
         overview.find(".defender .name").text(json.defender.name);
         overview.find(".defender .score").text(json.defender.score);
+        overview.find(".defender").attr("data-id", json.defender.id).data("id", json.defender.id);
+
         overview.find(".challenger .name").text(json.challenger.name);
         overview.find(".challenger .score").text(json.challenger.score);
+        overview.find(".challenger").attr("data-id", json.challenger.id).data("id", json.challenger.id);
 
         // Update the Game data 
         games.find(".defender-name").text(json.defender.name);
