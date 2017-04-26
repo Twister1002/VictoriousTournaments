@@ -11,6 +11,7 @@
     var userPermission = isLoggedIn ? Model.UserPermission((int)Session["User.UserId"]) : DataLib.Permission.NONE;
 
     ViewBag.Permission = userPermission;
+    ViewBag.isAdministrator = userPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR;
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
@@ -67,7 +68,7 @@
                     }
 
                     Html.RenderPartial("Brackets/Shared/_Header", bracketViewModel);
-                    Html.RenderPartial("Brackets/" + bracketName, bracketViewModel);
+                    Html.RenderPartial("Brackets/" + bracketName, bracketViewModel, new ViewDataDictionary(ViewData));
                     Html.RenderPartial("Brackets/Shared/_Standings", bracketViewModel);
                 }
             </ul>

@@ -378,34 +378,35 @@ namespace WebApplication.Models
         }
         
         //Only the creator can reset the brackets
-        public bool ResetBrackets(int sessionUser)
+        public bool ResetBrackets(int sessionUser, int bracketnum)
         {
             if (sessionUser == Model.CreatedByID)
             {
                 ProcessTournament();
-                foreach (IBracket bracket in Tourny.Brackets)
+                IBracket bracket = Tourny.Brackets.ElementAt(bracketnum);
+
+                // Delete the games first
+                for (int i = 1; i <= bracket.NumberOfMatches; i++)
                 {
-                    if (!bracket.IsFinished)
+                    IMatch match = bracket.GetMatch(i);
+
+                    // Delete every game associated with this bracket
+                    foreach (IGame game in match.Games)
                     {
-                        // Delete the games first
-                        for (int i = 1; i <= bracket.NumberOfMatches; i++)
-                        {
-                            IMatch match = bracket.GetMatch(i);
-
-                            foreach (IGame game in match.Games)
-                            {
-                                db.DeleteGame(match.GetModel(), game.GetModel());
-                            }
-                        }
-
-                        bracket.ResetMatches();
-                        for (int i = 1; i <= bracket.NumberOfMatches; i++)
-                        {
-                            IMatch match = bracket.GetMatch(i);
-                            db.UpdateMatch(match.GetModel());
-                        }
+                        db.DeleteGame(match.GetModel(), game.GetModel());
                     }
                 }
+
+                // Reset the bracket
+                bracket.ResetMatches();
+
+                // Update every match with this bracket
+                for (int i = 1; i <= bracket.NumberOfMatches; i++)
+                {
+                    IMatch match = bracket.GetMatch(i);
+                    db.UpdateMatch(match.GetModel());
+                }
+
                 return true;
             }
             else

@@ -21,7 +21,8 @@
     // Reset the brackets
     $(".bracket-info .options .tournament-reset").on("click", function () {
         var jsonData = {
-            "tournyNum": $(this).closest("#Tournament").data("id")
+            "tournyNum": $(this).closest("#Tournament").data("id"),
+            "bracketNum": $(this).closest(".bracket").data("bracketnum")
         };
 
         if (confirm("Are you sure you want to reset non-finished brackets?")) {

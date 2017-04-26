@@ -488,7 +488,7 @@ namespace WebApplication.Controllers
             if (Session["User.UserId"] != null)
             {
                 TournamentViewModel viewModel = new TournamentViewModel(json["tournyNum"]);
-                bool result = viewModel.ResetBrackets((int)Session["User.UserId"]);
+                bool result = viewModel.ResetBrackets((int)Session["User.UserId"], json["bracketNum"]);
 
                 if (result)
                 {

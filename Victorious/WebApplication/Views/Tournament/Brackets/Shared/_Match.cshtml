@@ -34,7 +34,10 @@
         <h2>Match @Model.Match.MatchNumber Details</h2>
         <div class="options">
             <span class="icon icon-cross close"></span>
-            <span class="icon icon-plus add-game"></span>
+            @if (ViewBag.isAdministrator)
+            {
+                <span class="icon icon-plus add-game"></span>
+            }
         </div>
         <ul class="list-table">
             <li class="list-table-header">
@@ -48,7 +51,9 @@
                 
             </li>
         </ul>
-       
-        <button type="button" class="update-games  @(Model.Match.IsFinished ? "hide" : "")">Update Games</button>
+        @if (ViewBag.isAdministrator)
+        {
+            <button type="button" class="update-games  @(Model.Match.IsFinished ? "hide" : "")">Update Games</button>
+        }
     </div>
 </div>
