@@ -14,8 +14,9 @@ using System.Data.Entity.Core.Objects;
 
 namespace DataLib
 {
+  
 
-    // Use FAILED_TO_DELETE only when something is being deleted from database, otherwise user FAILED_TO_ADD
+    // Use FAILED_TO_DELETE only when something is being deleted from database, otherwise user FAILED_TO_REMOVE
     public enum DbError
     {
         ERROR = -1, NONE = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_REMOVE, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS, CONCURRENCY_ERROR

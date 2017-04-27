@@ -24,6 +24,7 @@
           <Property Name="PhoneNumber" Type="nchar" MaxLength="15" />
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="LastLogin" Type="datetime" />
+          <Property Name="PermissionLevel" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Brackets">
           <Key>
@@ -153,25 +154,14 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
           <Property Name="UniformNumber" Type="int" />
           <Property Name="TournamentID" Type="int" Nullable="false" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="TournamentUserSeeds">
-          <Key>
-            <PropertyRef Name="TournamentUserID" />
-            <PropertyRef Name="BracketID" />
-            <PropertyRef Name="Seed" />
-          </Key>
-          <Property Name="TournamentUserID" Type="int" Nullable="false" />
-          <Property Name="BracketID" Type="int" Nullable="false" />
-          <Property Name="Seed" Type="int" Nullable="false" />
-        </EntityType>
-        <EntityType Name="UsersBrackets">
+        <EntityType Name="TournamentUsersBrackets">
           <Key>
             <PropertyRef Name="TournamentUserID" />
             <PropertyRef Name="BracketID" />
           </Key>
           <Property Name="TournamentUserID" Type="int" Nullable="false" />
           <Property Name="BracketID" Type="int" Nullable="false" />
+          <Property Name="Seed" Type="int" />
         </EntityType>
         <Association Name="FK_Brackets_Tournaments">
           <End Role="Tournaments" Type="Self.Tournaments" Multiplicity="0..1" />
@@ -221,44 +211,16 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_TournamentUserSeeds_Brackets">
-          <End Role="Brackets" Type="Self.Brackets" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="TournamentUserSeeds" Type="Self.TournamentUserSeeds" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Brackets">
-              <PropertyRef Name="BracketID" />
-            </Principal>
-            <Dependent Role="TournamentUserSeeds">
-              <PropertyRef Name="BracketID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_TournamentUserSeeds_TournamentUsers">
-          <End Role="TournamentUsers" Type="Self.TournamentUsers" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="TournamentUserSeeds" Type="Self.TournamentUserSeeds" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="TournamentUsers">
-              <PropertyRef Name="TournamentUserID" />
-            </Principal>
-            <Dependent Role="TournamentUserSeeds">
-              <PropertyRef Name="TournamentUserID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_UserBrackets_TournamentUsers">
           <End Role="TournamentUsers" Type="Self.TournamentUsers" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="UsersBrackets" Type="Self.UsersBrackets" Multiplicity="*" />
+          <End Role="TournamentUsersBrackets" Type="Self.TournamentUsersBrackets" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="TournamentUsers">
               <PropertyRef Name="TournamentUserID" />
             </Principal>
-            <Dependent Role="UsersBrackets">
+            <Dependent Role="TournamentUsersBrackets">
               <PropertyRef Name="TournamentUserID" />
             </Dependent>
           </ReferentialConstraint>
@@ -267,12 +229,12 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
           <End Role="Brackets" Type="Self.Brackets" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="UsersBrackets" Type="Self.UsersBrackets" Multiplicity="*" />
+          <End Role="TournamentUsersBrackets" Type="Self.TournamentUsersBrackets" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Brackets">
               <PropertyRef Name="BracketID" />
             </Principal>
-            <Dependent Role="UsersBrackets">
+            <Dependent Role="TournamentUsersBrackets">
               <PropertyRef Name="BracketID" />
             </Dependent>
           </ReferentialConstraint>
@@ -289,19 +251,12 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
           <EntitySet Name="TournamentRules" EntityType="Self.TournamentRules" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tournaments" EntityType="Self.Tournaments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TournamentUsers" EntityType="Self.TournamentUsers" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="UsersBrackets" EntityType="Self.UsersBrackets" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TournamentUsersBrackets" EntityType="Self.TournamentUsersBrackets" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GameTypes" EntityType="Self.GameTypes" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [GameTypes].[GameTypeID] AS [GameTypeID], 
     [GameTypes].[Title] AS [Title]
     FROM [dbo].[GameTypes] AS [GameTypes]</DefiningQuery>
-          </EntitySet>
-          <EntitySet Name="TournamentUserSeeds" EntityType="Self.TournamentUserSeeds" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [TournamentUserSeeds].[TournamentUserID] AS [TournamentUserID], 
-    [TournamentUserSeeds].[BracketID] AS [BracketID], 
-    [TournamentUserSeeds].[Seed] AS [Seed]
-    FROM [dbo].[TournamentUserSeeds] AS [TournamentUserSeeds]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK_Brackets_Tournaments" Association="Self.FK_Brackets_Tournaments">
             <End Role="Tournaments" EntitySet="Tournaments" />
@@ -319,21 +274,13 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
             <End Role="Tournaments" EntitySet="Tournaments" />
             <End Role="TournamentUsers" EntitySet="TournamentUsers" />
           </AssociationSet>
-          <AssociationSet Name="FK_TournamentUserSeeds_Brackets" Association="Self.FK_TournamentUserSeeds_Brackets">
-            <End Role="Brackets" EntitySet="Brackets" />
-            <End Role="TournamentUserSeeds" EntitySet="TournamentUserSeeds" />
-          </AssociationSet>
-          <AssociationSet Name="FK_TournamentUserSeeds_TournamentUsers" Association="Self.FK_TournamentUserSeeds_TournamentUsers">
-            <End Role="TournamentUsers" EntitySet="TournamentUsers" />
-            <End Role="TournamentUserSeeds" EntitySet="TournamentUserSeeds" />
-          </AssociationSet>
           <AssociationSet Name="FK_UserBrackets_TournamentUsers" Association="Self.FK_UserBrackets_TournamentUsers">
             <End Role="TournamentUsers" EntitySet="TournamentUsers" />
-            <End Role="UsersBrackets" EntitySet="UsersBrackets" />
+            <End Role="TournamentUsersBrackets" EntitySet="TournamentUsersBrackets" />
           </AssociationSet>
           <AssociationSet Name="FK_UsersBrackets_Tournaments" Association="Self.FK_UsersBrackets_Tournaments">
             <End Role="Brackets" EntitySet="Brackets" />
-            <End Role="UsersBrackets" EntitySet="UsersBrackets" />
+            <End Role="TournamentUsersBrackets" EntitySet="TournamentUsersBrackets" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -359,6 +306,7 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
           <Property Name="PhoneNumber" Type="String" MaxLength="15" FixedLength="true" Unicode="true" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
           <Property Name="LastLogin" Type="DateTime" Precision="3" />
+          <Property Name="PermissionLevel" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="Bracket">
           <Key>
@@ -372,8 +320,7 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
           <Property Name="TournamentID" Type="Int32" />
           <NavigationProperty Name="Tournament" Relationship="Self.FK_Brackets_Tournaments" FromRole="Brackets" ToRole="Tournaments" />
           <NavigationProperty Name="Matches" Relationship="Self.FK_Matches_Brackets" FromRole="Brackets" ToRole="Matches" />
-          <NavigationProperty Name="TournamentUserSeeds" Relationship="Self.FK_TournamentUserSeeds_Brackets" FromRole="Brackets" ToRole="TournamentUserSeeds" />
-          <NavigationProperty Name="TournamentUsers" Relationship="VictoriousDatabaseModel.UsersBrackets" FromRole="Bracket" ToRole="TournamentUser" />
+          <NavigationProperty Name="TournamentUsersBrackets" Relationship="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments" FromRole="Bracket" ToRole="TournamentUsersBracket" />
         </EntityType>
         <EntityType Name="BracketType">
           <Key>
@@ -466,18 +413,6 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
           <Property Name="GameTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="TournamentUserSeed">
-          <Key>
-            <PropertyRef Name="TournamentUserID" />
-            <PropertyRef Name="BracketID" />
-            <PropertyRef Name="Seed" />
-          </Key>
-          <Property Name="TournamentUserID" Type="Int32" Nullable="false" />
-          <Property Name="BracketID" Type="Int32" Nullable="false" />
-          <Property Name="Seed" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Bracket" Relationship="Self.FK_TournamentUserSeeds_Brackets" FromRole="TournamentUserSeeds" ToRole="Brackets" />
-          <NavigationProperty Name="TournamentUser" Relationship="VictoriousDatabaseModel.FK_TournamentUserSeeds_TournamentUsers" FromRole="TournamentUserSeed" ToRole="TournamentUser" />
-        </EntityType>
         <Association Name="FK_Brackets_Tournaments">
           <End Role="Tournaments" Type="Self.Tournament" Multiplicity="0..1" />
           <End Role="Brackets" Type="Self.Bracket" Multiplicity="*" />
@@ -498,20 +433,6 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
               <PropertyRef Name="BracketID" />
             </Principal>
             <Dependent Role="Matches">
-              <PropertyRef Name="BracketID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_TournamentUserSeeds_Brackets">
-          <End Role="Brackets" Type="Self.Bracket" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="TournamentUserSeeds" Type="Self.TournamentUserSeed" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Brackets">
-              <PropertyRef Name="BracketID" />
-            </Principal>
-            <Dependent Role="TournamentUserSeeds">
               <PropertyRef Name="BracketID" />
             </Dependent>
           </ReferentialConstraint>
@@ -538,7 +459,6 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
           <EntitySet Name="TournamentRules" EntityType="Self.TournamentRule" />
           <EntitySet Name="Tournaments" EntityType="Self.Tournament" />
           <EntitySet Name="GameTypes" EntityType="Self.GameType" />
-          <EntitySet Name="TournamentUserSeeds" EntityType="Self.TournamentUserSeed" />
           <AssociationSet Name="FK_Brackets_Tournaments" Association="Self.FK_Brackets_Tournaments">
             <End Role="Tournaments" EntitySet="Tournaments" />
             <End Role="Brackets" EntitySet="Brackets" />
@@ -547,10 +467,6 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
             <End EntitySet="Brackets" Role="Brackets" />
             <End EntitySet="Matches" Role="Matches" />
           </AssociationSet>
-          <AssociationSet Name="FK_TournamentUserSeeds_Brackets" Association="Self.FK_TournamentUserSeeds_Brackets">
-            <End Role="Brackets" EntitySet="Brackets" />
-            <End Role="TournamentUserSeeds" EntitySet="TournamentUserSeeds" />
-          </AssociationSet>
           <AssociationSet Name="FK_TournamentRules_Tournaments" Association="Self.FK_TournamentRules_Tournaments">
             <End Role="Tournaments" EntitySet="Tournaments" />
             <End Role="TournamentRules" EntitySet="TournamentRules" />
@@ -558,17 +474,18 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
           <EntitySet Name="Challengers" EntityType="VictoriousDatabaseModel.Challenger" />
           <EntitySet Name="Defenders" EntityType="VictoriousDatabaseModel.Defender" />
           <EntitySet Name="TournamentUsers" EntityType="VictoriousDatabaseModel.TournamentUser" />
+          <EntitySet Name="TournamentUsersBrackets" EntityType="VictoriousDatabaseModel.TournamentUsersBracket" />
           <AssociationSet Name="FK_TournamentUser_Tournaments" Association="VictoriousDatabaseModel.FK_TournamentUser_Tournaments">
             <End Role="Tournament" EntitySet="Tournaments" />
             <End Role="TournamentUser" EntitySet="TournamentUsers" />
           </AssociationSet>
-          <AssociationSet Name="FK_TournamentUserSeeds_TournamentUsers" Association="VictoriousDatabaseModel.FK_TournamentUserSeeds_TournamentUsers">
-            <End Role="TournamentUser" EntitySet="TournamentUsers" />
-            <End Role="TournamentUserSeed" EntitySet="TournamentUserSeeds" />
-          </AssociationSet>
-          <AssociationSet Name="UsersBrackets" Association="VictoriousDatabaseModel.UsersBrackets">
-            <End Role="TournamentUser" EntitySet="TournamentUsers" />
+          <AssociationSet Name="FK_UsersBrackets_Tournaments" Association="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments">
             <End Role="Bracket" EntitySet="Brackets" />
+            <End Role="TournamentUsersBracket" EntitySet="TournamentUsersBrackets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserBrackets_TournamentUsers" Association="VictoriousDatabaseModel.FK_UserBrackets_TournamentUsers">
+            <End Role="TournamentUser" EntitySet="TournamentUsers" />
+            <End Role="TournamentUsersBracket" EntitySet="TournamentUsersBrackets" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Challenger">
@@ -600,8 +517,18 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
           <Property Name="UniformNumber" Type="Int32" />
           <Property Name="TournamentID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" FromRole="TournamentUser" ToRole="Tournament" />
-          <NavigationProperty Name="TournamentUserSeeds" Relationship="VictoriousDatabaseModel.FK_TournamentUserSeeds_TournamentUsers" FromRole="TournamentUser" ToRole="TournamentUserSeed" />
-          <NavigationProperty Name="Brackets" Relationship="VictoriousDatabaseModel.UsersBrackets" FromRole="TournamentUser" ToRole="Bracket" />
+          <NavigationProperty Name="TournamentUsersBrackets" Relationship="VictoriousDatabaseModel.FK_UserBrackets_TournamentUsers" FromRole="TournamentUser" ToRole="TournamentUsersBracket" />
+        </EntityType>
+        <EntityType Name="TournamentUsersBracket">
+          <Key>
+            <PropertyRef Name="TournamentUserID" />
+            <PropertyRef Name="BracketID" />
+          </Key>
+          <Property Name="TournamentUserID" Type="Int32" Nullable="false" />
+          <Property Name="BracketID" Type="Int32" Nullable="false" />
+          <Property Name="Seed" Type="Int32" />
+          <NavigationProperty Name="Bracket" Relationship="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments" FromRole="TournamentUsersBracket" ToRole="Bracket" />
+          <NavigationProperty Name="TournamentUser" Relationship="VictoriousDatabaseModel.FK_UserBrackets_TournamentUsers" FromRole="TournamentUsersBracket" ToRole="TournamentUser" />
         </EntityType>
         <Association Name="FK_TournamentUser_Tournaments">
           <End Type="VictoriousDatabaseModel.Tournament" Role="Tournament" Multiplicity="1" />
@@ -615,23 +542,33 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_TournamentUserSeeds_TournamentUsers">
+        <Association Name="FK_UsersBrackets_Tournaments">
+          <End Type="VictoriousDatabaseModel.Bracket" Role="Bracket" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="VictoriousDatabaseModel.TournamentUsersBracket" Role="TournamentUsersBracket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bracket">
+              <PropertyRef Name="BracketID" />
+            </Principal>
+            <Dependent Role="TournamentUsersBracket">
+              <PropertyRef Name="BracketID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserBrackets_TournamentUsers">
           <End Type="VictoriousDatabaseModel.TournamentUser" Role="TournamentUser" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="VictoriousDatabaseModel.TournamentUserSeed" Role="TournamentUserSeed" Multiplicity="*" />
+          <End Type="VictoriousDatabaseModel.TournamentUsersBracket" Role="TournamentUsersBracket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="TournamentUser">
               <PropertyRef Name="TournamentUserID" />
             </Principal>
-            <Dependent Role="TournamentUserSeed">
+            <Dependent Role="TournamentUsersBracket">
               <PropertyRef Name="TournamentUserID" />
             </Dependent>
           </ReferentialConstraint>
-        </Association>
-        <Association Name="UsersBrackets">
-          <End Type="VictoriousDatabaseModel.TournamentUser" Role="TournamentUser" Multiplicity="*" />
-          <End Type="VictoriousDatabaseModel.Bracket" Role="Bracket" Multiplicity="*" />
         </Association>
       </Schema>
     </edmx:ConceptualModels>
@@ -750,15 +687,6 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="TournamentUserSeeds">
-            <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentUserSeed">
-              <MappingFragment StoreEntitySet="TournamentUserSeeds">
-                <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
-                <ScalarProperty Name="BracketID" ColumnName="BracketID" />
-                <ScalarProperty Name="Seed" ColumnName="Seed" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Challengers">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.Challenger">
               <MappingFragment StoreEntitySet="Challengers">
@@ -772,6 +700,22 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
               <MappingFragment StoreEntitySet="Defenders">
                 <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
                 <ScalarProperty Name="MatchID" ColumnName="MatchID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="IsTypeOf(VictoriousDatabaseModel.Account)">
+              <MappingFragment StoreEntitySet="Accounts">
+                <ScalarProperty Name="PermissionLevel" ColumnName="PermissionLevel" />
+                <ScalarProperty Name="LastLogin" ColumnName="LastLogin" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -789,26 +733,12 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does n
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="UsersBrackets" TypeName="VictoriousDatabaseModel.UsersBrackets" StoreEntitySet="UsersBrackets">
-            <EndProperty Name="Bracket">
-              <ScalarProperty Name="BracketID" ColumnName="BracketID" />
-            </EndProperty>
-            <EndProperty Name="TournamentUser">
-              <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
-            </EndProperty>
-          </AssociationSetMapping>
-          <EntitySetMapping Name="Accounts">
-            <EntityTypeMapping TypeName="IsTypeOf(VictoriousDatabaseModel.Account)">
-              <MappingFragment StoreEntitySet="Accounts">
-                <ScalarProperty Name="LastLogin" ColumnName="LastLogin" />
-                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
-                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+          <EntitySetMapping Name="TournamentUsersBrackets">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentUsersBracket">
+              <MappingFragment StoreEntitySet="TournamentUsersBrackets">
+                <ScalarProperty Name="Seed" ColumnName="Seed" />
+                <ScalarProperty Name="BracketID" ColumnName="BracketID" />
+                <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

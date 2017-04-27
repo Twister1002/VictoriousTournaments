@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public partial class AccountModel : Account
+    public partial class Account 
     {
-        public AccountModel()
+        public Account()
         {
-            Tournaments = new Collection<Tournament>();
+           
         }
 
-        public virtual ICollection<Tournament> Tournaments { get; set; }
+
     }
 }

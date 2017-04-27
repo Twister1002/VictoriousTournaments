@@ -6,6 +6,18 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
+    public enum Permission
+    {
+        // 0 = None
+        NONE = 0,
+        // 1 = Site Permissions
+        SITE_ADMINISTRATOR = 1, SITE_STANDARD,
+        // 100 = Tournament Permissions
+        TOURNAMENT_ADMINISTRATOR = 100, TOURNAMENT_STANDARD,
+        // 200 = Team Permissions
+        TEAM_CAPTAIN = 200, TEAM_STANDARD
+    }
+
     public enum DbError
     {
         ERROR = -1, NONE = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_REMOVE, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS, CONCURRENCY_ERROR

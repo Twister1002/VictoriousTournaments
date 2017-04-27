@@ -18,8 +18,7 @@ namespace DatabaseLib
         public Bracket()
         {
             this.Matches = new HashSet<Match>();
-            this.TournamentUserSeeds = new HashSet<TournamentUserSeed>();
-            this.TournamentUsers = new HashSet<TournamentUser>();
+            this.TournamentUsersBrackets = new HashSet<TournamentUsersBracket>();
         }
     
         public int BracketID { get; set; }
@@ -33,8 +32,6 @@ namespace DatabaseLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Match> Matches { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentUserSeed> TournamentUserSeeds { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentUser> TournamentUsers { get; set; }
+        public virtual ICollection<TournamentUsersBracket> TournamentUsersBrackets { get; set; }
     }
 }

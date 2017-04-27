@@ -106,7 +106,7 @@
     <Compile Include="TournamentUser.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="TournamentUserSeed.cs">
+    <Compile Include="TournamentUsersBracket.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
   </ItemGroup>

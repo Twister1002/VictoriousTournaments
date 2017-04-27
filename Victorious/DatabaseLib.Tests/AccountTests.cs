@@ -16,10 +16,10 @@ namespace DatabaseLib.Tests
                 LastName = "Kelton",
                 Username = Guid.NewGuid().ToString(),
                 Password = "1234",
-                //SitePermission = new PermissionModel()
-                //{
-                //    Permission = Permission.SITE_STANDARD
-                //}
+                MyProperty = 0,
+                PermissionLevel = (int)Permission.SITE_STANDARD,
+
+               
             };
 
             var result = db.AddAccount(user);

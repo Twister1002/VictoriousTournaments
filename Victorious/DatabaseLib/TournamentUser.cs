@@ -17,8 +17,7 @@ namespace DatabaseLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public TournamentUser()
         {
-            this.TournamentUserSeeds = new HashSet<TournamentUserSeed>();
-            this.Brackets = new HashSet<Bracket>();
+            this.TournamentUsersBrackets = new HashSet<TournamentUsersBracket>();
         }
     
         public int TournamentUserID { get; set; }
@@ -32,8 +31,6 @@ namespace DatabaseLib
     
         public virtual Tournament Tournament { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentUserSeed> TournamentUserSeeds { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Bracket> Brackets { get; set; }
+        public virtual ICollection<TournamentUsersBracket> TournamentUsersBrackets { get; set; }
     }
 }

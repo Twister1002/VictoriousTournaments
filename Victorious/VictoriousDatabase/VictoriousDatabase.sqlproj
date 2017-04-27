@@ -68,8 +68,7 @@
     <Build Include="Matches.sql" />
     <Build Include="Games.sql" />
     <Build Include="GameTypes.sql" />
-    <Build Include="TournamentUserSeeds.sql" />
-    <Build Include="UsersBrackets.sql" />
+    <Build Include="TournamentUsersBrackets.sql" />
     <Build Include="Defenders.sql" />
     <Build Include="Challengers.sql" />
   </ItemGroup>

@@ -23,5 +23,6 @@ namespace DatabaseLib
         public string PhoneNumber { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public Nullable<System.DateTime> LastLogin { get; set; }
+        public int PermissionLevel { get; set; }
     }
 }
