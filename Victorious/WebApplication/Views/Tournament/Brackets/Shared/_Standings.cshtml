@@ -13,11 +13,11 @@
     <ul class="list-table standings">
         <li class="list-table-header">
             <ul data-columns="@columns">
-                <li class="rank">Rank</li>
-                <li class="name">Name</li>
+                <li class="column rank">Rank</li>
+                <li class="column name">Name</li>
                 @if (usePoints)
                 {
-                    <li score="score">Score</li>
+                    <li score="column score">Score</li>
                 }
             </ul>
         </li>
@@ -25,11 +25,11 @@
             @foreach (var data in Model.Bracket.Rankings)
             {
                 <ul class="position" data-columns="@columns">
-                    <li class="rank">@data.Rank</li>
-                    <li class="name">@data.Name</li>
+                    <li class="column rank">@data.Rank</li>
+                    <li class="column name">@data.Name</li>
                     @if (usePoints)
                     {
-                        <li class="score">@data.Score</li>
+                        <li class="column score">@data.Score</li>
                     }
                 </ul>
             }  

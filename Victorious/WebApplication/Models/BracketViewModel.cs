@@ -27,11 +27,11 @@ namespace WebApplication.Models
         {
             if (Bracket.GrandFinal != null)
             {
-                return Bracket.NumberOfRounds + 1;
+                return Math.Max(Bracket.NumberOfRounds, Bracket.NumberOfLowerRounds) + 1;
             }
             else
             {
-                return Bracket.NumberOfRounds;
+                return Math.Max(Bracket.NumberOfRounds, Bracket.NumberOfLowerRounds);
             }
         }
 

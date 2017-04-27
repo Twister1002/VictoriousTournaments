@@ -42,15 +42,16 @@
         <ul class="list-table">
             <li class="list-table-header">
                 <ul data-columns="3">
-                    <li> </li>
-                    <li class="defender-name name">@Model.Defender().Name</li>
-                    <li class="challenger-name name">@Model.Challenger().Name</li>
+                    <li class="column"> </li>
+                    <li class="column defender-name name">@Model.Defender().Name</li>
+                    <li class="column challenger-name name">@Model.Challenger().Name</li>
                 </ul>
             </li>
             <li class="list-table-body games" data-max="@Model.Match.MaxGames">
-                
+
             </li>
         </ul>
+
         @if (ViewBag.isAdministrator)
         {
             <button type="button" class="update-games  @(Model.Match.IsFinished ? "hide" : "")">Update Games</button>

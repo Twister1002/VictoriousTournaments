@@ -208,9 +208,9 @@
     // Helper method to add games to details
     function AddGameToDetails(data, $games) {
         html = "<ul data-columns='3'>";
-        html += "<li class='game-number'>Game " + data.gameNum + "</li>";
-        html += "<li class='score'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.scores[PlayerSlot["defender"]] + "' /></li>";
-        html += "<li class='score'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.scores[PlayerSlot["challenger"]] + "' /></li>";
+        html += "<li class='column game-number'>Game " + data.gameNum + "</li>";
+        html += "<li class='column score'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.scores[PlayerSlot["defender"]] + "' /></li>";
+        html += "<li class='column score'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.scores[PlayerSlot["challenger"]] + "' /></li>";
         html += "</ul>";
 
         if (CanAddGames($games)) {
