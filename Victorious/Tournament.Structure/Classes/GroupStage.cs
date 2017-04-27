@@ -41,8 +41,8 @@ namespace Tournament.Structure
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			GameModel gameModel = Groups[groupIndex].AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
-
-			UpdateScore(_matchNumber, gameModel, true);
+			//UpdateScore(_matchNumber, gameModel, true);
+			UpdateRankings();
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
@@ -79,17 +79,17 @@ namespace Tournament.Structure
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			GameModel gameModel = Groups[groupIndex].RemoveLastGame(_matchNumber);
-			UpdateScore(_matchNumber, gameModel, false);
+			//UpdateScore(_matchNumber, gameModel, false);
+			UpdateRankings();
 			return gameModel;
 		}
 		public override void ResetMatchScore(int _matchNumber)
 		{
+			ApplyGameRemovalEffects(_matchNumber);
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			Groups[groupIndex].ResetMatchScore(_matchNumber);
 			UpdateRankings();
-
-			IsFinished = false;
 		}
 
 		public IBracket GetGroup(int _groupNumber)

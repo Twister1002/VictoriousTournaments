@@ -431,7 +431,6 @@ namespace Tournament.Structure
 				UpdateRankings();
 			}
 		}
-#endif
 		public override void ResetMatchScore(int _matchNumber)
 		{
 			int nextWinnerNumber;
@@ -455,15 +454,16 @@ namespace Tournament.Structure
 				UpdateRankings();
 			}
 		}
+#endif
 
 		public override void ResetMatches()
 		{
 			base.ResetMatches();
 			Rankings.Clear();
 		}
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
 		{
 			if (_isAddition)
@@ -493,9 +493,16 @@ namespace Tournament.Structure
 						rank = 2;
 					}
 #endif
-
 					Rankings.Add(new PlayerScore
 						(match.Players[(int)loserSlot].Id, match.Players[(int)loserSlot].Name, -1, rank));
+					if (nextWinnerNumber < 0)
+					{
+						// Finals match: Add winner to Rankings:
+						Rankings.Add(new PlayerScore
+							(match.Players[(int)(match.WinnerSlot)].Id,
+							match.Players[(int)(match.WinnerSlot)].Name, -1, 1));
+						IsFinished = true;
+					}
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
 			}
@@ -525,14 +532,6 @@ namespace Tournament.Structure
 							break;
 						}
 					}
-				}
-				else
-				{
-					// Finals match: Add winner to Rankings:
-					Rankings.Add(new PlayerScore
-						(match.Players[(int)(match.WinnerSlot)].Id,
-						match.Players[(int)(match.WinnerSlot)].Name, -1, 1));
-					IsFinished = true;
 				}
 			}
 		}
@@ -641,6 +640,6 @@ namespace Tournament.Structure
 
 			return m;
 		}
-#endregion
+		#endregion
 	}
 }

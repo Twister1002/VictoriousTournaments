@@ -482,7 +482,7 @@ namespace Tournament.Structure.Tests
 
 			m.AddGame(1, 0, PlayerSlot.Defender);
 			var g = m.RemoveLastGame();
-			Assert.IsInstanceOfType(g, typeof(IGame));
+			Assert.IsInstanceOfType(g, typeof(GameModel));
 		}
 		[TestMethod]
 		[TestCategory("Match")]

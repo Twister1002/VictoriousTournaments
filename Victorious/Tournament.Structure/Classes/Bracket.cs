@@ -41,7 +41,6 @@ namespace Tournament.Structure
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
 		public abstract GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
 		public abstract GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
-		public abstract void ResetMatchScore(int _matchNumber);
 		protected abstract void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition);
 		protected abstract void ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
 		protected abstract void ApplyGameRemovalEffects(int _matchNumber);
@@ -407,6 +406,13 @@ namespace Tournament.Structure
 			GameModel gameModel = GetMatch(_matchNumber).RemoveLastGame();
 			UpdateScore(_matchNumber, gameModel, false);
 			return gameModel;
+		}
+		public virtual void ResetMatchScore(int _matchNumber)
+		{
+			while (GetMatch(_matchNumber).Games.Count > 0)
+			{
+				RemoveLastGame(_matchNumber);
+			}
 		}
 
 		public virtual List<IMatch> GetRound(int _round)

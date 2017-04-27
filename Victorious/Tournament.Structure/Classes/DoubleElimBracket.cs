@@ -309,7 +309,6 @@ namespace Tournament.Structure
 
 			base.RemoveLastGame(_matchNumber);
 		}
-#endif
 		public override void ResetMatchScore(int _matchNumber)
 		{
 			int nextWinnerNumber;
@@ -327,6 +326,7 @@ namespace Tournament.Structure
 
 			base.ResetMatchScore(_matchNumber);
 		}
+#endif
 		#endregion
 
 		#region Private Methods
@@ -362,6 +362,12 @@ namespace Tournament.Structure
 
 					Rankings.Add(new PlayerScore
 						(match.Players[(int)loserSlot].Id, match.Players[(int)loserSlot].Name, -1, rank));
+					if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
+					{
+						Rankings.Add(new PlayerScore
+							(match.Players[(int)(match.WinnerSlot)].Id,
+							match.Players[(int)(match.WinnerSlot)].Name, -1, 1));
+					}
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
 			}

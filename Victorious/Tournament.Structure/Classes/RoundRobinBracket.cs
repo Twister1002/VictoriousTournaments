@@ -316,7 +316,6 @@ namespace Tournament.Structure
 
 			IsFinished = IsFinished && Matches[_matchNumber].IsFinished;
 		}
-#endif
 		public override void ResetMatchScore(int _matchNumber)
 		{
 			if (_matchNumber < 1)
@@ -349,6 +348,7 @@ namespace Tournament.Structure
 
 			IsFinished = false;
 		}
+#endif
 
 		public override void ResetMatches()
 		{

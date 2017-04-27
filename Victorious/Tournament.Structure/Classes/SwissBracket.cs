@@ -129,13 +129,13 @@ namespace Tournament.Structure
 				CheckAndRemoveNextRound(1 + currMatch.RoundIndex);
 			}
 		}
-#endif
 		public override void ResetMatchScore(int _matchNumber)
 		{
 			base.ResetMatchScore(_matchNumber);
 
 			CheckAndRemoveNextRound(1 + GetMatch(_matchNumber).RoundIndex);
 		}
+#endif
 		#endregion
 
 		#region Private Methods
