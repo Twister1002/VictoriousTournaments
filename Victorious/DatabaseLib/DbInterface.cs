@@ -34,13 +34,13 @@ namespace DatabaseLib
            
         }
 
-        public DbError AddAccount(Account user)
+        public DbError AddAccount(AccountModel user)
         {
            
             try
             {
                 user.CreatedOn = DateTime.Now;
-                context.Accounts.Add(user);
+                context.AccountModels.Add(user);
                 context.SaveChanges();
             }
             catch (Exception ex)

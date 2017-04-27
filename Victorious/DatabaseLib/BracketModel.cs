@@ -12,13 +12,13 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class Bracket
+    public partial class BracketModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Bracket()
+        public BracketModel()
         {
-            this.Matches = new HashSet<Match>();
-            this.TournamentUsersBrackets = new HashSet<TournamentUsersBracket>();
+            this.Matches = new HashSet<MatchModel>();
+            this.TournamentUsersBrackets = new HashSet<TournamentUsersBracketModel>();
         }
     
         public int BracketID { get; set; }
@@ -28,10 +28,10 @@ namespace DatabaseLib
         public int NumberOfGroups { get; set; }
         public Nullable<int> TournamentID { get; set; }
     
-        public virtual Tournament Tournament { get; set; }
+        public virtual TournamentModel Tournament { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Match> Matches { get; set; }
+        public virtual ICollection<MatchModel> Matches { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentUsersBracket> TournamentUsersBrackets { get; set; }
+        public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
     }
 }

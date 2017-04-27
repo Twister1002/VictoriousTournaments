@@ -10,7 +10,7 @@ namespace DatabaseLib.Tests
         public void Add_User_Acccount()
         {
             var db = new DbInterface();
-            var user = new Account()
+            var user = new AccountModel()
             {
                 FirstName = "Ryan",
                 LastName = "Kelton",

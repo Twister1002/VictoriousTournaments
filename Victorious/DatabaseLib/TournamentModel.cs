@@ -12,14 +12,14 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class Tournament
+    public partial class TournamentModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Tournament()
+        public TournamentModel()
         {
-            this.Brackets = new HashSet<Bracket>();
-            this.TournamentRules = new HashSet<TournamentRule>();
-            this.TournamentUsers = new HashSet<TournamentUser>();
+            this.Brackets = new HashSet<BracketModel>();
+            this.TournamentRules = new HashSet<TournamentRuleModel>();
+            this.TournamentUsers = new HashSet<TournamentUserModel>();
         }
     
         public int TournamentID { get; set; }
@@ -33,10 +33,10 @@ namespace DatabaseLib
         public int LastEditedByID { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Bracket> Brackets { get; set; }
+        public virtual ICollection<BracketModel> Brackets { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentRule> TournamentRules { get; set; }
+        public virtual ICollection<TournamentRuleModel> TournamentRules { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentUser> TournamentUsers { get; set; }
+        public virtual ICollection<TournamentUserModel> TournamentUsers { get; set; }
     }
 }

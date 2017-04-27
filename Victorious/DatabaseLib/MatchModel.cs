@@ -12,7 +12,7 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class Match
+    public partial class MatchModel
     {
         public int MatchID { get; set; }
         public int ChallengerID { get; set; }
@@ -35,6 +35,6 @@ namespace DatabaseLib
         public Nullable<int> MaxGames { get; set; }
         public Nullable<int> BracketID { get; set; }
     
-        public virtual Bracket Bracket { get; set; }
+        public virtual BracketModel Bracket { get; set; }
     }
 }

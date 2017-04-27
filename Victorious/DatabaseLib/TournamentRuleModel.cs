@@ -12,7 +12,7 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class TournamentRule
+    public partial class TournamentRuleModel
     {
         public int TournamentRulesID { get; set; }
         public int TournamentID { get; set; }
@@ -29,6 +29,6 @@ namespace DatabaseLib
         public Nullable<System.DateTime> CheckInEnds { get; set; }
         public int Platform { get; set; }
     
-        public virtual Tournament Tournament { get; set; }
+        public virtual TournamentModel Tournament { get; set; }
     }
 }

@@ -26,17 +26,17 @@ namespace DatabaseLib
         }
     
         public virtual DbSet<C__RefactorLog> C__RefactorLog { get; set; }
-        public virtual DbSet<Account> Accounts { get; set; }
-        public virtual DbSet<Bracket> Brackets { get; set; }
+        public virtual DbSet<AccountModel> AccountModels { get; set; }
+        public virtual DbSet<BracketModel> BracketModels { get; set; }
         public virtual DbSet<BracketType> BracketTypes { get; set; }
-        public virtual DbSet<Game> Games { get; set; }
-        public virtual DbSet<Match> Matches { get; set; }
-        public virtual DbSet<TournamentRule> TournamentRules { get; set; }
-        public virtual DbSet<Tournament> Tournaments { get; set; }
+        public virtual DbSet<GameModel> GameModels { get; set; }
+        public virtual DbSet<MatchModel> MatchModels { get; set; }
+        public virtual DbSet<TournamentRuleModel> TournamentRuleModels { get; set; }
+        public virtual DbSet<TournamentModel> TournamentModels { get; set; }
         public virtual DbSet<GameType> GameTypes { get; set; }
         public virtual DbSet<Challenger> Challengers { get; set; }
         public virtual DbSet<Defender> Defenders { get; set; }
-        public virtual DbSet<TournamentUser> TournamentUsers { get; set; }
-        public virtual DbSet<TournamentUsersBracket> TournamentUsersBrackets { get; set; }
+        public virtual DbSet<TournamentUserModel> TournamentUserModels { get; set; }
+        public virtual DbSet<TournamentUsersBracketModel> TournamentUsersBracketModels { get; set; }
     }
 }

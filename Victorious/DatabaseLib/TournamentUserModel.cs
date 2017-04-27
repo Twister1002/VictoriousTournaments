@@ -12,12 +12,12 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class TournamentUser
+    public partial class TournamentUserModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public TournamentUser()
+        public TournamentUserModel()
         {
-            this.TournamentUsersBrackets = new HashSet<TournamentUsersBracket>();
+            this.TournamentUsersBrackets = new HashSet<TournamentUsersBracketModel>();
         }
     
         public int TournamentUserID { get; set; }
@@ -29,8 +29,8 @@ namespace DatabaseLib
         public Nullable<int> UniformNumber { get; set; }
         public int TournamentID { get; set; }
     
-        public virtual Tournament Tournament { get; set; }
+        public virtual TournamentModel Tournament { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentUsersBracket> TournamentUsersBrackets { get; set; }
+        public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
     }
 }
