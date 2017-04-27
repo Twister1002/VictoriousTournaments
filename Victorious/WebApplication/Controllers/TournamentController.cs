@@ -19,13 +19,45 @@ namespace WebApplication.Controllers
         }
 
         // Tournament Search
-        [Route("Tournament/Search/{title?}")]
+        [Route("Tournament/Search")]
         public ActionResult Search(String title)
         {
             TournamentViewModel model = new TournamentViewModel();
             model.Search(title);
 
             return View("Search", model);
+        }
+
+        [HttpPost]
+        [Route("Ajax/Tournament/Search")]
+        public JsonResult Search(String title, int? gameTypeId, DateTime? startDate)
+        {
+            List<TournamentModel> searchedTournaments;
+
+            if (startDate != null)
+            {
+                searchedTournaments = db.FindTournaments(title, startDate.Value);
+            }
+            else
+            {
+                searchedTournaments = db.FindTournaments(title);
+            }
+
+            List<object> dataReturned = new List<object>();
+
+            foreach (TournamentModel tourny in searchedTournaments)
+            {
+                dataReturned.Add(new {
+                    id = tourny.TournamentID,
+                    title = tourny.Title,
+                    game = tourny.GameType != null ? tourny.GameType.Title : "None",
+                    startDate = tourny.TournamentRules.TournamentStartDate.Value.ToShortDateString(),
+                    isPublic = tourny.TournamentRules.IsPublic,
+                    link = Url.Action("Tournament", "Tournament", new { guid = tourny.TournamentID })
+                });
+            }
+
+            return Json(JsonConvert.SerializeObject(dataReturned));
         }
 
         // Tournament Info

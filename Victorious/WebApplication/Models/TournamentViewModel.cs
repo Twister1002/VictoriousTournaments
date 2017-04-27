@@ -48,6 +48,8 @@ namespace WebApplication.Models
             Administrators = new List<UserModel>();
             Participants = new List<UserModel>();
             GetUserPermissions();
+
+            Search(null);
         }
 
         public override void ApplyChanges(int SessionId)
