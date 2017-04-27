@@ -35,13 +35,15 @@ namespace Tournament.Structure
 			GetMatchData(ref _matchNumber, out groupIndex);
 			Groups[groupIndex].RestoreMatch(_matchNumber, _model);
 		}
-
+		
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			GameModel gameModel = Groups[groupIndex].AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
-			AddWinEffects(_matchNumber, _winnerSlot);
+
+			UpdateScore(_matchNumber, gameModel, true); // does nothing
+			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
@@ -68,7 +70,7 @@ namespace Tournament.Structure
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			GameModel gameModel = Groups[groupIndex].UpdateGame(_matchNumber, _gameNumber, _defenderScore, _challengerScore, _winnerSlot);
-			AddWinEffects(_matchNumber, _winnerSlot);
+			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
 		public override void RemoveLastGame(int _matchNumber)
@@ -141,7 +143,11 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void AddWinEffects(int _matchNumber, PlayerSlot _slot)
+		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
+		{
+			return;
+		}
+		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			UpdateRankings();
 

@@ -39,12 +39,12 @@ namespace Tournament.Structure
 
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
-		public abstract GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
 		public abstract GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
 		public abstract GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
 		public abstract void RemoveLastGame(int _matchNumber);
 		public abstract void ResetMatchScore(int _matchNumber);
-		protected abstract void AddWinEffects(int _matchNumber, PlayerSlot _slot);
+		protected abstract void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition);
+		protected abstract void ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
 		protected abstract void UpdateRankings();
 		#endregion
 
@@ -391,6 +391,14 @@ namespace Tournament.Structure
 
 			Players.Clear();
 			ResetBracket();
+		}
+
+		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
+			UpdateScore(_matchNumber, gameModel, true);
+			ApplyWinEffects(_matchNumber, _winnerSlot);
+			return gameModel;
 		}
 
 		public virtual List<IMatch> GetRound(int _round)

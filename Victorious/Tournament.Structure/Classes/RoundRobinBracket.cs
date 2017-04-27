@@ -203,6 +203,7 @@ namespace Tournament.Structure
 			}
 		}
 
+#if false
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
@@ -214,6 +215,7 @@ namespace Tournament.Structure
 			AddWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
+#endif
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
 		{
 			if (_matchNumber < 1)
@@ -284,7 +286,7 @@ namespace Tournament.Structure
 			}
 
 			GameModel gameModel = GetMatch(_matchNumber).UpdateGame(_gameNumber, _defenderScore, _challengerScore, _winnerSlot);
-			AddWinEffects(_matchNumber, _winnerSlot);
+			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
 		public override void RemoveLastGame(int _matchNumber)
@@ -358,18 +360,20 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void AddWinEffects(int _matchNumber, PlayerSlot _slot)
+		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
 		{
 			for (int i = 0; i < Rankings.Count; ++i)
 			{
-				if (Rankings[i].Id == Matches[_matchNumber].Players[(int)_slot].Id)
+				if (Rankings[i].Id == _game.WinnerID)
 				{
 					Rankings[i].Score += 1;
 					break;
 				}
 			}
 			UpdateRankings();
-
+		}
+		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		{
 			IsFinished = true;
 			foreach (IMatch match in Matches.Values)
 			{

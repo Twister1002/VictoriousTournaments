@@ -328,9 +328,9 @@ namespace Tournament.Structure
 #endregion
 
 #region Private Methods
-		protected override void AddWinEffects(int _matchNumber, PlayerSlot _slot)
+		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
-			base.AddWinEffects(_matchNumber, _slot);
+			base.ApplyWinEffects(_matchNumber, _slot);
 
 			int nextWinnerNumber;
 			int nextLoserNumber;

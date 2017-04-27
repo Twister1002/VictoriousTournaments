@@ -75,12 +75,12 @@ namespace Tournament.Structure
 			#endregion
 
 			#region Private Methods
-			protected override void AddWinEffects(int _matchNumber, PlayerSlot _slot)
+			protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 			{
 				if (GetMatch(_matchNumber).NextMatchNumber <= NumberOfMatches)
 				{
 					// Case 1: Not a final/endpoint match. Treat like a DEB:
-					base.AddWinEffects(_matchNumber, _slot);
+					base.ApplyWinEffects(_matchNumber, _slot);
 					return;
 				}
 

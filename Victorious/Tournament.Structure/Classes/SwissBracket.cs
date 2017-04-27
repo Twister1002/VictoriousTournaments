@@ -108,6 +108,7 @@ namespace Tournament.Structure
 			}
 		}
 
+#if false
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			GameModel gameModel = base.AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
@@ -118,6 +119,7 @@ namespace Tournament.Structure
 			}
 			return gameModel;
 		}
+#endif
 		public override void RemoveLastGame(int _matchNumber)
 		{
 			base.RemoveLastGame(_matchNumber);
@@ -137,6 +139,14 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		{
+			base.ApplyWinEffects(_matchNumber, _slot);
+			if (IsFinished)
+			{
+				IsFinished = !(AddNewRound(GetMatch(_matchNumber).MaxGames));
+			}
+		}
 		private bool AddNewRound(int _gamesPerMatch)
 		{
 			if (MaxRounds > 0 && NumberOfRounds >= MaxRounds)

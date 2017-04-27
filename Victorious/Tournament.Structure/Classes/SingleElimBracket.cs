@@ -307,12 +307,14 @@ namespace Tournament.Structure
 			#endregion
 		}
 
+#if false
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
 			AddWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
+#endif
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
 		{
 			GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore);
@@ -402,7 +404,7 @@ namespace Tournament.Structure
 				UpdateRankings();
 			}
 
-			AddWinEffects(_matchNumber, _winnerSlot);
+			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
 		public override void RemoveLastGame(int _matchNumber)
@@ -457,10 +459,14 @@ namespace Tournament.Structure
 			base.ResetMatches();
 			Rankings.Clear();
 		}
-		#endregion
+#endregion
 
-		#region Private Methods
-		protected override void AddWinEffects(int _matchNumber, PlayerSlot _slot)
+#region Private Methods
+		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
+		{
+			return;
+		}
+		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			int nextWinnerNumber;
 			int nextLoserNumber;
@@ -608,6 +614,6 @@ namespace Tournament.Structure
 
 			return m;
 		}
-		#endregion
+#endregion
 	}
 }
