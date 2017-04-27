@@ -289,6 +289,7 @@ namespace Tournament.Structure
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
+#if false
 		public override void RemoveLastGame(int _matchNumber)
 		{
 			if (_matchNumber < 1)
@@ -315,6 +316,7 @@ namespace Tournament.Structure
 
 			IsFinished = IsFinished && Matches[_matchNumber].IsFinished;
 		}
+#endif
 		public override void ResetMatchScore(int _matchNumber)
 		{
 			if (_matchNumber < 1)
@@ -366,10 +368,18 @@ namespace Tournament.Structure
 			{
 				if (Rankings[i].Id == _game.WinnerID)
 				{
-					Rankings[i].Score += 1;
+					if (_isAddition)
+					{
+						Rankings[i].Score += 1;
+					}
+					else
+					{
+						Rankings[i].Score -= 1;
+					}
 					break;
 				}
 			}
+
 			UpdateRankings();
 		}
 		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
@@ -383,6 +393,10 @@ namespace Tournament.Structure
 					break;
 				}
 			}
+		}
+		protected override void ApplyGameRemovalEffects(int _matchNumber)
+		{
+			IsFinished = false;
 		}
 
 		protected override void UpdateRankings()

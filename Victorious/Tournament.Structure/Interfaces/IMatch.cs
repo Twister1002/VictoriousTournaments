@@ -152,8 +152,8 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Delete/un-record the most recent Game.
 		/// </summary>
-		/// <returns>IGame that was removed</returns>
-		IGame RemoveLastGame();
+		/// <returns>Model of Game that was removed</returns>
+		GameModel RemoveLastGame();
 
 		/// <summary>
 		/// Resets Match score to 0-0.

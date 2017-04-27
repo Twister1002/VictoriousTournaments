@@ -99,7 +99,7 @@ namespace Tournament.Structure
 		/// Delete/un-record a Match's most recent Game.
 		/// </summary>
 		/// <param name="_matchNumber">Number of Match to modify</param>
-		void RemoveLastGame(int _matchNumber);
+		GameModel RemoveLastGame(int _matchNumber);
 
 		/// <summary>
 		/// Reset score for the specified match.

@@ -119,7 +119,6 @@ namespace Tournament.Structure
 			}
 			return gameModel;
 		}
-#endif
 		public override void RemoveLastGame(int _matchNumber)
 		{
 			base.RemoveLastGame(_matchNumber);
@@ -130,6 +129,7 @@ namespace Tournament.Structure
 				CheckAndRemoveNextRound(1 + currMatch.RoundIndex);
 			}
 		}
+#endif
 		public override void ResetMatchScore(int _matchNumber)
 		{
 			base.ResetMatchScore(_matchNumber);
@@ -146,6 +146,11 @@ namespace Tournament.Structure
 			{
 				IsFinished = !(AddNewRound(GetMatch(_matchNumber).MaxGames));
 			}
+		}
+		protected override void ApplyGameRemovalEffects(int _matchNumber)
+		{
+			CheckAndRemoveNextRound(1 + GetMatch(_matchNumber).RoundIndex);
+			IsFinished = false;
 		}
 		private bool AddNewRound(int _gamesPerMatch)
 		{

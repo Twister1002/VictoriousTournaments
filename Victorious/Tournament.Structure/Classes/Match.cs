@@ -460,7 +460,7 @@ namespace Tournament.Structure
 			throw new GameNotFoundException
 				("Game not found; Game Number may be invalid!");
 		}
-		public IGame RemoveLastGame()
+		public GameModel RemoveLastGame()
 		{
 			return (RemoveGame(Games.Count - 1));
 		}
@@ -628,7 +628,7 @@ namespace Tournament.Structure
 			AddWin(_game.WinnerSlot);
 			Games.Add(_game);
 		}
-		private IGame RemoveGame(int _index)
+		private GameModel RemoveGame(int _index)
 		{
 			if (0 == Games.Count)
 			{
@@ -641,7 +641,7 @@ namespace Tournament.Structure
 					("Game index is out of range!");
 			}
 
-			IGame removedGame = Games[_index];
+			GameModel removedGame = Games[_index].GetModel();
 			SubtractWin(Games[_index].WinnerSlot);
 			Games.RemoveAt(_index);
 

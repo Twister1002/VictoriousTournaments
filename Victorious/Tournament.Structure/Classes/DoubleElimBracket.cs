@@ -291,6 +291,7 @@ namespace Tournament.Structure
 
 			return gameModel;
 		}
+#if false
 		public override void RemoveLastGame(int _matchNumber)
 		{
 			int nextWinnerNumber;
@@ -308,6 +309,7 @@ namespace Tournament.Structure
 
 			base.RemoveLastGame(_matchNumber);
 		}
+#endif
 		public override void ResetMatchScore(int _matchNumber)
 		{
 			int nextWinnerNumber;
@@ -325,12 +327,51 @@ namespace Tournament.Structure
 
 			base.ResetMatchScore(_matchNumber);
 		}
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
+		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
+		{
+			if (_isAddition)
+			{
+				int nextWinnerNumber;
+				int nextLoserNumber;
+				IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
+				if (match.IsFinished && nextLoserNumber < 0)
+				{
+					// Add losing player to Rankings:
+					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
+						? PlayerSlot.Challenger
+						: PlayerSlot.Defender;
+					int rank = 2; // 2 = GrandFinal loser
+					if (null != LowerMatches && LowerMatches.ContainsKey(_matchNumber))
+					{
+						rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
+					}
+#if false
+					else if (null != Matches && Matches.ContainsKey(_matchNumber))
+					{
+						rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
+					}
+					else if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
+					{
+						rank = 2;
+					}
+#endif
+
+					Rankings.Add(new PlayerScore
+						(match.Players[(int)loserSlot].Id, match.Players[(int)loserSlot].Name, -1, rank));
+					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+				}
+			}
+			else
+			{
+				UpdateRankings();
+			}
+		}
 		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
-			base.ApplyWinEffects(_matchNumber, _slot);
 
 			int nextWinnerNumber;
 			int nextLoserNumber;
@@ -338,13 +379,16 @@ namespace Tournament.Structure
 
 			if (match.IsFinished)
 			{
-				PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
-					? PlayerSlot.Challenger
-					: PlayerSlot.Defender;
+				base.ApplyWinEffects(_matchNumber, _slot);
+
 				if (nextLoserNumber > 0)
 				{
 					// Advance the losing player:
+					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
+						? PlayerSlot.Challenger
+						: PlayerSlot.Defender;
 					IMatch nextMatch = GetMatch(nextLoserNumber);
+
 					for (int i = 0; i < nextMatch.PreviousMatchNumbers.Length; ++i)
 					{
 						if (_matchNumber == nextMatch.PreviousMatchNumbers[i])
@@ -354,27 +398,23 @@ namespace Tournament.Structure
 						}
 					}
 				}
-				else
-				{
-					// Add losing player to Rankings:
-					int rank = -1;
-					if (null != LowerMatches && LowerMatches.ContainsKey(_matchNumber))
-					{
-						rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
-					}
-					else if (null != Matches && Matches.ContainsKey(_matchNumber))
-					{
-						rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
-					}
-					else if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
-					{
-						rank = 2;
-					}
+			}
+		}
+		protected override void ApplyGameRemovalEffects(int _matchNumber)
+		{
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
-					Rankings.Add(new PlayerScore
-						(match.Players[(int)loserSlot].Id, match.Players[(int)loserSlot].Name, -1, rank));
-					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
-				}
+			if (match.IsFinished)
+			{
+				base.ApplyGameRemovalEffects(_matchNumber);
+
+				PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
+					? PlayerSlot.Challenger
+					: PlayerSlot.Defender;
+				RemovePlayerFromFutureMatches
+					(nextLoserNumber, ref match.Players[(int)loserSlot]);
 			}
 		}
 

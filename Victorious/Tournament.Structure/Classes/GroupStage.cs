@@ -42,7 +42,7 @@ namespace Tournament.Structure
 			GetMatchData(ref _matchNumber, out groupIndex);
 			GameModel gameModel = Groups[groupIndex].AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
 
-			UpdateScore(_matchNumber, gameModel, true); // does nothing
+			UpdateScore(_matchNumber, gameModel, true);
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
@@ -73,14 +73,14 @@ namespace Tournament.Structure
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
-		public override void RemoveLastGame(int _matchNumber)
+		public override GameModel RemoveLastGame(int _matchNumber)
 		{
+			ApplyGameRemovalEffects(_matchNumber);
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
-			Groups[groupIndex].RemoveLastGame(_matchNumber);
-			UpdateRankings();
-
-			IsFinished = (IsFinished && Groups[groupIndex].IsFinished);
+			GameModel gameModel = Groups[groupIndex].RemoveLastGame(_matchNumber);
+			UpdateScore(_matchNumber, gameModel, false);
+			return gameModel;
 		}
 		public override void ResetMatchScore(int _matchNumber)
 		{
@@ -145,7 +145,7 @@ namespace Tournament.Structure
 		#region Private Methods
 		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
 		{
-			return;
+			UpdateRankings();
 		}
 		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
@@ -160,6 +160,10 @@ namespace Tournament.Structure
 					break;
 				}
 			}
+		}
+		protected override void ApplyGameRemovalEffects(int _matchNumber)
+		{
+			IsFinished = false;
 		}
 		protected override void ResetBracket()
 		{
