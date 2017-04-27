@@ -4,15 +4,14 @@
 
     .content-header {
         width: 100%;
+
         .tournamentTitle {
             margin-bottom: 0em;
+            padding: 0em;
         }
+
         .tournament-buttons {
             display: inline-block;
-
-            > * {
-                cursor: pointer;
-            }
         }
 
         .gameTitle {
@@ -20,92 +19,48 @@
         }
     }
 
-    .list-table-header ul li {
-        text-align: center;
-    }
-
-    .round {
-        vertical-align: middle;
-        height: 100%;
-        position: relative;
-    }
-
-    .match {
-        position: relative;
-        padding: .5em;
-        .matchHeader {
-            .edit {
-                &.hide {
-                    display: none;
-                }
-
-                .img {
-                    position: relative;
-                    right: 0em;
-                }
-            }
+    /*.match-edit-module {
+        &.open {
+            display: block;
         }
 
-        .matchData {
-            background-color: @match-color;
-            width: 100%;
+        display: none;
+        position: absolute;
+        top: 0em;
+        width: 100%;
+        opacity: .9;
+        background-color: green;
+        height: 100%;
 
-            .info {
-                position: relative;
-                display: block;
-                border: .1em solid @white;
-                overflow: hidden;
+        .module-content {
+            padding: 1em;
 
-                .defender, .challenger {
-                    position: relative;
-                    display: block;
-                    width: 100%;
-                    height: 1.75em;
-                    overflow: hidden;
+            .editHeader {
+                h2 {
+                    display: inline-block;
+                }
 
-                    &.teamHover {
-                        background-color: @color-primary-2;
-                    }
+                .options {
+                    display: inline-block;
+                }
+            }
 
-                    .seed {
-                        display: inline-block;
-                        text-align: right;
-                        width: 1.5em;
-                        padding: .3em;
-                        border-right: .1em solid @white;
-                    }
-
-                    .name {
-                        overflow: hidden;
-                        display: inline-block;
-                        padding: .2em;
-                        /*background-color: red;*/
-                    }
-
-                    .match-score {
-                        position: absolute;
-                        display: inline-block;
-                        text-align: right;
-                        padding: .25em;
-                        width: 1.5em;
-                        border-left: .1em solid @white;
-                        right: 0em;
-                    }
-
-                    .score-edit {
+            .options {
+                .add-game {
+                    &.hide {
                         display: none;
                     }
-                }
-
-                .defender {
-                    border-bottom: .1em solid @white;
+                    display: inline-block;
                 }
             }
-        }
 
-        &.grandFinal {
-            position: relative;
-            top: -35%;
-        }
-    }
+            .overview {
+                display: none;
+            }
+
+            .TournamentGame {
+                display: block;
+            }
+        }*/
+    /*}*/
 }

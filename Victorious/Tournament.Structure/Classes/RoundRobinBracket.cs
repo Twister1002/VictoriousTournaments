@@ -79,7 +79,7 @@ namespace Tournament.Structure
 		}
 #endif
 		public RoundRobinBracket()
-			: this(new List<IPlayer>(), 0)
+			: this(new List<IPlayer>())
 		{ }
 		public RoundRobinBracket(BracketModel _model)
 		{
@@ -90,23 +90,20 @@ namespace Tournament.Structure
 
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			this.IsFinalized = _model.Finalized;
+			this.MaxRounds = 0;
+			ResetBracket();
 
 			List<UserModel> userModels = _model.UserSeeds
 				.OrderBy(ubs => ubs.Seed)
 				.Select(ubs => ubs.User)
 				.ToList();
 			this.Players = new List<IPlayer>();
-			this.Rankings = new List<IPlayerScore>();
 			foreach (UserModel model in userModels)
 			{
 				Players.Add(new User(model));
 				Rankings.Add(new PlayerScore(model.UserID, model.Username, 0, 1));
 			}
-			
-			this.MaxRounds = 0;
-			ResetBracket();
 
-			this.Matches = new Dictionary<int, IMatch>();
 			foreach (MatchModel mm in _model.Matches)
 			{
 				IMatch match = new Match(mm);
@@ -156,13 +153,11 @@ namespace Tournament.Structure
 			{
 				return;
 			}
-			Rankings = new List<IPlayerScore>();
 			foreach (IPlayer player in Players)
 			{
 				Rankings.Add(new PlayerScore(player.Id, player.Name, 0, 1));
 			}
 
-			Matches = new Dictionary<int, IMatch>();
 			int totalRounds = (0 == Players.Count % 2)
 				? Players.Count - 1 : Players.Count;
 
@@ -367,7 +362,12 @@ namespace Tournament.Structure
 		#region Private Methods
 		protected override void UpdateRankings()
 		{
-			Rankings.Sort((first, second) => -1 * (first.Score.CompareTo(second.Score)));
+			Rankings.Sort((first, second) =>
+			{
+				int compare = -1 * (first.Score.CompareTo(second.Score));
+				return ((0 != compare)
+					? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id)));
+			});
 			Rankings[0].Rank = 1;
 
 			int increment = 1;
@@ -385,6 +385,6 @@ namespace Tournament.Structure
 				}
 			}
 		}
-#endregion
+		#endregion
 	}
 }

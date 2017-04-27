@@ -297,10 +297,8 @@ namespace Tournament.Structure
 			#endregion
 
 			#region Set Bracket Member Variables
-			Rankings = new List<IPlayerScore>();
 			// Move bracket data to member variables (Matches dictionary)
 			NumberOfRounds = roundList.Count;
-			Matches = new Dictionary<int, IMatch>();
 			for (int r = 0; r < roundList.Count; ++r)
 			{
 				for (int m = 0; m < roundList[r].Count; ++m)

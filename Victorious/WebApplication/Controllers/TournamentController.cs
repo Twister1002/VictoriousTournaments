@@ -305,44 +305,97 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("Tournament/Finalize")]
-        public ActionResult Finalize(String tourny)
+        [Route("Tournament/Ajax/Finalize")]
+        public JsonResult Finalize(String jsonData, Dictionary<String, int> roundData)
         {
+            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
+            bool status = false;
+            String message = "No action was taken";
+            String redirect = redirect = Url.Action("Tournament", "Tournament", new { guid = json["tournyVal"] });
+
             if (Session["User.UserId"] != null)
             {
-                int tournyId = this.ConvertToInt(tourny);
-                TournamentViewModel viewModel = new TournamentViewModel(tournyId);
+                // Load the tournament
+                TournamentViewModel viewModel = new TournamentViewModel(json["tournyVal"]);
                 if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
-                    DbError result = viewModel.FinalizeTournament();
+                    DbError result = viewModel.FinalizeTournament(roundData);
 
                     if (result == DbError.SUCCESS)
                     {
-                        Session["Message"] = "Your tournament has been finalized. No changes can be made.";
+                        status = true;
+                        message = "Your tournament has been finalized. No changes can be made.";
+
+                        Session["Message"] = message;
                         Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
                     }
                     else
                     {
-                        Session["Message"] = "An error occurred while trying to create the matches.<br/>" + viewModel.dbException.Message;
+                        message = "An error occurred while trying to create the matches.<br/>" + viewModel.dbException.Message;
+
+                        Session["Message"] = message;
                         Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
                     }
                 }
                 else
                 {
-                    Session["Message"] = "You are not permitted to do that.";
+                    message = "You are not permitted to do that.";
+
+                    Session["Message"] = message;
                     Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
                 }
             }
             else
             {
-                Session["Message"] = "You must login before you can do that.";
+                message = "You must login to do that.";
+                redirect = Url.Action("Login", "Account");
+
+                Session["Message"] = message;
                 Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
-                return RedirectToAction("Login", "Account");
             }
 
-            // Create the matches
-            return RedirectToAction("Tournament", "Tournament", new { @guid = tourny });
+            return Json(JsonConvert.SerializeObject(new { status = status, message = message, redirect = redirect }));
         }
+
+        //[HttpPost]
+        //[Route("Tournament/Finalize")]
+        //public ActionResult Finalize(String tourny)
+        //{
+        //    if (Session["User.UserId"] != null)
+        //    {
+        //        int tournyId = this.ConvertToInt(tourny);
+        //        TournamentViewModel viewModel = new TournamentViewModel(tournyId);
+        //        if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+        //        {
+        //            DbError result = viewModel.FinalizeTournament();
+
+        //            if (result == DbError.SUCCESS)
+        //            {
+        //                Session["Message"] = "Your tournament has been finalized. No changes can be made.";
+        //                Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
+        //            }
+        //            else
+        //            {
+        //                Session["Message"] = "An error occurred while trying to create the matches.<br/>" + viewModel.dbException.Message;
+        //                Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            Session["Message"] = "You are not permitted to do that.";
+        //            Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Session["Message"] = "You must login before you can do that.";
+        //        Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+        //        return RedirectToAction("Login", "Account");
+        //    }
+
+        //    // Create the matches
+        //    return RedirectToAction("Tournament", "Tournament", new { @guid = tourny });
+        //}
 
         [HttpPost]
         [Route("Tournament/Ajax/Delete")]
@@ -423,50 +476,6 @@ namespace WebApplication.Controllers
                     }
                 }
             ));
-        }
-
-        [HttpPost]
-        [Route("Tournament/Ajax/Reset")]
-        public JsonResult Reset(String jsonData)
-        {
-            dynamic jsonResult = new { };
-            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<string, int>>(jsonData);
-
-            if (Session["User.UserId"] != null)
-            {
-                TournamentViewModel viewModel = new TournamentViewModel(json["tournyNum"]);
-                bool result = viewModel.ResetBrackets((int)Session["User.UserId"]);
-
-                if (result)
-                {
-                    Session["Message"] = "The bracket has been reset.";
-                    Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
-                    jsonResult = new
-                    {
-                        status = true,
-                        redirect = Url.Action("Tournament", "Tournament", new { guid = viewModel.Model.TournamentID })
-                    };
-                }
-                else
-                {
-                    Session["Message"] = "The bracket failed to reset.";
-                    Session["Message.Class"] = ViewModel.ViewError.WARNING;
-                    jsonResult = new
-                    {
-                        status = true
-                    };
-                }
-            }
-            else
-            {
-                jsonResult = new
-                {
-                    status = false,
-                    redirect = Url.Action("Login", "Account")
-                };
-            }
-
-            return Json(JsonConvert.SerializeObject(jsonResult));
         }
     }
 }

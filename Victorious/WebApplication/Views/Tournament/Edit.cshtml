@@ -75,18 +75,18 @@
         <ul class="list-table">
             <li class="list-table-header">
                 <ul class="border" data-columns="3">
-                    <li>Name</li>
-                    <li>Involvement</li>
-                    <li>Actions</li>
+                    <li class="column">Name</li>
+                    <li class="column">Involvement</li>
+                    <li class="column">Actions</li>
                 </ul>
             </li>
             <li class="list-table-body">
                 @foreach (var user in Model.Administrators) // Display the Admins first
                 {
                     <ul class="user border" data-user="@user.UserID" data-columns="3">
-                        <li class="name">@user.Username</li>
-                        <li class="permission">Admin</li>
-                        <li class="actions">
+                        <li class="column name">@user.Username</li>
+                        <li class="column permission">Admin</li>
+                        <li class="column actions">
                             @if (userId == Model.Model.CreatedByID && user.UserID != userId)
                             {
                                 <button class="demote">Demote</button>
@@ -98,9 +98,9 @@
                 @foreach (var user in Model.Participants) // Display the Admins Second
                 {
                     <ul class="user border" data-user="@user.UserID" data-columns="3">
-                        <li class="name">@user.Username</li>
-                        <li class="permission">Participant</li>
-                        <li class="actions">
+                        <li class="column name">@user.Username</li>
+                        <li class="column permission">Participant</li>
+                        <li class="column actions">
                             @if (userId == Model.Model.CreatedByID)
                             {
                                 <button class="promote">Promote</button>

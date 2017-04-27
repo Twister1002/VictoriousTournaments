@@ -148,7 +148,7 @@ namespace WebApplication.Models
             }
         }
 
-        public DbError FinalizeTournament()
+        public DbError FinalizeTournament(Dictionary<String, int> roundData)
         {
             // Load the tournament first
             ProcessTournament();
@@ -158,11 +158,26 @@ namespace WebApplication.Models
             BracketModel bracket = Model.Brackets.ElementAt(bracketNum);
             IBracket tourny = Tourny.Brackets[bracketNum];
 
+            // Set max games for every round
+            foreach (KeyValuePair<String, int> data in roundData)
+            {
+                tourny.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
+                tourny.SetMaxGamesForWholeLowerRound(int.Parse(data.Key), data.Value);
+            }
+
+            // Verify the grand final round
+            if (tourny.GrandFinal != null)
+            {
+                tourny.GrandFinal.SetMaxGames(roundData.Last().Value);
+            }
+
             // Process
             try
             {
                 CreateMatches(bracket, tourny);
                 SaveSeedParticipants(bracket, tourny);
+
+                // Recall the bracket
                 bracket.Finalized = true;
             }
             catch (Exception e)
@@ -224,16 +239,6 @@ namespace WebApplication.Models
             {
                 Tourny.AddBracket(PlayerTournament(bracket));
             }
-
-            // Progress a few matches
-            //Tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
-            //Tourny.Brackets[0].AddWin(2, PlayerSlot.Defender);
-            //Tourny.Brackets[0].AddWin(3, PlayerSlot.Challenger);
-            //Tourny.Brackets[0].AddWin(4, PlayerSlot.Challenger);
-            //Tourny.Brackets[0].AddWin(5, PlayerSlot.Challenger);
-            //Tourny.Brackets[0].AddWin(6, PlayerSlot.Defender);
-            //Tourny.Brackets[0].AddWin(7, PlayerSlot.Challenger);
-            //Tourny.Brackets[0].AddWin(8, PlayerSlot.Defender);
         }
 
         private IBracket BracketTournament(BracketModel bracketModel)
@@ -369,43 +374,6 @@ namespace WebApplication.Models
             }
 
             return result;
-        }
-        
-        //Only the creator can reset the brackets
-        public bool ResetBrackets(int sessionUser)
-        {
-            if (sessionUser == Model.CreatedByID)
-            {
-                ProcessTournament();
-                foreach (IBracket bracket in Tourny.Brackets)
-                {
-                    if (!bracket.IsFinished)
-                    {
-                        // Delete the games first
-                        for (int i = 1; i <= bracket.NumberOfMatches; i++)
-                        {
-                            IMatch match = bracket.GetMatch(i);
-
-                            foreach (IGame game in match.Games)
-                            {
-                                db.DeleteGame(match.GetModel(), game.GetModel());
-                            }
-                        }
-
-                        bracket.ResetMatches();
-                        for (int i = 1; i <= bracket.NumberOfMatches; i++)
-                        {
-                            IMatch match = bracket.GetMatch(i);
-                            db.UpdateMatch(match.GetModel());
-                        }
-                    }
-                }
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
     }
 }

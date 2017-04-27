@@ -14,6 +14,7 @@ namespace WebApplication.Models
 
         public MatchViewModel()
         {
+            Match = new Match();
             Model = new MatchModel();
         }
 
@@ -36,35 +37,42 @@ namespace WebApplication.Models
             }
         }
 
-        public override void ApplyChanges(int userId)
+        public IPlayer Challenger()
         {
-            Model.ChallengerScore = this.ChallengerScore;
-            Model.DefenderScore = this.DefenderScore;
-            Model.WinnerID = this.WinnerID;
-        }
-
-        public override void SetFields()
-        {
-            this.ChallengerScore = Model.ChallengerScore;
-            this.DefenderScore = Model.DefenderScore;
-            this.WinnerID = Model.WinnerID;
-        }
-
-        public void AddGame(int defenderScore, int challengerScore)
-        {
-            Match.AddGame(defenderScore, challengerScore);
-
-            db.AddGame(Model, new GameModel()
+            IPlayer player = Match.Players[(int)PlayerSlot.Challenger];
+            if (player == null)
             {
-                ChallengerID = Model.ChallengerID,
-                DefenderID = Model.DefenderID,
-                ChallengerScore = challengerScore,
-                DefenderScore = defenderScore,
-                GameID = -1,
-                MatchID = Model.MatchID,
-                WinnerID = -1,
-                GameNumber = -1
-            });
+                player = new User()
+                {
+                      Name = "Winner from "+Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger]
+                };
+            }
+
+            return player;
+        }
+
+        public IPlayer Defender()
+        {
+            IPlayer player = Match.Players[(int)PlayerSlot.Defender];
+            if (player == null)
+            {
+                player = new User()
+                {
+                    Name = "Winner from " + Match.PreviousMatchNumbers[(int)PlayerSlot.Defender]
+                };
+            }
+
+            return player;
+        }
+
+        public int DefenderScore()
+        {
+            return Match.Score[(int)PlayerSlot.Defender];
+        }
+
+        public int ChallengerScore()
+        {
+            return Match.Score[(int)PlayerSlot.Challenger];
         }
     }
 }

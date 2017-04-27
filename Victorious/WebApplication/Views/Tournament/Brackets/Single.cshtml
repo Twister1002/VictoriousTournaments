@@ -1,0 +1,19 @@
+﻿@model WebApplication.Models.BracketViewModel
+
+@{
+    int rounds = Model.TotalRounds();
+}
+
+<li class="list-table-body">
+    <ul class="round" data-columns="@rounds">
+        @for (int i = 1; i <= rounds; i++)
+        {
+            <li class="column">
+                @foreach (var match in Model.Bracket.GetRound(i))
+                {
+                    Html.RenderPartial("Brackets/Shared/_Match", new WebApplication.Models.MatchViewModel(match), new ViewDataDictionary(ViewData));
+                }
+            </li>
+        }
+    </ul>
+</li>

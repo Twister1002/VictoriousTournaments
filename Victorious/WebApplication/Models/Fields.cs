@@ -98,19 +98,21 @@ namespace WebApplication.Models
         public abstract void SetFields();
     }
 
+    public abstract class BracketFields : ViewModel
+    {
+        [Display(Name = "Best Of ")]
+        public int BestOfMatches { get; set; }
+    }
+
     public abstract class MatchFields : ViewModel {
-        [DataType(DataType.Text)]
-        public int? ChallengerScore { get; set; }
-        
-        [DataType(DataType.Text)]
-        public int? DefenderScore { get; set; }
 
-        [DataType(DataType.Text)]
-        public int? WinnerID { get; set; }
-
-        public abstract void ApplyChanges(int userId);
-        public abstract void SetFields();
     } 
+
+    public abstract class GameFields : ViewModel
+    {
+        public int ChallengerScore { get; set; }
+        public int DefenderScore { get; set; }
+    }
 
     public abstract class AdministratorFields : ViewModel
     {
@@ -122,7 +124,5 @@ namespace WebApplication.Models
         public bool XBox { get; set; }
         public bool PC { get; set; }
         public bool PS3 { get; set; }
-
-
     }
 }
