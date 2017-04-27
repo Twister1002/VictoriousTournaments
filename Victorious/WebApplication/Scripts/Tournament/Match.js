@@ -102,6 +102,26 @@
         var match = $(this).closest(".TournamentMatch");
         var games = match.find(".games ul");
         var gameData = new Array();
+        var validated = true;
+
+        // Validate the games fields
+        // For every game
+        $.each(games, function (i, e) {
+            // For every game's field's score
+            $.each($(e).find(".score"), function (ii, ee) {
+                // Is the value numeric?
+                var value = $(ee).find("input").val();
+                if (!$.isNumeric(value) || Math.floor(value) != value) {
+                    validated = false;
+                    $(ee).find("input").addClass("invalid");
+                }
+                else {
+                    $(ee).find("input").removeClass("invalid");
+                }
+            });
+        });
+
+        if (!validated) return;
 
         var jsonData = {
             "matchId": match.data("id"),
@@ -113,6 +133,7 @@
         // Get all the game data
         $.each(games, function (i, e) {
             gameData.push({
+                "GameNumber": i,
                 "DefenderScore": $(e).find(".defender-score").val(),
                 "ChallengerScore": $(e).find(".challenger-score").val()
             });
@@ -131,6 +152,9 @@
 
                 if (json.status) {
                     console.log(json.message);
+
+                    // Close the match details
+                    match.find(".TournamentGames").removeClass("open");
 
                     if (json.data.currentMatch) {
                         match = $(".TournamentMatch[data-id='" + json.data.currentMatch.matchId + "']");

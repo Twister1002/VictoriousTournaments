@@ -7,6 +7,13 @@ using Tournament.Structure;
 
 namespace WebApplication.Models
 {
+    public struct MatchGame
+    {
+        public int ChallengerScore;
+        public int DefenderScore;
+        public bool isProcessed;
+    }
+
     public class GameViewModel : GameFields
     {
         public GameModel Model { get; private set; }

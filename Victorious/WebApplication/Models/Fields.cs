@@ -104,12 +104,13 @@ namespace WebApplication.Models
         public int BestOfMatches { get; set; }
     }
 
-    public abstract class MatchFields : ViewModel {
-
+    public abstract class MatchFields : ViewModel
+    {
     } 
 
     public abstract class GameFields : ViewModel
     {
+        public int GameNumber { get; set; }
         public int ChallengerScore { get; set; }
         public int DefenderScore { get; set; }
     }

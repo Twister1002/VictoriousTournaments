@@ -64,25 +64,25 @@ namespace WebApplication.Controllers
             object data = new { };
 
             if (Session["User.UserId"] != null)
-            //if (true)
             {
                 Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonIds);
                 TournamentViewModel tournamentModel = new TournamentViewModel(json["tournamentId"]);
 
                 if (tournamentModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
-                //if (true)
                 {
                     tournamentModel.ProcessTournament();
                     IBracket bracket = tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]);
                     IMatch match = bracket.GetMatch(json["matchNum"]);
                     BracketViewModel bracketModel = new BracketViewModel(bracket);
                     MatchViewModel matchModel = new MatchViewModel(match);
+                    Dictionary<int, bool> processed = new Dictionary<int, bool>();
 
                     // Verify these matches exists
                     foreach (GameViewModel gameModel in games)
                     {
                         if (match.IsFinished || gameModel.ChallengerScore == gameModel.DefenderScore)
                         {
+                            processed.Add(gameModel.GameNumber, false);
                             continue;
                         }
 
@@ -96,12 +96,17 @@ namespace WebApplication.Controllers
                             DbError gameUpdate = db.AddGame(matchModel.Model, addedGameModel);
                             if (gameUpdate != DbError.SUCCESS)
                             {
+                                processed.Add(gameModel.GameNumber, false);
                                 message = "Failed to update a game.";
                                 return Json(JsonConvert.SerializeObject(new
                                 {
-                                    status = status,
+                                    status = false,
                                     message = message
                                 }));
+                            }
+                            else
+                            {
+                                processed.Add(gameModel.GameNumber, true);
                             }
                         }
                     }
@@ -191,6 +196,7 @@ namespace WebApplication.Controllers
                     // Prepare data
                     data = new
                     {
+                        processed = processed,
                         currentMatch = currentMatchData,
                         winnerMatch = winnerMatchData,
                         loserMatch = loserMatchData
