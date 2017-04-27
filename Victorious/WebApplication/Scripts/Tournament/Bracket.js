@@ -20,16 +20,13 @@
 
     // Reset the brackets
     $(".bracket-info .options .tournament-reset").on("click", function () {
-        var jsonData = {
-            "tournyNum": $(this).closest("#Tournament").data("id"),
-            "bracketNum": $(this).closest(".bracket").data("bracketnum")
-        };
+        var bracketId = $(this).closest(".bracket").data("id");
 
-        if (confirm("Are you sure you want to reset non-finished brackets?")) {
+        if (confirm("Are you sure you want to reset this bracket?")) {
             $.ajax({
-                "url": "/Tournament/Ajax/Reset",
+                "url": "/Ajax/Bracket/Reset",
                 "type": "POST",
-                "data": { "jsonData": JSON.stringify(jsonData) },
+                "data": { "bracketId": bracketId },
                 "dataType": "json",
                 "success": function (json) {
                     json = JSON.parse(json);
@@ -41,8 +38,6 @@
                     }
                 },
                 "error": function (json) {
-                    json = JSON.parse(json);
-
                     console.log("Error");
                 }
             });

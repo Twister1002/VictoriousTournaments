@@ -32,7 +32,7 @@
         var Bracket = Model.Tourny.Brackets[i];
         String bracketName = "";
 
-        <div class="bracket" data-bracketnum="@i">
+        <div class="bracket" data-id="@Bracket.Id" data-bracketnum="@i">
             <div class="bracket-info">
                 @switch (Bracket.BracketType)
                 {

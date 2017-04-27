@@ -477,49 +477,5 @@ namespace WebApplication.Controllers
                 }
             ));
         }
-
-        [HttpPost]
-        [Route("Tournament/Ajax/Reset")]
-        public JsonResult Reset(String jsonData)
-        {
-            dynamic jsonResult = new { };
-            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<string, int>>(jsonData);
-
-            if (Session["User.UserId"] != null)
-            {
-                TournamentViewModel viewModel = new TournamentViewModel(json["tournyNum"]);
-                bool result = viewModel.ResetBrackets((int)Session["User.UserId"], json["bracketNum"]);
-
-                if (result)
-                {
-                    Session["Message"] = "The bracket has been reset.";
-                    Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
-                    jsonResult = new
-                    {
-                        status = true,
-                        redirect = Url.Action("Tournament", "Tournament", new { guid = viewModel.Model.TournamentID })
-                    };
-                }
-                else
-                {
-                    Session["Message"] = "The bracket failed to reset.";
-                    Session["Message.Class"] = ViewModel.ViewError.WARNING;
-                    jsonResult = new
-                    {
-                        status = true
-                    };
-                }
-            }
-            else
-            {
-                jsonResult = new
-                {
-                    status = false,
-                    redirect = Url.Action("Login", "Account")
-                };
-            }
-
-            return Json(JsonConvert.SerializeObject(jsonResult));
-        }
     }
 }

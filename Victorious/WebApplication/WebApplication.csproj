@@ -202,6 +202,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdministratorController.cs" />
+    <Compile Include="Controllers\BracketController.cs" />
     <Compile Include="Controllers\VictoriousController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MatchController.cs" />
@@ -248,28 +249,20 @@
     <Content Include="Views\Tournament\Edit.cshtml" />
     <Content Include="Views\Tournament\Delete.cshtml" />
     <Content Include="Views\Account\Update.cshtml" />
-    <Content Include="Views\Tournament\_ViewTournament.cshtml" />
     <Content Include="Views\Tournament\Registration.cshtml" />
     <Content Include="Views\Tournament\Administrator\_Players.cshtml" />
     <Content Include="Styles\less\Tournament\_Tournament.less" />
     <Content Include="Styles\less\Tournament\_Create.less" />
     <Content Include="Styles\less\Tournament\_Edit.less" />
     <Content Include="Styles\less\Tournament\_Search.less" />
-    <Content Include="Views\Tournament\old_Brackets\_SingleElimination.cshtml" />
-    <Content Include="Views\Tournament\old_Brackets\_Swiss.cshtml" />
-    <Content Include="Views\Tournament\old_Brackets\_RoundRobin.cshtml" />
-    <Content Include="Views\Tournament\old_Brackets\_Match.cshtml" />
-    <Content Include="Views\Tournament\old_Brackets\_DoubleElimination.cshtml" />
     <Content Include="Views\Tournament\Administrator\_Finalize.cshtml" />
     <Content Include="Views\Administrator\Index.cshtml" />
     <Content Include="Styles\less\Tournament\_Standings.less" />
-    <Content Include="Views\Tournament\old_Brackets\_Standings.cshtml" />
     <Content Include="Views\Administrator\Games.cshtml" />
     <Content Include="Styles\less\Administrator\Administrator.less" />
     <Content Include="Styles\less\Administrator\Games.less" />
     <Content Include="Styles\less\Administrator.less" />
     <Content Include="Styles\less\Tournament\_Match.less" />
-    <Content Include="Views\Tournament\old_Brackets\_Games.cshtml" />
     <Content Include="Views\Tournament\Brackets\Shared\_Header.cshtml" />
     <Content Include="Views\Tournament\Brackets\Single.cshtml" />
     <Content Include="Views\Tournament\Brackets\Double.cshtml" />
@@ -288,6 +281,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\Account\" />
+    <Folder Include="Views\Bracket\" />
     <Folder Include="Views\Match\" />
   </ItemGroup>
   <ItemGroup>

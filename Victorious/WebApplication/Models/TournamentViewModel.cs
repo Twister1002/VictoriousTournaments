@@ -230,16 +230,6 @@ namespace WebApplication.Models
             {
                 Tourny.AddBracket(PlayerTournament(bracket));
             }
-
-            // Progress a few matches
-            //Tourny.Brackets[0].AddWin(1, PlayerSlot.Challenger);
-            //Tourny.Brackets[0].AddWin(2, PlayerSlot.Defender);
-            //Tourny.Brackets[0].AddWin(3, PlayerSlot.Challenger);
-            //Tourny.Brackets[0].AddWin(4, PlayerSlot.Challenger);
-            //Tourny.Brackets[0].AddWin(5, PlayerSlot.Challenger);
-            //Tourny.Brackets[0].AddWin(6, PlayerSlot.Defender);
-            //Tourny.Brackets[0].AddWin(7, PlayerSlot.Challenger);
-            //Tourny.Brackets[0].AddWin(8, PlayerSlot.Defender);
         }
 
         private IBracket BracketTournament(BracketModel bracketModel)
@@ -375,44 +365,6 @@ namespace WebApplication.Models
             }
 
             return result;
-        }
-        
-        //Only the creator can reset the brackets
-        public bool ResetBrackets(int sessionUser, int bracketnum)
-        {
-            if (sessionUser == Model.CreatedByID)
-            {
-                ProcessTournament();
-                IBracket bracket = Tourny.Brackets.ElementAt(bracketnum);
-
-                // Delete the games first
-                for (int i = 1; i <= bracket.NumberOfMatches; i++)
-                {
-                    IMatch match = bracket.GetMatch(i);
-
-                    // Delete every game associated with this bracket
-                    foreach (IGame game in match.Games)
-                    {
-                        db.DeleteGame(match.GetModel(), game.GetModel());
-                    }
-                }
-
-                // Reset the bracket
-                bracket.ResetMatches();
-
-                // Update every match with this bracket
-                for (int i = 1; i <= bracket.NumberOfMatches; i++)
-                {
-                    IMatch match = bracket.GetMatch(i);
-                    db.UpdateMatch(match.GetModel());
-                }
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
     }
 }
