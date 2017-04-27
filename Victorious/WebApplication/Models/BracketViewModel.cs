@@ -9,6 +9,12 @@ namespace WebApplication.Models
 {
     public class BracketViewModel : BracketFields
     {
+        public struct RoundData
+        {
+            public int roundNum;
+            public int bestOf;
+        };
+
         public IBracket Bracket { get; private set; }
         public BracketModel Model { get; private set; }
 
@@ -99,6 +105,39 @@ namespace WebApplication.Models
         public List<IMatch> LowerMatches(int round)
         {
             return Bracket.GetLowerRound(round);
+        }
+
+        public List<RoundData> RoundInfo()
+        {
+            List<RoundData> data = new List<RoundData>();
+            int totalRounds = TotalRounds();
+
+            for (int i = 1; i <= totalRounds; i++)
+            {
+                RoundData? roundInfo = null;
+
+                if (Bracket.GetRound(i).Count > 0)
+                {
+                    roundInfo = new RoundData() { roundNum = i, bestOf = Bracket.GetRound(i)[0].MaxGames };
+                } 
+                else if (i == totalRounds && Bracket.GrandFinal != null)
+                {
+                    roundInfo = new RoundData() { roundNum = i, bestOf = Bracket.GrandFinal.MaxGames };
+                }
+
+                if (roundInfo == null)
+                {
+                    // Check the lower rounds;
+                    if (Bracket.GetLowerRound(i).Count > 0)
+                    {
+                        roundInfo = new RoundData() { roundNum = i, bestOf = Bracket.GetLowerRound(i)[0].MaxGames };
+                    }
+                }
+
+                data.Add((RoundData)roundInfo);
+            }
+
+            return data;
         }
     }
 }

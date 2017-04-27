@@ -157,9 +157,18 @@ namespace WebApplication.Models
             int bracketNum = 0;
             BracketModel bracket = Model.Brackets.ElementAt(bracketNum);
             IBracket tourny = Tourny.Brackets[bracketNum];
-             foreach(KeyValuePair<String, int> data in roundData) {
+
+            // Set max games for every round
+            foreach (KeyValuePair<String, int> data in roundData)
+            {
                 tourny.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
                 tourny.SetMaxGamesForWholeLowerRound(int.Parse(data.Key), data.Value);
+            }
+
+            // Verify the grand final round
+            if (tourny.GrandFinal != null)
+            {
+                tourny.GrandFinal.SetMaxGames(roundData.Last().Value);
             }
 
             // Process
@@ -189,7 +198,7 @@ namespace WebApplication.Models
                 for (int i = 1; i <= tourny.NumberOfMatches; i++)
                 {
                     MatchModel matchModel = tourny.GetMatch(i).GetModel();
-                    
+
                     bracket.Matches.Add(matchModel);
                 }
             }
