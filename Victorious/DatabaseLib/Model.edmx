@@ -1,0 +1,838 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="VictoriousDatabaseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="__RefactorLog">
+          <Key>
+            <PropertyRef Name="OperationKey" />
+          </Key>
+          <Property Name="OperationKey" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Accounts">
+          <Key>
+            <PropertyRef Name="AccountID" />
+          </Key>
+          <Property Name="AccountID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="50" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" />
+          <Property Name="Password" Type="nvarchar" MaxLength="50" />
+          <Property Name="PhoneNumber" Type="nchar" MaxLength="15" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="LastLogin" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Brackets">
+          <Key>
+            <PropertyRef Name="BracketID" />
+          </Key>
+          <Property Name="BracketID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BracketTitle" Type="nvarchar(max)" />
+          <Property Name="BracketTypeID" Type="int" Nullable="false" />
+          <Property Name="Finalized" Type="bit" Nullable="false" />
+          <Property Name="NumberOfGroups" Type="int" Nullable="false" />
+          <Property Name="TournamentID" Type="int" />
+        </EntityType>
+        <EntityType Name="BracketTypes">
+          <Key>
+            <PropertyRef Name="BracketTypeID" />
+          </Key>
+          <Property Name="BracketTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TypeName" Type="nvarchar(max)" />
+          <Property Name="Type" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Challengers">
+          <Key>
+            <PropertyRef Name="MatchID" />
+            <PropertyRef Name="TournamentUserID" />
+          </Key>
+          <Property Name="MatchID" Type="int" Nullable="false" />
+          <Property Name="TournamentUserID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Defenders">
+          <Key>
+            <PropertyRef Name="MatchID" />
+            <PropertyRef Name="TournamentUserID" />
+          </Key>
+          <Property Name="MatchID" Type="int" Nullable="false" />
+          <Property Name="TournamentUserID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Games">
+          <Key>
+            <PropertyRef Name="GameID" />
+          </Key>
+          <Property Name="GameID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ChallengerID" Type="int" Nullable="false" />
+          <Property Name="DefenderID" Type="int" Nullable="false" />
+          <Property Name="WinnerID" Type="int" Nullable="false" />
+          <Property Name="MatchID" Type="int" />
+          <Property Name="GameNumber" Type="int" Nullable="false" />
+          <Property Name="ChallengerScore" Type="int" Nullable="false" />
+          <Property Name="DefenderScore" Type="int" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="GameTypes">
+          <Key>
+            <PropertyRef Name="GameTypeID" />
+          </Key>
+          <Property Name="GameTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Title" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Matches">
+          <Key>
+            <PropertyRef Name="MatchID" />
+          </Key>
+          <Property Name="MatchID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ChallengerID" Type="int" Nullable="false" />
+          <Property Name="DefenderID" Type="int" Nullable="false" />
+          <Property Name="WinnerID" Type="int" />
+          <Property Name="ChallengerScore" Type="int" />
+          <Property Name="DefenderScore" Type="int" />
+          <Property Name="RoundIndex" Type="int" />
+          <Property Name="MatchNumber" Type="int" Nullable="false" />
+          <Property Name="IsBye" Type="bit" />
+          <Property Name="StartDateTime" Type="datetime" />
+          <Property Name="EndDateTime" Type="datetime" />
+          <Property Name="MatchDuration" Type="time" Precision="7" />
+          <Property Name="MatchIndex" Type="int" />
+          <Property Name="NextMatchNumber" Type="int" />
+          <Property Name="PrevMatchIndex" Type="int" />
+          <Property Name="NextLoserMatchNumber" Type="int" />
+          <Property Name="PrevDefenderMatchNumber" Type="int" />
+          <Property Name="PrevChallengerMatchNumber" Type="int" />
+          <Property Name="MaxGames" Type="int" />
+          <Property Name="BracketID" Type="int" />
+        </EntityType>
+        <EntityType Name="TournamentRules">
+          <Key>
+            <PropertyRef Name="TournamentRulesID" />
+          </Key>
+          <Property Name="TournamentRulesID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TournamentID" Type="int" Nullable="false" />
+          <Property Name="NumberOfRounds" Type="int" Nullable="false" />
+          <Property Name="HasEntryFee" Type="bit" Nullable="false" />
+          <Property Name="EntryFee" Type="money" />
+          <Property Name="PrizePurse" Type="money" Nullable="false" />
+          <Property Name="IsPublic" Type="bit" Nullable="false" />
+          <Property Name="RegistrationStartDate" Type="datetime" />
+          <Property Name="RegistrationEndDate" Type="datetime" />
+          <Property Name="TournamentStartDate" Type="datetime" />
+          <Property Name="TournamentEndDate" Type="datetime" />
+          <Property Name="CheckInBegins" Type="datetime" />
+          <Property Name="CheckInEnds" Type="datetime" />
+          <Property Name="Platform" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Tournaments">
+          <Key>
+            <PropertyRef Name="TournamentID" />
+          </Key>
+          <Property Name="TournamentID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GameTypeID" Type="int" />
+          <Property Name="Title" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Description" Type="text" />
+          <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+          <Property Name="CreatedByID" Type="int" Nullable="false" />
+          <Property Name="WinnerID" Type="int" Nullable="false" />
+          <Property Name="LastEditedOn" Type="datetime" Nullable="false" />
+          <Property Name="LastEditedByID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TournamentUsers">
+          <Key>
+            <PropertyRef Name="TournamentUserID" />
+          </Key>
+          <Property Name="TournamentUserID" Type="int" Nullable="false" />
+          <Property Name="AccountID" Type="int" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Usernamne" Type="nvarchar" MaxLength="50" />
+          <Property Name="Seed" Type="int" />
+          <Property Name="UniformNumber" Type="int" />
+          <Property Name="TournamentID" Type="int" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'VictoriousDatabase.dbo.TournamentUserSeeds' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="TournamentUserSeeds">
+          <Key>
+            <PropertyRef Name="TournamentUserID" />
+            <PropertyRef Name="BracketID" />
+            <PropertyRef Name="Seed" />
+          </Key>
+          <Property Name="TournamentUserID" Type="int" Nullable="false" />
+          <Property Name="BracketID" Type="int" Nullable="false" />
+          <Property Name="Seed" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UsersBrackets">
+          <Key>
+            <PropertyRef Name="TournamentUserID" />
+            <PropertyRef Name="BracketID" />
+          </Key>
+          <Property Name="TournamentUserID" Type="int" Nullable="false" />
+          <Property Name="BracketID" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Brackets_Tournaments">
+          <End Role="Tournaments" Type="Self.Tournaments" Multiplicity="0..1" />
+          <End Role="Brackets" Type="Self.Brackets" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tournaments">
+              <PropertyRef Name="TournamentID" />
+            </Principal>
+            <Dependent Role="Brackets">
+              <PropertyRef Name="TournamentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Matches_Brackets">
+          <End Role="Brackets" Type="Self.Brackets" Multiplicity="0..1" />
+          <End Role="Matches" Type="Self.Matches" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Brackets">
+              <PropertyRef Name="BracketID" />
+            </Principal>
+            <Dependent Role="Matches">
+              <PropertyRef Name="BracketID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TournamentRules_Tournaments">
+          <End Role="Tournaments" Type="Self.Tournaments" Multiplicity="1" />
+          <End Role="TournamentRules" Type="Self.TournamentRules" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tournaments">
+              <PropertyRef Name="TournamentID" />
+            </Principal>
+            <Dependent Role="TournamentRules">
+              <PropertyRef Name="TournamentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TournamentUser_Tournaments">
+          <End Role="Tournaments" Type="Self.Tournaments" Multiplicity="1" />
+          <End Role="TournamentUsers" Type="Self.TournamentUsers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tournaments">
+              <PropertyRef Name="TournamentID" />
+            </Principal>
+            <Dependent Role="TournamentUsers">
+              <PropertyRef Name="TournamentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TournamentUserSeeds_Brackets">
+          <End Role="Brackets" Type="Self.Brackets" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TournamentUserSeeds" Type="Self.TournamentUserSeeds" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Brackets">
+              <PropertyRef Name="BracketID" />
+            </Principal>
+            <Dependent Role="TournamentUserSeeds">
+              <PropertyRef Name="BracketID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TournamentUserSeeds_TournamentUsers">
+          <End Role="TournamentUsers" Type="Self.TournamentUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TournamentUserSeeds" Type="Self.TournamentUserSeeds" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TournamentUsers">
+              <PropertyRef Name="TournamentUserID" />
+            </Principal>
+            <Dependent Role="TournamentUserSeeds">
+              <PropertyRef Name="TournamentUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserBrackets_TournamentUsers">
+          <End Role="TournamentUsers" Type="Self.TournamentUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UsersBrackets" Type="Self.UsersBrackets" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TournamentUsers">
+              <PropertyRef Name="TournamentUserID" />
+            </Principal>
+            <Dependent Role="UsersBrackets">
+              <PropertyRef Name="TournamentUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UsersBrackets_Tournaments">
+          <End Role="Brackets" Type="Self.Brackets" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UsersBrackets" Type="Self.UsersBrackets" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Brackets">
+              <PropertyRef Name="BracketID" />
+            </Principal>
+            <Dependent Role="UsersBrackets">
+              <PropertyRef Name="BracketID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="VictoriousDatabaseModelStoreContainer">
+          <EntitySet Name="__RefactorLog" EntityType="Self.__RefactorLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Accounts" EntityType="Self.Accounts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Brackets" EntityType="Self.Brackets" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BracketTypes" EntityType="Self.BracketTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Challengers" EntityType="Self.Challengers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Defenders" EntityType="Self.Defenders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Games" EntityType="Self.Games" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Matches" EntityType="Self.Matches" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TournamentRules" EntityType="Self.TournamentRules" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tournaments" EntityType="Self.Tournaments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TournamentUsers" EntityType="Self.TournamentUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UsersBrackets" EntityType="Self.UsersBrackets" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GameTypes" EntityType="Self.GameTypes" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [GameTypes].[GameTypeID] AS [GameTypeID], 
+    [GameTypes].[Title] AS [Title]
+    FROM [dbo].[GameTypes] AS [GameTypes]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="TournamentUserSeeds" EntityType="Self.TournamentUserSeeds" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [TournamentUserSeeds].[TournamentUserID] AS [TournamentUserID], 
+    [TournamentUserSeeds].[BracketID] AS [BracketID], 
+    [TournamentUserSeeds].[Seed] AS [Seed]
+    FROM [dbo].[TournamentUserSeeds] AS [TournamentUserSeeds]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_Brackets_Tournaments" Association="Self.FK_Brackets_Tournaments">
+            <End Role="Tournaments" EntitySet="Tournaments" />
+            <End Role="Brackets" EntitySet="Brackets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Matches_Brackets" Association="Self.FK_Matches_Brackets">
+            <End Role="Brackets" EntitySet="Brackets" />
+            <End Role="Matches" EntitySet="Matches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TournamentRules_Tournaments" Association="Self.FK_TournamentRules_Tournaments">
+            <End Role="Tournaments" EntitySet="Tournaments" />
+            <End Role="TournamentRules" EntitySet="TournamentRules" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TournamentUser_Tournaments" Association="Self.FK_TournamentUser_Tournaments">
+            <End Role="Tournaments" EntitySet="Tournaments" />
+            <End Role="TournamentUsers" EntitySet="TournamentUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TournamentUserSeeds_Brackets" Association="Self.FK_TournamentUserSeeds_Brackets">
+            <End Role="Brackets" EntitySet="Brackets" />
+            <End Role="TournamentUserSeeds" EntitySet="TournamentUserSeeds" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TournamentUserSeeds_TournamentUsers" Association="Self.FK_TournamentUserSeeds_TournamentUsers">
+            <End Role="TournamentUsers" EntitySet="TournamentUsers" />
+            <End Role="TournamentUserSeeds" EntitySet="TournamentUserSeeds" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserBrackets_TournamentUsers" Association="Self.FK_UserBrackets_TournamentUsers">
+            <End Role="TournamentUsers" EntitySet="TournamentUsers" />
+            <End Role="UsersBrackets" EntitySet="UsersBrackets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UsersBrackets_Tournaments" Association="Self.FK_UsersBrackets_Tournaments">
+            <End Role="Brackets" EntitySet="Brackets" />
+            <End Role="UsersBrackets" EntitySet="UsersBrackets" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="VictoriousDatabaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="C__RefactorLog">
+          <Key>
+            <PropertyRef Name="OperationKey" />
+          </Key>
+          <Property Name="OperationKey" Type="Guid" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="AccountID" />
+          </Key>
+          <Property Name="AccountID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="15" FixedLength="true" Unicode="true" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="LastLogin" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Bracket">
+          <Key>
+            <PropertyRef Name="BracketID" />
+          </Key>
+          <Property Name="BracketID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BracketTitle" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="BracketTypeID" Type="Int32" Nullable="false" />
+          <Property Name="Finalized" Type="Boolean" Nullable="false" />
+          <Property Name="NumberOfGroups" Type="Int32" Nullable="false" />
+          <Property Name="TournamentID" Type="Int32" />
+          <NavigationProperty Name="Tournament" Relationship="Self.FK_Brackets_Tournaments" FromRole="Brackets" ToRole="Tournaments" />
+          <NavigationProperty Name="Matches" Relationship="Self.FK_Matches_Brackets" FromRole="Brackets" ToRole="Matches" />
+          <NavigationProperty Name="TournamentUserSeeds" Relationship="Self.FK_TournamentUserSeeds_Brackets" FromRole="Brackets" ToRole="TournamentUserSeeds" />
+          <NavigationProperty Name="TournamentUsers" Relationship="VictoriousDatabaseModel.UsersBrackets" FromRole="Bracket" ToRole="TournamentUser" />
+        </EntityType>
+        <EntityType Name="BracketType">
+          <Key>
+            <PropertyRef Name="BracketTypeID" />
+          </Key>
+          <Property Name="BracketTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TypeName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Type" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Game">
+          <Key>
+            <PropertyRef Name="GameID" />
+          </Key>
+          <Property Name="GameID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ChallengerID" Type="Int32" Nullable="false" />
+          <Property Name="DefenderID" Type="Int32" Nullable="false" />
+          <Property Name="WinnerID" Type="Int32" Nullable="false" />
+          <Property Name="MatchID" Type="Int32" />
+          <Property Name="GameNumber" Type="Int32" Nullable="false" />
+          <Property Name="ChallengerScore" Type="Int32" Nullable="false" />
+          <Property Name="DefenderScore" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Match">
+          <Key>
+            <PropertyRef Name="MatchID" />
+          </Key>
+          <Property Name="MatchID" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+          <Property Name="ChallengerID" Nullable="false" Type="Int32" />
+          <Property Name="DefenderID" Nullable="false" Type="Int32" />
+          <Property Name="WinnerID" Type="Int32" />
+          <Property Name="ChallengerScore" Type="Int32" />
+          <Property Name="DefenderScore" Type="Int32" />
+          <Property Name="RoundIndex" Type="Int32" />
+          <Property Name="MatchNumber" Nullable="false" Type="Int32" />
+          <Property Name="IsBye" Type="Boolean" />
+          <Property Name="StartDateTime" Precision="3" Type="DateTime" />
+          <Property Name="EndDateTime" Precision="3" Type="DateTime" />
+          <Property Name="MatchDuration" Precision="7" Type="Time" />
+          <Property Name="MatchIndex" Type="Int32" />
+          <Property Name="NextMatchNumber" Type="Int32" />
+          <Property Name="PrevMatchIndex" Type="Int32" />
+          <Property Name="NextLoserMatchNumber" Type="Int32" />
+          <Property Name="PrevDefenderMatchNumber" Type="Int32" />
+          <Property Name="PrevChallengerMatchNumber" Type="Int32" />
+          <Property Name="MaxGames" Type="Int32" />
+          <Property Name="BracketID" Type="Int32" />
+          <NavigationProperty Name="Bracket" Relationship="Self.FK_Matches_Brackets" FromRole="Matches" ToRole="Brackets" />
+          </EntityType>
+        <EntityType Name="TournamentRule">
+          <Key>
+            <PropertyRef Name="TournamentRulesID" />
+          </Key>
+          <Property Name="TournamentRulesID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TournamentID" Type="Int32" Nullable="false" />
+          <Property Name="NumberOfRounds" Type="Int32" Nullable="false" />
+          <Property Name="HasEntryFee" Type="Boolean" Nullable="false" />
+          <Property Name="EntryFee" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="PrizePurse" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="IsPublic" Type="Boolean" Nullable="false" />
+          <Property Name="RegistrationStartDate" Type="DateTime" Precision="3" />
+          <Property Name="RegistrationEndDate" Type="DateTime" Precision="3" />
+          <Property Name="TournamentStartDate" Type="DateTime" Precision="3" />
+          <Property Name="TournamentEndDate" Type="DateTime" Precision="3" />
+          <Property Name="CheckInBegins" Type="DateTime" Precision="3" />
+          <Property Name="CheckInEnds" Type="DateTime" Precision="3" />
+          <Property Name="Platform" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Tournament" Relationship="Self.FK_TournamentRules_Tournaments" FromRole="TournamentRules" ToRole="Tournaments" />
+        </EntityType>
+        <EntityType Name="Tournament">
+          <Key>
+            <PropertyRef Name="TournamentID" />
+          </Key>
+          <Property Name="TournamentID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GameTypeID" Type="Int32" />
+          <Property Name="Title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedByID" Type="Int32" Nullable="false" />
+          <Property Name="WinnerID" Type="Int32" Nullable="false" />
+          <Property Name="LastEditedOn" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastEditedByID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Brackets" Relationship="Self.FK_Brackets_Tournaments" FromRole="Tournaments" ToRole="Brackets" />
+          <NavigationProperty Name="TournamentRules" Relationship="Self.FK_TournamentRules_Tournaments" FromRole="Tournaments" ToRole="TournamentRules" />
+          <NavigationProperty Name="TournamentUsers" Relationship="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" FromRole="Tournament" ToRole="TournamentUser" />
+        </EntityType>
+        <EntityType Name="GameType">
+          <Key>
+            <PropertyRef Name="GameTypeID" />
+          </Key>
+          <Property Name="GameTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="TournamentUserSeed">
+          <Key>
+            <PropertyRef Name="TournamentUserID" />
+            <PropertyRef Name="BracketID" />
+            <PropertyRef Name="Seed" />
+          </Key>
+          <Property Name="TournamentUserID" Type="Int32" Nullable="false" />
+          <Property Name="BracketID" Type="Int32" Nullable="false" />
+          <Property Name="Seed" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Bracket" Relationship="Self.FK_TournamentUserSeeds_Brackets" FromRole="TournamentUserSeeds" ToRole="Brackets" />
+          <NavigationProperty Name="TournamentUser" Relationship="VictoriousDatabaseModel.FK_TournamentUserSeeds_TournamentUsers" FromRole="TournamentUserSeed" ToRole="TournamentUser" />
+        </EntityType>
+        <Association Name="FK_Brackets_Tournaments">
+          <End Role="Tournaments" Type="Self.Tournament" Multiplicity="0..1" />
+          <End Role="Brackets" Type="Self.Bracket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tournaments">
+              <PropertyRef Name="TournamentID" />
+            </Principal>
+            <Dependent Role="Brackets">
+              <PropertyRef Name="TournamentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Matches_Brackets">
+          <End Type="Self.Bracket" Multiplicity="0..1" Role="Brackets" />
+          <End Type="Self.Match" Multiplicity="*" Role="Matches" />
+          <ReferentialConstraint>
+            <Principal Role="Brackets">
+              <PropertyRef Name="BracketID" />
+            </Principal>
+            <Dependent Role="Matches">
+              <PropertyRef Name="BracketID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TournamentUserSeeds_Brackets">
+          <End Role="Brackets" Type="Self.Bracket" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TournamentUserSeeds" Type="Self.TournamentUserSeed" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Brackets">
+              <PropertyRef Name="BracketID" />
+            </Principal>
+            <Dependent Role="TournamentUserSeeds">
+              <PropertyRef Name="BracketID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TournamentRules_Tournaments">
+          <End Role="Tournaments" Type="Self.Tournament" Multiplicity="1" />
+          <End Role="TournamentRules" Type="Self.TournamentRule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tournaments">
+              <PropertyRef Name="TournamentID" />
+            </Principal>
+            <Dependent Role="TournamentRules">
+              <PropertyRef Name="TournamentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="VictoriousEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="C__RefactorLog" EntityType="Self.C__RefactorLog" />
+          <EntitySet Name="Accounts" EntityType="Self.Account" />
+          <EntitySet Name="Brackets" EntityType="Self.Bracket" />
+          <EntitySet Name="BracketTypes" EntityType="Self.BracketType" />
+          <EntitySet Name="Games" EntityType="Self.Game" />
+          <EntitySet Name="Matches" EntityType="Self.Match" />
+          <EntitySet Name="TournamentRules" EntityType="Self.TournamentRule" />
+          <EntitySet Name="Tournaments" EntityType="Self.Tournament" />
+          <EntitySet Name="GameTypes" EntityType="Self.GameType" />
+          <EntitySet Name="TournamentUserSeeds" EntityType="Self.TournamentUserSeed" />
+          <AssociationSet Name="FK_Brackets_Tournaments" Association="Self.FK_Brackets_Tournaments">
+            <End Role="Tournaments" EntitySet="Tournaments" />
+            <End Role="Brackets" EntitySet="Brackets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Matches_Brackets" Association="Self.FK_Matches_Brackets">
+            <End EntitySet="Brackets" Role="Brackets" />
+            <End EntitySet="Matches" Role="Matches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TournamentUserSeeds_Brackets" Association="Self.FK_TournamentUserSeeds_Brackets">
+            <End Role="Brackets" EntitySet="Brackets" />
+            <End Role="TournamentUserSeeds" EntitySet="TournamentUserSeeds" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TournamentRules_Tournaments" Association="Self.FK_TournamentRules_Tournaments">
+            <End Role="Tournaments" EntitySet="Tournaments" />
+            <End Role="TournamentRules" EntitySet="TournamentRules" />
+          </AssociationSet>
+          <EntitySet Name="Challengers" EntityType="VictoriousDatabaseModel.Challenger" />
+          <EntitySet Name="Defenders" EntityType="VictoriousDatabaseModel.Defender" />
+          <EntitySet Name="TournamentUsers" EntityType="VictoriousDatabaseModel.TournamentUser" />
+          <AssociationSet Name="FK_TournamentUser_Tournaments" Association="VictoriousDatabaseModel.FK_TournamentUser_Tournaments">
+            <End Role="Tournament" EntitySet="Tournaments" />
+            <End Role="TournamentUser" EntitySet="TournamentUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TournamentUserSeeds_TournamentUsers" Association="VictoriousDatabaseModel.FK_TournamentUserSeeds_TournamentUsers">
+            <End Role="TournamentUser" EntitySet="TournamentUsers" />
+            <End Role="TournamentUserSeed" EntitySet="TournamentUserSeeds" />
+          </AssociationSet>
+          <AssociationSet Name="UsersBrackets" Association="VictoriousDatabaseModel.UsersBrackets">
+            <End Role="TournamentUser" EntitySet="TournamentUsers" />
+            <End Role="Bracket" EntitySet="Brackets" />
+          </AssociationSet>
+          </EntityContainer>
+        <EntityType Name="Challenger">
+          <Key>
+            <PropertyRef Name="MatchID" />
+            <PropertyRef Name="TournamentUserID" />
+          </Key>
+          <Property Name="MatchID" Type="Int32" Nullable="false" />
+          <Property Name="TournamentUserID" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Defender">
+          <Key>
+            <PropertyRef Name="MatchID" />
+            <PropertyRef Name="TournamentUserID" />
+          </Key>
+          <Property Name="MatchID" Type="Int32" Nullable="false" />
+          <Property Name="TournamentUserID" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TournamentUser">
+          <Key>
+            <PropertyRef Name="TournamentUserID" />
+          </Key>
+          <Property Name="TournamentUserID" Type="Int32" Nullable="false" />
+          <Property Name="AccountID" Type="Int32" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Usernamne" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Seed" Type="Int32" />
+          <Property Name="UniformNumber" Type="Int32" />
+          <Property Name="TournamentID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" FromRole="TournamentUser" ToRole="Tournament" />
+          <NavigationProperty Name="TournamentUserSeeds" Relationship="VictoriousDatabaseModel.FK_TournamentUserSeeds_TournamentUsers" FromRole="TournamentUser" ToRole="TournamentUserSeed" />
+          <NavigationProperty Name="Brackets" Relationship="VictoriousDatabaseModel.UsersBrackets" FromRole="TournamentUser" ToRole="Bracket" />
+        </EntityType>
+        <Association Name="FK_TournamentUser_Tournaments">
+          <End Type="VictoriousDatabaseModel.Tournament" Role="Tournament" Multiplicity="1" />
+          <End Type="VictoriousDatabaseModel.TournamentUser" Role="TournamentUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tournament">
+              <PropertyRef Name="TournamentID" />
+            </Principal>
+            <Dependent Role="TournamentUser">
+              <PropertyRef Name="TournamentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TournamentUserSeeds_TournamentUsers">
+          <End Type="VictoriousDatabaseModel.TournamentUser" Role="TournamentUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="VictoriousDatabaseModel.TournamentUserSeed" Role="TournamentUserSeed" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TournamentUser">
+              <PropertyRef Name="TournamentUserID" />
+            </Principal>
+            <Dependent Role="TournamentUserSeed">
+              <PropertyRef Name="TournamentUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UsersBrackets">
+          <End Type="VictoriousDatabaseModel.TournamentUser" Role="TournamentUser" Multiplicity="*" />
+          <End Type="VictoriousDatabaseModel.Bracket" Role="Bracket" Multiplicity="*" />
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="VictoriousDatabaseModelStoreContainer" CdmEntityContainer="VictoriousEntities">
+          <EntitySetMapping Name="C__RefactorLog">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.C__RefactorLog">
+              <MappingFragment StoreEntitySet="__RefactorLog">
+                <ScalarProperty Name="OperationKey" ColumnName="OperationKey" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Brackets">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.Bracket">
+              <MappingFragment StoreEntitySet="Brackets">
+                <ScalarProperty Name="BracketID" ColumnName="BracketID" />
+                <ScalarProperty Name="BracketTitle" ColumnName="BracketTitle" />
+                <ScalarProperty Name="BracketTypeID" ColumnName="BracketTypeID" />
+                <ScalarProperty Name="Finalized" ColumnName="Finalized" />
+                <ScalarProperty Name="NumberOfGroups" ColumnName="NumberOfGroups" />
+                <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BracketTypes">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.BracketType">
+              <MappingFragment StoreEntitySet="BracketTypes">
+                <ScalarProperty Name="BracketTypeID" ColumnName="BracketTypeID" />
+                <ScalarProperty Name="TypeName" ColumnName="TypeName" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Games">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.Game">
+              <MappingFragment StoreEntitySet="Games">
+                <ScalarProperty Name="GameID" ColumnName="GameID" />
+                <ScalarProperty Name="ChallengerID" ColumnName="ChallengerID" />
+                <ScalarProperty Name="DefenderID" ColumnName="DefenderID" />
+                <ScalarProperty Name="WinnerID" ColumnName="WinnerID" />
+                <ScalarProperty Name="MatchID" ColumnName="MatchID" />
+                <ScalarProperty Name="GameNumber" ColumnName="GameNumber" />
+                <ScalarProperty Name="ChallengerScore" ColumnName="ChallengerScore" />
+                <ScalarProperty Name="DefenderScore" ColumnName="DefenderScore" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Matches">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.Match">
+              <MappingFragment StoreEntitySet="Matches">
+                <ScalarProperty Name="MatchID" ColumnName="MatchID" />
+                <ScalarProperty Name="ChallengerID" ColumnName="ChallengerID" />
+                <ScalarProperty Name="DefenderID" ColumnName="DefenderID" />
+                <ScalarProperty Name="WinnerID" ColumnName="WinnerID" />
+                <ScalarProperty Name="ChallengerScore" ColumnName="ChallengerScore" />
+                <ScalarProperty Name="DefenderScore" ColumnName="DefenderScore" />
+                <ScalarProperty Name="RoundIndex" ColumnName="RoundIndex" />
+                <ScalarProperty Name="MatchNumber" ColumnName="MatchNumber" />
+                <ScalarProperty Name="IsBye" ColumnName="IsBye" />
+                <ScalarProperty Name="StartDateTime" ColumnName="StartDateTime" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="MatchDuration" ColumnName="MatchDuration" />
+                <ScalarProperty Name="MatchIndex" ColumnName="MatchIndex" />
+                <ScalarProperty Name="NextMatchNumber" ColumnName="NextMatchNumber" />
+                <ScalarProperty Name="PrevMatchIndex" ColumnName="PrevMatchIndex" />
+                <ScalarProperty Name="NextLoserMatchNumber" ColumnName="NextLoserMatchNumber" />
+                <ScalarProperty Name="PrevDefenderMatchNumber" ColumnName="PrevDefenderMatchNumber" />
+                <ScalarProperty Name="PrevChallengerMatchNumber" ColumnName="PrevChallengerMatchNumber" />
+                <ScalarProperty Name="MaxGames" ColumnName="MaxGames" />
+                <ScalarProperty Name="BracketID" ColumnName="BracketID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TournamentRules">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentRule">
+              <MappingFragment StoreEntitySet="TournamentRules">
+                <ScalarProperty Name="TournamentRulesID" ColumnName="TournamentRulesID" />
+                <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
+                <ScalarProperty Name="NumberOfRounds" ColumnName="NumberOfRounds" />
+                <ScalarProperty Name="HasEntryFee" ColumnName="HasEntryFee" />
+                <ScalarProperty Name="EntryFee" ColumnName="EntryFee" />
+                <ScalarProperty Name="PrizePurse" ColumnName="PrizePurse" />
+                <ScalarProperty Name="IsPublic" ColumnName="IsPublic" />
+                <ScalarProperty Name="RegistrationStartDate" ColumnName="RegistrationStartDate" />
+                <ScalarProperty Name="RegistrationEndDate" ColumnName="RegistrationEndDate" />
+                <ScalarProperty Name="TournamentStartDate" ColumnName="TournamentStartDate" />
+                <ScalarProperty Name="TournamentEndDate" ColumnName="TournamentEndDate" />
+                <ScalarProperty Name="CheckInBegins" ColumnName="CheckInBegins" />
+                <ScalarProperty Name="CheckInEnds" ColumnName="CheckInEnds" />
+                <ScalarProperty Name="Platform" ColumnName="Platform" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tournaments">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.Tournament">
+              <MappingFragment StoreEntitySet="Tournaments">
+                <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
+                <ScalarProperty Name="GameTypeID" ColumnName="GameTypeID" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="CreatedByID" ColumnName="CreatedByID" />
+                <ScalarProperty Name="WinnerID" ColumnName="WinnerID" />
+                <ScalarProperty Name="LastEditedOn" ColumnName="LastEditedOn" />
+                <ScalarProperty Name="LastEditedByID" ColumnName="LastEditedByID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GameTypes">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.GameType">
+              <MappingFragment StoreEntitySet="GameTypes">
+                <ScalarProperty Name="GameTypeID" ColumnName="GameTypeID" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TournamentUserSeeds">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentUserSeed">
+              <MappingFragment StoreEntitySet="TournamentUserSeeds">
+                <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
+                <ScalarProperty Name="BracketID" ColumnName="BracketID" />
+                <ScalarProperty Name="Seed" ColumnName="Seed" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Challengers">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.Challenger">
+              <MappingFragment StoreEntitySet="Challengers">
+                <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
+                <ScalarProperty Name="MatchID" ColumnName="MatchID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Defenders">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.Defender">
+              <MappingFragment StoreEntitySet="Defenders">
+                <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
+                <ScalarProperty Name="MatchID" ColumnName="MatchID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TournamentUsers">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentUser">
+              <MappingFragment StoreEntitySet="TournamentUsers">
+                <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
+                <ScalarProperty Name="UniformNumber" ColumnName="UniformNumber" />
+                <ScalarProperty Name="Seed" ColumnName="Seed" />
+                <ScalarProperty Name="Usernamne" ColumnName="Usernamne" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+                <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="UsersBrackets" TypeName="VictoriousDatabaseModel.UsersBrackets" StoreEntitySet="UsersBrackets">
+            <EndProperty Name="Bracket">
+              <ScalarProperty Name="BracketID" ColumnName="BracketID" />
+            </EndProperty>
+            <EndProperty Name="TournamentUser">
+              <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="IsTypeOf(VictoriousDatabaseModel.Account)">
+              <MappingFragment StoreEntitySet="Accounts">
+                <ScalarProperty Name="LastLogin" ColumnName="LastLogin" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

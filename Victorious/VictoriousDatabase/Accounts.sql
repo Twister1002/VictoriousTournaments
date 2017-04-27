@@ -9,5 +9,6 @@
     [PhoneNumber]               NCHAR (15)    NULL,
     [CreatedOn]                 DATETIME      NULL,
     [LastLogin]                 DATETIME      NULL, 
+    [PermissionLevel] INT NOT NULL, 
     CONSTRAINT [PK_Accounts] PRIMARY KEY ([AccountID]),
 )

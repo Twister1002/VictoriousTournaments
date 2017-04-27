@@ -46,7 +46,6 @@ namespace DataLib
 
             }
 
-
             context.Tournaments
                 .Include(x => x.Brackets)
                 .Include(x => x.Users)
