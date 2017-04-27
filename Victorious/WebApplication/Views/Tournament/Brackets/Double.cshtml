@@ -27,4 +27,22 @@
             </li>
         }
     </ul>
+    <ul class="round" data-columns="@rounds">
+        @for (int i = 1; i <= rounds; i++)
+        {
+            if (i != rounds)
+            {
+                <li class="column"></li>
+            }
+            else
+            {
+                <li class="column">
+                    @{
+                        ViewBag.isGrandFinal = true;
+                        Html.RenderPartial("Brackets/Shared/_Match", new WebApplication.Models.MatchViewModel(Model.Bracket.GrandFinal), new ViewDataDictionary(ViewData));
+                    }
+                </li>
+            }
+        }
+    </ul>
 </li>

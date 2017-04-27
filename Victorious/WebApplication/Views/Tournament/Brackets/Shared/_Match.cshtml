@@ -1,6 +1,11 @@
 ﻿@model WebApplication.Models.MatchViewModel
 
-<div class="TournamentMatch" data-id="@Model.Model.MatchID" data-matchnum="@Model.Model.MatchNumber">
+@{ 
+    String isGrandFinal = ViewBag.isGrandFinal == true ? "grand-final" : "";
+    ViewBag.isGrandFinal = null;
+}
+
+<div class="TournamentMatch @(isGrandFinal)" data-id="@Model.Model.MatchID" data-matchnum="@Model.Model.MatchNumber">
     <label class="matchNum">@Model.Model.MatchNumber</label>
 
     <div class="overview">
