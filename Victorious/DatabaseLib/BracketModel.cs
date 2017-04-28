@@ -28,10 +28,10 @@ namespace DatabaseLib
         public int NumberOfGroups { get; set; }
         public Nullable<int> TournamentID { get; set; }
     
-        public virtual TournamentModel Tournament { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MatchModel> Matches { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
+        public virtual TournamentModel Tournament { get; set; }
     }
 }

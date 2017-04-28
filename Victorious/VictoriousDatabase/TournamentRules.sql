@@ -1,7 +1,6 @@
 ﻿CREATE TABLE [dbo].[TournamentRules]
 (
-	[TournamentRulesID]     INT      IDENTITY (1, 1) NOT NULL,
-    [TournamentID]          INT      NOT NULL,
+	[TournamentRulesID]     INT      UNIQUE NOT NULL,
     [NumberOfRounds]        INT      NOT NULL,
     [HasEntryFee]           BIT      NOT NULL,
     [EntryFee]              MONEY    NULL,
@@ -15,5 +14,5 @@
     [CheckInEnds]           DATETIME NULL,
     [Platform]              INT      NOT NULL, 
     CONSTRAINT [PK_TournamentRules] PRIMARY KEY ([TournamentRulesID]),
-	CONSTRAINT FK_TournamentRules_Tournaments FOREIGN KEY(TournamentID) REFERENCES Tournaments(TournamentID)
+	CONSTRAINT FK_TournamentRules_Tournaments FOREIGN KEY(TournamentRulesID) REFERENCES Tournaments(TournamentID)
 )

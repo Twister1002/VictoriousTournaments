@@ -12,10 +12,9 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class TournamentRuleModel
+    public partial class TournamentRulesModel
     {
         public int TournamentRulesID { get; set; }
-        public int TournamentID { get; set; }
         public int NumberOfRounds { get; set; }
         public bool HasEntryFee { get; set; }
         public Nullable<decimal> EntryFee { get; set; }

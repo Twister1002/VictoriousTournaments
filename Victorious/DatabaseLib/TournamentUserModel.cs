@@ -29,8 +29,8 @@ namespace DatabaseLib
         public Nullable<int> UniformNumber { get; set; }
         public int TournamentID { get; set; }
     
-        public virtual TournamentModel Tournament { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
+        public virtual TournamentModel Tournament { get; set; }
     }
 }

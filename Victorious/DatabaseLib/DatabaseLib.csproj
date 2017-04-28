@@ -67,6 +67,7 @@
     <Compile Include="C__RefactorLog.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="DbInterface.cs" />
     <Compile Include="Defender.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -76,7 +77,6 @@
     <Compile Include="GameType.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="DbInterface.cs" />
     <Compile Include="MatchModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -100,7 +100,7 @@
     <Compile Include="TournamentModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="TournamentRuleModel.cs">
+    <Compile Include="TournamentRulesModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="TournamentUserModel.cs">
