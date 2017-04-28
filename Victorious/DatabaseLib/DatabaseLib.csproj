@@ -100,9 +100,6 @@
     <Compile Include="TournamentModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="TournamentRulesModel.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-    </Compile>
     <Compile Include="TournamentUserModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>

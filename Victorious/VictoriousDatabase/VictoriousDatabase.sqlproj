@@ -61,7 +61,6 @@
   <ItemGroup>
     <Build Include="Accounts.sql" />
     <Build Include="Tournaments.sql" />
-    <Build Include="TournamentRules.sql" />
     <Build Include="TournamentUsers.sql" />
     <Build Include="Brackets.sql" />
     <Build Include="BracketTypes.sql" />

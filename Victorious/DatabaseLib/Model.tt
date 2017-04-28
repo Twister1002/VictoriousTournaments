@@ -59,11 +59,11 @@ foreach (var entity in typeMapper.GetItemsToGenerate<EntityType>(itemCollection)
 <#
         }
 #>
+		OnInit();
     }
 
 <#
     }
-
     var simpleProperties = typeMapper.GetSimpleProperties(entity);
     if (simpleProperties.Any())
     {
@@ -91,6 +91,11 @@ foreach (var entity in typeMapper.GetItemsToGenerate<EntityType>(itemCollection)
     var navigationProperties = typeMapper.GetNavigationProperties(entity);
     if (navigationProperties.Any())
     {
+
+#>	
+	partial void OnInit();
+<#
+
 #>
 
 <#

@@ -197,7 +197,7 @@ namespace DatabaseLib
         #endregion
 
 
-        #region TournamentModels
+        #region Tournaments
 
         public DbError TournamentExists(TournamentModel tournament)
         {
@@ -233,13 +233,12 @@ namespace DatabaseLib
 
         public DbError AddTournament(TournamentModel tournament)
         {
-            TournamentRulesModel _rules = new TournamentRulesModel();
+           
             TournamentModel _tournament = new TournamentModel();
             try
             {
                 _tournament = tournament;
-                _rules = tournament.TournamentRule;
-                context.TournamentRulesModels.Add(_rules);
+             
                 _tournament.CreatedOn = DateTime.Now;
                 _tournament.LastEditedOn = DateTime.Now;
                 context.SaveChanges();
@@ -255,22 +254,7 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
-        public DbError AddUserToTournament(TournamentUserModel user)
-        {
-            try
-            {
-                context.TournamentUserModels.Add(user);
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                interfaceException = ex;
-                WriteException(ex);
-                return DbError.FAILED_TO_ADD;
-                throw;
-            }
-            return DbError.SUCCESS;
-        }
+       
 
         public TournamentModel GetTournamentById(int id)
         {
@@ -312,7 +296,7 @@ namespace DatabaseLib
             {
                 TournamentModel _tournament = context.TournamentModels.Find(tournament.TournamentID);
                 context.Entry(_tournament).CurrentValues.SetValues(tournament);
-                context.Entry(_tournament.TournamentRule).CurrentValues.SetValues(tournament.TournamentRule);
+            
                 //foreach (BracketModel bracket in tournament.Brackets)
                 //{
                 //    UpdateBracket(bracket);
@@ -341,11 +325,7 @@ namespace DatabaseLib
             try
             {
                 TournamentModel _tournament = context.TournamentModels.Find(tournamentId);
-                //if (_tournament.TournamentRule != null)
-                //{
-                //    TournamentRulesModel _rule = context.TournamentRule.Find(tournament.TournamentRule.TournamentRulesID);
-                //    DeleteTournamentRules(_rule);
-                //}
+                
                 //foreach (var bracket in _tournament.Brackets.ToList())
                 //{
                 //    DeleteBracket(bracket);
@@ -366,24 +346,7 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
-        public DbError RemoveUserFromTournament(int tournamentId, int userId)
-        {
-            try
-            {
-                
-                TournamentModel _tournament = context.TournamentModels.Find(tournamentId);
-                TournamentUserModel _user = context.TournamentUserModels.Find(userId);
-                //context.TournamentModels.Include(x => x.Users).Single(x => x.TournamentID == tournament.TournamentID).Users.Remove(_user);
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                interfaceException = ex;
-                WriteException(ex);
-                return DbError.FAILED_TO_REMOVE;
-            }
-            return DbError.SUCCESS;
-        }
+      
 
         /// <summary>
         /// Takes in a Dictionary of strings in which the key is the name of the parameter being searched for
@@ -452,7 +415,7 @@ namespace DatabaseLib
                 List<TournamentModel> _tournaments = context.TournamentModels.SqlQuery("SELECT * FROM dbo.TournamentModels WHERE Title LIKE @Title", new SqlParameter("@Title", "%" + title + "%")).ToList();
                 foreach (var _tournament in _tournaments)
                 {
-                    if (_tournament.TournamentRule.TournamentStartDate == startDate)
+                    if (_tournament.TournamentStartDate == startDate)
                         tournaments.Add(_tournament);
                 }
             }
@@ -469,6 +432,64 @@ namespace DatabaseLib
 
 
         #endregion
+
+
+        #region TournamentUsers
+
+        public DbError AddTournamentUser(TournamentUserModel user)
+        {
+            try
+            {
+                context.TournamentUserModels.Add(user);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_ADD;
+                throw;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public TournamentUserModel GetTournamentUserById(int id)
+        {
+            TournamentUserModel user = new TournamentUserModel();
+            try
+            {
+                user = context.TournamentUserModels.Find(id);
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                user.TournamentUserID = -1;
+            }
+            return user;
+        }
+
+        public DbError DeleteTournamentUser(int id)
+        {
+            try
+            {
+                TournamentUserModel _user = context.TournamentUserModels.Find(id);
+                context.TournamentUserModels.Remove(_user);
+                //context.TournamentModels.Include(x => x.).Single(x => x.TournamentID == tournament.TournamentID).Users.Remove(_user);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_REMOVE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        #endregion
+
+
 
         private void WriteException(Exception ex, [CallerMemberName] string funcName = null)
         {

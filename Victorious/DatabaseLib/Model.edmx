@@ -108,24 +108,6 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
           <Property Name="MaxGames" Type="int" />
           <Property Name="BracketID" Type="int" />
         </EntityType>
-        <EntityType Name="TournamentRules">
-          <Key>
-            <PropertyRef Name="TournamentRulesID" />
-          </Key>
-          <Property Name="TournamentRulesID" Type="int" Nullable="false" />
-          <Property Name="NumberOfRounds" Type="int" Nullable="false" />
-          <Property Name="HasEntryFee" Type="bit" Nullable="false" />
-          <Property Name="EntryFee" Type="money" />
-          <Property Name="PrizePurse" Type="money" Nullable="false" />
-          <Property Name="IsPublic" Type="bit" Nullable="false" />
-          <Property Name="RegistrationStartDate" Type="datetime" />
-          <Property Name="RegistrationEndDate" Type="datetime" />
-          <Property Name="TournamentStartDate" Type="datetime" />
-          <Property Name="TournamentEndDate" Type="datetime" />
-          <Property Name="CheckInBegins" Type="datetime" />
-          <Property Name="CheckInEnds" Type="datetime" />
-          <Property Name="Platform" Type="int" Nullable="false" />
-        </EntityType>
         <EntityType Name="Tournaments">
           <Key>
             <PropertyRef Name="TournamentID" />
@@ -139,6 +121,16 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
           <Property Name="WinnerID" Type="int" Nullable="false" />
           <Property Name="LastEditedOn" Type="datetime" Nullable="false" />
           <Property Name="LastEditedByID" Type="int" Nullable="false" />
+          <Property Name="EntryFee" Type="money" />
+          <Property Name="PrizePurse" Type="money" Nullable="false" />
+          <Property Name="IsPublic" Type="bit" Nullable="false" />
+          <Property Name="RegistrationStartDate" Type="datetime" Nullable="false" />
+          <Property Name="RegistrationEndDate" Type="datetime" Nullable="false" />
+          <Property Name="TournamentStartDate" Type="datetime" Nullable="false" />
+          <Property Name="TournamentEndDate" Type="datetime" Nullable="false" />
+          <Property Name="CheckInBegins" Type="datetime" Nullable="false" />
+          <Property Name="CheckInEnds" Type="datetime" Nullable="false" />
+          <Property Name="Platform" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="TournamentUsers">
           <Key>
@@ -148,7 +140,7 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
           <Property Name="AccountID" Type="int" />
           <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Usernamne" Type="nvarchar" MaxLength="50" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" />
           <Property Name="Seed" Type="int" />
           <Property Name="UniformNumber" Type="int" />
           <Property Name="TournamentID" Type="int" Nullable="false" />
@@ -183,18 +175,6 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
             </Principal>
             <Dependent Role="Matches">
               <PropertyRef Name="BracketID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_TournamentRules_Tournaments">
-          <End Role="Tournaments" Type="Self.Tournaments" Multiplicity="1" />
-          <End Role="TournamentRules" Type="Self.TournamentRules" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="Tournaments">
-              <PropertyRef Name="TournamentID" />
-            </Principal>
-            <Dependent Role="TournamentRules">
-              <PropertyRef Name="TournamentRulesID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -247,7 +227,6 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
           <EntitySet Name="Defenders" EntityType="Self.Defenders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Games" EntityType="Self.Games" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Matches" EntityType="Self.Matches" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="TournamentRules" EntityType="Self.TournamentRules" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tournaments" EntityType="Self.Tournaments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TournamentUsers" EntityType="Self.TournamentUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TournamentUsersBrackets" EntityType="Self.TournamentUsersBrackets" Schema="dbo" store:Type="Tables" />
@@ -264,10 +243,6 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
           <AssociationSet Name="FK_Matches_Brackets" Association="Self.FK_Matches_Brackets">
             <End Role="Brackets" EntitySet="Brackets" />
             <End Role="Matches" EntitySet="Matches" />
-          </AssociationSet>
-          <AssociationSet Name="FK_TournamentRules_Tournaments" Association="Self.FK_TournamentRules_Tournaments">
-            <End Role="Tournaments" EntitySet="Tournaments" />
-            <End Role="TournamentRules" EntitySet="TournamentRules" />
           </AssociationSet>
           <AssociationSet Name="FK_TournamentUser_Tournaments" Association="Self.FK_TournamentUser_Tournaments">
             <End Role="Tournaments" EntitySet="Tournaments" />
@@ -411,15 +386,10 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
             <End Role="TournamentUser" EntitySet="TournamentUserModels" />
             <End Role="TournamentUsersBracket" EntitySet="TournamentUsersBracketModels" />
           </AssociationSet>
-          <EntitySet Name="TournamentRulesModels" EntityType="VictoriousDatabaseModel.TournamentRulesModel" />
           <EntitySet Name="TournamentModels" EntityType="VictoriousDatabaseModel.TournamentModel" />
           <AssociationSet Name="FK_Brackets_Tournaments" Association="VictoriousDatabaseModel.FK_Brackets_Tournaments">
             <End Role="Tournament" EntitySet="TournamentModels" />
             <End Role="BracketModel" EntitySet="BracketModels" />
-          </AssociationSet>
-          <AssociationSet Name="FK_TournamentRules_Tournaments" Association="VictoriousDatabaseModel.FK_TournamentRules_Tournaments">
-            <End Role="Tournament" EntitySet="TournamentModels" />
-            <End Role="TournamentRule" EntitySet="TournamentRulesModels" />
           </AssociationSet>
           <AssociationSet Name="FK_TournamentUser_Tournaments" Association="VictoriousDatabaseModel.FK_TournamentUser_Tournaments">
             <End Role="Tournament" EntitySet="TournamentModels" />
@@ -450,12 +420,12 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
           <Property Name="AccountID" Type="Int32" />
           <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Usernamne" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Seed" Type="Int32" />
           <Property Name="UniformNumber" Type="Int32" />
           <Property Name="TournamentID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="TournamentUsersBrackets" Relationship="VictoriousDatabaseModel.FK_UserBrackets_TournamentUsers" FromRole="TournamentUser" ToRole="TournamentUsersBracket" />
           <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" FromRole="TournamentUserModel" ToRole="Tournament" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="TournamentUsersBracketModel">
           <Key>
@@ -496,25 +466,6 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="TournamentRulesModel">
-          <Key>
-            <PropertyRef Name="TournamentRulesID" />
-          </Key>
-          <Property Name="TournamentRulesID" Type="Int32" Nullable="false" />
-          <Property Name="NumberOfRounds" Type="Int32" Nullable="false" />
-          <Property Name="HasEntryFee" Type="Boolean" Nullable="false" />
-          <Property Name="EntryFee" Type="Decimal" Precision="19" Scale="4" />
-          <Property Name="PrizePurse" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
-          <Property Name="IsPublic" Type="Boolean" Nullable="false" />
-          <Property Name="RegistrationStartDate" Type="DateTime" Precision="3" />
-          <Property Name="RegistrationEndDate" Type="DateTime" Precision="3" />
-          <Property Name="TournamentStartDate" Type="DateTime" Precision="3" />
-          <Property Name="TournamentEndDate" Type="DateTime" Precision="3" />
-          <Property Name="CheckInBegins" Type="DateTime" Precision="3" />
-          <Property Name="CheckInEnds" Type="DateTime" Precision="3" />
-          <Property Name="Platform" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.FK_TournamentRules_Tournaments" FromRole="TournamentRule" ToRole="Tournament" />
-        </EntityType>
         <EntityType Name="TournamentModel">
           <Key>
             <PropertyRef Name="TournamentID" />
@@ -529,8 +480,17 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
           <Property Name="LastEditedOn" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="LastEditedByID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Brackets" Relationship="VictoriousDatabaseModel.FK_Brackets_Tournaments" FromRole="Tournament" ToRole="BracketModel" />
-          <NavigationProperty Name="TournamentRule" Relationship="VictoriousDatabaseModel.FK_TournamentRules_Tournaments" FromRole="Tournament" ToRole="TournamentRule" />
           <NavigationProperty Name="TournamentUsers" Relationship="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" FromRole="Tournament" ToRole="TournamentUserModel" />
+          <Property Name="EntryFee" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="PrizePurse" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
+          <Property Name="IsPublic" Type="Boolean" Nullable="false" />
+          <Property Name="RegistrationStartDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="RegistrationEndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="TournamentStartDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="TournamentEndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CheckInBegins" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CheckInEnds" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Platform" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="FK_Brackets_Tournaments">
           <End Type="VictoriousDatabaseModel.TournamentModel" Role="Tournament" Multiplicity="0..1" />
@@ -541,18 +501,6 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
             </Principal>
             <Dependent Role="BracketModel">
               <PropertyRef Name="TournamentID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_TournamentRules_Tournaments">
-          <End Type="VictoriousDatabaseModel.TournamentModel" Role="Tournament" Multiplicity="1" />
-          <End Type="VictoriousDatabaseModel.TournamentRulesModel" Role="TournamentRule" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="Tournament">
-              <PropertyRef Name="TournamentID" />
-            </Principal>
-            <Dependent Role="TournamentRule">
-              <PropertyRef Name="TournamentRulesID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -682,20 +630,6 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="TournamentUserModels">
-            <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentUserModel">
-              <MappingFragment StoreEntitySet="TournamentUsers">
-                <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
-                <ScalarProperty Name="UniformNumber" ColumnName="UniformNumber" />
-                <ScalarProperty Name="Seed" ColumnName="Seed" />
-                <ScalarProperty Name="Usernamne" ColumnName="Usernamne" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
-                <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="TournamentUsersBracketModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentUsersBracketModel">
               <MappingFragment StoreEntitySet="TournamentUsersBrackets">
@@ -705,9 +639,9 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="TournamentRulesModels">
-            <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentRulesModel">
-              <MappingFragment StoreEntitySet="TournamentRules">
+          <EntitySetMapping Name="TournamentModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentModel">
+              <MappingFragment StoreEntitySet="Tournaments">
                 <ScalarProperty Name="Platform" ColumnName="Platform" />
                 <ScalarProperty Name="CheckInEnds" ColumnName="CheckInEnds" />
                 <ScalarProperty Name="CheckInBegins" ColumnName="CheckInBegins" />
@@ -718,15 +652,6 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
                 <ScalarProperty Name="IsPublic" ColumnName="IsPublic" />
                 <ScalarProperty Name="PrizePurse" ColumnName="PrizePurse" />
                 <ScalarProperty Name="EntryFee" ColumnName="EntryFee" />
-                <ScalarProperty Name="HasEntryFee" ColumnName="HasEntryFee" />
-                <ScalarProperty Name="NumberOfRounds" ColumnName="NumberOfRounds" />
-                <ScalarProperty Name="TournamentRulesID" ColumnName="TournamentRulesID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="TournamentModels">
-            <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentModel">
-              <MappingFragment StoreEntitySet="Tournaments">
                 <ScalarProperty Name="LastEditedByID" ColumnName="LastEditedByID" />
                 <ScalarProperty Name="LastEditedOn" ColumnName="LastEditedOn" />
                 <ScalarProperty Name="WinnerID" ColumnName="WinnerID" />
@@ -736,6 +661,20 @@ warning 6002: The table/view 'VictoriousDatabase.dbo.GameTypes' does not have a 
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="GameTypeID" ColumnName="GameTypeID" />
                 <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TournamentUserModels">
+            <EntityTypeMapping TypeName="IsTypeOf(VictoriousDatabaseModel.TournamentUserModel)">
+              <MappingFragment StoreEntitySet="TournamentUsers">
+                <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
+                <ScalarProperty Name="UniformNumber" ColumnName="UniformNumber" />
+                <ScalarProperty Name="Seed" ColumnName="Seed" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+                <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

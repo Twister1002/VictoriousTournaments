@@ -19,6 +19,7 @@ namespace DatabaseLib
         {
             this.Brackets = new HashSet<BracketModel>();
             this.TournamentUsers = new HashSet<TournamentUserModel>();
+    		OnInit();
         }
     
         public int TournamentID { get; set; }
@@ -30,10 +31,21 @@ namespace DatabaseLib
         public int WinnerID { get; set; }
         public System.DateTime LastEditedOn { get; set; }
         public int LastEditedByID { get; set; }
+        public Nullable<decimal> EntryFee { get; set; }
+        public decimal PrizePurse { get; set; }
+        public bool IsPublic { get; set; }
+        public System.DateTime RegistrationStartDate { get; set; }
+        public System.DateTime RegistrationEndDate { get; set; }
+        public System.DateTime TournamentStartDate { get; set; }
+        public System.DateTime TournamentEndDate { get; set; }
+        public System.DateTime CheckInBegins { get; set; }
+        public System.DateTime CheckInEnds { get; set; }
+        public int Platform { get; set; }
+    	
+    	partial void OnInit();
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BracketModel> Brackets { get; set; }
-        public virtual TournamentRulesModel TournamentRule { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentUserModel> TournamentUsers { get; set; }
     }

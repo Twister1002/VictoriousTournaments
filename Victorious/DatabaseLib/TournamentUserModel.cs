@@ -18,16 +18,19 @@ namespace DatabaseLib
         public TournamentUserModel()
         {
             this.TournamentUsersBrackets = new HashSet<TournamentUsersBracketModel>();
+    		OnInit();
         }
     
         public int TournamentUserID { get; set; }
         public Nullable<int> AccountID { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Usernamne { get; set; }
         public Nullable<int> Seed { get; set; }
         public Nullable<int> UniformNumber { get; set; }
         public int TournamentID { get; set; }
+        public string Username { get; set; }
+    	
+    	partial void OnInit();
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }

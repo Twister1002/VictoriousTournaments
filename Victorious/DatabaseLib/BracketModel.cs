@@ -19,6 +19,7 @@ namespace DatabaseLib
         {
             this.Matches = new HashSet<MatchModel>();
             this.TournamentUsersBrackets = new HashSet<TournamentUsersBracketModel>();
+    		OnInit();
         }
     
         public int BracketID { get; set; }
@@ -27,6 +28,8 @@ namespace DatabaseLib
         public bool Finalized { get; set; }
         public int NumberOfGroups { get; set; }
         public Nullable<int> TournamentID { get; set; }
+    	
+    	partial void OnInit();
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MatchModel> Matches { get; set; }

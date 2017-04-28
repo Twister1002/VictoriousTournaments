@@ -49,4 +49,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="MatchID" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="21837587-af25-4330-b889-b8064c027f59" ChangeDateTime="04/28/2017 19:32:13">
+    <Property Name="ElementName" Value="[dbo].[TournamentUsers].[Usernamne]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentUsers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Username" />
+  </Operation>
 </Operations>

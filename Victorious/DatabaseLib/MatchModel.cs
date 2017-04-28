@@ -34,6 +34,8 @@ namespace DatabaseLib
         public Nullable<int> PrevChallengerMatchNumber { get; set; }
         public Nullable<int> MaxGames { get; set; }
         public Nullable<int> BracketID { get; set; }
+    	
+    	partial void OnInit();
     
         public virtual BracketModel Bracket { get; set; }
     }

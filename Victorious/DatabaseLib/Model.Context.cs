@@ -36,7 +36,6 @@ namespace DatabaseLib
         public virtual DbSet<Defender> Defenders { get; set; }
         public virtual DbSet<TournamentUserModel> TournamentUserModels { get; set; }
         public virtual DbSet<TournamentUsersBracketModel> TournamentUsersBracketModels { get; set; }
-        public virtual DbSet<TournamentRulesModel> TournamentRulesModels { get; set; }
         public virtual DbSet<TournamentModel> TournamentModels { get; set; }
     }
 }

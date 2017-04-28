@@ -22,7 +22,9 @@
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentRule" Width="1.5" PointX="3.25" PointY="20.875" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.Tournament" Width="1.5" PointX="1" PointY="14.125" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Brackets_Tournaments" />
-        <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentRules_Tournaments" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentModel" Width="1.5" PointX="8.25" PointY="12.125" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_Brackets_Tournaments" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" />
         </Diagram>
     </edmx:Diagrams>

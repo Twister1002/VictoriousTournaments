@@ -4,7 +4,7 @@
     [AccountID] INT NULL, 
     [FirstName] NVARCHAR(50) NOT NULL, 
     [LastName] NVARCHAR(50) NOT NULL, 
-	[Usernamne] NVARCHAR(50) NULL,
+	[Username] NVARCHAR(50) NULL,
     [Seed] INT NULL, 
     [UniformNumber] INT NULL, 
     [TournamentID] INT NOT NULL,
