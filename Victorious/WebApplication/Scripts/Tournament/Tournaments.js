@@ -1,17 +1,19 @@
 ﻿jQuery(document).ready(function () {
     var $ = jQuery;
 
+    // Redirect to update
+    $(".tournament-update").on("click", function () {
+        window.location.replace("/Tournament/Update/" + $(this).closest("#Tournament").data("id"));
+    });
+
     // Tournament Deletion
     $(".tournament-delete").on("click", function () {
-        var jsonData = {
-            "tourny": $(this).closest("#Tournament").data("id")
-        };
 
         if (confirm("Are you sure you want to delete this tournament? This can no be reverted.")) {
             $.ajax({
-                "url": "/Tournament/Ajax/Delete",
+                "url": "/Ajax/Tournament/Delete",
                 "type": "POST",
-                "data": { "jsonData": JSON.stringify(jsonData) },
+                "data": { "tourny": $(this).closest("#Tournament").data("id") },
                 "dataType": "json",
                 "success": function (json) {
                     json = JSON.parse(json);
@@ -30,12 +32,6 @@
         }
     });
 
-    // Redirect to update
-    $(".tournament-update").on("click", function () {
-        window.location.replace("/Tournament/Update/" + $(this).closest("#Tournament").data("id"));
-    });
-
-
     // Finalize Tournament 
     $(".tournamentFinalizeButton").on("click", function () {
         var roundData = {};
@@ -49,7 +45,7 @@
         });
 
         $.ajax({
-            "url": "/Tournament/Ajax/Finalize",
+            "url": "/Ajax/Tournament/Finalize",
             "type": "POST",
             "data": { "jsonData": JSON.stringify(jsonData), "roundData": roundData },
             "dataType": "json",

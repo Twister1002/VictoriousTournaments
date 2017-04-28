@@ -87,28 +87,31 @@ namespace WebApplication.Controllers
 
                 if (viewModel.TournamentPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
-                    matchViewModel.RemoveGames();
+                    List<int> matchesAffected = viewModel.ResetMatch(matchNum);
+                    List<object> matchResponse = new List<object>();
+
+                    // Have the bracket now reset the matches
                     viewModel.ResetMatch(matchNum);
 
-                    status = true;
-                    message = "Match eas reset";
-                    data = new
+                    foreach (int match in matchesAffected)
                     {
-                        ready = matchViewModel.Match.IsReady,
-                        finished = matchViewModel.Match.IsFinished,
-                        challenger = new
+                        // Remove the games associated with this match.
+                        MatchViewModel matchModel = new MatchViewModel(viewModel.Bracket.GetMatch(match));
+                        matchModel.RemoveGames();
+
+                        // Update this match in the databas
+                        DbError result = db.UpdateMatch(matchModel.Model);
+                        if (result != DbError.SUCCESS)
                         {
-                            id = matchViewModel.Match.Players[(int)PlayerSlot.Challenger].Id,
-                            name = matchViewModel.Match.Players[(int)PlayerSlot.Challenger].Name,
-                            score = matchViewModel.Match.Score[(int)PlayerSlot.Challenger]
-                        },
-                        defender = new
-                        {
-                            id = matchViewModel.Match.Players[(int)PlayerSlot.Defender].Id,
-                            name = matchViewModel.Match.Players[(int)PlayerSlot.Defender].Name,
-                            score = matchViewModel.Match.Score[(int)PlayerSlot.Defender]
+                            return Json("Unable to update match");
                         }
-                    };
+
+                        matchResponse.Add(JsonMatchResponse(matchModel.Match, false));
+                    }
+
+                    status = true;
+                    message = "Matches are reset";
+                    data = matchResponse;
                 }
                 else
                 {
@@ -126,6 +129,27 @@ namespace WebApplication.Controllers
                     status = status,
                     message = message,
                     data = data
+                }
+            ));
+        }
+
+        [HttpPost]
+        [Route("Ajax/Bracket/Standings")]
+        public JsonResult Standings(String jsonData)
+        {
+            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
+            TournamentViewModel viewModel = new TournamentViewModel(json["tournamentId"]);
+            viewModel.ProcessTournament();
+            IBracket bracket = viewModel.Tourny.Brackets[json["bracketNum"]];
+
+            return Json(JsonConvert.SerializeObject(
+                new
+                {
+                    status = true,
+                    data = new
+                    {
+                        ranks = bracket.Rankings
+                    }
                 }
             ));
         }

@@ -22,42 +22,24 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("Match/Ajax/Match")]
+        [Route("Ajax/Match")]
         public JsonResult MatchInfo(String jsonData)
         {
             Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
             MatchViewModel viewModel = new MatchViewModel(json["matchId"]);
 
-            Dictionary<int, object> matchData = new Dictionary<int, object>();
-            foreach (IGame game in viewModel.Match.Games)
-            {
-                matchData.Add(
-                    game.GameNumber,
-                    new {
-                        gameNum = game.GameNumber,
-                        scores = game.Score,
-                    }
-                );
-            }
+            
 
             String jsonResult = JsonConvert.SerializeObject(new {
                 status = true,
-                data = new 
-                {
-                    matchData = matchData,
-                    matchId = viewModel.Match.Id,
-                    matchNum = viewModel.Match.MatchNumber,
-                    maxGames = viewModel.Match.MaxGames,
-                    finished = viewModel.Match.IsFinished
-                }
-                
+                data = JsonMatchResponse(viewModel.Match, true)
             });
 
             return Json(jsonResult);
         }
 
         [HttpPost]
-        [Route("Match/Ajax/Update")]
+        [Route("Ajax/Match/Update")]
         public JsonResult MatchUpdate(String jsonIds, List<GameViewModel> games)
         {
             bool status = false;
@@ -87,7 +69,7 @@ namespace WebApplication.Controllers
                             continue;
                         }
 
-                        if (!match.Games.Contains(gameModel.Game))
+                        if (!match.Games.Any(x=>x.GameNumber == gameModel.GameNumber))
                         {
                             // We need to add this game.
                             PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
@@ -109,6 +91,10 @@ namespace WebApplication.Controllers
                             {
                                 processed.Add(gameModel.GameNumber, true);
                             }
+                        }
+                        else
+                        {
+                            processed.Add(gameModel.GameNumber, false);
                         }
                     }
 
@@ -132,66 +118,15 @@ namespace WebApplication.Controllers
                         status = true;
                         message = "Current match was updated";
 
-                        currentMatchData = new
-                        {
-                            matchId = matchModel.Match.Id,
-                            ready = match.IsReady,
-                            finished = match.IsFinished,
-                            defender = new
-                            {
-                                id = matchModel.Defender().Id,
-                                name = matchModel.Defender().Name,
-                                score = matchModel.Match.Score[(int)PlayerSlot.Defender]
-                            },
-                            challenger = new
-                            {
-                                id = matchModel.Challenger().Id,
-                                name = matchModel.Challenger().Name,
-                                score = matchModel.Match.Score[(int)PlayerSlot.Challenger]
-                            }
-                        };
+                        currentMatchData = JsonMatchResponse(matchModel.Match, false);
                     }
                     if (winnerMatchUpdate == DbError.SUCCESS)
                     {
-                        winnerMatchData = new
-                        {
-                            matchId = winnerMatchModel.Match.Id,
-                            ready = winnerMatchModel.Match.IsReady,
-                            finished = winnerMatchModel.Match.IsFinished,
-                            defender = new
-                            {
-                                id = winnerMatchModel.Defender().Id,
-                                name = winnerMatchModel.Defender().Name,
-                                score = winnerMatchModel.Match.Score[(int)PlayerSlot.Defender]
-                            },
-                            challenger = new
-                            {
-                                id = winnerMatchModel.Challenger().Id,
-                                name = winnerMatchModel.Challenger().Name,
-                                score = winnerMatchModel.Match.Score[(int)PlayerSlot.Challenger]
-                            }
-                        };
+                        winnerMatchData = JsonMatchResponse(winnerMatchModel.Match, false);
                     }
                     if (loserMatchUpdate == DbError.SUCCESS)
                     {
-                        loserMatchData = new
-                        {
-                            matchId = loserMatchModel.Match.Id,
-                            ready = loserMatchModel.Match.IsReady,
-                            finished = loserMatchModel.Match.IsFinished,
-                            defender = new
-                            {
-                                id = loserMatchModel.Defender().Id,
-                                name = loserMatchModel.Defender().Name,
-                                score = loserMatchModel.Match.Score[(int)PlayerSlot.Defender]
-                            },
-                            challenger = new
-                            {
-                                id = loserMatchModel.Challenger().Id,
-                                name = loserMatchModel.Challenger().Name,
-                                score = loserMatchModel.Match.Score[(int)PlayerSlot.Challenger]
-                            }
-                        };
+                        loserMatchData = JsonMatchResponse(loserMatchModel.Match, false);
                     }
 
                     // Prepare data
