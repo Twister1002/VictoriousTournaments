@@ -43,6 +43,17 @@ namespace DatabaseLib.Tests
             Assert.AreEqual("Test Me", t.Description);
         }
 
+        [TestMethod]
+        public void Delete_Tournaent()
+        {
+            var db = new DbInterface();
+
+            var tournament = db.GetAllTournaments()[0];
+
+            var result = db.DeleteTournament(tournament.TournamentID);
+
+            Assert.AreEqual(DbError.SUCCESS, result);
+        }
       
 
         private TournamentUserModel NewTournamentUser()

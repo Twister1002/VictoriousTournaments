@@ -42,6 +42,7 @@ namespace DatabaseLib.Tests
             //Assert.AreEqual(DbError.SUCCESS, result);
         }
 
+
         private TournamentUserModel NewTournamentUser()
         {
             TournamentUserModel user = new TournamentUserModel()
