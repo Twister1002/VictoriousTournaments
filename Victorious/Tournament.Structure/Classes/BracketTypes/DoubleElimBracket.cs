@@ -343,12 +343,12 @@ namespace Tournament.Structure
 		#region Private Methods
 		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished)
 		{
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
 			if (_isAddition)
 			{
-				int nextWinnerNumber;
-				int nextLoserNumber;
-				IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
 				if (match.IsFinished && nextLoserNumber < 0)
 				{
 					// Add losing player to Rankings:
@@ -382,7 +382,7 @@ namespace Tournament.Structure
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
 			}
-			else
+			else if (_wasFinished && !(match.IsFinished))
 			{
 				UpdateRankings();
 			}
