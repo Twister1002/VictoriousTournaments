@@ -13,6 +13,7 @@ namespace Tournament.Structure
 		private class GSLBracket : DoubleElimBracket
 		{
 			#region Variables & Properties
+			// inherits int Id
 			// inherits BracketType BracketType
 			// inherits bool IsFinalized
 			// inherits bool IsFinished
@@ -203,6 +204,7 @@ namespace Tournament.Structure
 		}
 
 		#region Variables & Properties
+		// inherits int Id
 		// inherits BracketType BracketType
 		// inherits bool IsFinalized
 		// inherits bool IsFinished
@@ -257,6 +259,7 @@ namespace Tournament.Structure
 				Players = _players;
 			}
 
+			Id = 0;
 			BracketType = BracketTypeModel.BracketType.GSLGROUP;
 			NumberOfGroups = _numberOfGroups;
 			ResetBracket();
@@ -283,6 +286,7 @@ namespace Tournament.Structure
 				Players.Add(new User(model));
 			}
 
+			this.Id = _model.BracketID;
 			this.BracketType = BracketTypeModel.BracketType.GSLGROUP;
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;

@@ -11,6 +11,8 @@ namespace Tournament.Structure
 	public abstract class Bracket : IBracket
 	{
 		#region Variables & Properties
+		public int Id
+		{ get; protected set; }
 		public BracketTypeModel.BracketType BracketType
 		{ get; protected set; }
 		public bool IsFinalized

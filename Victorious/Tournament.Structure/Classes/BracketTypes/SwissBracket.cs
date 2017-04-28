@@ -11,6 +11,7 @@ namespace Tournament.Structure
 	public class SwissBracket : RoundRobinBracket
 	{
 		#region Variables & Properties
+		// inherits int Id
 		// inherits BracketType BracketType
 		// inherits bool IsFinalized
 		// inherits bool IsFinished
@@ -52,6 +53,7 @@ namespace Tournament.Structure
 				Players = _players;
 			}
 
+			Id = 0;
 			//BracketType = BracketTypeModel.BracketType.SWISS;
 			MaxRounds = _numberOfRounds;
 			ResetBracket();

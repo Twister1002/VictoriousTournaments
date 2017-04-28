@@ -11,6 +11,7 @@ namespace Tournament.Structure
 	public class RoundRobinGroups : GroupStage
 	{
 		#region Variables & Properties
+		// inherits int Id
 		// inherits BracketType BracketType
 		// inherits bool IsFinalized
 		// inherits bool IsFinished
@@ -64,6 +65,7 @@ namespace Tournament.Structure
 				Players = _players;
 			}
 
+			Id = 0;
 			BracketType = BracketTypeModel.BracketType.RRGROUP;
 			NumberOfGroups = _numberOfGroups;
 			MaxRounds = _numberOfRounds;
@@ -121,6 +123,7 @@ namespace Tournament.Structure
 				Players.Add(new User(model));
 			}
 
+			this.Id = _model.BracketID;
 			this.BracketType = BracketTypeModel.BracketType.RRGROUP;
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;

@@ -11,6 +11,7 @@ namespace Tournament.Structure
 	public class DoubleElimBracket : SingleElimBracket
 	{
 		#region Variables & Properties
+		// inherits int Id
 		// inherits BracketType BracketType
 		// inherits bool IsFinalized
 		// inherits bool IsFinished

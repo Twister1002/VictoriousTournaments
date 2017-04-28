@@ -11,6 +11,7 @@ namespace Tournament.Structure
 	public class SingleElimBracket : Bracket
 	{
 		#region Variables & Properties
+		// inherits int Id
 		// inherits BracketType BracketType
 		// inherits bool IsFinalized
 		// inherits bool IsFinished
@@ -55,6 +56,7 @@ namespace Tournament.Structure
 				}
 			}
 
+			Id = 0;
 			BracketType = BracketTypeModel.BracketType.SINGLE;
 			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
@@ -84,6 +86,7 @@ namespace Tournament.Structure
 					("Bracket Model cannot be null!");
 			}
 
+			this.Id = _model.BracketID;
 			this.BracketType = BracketTypeModel.BracketType.SINGLE;
 			this.IsFinalized = _model.Finalized;
 

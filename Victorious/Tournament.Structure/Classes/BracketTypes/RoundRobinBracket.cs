@@ -11,6 +11,7 @@ namespace Tournament.Structure
 	public class RoundRobinBracket : Bracket
 	{
 		#region Variables & Properties
+		// inherits int Id
 		// inherits BracketType BracketType
 		// inherits bool IsFinalized
 		// inherits bool IsFinished
@@ -52,6 +53,7 @@ namespace Tournament.Structure
 				Players = _players;
 			}
 
+			Id = 0;
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			MaxRounds = _numberOfRounds;
 			ResetBracket();
@@ -88,7 +90,8 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_model");
 			}
 
-			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
+			this.Id = _model.BracketID;
+			this.BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			this.IsFinalized = _model.Finalized;
 			this.MaxRounds = 0;
 			ResetBracket();
