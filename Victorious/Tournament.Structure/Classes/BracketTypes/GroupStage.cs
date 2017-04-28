@@ -86,14 +86,23 @@ namespace Tournament.Structure
 			UpdateRankings();
 			return gameModel;
 		}
-		public override void ResetMatchScore(int _matchNumber)
+		public override void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
+		{
+			int groupIndex;
+			GetMatchData(ref _matchNumber, out groupIndex);
+			Groups[groupIndex].SetMatchWinner(_matchNumber, _winnerSlot);
+			UpdateRankings();
+			ApplyWinEffects(_matchNumber, _winnerSlot);
+		}
+		public override List<GameModel> ResetMatchScore(int _matchNumber)
 		{
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			bool wasFinished = GetMatch(_matchNumber).IsFinished;
-			Groups[groupIndex].ResetMatchScore(_matchNumber);
+			List<GameModel> modelList = Groups[groupIndex].ResetMatchScore(_matchNumber);
 			UpdateFinishStatus();
 			UpdateRankings();
+			return modelList;
 		}
 
 		public IBracket GetGroup(int _groupNumber)

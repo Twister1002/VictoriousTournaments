@@ -380,26 +380,36 @@ namespace Tournament.Structure
 		#region Private Methods
 		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished)
 		{
-			//PlayerSlot matchWinner = GetMatch(_matchNumber).WinnerSlot;
-			PlayerSlot gameWinner = (_game.DefenderID == _game.WinnerID)
-				? PlayerSlot.Defender : PlayerSlot.Challenger;
-			bool matchFinishChange = _wasFinished ^ GetMatch(_matchNumber).IsFinished;
+			if (null == _game)
+			{
+				// Match winner was manually set. Apply a match win to his score:
+				IMatch match = GetMatch(_matchNumber);
+				int winnerIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)(match.WinnerSlot)].Id);
+				Rankings[winnerIndex].AddToScore(MatchWinValue, 0, 0, true);
+			}
+			else
+			{
+				//PlayerSlot matchWinner = GetMatch(_matchNumber).WinnerSlot;
+				PlayerSlot gameWinner = (_game.DefenderID == _game.WinnerID)
+					? PlayerSlot.Defender : PlayerSlot.Challenger;
+				bool matchFinishChange = _wasFinished ^ GetMatch(_matchNumber).IsFinished;
 
-			// Update Defender's score:
-			int defIndex = Rankings.FindIndex(r => r.Id == _game.DefenderID);
-			bool defenderUpdate = matchFinishChange && (PlayerSlot.Defender == gameWinner);
-			Rankings[defIndex].Score += (_isAddition)
-				? Convert.ToInt16(defenderUpdate) * MatchWinValue
-				: -1 * Convert.ToInt16(defenderUpdate) * MatchWinValue;
-			Rankings[defIndex].AddToScore(Convert.ToInt16(defenderUpdate) * MatchWinValue, 1, _game.DefenderScore, _isAddition);
+				// Update Defender's score:
+				int defIndex = Rankings.FindIndex(r => r.Id == _game.DefenderID);
+				bool defenderUpdate = matchFinishChange && (PlayerSlot.Defender == gameWinner);
+				Rankings[defIndex].Score += (_isAddition)
+					? Convert.ToInt16(defenderUpdate) * MatchWinValue
+					: -1 * Convert.ToInt16(defenderUpdate) * MatchWinValue;
+				Rankings[defIndex].AddToScore(Convert.ToInt16(defenderUpdate) * MatchWinValue, 1, _game.DefenderScore, _isAddition);
 
-			// Update Challenger's score:
-			int chalIndex = Rankings.FindIndex(r => r.Id == _game.ChallengerID);
-			bool challengerUpdate = matchFinishChange && (PlayerSlot.Challenger == gameWinner);
-			Rankings[chalIndex].Score += (_isAddition)
-				? Convert.ToInt16(challengerUpdate) * MatchWinValue
-				: -1 * Convert.ToInt16(challengerUpdate) * MatchWinValue;
-			Rankings[chalIndex].AddToScore(Convert.ToInt16(challengerUpdate) * MatchWinValue, 1, _game.ChallengerScore, _isAddition);
+				// Update Challenger's score:
+				int chalIndex = Rankings.FindIndex(r => r.Id == _game.ChallengerID);
+				bool challengerUpdate = matchFinishChange && (PlayerSlot.Challenger == gameWinner);
+				Rankings[chalIndex].Score += (_isAddition)
+					? Convert.ToInt16(challengerUpdate) * MatchWinValue
+					: -1 * Convert.ToInt16(challengerUpdate) * MatchWinValue;
+				Rankings[chalIndex].AddToScore(Convert.ToInt16(challengerUpdate) * MatchWinValue, 1, _game.ChallengerScore, _isAddition);
+			}
 
 			UpdateRankings();
 		}

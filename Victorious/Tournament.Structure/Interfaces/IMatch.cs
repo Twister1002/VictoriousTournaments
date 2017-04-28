@@ -33,6 +33,9 @@ namespace Tournament.Structure
 		/// </summary>
 		bool IsFinished { get; }
 
+
+		bool IsManualWin { get; }
+
 		/// <summary>
 		/// Max number of games that MAY be played.
 		/// (ex: BO3 = 3 max games)
@@ -161,6 +164,12 @@ namespace Tournament.Structure
 		/// <param name="_gameNumber">Game Number of desired Game</param>
 		/// <returns>Model of removed Game</returns>
 		GameModel RemoveGameNumber(int _gameNumber);
+
+		/// <summary>
+		/// Manually set a winner for this Match.
+		/// </summary>
+		/// <param name="_winnerSlot">Slot of winning Player (Defender/Challenger)</param>
+		void SetWinner(PlayerSlot _winnerSlot);
 
 		/// <summary>
 		/// Resets Match score to 0-0.

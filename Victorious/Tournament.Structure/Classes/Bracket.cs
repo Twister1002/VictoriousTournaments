@@ -424,12 +424,32 @@ namespace Tournament.Structure
 			UpdateScore(_matchNumber, gameModel, false, wasFinished);
 			return gameModel;
 		}
-		public virtual void ResetMatchScore(int _matchNumber)
+
+		public virtual void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
 		{
+			List<GameModel> modelList = ResetMatchScore(_matchNumber);
+			GetMatch(_matchNumber).SetWinner(_winnerSlot);
+			foreach (GameModel model in modelList)
+			{
+				PlayerSlot winSlot = (model.DefenderID == model.WinnerID)
+					? PlayerSlot.Defender : PlayerSlot.unspecified;
+				winSlot = (model.ChallengerID == model.WinnerID)
+					? PlayerSlot.Challenger : winSlot;
+
+				GetMatch(_matchNumber).AddGame(model.DefenderScore, model.ChallengerScore, winSlot);
+			}
+
+			UpdateScore(_matchNumber, null, true, false);
+			ApplyWinEffects(_matchNumber, _winnerSlot);
+		}
+		public virtual List<GameModel> ResetMatchScore(int _matchNumber)
+		{
+			List<GameModel> modelList = new List<GameModel>();
 			while (GetMatch(_matchNumber).Games.Count > 0)
 			{
-				RemoveLastGame(_matchNumber);
+				modelList.Add(RemoveLastGame(_matchNumber));
 			}
+			return modelList;
 		}
 
 		public virtual List<IMatch> GetRound(int _round)
