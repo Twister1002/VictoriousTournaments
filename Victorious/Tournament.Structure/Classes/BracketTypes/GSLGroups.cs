@@ -13,6 +13,7 @@ namespace Tournament.Structure
 		private class GSLBracket : DoubleElimBracket
 		{
 			#region Variables & Properties
+			// inherits int Id
 			// inherits BracketType BracketType
 			// inherits bool IsFinalized
 			// inherits bool IsFinished
@@ -56,33 +57,94 @@ namespace Tournament.Structure
 				--NumberOfMatches;
 			}
 
+#if false
 			public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 			{
+				GameModel gameModel = null;
 				if (GetMatch(_matchNumber).NextMatchNumber <= NumberOfMatches)
 				{
-					// Case 1: Not a final/endpoint match.
-					return base.AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
+					gameModel = base.AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
+				}
+				else
+				{
+					gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
+					AddWinEffects(_matchNumber, _winnerSlot);
+				}
+				return gameModel;
+			}
+#endif
+			#endregion
+
+			#region Private Methods
+			protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
+			{
+				if (!_isAddition)
+				{
+					UpdateRankings();
+					return;
 				}
 
-				GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
 				int nextWinnerNumber;
 				int nextLoserNumber;
 				IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
+				if (match.NextMatchNumber <= NumberOfMatches)
+				{
+					// Case 1: Not a final/endpoint match. Treat like a DEB:
+					base.UpdateScore(_matchNumber, _game, _isAddition);
+					return;
+				}
+
 				PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
 					? PlayerSlot.Challenger
 					: PlayerSlot.Defender;
+				if (match.IsFinished)
+				{
+					if (nextLoserNumber > 0)
+					{
+						// Case 2: UB Finals.
+						// Add winner to top of Rankings:
+						Rankings.Add(new PlayerScore
+							(match.Players[(int)(match.WinnerSlot)].Id,
+							match.Players[(int)(match.WinnerSlot)].Name, -1, 1));
+					}
+					else
+					{
+						// Case 3: LB Finals.
+						// Add both players to Rankings:
+						Rankings.Add(new PlayerScore
+							(match.Players[(int)(match.WinnerSlot)].Id,
+							match.Players[(int)(match.WinnerSlot)].Name, -1, 2));
+						Rankings.Add(new PlayerScore
+							(match.Players[(int)loserSlot].Id,
+							match.Players[(int)loserSlot].Name, -1, 3));
+					}
+				}
+
+				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+			}
+			protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+			{
+				int nextWinnerNumber;
+				int nextLoserNumber;
+				IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
+				if (match.NextMatchNumber <= NumberOfMatches)
+				{
+					// Case 1: Not a final/endpoint match. Treat like a DEB:
+					base.ApplyWinEffects(_matchNumber, _slot);
+					return;
+				}
 
 				if (match.IsFinished)
 				{
 					if (nextLoserNumber > 0)
 					{
 						// Case 2: UB Finals.
-
-						// Add winner to top of Rankings:
-						Rankings.Add(new PlayerScore
-							(match.Players[(int)(match.WinnerSlot)].Id,
-							match.Players[(int)(match.WinnerSlot)].Name, -1, 1));
 						// Advance loser to lower bracket:
+						PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
+							? PlayerSlot.Challenger
+							: PlayerSlot.Defender;
 						GetMatch(nextLoserNumber).AddPlayer
 							(match.Players[(int)loserSlot], PlayerSlot.Defender);
 						// Check lower bracket completion:
@@ -94,29 +156,15 @@ namespace Tournament.Structure
 					else
 					{
 						// Case 3: LB Finals.
-
-						// Add both players to Rankings:
-						Rankings.Add(new PlayerScore
-							(match.Players[(int)(match.WinnerSlot)].Id,
-							match.Players[(int)(match.WinnerSlot)].Name, -1, 2));
-						Rankings.Add(new PlayerScore
-							(match.Players[(int)loserSlot].Id,
-							match.Players[(int)loserSlot].Name, -1, 3));
 						// Check upper bracket completion:
 						if (GetRound(NumberOfRounds)[0].IsFinished)
 						{
 							this.IsFinished = true;
 						}
 					}
-
-					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
-
-				return gameModel;
 			}
-			#endregion
 
-			#region Private Methods
 			protected override void RemovePlayerFromFutureMatches(int _matchNumber, ref IPlayer _player)
 			{
 				if (_matchNumber > NumberOfMatches)
@@ -156,6 +204,7 @@ namespace Tournament.Structure
 		}
 
 		#region Variables & Properties
+		// inherits int Id
 		// inherits BracketType BracketType
 		// inherits bool IsFinalized
 		// inherits bool IsFinished
@@ -186,8 +235,8 @@ namespace Tournament.Structure
 			if (_numberOfGroups * 4 != _players.Count &&
 				_numberOfGroups * 8 != _players.Count)
 			{
-				throw new ArgumentOutOfRangeException
-					("_numberOfGroups", "Must have 4 or 8 players per group!");
+				throw new BracketException
+					("Must have 4 or 8 players per group!");
 			}
 
 			Players = new List<IPlayer>();
@@ -210,6 +259,7 @@ namespace Tournament.Structure
 				Players = _players;
 			}
 
+			Id = 0;
 			BracketType = BracketTypeModel.BracketType.GSLGROUP;
 			NumberOfGroups = _numberOfGroups;
 			ResetBracket();
@@ -236,6 +286,7 @@ namespace Tournament.Structure
 				Players.Add(new User(model));
 			}
 
+			this.Id = _model.BracketID;
 			this.BracketType = BracketTypeModel.BracketType.GSLGROUP;
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
@@ -275,6 +326,14 @@ namespace Tournament.Structure
 				}
 
 				Groups.Add(new GSLBracket(pList, _gamesPerMatch));
+			}
+
+			foreach (IBracket group in Groups)
+			{
+				NumberOfMatches += group.NumberOfMatches;
+				NumberOfRounds = (NumberOfRounds < group.NumberOfRounds)
+					? group.NumberOfRounds
+					: this.NumberOfRounds;
 			}
 		}
 

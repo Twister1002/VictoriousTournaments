@@ -11,6 +11,7 @@ namespace Tournament.Structure
 	public class SwissBracket : RoundRobinBracket
 	{
 		#region Variables & Properties
+		// inherits int Id
 		// inherits BracketType BracketType
 		// inherits bool IsFinalized
 		// inherits bool IsFinished
@@ -52,6 +53,7 @@ namespace Tournament.Structure
 				Players = _players;
 			}
 
+			Id = 0;
 			//BracketType = BracketTypeModel.BracketType.SWISS;
 			MaxRounds = _numberOfRounds;
 			ResetBracket();
@@ -108,6 +110,7 @@ namespace Tournament.Structure
 			}
 		}
 
+#if false
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			GameModel gameModel = base.AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
@@ -134,9 +137,23 @@ namespace Tournament.Structure
 
 			CheckAndRemoveNextRound(1 + GetMatch(_matchNumber).RoundIndex);
 		}
+#endif
 		#endregion
 
 		#region Private Methods
+		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		{
+			base.ApplyWinEffects(_matchNumber, _slot);
+			if (this.IsFinished)
+			{
+				IsFinished = !(AddNewRound(GetMatch(_matchNumber).MaxGames));
+			}
+		}
+		protected override void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished)
+		{
+			CheckAndRemoveNextRound(1 + GetMatch(_matchNumber).RoundIndex);
+			base.ApplyGameRemovalEffects(_matchNumber, _game, _wasFinished);
+		}
 		private bool AddNewRound(int _gamesPerMatch)
 		{
 			if (MaxRounds > 0 && NumberOfRounds >= MaxRounds)

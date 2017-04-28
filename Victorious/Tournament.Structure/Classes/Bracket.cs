@@ -11,6 +11,8 @@ namespace Tournament.Structure
 	public abstract class Bracket : IBracket
 	{
 		#region Variables & Properties
+		public int Id
+		{ get; protected set; }
 		public BracketTypeModel.BracketType BracketType
 		{ get; protected set; }
 		public bool IsFinalized
@@ -39,10 +41,10 @@ namespace Tournament.Structure
 
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
-		public abstract GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
 		public abstract GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
-		public abstract void RemoveLastGame(int _matchNumber);
-		public abstract void ResetMatchScore(int _matchNumber);
+		protected abstract void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition);
+		protected abstract void ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
+		protected abstract void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished);
 		protected abstract void UpdateRankings();
 		#endregion
 
@@ -391,6 +393,43 @@ namespace Tournament.Structure
 			ResetBracket();
 		}
 
+		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			GameModel gameModel = GetMatch(_matchNumber)
+				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
+			UpdateScore(_matchNumber, gameModel, true);
+			ApplyWinEffects(_matchNumber, _winnerSlot);
+			return gameModel;
+		}
+		public virtual GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			bool wasFinished = GetMatch(_matchNumber).IsFinished;
+			GameModel removedGame = GetMatch(_matchNumber).RemoveGameNumber(_gameNumber);
+			ApplyGameRemovalEffects(_matchNumber, removedGame, wasFinished);
+			UpdateScore(_matchNumber, removedGame, false);
+
+			GameModel addedGame = GetMatch(_matchNumber)
+				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
+			UpdateScore(_matchNumber, addedGame, true);
+			ApplyWinEffects(_matchNumber, _winnerSlot);
+			return addedGame;
+		}
+		public virtual GameModel RemoveLastGame(int _matchNumber)
+		{
+			bool wasFinished = GetMatch(_matchNumber).IsFinished;
+			GameModel gameModel = GetMatch(_matchNumber).RemoveLastGame();
+			ApplyGameRemovalEffects(_matchNumber, gameModel, wasFinished);
+			UpdateScore(_matchNumber, gameModel, false);
+			return gameModel;
+		}
+		public virtual void ResetMatchScore(int _matchNumber)
+		{
+			while (GetMatch(_matchNumber).Games.Count > 0)
+			{
+				RemoveLastGame(_matchNumber);
+			}
+		}
+
 		public virtual List<IMatch> GetRound(int _round)
 		{
 			if (null == Matches)
@@ -456,7 +495,7 @@ namespace Tournament.Structure
 			throw new MatchNotFoundException
 				("Match not found; match number may be invalid.");
 		}
-		public void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
+		public virtual void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
 		{
 			if (_maxGamesPerMatch < 1)
 			{
@@ -479,7 +518,7 @@ namespace Tournament.Structure
 				GetMatch(match.MatchNumber).SetMaxGames(_maxGamesPerMatch);
 			}
 		}
-		public void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch)
+		public virtual void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch)
 		{
 			if (_maxGamesPerMatch < 1)
 			{

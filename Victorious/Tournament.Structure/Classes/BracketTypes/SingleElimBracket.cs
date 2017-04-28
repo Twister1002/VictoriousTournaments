@@ -11,6 +11,7 @@ namespace Tournament.Structure
 	public class SingleElimBracket : Bracket
 	{
 		#region Variables & Properties
+		// inherits int Id
 		// inherits BracketType BracketType
 		// inherits bool IsFinalized
 		// inherits bool IsFinished
@@ -55,6 +56,7 @@ namespace Tournament.Structure
 				}
 			}
 
+			Id = 0;
 			BracketType = BracketTypeModel.BracketType.SINGLE;
 			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
@@ -84,6 +86,7 @@ namespace Tournament.Structure
 					("Bracket Model cannot be null!");
 			}
 
+			this.Id = _model.BracketID;
 			this.BracketType = BracketTypeModel.BracketType.SINGLE;
 			this.IsFinalized = _model.Finalized;
 
@@ -123,15 +126,10 @@ namespace Tournament.Structure
 				UpdateRankings();
 				if (Matches[NumberOfMatches].IsFinished)
 				{
+					// Add Finals winner to Rankings:
 					IPlayer winningPlayer = Matches[NumberOfMatches]
 						.Players[(int)Matches[NumberOfMatches].WinnerSlot];
 					Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, -1, 1));
-					IPlayer losingPlayer = Matches[NumberOfMatches].Players[
-						(PlayerSlot.Defender == Matches[NumberOfMatches].WinnerSlot)
-						? (int)PlayerSlot.Challenger
-						: (int)PlayerSlot.Defender];
-					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, 2));
-
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 					this.IsFinished = true;
 				}
@@ -151,7 +149,7 @@ namespace Tournament.Structure
 			else if (_gamesPerMatch % 2 == 0)
 			{
 				throw new BracketException
-					("Games Per Match must be odd!");
+					("Games/Match must be odd in an elimination bracket!");
 			}
 			if (Players.Count < 2)
 			{
@@ -312,66 +310,14 @@ namespace Tournament.Structure
 			#endregion
 		}
 
+#if false
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
-			if (match.IsFinished)
-			{
-				if (nextWinnerNumber > 0)
-				{
-					// Advance the winning player:
-					IMatch nextMatch = GetMatch(nextWinnerNumber);
-					for (int i = 0; i < nextMatch.PreviousMatchNumbers.Length; ++i)
-					{
-						if (_matchNumber == nextMatch.PreviousMatchNumbers[i])
-						{
-							GetMatch(nextWinnerNumber).AddPlayer
-								(match.Players[(int)(match.WinnerSlot)], (PlayerSlot)i);
-							break;
-						}
-					}
-				}
-				else
-				{
-					// Add winner to Rankings:
-					Rankings.Add(new PlayerScore
-						(match.Players[(int)(match.WinnerSlot)].Id,
-						match.Players[(int)(match.WinnerSlot)].Name, -1, 1));
-					IsFinished = true;
-				}
-
-				if (BracketTypeModel.BracketType.SINGLE == this.BracketType)
-				{
-					// Add losing player to Rankings:
-					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
-						? PlayerSlot.Challenger
-						: PlayerSlot.Defender;
-					int rank = -1;
-					if (null != LowerMatches && LowerMatches.ContainsKey(_matchNumber))
-					{
-						rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
-					}
-					else if (null != Matches && Matches.ContainsKey(_matchNumber))
-					{
-						rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
-					}
-					else if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
-					{
-						rank = 2;
-					}
-
-					Rankings.Add(new PlayerScore
-						(match.Players[(int)loserSlot].Id, match.Players[(int)loserSlot].Name, -1, rank));
-					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
-				}
-			}
-
+			AddWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
+#endif
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
 		{
 			GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore);
@@ -432,6 +378,39 @@ namespace Tournament.Structure
 
 			return gameModel;
 		}
+#if false
+		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+			if (!match.Games.Exists(g => g.GameNumber == _gameNumber))
+			{
+				throw new GameNotFoundException
+					("Game not found; Game Number may be invalid!");
+			}
+
+			bool needToUpdateRankings = false;
+			if (match.IsFinished &&
+				match.WinnerSlot != _winnerSlot)
+			{
+				needToUpdateRankings = true;
+				// Remove advanced players from future matches:
+				RemovePlayerFromFutureMatches
+					(nextWinnerNumber, ref match.Players[(int)(match.WinnerSlot)]);
+			}
+
+			GameModel gameModel = GetMatch(_matchNumber).UpdateGame(_gameNumber, _defenderScore, _challengerScore, _winnerSlot);
+
+			if (needToUpdateRankings)
+			{
+				IsFinished = false;
+				UpdateRankings();
+			}
+
+			ApplyWinEffects(_matchNumber, _winnerSlot);
+			return gameModel;
+		}
 		public override void RemoveLastGame(int _matchNumber)
 		{
 			int nextWinnerNumber;
@@ -478,6 +457,17 @@ namespace Tournament.Structure
 				UpdateRankings();
 			}
 		}
+#endif
+
+		public override void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
+		{
+			if (0 == _maxGamesPerMatch % 2)
+			{
+				throw new ScoreException
+					("Games/Match must be ODD in an elimination bracket!");
+			}
+			base.SetMaxGamesForWholeRound(_round, _maxGamesPerMatch);
+		}
 
 		public override void ResetMatches()
 		{
@@ -487,6 +477,95 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
+		{
+			if (_isAddition)
+			{
+				int nextWinnerNumber;
+				int nextLoserNumber;
+				IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
+				if (match.IsFinished)
+				{
+					// Add losing player to Rankings:
+					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
+						? PlayerSlot.Challenger
+						: PlayerSlot.Defender;
+					int rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
+#if false
+					if (null != LowerMatches && LowerMatches.ContainsKey(_matchNumber))
+					{
+						rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
+					}
+					else if (null != Matches && Matches.ContainsKey(_matchNumber))
+					{
+						rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
+					}
+					else if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
+					{
+						rank = 2;
+					}
+#endif
+					Rankings.Add(new PlayerScore
+						(match.Players[(int)loserSlot].Id, match.Players[(int)loserSlot].Name, -1, rank));
+					if (nextWinnerNumber < 0)
+					{
+						// Finals match: Add winner to Rankings:
+						Rankings.Add(new PlayerScore
+							(match.Players[(int)(match.WinnerSlot)].Id,
+							match.Players[(int)(match.WinnerSlot)].Name, -1, 1));
+						IsFinished = true;
+					}
+					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+				}
+			}
+			else
+			{
+				UpdateRankings();
+			}
+		}
+		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		{
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
+			if (match.IsFinished)
+			{
+				if (nextWinnerNumber > 0)
+				{
+					// Advance the winning player:
+					IMatch nextMatch = GetMatch(nextWinnerNumber);
+					for (int i = 0; i < nextMatch.PreviousMatchNumbers.Length; ++i)
+					{
+						if (_matchNumber == nextMatch.PreviousMatchNumbers[i])
+						{
+							GetMatch(nextWinnerNumber).AddPlayer
+								(match.Players[(int)(match.WinnerSlot)], (PlayerSlot)i);
+							break;
+						}
+					}
+				}
+			}
+		}
+		protected override void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished)
+		{
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
+			if (match.IsFinished != _wasFinished)
+			{
+				this.IsFinished = (IsFinished && match.IsFinished);
+				PlayerSlot winnerSlot = (_game.DefenderID == _game.WinnerID)
+					? PlayerSlot.Defender
+					: PlayerSlot.Challenger;
+				// Remove advanced players from future matches:
+				RemovePlayerFromFutureMatches
+					(nextWinnerNumber, ref match.Players[(int)winnerSlot]);
+			}
+		}
+
 		private void ReassignPlayers(IMatch _currMatch, List<IMatch> _prevRound)
 		{
 			if (null == _currMatch ||

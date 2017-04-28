@@ -11,6 +11,7 @@ namespace Tournament.Structure
 	public class RoundRobinBracket : Bracket
 	{
 		#region Variables & Properties
+		// inherits int Id
 		// inherits BracketType BracketType
 		// inherits bool IsFinalized
 		// inherits bool IsFinished
@@ -52,6 +53,7 @@ namespace Tournament.Structure
 				Players = _players;
 			}
 
+			Id = 0;
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			MaxRounds = _numberOfRounds;
 			ResetBracket();
@@ -88,7 +90,8 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_model");
 			}
 
-			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
+			this.Id = _model.BracketID;
+			this.BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			this.IsFinalized = _model.Finalized;
 			this.MaxRounds = 0;
 			ResetBracket();
@@ -203,49 +206,19 @@ namespace Tournament.Structure
 			}
 		}
 
+#if false
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
-			if (!Matches.ContainsKey(_matchNumber))
-			{
-				throw new MatchNotFoundException
-					("Match not found; match number may be invalid.");
-			}
-
-			GameModel gameModel = Matches[_matchNumber].AddGame(_defenderScore, _challengerScore, _winnerSlot);
+			GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
 			if (_defenderScore == _challengerScore)
 			{
 				throw new NotImplementedException
 					("Tie games are not (yet) supported!");
 			}
-			PlayerSlot gameWinnerSlot = (_defenderScore > _challengerScore)
-				? PlayerSlot.Defender : PlayerSlot.Challenger;
-			for (int i = 0; i < Rankings.Count; ++i)
-			{
-				if (Rankings[i].Id == Matches[_matchNumber].Players[(int)gameWinnerSlot].Id)
-				{
-					Rankings[i].Score += 1;
-					break;
-				}
-			}
-			UpdateRankings();
-
-			IsFinished = true;
-			foreach (IMatch match in Matches.Values)
-			{
-				if (!match.IsFinished)
-				{
-					IsFinished = false;
-					break;
-				}
-			}
-
+			AddWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
+#endif
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
 		{
 			if (_matchNumber < 1)
@@ -287,6 +260,37 @@ namespace Tournament.Structure
 				}
 			}
 
+			return gameModel;
+		}
+#if false
+		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			IMatch match = GetMatch(_matchNumber);
+			bool gameFound = false;
+			foreach (IGame game in match.Games)
+			{
+				if (game.GameNumber == _gameNumber)
+				{
+					gameFound = true;
+					for (int i = 0; i < Rankings.Count; ++i)
+					{
+						if (Rankings[i].Id == match.Players[(int)(game.WinnerSlot)].Id)
+						{
+							Rankings[i].Score -= 1;
+							break;
+						}
+					}
+					break;
+				}
+			}
+			if (!gameFound)
+			{
+				throw new GameNotFoundException
+					("Game not found; Game Number may be invalid!");
+			}
+
+			GameModel gameModel = GetMatch(_matchNumber).UpdateGame(_gameNumber, _defenderScore, _challengerScore, _winnerSlot);
+			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
 		public override void RemoveLastGame(int _matchNumber)
@@ -347,6 +351,7 @@ namespace Tournament.Structure
 
 			IsFinished = false;
 		}
+#endif
 
 		public override void ResetMatches()
 		{
@@ -360,6 +365,43 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
+		{
+			for (int i = 0; i < Rankings.Count; ++i)
+			{
+				if (Rankings[i].Id == _game.WinnerID)
+				{
+					if (_isAddition)
+					{
+						Rankings[i].Score += 1;
+					}
+					else
+					{
+						Rankings[i].Score -= 1;
+					}
+					break;
+				}
+			}
+
+			UpdateRankings();
+		}
+		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		{
+			IsFinished = true;
+			foreach (IMatch match in Matches.Values)
+			{
+				if (!match.IsFinished)
+				{
+					IsFinished = false;
+					break;
+				}
+			}
+		}
+		protected override void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished)
+		{
+			this.IsFinished = (IsFinished && GetMatch(_matchNumber).IsFinished);
+		}
+
 		protected override void UpdateRankings()
 		{
 			Rankings.Sort((first, second) =>
