@@ -248,22 +248,11 @@ namespace Tournament.Structure
 			{
 				Rankings.AddRange(group.Rankings);
 			}
-			Rankings.Sort((first, second) => -1 * (first.Score.CompareTo(second.Score)));
-			Rankings[0].Rank = 1;
 
-			int increment = 1;
-			for (int i = 1; i < Rankings.Count; ++i)
+			Rankings.Sort(SortRankingScores);
+			for (int i = 0; i < Rankings.Count; ++i)
 			{
-				if (Rankings[i].Score == Rankings[i - 1].Score)
-				{
-					++increment;
-					Rankings[i].Rank = Rankings[i - 1].Rank;
-				}
-				else
-				{
-					Rankings[i].Rank = Rankings[i - 1].Rank + increment;
-					increment = 1;
-				}
+				Rankings[i].Rank = i + 1;
 			}
 		}
 		#endregion

@@ -341,7 +341,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
+		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished)
 		{
 			if (_isAddition)
 			{

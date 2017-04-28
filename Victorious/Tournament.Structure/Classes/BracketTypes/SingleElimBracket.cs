@@ -318,6 +318,7 @@ namespace Tournament.Structure
 			return gameModel;
 		}
 #endif
+		// obsolete:
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
 		{
 			GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore);
@@ -477,7 +478,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
+		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished)
 		{
 			if (_isAddition)
 			{

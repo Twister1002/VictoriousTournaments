@@ -23,6 +23,8 @@ namespace Tournament.Structure
 		// inherits int NumberOfLowerRounds (0)
 		// inherits IMatch GrandFinal (null)
 		// inherits int NumberOfMatches
+		protected int MatchWinValue
+		{ get; set; }
 		#endregion
 
 		#region Ctors
@@ -56,6 +58,7 @@ namespace Tournament.Structure
 			Id = 0;
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			MaxRounds = _numberOfRounds;
+			MatchWinValue = 2;
 			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
 		}
@@ -94,6 +97,7 @@ namespace Tournament.Structure
 			this.BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			this.IsFinalized = _model.Finalized;
 			this.MaxRounds = 0;
+			this.MatchWinValue = 2;
 			ResetBracket();
 
 			List<UserModel> userModels = _model.UserSeeds
@@ -109,6 +113,7 @@ namespace Tournament.Structure
 
 			foreach (MatchModel mm in _model.Matches)
 			{
+				// Create the Match:
 				IMatch match = new Match(mm);
 				Matches.Add(match.MatchNumber, match);
 				++NumberOfMatches;
@@ -117,17 +122,25 @@ namespace Tournament.Structure
 					this.NumberOfRounds = match.RoundIndex;
 				}
 
-				for (int i = 0; i < Rankings.Count; ++i)
+				// Get the Scores, and update Rankings:
+				int defScore = 0, chalScore = 0;
+				foreach (IGame game in match.Games)
 				{
-					if (Rankings[i].Id == match.Players[(int)PlayerSlot.Defender].Id)
-					{
-						Rankings[i].Score = Rankings[i].Score + match.Score[(int)PlayerSlot.Defender];
-					}
-					else if (Rankings[i].Id == match.Players[(int)PlayerSlot.Challenger].Id)
-					{
-						Rankings[i].Score = Rankings[i].Score + match.Score[(int)PlayerSlot.Challenger];
-					}
+					defScore += game.Score[(int)PlayerSlot.Defender];
+					chalScore += game.Score[(int)PlayerSlot.Challenger];
 				}
+
+				int defIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id);
+				Rankings[defIndex].Score += match.Score[(int)PlayerSlot.Defender];
+				Rankings[defIndex].AddToScore(
+					(PlayerSlot.Defender == match.WinnerSlot) ? MatchWinValue : 0
+					, match.Score[(int)PlayerSlot.Defender], defScore, true);
+
+				int chalIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id);
+				Rankings[chalIndex].Score += match.Score[(int)PlayerSlot.Challenger];
+				Rankings[chalIndex].AddToScore(
+					(PlayerSlot.Challenger == match.WinnerSlot) ? MatchWinValue : 0
+					, match.Score[(int)PlayerSlot.Challenger], chalScore, true);
 			}
 
 			UpdateRankings();
@@ -365,23 +378,28 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
+		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished)
 		{
-			for (int i = 0; i < Rankings.Count; ++i)
-			{
-				if (Rankings[i].Id == _game.WinnerID)
-				{
-					if (_isAddition)
-					{
-						Rankings[i].Score += 1;
-					}
-					else
-					{
-						Rankings[i].Score -= 1;
-					}
-					break;
-				}
-			}
+			//PlayerSlot matchWinner = GetMatch(_matchNumber).WinnerSlot;
+			PlayerSlot gameWinner = (_game.DefenderID == _game.WinnerID)
+				? PlayerSlot.Defender : PlayerSlot.Challenger;
+			bool matchFinishChange = _wasFinished ^ GetMatch(_matchNumber).IsFinished;
+
+			// Update Defender's score:
+			int defIndex = Rankings.FindIndex(r => r.Id == _game.DefenderID);
+			bool defenderUpdate = matchFinishChange && (PlayerSlot.Defender == gameWinner);
+			Rankings[defIndex].Score += (_isAddition)
+				? Convert.ToInt16(defenderUpdate) * MatchWinValue
+				: -1 * Convert.ToInt16(defenderUpdate) * MatchWinValue;
+			Rankings[defIndex].AddToScore(Convert.ToInt16(defenderUpdate) * MatchWinValue, 1, _game.DefenderScore, _isAddition);
+
+			// Update Challenger's score:
+			int chalIndex = Rankings.FindIndex(r => r.Id == _game.ChallengerID);
+			bool challengerUpdate = matchFinishChange && (PlayerSlot.Challenger == gameWinner);
+			Rankings[chalIndex].Score += (_isAddition)
+				? Convert.ToInt16(challengerUpdate) * MatchWinValue
+				: -1 * Convert.ToInt16(challengerUpdate) * MatchWinValue;
+			Rankings[chalIndex].AddToScore(Convert.ToInt16(challengerUpdate) * MatchWinValue, 1, _game.ChallengerScore, _isAddition);
 
 			UpdateRankings();
 		}
@@ -404,29 +422,25 @@ namespace Tournament.Structure
 
 		protected override void UpdateRankings()
 		{
+			Rankings.Sort(SortRankingScores);
+#if false
 			Rankings.Sort((first, second) =>
 			{
-				int compare = -1 * (first.Score.CompareTo(second.Score));
-				return ((0 != compare)
-					? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id)));
+				// Rankings sorting: MatchScore > GameScore > PointsScore > initial Seeding
+				int compare = -1 * (first.MatchScore.CompareTo(second.MatchScore));
+				compare = (compare != 0)
+					? compare : -1 * (first.GameScore.CompareTo(second.GameScore));
+				compare = (compare != 0)
+					? compare : -1 * (first.PointsScore.CompareTo(second.PointsScore));
+				return (compare != 0)
+					? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
 			});
-			Rankings[0].Rank = 1;
-
-			int increment = 1;
-			for (int i = 1; i < Rankings.Count; ++i)
+#endif
+			for (int i = 0; i < Rankings.Count; ++i)
 			{
-				if (Rankings[i].Score == Rankings[i - 1].Score)
-				{
-					++increment;
-					Rankings[i].Rank = Rankings[i - 1].Rank;
-				}
-				else
-				{
-					Rankings[i].Rank = Rankings[i - 1].Rank + increment;
-					increment = 1;
-				}
+				Rankings[i].Rank = i + 1;
 			}
 		}
-		#endregion
+#endregion
 	}
 }

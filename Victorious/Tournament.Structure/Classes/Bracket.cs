@@ -41,8 +41,9 @@ namespace Tournament.Structure
 
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
+		// obsolete:
 		public abstract GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
-		protected abstract void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition);
+		protected abstract void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished);
 		protected abstract void ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
 		protected abstract void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished);
 		protected abstract void UpdateRankings();
@@ -395,9 +396,10 @@ namespace Tournament.Structure
 
 		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
+			bool wasFinished = GetMatch(_matchNumber).IsFinished;
 			GameModel gameModel = GetMatch(_matchNumber)
 				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
-			UpdateScore(_matchNumber, gameModel, true);
+			UpdateScore(_matchNumber, gameModel, true, wasFinished);
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
@@ -406,11 +408,11 @@ namespace Tournament.Structure
 			bool wasFinished = GetMatch(_matchNumber).IsFinished;
 			GameModel removedGame = GetMatch(_matchNumber).RemoveGameNumber(_gameNumber);
 			ApplyGameRemovalEffects(_matchNumber, removedGame, wasFinished);
-			UpdateScore(_matchNumber, removedGame, false);
+			UpdateScore(_matchNumber, removedGame, false, wasFinished);
 
 			GameModel addedGame = GetMatch(_matchNumber)
 				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
-			UpdateScore(_matchNumber, addedGame, true);
+			UpdateScore(_matchNumber, addedGame, true, wasFinished);
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return addedGame;
 		}
@@ -419,7 +421,7 @@ namespace Tournament.Structure
 			bool wasFinished = GetMatch(_matchNumber).IsFinished;
 			GameModel gameModel = GetMatch(_matchNumber).RemoveLastGame();
 			ApplyGameRemovalEffects(_matchNumber, gameModel, wasFinished);
-			UpdateScore(_matchNumber, gameModel, false);
+			UpdateScore(_matchNumber, gameModel, false, wasFinished);
 			return gameModel;
 		}
 		public virtual void ResetMatchScore(int _matchNumber)
@@ -582,6 +584,17 @@ namespace Tournament.Structure
 			NumberOfRounds = NumberOfLowerRounds = 0;
 			NumberOfMatches = 0;
 			Rankings.Clear();
+		}
+		protected int SortRankingScores(IPlayerScore first, IPlayerScore second)
+		{
+			// Rankings sorting: MatchScore > GameScore > PointsScore > initial Seeding
+			int compare = -1 * (first.MatchScore.CompareTo(second.MatchScore));
+			compare = (compare != 0)
+				? compare : -1 * (first.GameScore.CompareTo(second.GameScore));
+			compare = (compare != 0)
+				? compare : -1 * (first.PointsScore.CompareTo(second.PointsScore));
+			return (compare != 0)
+				? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
 		}
 		#endregion
 	}

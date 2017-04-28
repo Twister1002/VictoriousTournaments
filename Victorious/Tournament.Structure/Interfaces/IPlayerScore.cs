@@ -15,16 +15,22 @@ namespace Tournament.Structure
 		int Id { get; }
 		string Name { get; }
 
-		/// <summary>
-		/// -1 when not applicable. (should not be displayed)
-		/// </summary>
+		[System.Obsolete("use MatchScore&GameScore instead", false)]
 		int Score { get; set; }
+		int MatchScore { get; set; }
+		int GameScore { get; set; }
+		int PointsScore { get; set; }
 
 		/// <summary>
 		/// In the case of a "ranged" rank, returns the minimum.
 		/// Ex: Rank 5-8 returns 5.
 		/// </summary>
 		int Rank { get; set; }
+		#endregion
+
+		#region Methods
+		void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _addition);
+		void ResetScore();
 		#endregion
 	}
 }
