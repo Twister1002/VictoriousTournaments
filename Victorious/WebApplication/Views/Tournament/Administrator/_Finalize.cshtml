@@ -1,13 +1,4 @@
 ﻿
-<div id="TournamentFinalize">
-    <h2>Finalize Tournament</h2>
-    @using (Html.BeginForm("Finalize", "Tournament", new { tourny = ViewBag.TournamentId }, FormMethod.Post))
-    {
-        <button type = "submit">Finalize Tournament</button>
-    }
-    @*
-    <div class="">
-        To accept the bracket and these players, click on this here to finalize the tournament. <br/>
-        No changes to the brackets can be made after this happens.
-    </div>*@
+<div class="TournamentFinalize">
+    <button type="button" class="tournamentFinalizeButton">Finalize Tournament</button>
 </div>

@@ -35,51 +35,33 @@
         window.location.replace("/Tournament/Update/" + $(this).closest("#Tournament").data("id"));
     });
 
-    // Reset the brackets
-    $(".tournament-reset").on("click", function () {
+
+    // Finalize Tournament 
+    $(".tournamentFinalizeButton").on("click", function () {
+        var roundData = {};
         var jsonData = {
-            "tournyNum": $(this).closest("#Tournament").data("id")
+            "tournyVal": $("#Tournament").data("id"),
+            "bracketVal": $(".bracket").data("bracketnum"),
         };
 
-        if (confirm("Are you sure you want to reset non-finished brackets?")) {
-            $.ajax({
-                "url": "/Tournament/Ajax/Reset",
-                "type": "POST",
-                "data": { "jsonData": JSON.stringify(jsonData) },
-                "dataType": "json",
-                "success": function (json) {
-                    json = JSON.parse(json);
-                    if (json.status) {
-                        window.location.replace(json.redirect);
-                    }
-                    else {
-                        alert(json.message);
-                    }
-                },
-                "error": function (json) {
-                    json = JSON.parse(json);
+        $.each($(".header-rounds li"), function (i, e) {
+            roundData[i + 1] = $(e).find(".bestOfMatches").val();
+        });
 
-                    console.log("Error");
-                }
-            });
-        }
-        else {
-            return false;
-        }
-    });
-
-    // View tournament standings
-    $(".tournament-standings").on("click", function () {
-        var elem = $("#TournamentStandings");
-
-        if (elem.hasClass("open")) {
-            // Close the side panel
-            elem.removeClass("open");
-        }
-        else {
-            // Open the side panel
-            elem.addClass("open");
-        }
+        $.ajax({
+            "url": "/Tournament/Ajax/Finalize",
+            "type": "POST",
+            "data": { "jsonData": JSON.stringify(jsonData), "roundData": roundData },
+            "dataType": "json",
+            "success": function (json) {
+                json = JSON.parse(json);
+                location.replace(json.redirect);
+                console.log(json);
+            },
+            "error": function (json) {
+                console.log(json);
+            }
+        });
     });
 
     // Update the Date selections
@@ -99,9 +81,11 @@
     });
 
     (function ($) {
-        $("#RegistrationStartDate")
-            .datepicker("setDate", $(this).val())
-            //.datepicker("option", "minDate", "-1m")
-            .trigger("change");
+        if ($("#RegistrationStartDate").length > 0) {
+            $("#RegistrationStartDate")
+                .datepicker("setDate", $(this).val())
+                //.datepicker("option", "minDate", "-1m")
+                .trigger("change");
+        }
     })($);
 });

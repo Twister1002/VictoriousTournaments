@@ -29,5 +29,10 @@ namespace WebApplication.Models
         protected DatabaseInterface db = new DatabaseInterface();
         public String message { get; set; }
         public Exception dbException { get; set; }
+        public Permission GetSitePermission(int userId)
+        {
+            UserModel model = db.GetUserById(userId);
+            return model.SitePermission.Permission;
+        }
     }
 }

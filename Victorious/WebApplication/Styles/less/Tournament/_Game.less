@@ -1,0 +1,57 @@
+﻿.TournamentGames {
+    position: absolute;
+    opacity: .95;
+    background-color: black;
+    z-index: 1;
+    min-width: 14em;
+    padding: .5em .1em;
+    width: 100%;
+    display: none;
+
+    &.open {
+        display: block;
+    }
+
+    h2 {
+        display: inline-block;
+    }
+
+    .options {
+        display: inline-block;
+        
+        .add-game {
+            &.hide {
+                display: none;
+            }
+        }
+    }
+
+    .name {
+        text-align: center;
+    }
+
+    .score {
+        text-align: center;
+
+        input {
+            width: 2.5em;
+            &.invalid {
+                background-color: @alert-red;
+                color: @white;
+            }
+        }
+
+        &.no-edit {
+            input {
+                background-color: inherit;
+                border: none;
+            }
+        }
+    }
+
+    .update-games {
+        &.hide {
+            display: none;
+        }
+    }
+}

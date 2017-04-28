@@ -1,0 +1,66 @@
+﻿@model WebApplication.Models.MatchViewModel
+
+@{ 
+    String isGrandFinal = ViewBag.isGrandFinal == true ? "grand-final" : "";
+    ViewBag.isGrandFinal = null;
+}
+
+<div class="TournamentMatch @(isGrandFinal)" data-id="@Model.Model.MatchID" data-matchnum="@Model.Model.MatchNumber">
+    <label class="matchNum">@Model.Model.MatchNumber</label>
+
+    <div class="overview">
+        <div class="defender" data-id="@Model.Defender().Id">
+            <div class="name">
+                @Model.Defender().Name
+            </div>
+            <div class="score">
+                @Model.DefenderScore()
+            </div>
+            <div class="score-edit">
+                <input type="text" name="gameScore" maxlength="3" />
+            </div>
+        </div>
+        <div class="challenger" data-id="@Model.Challenger().Id">
+            <div class="name">
+                @Model.Challenger().Name
+            </div>
+            <div class="score">
+                @Model.ChallengerScore()
+            </div>
+            <div class="score-edit">
+                <input type="text" name="gameScore" maxlength="3" />
+            </div>
+        </div>
+    </div>
+
+    <div class="details @(Model.Match.IsReady ? "" : "hide") clickable clickable-underline">Details</div>
+
+    <div class="TournamentGames">
+        <h2>Match @Model.Match.MatchNumber Details</h2>
+        <div class="options">
+            <span class="icon icon-cross close"></span>
+            @if (ViewBag.isAdministrator)
+            {
+                <span class="icon icon-plus add-game"></span>
+                <span class="icon icon-loop2 reset-match"></span>
+            }
+        </div>
+        <ul class="list-table">
+            <li class="list-table-header">
+                <ul data-columns="3">
+                    <li class="column"> </li>
+                    <li class="column defender-name name">@Model.Defender().Name</li>
+                    <li class="column challenger-name name">@Model.Challenger().Name</li>
+                </ul>
+            </li>
+            <li class="list-table-body games" data-max="@Model.Match.MaxGames">
+
+            </li>
+        </ul>
+
+        @if (ViewBag.isAdministrator)
+        {
+            <button type="button" class="update-games  @(Model.Match.IsFinished ? "hide" : "")">Update Games</button>
+        }
+    </div>
+</div>

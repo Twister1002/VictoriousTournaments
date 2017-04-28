@@ -1,0 +1,65 @@
+﻿.TournamentMatch {
+    position: relative;
+    padding: .5em .2em;
+
+    &.grand-final {
+        position: relative;
+        top: -35%;
+    }
+
+    .matchNum {
+        &:before {
+            content: "Match ";
+        }
+    }
+
+    .overview {
+        background-color: @match-color;
+        border: 1px solid @white;
+        overflow: hidden;
+
+        .defender, .challenger {
+            &[data-id='-1'] {
+                .name {
+                    font-style:italic;
+                }
+            }
+
+            white-space:nowrap;
+            position: relative;
+            padding: .1em;
+            overflow: hidden;
+
+            &.teamHover {
+                background-color: @color-primary-0;
+            }
+
+            .score {
+                position: absolute;
+                right: 0em;
+                top: 0em;
+                height: 1.5em;
+                line-height: 1.5em;
+                text-align: right;
+                padding: 0em .25em;
+                border-left: 1px solid @white;
+            }
+            .score-edit {
+                display: none;
+            }
+        }
+
+        .defender {
+            border-bottom: 1px solid @white;
+        }
+    }
+
+    .details {
+        &.hide {
+            display: none;
+        }
+
+        display: block;
+        text-align:center;
+    }
+}

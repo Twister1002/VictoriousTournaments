@@ -6,7 +6,7 @@
     $("#AdministratorGames .GameAddButton").on("click", function () {
         var jsonData = {
             "function": "add",
-            "title": $("#AdministratorGames .list-table-input .gameTitle .field").val()
+            "title": $("#AdministratorGames .form .gameTitle .field").val()
         };
 
         GameUpdate(jsonData);
@@ -40,9 +40,9 @@
 
                     if (json.function == "add") {
                         html = "<ul class='game' data-columns='3' data-gameid='" + json.data.model.GameID + "'>";
-                        html += "<li class='gameTitle'>" + json.data.model.Title + "</li>";
-                        html += "<li class='gamePlatforms'>None</li>";
-                        html += "<li class='gameDelete'><img class='icon icon-cross' src='Images/svg/cross.svg' /></li>";
+                        html += "<li class='column gameTitle'>" + json.data.model.Title + "</li>";
+                        html += "<li class='column gamePlatforms'>None</li>";
+                        html += "<li class='column gameDelete'><span class='icon icon-cross'></span></li>";
                         html += "</ul>";
 
                         table.append(html);

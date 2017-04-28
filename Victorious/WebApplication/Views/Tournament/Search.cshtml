@@ -7,19 +7,23 @@
 <div id="TournamentSearch">
     <h2>Find A Tournament</h2>
     <ul class="list-table">
-        <li>
-            <ul class="options form" data-columns="3">
-                <li>@Html.TextBoxFor(x => x.Title, Model.titleSearch, new { @class="field", placeholder="Search By Title"})</li>
-                <li>@Html.DropDownListFor(x => x.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---")</li>
-                <li>@Html.TextBoxFor(t => t.TournamentStartDate, new { @class = "datepicker", placeholder="Start Date" } )</li>
+        <li class="list-table-header">
+            <ul class="options form" data-columns="4">
+                <li class="column">@Html.TextBoxFor(x => x.Title, Model.titleSearch, new { @class = "field title", placeholder = "Search By Title" })</li>
+                <li class="column">@Html.DropDownListFor(x => x.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---", new { @class = "gameType" })</li>
+                <li class="column">@Html.TextBoxFor(t => t.TournamentStartDate, new { @class = "datepicker startDate", placeholder = "Start Date" })</li>
+                <li class="column">
+                    <button type="button" class="searchButton">Search</button>
+                    <button type="button" class="clearButton">Reset</button>
+                </li>
             </ul>
         </li>
         <li class="list-table-header">
             <ul class="border list-table-columns" data-columns="4">
-                <li>Title</li>
-                <li>Game</li>
-                <li>Start Date</li>
-                <li>Registration</li>
+                <li class="column">Title</li>
+                <li class="column">Game</li>
+                <li class="column">Start Date</li>
+                <li class="column">Registration</li>
             </ul>
         </li>
         <li class="list-table-body">
@@ -27,12 +31,12 @@
             {
                 foreach (DataLib.TournamentModel tournyModel in Model.SearchModels)
                 {
-                    <a href="/Tournament/@tournyModel.TournamentID">
-                        <ul class="list-table-columns column-clickable" data-columns="4">
-                            <li>@tournyModel.Title</li>
-                            <li>@(tournyModel.GameType != null ? tournyModel.GameType.Title : "None")</li>
-                            <li>@(((DateTime)tournyModel.TournamentRules.TournamentStartDate).ToShortDateString())</li>
-                            <li>@((bool)tournyModel.TournamentRules.IsPublic ? "Public" : "Private")</li>
+                    <a class="column" href="/Tournament/@tournyModel.TournamentID">
+                        <ul class="column-clickable" data-columns="4">
+                            <li class="column">@tournyModel.Title</li>
+                            <li class="column">@(tournyModel.GameType != null ? tournyModel.GameType.Title : "None")</li>
+                            <li class="column">@(((DateTime)tournyModel.TournamentRules.TournamentStartDate).ToShortDateString())</li>
+                            <li class="column">@((bool)tournyModel.TournamentRules.IsPublic ? "Public" : "Private")</li>
                         </ul>
                     </a>
                 }

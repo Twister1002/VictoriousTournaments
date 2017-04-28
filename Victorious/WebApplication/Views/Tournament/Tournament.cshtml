@@ -11,8 +11,7 @@
     var userPermission = isLoggedIn ? Model.UserPermission((int)Session["User.UserId"]) : DataLib.Permission.NONE;
 
     ViewBag.Permission = userPermission;
-    ViewBag.isLoggedIn = isLoggedIn;
-    ViewBag.TournamentId = Model.Model.TournamentID;
+    ViewBag.isAdministrator = userPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR;
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
@@ -24,39 +23,55 @@
                 <span class="icon icon-pencil tournament-update"></span>
                 <span class="icon icon-cross tournament-delete"></span>
             }
-            @if (isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
-            {
-                <span class="icon icon-loop2 tournament-reset"></span>
-            }
-            <span class="icon icon-trophy tournament-standings"></span>
         </div>
         <h3 class="gameTitle">@(Model.Model.GameType != null ? Model.Model.GameType.Title : "")</h3>
     </div>
-    @{
-        if (userPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
-        {
-            Html.RenderPartial("_ViewTournament", Model.Tourny, new ViewDataDictionary(ViewData));
-        }
-        else
-        {
-            if (registrationStarted && !registrationEnded)
-            {
-                Html.RenderPartial("_ViewRegistration", Model, new ViewDataDictionary(ViewData));
-            }
-            else if (registrationEnded && !tournamentStarted)
-            {
-                <div class="message success">The tournament is currently being prepared. Please wait until the brackets are released.</div>
-            }
-            else if (tournamentStarted)
-            {
-                Html.RenderPartial("_ViewTournament", Model.Tourny, new ViewDataDictionary(ViewData));
-            }
-            else
-            {
-                <div class="message exception">Yeah..... something went wrong with displaying the tournament</div>
-            }
-        }
+    @for (int i = 0; i < Model.Tourny.Brackets.Count; i++)
+    {
+        // Tournament View
+        var Bracket = Model.Tourny.Brackets[i];
+        String bracketName = "";
 
-        Html.RenderPartial("Brackets/_Standings", Model.Tourny, new ViewDataDictionary(ViewData));
+        <div class="bracket" data-id="@Bracket.Id" data-bracketnum="@i">
+            <div class="bracket-info">
+                @switch (Bracket.BracketType)
+                {
+                    case DataLib.BracketTypeModel.BracketType.SINGLE:
+                        bracketName = "Single";
+                        break;
+                    case DataLib.BracketTypeModel.BracketType.DOUBLE:
+                        bracketName = "Double";
+                        break;
+                    case DataLib.BracketTypeModel.BracketType.ROUNDROBIN:
+                        bracketName = "RoundRobin";
+                        break;
+                }
+
+                <h3 class="name">@bracketName</h3>
+                <div class="options">
+                    @if (Bracket.IsFinalized) { 
+                        if (isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
+                        {
+                            <span class="icon icon-loop2 tournament-reset"></span>
+                        }
+                        <span class="icon icon-trophy tournament-standings"></span>
+                    }
+                </div>
+            </div>
+            <ul class="list-table bracket-data">
+                @{
+                    var bracketViewModel = new WebApplication.Models.BracketViewModel(Bracket);
+                    
+                    if (!Bracket.IsFinalized && isLoggedIn && (int)Session["User.UserId"] == Model.Model.CreatedByID)
+                    {
+                        Html.RenderPartial("Administrator/_Finalize");
+                    }
+
+                    Html.RenderPartial("Brackets/Shared/_Header", bracketViewModel, new ViewDataDictionary(ViewData));
+                    Html.RenderPartial("Brackets/" + bracketName, bracketViewModel, new ViewDataDictionary(ViewData));
+                    Html.RenderPartial("Brackets/Shared/_Standings", bracketViewModel);
+                }
+            </ul>
+        </div>
     }
 </div>
