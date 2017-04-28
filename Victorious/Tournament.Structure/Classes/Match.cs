@@ -358,7 +358,13 @@ namespace Tournament.Structure
 					("Score cannot be negative!");
 			}
 
-			IGame game = new Game(this.Id, (Games.Count + 1));
+			int gameNum = 1;
+			// Find the lowest (positive) Game Number we can add:
+			while (Games.Select(g => g.GameNumber).ToList().Contains(gameNum))
+			{
+				++gameNum;
+			}
+			IGame game = new Game(this.Id, gameNum);
 			for (int i = 0; i < 2; ++i)
 			{
 				game.PlayerIDs[i] = this.Players[i].Id;
@@ -373,6 +379,8 @@ namespace Tournament.Structure
 				AddWin(game.WinnerSlot);
 			}
 			Games.Add(game);
+			Games.Sort((first, second) => first.GameNumber.CompareTo(second.GameNumber));
+
 			return game.GetModel();
 		}
 		public GameModel AddGame(int _defenderScore, int _challengerScore)
@@ -413,6 +421,7 @@ namespace Tournament.Structure
 			Games.Add(game);
 			return game.GetModel();
 		}
+#if false
 		public GameModel UpdateGame(int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			if (_gameNumber < 1)
@@ -435,7 +444,7 @@ namespace Tournament.Structure
 			{
 				if (Games[g].GameNumber == _gameNumber)
 				{
-					RemoveGame(g);
+					RemoveGameNumber(g);
 
 					IGame game = new Game(this.Id, _gameNumber);
 					for (int i = 0; i < 2; ++i)
@@ -460,10 +469,35 @@ namespace Tournament.Structure
 			throw new GameNotFoundException
 				("Game not found; Game Number may be invalid!");
 		}
+#endif
 		public GameModel RemoveLastGame()
 		{
-			return (RemoveGame(Games.Count - 1));
+			int index = Games.Count - 1;
+			if (index < 0)
+			{
+				throw new GameNotFoundException
+					("No Games to remove!");
+			}
+
+			return (RemoveGameNumber(Games[index].GameNumber));
 		}
+		public GameModel RemoveGameNumber(int _gameNumber)
+		{
+			for (int index = 0; index < Games.Count; ++index)
+			{
+				if (Games[index].GameNumber == _gameNumber)
+				{
+					GameModel removedGame = Games[index].GetModel();
+					SubtractWin(Games[index].WinnerSlot);
+					Games.RemoveAt(index);
+					return removedGame;
+				}
+			}
+
+			throw new GameNotFoundException
+				("Game not found; Game Number may be invalid!");
+		}
+
 		public void ResetScore()
 		{
 			if (null == Score)
@@ -601,9 +635,9 @@ namespace Tournament.Structure
 			NextLoserMatchNumber = _number;
 			Model.NextLoserMatchNumber = _number;
 		}
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 		private void AddGame(IGame _game)
 		{
 			if (null == _game)
@@ -627,25 +661,6 @@ namespace Tournament.Structure
 
 			AddWin(_game.WinnerSlot);
 			Games.Add(_game);
-		}
-		private GameModel RemoveGame(int _index)
-		{
-			if (0 == Games.Count)
-			{
-				throw new GameNotFoundException
-					("No Games to remove!");
-			}
-			if (_index < 0 || _index >= Games.Count)
-			{
-				throw new InvalidIndexException
-					("Game index is out of range!");
-			}
-
-			GameModel removedGame = Games[_index].GetModel();
-			SubtractWin(Games[_index].WinnerSlot);
-			Games.RemoveAt(_index);
-
-			return removedGame;
 		}
 		private void AddWin(PlayerSlot _slot)
 		{
@@ -728,6 +743,6 @@ namespace Tournament.Structure
 					break;
 			}
 		}
-		#endregion
+#endregion
 	}
 }

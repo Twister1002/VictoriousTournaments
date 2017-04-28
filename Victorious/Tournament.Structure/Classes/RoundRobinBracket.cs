@@ -259,6 +259,7 @@ namespace Tournament.Structure
 
 			return gameModel;
 		}
+#if false
 		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			IMatch match = GetMatch(_matchNumber);
@@ -289,7 +290,6 @@ namespace Tournament.Structure
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
-#if false
 		public override void RemoveLastGame(int _matchNumber)
 		{
 			if (_matchNumber < 1)
@@ -394,9 +394,9 @@ namespace Tournament.Structure
 				}
 			}
 		}
-		protected override void ApplyGameRemovalEffects(int _matchNumber)
+		protected override void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished)
 		{
-			IsFinished = false;
+			this.IsFinished = (IsFinished && GetMatch(_matchNumber).IsFinished);
 		}
 
 		protected override void UpdateRankings()

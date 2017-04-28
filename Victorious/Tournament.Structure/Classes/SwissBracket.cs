@@ -142,15 +142,15 @@ namespace Tournament.Structure
 		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			base.ApplyWinEffects(_matchNumber, _slot);
-			if (IsFinished)
+			if (this.IsFinished)
 			{
 				IsFinished = !(AddNewRound(GetMatch(_matchNumber).MaxGames));
 			}
 		}
-		protected override void ApplyGameRemovalEffects(int _matchNumber)
+		protected override void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished)
 		{
 			CheckAndRemoveNextRound(1 + GetMatch(_matchNumber).RoundIndex);
-			IsFinished = false;
+			base.ApplyGameRemovalEffects(_matchNumber, _game, _wasFinished);
 		}
 		private bool AddNewRound(int _gamesPerMatch)
 		{

@@ -375,6 +375,7 @@ namespace Tournament.Structure
 
 			return gameModel;
 		}
+#if false
 		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			int nextWinnerNumber;
@@ -407,7 +408,6 @@ namespace Tournament.Structure
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
-#if false
 		public override void RemoveLastGame(int _matchNumber)
 		{
 			int nextWinnerNumber;
@@ -535,18 +535,21 @@ namespace Tournament.Structure
 				}
 			}
 		}
-		protected override void ApplyGameRemovalEffects(int _matchNumber)
+		protected override void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished)
 		{
 			int nextWinnerNumber;
 			int nextLoserNumber;
 			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
-			if (match.IsFinished)
+			if (match.IsFinished != _wasFinished)
 			{
-				IsFinished = false;
+				this.IsFinished = (IsFinished && match.IsFinished);
+				PlayerSlot winnerSlot = (_game.DefenderID == _game.WinnerID)
+					? PlayerSlot.Defender
+					: PlayerSlot.Challenger;
 				// Remove advanced players from future matches:
 				RemovePlayerFromFutureMatches
-					(nextWinnerNumber, ref match.Players[(int)(match.WinnerSlot)]);
+					(nextWinnerNumber, ref match.Players[(int)winnerSlot]);
 			}
 		}
 

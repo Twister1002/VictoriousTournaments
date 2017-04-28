@@ -406,17 +406,17 @@ namespace Tournament.Structure
 				}
 			}
 		}
-		protected override void ApplyGameRemovalEffects(int _matchNumber)
+		protected override void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished)
 		{
 			int nextWinnerNumber;
 			int nextLoserNumber;
 			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
-			if (match.IsFinished)
+			if (match.IsFinished != _wasFinished)
 			{
-				base.ApplyGameRemovalEffects(_matchNumber);
+				base.ApplyGameRemovalEffects(_matchNumber, _game, _wasFinished);
 
-				PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
+				PlayerSlot loserSlot = (_game.DefenderID == _game.WinnerID)
 					? PlayerSlot.Challenger
 					: PlayerSlot.Defender;
 				RemovePlayerFromFutureMatches

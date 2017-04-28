@@ -138,7 +138,7 @@ namespace Tournament.Structure
 		GameModel AddGame(int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
 		[System.Obsolete("use AddGame(int, int, PlayerSlot) instead", false)]
 		GameModel AddGame(int _defenderScore, int _challengerScore);
-
+#if false
 		/// <summary>
 		/// Replace an existing Game with new data.
 		/// </summary>
@@ -148,12 +148,19 @@ namespace Tournament.Structure
 		/// <param name="_winnerSlot">Slot of winner (Defender/Challenger)</param>
 		/// <returns>Model of the new Game</returns>
 		GameModel UpdateGame(int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
-
+#endif
 		/// <summary>
 		/// Delete/un-record the most recent Game.
 		/// </summary>
 		/// <returns>Model of Game that was removed</returns>
 		GameModel RemoveLastGame();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="_gameNumber"></param>
+		/// <returns></returns>
+		GameModel RemoveGameNumber(int _gameNumber);
 
 		/// <summary>
 		/// Resets Match score to 0-0.
