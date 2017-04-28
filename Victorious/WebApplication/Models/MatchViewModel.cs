@@ -37,6 +37,29 @@ namespace WebApplication.Models
             }
         }
 
+        public void RemoveGame(int gameNum)
+        {
+            DbError result = db.DeleteGame(Model, Match.Games[gameNum].GetModel());
+            if (result == DbError.SUCCESS)
+            {
+                Match.RemoveGameNumber(gameNum);
+            }
+        }
+
+        public void RemoveGames()
+        {
+            List<GameModel> games = Model.Games.ToList();
+
+            foreach (GameModel game in games)
+            {
+                DbError result = db.DeleteGame(Model, game);
+                if (result == DbError.SUCCESS)
+                {
+                    //Match.RemoveGameNumber(game.GameNumber);
+                }
+            }
+        }
+
         public IPlayer Challenger()
         {
             IPlayer player = Match.Players[(int)PlayerSlot.Challenger];

@@ -104,6 +104,7 @@
         var gameData = new Array();
         var validated = true;
 
+        // TODO: When adding more games, if both fields are blank, they should not restrict processing.
         // Validate the games fields
         // For every game
         $.each(games, function (i, e) {
@@ -182,6 +183,34 @@
             },
             "complete": function () {
 
+            }
+        });
+    });
+
+    $(".TournamentGames .options .reset-match").on("click", function () {
+        var match = $(this).closest(".TournamentMatch");
+        var jsonData = {
+            "bracketId": $(this).closest(".bracket").data("id"),
+            "matchNum": $(this).closest(".TournamentMatch").data("matchnum")
+        };
+
+        $.ajax({
+            "url": "/Ajax/Bracket/MatchReset",
+            "type": "post",
+            "data": { "bracketId": $(this).closest(".bracket").data("id"), "matchNum": $(this).closest(".TournamentMatch").data("matchnum") },
+            "dataType": "json",
+            "success": function (json) {
+                json = JSON.parse(json);
+
+                if (json.status) {
+                    MatchUpdate(json.data, match);
+                    match.find(".TournamentGames .games").empty();
+                }
+
+                console.log(json.message);
+            },
+            "error": function (json) {
+                console.log(json);
             }
         });
     });
@@ -296,5 +325,9 @@
 
             }
         });
+    }
+
+    function MatchIsFinished($match) {
+
     }
 });

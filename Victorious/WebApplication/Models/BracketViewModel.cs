@@ -119,7 +119,7 @@ namespace WebApplication.Models
                 if (Bracket.GetRound(i).Count > 0)
                 {
                     roundInfo = new RoundData() { roundNum = i, bestOf = Bracket.GetRound(i)[0].MaxGames };
-                } 
+                }
                 else if (i == totalRounds && Bracket.GrandFinal != null)
                 {
                     roundInfo = new RoundData() { roundNum = i, bestOf = Bracket.GrandFinal.MaxGames };
@@ -138,6 +138,16 @@ namespace WebApplication.Models
             }
 
             return data;
+        }
+
+        public void ResetMatch(int matchNum)
+        {
+            Bracket.ResetMatchScore(matchNum);
+        }
+
+        public Permission TournamentPermission(int userId)
+        {
+            return Model.Tournament.UsersInTournament.First(x => x.UserID == userId).Permission;
         }
     }
 }

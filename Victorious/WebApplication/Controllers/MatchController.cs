@@ -31,7 +31,8 @@ namespace WebApplication.Controllers
             Dictionary<int, object> matchData = new Dictionary<int, object>();
             foreach (IGame game in viewModel.Match.Games)
             {
-                matchData.Add(game.GameNumber,
+                matchData.Add(
+                    game.GameNumber,
                     new {
                         gameNum = game.GameNumber,
                         scores = game.Score,
