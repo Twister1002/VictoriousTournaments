@@ -32,16 +32,16 @@ namespace WebApplication.Controllers
         [Route("Ajax/Tournament/Search")]
         public JsonResult Search(String title, int? gameTypeId, DateTime? startDate)
         {
-            List<TournamentModel> searchedTournaments = new List<TournamentModel>();
+            List<TournamentModel> searchedTournaments;
 
             if (startDate != null)
             {
-                //searchedTournaments = db.FindTournaments(title, startDate.Value);
+                searchedTournaments = db.FindTournaments(title, startDate.Value);
             }
             else
             {
-				searchedTournaments = db.FindTournaments(title);
-			}
+                searchedTournaments = db.FindTournaments(title);
+            }
 
             List<object> dataReturned = new List<object>();
 
