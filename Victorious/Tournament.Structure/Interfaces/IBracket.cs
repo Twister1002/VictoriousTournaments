@@ -178,6 +178,7 @@ namespace Tournament.Structure
 
 		/// <summary>
 		/// Manually set a winner for specified Match.
+		/// Winner's score will be -1.
 		/// </summary>
 		/// <param name="_matchNumber">Number of Match to affect</param>
 		/// <param name="_winnerSlot">Slot of winner (Defender/Challenger)</param>

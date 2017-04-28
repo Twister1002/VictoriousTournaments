@@ -33,7 +33,9 @@ namespace Tournament.Structure
 		/// </summary>
 		bool IsFinished { get; }
 
-
+		/// <summary>
+		/// Is the Match winner manually set?
+		/// </summary>
 		bool IsManualWin { get; }
 
 		/// <summary>
@@ -167,6 +169,7 @@ namespace Tournament.Structure
 
 		/// <summary>
 		/// Manually set a winner for this Match.
+		/// Winner's score will be -1.
 		/// </summary>
 		/// <param name="_winnerSlot">Slot of winning Player (Defender/Challenger)</param>
 		void SetWinner(PlayerSlot _winnerSlot);

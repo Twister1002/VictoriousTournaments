@@ -506,7 +506,10 @@ namespace Tournament.Structure
 				if (Games[index].GameNumber == _gameNumber)
 				{
 					GameModel removedGame = Games[index].GetModel();
-					SubtractWin(Games[index].WinnerSlot);
+					if (!IsManualWin)
+					{
+						SubtractWin(Games[index].WinnerSlot);
+					}
 					Games.RemoveAt(index);
 					return removedGame;
 				}
