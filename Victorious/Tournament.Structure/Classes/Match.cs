@@ -497,7 +497,6 @@ namespace Tournament.Structure
 			throw new GameNotFoundException
 				("Game not found; Game Number may be invalid!");
 		}
-
 		public void ResetScore()
 		{
 			if (null == Score)

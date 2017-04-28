@@ -495,7 +495,7 @@ namespace Tournament.Structure
 			throw new MatchNotFoundException
 				("Match not found; match number may be invalid.");
 		}
-		public void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
+		public virtual void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
 		{
 			if (_maxGamesPerMatch < 1)
 			{
@@ -518,7 +518,7 @@ namespace Tournament.Structure
 				GetMatch(match.MatchNumber).SetMaxGames(_maxGamesPerMatch);
 			}
 		}
-		public void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch)
+		public virtual void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch)
 		{
 			if (_maxGamesPerMatch < 1)
 			{

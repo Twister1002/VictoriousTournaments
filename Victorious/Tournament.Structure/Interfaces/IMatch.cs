@@ -156,10 +156,10 @@ namespace Tournament.Structure
 		GameModel RemoveLastGame();
 
 		/// <summary>
-		/// 
+		/// Delete/un-record a specific Game.
 		/// </summary>
-		/// <param name="_gameNumber"></param>
-		/// <returns></returns>
+		/// <param name="_gameNumber">Game Number of desired Game</param>
+		/// <returns>Model of removed Game</returns>
 		GameModel RemoveGameNumber(int _gameNumber);
 
 		/// <summary>

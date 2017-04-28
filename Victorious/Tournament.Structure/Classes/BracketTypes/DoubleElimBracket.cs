@@ -328,6 +328,16 @@ namespace Tournament.Structure
 			base.ResetMatchScore(_matchNumber);
 		}
 #endif
+
+		public override void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch)
+		{
+			if (0 == _maxGamesPerMatch)
+			{
+				throw new ScoreException
+					("Games/Match must be odd in an elimination bracket!");
+			}
+			base.SetMaxGamesForWholeLowerRound(_round, _maxGamesPerMatch);
+		}
 		#endregion
 
 		#region Private Methods

@@ -149,7 +149,7 @@ namespace Tournament.Structure
 			else if (_gamesPerMatch % 2 == 0)
 			{
 				throw new BracketException
-					("Games Per Match must be odd!");
+					("Games/Match must be odd in an elimination bracket!");
 			}
 			if (Players.Count < 2)
 			{
@@ -458,6 +458,16 @@ namespace Tournament.Structure
 			}
 		}
 #endif
+
+		public override void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
+		{
+			if (0 == _maxGamesPerMatch % 2)
+			{
+				throw new ScoreException
+					("Games/Match must be ODD in an elimination bracket!");
+			}
+			base.SetMaxGamesForWholeRound(_round, _maxGamesPerMatch);
+		}
 
 		public override void ResetMatches()
 		{
