@@ -558,18 +558,18 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
-        public List<TournamentModel> FindTournaments(string title, DateTime startDate)
+        public List<TournamentModel> FindTournaments(string title)
         {
             List<TournamentModel> tournaments = new List<TournamentModel>();
             //TournamentRuleModel rules = tournament.TournamentRules;
             try
             {
                 List<TournamentModel> _tournaments = context.Tournaments.SqlQuery("SELECT * FROM dbo.Tournaments WHERE Title LIKE @Title", new SqlParameter("@Title", "%" + title + "%")).ToList();
-                foreach (var _tournament in _tournaments)
-                {
-                    if (_tournament.TournamentRules.TournamentStartDate == startDate)
-                        tournaments.Add(_tournament);
-                }
+                //foreach (var _tournament in _tournaments)
+                //{
+                //    if (_tournament.TournamentRules.TournamentStartDate == startDate)
+                //        tournaments.Add(_tournament);
+                //}
             }
             catch (Exception ex)
             {

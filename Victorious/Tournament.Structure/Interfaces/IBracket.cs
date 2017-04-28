@@ -155,8 +155,6 @@ namespace Tournament.Structure
 		/// <param name="_winnerSlot">Slot of winner (Defender/Challenger)</param>
 		/// <returns>Model of the new Game</returns>
 		GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
-		[System.Obsolete("use AddGame(int, int, int, PlayerSlot) isntead", false)]
-		GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
 
 		/// <summary>
 		/// Replaces a Game with new data.

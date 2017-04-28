@@ -47,25 +47,6 @@ namespace Tournament.Structure
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
-		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
-		{
-			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			GameModel gameModel = Groups[groupIndex].AddGame(_matchNumber, _defenderScore, _challengerScore);
-			UpdateRankings();
-
-			IsFinished = true;
-			foreach (IBracket group in Groups)
-			{
-				if (!group.IsFinished)
-				{
-					IsFinished = false;
-					break;
-				}
-			}
-
-			return gameModel;
-		}
 		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			int groupIndex;

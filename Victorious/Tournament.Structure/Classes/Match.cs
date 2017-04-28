@@ -401,44 +401,6 @@ namespace Tournament.Structure
 			Games.Sort((first, second) => first.GameNumber.CompareTo(second.GameNumber));
 			return game.GetModel();
 		}
-		public GameModel AddGame(int _defenderScore, int _challengerScore)
-		{
-			if (!IsReady)
-			{
-				throw new InactiveMatchException
-					("Cannot add games to an inactive match!");
-			}
-			if (_defenderScore < 0 || _challengerScore < 0)
-			{
-				throw new ScoreException
-					("Score cannot be negative!");
-			}
-
-			IGame game = new Game(this.Id, (Games.Count + 1));
-			for (int i = 0; i < 2; ++i)
-			{
-				game.PlayerIDs[i] = this.Players[i].Id;
-			}
-			game.Score[(int)PlayerSlot.Defender] = _defenderScore;
-			game.Score[(int)PlayerSlot.Challenger] = _challengerScore;
-			if (_defenderScore > _challengerScore)
-			{
-				game.WinnerSlot = PlayerSlot.Defender;
-			}
-			else if (_challengerScore > _defenderScore)
-			{
-				game.WinnerSlot = PlayerSlot.Challenger;
-			}
-			else
-			{
-				throw new NotImplementedException
-					("Tie Games are not (yet) supported!");
-			}
-
-			AddWin(game.WinnerSlot);
-			Games.Add(game);
-			return game.GetModel();
-		}
 #if false
 		public GameModel UpdateGame(int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{

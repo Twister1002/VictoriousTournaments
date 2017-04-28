@@ -41,8 +41,6 @@ namespace Tournament.Structure
 
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
-		// obsolete:
-		public abstract GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
 		protected abstract void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished);
 		protected abstract void ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
 		protected abstract void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished);
