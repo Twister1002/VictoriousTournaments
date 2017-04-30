@@ -520,7 +520,7 @@ namespace Tournament.Structure
 				Score = new int[2];
 			}
 
-			IsFinished = false;
+			IsFinished = IsManualWin = false;
 			WinnerSlot = PlayerSlot.unspecified;
 			Model.WinnerID = -1;
 			Games.Clear();
