@@ -29,7 +29,7 @@ namespace Tournament.Structure
 		public DoubleElimBracket(List<IPlayer> _players, int _maxGamesPerMatch = 1)
 			: base(_players, _maxGamesPerMatch)
 		{
-			BracketType = BracketTypeModel.BracketType.DOUBLE;
+			BracketType = BracketType.DOUBLE;
 		}
 #if false
 		public DoubleElimBracket(int _numPlayers)
@@ -45,7 +45,7 @@ namespace Tournament.Structure
 			: base(_model)
 		{
 			this.IsFinished = false;
-			this.BracketType = BracketTypeModel.BracketType.DOUBLE;
+			this.BracketType = BracketType.DOUBLE;
 
 			if (CalculateTotalLowerBracketMatches(Players.Count) > 0)
 			{

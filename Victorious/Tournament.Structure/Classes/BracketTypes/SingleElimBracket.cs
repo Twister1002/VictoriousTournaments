@@ -57,7 +57,7 @@ namespace Tournament.Structure
 			}
 
 			Id = 0;
-			BracketType = BracketTypeModel.BracketType.SINGLE;
+			BracketType = BracketType.SINGLE;
 			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
 		}
@@ -87,7 +87,7 @@ namespace Tournament.Structure
 			}
 			
 			this.Id = _model.BracketID;
-			this.BracketType = BracketTypeModel.BracketType.SINGLE;
+			this.BracketType = BracketType.SINGLE;
 			this.IsFinalized = _model.Finalized;
 
 			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
@@ -121,7 +121,7 @@ namespace Tournament.Structure
 			}
 
 			this.Rankings = new List<IPlayerScore>();
-			if (BracketTypeModel.BracketType.SINGLE == BracketType)
+			if (BracketType.SINGLE == BracketType)
 			{
 				UpdateRankings();
 				if (Matches[NumberOfMatches].IsFinished)

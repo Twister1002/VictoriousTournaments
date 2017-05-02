@@ -13,7 +13,7 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		public int Id
 		{ get; protected set; }
-		public BracketTypeModel.BracketType BracketType
+		public BracketType BracketType
 		{ get; protected set; }
 		public bool IsFinalized
 		{ get; protected set; }

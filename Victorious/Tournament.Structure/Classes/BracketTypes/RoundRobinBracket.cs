@@ -56,7 +56,7 @@ namespace Tournament.Structure
 			}
 
 			Id = 0;
-			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
+			BracketType = BracketType.ROUNDROBIN;
 			MaxRounds = _numberOfRounds;
 			MatchWinValue = 2;
 			ResetBracket();
@@ -94,7 +94,7 @@ namespace Tournament.Structure
 			}
 
 			this.Id = _model.BracketID;
-			this.BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
+			this.BracketType = BracketType.ROUNDROBIN;
 			this.IsFinalized = _model.Finalized;
 			this.MaxRounds = 0;
 			this.MatchWinValue = 2;

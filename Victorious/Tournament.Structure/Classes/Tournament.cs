@@ -253,16 +253,16 @@ namespace Tournament.Structure
 			IBracket ret = null;
 			switch (_model.BracketType.Type)
 			{
-				case (BracketTypeModel.BracketType.SINGLE):
+				case ((int)BracketType.SINGLE):
 					ret = new SingleElimBracket(_model);
 					break;
-				case (BracketTypeModel.BracketType.DOUBLE):
+				case ((int)BracketType.DOUBLE):
 					ret = new DoubleElimBracket(_model);
 					break;
-				case (BracketTypeModel.BracketType.ROUNDROBIN):
+				case ((int)BracketType.ROUNDROBIN):
 					ret = new RoundRobinBracket(_model);
 					break;
-				case (BracketTypeModel.BracketType.RRGROUP):
+				case ((int)BracketType.RRGROUP):
 					ret = new RoundRobinGroups(_model);
 					break;
 				default:

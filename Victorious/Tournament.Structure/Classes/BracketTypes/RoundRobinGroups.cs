@@ -66,7 +66,7 @@ namespace Tournament.Structure
 			}
 
 			Id = 0;
-			BracketType = BracketTypeModel.BracketType.RRGROUP;
+			BracketType = BracketType.RRGROUP;
 			NumberOfGroups = _numberOfGroups;
 			MaxRounds = _numberOfRounds;
 			ResetBracket();
@@ -124,7 +124,7 @@ namespace Tournament.Structure
 			}
 
 			this.Id = _model.BracketID;
-			this.BracketType = BracketTypeModel.BracketType.RRGROUP;
+			this.BracketType = BracketType.RRGROUP;
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
 			this.MaxRounds = 0;

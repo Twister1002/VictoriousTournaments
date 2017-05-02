@@ -12,7 +12,7 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		int Id { get; }
-		BracketTypeModel.BracketType BracketType { get; }
+		BracketType BracketType { get; }
 
 		/// <summary>
 		/// Is Bracket creation finalized; ready to play?

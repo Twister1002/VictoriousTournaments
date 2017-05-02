@@ -31,7 +31,7 @@ namespace Tournament.Structure
 			public GSLBracket(List<IPlayer> _players, int _maxGamesPerMatch = 1)
 				: base(_players, _maxGamesPerMatch)
 			{
-				BracketType = BracketTypeModel.BracketType.GSL;
+				//BracketType = BracketType.GSL;
 			}
 			public GSLBracket()
 				: this(new List<IPlayer>())
@@ -260,7 +260,7 @@ namespace Tournament.Structure
 			}
 
 			Id = 0;
-			BracketType = BracketTypeModel.BracketType.GSLGROUP;
+			BracketType = BracketType.GSLGROUP;
 			NumberOfGroups = _numberOfGroups;
 			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
@@ -286,7 +286,7 @@ namespace Tournament.Structure
 			}
 
 			this.Id = _model.BracketID;
-			this.BracketType = BracketTypeModel.BracketType.GSLGROUP;
+			this.BracketType = BracketType.GSLGROUP;
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
 			ResetBracket();
