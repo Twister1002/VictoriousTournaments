@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{784968E0-C7A8-452E-824E-C56EFC0B26A2}</ProjectGuid>
+    <ProjectGuid>{ACF45A8F-720F-45ED-AD50-EB014189A1E0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DataLib.Tests</RootNamespace>
-    <AssemblyName>DataLib.Tests</AssemblyName>
+    <RootNamespace>DatabaseLib.Tests</RootNamespace>
+    <AssemblyName>DatabaseLib.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -45,7 +45,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Data.Entity" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -62,18 +61,18 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="BaseTest.cs" />
-    <Compile Include="MatchTests.cs" />
-    <Compile Include="PermissionTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ConcurrencyTests.cs" />
+    <Compile Include="AccountTests.cs" />
+    <Compile Include="BracketTests.cs" />
     <Compile Include="GameTests.cs" />
-    <Compile Include="UserTests.cs" />
+    <Compile Include="MatchTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TournamentTests.cs" />
+    <Compile Include="TournamentUserTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataLib\DataLib.csproj">
-      <Project>{59636ed1-650e-4319-aabe-aed047a9feb5}</Project>
-      <Name>DataLib</Name>
+    <ProjectReference Include="..\DatabaseLib\DatabaseLib.csproj">
+      <Project>{977c6746-ca5d-49c7-b996-357507bc45cb}</Project>
+      <Name>DatabaseLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
