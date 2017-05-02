@@ -1,9 +1,9 @@
 ﻿CREATE TABLE [dbo].[Matches]
 (
-	[MatchId]                   INT      IDENTITY (1, 1) NOT NULL,
-    [ChallengerId]              INT      NOT NULL,
-    [DefenderId]                INT      NOT NULL,
-    [WinnerId]                  INT      NULL,
+	[MatchID]                   INT      IDENTITY (1, 1) NOT NULL,
+    [ChallengerID]              INT      NOT NULL,
+    [DefenderID]                INT      NOT NULL,
+    [WinnerID]                  INT      NULL,
     [ChallengerScore]           INT      NULL,
     [DefenderScore]             INT      NULL,
     [RoundIndex]                INT      NULL,
@@ -19,8 +19,8 @@
     [PrevDefenderMatchNumber]   INT      NULL,
     [PrevChallengerMatchNumber] INT      NULL,
     [MaxGames]                  INT      NULL, 
-    [BracketId] INT NULL, 
-    CONSTRAINT [PK_Matches] PRIMARY KEY ([MatchId]),
-	CONSTRAINT FK_Matches_Brackets FOREIGN KEY([BracketId]) REFERENCES Brackets([BracketId])
+    [BracketID] INT NULL, 
+    CONSTRAINT [PK_Matches] PRIMARY KEY ([MatchID]),
+	CONSTRAINT FK_Matches_Brackets FOREIGN KEY(BracketID) REFERENCES Brackets(BracketID)
 
 )

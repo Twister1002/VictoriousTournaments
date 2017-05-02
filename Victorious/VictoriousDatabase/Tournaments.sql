@@ -1,14 +1,14 @@
 ﻿CREATE TABLE [dbo].[Tournaments]
 (
-	[TournamentId]      INT            IDENTITY (1, 1) NOT NULL,
-    [GameTypeId]        INT            NULL,
+	[TournamentID]      INT            IDENTITY (1, 1) NOT NULL,
+    [GameTypeID]        INT            NULL,
     [Title]             NVARCHAR (MAX) NOT NULL,
     [Description]       TEXT           NULL,
     [CreatedOn]         DATETIME       NOT NULL,
-    [CreatedById]       INT            NOT NULL,
-    [WinnerId]          INT            NOT NULL,
+    [CreatedByID]       INT            NOT NULL,
+    [WinnerID]          INT            NOT NULL,
     [LastEditedOn]      DATETIME       NOT NULL,
-    [LastEditedById]    INT            NOT NULL, 
+    [LastEditedByID]    INT            NOT NULL, 
 	[EntryFee]              MONEY    NULL,
     [PrizePurse]            MONEY    NOT NULL,
     [IsPublic]              BIT      NOT NULL,
@@ -19,5 +19,5 @@
     [CheckInBegins]         DATETIME NOT NULL,
     [CheckInEnds]           DATETIME NOT NULL,
     [Platform]              INT      NOT NULL, 
-    CONSTRAINT [PK_Tournaments] PRIMARY KEY ([TournamentId]), 
+    CONSTRAINT [PK_Tournaments] PRIMARY KEY ([TournamentID]), 
 )

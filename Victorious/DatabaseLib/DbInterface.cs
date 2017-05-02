@@ -36,7 +36,7 @@ namespace DatabaseLib
 
         public DbInterface()
         {
-          
+
         }
 
         #region Accounts
@@ -200,7 +200,7 @@ namespace DatabaseLib
 
 
         #region Tournaments
-     
+
         public List<TournamentModel> GetAllTournaments()
         {
             List<TournamentModel> tournaments = new List<TournamentModel>();
@@ -326,7 +326,7 @@ namespace DatabaseLib
             }
             return DbError.SUCCESS;
         }
-      
+
         public List<TournamentModel> FindTournaments(Dictionary<string, string> searchParams)
         {
             List<TournamentModel> tournaments = new List<TournamentModel>();
@@ -474,6 +474,42 @@ namespace DatabaseLib
                 return DbError.FAILED_TO_REMOVE;
             }
             return DbError.SUCCESS;
+        }
+
+        public DbError AddTournamentUserToBracket(int tournamentUserId, int bracketId, int seed)
+        {
+            try
+            {
+                TournamentUsersBracketModel t = new TournamentUsersBracketModel();
+                t.BracketID = bracketId;
+                t.Seed = seed;
+                t.TournamentUserID = tournamentUserId;
+                context.TournamentUsersBracketModels.Add(t);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public int GetTournamentUserSeed(int tournamentUserId, int bracketId)
+        {
+            int seed = 0;
+            try
+            {
+                seed = context.TournamentUsersBracketModels.Where(x => x.TournamentUserID == tournamentUserId && x.BracketID == bracketId).Single().Seed.Value;
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                seed = -1;
+            }
+            return seed;
         }
 
         #endregion
@@ -634,7 +670,7 @@ namespace DatabaseLib
         public List<MatchModel> GetAllMatchesInBracket(int bracketId)
         {
             List<MatchModel> matches = new List<MatchModel>();
-           
+
             try
             {
                 matches = context.MatchModels.Where(x => x.BracketID == bracketId).ToList();
@@ -698,8 +734,9 @@ namespace DatabaseLib
             }
             return DbError.SUCCESS;
         }
-   
+
         #endregion
+
 
         #region Games
 

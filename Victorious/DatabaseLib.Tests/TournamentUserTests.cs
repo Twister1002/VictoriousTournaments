@@ -42,6 +42,24 @@ namespace DatabaseLib.Tests
             //Assert.AreEqual(DbError.SUCCESS, result);
         }
 
+        [TestMethod]
+        public void Add_User_To_Bracket()
+        {
+            var db = new DbInterface();
+
+            db.AddTournamentUserToBracket(db.GetAllUsersInTournament(1)[0].TournamentUserID, db.GetAllBracketsInTournament(db.GetAllTournaments()[0].TournamentID)[0].BracketID, 1);
+
+        }
+
+        [TestMethod]
+        public void Get_User_Seed()
+        {
+            var db = new DbInterface();
+
+            var result = db.GetTournamentUserSeed(db.GetAllUsersInTournament(1)[0].TournamentUserID, db.GetAllBracketsInTournament(db.GetAllTournaments()[0].TournamentID)[0].BracketID);
+
+            Assert.AreEqual(1, result);
+        }
 
         private TournamentUserModel NewTournamentUser()
         {
@@ -51,7 +69,6 @@ namespace DatabaseLib.Tests
                 FirstName = "Ryan",
                 LastName = "Kelton",
                 Username = Guid.NewGuid().ToString(),
-                Seed = 1,
                 UniformNumber = 1
             };
             return user;

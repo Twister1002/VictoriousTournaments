@@ -83,7 +83,6 @@ namespace DatabaseLib.Tests
                 FirstName = "Ryan",
                 LastName = "Kelton",
                 Username = Guid.NewGuid().ToString(),
-                Seed = 1,
                 UniformNumber = 1
             };
             return user;

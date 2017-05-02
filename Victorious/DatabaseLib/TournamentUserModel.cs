@@ -25,7 +25,6 @@ namespace DatabaseLib
         public Nullable<int> AccountID { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public Nullable<int> Seed { get; set; }
         public Nullable<int> UniformNumber { get; set; }
         public int TournamentID { get; set; }
         public string Username { get; set; }
