@@ -7,6 +7,14 @@ namespace WebApplication.Controllers
 {
     public abstract class VictoriousController : Controller
     {
+        Dictionary<String, object> jsonResponse;
+
+        public VictoriousController()
+        {
+            jsonResponse = new Dictionary<String, object>();
+
+        }
+
         public int ConvertToInt(String x)
         {
             int i = -1;

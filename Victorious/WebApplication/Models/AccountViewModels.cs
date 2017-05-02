@@ -1,8 +1,7 @@
-﻿using DataLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using DatabaseLib;
 
 namespace WebApplication.Models
 {
@@ -17,22 +16,22 @@ namespace WebApplication.Models
 
     public class AccountViewModel : AccountFields
     {
-        public UserModel Model { get; private set; }
+        public AccountModel Model { get; private set; }
         public Dictionary<TournamentStatus, List<TournamentModel>> Tournaments { get; private set; }
 
         public AccountViewModel()
         {
-            Model = new UserModel();
+            Model = new AccountModel();
             Init();
         }
 
         public AccountViewModel(int id)
         {
-            Model = db.GetUserById(id);
+            Model = db.GetAccount(id);
             Init();
         }
 
-        public AccountViewModel(UserModel model)
+        public AccountViewModel(AccountModel model)
         {
             Model = model;
             Init();
@@ -47,31 +46,31 @@ namespace WebApplication.Models
             Tournaments[TournamentStatus.PAST] = new List<TournamentModel>();
 
             // Filter the list down of tournaments
-            foreach (TournamentModel tourny in Model.Tournaments)
-            {
-                // OWner of tournament
-                if (tourny.UsersInTournament.Single(x=>x.UserID == Model.UserID).Permission == Permission.TOURNAMENT_ADMINISTRATOR)
-                {
-                    Tournaments[TournamentStatus.ADMIN].Add(tourny);
-                }
-                else
-                {
-                    // Active Tournament
-                    if (tourny.TournamentRules.TournamentStartDate <= DateTime.Now && 
-                        tourny.TournamentRules.TournamentEndDate > DateTime.Now)
-                    {
-                        Tournaments[TournamentStatus.ACTIVE].Add(tourny);
-                    }
-                    else if (tourny.TournamentRules.TournamentStartDate > DateTime.Now)
-                    {
-                        Tournaments[TournamentStatus.UPCOMING].Add(tourny);
-                    }
-                    else
-                    {
-                        Tournaments[TournamentStatus.PAST].Add(tourny);
-                    }
-                }
-            }
+            //foreach (TournamentModel tourny in Model.Tournaments)
+            //{
+            //    // OWner of tournament
+            //    if (tourny.UsersInTournament.Single(x=>x.UserID == Model.UserID).Permission == Permission.TOURNAMENT_ADMINISTRATOR)
+            //    {
+            //        Tournaments[TournamentStatus.ADMIN].Add(tourny);
+            //    }
+            //    else
+            //    {
+            //        // Active Tournament
+            //        if (tourny.TournamentRules.TournamentStartDate <= DateTime.Now && 
+            //            tourny.TournamentRules.TournamentEndDate > DateTime.Now)
+            //        {
+            //            Tournaments[TournamentStatus.ACTIVE].Add(tourny);
+            //        }
+            //        else if (tourny.TournamentRules.TournamentStartDate > DateTime.Now)
+            //        {
+            //            Tournaments[TournamentStatus.UPCOMING].Add(tourny);
+            //        }
+            //        else
+            //        {
+            //            Tournaments[TournamentStatus.PAST].Add(tourny);
+            //        }
+            //    }
+            //}
         }
 
         public override void ApplyChanges()
@@ -94,19 +93,34 @@ namespace WebApplication.Models
             this.FirstName  = Model.FirstName;
         }
 
-        public void setUserModel()
+        public bool Create()
         {
-            if (Model != null)
+            bool usernameExists = db.AccountUsernameExists(Username) == DbError.EXISTS;
+            bool emailExists = false;
+            bool passwordsMatch = Password == PasswordVerify;
+
+
+            if (!usernameExists && !emailExists && passwordsMatch)
             {
-                Model = db.GetUserById(Model.UserID);
+                return db.AddAccount(Model) == DbError.SUCCESS;
+            }
+            else
+            {
+                return false;
             }
         }
 
+        public bool Update()
+        {
+            return db.UpdateAccount(Model) == DbError.SUCCESS;
+        }
+
+        [Obsolete]
         public void setUserModel(int id)
         {
             if (id > 0)
             {
-                Model = db.GetUserById(id);
+                Model = db.GetAccount(id);
             }
         }
 
@@ -114,7 +128,7 @@ namespace WebApplication.Models
         {
             if (name != String.Empty)
             {
-                Model = db.GetUserByUsername(name);
+                Model = db.GetAccountByUsername(name);
             }
         }
     }
