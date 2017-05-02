@@ -46,6 +46,22 @@ namespace WebApplication.Models
             }
         }
 
+        public bool Update()
+        {
+            if (Model != null)
+            {
+                return db.UpdateBracket(Model) == DbError.SUCCESS;
+            }
+
+            return false;
+        }
+
+        public bool Update(BracketModel model)
+        {
+            //Model = model;
+            return db.UpdateBracket(model) == DbError.SUCCESS;
+        }
+
         public bool ResetBracket()
         {
             DbError result = DbError.SUCCESS;

@@ -1,12 +1,11 @@
-﻿using DataLib;
-using Json;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Tournament.Structure;
 using WebApplication.Models;
+using DatabaseLib;
 
 namespace WebApplication.Controllers
 {
@@ -27,9 +26,7 @@ namespace WebApplication.Controllers
         {
             Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
             MatchViewModel viewModel = new MatchViewModel(json["matchId"]);
-
             
-
             String jsonResult = JsonConvert.SerializeObject(new {
                 status = true,
                 data = JsonMatchResponse(viewModel.Match, true)
@@ -57,7 +54,7 @@ namespace WebApplication.Controllers
                     IBracket bracket = tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]);
                     IMatch match = bracket.GetMatch(json["matchNum"]);
                     BracketViewModel bracketModel = new BracketViewModel(bracket);
-                    MatchViewModel matchModel = new MatchViewModel(match);
+                    //MatchViewModel matchModel = new MatchViewModel(match);
                     Dictionary<int, bool> processed = new Dictionary<int, bool>();
 
                     // Verify these matches exists
@@ -74,57 +71,41 @@ namespace WebApplication.Controllers
                             // We need to add this game.
                             PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
                             GameModel addedGameModel = bracket.AddGame(match.MatchNumber, gameModel.DefenderScore, gameModel.ChallengerScore, winner);
-
-                            // Update the games in the database
-                            DbError gameUpdate = db.AddGame(matchModel.Model, addedGameModel);
-                            if (gameUpdate != DbError.SUCCESS)
-                            {
-                                processed.Add(gameModel.GameNumber, false);
-                                message = "Failed to update a game.";
-                                return Json(JsonConvert.SerializeObject(new
-                                {
-                                    status = false,
-                                    message = message
-                                }));
-                            }
-                            else
-                            {
-                                processed.Add(gameModel.GameNumber, true);
-                            }
                         }
                         else
                         {
                             processed.Add(gameModel.GameNumber, false);
                         }
                     }
-
-                    // Load the next models
+                    
+                    //  Load the Models
+                    MatchViewModel matchModel = new MatchViewModel(bracket.GetMatch(match.MatchNumber));
                     MatchViewModel winnerMatchModel = matchModel.Match.NextMatchNumber != -1 ? new MatchViewModel(bracket.GetMatch(matchModel.Match.NextMatchNumber)) : null;
                     MatchViewModel loserMatchModel = matchModel.Match.NextLoserMatchNumber != -1 ? new MatchViewModel(bracket.GetMatch(matchModel.Match.NextLoserMatchNumber)) : null;
 
                     // Update the bracket in the database
-                    DbError bracketUpdate = db.UpdateBracket(bracketModel.Model);
+                    //DbError bracketUpdate = db.UpdateBracket(bracketModel.Model);
 
                     // Update the matches in the database
                     object currentMatchData = null;
                     object winnerMatchData = null;
                     object loserMatchData = null;
-                    DbError currentMatchUpdate = db.UpdateMatch(matchModel.Model);
-                    DbError winnerMatchUpdate = winnerMatchModel != null ? db.UpdateMatch(winnerMatchModel.Model) : DbError.NONE;
-                    DbError loserMatchUpdate = loserMatchModel != null ? db.UpdateMatch(loserMatchModel.Model) : DbError.NONE;
+                    bool currentMatchUpdate = matchModel.Update();
+                    bool winnerMatchUpdate = winnerMatchModel != null ? winnerMatchModel.Update() : false;
+                    bool loserMatchUpdate = loserMatchModel != null ? loserMatchModel.Update() : false;
 
-                    if (currentMatchUpdate == DbError.SUCCESS)
+                    if (currentMatchUpdate)
                     {
                         status = true;
                         message = "Current match was updated";
 
                         currentMatchData = JsonMatchResponse(matchModel.Match, false);
                     }
-                    if (winnerMatchUpdate == DbError.SUCCESS)
+                    if (winnerMatchUpdate)
                     {
                         winnerMatchData = JsonMatchResponse(winnerMatchModel.Match, false);
                     }
-                    if (loserMatchUpdate == DbError.SUCCESS)
+                    if (loserMatchUpdate)
                     {
                         loserMatchData = JsonMatchResponse(loserMatchModel.Match, false);
                     }

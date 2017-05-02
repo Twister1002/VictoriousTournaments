@@ -34,15 +34,20 @@ namespace WebApplication.Models
                 Match = new Match();
             }
         }
+        
+        public bool Update()
+        {
+            return db.UpdateMatch(Model) == DbError.SUCCESS;
+        }
 
         public bool DeleteGame(int gameId)
         {
             return db.DeleteGame(gameId) == DbError.SUCCESS;
         }
 
-        public bool Update()
+        public bool CreateGame(GameModel game)
         {
-            return db.UpdateMatch(Model) == DbError.SUCCESS;
+            return db.AddGame(game) == DbError.SUCCESS;
         }
 
         public void RemoveGames()

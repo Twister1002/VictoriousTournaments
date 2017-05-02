@@ -36,7 +36,5 @@ namespace WebApplication.Models
             Game = game;
             Model = Game.GetModel();
         }
-
-
     }
 }
