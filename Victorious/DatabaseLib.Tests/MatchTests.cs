@@ -13,7 +13,7 @@ namespace DatabaseLib.Tests
 
             MatchModel match = new MatchModel()
             {
-                BracketID = 3,
+                BracketID = db.GetAllBracketsInTournament(db.GetAllTournaments()[0].TournamentID)[0].BracketID,
                 ChallengerID = 1,
                 DefenderID = 2,
                 MatchNumber = 1
@@ -56,6 +56,40 @@ namespace DatabaseLib.Tests
             var result = db.DeleteMatch(1);
 
             Assert.AreEqual(DbError.SUCCESS, result);
+        }
+
+        [TestMethod]
+        public void Set_Challenger()
+        {
+            var db = new DbInterface();
+
+            MatchModel match = new MatchModel()
+            {
+                BracketID = 3,
+                ChallengerID = 1,
+                DefenderID = 2,
+                MatchNumber = 1
+            };
+
+            db.AddMatch(match);
+
+            Assert.AreEqual(1, match.Challenger.TournamentUserID);
+
+        }
+
+        [TestMethod]
+        public void Update_Challenger_Via_Update_Match()
+        {
+            var db = new DbInterface();
+
+            MatchModel match = new MatchModel();
+            match = db.GetAllMatchesInBracket(db.GetAllBracketsInTournament(db.GetAllTournaments()[0].TournamentID)[0].BracketID)[0];
+
+            match.Challenger.FirstName = "Billy";
+            db.UpdateMatch(match);
+
+            Assert.AreEqual("Billy", db.GetMatch(match.MatchID).Challenger.FirstName);
+            
         }
     }
 }

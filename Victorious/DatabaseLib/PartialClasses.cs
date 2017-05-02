@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data.Entity.Core.Objects.DataClasses;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PropertyChanged;
 
 namespace DatabaseLib
 {
@@ -52,16 +54,19 @@ namespace DatabaseLib
         }
     }
 
-    public partial class MatchModel
+    public partial class MatchModel 
     {
         partial void OnInit()
         {
-
+            Challenger = new TournamentUserModel();
+            Defender = new TournamentUserModel();
         }
 
-        public TournamentUserModel Challenger { get; set; }
+        public virtual TournamentUserModel Challenger { get; set; }
 
-        public TournamentUserModel Defender { get; set; }
+        public virtual TournamentUserModel Defender { get; set; }
+
+      
     }
 
     public partial class GameModel

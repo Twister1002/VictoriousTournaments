@@ -12,10 +12,10 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class BracketType
+    public partial class BracketTypeModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public BracketType()
+        public BracketTypeModel()
         {
             this.Brackets = new HashSet<BracketModel>();
     		OnInit();

@@ -318,7 +318,7 @@
           <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.FK_Brackets_Tournaments" FromRole="BracketModel" ToRole="Tournament" />
           <NavigationProperty Name="BracketType" Relationship="VictoriousDatabaseModel.FK_Brackets_BracketTypes" FromRole="BracketModel" ToRole="BracketType" />
         </EntityType>
-        <EntityType Name="BracketType">
+        <EntityType Name="BracketTypeModel">
           <Key>
             <PropertyRef Name="BracketTypeID" />
           </Key>
@@ -377,7 +377,7 @@
           <EntitySet Name="C__RefactorLog" EntityType="Self.C__RefactorLog" />
           <EntitySet Name="AccountModels" EntityType="VictoriousDatabaseModel.AccountModel" />
           <EntitySet Name="BracketModels" EntityType="VictoriousDatabaseModel.BracketModel" />
-          <EntitySet Name="BracketTypes" EntityType="Self.BracketType" />
+          <EntitySet Name="BracketTypeModels" EntityType="VictoriousDatabaseModel.BracketTypeModel" />
           <EntitySet Name="MatchModels" EntityType="VictoriousDatabaseModel.MatchModel" />
           <EntitySet Name="GameTypes" EntityType="Self.GameType" />
           <AssociationSet Name="FK_Matches_Brackets" Association="Self.FK_Matches_Brackets">
@@ -409,7 +409,7 @@
             <End EntitySet="GameModels" Role="GameModel" />
           </AssociationSet>
           <AssociationSet Name="FK_Brackets_BracketTypes" Association="VictoriousDatabaseModel.FK_Brackets_BracketTypes">
-            <End Role="BracketType" EntitySet="BracketTypes" />
+            <End Role="BracketType" EntitySet="BracketTypeModels" />
             <End Role="BracketModel" EntitySet="BracketModels" />
           </AssociationSet>
           <AssociationSet Name="FK_Tournaments_GameTypes" Association="VictoriousDatabaseModel.FK_Tournaments_GameTypes">
@@ -548,7 +548,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Brackets_BracketTypes">
-          <End Type="VictoriousDatabaseModel.BracketType" Role="BracketType" Multiplicity="1" />
+          <End Type="VictoriousDatabaseModel.BracketTypeModel" Role="BracketType" Multiplicity="1" />
           <End Type="VictoriousDatabaseModel.BracketModel" Role="BracketModel" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BracketType">
@@ -596,8 +596,8 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="BracketTypes">
-            <EntityTypeMapping TypeName="VictoriousDatabaseModel.BracketType">
+          <EntitySetMapping Name="BracketTypeModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.BracketTypeModel">
               <MappingFragment StoreEntitySet="BracketTypes">
                 <ScalarProperty Name="BracketTypeID" ColumnName="BracketTypeID" />
                 <ScalarProperty Name="TypeName" ColumnName="TypeName" />
