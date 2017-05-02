@@ -87,12 +87,7 @@ namespace WebApplication.Controllers
 
                 if (viewModel.TournamentPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
-                    // 1. Find Match Numbers
-                    // 2. Remove Games from DB
-                    // 3. Call Bracket.ResetMatchScore() to update match objects
-                    // 4. Call db.UpdateMatch() with new MatchModels to remove players from DB matches
-
-                    List<int> matchesAffected = viewModel.ResetMatch(matchNum);
+                    List<int> matchesAffected = viewModel.MatchesAffectedList(matchNum);
                     List<object> matchResponse = new List<object>();
 
                     viewModel.Bracket.ResetMatchScore(matchNum);

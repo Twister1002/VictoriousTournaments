@@ -140,7 +140,7 @@ namespace WebApplication.Models
             return data;
         }
 
-        public List<int> ResetMatch(int matchNum)
+        public List<int> MatchesAffectedList(int matchNum)
         {
             List<int> matchesAffected = new List<int>();
             IMatch head = Bracket.GetMatch(matchNum);
@@ -148,12 +148,27 @@ namespace WebApplication.Models
             
             if (head.NextMatchNumber != -1)
             {
-                matchesAffected.AddRange(ResetMatch(head.NextMatchNumber));
+                List<int> matches = MatchesAffectedList(head.NextMatchNumber);
+
+                foreach (int match in matches) {
+                    if (!matchesAffected.Exists((i) => i == match))
+                    {
+                        matchesAffected.Add(match);
+                    }
+                }
             }
 
             if (head.NextLoserMatchNumber != -1)
             {
-                matchesAffected.AddRange(ResetMatch(head.NextLoserMatchNumber));
+                List<int> matches = MatchesAffectedList(head.NextLoserMatchNumber);
+
+                foreach (int match in matches)
+                {
+                    if (!matchesAffected.Exists((i) => i == match))
+                    {
+                        matchesAffected.Add(match);
+                    }
+                }
             }
 
             return matchesAffected;
