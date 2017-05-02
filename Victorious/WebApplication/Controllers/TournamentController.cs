@@ -337,7 +337,7 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("Tournament/Ajax/Finalize")]
+        [Route("Ajax/Tournament/Finalize")]
         public JsonResult Finalize(String jsonData, Dictionary<String, int> roundData)
         {
             Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
@@ -389,48 +389,8 @@ namespace WebApplication.Controllers
             return Json(JsonConvert.SerializeObject(new { status = status, message = message, redirect = redirect }));
         }
 
-        //[HttpPost]
-        //[Route("Tournament/Finalize")]
-        //public ActionResult Finalize(String tourny)
-        //{
-        //    if (Session["User.UserId"] != null)
-        //    {
-        //        int tournyId = this.ConvertToInt(tourny);
-        //        TournamentViewModel viewModel = new TournamentViewModel(tournyId);
-        //        if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
-        //        {
-        //            DbError result = viewModel.FinalizeTournament();
-
-        //            if (result == DbError.SUCCESS)
-        //            {
-        //                Session["Message"] = "Your tournament has been finalized. No changes can be made.";
-        //                Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
-        //            }
-        //            else
-        //            {
-        //                Session["Message"] = "An error occurred while trying to create the matches.<br/>" + viewModel.dbException.Message;
-        //                Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            Session["Message"] = "You are not permitted to do that.";
-        //            Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        Session["Message"] = "You must login before you can do that.";
-        //        Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
-        //        return RedirectToAction("Login", "Account");
-        //    }
-
-        //    // Create the matches
-        //    return RedirectToAction("Tournament", "Tournament", new { @guid = tourny });
-        //}
-
         [HttpPost]
-        [Route("Tournament/Ajax/Delete")]
+        [Route("Ajax/Tournament/Delete")]
         public JsonResult Delete(String jsonData)
         {
             dynamic jsonResult = new { };
@@ -438,7 +398,7 @@ namespace WebApplication.Controllers
 
             if (Session["User.UserId"] != null)
             {
-                UserModel userModel = this.getUserModel((int)Session["User.UserId"]);
+                UserModel userModel = db.GetUserById((int)Session["User.UserId"]);
                 TournamentViewModel model = new TournamentViewModel(json["tourny"]);
                 if (model.Model.CreatedByID == userModel.UserID)
                 {
@@ -487,27 +447,6 @@ namespace WebApplication.Controllers
                     message = "You must be logged in to do this action"
                 }));
             }
-        }
-
-        [HttpPost]
-        [Route("Tournament/Ajax/Standings")]
-        public JsonResult Standings(String jsonData)
-        {
-            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
-            TournamentViewModel viewModel = new TournamentViewModel(json["tournamentId"]);
-            viewModel.ProcessTournament();
-            IBracket bracket = viewModel.Tourny.Brackets[json["bracketNum"]];
-
-            return Json(JsonConvert.SerializeObject(
-                new
-                {
-                    status = true,
-                    data = new
-                    {
-                        ranks = bracket.Rankings
-                    }
-                }
-            ));
         }
     }
 }

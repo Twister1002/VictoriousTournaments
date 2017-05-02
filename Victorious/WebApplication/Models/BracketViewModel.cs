@@ -140,9 +140,23 @@ namespace WebApplication.Models
             return data;
         }
 
-        public void ResetMatch(int matchNum)
+        public List<int> ResetMatch(int matchNum)
         {
-            Bracket.ResetMatchScore(matchNum);
+            List<int> matchesAffected = new List<int>();
+            IMatch head = Bracket.GetMatch(matchNum);
+            matchesAffected.Add(matchNum);
+            
+            if (head.NextMatchNumber != -1)
+            {
+                matchesAffected.AddRange(ResetMatch(head.NextMatchNumber));
+            }
+
+            if (head.NextLoserMatchNumber != -1)
+            {
+                matchesAffected.AddRange(ResetMatch(head.NextLoserMatchNumber));
+            }
+
+            return matchesAffected;
         }
 
         public Permission TournamentPermission(int userId)

@@ -87,28 +87,39 @@ namespace WebApplication.Controllers
 
                 if (viewModel.TournamentPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
-                    matchViewModel.RemoveGames();
-                    viewModel.ResetMatch(matchNum);
+                    // 1. Find Match Numbers
+                    // 2. Remove Games from DB
+                    // 3. Call Bracket.ResetMatchScore() to update match objects
+                    // 4. Call db.UpdateMatch() with new MatchModels to remove players from DB matches
+
+                    List<int> matchesAffected = viewModel.ResetMatch(matchNum);
+                    List<object> matchResponse = new List<object>();
+
+                    viewModel.Bracket.ResetMatchScore(matchNum);
+
+                    foreach (int match in matchesAffected)
+                    {
+                        // Remove the games associated with this match.
+                        MatchViewModel matchModel = new MatchViewModel(viewModel.Bracket.GetMatch(match).Id);
+                        matchModel.RemoveGames();
+
+                        // Reset the model
+                        matchModel = new MatchViewModel(viewModel.Bracket.GetMatch(match));
+
+                        // Update this match in the database according to the reset from the bracket
+                        DbError result = db.UpdateMatch(matchModel.Model);
+                        if (result != DbError.SUCCESS)
+                        {
+                            return Json("Unable to update match");
+                        }
+
+                        matchResponse.Add(JsonMatchResponse(matchModel.Match, true));
+
+                    }
 
                     status = true;
-                    message = "Match eas reset";
-                    data = new
-                    {
-                        ready = matchViewModel.Match.IsReady,
-                        finished = matchViewModel.Match.IsFinished,
-                        challenger = new
-                        {
-                            id = matchViewModel.Match.Players[(int)PlayerSlot.Challenger].Id,
-                            name = matchViewModel.Match.Players[(int)PlayerSlot.Challenger].Name,
-                            score = matchViewModel.Match.Score[(int)PlayerSlot.Challenger]
-                        },
-                        defender = new
-                        {
-                            id = matchViewModel.Match.Players[(int)PlayerSlot.Defender].Id,
-                            name = matchViewModel.Match.Players[(int)PlayerSlot.Defender].Name,
-                            score = matchViewModel.Match.Score[(int)PlayerSlot.Defender]
-                        }
-                    };
+                    message = "Matches are reset";
+                    data = matchResponse;
                 }
                 else
                 {
@@ -126,6 +137,27 @@ namespace WebApplication.Controllers
                     status = status,
                     message = message,
                     data = data
+                }
+            ));
+        }
+
+        [HttpPost]
+        [Route("Ajax/Bracket/Standings")]
+        public JsonResult Standings(String jsonData)
+        {
+            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
+            TournamentViewModel viewModel = new TournamentViewModel(json["tournamentId"]);
+            viewModel.ProcessTournament();
+            IBracket bracket = viewModel.Tourny.Brackets[json["bracketNum"]];
+
+            return Json(JsonConvert.SerializeObject(
+                new
+                {
+                    status = true,
+                    data = new
+                    {
+                        ranks = bracket.Rankings
+                    }
                 }
             ));
         }

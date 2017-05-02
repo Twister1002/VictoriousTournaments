@@ -36,16 +36,22 @@
         var gameList = $(this).closest(".TournamentGames");
         var maxGames = gameList.data("max");
         var gamesListed = gameList.find(".list-table-body ul").length;
+        var nextGameNumber = $(gameList.find(".games ul")[gamesListed - 1]).data("gamenum") + 1;
 
         jsonData = {
-            "gameNum": gamesListed + 1,
-            "scores": {
-                0: "",
-                1: "",
-            }
-        }
+            "gameNum": (isNaN(nextGameNumber) ? 1 : nextGameNumber),
+            "challenger": { "score": "" },
+            "defender": { "score": "" }
+        };
 
         AddGameToDetails(jsonData, gameList);
+
+        if (CanAddGames(gameList)) {
+            $(this).removeClass("hide");
+        }
+        else {
+            $(this).addClass("hide");
+        }
     });
 
     // Show the details of the match
@@ -56,7 +62,7 @@
         };
 
         $.ajax({
-            "url": "/Match/Ajax/Match",
+            "url": "/Ajax/Match",
             "type": "POST",
             "data": { "jsonData": JSON.stringify(jsonData) },
             "dataType": "json",
@@ -67,13 +73,16 @@
                 json = JSON.parse(json);
 
                 if (json.status) {
+                    console.log(json);
+
                     // Remove all games
                     matchElem.find(".TournamentGames .list-table-body").empty();
 
                     // Add the currently fetched games
-                    $.each(json.data.matchData, function (i, e) {
+                    $.each(json.data.games, function (i, e) {
                         AddGameToDetails(e, matchElem.find(".TournamentGames"));
                     });
+                    MatchUpdate(json.data, matchElem);
 
                     if (CanAddGames(matchElem.find(".TournamentGames")) && !json.data.finished) {
                         matchElem.find(".options .add-game").removeClass("hide");
@@ -108,18 +117,19 @@
         // Validate the games fields
         // For every game
         $.each(games, function (i, e) {
-            // For every game's field's score
-            $.each($(e).find(".score"), function (ii, ee) {
-                // Is the value numeric?
-                var value = $(ee).find("input").val();
-                if (!$.isNumeric(value) || Math.floor(value) != value) {
-                    validated = false;
-                    $(ee).find("input").addClass("invalid");
-                }
-                else {
-                    $(ee).find("input").removeClass("invalid");
-                }
-            });
+            // For every game's row
+            defenderScore = $(e).find(".defender-score").val();
+            challengerScore = $(e).find(".challenger-score").val();
+
+            defenderScoreValid = $.isNumeric(defenderScore) || Math.floor(defenderScore) != defenderScore;
+            challengerScoreValue = $.isNumeric(challengerScore) || Math.floor(challengerScore) != challengerScore;
+
+            if (!defenderScoreValid || !challengerScoreValue) {
+                $(e).find(".score").addClass("invalid");
+            }
+            else {
+                $(e).find(".score").removeClass("invalid");
+            }
         });
 
         if (!validated) return;
@@ -134,40 +144,43 @@
         // Get all the game data
         $.each(games, function (i, e) {
             gameData.push({
-                "GameNumber": i,
+                "GameNumber": $(e).data("gamenum"),
                 "DefenderScore": $(e).find(".defender-score").val(),
                 "ChallengerScore": $(e).find(".challenger-score").val()
             });
         });
 
         $.ajax({
-            "url": "/Match/Ajax/Update",
+            "url": "/Ajax/Match/Update",
             "type": "POST",
             "data": { "jsonIds": JSON.stringify(jsonData), "games": gameData },
             "dataType": "json",
             "beforeSend": function () {
-                
+                match.find(".TournamentGames .update-games").attr("disabled", true);
             },
             "success": function (json) {
                 json = JSON.parse(json);
 
                 if (json.status) {
                     console.log(json.message);
+                    var matchElement = null;
 
-                    // Close the match details
-                    match.find(".TournamentGames").removeClass("open");
+                    // Close the match details if the match is finished.
+                    if (json.data.currentMatch.finished) {
+                        match.find(".TournamentGames").removeClass("open");
+                    }
 
                     if (json.data.currentMatch) {
-                        match = $(".TournamentMatch[data-id='" + json.data.currentMatch.matchId + "']");
-                        MatchUpdate(json.data.currentMatch, match);
+                        matchElement = $(".TournamentMatch[data-id='" + json.data.currentMatch.matchId + "']");
+                        MatchUpdate(json.data.currentMatch, matchElement);
                     }
                     if (json.data.winnerMatch) {
-                        match = $(".TournamentMatch[data-id='" + json.data.winnerMatch.matchId + "']");
-                        MatchUpdate(json.data.winnerMatch, match);
+                        matchElement = $(".TournamentMatch[data-id='" + json.data.winnerMatch.matchId + "']");
+                        MatchUpdate(json.data.winnerMatch, matchElement);
                     }
                     if (json.data.loserMatch) {
-                        match = $(".TournamentMatch[data-id='" + json.data.loserMatch.matchId + "']");
-                        MatchUpdate(json.data.loserMatch, match);
+                        matchElement = $(".TournamentMatch[data-id='" + json.data.loserMatch.matchId + "']");
+                        MatchUpdate(json.data.loserMatch, matchElement);
                     }
 
                     UpdateStandings(jsonData.tournamentId, jsonData.bracketNum);
@@ -182,7 +195,7 @@
                 console.log(json);
             },
             "complete": function () {
-
+                match.find(".TournamentGames .update-games").attr("disabled", false);
             }
         });
     });
@@ -203,7 +216,10 @@
                 json = JSON.parse(json);
 
                 if (json.status) {
-                    MatchUpdate(json.data, match);
+                    $.each(json.data, function (i, e) {
+                        MatchUpdate(e, match);
+                    });
+                    
                     match.find(".TournamentGames .games").empty();
                 }
 
@@ -260,26 +276,17 @@
 
     // Helper method to add games to details
     function AddGameToDetails(data, $games) {
-        html = "<ul data-columns='3'>";
+        html = "<ul data-columns='3' data-gameNum='"+data.gameNum+"'>";
         html += "<li class='column game-number'>Game " + data.gameNum + "</li>";
-        html += "<li class='column score'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.scores[PlayerSlot["defender"]] + "' /></li>";
-        html += "<li class='column score'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.scores[PlayerSlot["challenger"]] + "' /></li>";
+        html += "<li class='column score'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li>";
+        html += "<li class='column score'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li>";
         html += "</ul>";
 
-        if (CanAddGames($games)) {
-            $games.find(".list-table-body").append(html);
-            if (!CanAddGames($games)) {
-                $games.find(".options .add-game").addClass("hide");
-            }
-        }
-        else {
-            // Remove the add button
-            $games.find(".options .add-game").addClass("hide");
-        }
+        $games.find(".games").append(html);
     }
 
     function CanAddGames($games) {
-        if ($games.find(".list-table-body ul").length >= $games.find(".list-table-body").data("max")) {
+        if ($games.find(".games ul").length >= $games.find(".games").data("max")) {
             return false;
         }
         else {
@@ -294,7 +301,7 @@
         };
 
         $.ajax({
-            "url": "/Tournament/Ajax/Standings",
+            "url": "/Ajax/Bracket/Standings",
             "type": "POST",
             "data": { "jsonData": JSON.stringify(jsonData) },
             "dataType": "json",
