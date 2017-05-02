@@ -107,7 +107,6 @@ namespace WebApplication.Controllers
                         }
 
                         matchResponse.Add(JsonMatchResponse(matchModel.Match, true));
-
                     }
 
                     status = true;
