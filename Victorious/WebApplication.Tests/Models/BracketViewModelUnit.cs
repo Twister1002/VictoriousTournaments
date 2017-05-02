@@ -53,7 +53,8 @@ namespace WebApplication.Tests.Models
             List<int> matchesAffected = model.MatchesAffectedList(2);
 
             // Assert
-            Assert.AreEqual(true, !matchesAffectedActual.Except(matchesAffected).Any());
+
+            Assert.AreEqual(true, (!matchesAffectedActual.Except(matchesAffected).Any() && !matchesAffected.Except(matchesAffectedActual).Any()));
         }
 
 
