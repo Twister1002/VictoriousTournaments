@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
@@ -113,12 +113,12 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_model");
 			}
 
-			List<UserModel> userModels = _model.UserSeeds
-				.OrderBy(ubs => ubs.Seed)
-				.Select(ubs => ubs.User)
+			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
+				.OrderBy(tubm => tubm.Seed)
+				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
-			foreach (UserModel model in userModels)
+			foreach (TournamentUserModel model in userModels)
 			{
 				Players.Add(new User(model));
 			}

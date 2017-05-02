@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
@@ -42,7 +42,15 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		public override UserModel GetModel()
+		public override AccountModel GetAccountModel()
+		{
+			throw new NotImplementedException();
+		}
+		public override TournamentUserModel GetTournamentUserModel()
+		{
+			throw new NotImplementedException();
+		}
+		public override TournamentUsersBracketModel GetTournamentUsersBracketModel()
 		{
 			throw new NotImplementedException();
 		}
@@ -75,7 +83,7 @@ namespace Tournament.Structure
 		}
 #endif
 
-		public void AddMember(User _user)
+public void AddMember(User _user)
 		{
 			if (TeamMembers.Contains(_user))
 			{

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
@@ -85,19 +85,19 @@ namespace Tournament.Structure
 				throw new NullReferenceException
 					("Bracket Model cannot be null!");
 			}
-
+			
 			this.Id = _model.BracketID;
 			this.BracketType = BracketTypeModel.BracketType.SINGLE;
 			this.IsFinalized = _model.Finalized;
 
-			List<UserModel> userModels = _model.UserSeeds
-				.OrderBy(ubs => ubs.Seed)
-				.Select(ubs => ubs.User)
+			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
+				.OrderBy(tubm => tubm.Seed)
+				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
-			foreach (UserModel um in userModels)
+			foreach (TournamentUserModel model in userModels)
 			{
-				Players.Add(new User(um));
+				Players.Add(new User(model));
 			}
 
 			ResetBracket();

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
@@ -46,9 +46,9 @@ namespace Tournament.Structure
 			this.Description = _model.Description;
 
 			this.Players = new List<IPlayer>();
-			foreach (UserInTournamentModel model in _model.UsersInTournament)
+			foreach (TournamentUserModel model in _model.TournamentUsers)
 			{
-				Players.Add(new User(model.User));
+				Players.Add(new User(model));
 			}
 
 			this.Brackets = new List<IBracket>();
@@ -57,8 +57,8 @@ namespace Tournament.Structure
 				AddBracket(RestoreBracket(bModel));
 			}
 
-			this.PrizePool = (float)(_model.TournamentRules.PrizePurse);
-			this.IsPublic = _model.TournamentRules.IsPublic;
+			this.PrizePool = (float)(_model.PrizePurse);
+			this.IsPublic = _model.IsPublic;
 		}
 		#endregion
 
