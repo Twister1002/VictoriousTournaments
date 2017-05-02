@@ -329,43 +329,65 @@ namespace Tournament.Structure
 			foreach (IPlayerScore ps in Rankings)
 			{
 				ps.Rank = 1;
-				ps.Score = 0;
+				ps.ResetScore();
 			}
 		}
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished)
+		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false)
 		{
-			if (null == _game)
+			if (null == _games)
 			{
 				// Match winner was manually set. Apply a match win to his score:
 				IMatch match = GetMatch(_matchNumber);
 				int winnerIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)(match.WinnerSlot)].Id);
 				Rankings[winnerIndex].AddToScore(MatchWinValue, 0, 0, true);
 			}
+			else if (_resetManualWin)
+			{
+				// Match had a manual winner: being removed.
+				// Update score accordingly, ignoring individual game scores:
+				int winnerIndex = Rankings.FindIndex
+					(r => r.Id == GetMatch(_matchNumber).Players[(int)_formerMatchWinnerSlot].Id);
+				Rankings[winnerIndex].AddToScore(MatchWinValue, 0, 0, false);
+			}
 			else
 			{
-				//PlayerSlot matchWinner = GetMatch(_matchNumber).WinnerSlot;
-				PlayerSlot gameWinner = (_game.DefenderID == _game.WinnerID)
-					? PlayerSlot.Defender : PlayerSlot.Challenger;
-				bool matchFinishChange = _wasFinished ^ GetMatch(_matchNumber).IsFinished;
+				IMatch match = GetMatch(_matchNumber);
+				int defenderGameScore = 0, defenderPointScore = 0;
+				int challengerGameScore = 0, challengerPointScore = 0;
+				foreach (GameModel model in _games)
+				{
+					if (model.WinnerID == model.DefenderID)
+					{
+						++defenderGameScore;
+					}
+					else if (model.WinnerID == model.ChallengerID)
+					{
+						++challengerGameScore;
+					}
+					defenderPointScore += model.DefenderScore;
+					challengerPointScore += model.ChallengerScore;
+				}
 
 				// Update Defender's score:
-				int defIndex = Rankings.FindIndex(r => r.Id == _game.DefenderID);
-				bool defenderUpdate = matchFinishChange && (PlayerSlot.Defender == gameWinner);
+				int defIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id);
+				bool defenderUpdate = (PlayerSlot.Defender == _formerMatchWinnerSlot) ^
+					(PlayerSlot.Defender == match.WinnerSlot);
 				Rankings[defIndex].Score += (_isAddition)
 					? Convert.ToInt16(defenderUpdate) * MatchWinValue
 					: -1 * Convert.ToInt16(defenderUpdate) * MatchWinValue;
-				Rankings[defIndex].AddToScore(Convert.ToInt16(defenderUpdate) * MatchWinValue, 1, _game.DefenderScore, _isAddition);
+				Rankings[defIndex].AddToScore(Convert.ToInt16(defenderUpdate) * MatchWinValue, defenderGameScore, defenderPointScore, _isAddition);
 
 				// Update Challenger's score:
-				int chalIndex = Rankings.FindIndex(r => r.Id == _game.ChallengerID);
-				bool challengerUpdate = matchFinishChange && (PlayerSlot.Challenger == gameWinner);
+				int chalIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id);
+				bool challengerUpdate = (PlayerSlot.Challenger == _formerMatchWinnerSlot) ^
+					(PlayerSlot.Challenger == match.WinnerSlot);
 				Rankings[chalIndex].Score += (_isAddition)
 					? Convert.ToInt16(challengerUpdate) * MatchWinValue
 					: -1 * Convert.ToInt16(challengerUpdate) * MatchWinValue;
-				Rankings[chalIndex].AddToScore(Convert.ToInt16(challengerUpdate) * MatchWinValue, 1, _game.ChallengerScore, _isAddition);
+				Rankings[chalIndex].AddToScore(Convert.ToInt16(challengerUpdate) * MatchWinValue, challengerGameScore, challengerPointScore, _isAddition);
 			}
 
 			UpdateRankings();
@@ -382,7 +404,7 @@ namespace Tournament.Structure
 				}
 			}
 		}
-		protected override void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished)
+		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
 			this.IsFinished = (IsFinished && GetMatch(_matchNumber).IsFinished);
 		}

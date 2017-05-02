@@ -362,6 +362,11 @@ namespace Tournament.Structure
 				throw new InactiveMatchException
 					("Cannot add games to an inactive match!");
 			}
+			if (IsFinished && !IsManualWin)
+			{
+				throw new InactiveMatchException
+					("Cannot add games to a finished match!");
+			}
 			if (PlayerSlot.unspecified == _winnerSlot)
 			{
 				throw new NotImplementedException

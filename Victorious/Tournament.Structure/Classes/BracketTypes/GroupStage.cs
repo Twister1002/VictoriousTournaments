@@ -40,8 +40,10 @@ namespace Tournament.Structure
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			GameModel gameModel = Groups[groupIndex].AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
+			int fixedMatchNumber = _matchNumber;
+			GetMatchData(ref fixedMatchNumber, out groupIndex);
+
+			GameModel gameModel = Groups[groupIndex].AddGame(fixedMatchNumber, _defenderScore, _challengerScore, _winnerSlot);
 			//UpdateScore(_matchNumber, gameModel, true);
 			UpdateRankings();
 			ApplyWinEffects(_matchNumber, _winnerSlot);
@@ -50,19 +52,23 @@ namespace Tournament.Structure
 		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			GameModel gameModel = Groups[groupIndex].UpdateGame(_matchNumber, _gameNumber, _defenderScore, _challengerScore, _winnerSlot);
+			int fixedMatchNumber = _matchNumber;
+			GetMatchData(ref fixedMatchNumber, out groupIndex);
+
+			GameModel gameModel = Groups[groupIndex].UpdateGame(fixedMatchNumber, _gameNumber, _defenderScore, _challengerScore, _winnerSlot);
 			UpdateRankings();
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
 		public override GameModel RemoveLastGame(int _matchNumber)
 		{
+			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
 			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			bool wasFinished = GetMatch(_matchNumber).IsFinished;
-			GameModel gameModel = Groups[groupIndex].RemoveLastGame(_matchNumber);
-			ApplyGameRemovalEffects(_matchNumber, gameModel, wasFinished);
+			int fixedMatchNumber = _matchNumber;
+			GetMatchData(ref fixedMatchNumber, out groupIndex);
+
+			GameModel gameModel = Groups[groupIndex].RemoveLastGame(fixedMatchNumber);
+			ApplyGameRemovalEffects(_matchNumber, new List<GameModel>() { gameModel }, matchWinnerSlot);
 			//UpdateScore(_matchNumber, gameModel, false);
 			UpdateRankings();
 			return gameModel;
@@ -70,8 +76,10 @@ namespace Tournament.Structure
 		public override void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
 		{
 			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			Groups[groupIndex].SetMatchWinner(_matchNumber, _winnerSlot);
+			int fixedMatchNumber = _matchNumber;
+			GetMatchData(ref fixedMatchNumber, out groupIndex);
+
+			Groups[groupIndex].SetMatchWinner(fixedMatchNumber, _winnerSlot);
 			UpdateRankings();
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 		}
@@ -80,6 +88,7 @@ namespace Tournament.Structure
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			bool wasFinished = GetMatch(_matchNumber).IsFinished;
+
 			List<GameModel> modelList = Groups[groupIndex].ResetMatchScore(_matchNumber);
 			UpdateFinishStatus();
 			UpdateRankings();
@@ -137,7 +146,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished)
+		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false)
 		{
 			UpdateRankings();
 		}
@@ -145,9 +154,9 @@ namespace Tournament.Structure
 		{
 			UpdateFinishStatus();
 		}
-		protected override void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished)
+		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
-			if (!_wasFinished)
+			if (PlayerSlot.unspecified == _formerMatchWinnerSlot)
 			{
 				this.IsFinished = false;
 				return;

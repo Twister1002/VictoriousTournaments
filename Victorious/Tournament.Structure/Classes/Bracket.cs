@@ -41,9 +41,9 @@ namespace Tournament.Structure
 
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
-		protected abstract void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished);
+		protected abstract void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false);
 		protected abstract void ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
-		protected abstract void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished);
+		protected abstract void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot);
 		protected abstract void UpdateRankings();
 		#endregion
 
@@ -394,38 +394,46 @@ namespace Tournament.Structure
 
 		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			bool wasFinished = GetMatch(_matchNumber).IsFinished;
+			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
+
 			GameModel gameModel = GetMatch(_matchNumber)
 				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
-			UpdateScore(_matchNumber, gameModel, true, wasFinished);
+			UpdateScore(_matchNumber, new List<GameModel>() { gameModel }, true, matchWinnerSlot);
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
 		public virtual GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			bool wasFinished = GetMatch(_matchNumber).IsFinished;
-			GameModel removedGame = GetMatch(_matchNumber).RemoveGameNumber(_gameNumber);
-			ApplyGameRemovalEffects(_matchNumber, removedGame, wasFinished);
-			UpdateScore(_matchNumber, removedGame, false, wasFinished);
+			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
+			List<GameModel> modelList = new List<GameModel>();
+
+			modelList.Add(GetMatch(_matchNumber).RemoveGameNumber(_gameNumber));
+			ApplyGameRemovalEffects(_matchNumber, modelList, matchWinnerSlot);
+			UpdateScore(_matchNumber, modelList, false, matchWinnerSlot);
 
 			GameModel addedGame = GetMatch(_matchNumber)
 				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
-			UpdateScore(_matchNumber, addedGame, true, wasFinished);
+			UpdateScore(_matchNumber, new List<GameModel>() { addedGame }, true, _winnerSlot);
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return addedGame;
 		}
 		public virtual GameModel RemoveLastGame(int _matchNumber)
 		{
-			bool wasFinished = GetMatch(_matchNumber).IsFinished;
-			GameModel gameModel = GetMatch(_matchNumber).RemoveLastGame();
-			ApplyGameRemovalEffects(_matchNumber, gameModel, wasFinished);
-			UpdateScore(_matchNumber, gameModel, false, wasFinished);
-			return gameModel;
+			PlayerSlot winnerSlot = GetMatch(_matchNumber).WinnerSlot;
+			List<GameModel> modelList = new List<GameModel>();
+
+			modelList.Add(GetMatch(_matchNumber).RemoveLastGame());
+			ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
+			UpdateScore(_matchNumber, modelList, false, winnerSlot);
+			return modelList[0];
 		}
 
 		public virtual void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
 		{
+			// Reset the match, and save the games:
 			List<GameModel> modelList = ResetMatchScore(_matchNumber);
+
+			// Set the match winner, THEN re-add the games and update:
 			GetMatch(_matchNumber).SetWinner(_winnerSlot);
 			foreach (GameModel model in modelList)
 			{
@@ -436,18 +444,28 @@ namespace Tournament.Structure
 
 				GetMatch(_matchNumber).AddGame(model.DefenderScore, model.ChallengerScore, winSlot);
 			}
-
-			UpdateScore(_matchNumber, null, true, false);
+			UpdateScore(_matchNumber, null, true, PlayerSlot.unspecified);
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 		}
 		public virtual List<GameModel> ResetMatchScore(int _matchNumber)
 		{
+			IMatch match = GetMatch(_matchNumber);
+			PlayerSlot winnerSlot = match.WinnerSlot;
+			bool wasManualWin = match.IsManualWin;
+
+			List<GameModel> modelList = GetMatch(_matchNumber).ResetScore();
+			ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
+			UpdateScore(_matchNumber, modelList, false, winnerSlot, wasManualWin);
+			return modelList;
+#if false
 			List<GameModel> modelList = new List<GameModel>();
+			IMatch match = GetMatch(_matchNumber);
 			while (GetMatch(_matchNumber).Games.Count > 0)
 			{
 				modelList.Add(RemoveLastGame(_matchNumber));
 			}
 			return modelList;
+#endif
 		}
 
 		public virtual List<IMatch> GetRound(int _round)
@@ -577,9 +595,9 @@ namespace Tournament.Structure
 				GetMatch(n).ResetScore();
 			}
 		}
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 		protected virtual void ResetBracket()
 		{
 			if (null == Matches)
@@ -614,6 +632,6 @@ namespace Tournament.Structure
 			return (compare != 0)
 				? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
 		}
-		#endregion
+#endregion
 	}
 }
