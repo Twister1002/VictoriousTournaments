@@ -175,7 +175,8 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Resets Match score to 0-0.
 		/// </summary>
-		void ResetScore();
+		/// <returns>List of Models of removed Games</returns>
+		List<GameModel> ResetScore();
 
 		/// <summary>
 		/// Set the max number of Games to play this Match.

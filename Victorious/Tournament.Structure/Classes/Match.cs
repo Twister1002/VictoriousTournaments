@@ -513,7 +513,7 @@ namespace Tournament.Structure
 			IsFinished = true;
 			IsManualWin = true;
 		}
-		public void ResetScore()
+		public List<GameModel> ResetScore()
 		{
 			if (null == Score)
 			{
@@ -521,11 +521,18 @@ namespace Tournament.Structure
 			}
 
 			IsFinished = IsManualWin = false;
+			Score[0] = Score[1] = 0;
 			WinnerSlot = PlayerSlot.unspecified;
 			Model.WinnerID = -1;
-			Games.Clear();
-			Score[0] = Score[1] = 0;
 			Model.DefenderScore = Model.ChallengerScore = 0;
+
+			List<GameModel> modelList = new List<GameModel>();
+			foreach (IGame game in Games)
+			{
+				modelList.Add(game.GetModel());
+			}
+			Games.Clear();
+			return modelList;
 		}
 
 		public void SetMaxGames(int _numberOfGames)
