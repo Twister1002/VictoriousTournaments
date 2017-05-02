@@ -50,7 +50,7 @@ namespace Tournament.Structure
 		{
 			throw new NotImplementedException();
 		}
-		public override TournamentUsersBracketModel GetTournamentUsersBracketModel()
+		public override TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed)
 		{
 			throw new NotImplementedException();
 		}
