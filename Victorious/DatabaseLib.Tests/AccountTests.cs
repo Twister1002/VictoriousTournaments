@@ -74,7 +74,7 @@ namespace DatabaseLib.Tests
 
             db.AddAccount(user);
 
-            var result = db.DeleteAccount(db.GetAccountById(user.AccountID));
+            var result = db.DeleteAccount(db.GetAccount(user.AccountID));
 
             Assert.AreEqual(DbError.SUCCESS, result);
         }

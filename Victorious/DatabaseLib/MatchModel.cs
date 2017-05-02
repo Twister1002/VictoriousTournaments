@@ -14,6 +14,13 @@ namespace DatabaseLib
     
     public partial class MatchModel
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public MatchModel()
+        {
+            this.Games = new HashSet<GameModel>();
+    		OnInit();
+        }
+    
         public int MatchID { get; set; }
         public int ChallengerID { get; set; }
         public int DefenderID { get; set; }
@@ -38,5 +45,7 @@ namespace DatabaseLib
     	partial void OnInit();
     
         public virtual BracketModel Bracket { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<GameModel> Games { get; set; }
     }
 }

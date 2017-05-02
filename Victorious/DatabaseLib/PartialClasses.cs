@@ -30,6 +30,8 @@ namespace DatabaseLib
             WinnerID = -1;
             CreatedOn = DateTime.Now;
             LastEditedOn = DateTime.Now;
+
+            Brackets = new Collection<BracketModel>();
         }
 
     }
@@ -41,4 +43,34 @@ namespace DatabaseLib
 
         }
     }
+
+    public partial class BracketModel
+    {
+        partial void OnInit()
+        {
+            Matches = new Collection<MatchModel>();
+        }
+    }
+
+    public partial class MatchModel
+    {
+        partial void OnInit()
+        {
+
+        }
+
+        public TournamentUserModel Challenger { get; set; }
+
+        public TournamentUserModel Defender { get; set; }
+    }
+
+    public partial class GameModel
+    {
+        partial void OnInit()
+        {
+
+        }
+    }
+
+
 }

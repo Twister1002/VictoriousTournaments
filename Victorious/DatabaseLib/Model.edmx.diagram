@@ -4,28 +4,25 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="140c09bfe994490da52abb1b6f930a88" Name="Diagram1" ZoomLevel="100">
+      <Diagram DiagramId="140c09bfe994490da52abb1b6f930a88" Name="Diagram1" ZoomLevel="88">
         <EntityTypeShape EntityType="VictoriousDatabaseModel.C__RefactorLog" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountModel" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketModel" Width="1.5" PointX="4.875" PointY="10.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketModel" Width="1.5" PointX="6.125" PointY="5.25" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketType" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.GameModel" Width="1.5" PointX="0.75" PointY="7.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.MatchModel" PointX="4.375" PointY="13.75" Width="1.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.GameType" Width="1.5" PointX="2.75" PointY="8.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.MatchModel" PointX="5.625" PointY="8.875" Width="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.GameType" Width="1.5" PointX="4" PointY="4" IsExpanded="true" />
         <AssociationConnector ManuallyRouted="false" Association="VictoriousDatabaseModel.FK_Matches_Brackets" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.Challenger" Width="1.5" PointX="8" PointY="9.25" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.Defender" Width="1.5" PointX="5.625" PointY="7.375" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUserModel" Width="1.5" PointX="2" PointY="15.625" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUsersBracketModel" Width="1.5" PointX="1" PointY="10.875" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUserModel" Width="1.5" PointX="3.25" PointY="10.75" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUsersBracketModel" Width="1.5" PointX="2.25" PointY="6" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_UserBrackets_TournamentUsers" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentRule" Width="1.5" PointX="3.25" PointY="20.875" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.Tournament" Width="1.5" PointX="1" PointY="14.125" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Brackets_Tournaments" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentModel" Width="1.5" PointX="8.25" PointY="12.125" />
-        <AssociationConnector Association="VictoriousDatabaseModel.FK_Brackets_Tournaments" />
-        <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentModel" Width="1.5" PointX="9.5" PointY="7.25" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.GameModel" Width="1.5" PointX="10.375" PointY="12.75" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_Games_Matches" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

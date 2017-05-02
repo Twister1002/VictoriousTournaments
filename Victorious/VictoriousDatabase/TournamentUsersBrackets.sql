@@ -1,11 +1,11 @@
 ﻿CREATE TABLE [dbo].[TournamentUsersBrackets]
 (
-	[TournamentUserID] INT NOT NULL, 
-    [BracketID] INT NOT NULL,
+	[TournamentUserId] INT NOT NULL, 
+    [BracketId] INT NOT NULL,
 	[Seed] INT NULL, 
-    CONSTRAINT FK_UsersBrackets_Tournaments FOREIGN KEY(BracketID) REFERENCES Brackets(BracketID) ON DELETE CASCADE,
-	CONSTRAINT FK_UserBrackets_TournamentUsers FOREIGN KEY(TournamentUserID) REFERENCES TournamentUsers(TournamentUserID) ON DELETE CASCADE, 
+    CONSTRAINT FK_UsersBrackets_Tournaments FOREIGN KEY([BracketId]) REFERENCES Brackets([BracketId]) ON DELETE CASCADE,
+	CONSTRAINT FK_UserBrackets_TournamentUsers FOREIGN KEY([TournamentUserId]) REFERENCES TournamentUsers([TournamentUserId]) ON DELETE CASCADE, 
 
-    CONSTRAINT [PK_TournamentUsersBrackets] PRIMARY KEY ([TournamentUserID], [BracketID])
+    CONSTRAINT [PK_TournamentUsersBrackets] PRIMARY KEY ([TournamentUserId], [BracketId])
 
 )
