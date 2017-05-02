@@ -18,9 +18,18 @@ namespace DatabaseLib
         // 1 = Site Permissions
         SITE_ADMINISTRATOR = 1, SITE_STANDARD,
         // 100 = Tournament Permissions
-        TOURNAMENT_ADMINISTRATOR = 100, TOURNAMENT_STANDARD,
+        TOURNAMENT_ADMINISTRATOR = 100, TOURNAMENT_STANDARD, TOURNAMENT_CREATOR,
         // 200 = Team Permissions
         TEAM_CAPTAIN = 200, TEAM_STANDARD
+    }
+
+    public enum BracketType
+    {
+        SINGLE = 1,
+        DOUBLE,
+        ROUNDROBIN,
+        RRGROUP,
+        GSLGROUP
     }
 
     public enum DbError
@@ -622,10 +631,10 @@ namespace DatabaseLib
             {
                 MatchModel _match = new MatchModel();
                 _match = match;
-
+                
                 _match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
                 _match.Defender = context.TournamentUserModels.Find(match.DefenderID);
-
+                
                 //context.Challengers.Add(new Challenger() { TournamentUserID = _match.ChallengerID, MatchID = _match.MatchID });
                 //context.Defenders.Add(new Defender() { TournamentUserID = _match.DefenderID, MatchID = _match.MatchID });
 
@@ -656,6 +665,8 @@ namespace DatabaseLib
             try
             {
                 match = context.MatchModels.Find(id);
+                match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
+                match.Defender = context.TournamentUserModels.Find(match.DefenderID);
             }
             catch (Exception ex)
             {
@@ -695,6 +706,8 @@ namespace DatabaseLib
                     _match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
                     _match.Defender = context.TournamentUserModels.Find(match.DefenderID);
                 }
+                UpdateTournamentUser(match.Defender);
+                UpdateTournamentUser(match.Challenger);
                 if (cascade)
                 {
                     foreach (var game in _match.Games.ToList())
