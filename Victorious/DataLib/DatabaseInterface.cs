@@ -576,8 +576,23 @@ namespace DataLib
                 interfaceException = ex;
                 WriteException(ex);
                 tournaments.Clear();
-                tournaments.Add(new TournamentModel() { TournamentID = 0 });
-                return tournaments;
+            }
+            return tournaments;
+        }
+
+        public List<TournamentModel> FindTournaments(string title)
+        {
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+
+            try
+            {
+                tournaments = context.Tournaments.SqlQuery("SELECT * FROM dbo.Tournaments WHERE Title LIKE @Title", new SqlParameter("@Title", "%" + title + "%")).ToList();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                tournaments.Clear();
             }
             return tournaments;
         }
