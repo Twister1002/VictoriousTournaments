@@ -25,6 +25,8 @@ namespace Tournament.Structure
 		// inherits int NumberOfMatches
 		protected int MatchWinValue
 		{ get; set; }
+		protected int MatchTieValue
+		{ get; set; }
 		#endregion
 
 		#region Ctors
@@ -59,6 +61,7 @@ namespace Tournament.Structure
 			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
 			MaxRounds = _numberOfRounds;
 			MatchWinValue = 2;
+			MatchTieValue = 1;
 			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
 		}
@@ -98,6 +101,7 @@ namespace Tournament.Structure
 			this.IsFinalized = _model.Finalized;
 			this.MaxRounds = 0;
 			this.MatchWinValue = 2;
+			this.MatchTieValue = 1;
 			ResetBracket();
 
 			List<UserModel> userModels = _model.UserSeeds
