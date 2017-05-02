@@ -1,9 +1,8 @@
-﻿using DataLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Tournament.Structure;
+using DatabaseLib;
 
 namespace WebApplication.Models
 {
@@ -31,16 +30,17 @@ namespace WebApplication.Models
 
         public BracketViewModel(int id)
         {
-            Model = db.GetBracketByID(id);
+            Model = db.GetBracket(id);
+
             switch (Model.BracketType.Type)
             {
-                case BracketTypeModel.BracketType.SINGLE:
+                case BracketTypes.SINGLE:
                     Bracket = new SingleElimBracket(Model);
                     break;
-                case BracketTypeModel.BracketType.DOUBLE:
+                case BracketTypes.DOUBLE:
                     Bracket = new DoubleElimBracket(Model);
                     break;
-                case BracketTypeModel.BracketType.ROUNDROBIN:
+                case BracketTypes.ROUNDROBIN:
                     Bracket = new RoundRobinBracket(Model);
                     break;
             }
@@ -60,7 +60,7 @@ namespace WebApplication.Models
                 {
                     if (result == DbError.SUCCESS)
                     {
-                        result = db.DeleteGame(match.GetModel(), game.GetModel());
+                        result = db.DeleteGame(game.Id);
                     }
                 }
             }
@@ -73,8 +73,7 @@ namespace WebApplication.Models
             {
                 if (result == DbError.SUCCESS)
                 {
-                    IMatch match = Bracket.GetMatch(i);
-                    result = db.UpdateMatch(match.GetModel());
+                    db.UpdateMatch(Bracket.GetMatch(i).GetModel());
                 }
                 else
                 {
@@ -174,9 +173,9 @@ namespace WebApplication.Models
             return matchesAffected;
         }
 
-        public Permission TournamentPermission(int userId)
+        public Permission TournamentPermission(int accountId)
         {
-            return Model.Tournament.UsersInTournament.First(x => x.UserID == userId).Permission;
+            return Model.Tournament.TournamentUsers.First(x => x.AccountID == accountId).Permission;
         }
     }
 }

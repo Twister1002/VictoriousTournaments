@@ -105,12 +105,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\dbo.Brackets.data.sql" />
-    <Content Include="App_Data\dbo.TournamentModelUserModels.data.sql" />
-    <Content Include="App_Data\dbo.TournamentRules.data.sql" />
-    <Content Include="App_Data\dbo.Tournaments.data.sql" />
-    <Content Include="App_Data\dbo.Users.data.sql" />
-    <Content Include="App_Data\dbo.UsersInTournaments.data.sql" />
     <Content Include="Content\fonts\icomoon.svg" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\svg\checkmark.svg" />
@@ -281,6 +275,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Scripts\Account\" />
     <Folder Include="Views\Bracket\" />
     <Folder Include="Views\Match\" />
