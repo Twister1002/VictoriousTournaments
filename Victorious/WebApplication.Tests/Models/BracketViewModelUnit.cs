@@ -14,19 +14,6 @@ namespace WebApplication.Tests.Models
     {
         [TestMethod]
         [TestCategory("BracketView")]
-        public void BracketViewModel_GetRounds_Returns_NumberOfRounds()
-        {
-            // Arrange
-            BracketViewModel model = new BracketViewModel();
-
-            // Act
-
-
-            // Assert
-        }
-
-        [TestMethod]
-        [TestCategory("BracketView")]
         [TestCategory("Bracket")]
         public void BracketViewModel_ResetMatches_FromMatch2_Returns_CorrectMatchesAffected()
         {
@@ -64,8 +51,6 @@ namespace WebApplication.Tests.Models
 
             // Act
             List<int> matchesAffected = model.MatchesAffectedList(2);
-            // Should be matches (2, 6, 12, 9, 13, 15, 10, 16, 17, 13, 15)
-
 
             // Assert
             Assert.AreEqual(true, !matchesAffectedActual.Except(matchesAffected).Any());
@@ -76,7 +61,7 @@ namespace WebApplication.Tests.Models
         IBracket bracket;
 
         // Helper Methods
-        public void ProcessMatches_DoubleElim()
+        private void ProcessMatches_DoubleElim()
         {
             // Upper Bracket
             bracket.AddGame(1, 0, 1, PlayerSlot.Challenger);
@@ -98,7 +83,7 @@ namespace WebApplication.Tests.Models
             bracket.AddGame(17, 1, 0, PlayerSlot.Defender);
         }
 
-        public List<IPlayer> CreatePlayers()
+        private List<IPlayer> CreatePlayers()
         {
             List<IPlayer> players = new List<IPlayer>();
 
@@ -110,14 +95,14 @@ namespace WebApplication.Tests.Models
             return players;
         }
 
-        public IBracket SingleEliminationBracket(List<IPlayer> players)
+        private IBracket SingleEliminationBracket(List<IPlayer> players)
         {
             bracket = new SingleElimBracket(players);
 
             return bracket;
         }
 
-        public IBracket DoubleEliminationBracket(List<IPlayer> players)
+        private IBracket DoubleEliminationBracket(List<IPlayer> players)
         {
             bracket = new DoubleElimBracket(players);
 

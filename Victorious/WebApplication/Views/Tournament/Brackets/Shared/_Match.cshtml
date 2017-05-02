@@ -41,8 +41,8 @@
             <span class="icon icon-cross close"></span>
             @if (ViewBag.isAdministrator)
             {
-                <span class="icon icon-plus add-game"></span>
                 <span class="icon icon-loop2 reset-match"></span>
+                <span class="icon icon-plus add-game hide"></span>
             }
         </div>
         <ul class="list-table">
@@ -60,7 +60,7 @@
 
         @if (ViewBag.isAdministrator)
         {
-            <button type="button" class="update-games  @(Model.Match.IsFinished ? "hide" : "")">Update Games</button>
+            <button type="button" class="update-games hide">Update Games</button>
         }
     </div>
 </div>

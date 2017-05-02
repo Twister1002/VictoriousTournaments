@@ -68,28 +68,21 @@
             "dataType": "json",
             "beforeSend": function () {
                 matchElem.find(".TournamentGames").addClass("open");
+                matchElem.find(".TournamentGames .list-table-body").empty();
             },
             "success": function (json) {
                 json = JSON.parse(json);
 
                 if (json.status) {
                     console.log(json);
-
-                    // Remove all games
-                    matchElem.find(".TournamentGames .list-table-body").empty();
+                    $games = matchElem.find(".TournamentGames");
 
                     // Add the currently fetched games
                     $.each(json.data.games, function (i, e) {
                         AddGameToDetails(e, matchElem.find(".TournamentGames"));
                     });
                     MatchUpdate(json.data, matchElem);
-
-                    if (CanAddGames(matchElem.find(".TournamentGames")) && !json.data.finished) {
-                        matchElem.find(".options .add-game").removeClass("hide");
-                    }
-                    else {
-                        matchElem.find(".options .add-game").addClass("hide");
-                    }
+                    MatchOptionsUpdate(json.data, $games);
                 }
                 else {
                     alert(json.message);
@@ -113,7 +106,6 @@
         var gameData = new Array();
         var validated = true;
 
-        // TODO: When adding more games, if both fields are blank, they should not restrict processing.
         // Validate the games fields
         // For every game
         $.each(games, function (i, e) {
@@ -173,6 +165,7 @@
                     if (json.data.currentMatch) {
                         matchElement = $(".TournamentMatch[data-id='" + json.data.currentMatch.matchId + "']");
                         MatchUpdate(json.data.currentMatch, matchElement);
+                        MatchOptionsUpdate(json.data.currentMatch, matchElement.find(".TournamentGames"));
                     }
                     if (json.data.winnerMatch) {
                         matchElement = $(".TournamentMatch[data-id='" + json.data.winnerMatch.matchId + "']");
@@ -204,20 +197,24 @@
         var match = $(this).closest(".TournamentMatch");
         var jsonData = {
             "bracketId": $(this).closest(".bracket").data("id"),
-            "matchNum": $(this).closest(".TournamentMatch").data("matchnum")
+            "matchNum": match.data("matchnum")
         };
 
         $.ajax({
             "url": "/Ajax/Bracket/MatchReset",
             "type": "post",
-            "data": { "bracketId": $(this).closest(".bracket").data("id"), "matchNum": $(this).closest(".TournamentMatch").data("matchnum") },
+            "data": { "bracketId": $(this).closest(".bracket").data("id"), "matchNum": match.data("matchnum") },
             "dataType": "json",
             "success": function (json) {
                 json = JSON.parse(json);
 
                 if (json.status) {
                     $.each(json.data, function (i, e) {
-                        MatchUpdate(e, match);
+                        MatchUpdate(e, $(".TournamentMatch[data-id='" + e.matchId + "']"));
+
+                        if (e.matchNum == match.data("matchnum")) {
+                            MatchOptionsUpdate(e, match.find(".TournamentGames"));
+                        }
                     });
                     
                     match.find(".TournamentGames .games").empty();
@@ -256,22 +253,6 @@
         else {
             $match.find(".details").addClass("hide");
         }
-
-        // Verify if the users can add more games
-        if (CanAddGames(games)) {
-            games.find(".options .add-game").removeClass("hide");
-        }
-        else {
-            games.find(".options .add-game").addClass("hide");
-        }
-
-        // Verify the match is finished
-        if (json.finished) {
-            games.find(".update-games").addClass("hide");
-        }
-        else {
-            games.find(".update-games").removeClass("hide");
-        }
     }
 
     // Helper method to add games to details
@@ -291,6 +272,24 @@
         }
         else {
             return true;
+        }
+    }
+
+    function MatchOptionsUpdate(json, $games) {
+        // Verify if the users can add more games
+        if (CanAddGames($games)) {
+            $games.find(".options .add-game").removeClass("hide");
+        }
+        else {
+            $games.find(".options .add-game").addClass("hide");
+        }
+
+        // Verify the match is finished
+        if (json.finished) {
+            $games.find(".update-games").addClass("hide");
+        }
+        else {
+            $games.find(".update-games").removeClass("hide");
         }
     }
 
@@ -334,7 +333,4 @@
         });
     }
 
-    function MatchIsFinished($match) {
-
-    }
 });
