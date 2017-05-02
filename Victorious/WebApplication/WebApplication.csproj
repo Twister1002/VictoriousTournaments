@@ -286,9 +286,9 @@
     <Folder Include="Views\Match\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataLib\DataLib.csproj">
-      <Project>{59636ed1-650e-4319-aabe-aed047a9feb5}</Project>
-      <Name>DataLib</Name>
+    <ProjectReference Include="..\DatabaseLib\DatabaseLib.csproj">
+      <Project>{977c6746-ca5d-49c7-b996-357507bc45cb}</Project>
+      <Name>DatabaseLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tournament.Structure\Tournament.Structure.csproj">
       <Project>{2de53f49-9b50-489d-8fe3-8fc10e1efd57}</Project>
