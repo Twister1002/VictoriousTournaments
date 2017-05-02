@@ -7,7 +7,7 @@
 	[Username] NVARCHAR(50) NULL,
     [UniformNumber] INT NULL, 
     [TournamentID] INT NOT NULL,
-    [Permission] INT NULL, 
+    [PermissionLevel] INT NULL, 
     CONSTRAINT [PK_TournamentUsers] PRIMARY KEY ([TournamentUserID]),
 	CONSTRAINT FK_TournamentUser_Tournaments FOREIGN KEY(TournamentID) REFERENCES Tournaments(TournamentID)
 

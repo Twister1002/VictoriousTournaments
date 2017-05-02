@@ -63,4 +63,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="TournamentTypeId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="2db94fff-139c-4afb-afa5-4259ada492e2" ChangeDateTime="05/02/2017 22:10:14">
+    <Property Name="ElementName" Value="[dbo].[TournamentUsers].[Permission]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentUsers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PermissionLevel" />
+  </Operation>
 </Operations>

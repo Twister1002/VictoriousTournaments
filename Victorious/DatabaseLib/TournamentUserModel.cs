@@ -28,6 +28,7 @@ namespace DatabaseLib
         public Nullable<int> UniformNumber { get; set; }
         public int TournamentID { get; set; }
         public string Username { get; set; }
+        public Nullable<int> PermissionLevel { get; set; }
     	
     	partial void OnInit();
     
