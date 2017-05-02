@@ -165,13 +165,13 @@ namespace Tournament.Structure
 				}
 			}
 
-			protected override void RemovePlayerFromFutureMatches(int _matchNumber, ref IPlayer _player)
+			protected override void RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 			{
 				if (_matchNumber > NumberOfMatches)
 				{
 					return;
 				}
-				base.RemovePlayerFromFutureMatches(_matchNumber, ref _player);
+				base.RemovePlayerFromFutureMatches(_matchNumber, _playerId);
 			}
 			protected override void UpdateRankings()
 			{

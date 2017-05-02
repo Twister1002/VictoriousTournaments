@@ -380,7 +380,7 @@ namespace Tournament.Structure
 					? PlayerSlot.Challenger
 					: PlayerSlot.Defender;
 				RemovePlayerFromFutureMatches
-					(nextLoserNumber, ref match.Players[(int)loserSlot]);
+					(nextLoserNumber, match.Players[(int)loserSlot].Id);
 			}
 		}
 
@@ -407,9 +407,9 @@ namespace Tournament.Structure
 			return (normalizedPlayers - 2);
 		}
 
-		protected override void RemovePlayerFromFutureMatches(int _matchNumber, ref IPlayer _player)
+		protected override void RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 		{
-			if (_matchNumber < 1 || null == _player)
+			if (_matchNumber < 1 || _playerId == -1)
 			{
 				return;
 			}
@@ -418,7 +418,9 @@ namespace Tournament.Structure
 			int nextLoserNumber;
 			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
-			if (match.Players.Contains(_player))
+			if (match.Players
+				.Where(p => p != null)
+				.Any(p => p.Id == _playerId))
 			{
 				if (match.IsFinished)
 				{
@@ -427,12 +429,12 @@ namespace Tournament.Structure
 						: PlayerSlot.Defender;
 
 					RemovePlayerFromFutureMatches
-						(nextWinnerNumber, ref match.Players[(int)(match.WinnerSlot)]);
+						(nextWinnerNumber, match.Players[(int)(match.WinnerSlot)].Id);
 					RemovePlayerFromFutureMatches
-						(nextLoserNumber, ref match.Players[(int)loserSlot]);
+						(nextLoserNumber, match.Players[(int)loserSlot].Id);
 				}
 
-				GetMatch(_matchNumber).RemovePlayer(_player.Id);
+				GetMatch(_matchNumber).RemovePlayer(_playerId);
 			}
 		}
 

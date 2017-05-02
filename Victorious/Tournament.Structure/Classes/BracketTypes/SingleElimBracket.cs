@@ -502,7 +502,7 @@ namespace Tournament.Structure
 					: PlayerSlot.Challenger;
 				// Remove advanced players from future matches:
 				RemovePlayerFromFutureMatches
-					(nextWinnerNumber, ref match.Players[(int)winnerSlot]);
+					(nextWinnerNumber, match.Players[(int)winnerSlot].Id);
 			}
 		}
 
@@ -541,9 +541,9 @@ namespace Tournament.Structure
 			}
 		}
 
-		protected virtual void RemovePlayerFromFutureMatches(int _matchNumber, ref IPlayer _player)
+		protected virtual void RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 		{
-			if (_matchNumber < 1 || null == _player)
+			if (_matchNumber < 1 || _playerId == -1)
 			{
 				return;
 			}
@@ -553,17 +553,17 @@ namespace Tournament.Structure
 					("Invalid match number called by recursive method!");
 			}
 
-			if (Matches[_matchNumber].Players.Contains(_player))
+			if (Matches[_matchNumber].Players
+				.Where(p => p != null)
+				.Any(p => p.Id == _playerId))
 			{
 				if (Matches[_matchNumber].IsFinished)
 				{
 					// Remove any advanced Players from future Matches:
-					RemovePlayerFromFutureMatches
-						(Matches[_matchNumber].NextMatchNumber,
-						ref Matches[_matchNumber].Players[(int)(Matches[_matchNumber].WinnerSlot)]);
+					RemovePlayerFromFutureMatches(Matches[_matchNumber].NextMatchNumber, _playerId);
 				}
 
-				Matches[_matchNumber].RemovePlayer(_player.Id);
+				Matches[_matchNumber].RemovePlayer(_playerId);
 			}
 		}
 
