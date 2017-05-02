@@ -673,6 +673,31 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB ResetMatchScore")]
+		public void DEBResetMatch_ResetsALargeBracket()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 11; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			for (int n = 1; n < b.NumberOfMatches; ++n)
+			{
+				b.GetMatch(n).SetMaxGames(3);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+				b.AddGame(n, 0, 1, PlayerSlot.Challenger);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			b.ResetMatchScore(2);
+			Assert.AreEqual(0, b.GetMatch(2).Score[(int)PlayerSlot.Challenger]);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("DEB ResetMatchScore")]
 		public void DEBResetMatch_ResetsGrandFinal()
 		{
 			List<IPlayer> pList = new List<IPlayer>();

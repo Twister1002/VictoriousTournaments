@@ -47,25 +47,6 @@ namespace Tournament.Structure
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
-		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
-		{
-			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			GameModel gameModel = Groups[groupIndex].AddGame(_matchNumber, _defenderScore, _challengerScore);
-			UpdateRankings();
-
-			IsFinished = true;
-			foreach (IBracket group in Groups)
-			{
-				if (!group.IsFinished)
-				{
-					IsFinished = false;
-					break;
-				}
-			}
-
-			return gameModel;
-		}
 		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			int groupIndex;
@@ -86,14 +67,23 @@ namespace Tournament.Structure
 			UpdateRankings();
 			return gameModel;
 		}
-		public override void ResetMatchScore(int _matchNumber)
+		public override void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
+		{
+			int groupIndex;
+			GetMatchData(ref _matchNumber, out groupIndex);
+			Groups[groupIndex].SetMatchWinner(_matchNumber, _winnerSlot);
+			UpdateRankings();
+			ApplyWinEffects(_matchNumber, _winnerSlot);
+		}
+		public override List<GameModel> ResetMatchScore(int _matchNumber)
 		{
 			int groupIndex;
 			GetMatchData(ref _matchNumber, out groupIndex);
 			bool wasFinished = GetMatch(_matchNumber).IsFinished;
-			Groups[groupIndex].ResetMatchScore(_matchNumber);
+			List<GameModel> modelList = Groups[groupIndex].ResetMatchScore(_matchNumber);
 			UpdateFinishStatus();
 			UpdateRankings();
+			return modelList;
 		}
 
 		public IBracket GetGroup(int _groupNumber)
@@ -147,7 +137,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
+		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished)
 		{
 			UpdateRankings();
 		}

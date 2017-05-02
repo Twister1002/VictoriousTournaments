@@ -155,8 +155,6 @@ namespace Tournament.Structure
 		/// <param name="_winnerSlot">Slot of winner (Defender/Challenger)</param>
 		/// <returns>Model of the new Game</returns>
 		GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
-		[System.Obsolete("use AddGame(int, int, int, PlayerSlot) isntead", false)]
-		GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
 
 		/// <summary>
 		/// Replaces a Game with new data.
@@ -177,11 +175,20 @@ namespace Tournament.Structure
 		GameModel RemoveLastGame(int _matchNumber);
 
 		/// <summary>
+		/// Manually set a winner for specified Match.
+		/// Winner's score will be -1.
+		/// </summary>
+		/// <param name="_matchNumber">Number of Match to affect</param>
+		/// <param name="_winnerSlot">Slot of winner (Defender/Challenger)</param>
+		void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot);
+
+		/// <summary>
 		/// Reset score for the specified match.
 		/// Resets any affected "future" matches.
 		/// </summary>
 		/// <param name="_matchNumber">Number of specified match</param>
-		void ResetMatchScore(int _matchNumber);
+		/// <returns>List of Models of removed Games</returns>
+		List<GameModel> ResetMatchScore(int _matchNumber);
 
 		/// <summary>
 		/// Get all Matches in specified round.

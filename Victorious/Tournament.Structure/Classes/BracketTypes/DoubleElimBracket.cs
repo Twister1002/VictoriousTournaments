@@ -241,57 +241,6 @@ namespace Tournament.Structure
 			return gameModel;
 		}
 #endif
-		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
-		{
-			GameModel gameModel = base.AddGame(_matchNumber, _defenderScore, _challengerScore);
-
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
-			if (match.IsFinished)
-			{
-				PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
-					? PlayerSlot.Challenger
-					: PlayerSlot.Defender;
-				if (nextLoserNumber > 0)
-				{
-					// Advance the losing player:
-					IMatch nextMatch = GetMatch(nextLoserNumber);
-					for (int i = 0; i < nextMatch.PreviousMatchNumbers.Length; ++i)
-					{
-						if (_matchNumber == nextMatch.PreviousMatchNumbers[i])
-						{
-							GetMatch(nextLoserNumber).AddPlayer(match.Players[(int)loserSlot], (PlayerSlot)i);
-							break;
-						}
-					}
-				}
-				else
-				{
-					// Add losing player to Rankings:
-					int rank = -1;
-					if (null != LowerMatches && LowerMatches.ContainsKey(_matchNumber))
-					{
-						rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
-					}
-					else if (null != Matches && Matches.ContainsKey(_matchNumber))
-					{
-						rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
-					}
-					else if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
-					{
-						rank = 2;
-					}
-
-					Rankings.Add(new PlayerScore
-						(match.Players[(int)loserSlot].Id, match.Players[(int)loserSlot].Name, -1, rank));
-					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
-				}
-			}
-
-			return gameModel;
-		}
 #if false
 		public override void RemoveLastGame(int _matchNumber)
 		{
@@ -341,14 +290,14 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
+		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished)
 		{
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
 			if (_isAddition)
 			{
-				int nextWinnerNumber;
-				int nextLoserNumber;
-				IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
 				if (match.IsFinished && nextLoserNumber < 0)
 				{
 					// Add losing player to Rankings:
@@ -382,7 +331,7 @@ namespace Tournament.Structure
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
 			}
-			else
+			else if (_wasFinished && !(match.IsFinished))
 			{
 				UpdateRankings();
 			}
@@ -431,7 +380,7 @@ namespace Tournament.Structure
 					? PlayerSlot.Challenger
 					: PlayerSlot.Defender;
 				RemovePlayerFromFutureMatches
-					(nextLoserNumber, ref match.Players[(int)loserSlot]);
+					(nextLoserNumber, match.Players[(int)loserSlot].Id);
 			}
 		}
 
@@ -458,9 +407,9 @@ namespace Tournament.Structure
 			return (normalizedPlayers - 2);
 		}
 
-		protected override void RemovePlayerFromFutureMatches(int _matchNumber, ref IPlayer _player)
+		protected override void RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 		{
-			if (_matchNumber < 1 || null == _player)
+			if (_matchNumber < 1 || _playerId == -1)
 			{
 				return;
 			}
@@ -469,7 +418,9 @@ namespace Tournament.Structure
 			int nextLoserNumber;
 			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
-			if (match.Players.Contains(_player))
+			if (match.Players
+				.Where(p => p != null)
+				.Any(p => p.Id == _playerId))
 			{
 				if (match.IsFinished)
 				{
@@ -478,12 +429,12 @@ namespace Tournament.Structure
 						: PlayerSlot.Defender;
 
 					RemovePlayerFromFutureMatches
-						(nextWinnerNumber, ref match.Players[(int)(match.WinnerSlot)]);
+						(nextWinnerNumber, match.Players[(int)(match.WinnerSlot)].Id);
 					RemovePlayerFromFutureMatches
-						(nextLoserNumber, ref match.Players[(int)loserSlot]);
+						(nextLoserNumber, match.Players[(int)loserSlot].Id);
 				}
 
-				GetMatch(_matchNumber).RemovePlayer(_player.Id);
+				GetMatch(_matchNumber).RemovePlayer(_playerId);
 			}
 		}
 

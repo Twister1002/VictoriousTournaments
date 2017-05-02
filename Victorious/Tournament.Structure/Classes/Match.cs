@@ -19,6 +19,9 @@ namespace Tournament.Structure
 		{ get; private set; }
 		public bool IsFinished
 		{ get; private set; }
+		public bool IsManualWin
+		{ get; private set; }
+
 		public int MaxGames
 		{ get; private set; }
 		public IPlayer[] Players
@@ -51,6 +54,7 @@ namespace Tournament.Structure
 
 			IsReady = false;
 			IsFinished = false;
+			IsManualWin = false;
 			MaxGames = 1;
 			Model.MaxGames = 1;
 
@@ -81,6 +85,7 @@ namespace Tournament.Structure
 			this.Model = _match.Model;
 			this.IsReady = _match.IsReady;
 			this.IsFinished = _match.IsFinished;
+			this.IsManualWin = _match.IsManualWin;
 			this.MaxGames = _match.MaxGames;
 			this.WinnerSlot = _match.WinnerSlot;
 			this.RoundIndex = _match.RoundIndex;
@@ -141,10 +146,6 @@ namespace Tournament.Structure
 			{
 				this.AddGame(new Game(model));
 			}
-			//Score[(int)PlayerSlot.Defender] = (null == _m.DefenderScore)
-			//	? 0 : (int)(_m.DefenderScore);
-			//Score[(int)PlayerSlot.Challenger] = (null == _m.ChallengerScore)
-			//	? 0 : (int)(_m.ChallengerScore);
 			if (Score[0] > winsNeeded || Score[1] > winsNeeded)
 			{
 				throw new ScoreException
@@ -161,6 +162,20 @@ namespace Tournament.Structure
 			}
 			IsFinished = (PlayerSlot.unspecified == WinnerSlot)
 				? false : true;
+
+#if false
+			// Check for (and set) a manual win:
+			this.IsManualWin = _m.IsManualWin;
+			if (IsManualWin)
+			{
+				this.WinnerSlot = (_m.DefenderID == _m.WinnerID)
+					? PlayerSlot.Defender : PlayerSlot.Challenger;
+				Score[(int)PlayerSlot.Defender] = 0;
+				Score[(int)PlayerSlot.Challenger] = 0;
+				Score[(int)WinnerSlot] = -1;
+				IsFinished = true;
+			}
+#endif
 
 			RoundIndex = (int)(_m.RoundIndex);
 			MatchIndex = (int)(_m.MatchIndex);
@@ -373,52 +388,17 @@ namespace Tournament.Structure
 			game.Score[(int)PlayerSlot.Challenger] = _challengerScore;
 			game.WinnerSlot = _winnerSlot;
 
-			if (PlayerSlot.Defender == _winnerSlot ||
-				PlayerSlot.Challenger == _winnerSlot)
+			if (!IsFinished)
 			{
-				AddWin(game.WinnerSlot);
+				if (PlayerSlot.Defender == _winnerSlot ||
+					PlayerSlot.Challenger == _winnerSlot)
+				{
+					AddWin(game.WinnerSlot);
+				}
 			}
+
 			Games.Add(game);
 			Games.Sort((first, second) => first.GameNumber.CompareTo(second.GameNumber));
-
-			return game.GetModel();
-		}
-		public GameModel AddGame(int _defenderScore, int _challengerScore)
-		{
-			if (!IsReady)
-			{
-				throw new InactiveMatchException
-					("Cannot add games to an inactive match!");
-			}
-			if (_defenderScore < 0 || _challengerScore < 0)
-			{
-				throw new ScoreException
-					("Score cannot be negative!");
-			}
-
-			IGame game = new Game(this.Id, (Games.Count + 1));
-			for (int i = 0; i < 2; ++i)
-			{
-				game.PlayerIDs[i] = this.Players[i].Id;
-			}
-			game.Score[(int)PlayerSlot.Defender] = _defenderScore;
-			game.Score[(int)PlayerSlot.Challenger] = _challengerScore;
-			if (_defenderScore > _challengerScore)
-			{
-				game.WinnerSlot = PlayerSlot.Defender;
-			}
-			else if (_challengerScore > _defenderScore)
-			{
-				game.WinnerSlot = PlayerSlot.Challenger;
-			}
-			else
-			{
-				throw new NotImplementedException
-					("Tie Games are not (yet) supported!");
-			}
-
-			AddWin(game.WinnerSlot);
-			Games.Add(game);
 			return game.GetModel();
 		}
 #if false
@@ -488,7 +468,10 @@ namespace Tournament.Structure
 				if (Games[index].GameNumber == _gameNumber)
 				{
 					GameModel removedGame = Games[index].GetModel();
-					SubtractWin(Games[index].WinnerSlot);
+					if (!IsManualWin)
+					{
+						SubtractWin(Games[index].WinnerSlot);
+					}
 					Games.RemoveAt(index);
 					return removedGame;
 				}
@@ -497,19 +480,59 @@ namespace Tournament.Structure
 			throw new GameNotFoundException
 				("Game not found; Game Number may be invalid!");
 		}
-		public void ResetScore()
+		public void SetWinner(PlayerSlot _winnerSlot)
+		{
+			if (!IsReady)
+			{
+				throw new InactiveMatchException
+					("Cannot set a winner for an inactive match!");
+			}
+			if (IsFinished || Games.Count > 0)
+			{
+				throw new InactiveMatchException
+					("Can't set winner! Reset match first.");
+			}
+
+			if (PlayerSlot.Defender == _winnerSlot)
+			{
+				Score[(int)PlayerSlot.Defender] = -1;
+				Score[(int)PlayerSlot.Challenger] = 0;
+			}
+			else if (PlayerSlot.Challenger == _winnerSlot)
+			{
+				Score[(int)PlayerSlot.Defender] = 0;
+				Score[(int)PlayerSlot.Challenger] = -1;
+			}
+			else
+			{
+				throw new InvalidSlotException
+					("Winner must be Defender or Challenger!");
+			}
+
+			WinnerSlot = _winnerSlot;
+			IsFinished = true;
+			IsManualWin = true;
+		}
+		public List<GameModel> ResetScore()
 		{
 			if (null == Score)
 			{
 				Score = new int[2];
 			}
 
-			IsFinished = false;
+			IsFinished = IsManualWin = false;
+			Score[0] = Score[1] = 0;
 			WinnerSlot = PlayerSlot.unspecified;
 			Model.WinnerID = -1;
-			Games.Clear();
-			Score[0] = Score[1] = 0;
 			Model.DefenderScore = Model.ChallengerScore = 0;
+
+			List<GameModel> modelList = new List<GameModel>();
+			foreach (IGame game in Games)
+			{
+				modelList.Add(game.GetModel());
+			}
+			Games.Clear();
+			return modelList;
 		}
 
 		public void SetMaxGames(int _numberOfGames)

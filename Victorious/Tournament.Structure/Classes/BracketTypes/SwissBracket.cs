@@ -151,7 +151,10 @@ namespace Tournament.Structure
 		}
 		protected override void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished)
 		{
-			CheckAndRemoveNextRound(1 + GetMatch(_matchNumber).RoundIndex);
+			if (_wasFinished && !(GetMatch(_matchNumber).IsFinished))
+			{
+				CheckAndRemoveNextRound(1 + GetMatch(_matchNumber).RoundIndex);
+			}
 			base.ApplyGameRemovalEffects(_matchNumber, _game, _wasFinished);
 		}
 		private bool AddNewRound(int _gamesPerMatch)

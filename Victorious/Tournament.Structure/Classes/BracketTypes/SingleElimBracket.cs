@@ -318,66 +318,6 @@ namespace Tournament.Structure
 			return gameModel;
 		}
 #endif
-		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
-		{
-			GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore);
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
-			if (match.IsFinished)
-			{
-				if (nextWinnerNumber > 0)
-				{
-					// Advance the winning player:
-					IMatch nextMatch = GetMatch(nextWinnerNumber);
-					for (int i = 0; i < nextMatch.PreviousMatchNumbers.Length; ++i)
-					{
-						if (_matchNumber == nextMatch.PreviousMatchNumbers[i])
-						{
-							GetMatch(nextWinnerNumber).AddPlayer
-								(match.Players[(int)(match.WinnerSlot)], (PlayerSlot)i);
-							break;
-						}
-					}
-				}
-				else
-				{
-					// Add winner to Rankings:
-					Rankings.Add(new PlayerScore
-						(match.Players[(int)(match.WinnerSlot)].Id,
-						match.Players[(int)(match.WinnerSlot)].Name, -1, 1));
-					IsFinished = true;
-				}
-
-				if (BracketTypeModel.BracketType.SINGLE == this.BracketType)
-				{
-					// Add losing player to Rankings:
-					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
-						? PlayerSlot.Challenger
-						: PlayerSlot.Defender;
-					int rank = -1;
-					if (null != LowerMatches && LowerMatches.ContainsKey(_matchNumber))
-					{
-						rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
-					}
-					else if (null != Matches && Matches.ContainsKey(_matchNumber))
-					{
-						rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
-					}
-					else if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
-					{
-						rank = 2;
-					}
-
-					Rankings.Add(new PlayerScore
-						(match.Players[(int)loserSlot].Id, match.Players[(int)loserSlot].Name, -1, rank));
-					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
-				}
-			}
-
-			return gameModel;
-		}
 #if false
 		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
@@ -477,14 +417,14 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition)
+		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished)
 		{
+			int nextWinnerNumber;
+			int nextLoserNumber;
+			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
 			if (_isAddition)
 			{
-				int nextWinnerNumber;
-				int nextLoserNumber;
-				IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
 				if (match.IsFinished)
 				{
 					// Add losing player to Rankings:
@@ -519,7 +459,7 @@ namespace Tournament.Structure
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
 			}
-			else
+			else if (_wasFinished && !(match.IsFinished))
 			{
 				UpdateRankings();
 			}
@@ -562,7 +502,7 @@ namespace Tournament.Structure
 					: PlayerSlot.Challenger;
 				// Remove advanced players from future matches:
 				RemovePlayerFromFutureMatches
-					(nextWinnerNumber, ref match.Players[(int)winnerSlot]);
+					(nextWinnerNumber, match.Players[(int)winnerSlot].Id);
 			}
 		}
 
@@ -601,9 +541,9 @@ namespace Tournament.Structure
 			}
 		}
 
-		protected virtual void RemovePlayerFromFutureMatches(int _matchNumber, ref IPlayer _player)
+		protected virtual void RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 		{
-			if (_matchNumber < 1 || null == _player)
+			if (_matchNumber < 1 || _playerId == -1)
 			{
 				return;
 			}
@@ -613,17 +553,17 @@ namespace Tournament.Structure
 					("Invalid match number called by recursive method!");
 			}
 
-			if (Matches[_matchNumber].Players.Contains(_player))
+			if (Matches[_matchNumber].Players
+				.Where(p => p != null)
+				.Any(p => p.Id == _playerId))
 			{
 				if (Matches[_matchNumber].IsFinished)
 				{
 					// Remove any advanced Players from future Matches:
-					RemovePlayerFromFutureMatches
-						(Matches[_matchNumber].NextMatchNumber,
-						ref Matches[_matchNumber].Players[(int)(Matches[_matchNumber].WinnerSlot)]);
+					RemovePlayerFromFutureMatches(Matches[_matchNumber].NextMatchNumber, _playerId);
 				}
 
-				Matches[_matchNumber].RemovePlayer(_player.Id);
+				Matches[_matchNumber].RemovePlayer(_playerId);
 			}
 		}
 

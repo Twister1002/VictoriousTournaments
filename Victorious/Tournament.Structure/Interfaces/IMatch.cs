@@ -34,6 +34,11 @@ namespace Tournament.Structure
 		bool IsFinished { get; }
 
 		/// <summary>
+		/// Is the Match winner manually set?
+		/// </summary>
+		bool IsManualWin { get; }
+
+		/// <summary>
 		/// Max number of games that MAY be played.
 		/// (ex: BO3 = 3 max games)
 		/// </summary>
@@ -136,8 +141,6 @@ namespace Tournament.Structure
 		/// <param name="_winnerSlot">Slot of winner (Defender/Challenger)</param>
 		/// <returns>Model of the new Game</returns>
 		GameModel AddGame(int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
-		[System.Obsolete("use AddGame(int, int, PlayerSlot) instead", false)]
-		GameModel AddGame(int _defenderScore, int _challengerScore);
 #if false
 		/// <summary>
 		/// Replace an existing Game with new data.
@@ -163,9 +166,17 @@ namespace Tournament.Structure
 		GameModel RemoveGameNumber(int _gameNumber);
 
 		/// <summary>
+		/// Manually set a winner for this Match.
+		/// Winner's score will be -1.
+		/// </summary>
+		/// <param name="_winnerSlot">Slot of winning Player (Defender/Challenger)</param>
+		void SetWinner(PlayerSlot _winnerSlot);
+
+		/// <summary>
 		/// Resets Match score to 0-0.
 		/// </summary>
-		void ResetScore();
+		/// <returns>List of Models of removed Games</returns>
+		List<GameModel> ResetScore();
 
 		/// <summary>
 		/// Set the max number of Games to play this Match.
