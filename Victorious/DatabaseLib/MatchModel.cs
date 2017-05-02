@@ -29,7 +29,6 @@ namespace DatabaseLib
         public Nullable<int> DefenderScore { get; set; }
         public Nullable<int> RoundIndex { get; set; }
         public int MatchNumber { get; set; }
-        public Nullable<bool> IsBye { get; set; }
         public Nullable<System.DateTime> StartDateTime { get; set; }
         public Nullable<System.DateTime> EndDateTime { get; set; }
         public Nullable<System.TimeSpan> MatchDuration { get; set; }

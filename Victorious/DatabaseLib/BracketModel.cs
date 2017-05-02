@@ -36,5 +36,6 @@ namespace DatabaseLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
         public virtual TournamentModel Tournament { get; set; }
+        public virtual BracketType BracketType { get; set; }
     }
 }

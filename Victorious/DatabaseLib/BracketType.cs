@@ -14,8 +14,20 @@ namespace DatabaseLib
     
     public partial class BracketType
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public BracketType()
+        {
+            this.Brackets = new HashSet<BracketModel>();
+    		OnInit();
+        }
+    
         public int BracketTypeID { get; set; }
         public string TypeName { get; set; }
         public int Type { get; set; }
+    	
+    	partial void OnInit();
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BracketModel> Brackets { get; set; }
     }
 }

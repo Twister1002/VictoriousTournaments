@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [dbo].[GameTypes]
 (
-	[GameTypeID] INT            IDENTITY (1, 1) NOT NULL,
-    [Title]      NVARCHAR (MAX) NULL,
+	[GameTypeID] INT NOT NULL IDENTITY,
+    [Title]      NVARCHAR (MAX) NULL, 
+    CONSTRAINT [PK_GameTypes] PRIMARY KEY ([GameTypeID]),
 )

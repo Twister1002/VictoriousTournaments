@@ -20,4 +20,5 @@
     [CheckInEnds]           DATETIME NOT NULL,
     [Platform]              INT      NOT NULL, 
     CONSTRAINT [PK_Tournaments] PRIMARY KEY ([TournamentID]), 
+	CONSTRAINT FK_Tournaments_GameTypes FOREIGN KEY(GameTypeID) REFERENCES GameTypes(GameTypeID)
 )

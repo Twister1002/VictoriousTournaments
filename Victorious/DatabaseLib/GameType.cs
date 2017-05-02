@@ -14,7 +14,19 @@ namespace DatabaseLib
     
     public partial class GameType
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public GameType()
+        {
+            this.Tournaments = new HashSet<TournamentModel>();
+    		OnInit();
+        }
+    
         public int GameTypeID { get; set; }
         public string Title { get; set; }
+    	
+    	partial void OnInit();
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TournamentModel> Tournaments { get; set; }
     }
 }

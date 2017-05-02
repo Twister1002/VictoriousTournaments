@@ -36,7 +36,7 @@ namespace DatabaseLib
 
         public DbInterface()
         {
-
+            
         }
 
         #region Accounts
@@ -161,7 +161,7 @@ namespace DatabaseLib
             return account;
         }
 
-        public List<AccountModel> GetAllAccountModels()
+        public List<AccountModel> GetAllAccounts()
         {
             List<AccountModel> accountModels = new List<AccountModel>();
             try

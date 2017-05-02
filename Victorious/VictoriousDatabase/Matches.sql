@@ -8,7 +8,6 @@
     [DefenderScore]             INT      NULL,
     [RoundIndex]                INT      NULL,
     [MatchNumber]               INT      NOT NULL,
-    [IsBye]                     BIT      NULL,
     [StartDateTime]             DATETIME NULL,
     [EndDateTime]               DATETIME NULL,
     [MatchDuration]             TIME (7) NULL,

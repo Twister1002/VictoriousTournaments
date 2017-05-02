@@ -13,10 +13,10 @@ namespace DatabaseLib
     {
         public AccountModel()
         {
-            Tournaments = new Collection<TournamentModel>();
+            //Tournaments = new Collection<TournamentModel>();
         }
 
-        public ICollection<TournamentModel> Tournaments { get; set; }
+        //public ICollection<TournamentModel> Tournaments { get; set; }
 
     }
 
