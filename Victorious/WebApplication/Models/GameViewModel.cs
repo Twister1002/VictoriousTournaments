@@ -1,9 +1,5 @@
-﻿using DataLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Tournament.Structure;
+﻿using Tournament.Structure;
+using DatabaseLib;
 
 namespace WebApplication.Models
 {
