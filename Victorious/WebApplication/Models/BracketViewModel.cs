@@ -34,13 +34,13 @@ namespace WebApplication.Models
 
             switch (Model.BracketType.Type)
             {
-                case (int)BracketType.SINGLE:
+                case BracketType.SINGLE:
                     Bracket = new SingleElimBracket(Model);
                     break;
-                case (int)BracketType.DOUBLE:
+                case BracketType.DOUBLE:
                     Bracket = new DoubleElimBracket(Model);
                     break;
-                case (int)BracketType.ROUNDROBIN:
+                case BracketType.ROUNDROBIN:
                     Bracket = new RoundRobinBracket(Model);
                     break;
             }

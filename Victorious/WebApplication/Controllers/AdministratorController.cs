@@ -51,7 +51,7 @@ namespace WebApplication.Controllers
             {
                 Dictionary<string, string> json = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
                 AdministratorViewModel adminModel = new AdministratorViewModel();
-                GameType gameType;
+                GameTypeModel gameType;
                 DbError result = DbError.NONE;
 
                 //if (json["function"] == "add")

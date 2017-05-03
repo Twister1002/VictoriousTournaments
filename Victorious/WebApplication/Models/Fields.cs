@@ -78,8 +78,8 @@ namespace WebApplication.Models
         [Display(Name = "Tournament End")]
         public DateTime TournamentEndDate { get; set; }
         
-        public List<BracketType> BracketTypes { get; protected set; }
-        public List<GameType> GameTypes { get; protected set; }
+        public List<BracketTypeModel> BracketTypes { get; protected set; }
+        public List<GameTypeModel> GameTypes { get; protected set; }
 
         [Display(Name = "Bracket Type")]
         [Required(ErrorMessage ="Select a bracket type")]

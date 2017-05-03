@@ -42,10 +42,8 @@ namespace WebApplication.Models
 
         public void Init()
         {
-            //this.BracketTypes = db.GetAllBracketTypes();
-            //this.GameTypes = db.GetAllGameTypes();
-            this.BracketTypes = new List<BracketType>();
-            this.GameTypes = new List<GameType>();
+            this.BracketTypes = db.GetAllBracketTypes();
+            this.GameTypes = db.GetAllGameTypes();
             Administrators = new List<TournamentUserModel>();
             Participants = new List<TournamentUserModel>();
             GetUserPermissions();

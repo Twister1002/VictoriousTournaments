@@ -6,24 +6,24 @@ namespace WebApplication.Models
 {
     public class AdministratorViewModel : AdministratorFields
     {
-        public List<GameType> Games { get; private set; }
+        public List<GameTypeModel> Games { get; private set; }
 
         public AdministratorViewModel()
         {
             //Games = db.GetAllGameTypes();
         }
 
-        public bool CreateGame(GameType game)
+        public bool CreateGame(GameTypeModel game)
         {
             return false;
         }
 
-        public bool UpdateGame(GameType game)
+        public bool UpdateGame(GameTypeModel game)
         {
             return false;
         }
 
-        public bool DeleteGame(GameType game)
+        public bool DeleteGame(GameTypeModel game)
         {
             return false;
         }

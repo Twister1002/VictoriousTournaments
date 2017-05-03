@@ -96,7 +96,7 @@ namespace WebApplication.Models
         public bool Create()
         {
             bool usernameExists = db.AccountUsernameExists(Username) == DbError.EXISTS;
-            bool emailExists = false;
+            bool emailExists = db.AccountEmailExists(Email) == DbError.SUCCESS;
             bool passwordsMatch = Password == PasswordVerify;
 
 
@@ -117,9 +117,10 @@ namespace WebApplication.Models
 
         public bool Login()
         {
-            AccountModel user = db.GetAccountByUsername(Username);
+            AccountModel user = db.GetAccount(Username);
             if (user.Password == Password)
             {
+                Model.LastLogin = DateTime.Now;
                 return true;
             }
 
