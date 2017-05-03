@@ -105,7 +105,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\FakeAccounts.sql" />
+    <Content Include="App_Data\Accounts.sql" />
+    <Content Include="App_Data\GameTypes.sql" />
+    <Content Include="App_Data\Tournaments.sql" />
+    <Content Include="App_Data\UsersToTournament.sql" />
     <Content Include="Content\fonts\icomoon.svg" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\svg\checkmark.svg" />
