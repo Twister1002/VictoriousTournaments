@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
@@ -31,7 +31,7 @@ namespace Tournament.Structure
 			public GSLBracket(List<IPlayer> _players, int _maxGamesPerMatch = 1)
 				: base(_players, _maxGamesPerMatch)
 			{
-				//BracketType = DataLib.BracketTypeModel.BracketType.GSL;
+				//BracketType = BracketType.GSL;
 			}
 			public GSLBracket()
 				: this(new List<IPlayer>())
@@ -262,11 +262,10 @@ namespace Tournament.Structure
 			}
 
 			Id = 0;
-			BracketType = BracketTypeModel.BracketType.GSLGROUP;
+			BracketType = BracketType.GSLGROUP;
 			NumberOfGroups = _numberOfGroups;
 			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
-
 		}
 		public GSLGroups()
 			: this(new List<IPlayer>(), 2)
@@ -278,18 +277,18 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_model");
 			}
 
-			List<UserModel> userModels = _model.UserSeeds
-				.OrderBy(ubs => ubs.Seed)
-				.Select(ubs => ubs.User)
+			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
+				.OrderBy(tubm => tubm.Seed)
+				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
-			foreach (UserModel model in userModels)
+			foreach (TournamentUserModel model in userModels)
 			{
 				Players.Add(new User(model));
 			}
 
 			this.Id = _model.BracketID;
-			this.BracketType = BracketTypeModel.BracketType.GSLGROUP;
+			this.BracketType = BracketType.GSLGROUP;
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
 			ResetBracket();

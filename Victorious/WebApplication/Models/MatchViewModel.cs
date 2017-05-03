@@ -1,9 +1,7 @@
-﻿using DataLib;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Tournament.Structure;
+using DatabaseLib;
 
 namespace WebApplication.Models
 {
@@ -26,7 +24,7 @@ namespace WebApplication.Models
 
         public MatchViewModel(int matchId)
         {
-            Model = db.GetMatchById(matchId);
+            Model = db.GetMatch(matchId);
             if (Model != null)
             {
                 Match = new Match(Model);
@@ -36,14 +34,20 @@ namespace WebApplication.Models
                 Match = new Match();
             }
         }
-
-        public void RemoveGame(int gameNum)
+        
+        public bool Update()
         {
-            DbError result = db.DeleteGame(Model, Match.Games[gameNum].GetModel());
-            //if (result == DbError.SUCCESS)
-            //{
-            //    Match.RemoveGameNumber(gameNum);
-            //}
+            return db.UpdateMatch(Model) == DbError.SUCCESS;
+        }
+
+        public bool DeleteGame(int gameId)
+        {
+            return db.DeleteGame(gameId) == DbError.SUCCESS;
+        }
+
+        public bool CreateGame(GameModel game)
+        {
+            return db.AddGame(game) == DbError.SUCCESS;
         }
 
         public void RemoveGames()
@@ -52,11 +56,7 @@ namespace WebApplication.Models
 
             foreach (GameModel game in games)
             {
-                DbError result = db.DeleteGame(Model, game);
-                //if (result == DbError.SUCCESS)
-                //{
-                //    //Match.RemoveGameNumber(game.GameNumber);
-                //}
+                DeleteGame(game.GameID);
             }
         }
 

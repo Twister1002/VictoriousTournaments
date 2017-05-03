@@ -1,8 +1,7 @@
-﻿using DataLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using DatabaseLib;
 
 namespace WebApplication.Models
 {
@@ -17,22 +16,22 @@ namespace WebApplication.Models
 
     public class AccountViewModel : AccountFields
     {
-        public UserModel Model { get; private set; }
+        public AccountModel Model { get; private set; }
         public Dictionary<TournamentStatus, List<TournamentModel>> Tournaments { get; private set; }
 
         public AccountViewModel()
         {
-            Model = new UserModel();
+            Model = new AccountModel();
             Init();
         }
 
         public AccountViewModel(int id)
         {
-            Model = db.GetUserById(id);
+            Model = db.GetAccount(id);
             Init();
         }
 
-        public AccountViewModel(UserModel model)
+        public AccountViewModel(AccountModel model)
         {
             Model = model;
             Init();
@@ -40,6 +39,8 @@ namespace WebApplication.Models
 
         private void Init()
         {
+            SetFields();
+
             Tournaments = new Dictionary<TournamentStatus, List<TournamentModel>>();
             Tournaments[TournamentStatus.ADMIN] = new List<TournamentModel>();
             Tournaments[TournamentStatus.ACTIVE] = new List<TournamentModel>();
@@ -47,31 +48,31 @@ namespace WebApplication.Models
             Tournaments[TournamentStatus.PAST] = new List<TournamentModel>();
 
             // Filter the list down of tournaments
-            foreach (TournamentModel tourny in Model.Tournaments)
-            {
-                // OWner of tournament
-                if (tourny.UsersInTournament.Single(x=>x.UserID == Model.UserID).Permission == Permission.TOURNAMENT_ADMINISTRATOR)
-                {
-                    Tournaments[TournamentStatus.ADMIN].Add(tourny);
-                }
-                else
-                {
-                    // Active Tournament
-                    if (tourny.TournamentRules.TournamentStartDate <= DateTime.Now && 
-                        tourny.TournamentRules.TournamentEndDate > DateTime.Now)
-                    {
-                        Tournaments[TournamentStatus.ACTIVE].Add(tourny);
-                    }
-                    else if (tourny.TournamentRules.TournamentStartDate > DateTime.Now)
-                    {
-                        Tournaments[TournamentStatus.UPCOMING].Add(tourny);
-                    }
-                    else
-                    {
-                        Tournaments[TournamentStatus.PAST].Add(tourny);
-                    }
-                }
-            }
+            //foreach (TournamentModel tourny in Model.Tournaments)
+            //{
+            //    // OWner of tournament
+            //    if (tourny.UsersInTournament.Single(x=>x.UserID == Model.UserID).Permission == Permission.TOURNAMENT_ADMINISTRATOR)
+            //    {
+            //        Tournaments[TournamentStatus.ADMIN].Add(tourny);
+            //    }
+            //    else
+            //    {
+            //        // Active Tournament
+            //        if (tourny.TournamentRules.TournamentStartDate <= DateTime.Now && 
+            //            tourny.TournamentRules.TournamentEndDate > DateTime.Now)
+            //        {
+            //            Tournaments[TournamentStatus.ACTIVE].Add(tourny);
+            //        }
+            //        else if (tourny.TournamentRules.TournamentStartDate > DateTime.Now)
+            //        {
+            //            Tournaments[TournamentStatus.UPCOMING].Add(tourny);
+            //        }
+            //        else
+            //        {
+            //            Tournaments[TournamentStatus.PAST].Add(tourny);
+            //        }
+            //    }
+            //}
         }
 
         public override void ApplyChanges()
@@ -79,11 +80,9 @@ namespace WebApplication.Models
             // Non null fields
             Model.Username      = this.Username != String.Empty ? this.Username : String.Empty;
             Model.Email         = this.Email != String.Empty ? this.Email : String.Empty;
-
-            // Null fields
-            Model.FirstName     = this.FirstName;
-            Model.LastName      = this.LastName;
-            Model.Password      = this.Password;
+            Model.FirstName     = this.FirstName != String.Empty ? this.FirstName : String.Empty;
+            Model.LastName      = this.LastName != String.Empty ? this.LastName : String.Empty;
+            Model.Password      = this.Password != String.Empty ? this.Password : String.Empty;
         }
 
         public override void SetFields()
@@ -94,28 +93,38 @@ namespace WebApplication.Models
             this.FirstName  = Model.FirstName;
         }
 
-        public void setUserModel()
+        public bool Create()
         {
-            if (Model != null)
+            bool usernameExists = db.AccountUsernameExists(Username) == DbError.EXISTS;
+            bool emailExists = db.AccountEmailExists(Email) == DbError.SUCCESS;
+            bool passwordsMatch = Password == PasswordVerify;
+
+
+            if (!usernameExists && !emailExists && passwordsMatch)
             {
-                Model = db.GetUserById(Model.UserID);
+                return db.AddAccount(Model) == DbError.SUCCESS;
+            }
+            else
+            {
+                return false;
             }
         }
 
-        public void setUserModel(int id)
+        public bool Update()
         {
-            if (id > 0)
-            {
-                Model = db.GetUserById(id);
-            }
+            return db.UpdateAccount(Model) == DbError.SUCCESS;
         }
 
-        public void setUserModel(String name)
+        public bool Login()
         {
-            if (name != String.Empty)
+            AccountModel user = db.GetAccount(Username);
+            if (user.Password == Password)
             {
-                Model = db.GetUserByUsername(name);
+                Model.LastLogin = DateTime.Now;
+                return true;
             }
+
+            return false;
         }
     }
 }

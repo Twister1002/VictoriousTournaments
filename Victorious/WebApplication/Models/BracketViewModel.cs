@@ -1,9 +1,8 @@
-﻿using DataLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Tournament.Structure;
+using DatabaseLib;
 
 namespace WebApplication.Models
 {
@@ -31,19 +30,36 @@ namespace WebApplication.Models
 
         public BracketViewModel(int id)
         {
-            Model = db.GetBracketByID(id);
+            Model = db.GetBracket(id);
+
             switch (Model.BracketType.Type)
             {
-                case BracketTypeModel.BracketType.SINGLE:
+                case BracketType.SINGLE:
                     Bracket = new SingleElimBracket(Model);
                     break;
-                case BracketTypeModel.BracketType.DOUBLE:
+                case BracketType.DOUBLE:
                     Bracket = new DoubleElimBracket(Model);
                     break;
-                case BracketTypeModel.BracketType.ROUNDROBIN:
+                case BracketType.ROUNDROBIN:
                     Bracket = new RoundRobinBracket(Model);
                     break;
             }
+        }
+
+        public bool Update()
+        {
+            if (Model != null)
+            {
+                return db.UpdateBracket(Model) == DbError.SUCCESS;
+            }
+
+            return false;
+        }
+
+        public bool Update(BracketModel model)
+        {
+            //Model = model;
+            return db.UpdateBracket(model) == DbError.SUCCESS;
         }
 
         public bool ResetBracket()
@@ -60,7 +76,7 @@ namespace WebApplication.Models
                 {
                     if (result == DbError.SUCCESS)
                     {
-                        result = db.DeleteGame(match.GetModel(), game.GetModel());
+                        result = db.DeleteGame(game.Id);
                     }
                 }
             }
@@ -73,8 +89,7 @@ namespace WebApplication.Models
             {
                 if (result == DbError.SUCCESS)
                 {
-                    IMatch match = Bracket.GetMatch(i);
-                    result = db.UpdateMatch(match.GetModel());
+                    db.UpdateMatch(Bracket.GetMatch(i).GetModel());
                 }
                 else
                 {
@@ -140,7 +155,7 @@ namespace WebApplication.Models
             return data;
         }
 
-        public List<int> ResetMatch(int matchNum)
+        public List<int> MatchesAffectedList(int matchNum)
         {
             List<int> matchesAffected = new List<int>();
             IMatch head = Bracket.GetMatch(matchNum);
@@ -148,20 +163,35 @@ namespace WebApplication.Models
             
             if (head.NextMatchNumber != -1)
             {
-                matchesAffected.AddRange(ResetMatch(head.NextMatchNumber));
+                List<int> matches = MatchesAffectedList(head.NextMatchNumber);
+
+                foreach (int match in matches) {
+                    if (!matchesAffected.Exists((i) => i == match))
+                    {
+                        matchesAffected.Add(match);
+                    }
+                }
             }
 
             if (head.NextLoserMatchNumber != -1)
             {
-                matchesAffected.AddRange(ResetMatch(head.NextLoserMatchNumber));
+                List<int> matches = MatchesAffectedList(head.NextLoserMatchNumber);
+
+                foreach (int match in matches)
+                {
+                    if (!matchesAffected.Exists((i) => i == match))
+                    {
+                        matchesAffected.Add(match);
+                    }
+                }
             }
 
             return matchesAffected;
         }
 
-        public Permission TournamentPermission(int userId)
+        public Permission TournamentPermission(int accountId)
         {
-            return Model.Tournament.UsersInTournament.First(x => x.UserID == userId).Permission;
+            return (Permission)Model.Tournament.TournamentUsers.First(x => x.AccountID == accountId).PermissionLevel;
         }
     }
 }

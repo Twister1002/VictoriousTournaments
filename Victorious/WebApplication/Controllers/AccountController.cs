@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using WebApplication.Models;
-using DataLib;
 
 namespace WebApplication.Controllers
 {
@@ -25,7 +19,7 @@ namespace WebApplication.Controllers
         {
             if (Session["User.UserId"] != null)
             {
-                AccountViewModel model = new AccountViewModel(db.GetUserById((int)Session["User.UserId"]));
+                AccountViewModel model = new AccountViewModel((int)Session["User.UserId"]);
                 return View("Index", model);
             }
             else
@@ -38,7 +32,7 @@ namespace WebApplication.Controllers
         public ActionResult Login()
         {
             AccountViewModel model = new AccountViewModel();
-           
+
             if (Session["User.UserId"] != null)
             {
                 return RedirectToAction("Index", "Account");
@@ -53,41 +47,28 @@ namespace WebApplication.Controllers
         [Route("Account/Login")]
         public ActionResult Login(AccountViewModel viewModel)
         {
-            if (ModelState.IsValid)
-            {
-                // Check the username and password
-                viewModel.setUserModel(viewModel.Username);
-                
-                if (viewModel.Model != null)
-                {
-                    if (viewModel.Password == viewModel.Model.Password)
-                    {
-                        Session["User.UserId"] = viewModel.Model.UserID;
-                        Session["User.Name"] = viewModel.Model.FirstName;
-                        return RedirectToAction("Index", "Account");
-                    }
-                    else
-                    {
-                        // There was an error 
-                        viewModel.error = ViewModel.ViewError.WARNING;
-                        viewModel.message = "The password you provided for this user is invalid";
-                    }
-                }
-                else
-                {
-                    viewModel.error = ViewModel.ViewError.WARNING;
-                    viewModel.message = "The username you provided doesn't exist.";
-                }
-            }
-            else
+            if (!ModelState.IsValid)
             {
                 viewModel.error = ViewModel.ViewError.CRITICAL;
                 viewModel.message = "Please enter in the required fields.";
             }
+            else
+            {
+                if (viewModel.Login())
+                {
+                    Session["User.UserId"] = viewModel.Model.AccountID;
+                    Session["User.Name"] = viewModel.FirstName;
+                }
+                else
+                {
+                    Session["Message"] = "The username or password is invalid.";
+                    Session["Message.Class"] = ViewModel.ViewError.WARNING; 
+                }
+            }
 
-            return View("Login", viewModel);
+            return View("Index", viewModel);
         }
-        
+
         [Route("Account/Register")]
         public ActionResult Register()
         {
@@ -101,56 +82,37 @@ namespace WebApplication.Controllers
             {
                 return View(model);
             }
-           
+
         }
 
         [HttpPost]
         [Route("Account/Register")]
         public ActionResult Register(AccountViewModel viewModel)
         {
-            if (ModelState.IsValid)
-            {
-                bool passwordsMatch = viewModel.Password == viewModel.PasswordVerify;
-                DbError userExists = db.UserUsernameExists(viewModel.Username);
-                DbError emailExists = db.UserEmailExists(viewModel.Email);
-
-                if (userExists == DbError.DOES_NOT_EXIST && emailExists == DbError.DOES_NOT_EXIST)
-                {
-                    // We can then register the user
-                    viewModel.ApplyChanges();
-                    UserModel userModel = viewModel.Model;
-
-                    DbError error = db.AddUser(userModel);
-                    if (error == DbError.SUCCESS)
-                    {
-                        // User Registraion was successful
-                        Session["Message"] = "Registration was successful. Please login to continue.";
-                        Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
-                        return RedirectToAction("Login", "Account");
-                    }
-                    else
-                    {
-                        // User Registration failed.
-                        viewModel.dbException = db.interfaceException;
-                        viewModel.error = ViewModel.ViewError.CRITICAL;
-                        viewModel.message = "Well... Something went wrong when creating your account: <br/>";
-                        //+"<h2>Message</h2>" + db.e.Message + "<h2>Inner Exception</h2>" + db.e.InnerException;
-                        return View(viewModel);
-                    }
-                }
-                else
-                {
-                    viewModel.error = ViewModel.ViewError.WARNING;
-                    viewModel.message = "The username or email is all ready being used. Click <a class='clickable-underline' href='/Account/Login/'>here</a> to login";
-                    return View(viewModel);
-                }
-            }
-            else
+            if (!ModelState.IsValid)
             {
                 //If we hit this, then something failed 
                 viewModel.error = ViewModel.ViewError.EXCEPTION;
                 viewModel.message = "Please enter in the required fields.";
                 return View(viewModel);
+            }
+            else
+            { 
+                viewModel.ApplyChanges();
+
+                if (viewModel.Create())
+                {
+                    // User Registraion was successful
+                    Session["Message"] = "Registration was successful. Please login to continue.";
+                    Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
+                    return RedirectToAction("Login", "Account");
+                }
+                else
+                {
+                    viewModel.error = ViewModel.ViewError.CRITICAL;
+                    viewModel.message = "We were unable to register your account. Please try again";
+                    return View("Register", viewModel);
+                }
             }
         }
 
@@ -176,56 +138,44 @@ namespace WebApplication.Controllers
         [Route("Account/Update")]
         public ActionResult Update(AccountViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            if (Session["User.UserId"] != null)
             {
-                if (Session["User.UserId"] != null)
+                // Verify the user being updated is legitly the user logged in
+                if (viewModel.Model.AccountID == (int)Session["User.UserId"])
                 {
-                    viewModel.setUserModel((int)Session["User.UserId"]);
+                    // Apply the changes
+                    viewModel.ApplyChanges();
 
-                    // Verify the user being updated is legitly the user logged in
-                    if (viewModel.Model.UserID == (int)Session["User.UserId"])
+                    if (viewModel.Update())
                     {
-                        // Apply the changes
-                        viewModel.ApplyChanges();
-
-                        DbError error = db.UpdateUser(viewModel.Model);
-                        if (error == DbError.SUCCESS)
-                        {
-                            viewModel.error = ViewModel.ViewError.SUCCESS;
-                            viewModel.message = "Your account was successfully updated.";
-                            Session["User.Name"] = viewModel.FirstName;
-                            Session["Message"] = viewModel.message;
-                            Session["Message.Class"] = viewModel.error;
-                            return RedirectToAction("Index", "Account");
-                        }
-                        else
-                        {
-                            // There was an error updating the account
-                            viewModel.dbException = db.interfaceException;
-                            viewModel.error = ViewModel.ViewError.CRITICAL;
-                            viewModel.message = "There was an error updating your account. Please try again later.";
-                        }
+                        viewModel.error = ViewModel.ViewError.SUCCESS;
+                        viewModel.message = "Your account was successfully updated.";
+                        Session["User.Name"] = viewModel.FirstName;
+                        Session["Message"] = viewModel.message;
+                        Session["Message.Class"] = viewModel.error;
+                        return RedirectToAction("Index", "Account");
                     }
                     else
                     {
-                        // Log the user out as I feel this is a hacking attempt
-                        Session.RemoveAll();
-                        Session["Message"] = "We couldn't validate who you are. Please login and try again.";
-                        Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
-                        return RedirectToAction("Login", "Account");
+                        // There was an error updating the account
+                        viewModel.error = ViewModel.ViewError.CRITICAL;
+                        viewModel.message = "There was an error updating your account. Please try again later.";
                     }
                 }
                 else
                 {
-                    Session["Message"] = "Please login to edit your account information";
-                    Session["Message.Class"] = ViewModel.ViewError.WARNING;
+                    // Log the user out as I feel this is a hacking attempt
+                    Session.RemoveAll();
+                    Session["Message"] = "Unfortunately, we're unable to update your account. Please login and try again.";
+                    Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
                     return RedirectToAction("Login", "Account");
                 }
             }
             else
             {
-                viewModel.error = ViewModel.ViewError.CRITICAL;
-                viewModel.message = "Please enter in the fields fully and correctly.";
+                Session["Message"] = "Please login to edit your account information";
+                Session["Message.Class"] = ViewModel.ViewError.WARNING;
+                return RedirectToAction("Login", "Account");
             }
 
             return View("Update", viewModel);

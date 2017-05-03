@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
@@ -19,11 +19,9 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		/// <summary>
-		/// Create a Model for this Player.
-		/// </summary>
-		/// <returns>UserModel-type object</returns>
-		UserModel GetModel();
+		AccountModel GetAccountModel();
+		TournamentUserModel GetTournamentUserModel();
+		TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed);
 		#endregion
 	}
 }

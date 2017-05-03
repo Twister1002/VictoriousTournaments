@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataLib
 {
-    public partial class DbModel
+    public abstract class DbModel
     {
 
     }

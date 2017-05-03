@@ -8,14 +8,15 @@
     });
 
     $("#TournamentSearch .options .searchButton").on("click", function () {
+        var jsonData = {
+            "title": $("#TournamentSearch .options .title").val(),
+            "gameTypeId": $("#TournamentSearch .options .gameType").val(),
+            "startDate": $("#TournamentSearch .options .startDate").val()
+        }
         $.ajax({
             "url": "/Ajax/Tournament/Search",
             "type": "post",
-            "data": {
-                "title":        $("#TournamentSearch .options .title").val(),
-                "gameTypeId":   $("#TournamentSearch .options .gameType").val(),
-                "startDate":    $("#TournamentSearch .options .startDate").val()
-            },
+            "data": { "searchData": JSON.stringify(jsonData) },
             "dataType": "json",
             "success": function (json) {
                 json = JSON.parse(json);
@@ -48,4 +49,12 @@
             }
         });
     });
+
+    (function ($) {
+        // Reset all the fields
+        $("#TournamentSearch .options").each(function (i, e) {
+            $(e).find("input").val('');
+            $(e).find("select").val('');
+        });
+    })($);
 });

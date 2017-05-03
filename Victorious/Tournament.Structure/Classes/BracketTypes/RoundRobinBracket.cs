@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
@@ -58,7 +58,7 @@ namespace Tournament.Structure
 			}
 
 			Id = 0;
-			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
+			BracketType = BracketType.ROUNDROBIN;
 			MaxRounds = _numberOfRounds;
 			MatchWinValue = 2;
 			MatchTieValue = 1;
@@ -97,22 +97,22 @@ namespace Tournament.Structure
 			}
 
 			this.Id = _model.BracketID;
-			this.BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
+			this.BracketType = BracketType.ROUNDROBIN;
 			this.IsFinalized = _model.Finalized;
 			this.MaxRounds = 0;
 			this.MatchWinValue = 2;
 			this.MatchTieValue = 1;
 			ResetBracket();
 
-			List<UserModel> userModels = _model.UserSeeds
-				.OrderBy(ubs => ubs.Seed)
-				.Select(ubs => ubs.User)
+			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
+				.OrderBy(tubm => tubm.Seed)
+				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
-			foreach (UserModel model in userModels)
+			foreach (TournamentUserModel model in userModels)
 			{
 				Players.Add(new User(model));
-				Rankings.Add(new PlayerScore(model.UserID, model.Username, 0, 1));
+				Rankings.Add(new PlayerScore(model.TournamentUserID, model.Username, 0, 1));
 			}
 
 			foreach (MatchModel mm in _model.Matches)

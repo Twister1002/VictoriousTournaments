@@ -1,8 +1,6 @@
-﻿using DataLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using DatabaseLib;
 
 namespace WebApplication.Models
 {
@@ -12,7 +10,22 @@ namespace WebApplication.Models
 
         public AdministratorViewModel()
         {
-            Games = db.GetAllGameTypes();
+            //Games = db.GetAllGameTypes();
+        }
+
+        public bool CreateGame(GameTypeModel game)
+        {
+            return false;
+        }
+
+        public bool UpdateGame(GameTypeModel game)
+        {
+            return false;
+        }
+
+        public bool DeleteGame(GameTypeModel game)
+        {
+            return false;
         }
     }
 }

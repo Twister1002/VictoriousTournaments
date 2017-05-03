@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="9fc4bd3d-3d3a-41a2-9d99-c50404efbcc3" ChangeDateTime="04/27/2017 12:36:36">
+    <Property Name="ElementName" Value="[dbo].[Account].[UserID]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Account]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="AccountId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3947b491-e0e0-4e68-939a-d336c018ae56" ChangeDateTime="04/27/2017 12:41:20">
+    <Property Name="ElementName" Value="[dbo].[TournamentUser].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentUser]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TournamentUserID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ab64996a-9428-4b90-9f23-a4fe3af9ca70" ChangeDateTime="04/27/2017 12:55:24">
+    <Property Name="ElementName" Value="[dbo].[TournamentUserSeeds].[UserID]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentUserSeeds]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TournamentUserID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ecce71e6-832b-4405-9b49-80233a820b0c" ChangeDateTime="04/27/2017 13:18:02">
+    <Property Name="ElementName" Value="[dbo].[UsersInBrackets].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UsersInBrackets]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TournamentUserID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3a06c796-bc53-4fd3-a6f4-fe8ff87bd74f" ChangeDateTime="04/27/2017 13:18:40">
+    <Property Name="ElementName" Value="[dbo].[Matches].[BracketModel_BracketID]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Matches]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BracketMdel_BracketID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d4ca555d-11a1-46cf-9a21-e36b46ccae0b" ChangeDateTime="04/27/2017 14:16:35">
+    <Property Name="ElementName" Value="[dbo].[Defenders].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Defenders]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="MatchID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1aff9f34-b26e-4426-997f-12015e16e9ef" ChangeDateTime="04/27/2017 14:20:33">
+    <Property Name="ElementName" Value="[dbo].[Challengers].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Challengers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="MatchID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="21837587-af25-4330-b889-b8064c027f59" ChangeDateTime="04/28/2017 19:32:13">
+    <Property Name="ElementName" Value="[dbo].[TournamentUsers].[Usernamne]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentUsers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Username" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b7be0c21-ebcf-4519-a21c-0a41dd4283a5" ChangeDateTime="05/02/2017 16:12:10">
+    <Property Name="ElementName" Value="[dbo].[TournamentType].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentType]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TournamentTypeId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2db94fff-139c-4afb-afa5-4259ada492e2" ChangeDateTime="05/02/2017 22:10:14">
+    <Property Name="ElementName" Value="[dbo].[TournamentUsers].[Permission]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentUsers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PermissionLevel" />
+  </Operation>
+</Operations>

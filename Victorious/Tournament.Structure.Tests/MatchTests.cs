@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using Moq;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure.Tests
 {

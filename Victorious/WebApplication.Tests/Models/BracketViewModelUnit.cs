@@ -9,32 +9,103 @@ using Tournament.Structure;
 
 namespace WebApplication.Tests.Models
 {
-    class BracketViewModelUnit
+    [TestClass]
+    public class BracketViewModelUnit
     {
         [TestMethod]
         [TestCategory("BracketView")]
-        public void BracketViewModel_GetRounds_Returns_NumberOfRounds()
+        [TestCategory("Bracket")]
+        public void BracketViewModel_ResetMatches_FromMatch2_Returns_CorrectMatchesAffected()
         {
             // Arrange
-            BracketViewModel model = new BracketViewModel();
+            BracketViewModel model = new BracketViewModel(DoubleEliminationBracket(CreatePlayers()));
+            List<int> matchesAffectedActual = new List<int>();
+            // Player 11
+            matchesAffectedActual.Add(2);
+            matchesAffectedActual.Add(6);
+            matchesAffectedActual.Add(12);
+
+            //Player 1
+            matchesAffectedActual.Add(6);
+            matchesAffectedActual.Add(9);
+            matchesAffectedActual.Add(13);
+            matchesAffectedActual.Add(15);
+
+            //Player 3
+            matchesAffectedActual.Add(12);
+            matchesAffectedActual.Add(14);
+            matchesAffectedActual.Add(15);
+            matchesAffectedActual.Add(16);
+
+            //Player 5
+            matchesAffectedActual.Add(9);
+            matchesAffectedActual.Add(10);
+            matchesAffectedActual.Add(16);
+            matchesAffectedActual.Add(17);
+
+            // Player 2
+            matchesAffectedActual.Add(17);
+            
+            matchesAffectedActual = matchesAffectedActual.Distinct().ToList();
+            matchesAffectedActual.Sort();
 
             // Act
-
+            List<int> matchesAffected = model.MatchesAffectedList(2);
 
             // Assert
+
+            Assert.AreEqual(true, (!matchesAffectedActual.Except(matchesAffected).Any() && !matchesAffected.Except(matchesAffectedActual).Any()));
         }
 
 
-        public IBracket SingleEliminationBracket()
+        // Helper Objects
+        IBracket bracket;
+
+        // Helper Methods
+        private void ProcessMatches_DoubleElim()
         {
-            IBracket bracket = new SingleElimBracket();
+            // Upper Bracket
+            bracket.AddGame(1, 0, 1, PlayerSlot.Challenger);
+            bracket.AddGame(2, 1, 0, PlayerSlot.Defender);
+            bracket.AddGame(3, 1, 0, PlayerSlot.Defender);
+            bracket.AddGame(4, 1, 0, PlayerSlot.Defender);
+            bracket.AddGame(5, 0, 1, PlayerSlot.Challenger);
+            bracket.AddGame(6, 1, 0, PlayerSlot.Defender);
+            bracket.AddGame(7, 0, 1, PlayerSlot.Challenger);
+            bracket.AddGame(8, 1, 0, PlayerSlot.Defender);
+            bracket.AddGame(9, 0, 1, PlayerSlot.Challenger);
+            bracket.AddGame(10, 1, 0, PlayerSlot.Defender);
+            bracket.AddGame(11, 0, 1, PlayerSlot.Challenger);
+            bracket.AddGame(12, 0, 1, PlayerSlot.Challenger);
+            bracket.AddGame(13, 1, 0, PlayerSlot.Defender);
+            bracket.AddGame(14, 0, 1, PlayerSlot.Challenger);
+            bracket.AddGame(15, 0, 1, PlayerSlot.Challenger);
+            bracket.AddGame(16, 1, 0, PlayerSlot.Defender);
+            bracket.AddGame(17, 1, 0, PlayerSlot.Defender);
+        }
+
+        private List<IPlayer> CreatePlayers()
+        {
+            List<IPlayer> players = new List<IPlayer>();
+
+            for (int i = 1; i <= 11; i++)
+            {
+                players.Add(new User(i, "Player "+i, "Player", i.ToString(), "Player"+i+"@email.com"));
+            }
+
+            return players;
+        }
+
+        private IBracket SingleEliminationBracket(List<IPlayer> players)
+        {
+            bracket = new SingleElimBracket(players);
 
             return bracket;
         }
 
-        public IBracket DoubleEliminationBracket()
+        private IBracket DoubleEliminationBracket(List<IPlayer> players)
         {
-            IBracket bracket = new DoubleElimBracket();
+            bracket = new DoubleElimBracket(players);
 
             return bracket;
         }

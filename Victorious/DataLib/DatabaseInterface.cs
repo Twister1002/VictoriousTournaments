@@ -10,11 +10,13 @@ using System.Data.Sql;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Core.Objects;
 
 namespace DataLib
 {
+  
 
-    // Use FAILED_TO_DELETE only when something is being deleted from database, otherwise user FAILED_TO_ADD
+    // Use FAILED_TO_DELETE only when something is being deleted from database, otherwise user FAILED_TO_REMOVE
     public enum DbError
     {
         ERROR = -1, NONE = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_REMOVE, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS, CONCURRENCY_ERROR
@@ -45,7 +47,6 @@ namespace DataLib
 
             }
 
-
             context.Tournaments
                 .Include(x => x.Brackets)
                 .Include(x => x.Users)
@@ -75,7 +76,7 @@ namespace DataLib
                 .Load();
 
 
-            
+
 
         }
         // DO NOT EVER CALL THIS FUNCTION OUTSIDE THE DEBUG PROJECT
@@ -186,9 +187,7 @@ namespace DataLib
                 interfaceException = ex;
                 WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
-
             }
-
             return DbError.EXISTS;
         }
 
@@ -223,7 +222,6 @@ namespace DataLib
                 WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
-
             return DbError.SUCCESS;
         }
 
@@ -241,7 +239,6 @@ namespace DataLib
                 WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
-
             return DbError.SUCCESS;
         }
 
@@ -251,7 +248,6 @@ namespace DataLib
             try
             {
                 context.Users.Remove(_user);
-
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -276,7 +272,6 @@ namespace DataLib
                 WriteException(ex);
                 user.UserID = -1;
             }
-
             return user;
         }
 
@@ -286,8 +281,6 @@ namespace DataLib
             try
             {
                 user = context.Users.Single(x => x.Username == username);
-                //if (user.Password == null || user.Email == null || user.FirstName == null || user.LastName == null)
-                //    throw new NullReferenceException();
             }
             catch (Exception ex)
             {
@@ -296,7 +289,6 @@ namespace DataLib
                 user.UserID = -1;
                 return user;
             }
-
             return user;
         }
 
@@ -315,29 +307,6 @@ namespace DataLib
                 users.Add(new UserModel() { UserID = -1 });
             }
             return users;
-        }
-
-
-
-        public DbError UpdateUserTournamentPermission(UserModel user, TournamentModel tournament, Permission permission)
-        {
-            UserInTournamentModel uitm = new UserInTournamentModel();
-            try
-            {
-                uitm = context.UsersInTournaments.Where(x => x.TournamentID == tournament.TournamentID && x.UserID == user.UserID).Single();
-                uitm.Permission = permission;
-                //context.UsersInTournaments.Where(x => x.UserID == user.UserID).Single().Permission = permission;
-                //uitm.Permission = permission;
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                interfaceException = ex;
-                WriteException(ex);
-                return DbError.FAILED_TO_UPDATE;
-               
-            }
-            return DbError.SUCCESS;
         }
 
         #endregion
@@ -416,7 +385,6 @@ namespace DataLib
                 WriteException(ex);
                 return DbError.FAILED_TO_ADD;
             }
-
             return DbError.SUCCESS;
         }
 
@@ -451,7 +419,6 @@ namespace DataLib
                 tournament.TournamentID = -1;
             }
             return tournament;
-
         }
 
         [Obsolete("Use 'Users' collection of tournament")]
@@ -489,16 +456,10 @@ namespace DataLib
             }
             catch (DbUpdateConcurrencyException ce)
             {
-                //interfaceException = ce;
-                //WriteException(ce);
-                //var entry = ce.Entries.Single();
-                //var currentValues = entry.Entity;
-                //var databaseValues = entry.GetDatabaseValues();
-                //var resolvedValues = databaseValues.Clone();
                 interfaceException = ce;
                 WriteException(ce);
                 return DbError.CONCURRENCY_ERROR;
-               
+
             }
             catch (Exception ex)
             {
@@ -556,6 +517,64 @@ namespace DataLib
                 return DbError.FAILED_TO_REMOVE;
             }
             return DbError.SUCCESS;
+        }
+
+        /// <summary>
+        /// Takes in a Dictionary of strings in which the key is the name of the parameter being searched for
+        /// and the value is the value of that parameter.
+        /// </summary>
+        /// <param name="searchParams"></param>
+        /// <returns></returns>
+        public List<TournamentModel> FindTournaments(Dictionary<string, string> searchParams)
+        {
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+
+            try
+            {
+                List<SqlParameter> sqlparams = new List<SqlParameter>();
+                string query = string.Empty;
+                //string tournamentIdQuery = "SELECT TournamentID FROM dbo.Tournaments AS Tournament  ";
+                //string rulesIdQuery = "SELECT TournamentID FROM TournamentRules WHERE TournamentStartDate = @StartDate";
+
+                //string[] queries = new string[] { "Tournament.Title = @Title", "Tournament.StartDate = @StartDate" };  
+                if (searchParams.ContainsKey("Title"))
+                {
+                    sqlparams.Add(new SqlParameter("@Title", searchParams["Title"]));
+                    query = "SELECT TournamentID FROM Tournaments WHERE Title = @Title";
+                }
+                if (searchParams.ContainsKey("StartDate"))
+                {
+                    sqlparams.Add(new SqlParameter("@StartDate", DateTime.Parse(searchParams["TournamentStartDate"])));
+                    if (searchParams.ContainsKey("Title"))
+                        query += "UNION SELECT TournamentID FROM TournamentRules WHERE TournamentStartDate = @StartDate";
+                    else
+                        query = "SELECT TournamentID FROM TournamentRules WHERE TournamentStartDate = @StartDate";
+                }
+                tournaments = context.Tournaments.SqlQuery(query, sqlparams).ToList();
+                //if (searchParams.ContainsKey("GameTypeID"))
+                //{
+                //    sqlparams.Add(new SqlParameter("@Game", searchParams["Game"]));
+                //    foreach (var tournament in tournaments)
+                //    {
+                //        if (tournament)
+                //    }
+                //}
+
+
+
+
+                //List < TournamentModel > _tournaments = context.Tournaments.SqlQuery("SELECT * FROM dbo.Tournaments WHERE Title LIKE @Title", new SqlParameter("@Title", "%" + title + "%")).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                tournaments.Clear();
+                tournaments.Add(new TournamentModel() { TournamentID = 0 });
+            }
+            return tournaments;
+
         }
 
         public List<TournamentModel> FindTournaments(string title, DateTime startDate)
@@ -823,7 +842,7 @@ namespace DataLib
 
         #endregion
 
-        #region Match
+        #region Matches
 
         public DbError MatchExists(MatchModel match)
         {
@@ -867,7 +886,6 @@ namespace DataLib
             throw new Exception("Don't Call this Function");
             try
             {
-
                 _match = match;
 
                 _match.Challenger = context.Users.Find(match.ChallengerID);
@@ -915,7 +933,6 @@ namespace DataLib
             try
             {
                 MatchModel _match = context.Matches.Find(match.MatchID);
-                //context.Matches.Attach(match);
                 context.Matches.Remove(_match);
                 context.SaveChanges();
             }
@@ -1117,15 +1134,85 @@ namespace DataLib
 
         #region Permissions
 
-        public Permission GetUserPermission(UserModel user, TournamentModel tournament) // Rename and seperate all get permission calls/functions
+        public Permission GetUserSitePermission(UserModel user)
         {
-            Permission permission = new Permission();
+            Permission permission = Permission.NONE;
+            try
+            {
+                permission = context.Users.Find(user.UserID).SitePermission.Permission;
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return permission;
+            }
+            return permission;
+        }
+
+        public Permission GetUserTournamentPermission(UserModel user, TournamentModel tournament)
+        {
+            Permission permission = Permission.NONE;
             try
             {
                 context.Users.Load();
                 context.Tournaments.Load();
                 context.UsersInTournaments.Load();
                 permission = context.UsersInTournaments.SingleOrDefault(e => e.UserID == user.UserID && e.TournamentID == tournament.TournamentID).Permission;
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return permission;
+            }
+            return permission;
+        }
+
+        public DbError UpdateUserTournamentPermission(UserModel user, TournamentModel tournament, Permission permission)
+        {
+            UserInTournamentModel uitm = new UserInTournamentModel();
+            try
+            {
+                uitm = context.UsersInTournaments.Where(x => x.TournamentID == tournament.TournamentID && x.UserID == user.UserID).Single();
+                uitm.Permission = permission;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError UpdateUserSitePermission(UserModel user, Permission permission)
+        {
+            try
+            {
+                UserModel _user = context.Users.Find(user.UserID);
+                _user.SitePermission.Permission = permission;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+
+        [Obsolete("Use GetUserTournamentPermission or GetUserSitePermission")]
+        public Permission GetUserPermission(UserModel user, TournamentModel tournament) // Rename and seperate all get permission calls/functions
+        {
+            Permission permission = new Permission();
+            try
+            {
+
                 //permission = context.UsersInTournaments.Include(x => x.Tournament).Include(x => x.User).Single().Permission;
                 //permission = context.UsersInTournaments.Where(x => x.UserID == user.UserID && x.TournamentID == tournament.TournamentID).First().Permission;
             }
@@ -1136,11 +1223,6 @@ namespace DataLib
             }
             return permission;
         }
-
-        //public Permission GetUserPermission(UserModel user, TeamModel team)
-        //{
-
-        //}
 
         #endregion
 
@@ -1173,7 +1255,7 @@ namespace DataLib
             {
                 context.Games.Add(game);
                 match.Games.Add(game);
-                context.SaveChanges(); 
+                context.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -1201,12 +1283,46 @@ namespace DataLib
             return DbError.SUCCESS;
         }
 
+        public List<GameModel> GetAllGamesInMatch(MatchModel match)
+        {
+            List<GameModel> games = new List<GameModel>();
+            try
+            {
+                games = match.Games.ToList();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                games.Clear();
+                games.Add(new GameModel() { GameID = -1 });
+            }
+            return games;
+        }
 
+        [Obsolete("Use DeleteGame(GameModel game)")]
         public DbError DeleteGame(MatchModel match, GameModel game)
         {
             try
             {
                 match.Games.Remove(game);
+                GameModel _game = context.Games.Find(game.GameID);
+                context.Games.Remove(_game);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError DeleteGame(GameModel game)
+        {
+            try
+            {
                 GameModel _game = context.Games.Find(game.GameID);
                 context.Games.Remove(_game);
                 context.SaveChanges();
@@ -1292,7 +1408,6 @@ namespace DataLib
         }
 
         #endregion
-
 
 
         private void WriteException(Exception ex, [CallerMemberName] string funcName = null)

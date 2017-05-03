@@ -1,11 +1,10 @@
-﻿using DataLib;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using WebApplication.Models;
+using DatabaseLib;
 
 namespace WebApplication.Controllers
 {
@@ -40,50 +39,56 @@ namespace WebApplication.Controllers
 
 
         [HttpPost]
-        [Route("Administrator/Ajax/Games")]
+        [Route("Ajax/Games")]
         public JsonResult Games(String jsonData)
         {
-            dynamic jsonReturn = new { status = false, message = "No action was taken" };
+            object jsonReturn = new {
+                status = false,
+                message = "No action was taken"
+            };
 
             if (IsAdministrator())
             {
                 Dictionary<string, string> json = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
-                GameTypeModel gameModel = new GameTypeModel();
+                AdministratorViewModel adminModel = new AdministratorViewModel();
+                GameTypeModel gameType;
                 DbError result = DbError.NONE;
 
-                if (json["function"] == "add")
-                {
-                    gameModel.Title = json["title"];
-                    result = db.AddGameType(gameModel);
-                    gameModel = db.GetAllGameTypes().First(x => x.Title == json["title"]);
-                }
-                else if (json["function"] == "delete")
-                {
-                    gameModel = db.GetAllGameTypes().First(x => x.Title == json["title"]);
-                    result = db.DeleteGameType(gameModel);
-                }
+                //if (json["function"] == "add")
+                //{
+                //    gameType = new GameType()
+                //    {
+                //        Title = json["title"],
+                //    };
 
-                if (result == DbError.SUCCESS)
-                {
-                    jsonReturn = new {
-                        status = true,
-                        function = json["function"],
-                        message = "Was able to " + json["function"] + " successfully",
-                        data = new
-                        {
-                            model = gameModel
-                        }
-                    };
-                }
-                else
-                {
-                    jsonReturn = new
-                    {
-                        status = false,
-                        message = "An error occured while taking action",
-                        Exception = db.interfaceException.Message
-                    };
-                }
+                //    adminModel.CreateGame(gameType);
+                //}
+                //else if (json["function"] == "delete")
+                //{
+                   
+                //}
+
+                //if (result == DbError.SUCCESS)
+                //{
+                //    jsonReturn = new {
+                //        status = true,
+                //        function = json["function"],
+                //        message = "Was able to " + json["function"] + " successfully",
+                //        data = new
+                //        {
+                //            model = gameModel
+                //        }
+                //    };
+                //}
+                //else
+                //{
+                //    jsonReturn = new
+                //    {
+                //        status = false,
+                //        message = "An error occured while taking action",
+                //        Exception = db.interfaceException.Message
+                //    };
+                //}
             }
 
             return Json(JsonConvert.SerializeObject(jsonReturn));
@@ -106,9 +111,9 @@ namespace WebApplication.Controllers
 
         public Permission UserPermission()
         {
-            UserModel userModel = db.GetUserById((int)Session["User.UserId"]);
+            AccountViewModel userModel = new AccountViewModel((int)Session["User.UserId"]);
 
-            return userModel.SitePermission.Permission;
+            return (Permission)userModel.Model.PermissionLevel;
         }
     }
 }

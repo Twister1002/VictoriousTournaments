@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using DataLib;
 using Tournament.Structure;
 
 namespace WebApplication.Controllers
 {
     public abstract class VictoriousController : Controller
     {
-        protected DatabaseInterface db = new DatabaseInterface();
+        Dictionary<String, object> jsonResponse;
+
+        public VictoriousController()
+        {
+            jsonResponse = new Dictionary<String, object>();
+
+        }
 
         public int ConvertToInt(String x)
         {

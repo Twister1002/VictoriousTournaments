@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
@@ -55,30 +55,60 @@ namespace Tournament.Structure
 			this.Lastname = _user.Lastname;
 			this.Email = _user.Email;
 		}
-		public User(UserModel _u)
+		public User(AccountModel _model)
 		{
-			if (null == _u)
+			if (null == _model)
 			{
-				throw new ArgumentNullException("_u");
+				throw new ArgumentNullException("_model");
 			}
 
-			Id = _u.UserID;
-			Name = _u.Username;
-			Firstname = _u.FirstName;
-			Lastname = _u.LastName;
-			Email = _u.Email;
+			this.Id = _model.AccountID;
+			this.Name = _model.Username;
+			this.Firstname = _model.FirstName;
+			this.Lastname = _model.LastName;
+			this.Email = _model.Email;
+		}
+		public User(TournamentUserModel _model)
+		{
+			if (null == _model)
+			{
+				throw new ArgumentNullException("_model");
+			}
+
+			this.Id = _model.TournamentUserID;
+			this.Name = _model.Username;
+			this.Firstname = _model.FirstName;
+			this.Lastname = _model.LastName;
 		}
 		#endregion
 
 		#region Public Methods
-		public override UserModel GetModel()
+		public override AccountModel GetAccountModel()
 		{
-			UserModel model = new UserModel();
-			model.UserID = this.Id;
+			AccountModel model = new AccountModel();
+			model.AccountID = this.Id;
 			model.Username = this.Name;
 			model.FirstName = this.Firstname;
 			model.LastName = this.Lastname;
 			model.Email = this.Email;
+			return model;
+		}
+		public override TournamentUserModel GetTournamentUserModel()
+		{
+			TournamentUserModel model = new TournamentUserModel();
+			model.TournamentUserID = this.Id;
+			model.AccountID = this.Id;
+			model.Username = this.Name;
+			model.FirstName = this.Firstname;
+			model.LastName = this.Lastname;
+			return model;
+		}
+		public override TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed)
+		{
+			TournamentUsersBracketModel model = new TournamentUsersBracketModel();
+			model.BracketID = _bracketId;
+			model.Seed = _seed;
+			model.TournamentUser = this.GetTournamentUserModel();
 			return model;
 		}
 		#endregion

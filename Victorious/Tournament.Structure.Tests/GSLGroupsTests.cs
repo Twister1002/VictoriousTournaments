@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Moq;
 using System.Linq;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure.Tests
 {

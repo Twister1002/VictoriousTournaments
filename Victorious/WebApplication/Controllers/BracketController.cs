@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using WebApplication.Models;
-using DataLib;
 using Tournament.Structure;
+using DatabaseLib;
 
 namespace WebApplication.Controllers
 {
@@ -87,12 +85,7 @@ namespace WebApplication.Controllers
 
                 if (viewModel.TournamentPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
-                    // 1. Find Match Numbers
-                    // 2. Remove Games from DB
-                    // 3. Call Bracket.ResetMatchScore() to update match objects
-                    // 4. Call db.UpdateMatch() with new MatchModels to remove players from DB matches
-
-                    List<int> matchesAffected = viewModel.ResetMatch(matchNum);
+                    List<int> matchesAffected = viewModel.MatchesAffectedList(matchNum);
                     List<object> matchResponse = new List<object>();
 
                     viewModel.Bracket.ResetMatchScore(matchNum);
@@ -107,14 +100,12 @@ namespace WebApplication.Controllers
                         matchModel = new MatchViewModel(viewModel.Bracket.GetMatch(match));
 
                         // Update this match in the database according to the reset from the bracket
-                        DbError result = db.UpdateMatch(matchModel.Model);
-                        if (result != DbError.SUCCESS)
+                        if (!matchModel.Update())
                         {
                             return Json("Unable to update match");
                         }
 
                         matchResponse.Add(JsonMatchResponse(matchModel.Match, true));
-
                     }
 
                     status = true;

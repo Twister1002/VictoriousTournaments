@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
@@ -19,9 +19,6 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		int Id { get; }
-
-		[System.Obsolete("use .GetModel()", false)]
-		MatchModel Model { get; }
 
 		/// <summary>
 		/// Is the Match set/ready to play?
