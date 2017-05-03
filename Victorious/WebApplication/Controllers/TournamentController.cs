@@ -306,42 +306,47 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Ajax/Tournament/Delete")]
-        public JsonResult Delete(String jsonData)
+        public JsonResult Delete(int tournamentId)
         {
-            object jsonResult = new { };
-            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<string, int>>(jsonData);
+            bool status = false;
+            String message = "No action taken";
+            String redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
 
             if (Session["User.UserId"] != null)
             {
-                TournamentViewModel viewModel = new TournamentViewModel(json["tourny"]);
-                if (viewModel.Delete())
+                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+                if (viewModel.IsCreator((int)Session["User.UserId"]))
                 {
-                    jsonResult = new
+                    if (viewModel.Delete())
                     {
-                        status = true,
-                        message = "Tournament was deleted.",
-                        redirect = Url.Action("Index", "Tournament")
-                    };
+                        status = true;
+                        message = "Tournament was deleted.";
+                        redirect = Url.Action("Index", "Tournament");
+                    }
+                    else
+                    {
+                        status = false;
+                        message = "Unable to delete the tournament due to an error.";
+                    }
                 }
                 else
                 {
-                    jsonResult = new
-                    {
-                        status = false,
-                        message = "Unable to delete the tournament due to an error."
-                    };
+                    status = false;
+                    message = "You do not have permission to do this.";
                 }
             }
             else
             {
-                jsonResult = new
-                {
-                    status = false,
-                    message = "Please login in order to modify a tournament."
-                };
+                status = false;
+                message = "Please login in order to modify a tournament.";
             }
 
-            return Json(JsonConvert.SerializeObject(jsonResult));
+            return Json(JsonConvert.SerializeObject(new
+            {
+                status,
+                message,
+                redirect
+            }));
         }
 
         [HttpPost]

@@ -10,6 +10,9 @@ namespace WebApplication.Models
         public MatchModel Model { get; private set; }
         public IMatch Match { get; private set; }
 
+        public IPlayer Challenger { get; private set;}
+        public IPlayer Defender { get; private set; }
+
         public MatchViewModel()
         {
             Match = new Match();
@@ -20,6 +23,8 @@ namespace WebApplication.Models
         {
             Match = match;
             Model = Match.GetModel();
+
+            Init();
         }
 
         public MatchViewModel(int matchId)
@@ -32,6 +37,29 @@ namespace WebApplication.Models
             else
             {
                 Match = new Match();
+            }
+
+            Init();
+        }
+
+        private void Init()
+        {
+            Challenger = Match.Players[(int)PlayerSlot.Challenger];
+            if (Challenger == null)
+            {
+                Challenger = new User()
+                {
+                    Name = "Winner from " + Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger]
+                };
+            }
+
+            Defender = Match.Players[(int)PlayerSlot.Defender];
+            if (Defender == null)
+            {
+                Defender = new User()
+                {
+                    Name = "Winner from " + Match.PreviousMatchNumbers[(int)PlayerSlot.Defender]
+                };
             }
         }
         
@@ -58,34 +86,6 @@ namespace WebApplication.Models
             {
                 DeleteGame(game.GameID);
             }
-        }
-
-        public IPlayer Challenger()
-        {
-            IPlayer player = Match.Players[(int)PlayerSlot.Challenger];
-            if (player == null)
-            {
-                player = new User()
-                {
-                      Name = "Winner from "+Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger]
-                };
-            }
-
-            return player;
-        }
-
-        public IPlayer Defender()
-        {
-            IPlayer player = Match.Players[(int)PlayerSlot.Defender];
-            if (player == null)
-            {
-                player = new User()
-                {
-                    Name = "Winner from " + Match.PreviousMatchNumbers[(int)PlayerSlot.Defender]
-                };
-            }
-
-            return player;
         }
 
         public int DefenderScore()

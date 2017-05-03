@@ -287,7 +287,7 @@ namespace WebApplication.Models
                 };
 
                 //db.AddTournamentUserToBracket(userSeed);
-                db.AddTournamentUserToBracket(Model.TournamentID, bracket.BracketID, tourny.GetPlayerSeed(players[i].Id));
+                db.AddTournamentUserToBracket(userModel.TournamentUserID, bracket.BracketID, tourny.GetPlayerSeed(players[i].Id));
             }
         }
 

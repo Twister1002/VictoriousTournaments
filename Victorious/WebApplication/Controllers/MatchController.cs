@@ -48,7 +48,7 @@ namespace WebApplication.Controllers
                 Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonIds);
                 TournamentViewModel tournamentModel = new TournamentViewModel(json["tournamentId"]);
 
-                if (tournamentModel.TournamentPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+                if (tournamentModel.IsAdministrator((int)Session["User.UserId"]))
                 {
                     tournamentModel.ProcessTournament();
                     IBracket bracket = tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]);
