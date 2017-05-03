@@ -175,7 +175,7 @@ namespace WebApplication.Models
 
         public bool Delete()
         {
-            return false;
+            return db.DeleteTournament(Model.TournamentID) == DbError.SUCCESS;
         }
 
         public void Search(Dictionary<String, String> searchData)

@@ -32,12 +32,13 @@ namespace WebApplication.Controllers
         {
             TournamentViewModel viewModel = new TournamentViewModel();
             viewModel.Search(JsonConvert.DeserializeObject<Dictionary<String, String>>(searchData));
-            
+
             List<object> dataReturned = new List<object>();
 
             foreach (TournamentModel tourny in viewModel.SearchModels)
             {
-                dataReturned.Add(new {
+                dataReturned.Add(new
+                {
                     id = tourny.TournamentID,
                     title = tourny.Title,
                     game = tourny.GameType.Title,
@@ -272,9 +273,7 @@ namespace WebApplication.Controllers
                 TournamentViewModel viewModel = new TournamentViewModel(json["tournyVal"]);
                 if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
-                    DbError result = viewModel.FinalizeTournament(roundData);
-
-                    if (result == DbError.SUCCESS)
+                    if (viewModel.FinalizeTournament(roundData))
                     {
                         status = true;
                         message = "Your tournament has been finalized. No changes can be made.";
@@ -314,40 +313,44 @@ namespace WebApplication.Controllers
         [Route("Ajax/Tournament/Delete")]
         public JsonResult Delete(String jsonData)
         {
-            dynamic jsonResult = new { };
+            object jsonResult = new { };
             Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<string, int>>(jsonData);
 
             if (Session["User.UserId"] != null)
             {
-                UserModel userModel = db.GetUserById((int)Session["User.UserId"]);
-                TournamentViewModel model = new TournamentViewModel(json["tourny"]);
-                if (model.Model.CreatedByID == userModel.UserID)
+                TournamentViewModel viewModel = new TournamentViewModel(json["tourny"]);
+                if (viewModel.Delete())
                 {
-                    DbError result = db.DeleteTournament(model.Model);
-                    if (result == DbError.SUCCESS)
+                    jsonResult = new
                     {
-                        jsonResult = new { status = true, message = "Tournament was deleted.", redirect = Url.Action("Index", "Tournament") };
-                    }
-                    else
-                    {
-                        jsonResult = new { status = false, message = "Unable to delete the tournament due to an error." };
-                    }
+                        status = true,
+                        message = "Tournament was deleted.",
+                        redirect = Url.Action("Index", "Tournament")
+                    };
                 }
                 else
                 {
-                    jsonResult = new { status = false, message = "You are not entitled to do this." };
+                    jsonResult = new
+                    {
+                        status = false,
+                        message = "Unable to delete the tournament due to an error."
+                    };
                 }
             }
             else
             {
-                jsonResult = new { status = false, message = "Please login in order to modify a tournament." };
+                jsonResult = new
+                {
+                    status = false,
+                    message = "Please login in order to modify a tournament."
+                };
             }
 
             return Json(JsonConvert.SerializeObject(jsonResult));
         }
 
         [HttpPost]
-        [Route("Tournament/Ajax/PermissionChange")]
+        [Route("Ajax/PermissionChange")]
         public JsonResult PermissionChange(String jsonData)
         {
             Dictionary<string, string> json = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
