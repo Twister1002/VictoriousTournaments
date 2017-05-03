@@ -54,22 +54,16 @@ namespace WebApplication.Controllers
             }
             else
             {
-                // Check the username and password
-                viewModel.setUserModel(viewModel.Username);
-
-                if (viewModel.Model != null)
+                if (viewModel.Login())
                 {
-                    if (viewModel.Password == viewModel.Model.Password)
-                    {
-                        Session["User.UserId"] = viewModel.Model.AccountID;
-                    }
+                    Session["User.UserId"] = viewModel.Model.AccountID;
+                    Session["User.Name"] = viewModel.FirstName;
                 }
-            }
-
-            if (Session["User.UserId"] == null)
-            {
-                viewModel.error = ViewModel.ViewError.WARNING;
-                viewModel.message = "The username or password is invalid.";
+                else
+                {
+                    Session["Message"] = "The username or password is invalid.";
+                    Session["Message.Class"] = ViewModel.ViewError.WARNING; 
+                }
             }
 
             return View("Index", viewModel);
@@ -95,7 +89,7 @@ namespace WebApplication.Controllers
         [Route("Account/Register")]
         public ActionResult Register(AccountViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 //If we hit this, then something failed 
                 viewModel.error = ViewModel.ViewError.EXCEPTION;
@@ -146,8 +140,6 @@ namespace WebApplication.Controllers
         {
             if (Session["User.UserId"] != null)
             {
-                viewModel.setUserModel((int)Session["User.UserId"]);
-
                 // Verify the user being updated is legitly the user logged in
                 if (viewModel.Model.AccountID == (int)Session["User.UserId"])
                 {

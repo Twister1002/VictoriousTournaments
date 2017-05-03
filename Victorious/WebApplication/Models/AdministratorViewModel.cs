@@ -10,7 +10,7 @@ namespace WebApplication.Models
 
         public AdministratorViewModel()
         {
-            Games = db.GetAllGameTypes();
+            //Games = db.GetAllGameTypes();
         }
 
         public bool CreateGame(GameType game)

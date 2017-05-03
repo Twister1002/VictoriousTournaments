@@ -39,6 +39,8 @@ namespace WebApplication.Models
 
         private void Init()
         {
+            SetFields();
+
             Tournaments = new Dictionary<TournamentStatus, List<TournamentModel>>();
             Tournaments[TournamentStatus.ADMIN] = new List<TournamentModel>();
             Tournaments[TournamentStatus.ACTIVE] = new List<TournamentModel>();
@@ -78,11 +80,9 @@ namespace WebApplication.Models
             // Non null fields
             Model.Username      = this.Username != String.Empty ? this.Username : String.Empty;
             Model.Email         = this.Email != String.Empty ? this.Email : String.Empty;
-
-            // Null fields
-            Model.FirstName     = this.FirstName;
-            Model.LastName      = this.LastName;
-            Model.Password      = this.Password;
+            Model.FirstName     = this.FirstName != String.Empty ? this.FirstName : String.Empty;
+            Model.LastName      = this.LastName != String.Empty ? this.LastName : String.Empty;
+            Model.Password      = this.Password != String.Empty ? this.Password : String.Empty;
         }
 
         public override void SetFields()
@@ -115,21 +115,15 @@ namespace WebApplication.Models
             return db.UpdateAccount(Model) == DbError.SUCCESS;
         }
 
-        [Obsolete]
-        public void setUserModel(int id)
+        public bool Login()
         {
-            if (id > 0)
+            AccountModel user = db.GetAccountByUsername(Username);
+            if (user.Password == Password)
             {
-                Model = db.GetAccount(id);
+                return true;
             }
-        }
 
-        public void setUserModel(String name)
-        {
-            if (name != String.Empty)
-            {
-                Model = db.GetAccountByUsername(name);
-            }
+            return false;
         }
     }
 }

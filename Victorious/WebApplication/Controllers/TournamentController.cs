@@ -30,12 +30,12 @@ namespace WebApplication.Controllers
         [Route("Ajax/Tournament/Search")]
         public JsonResult AjaxSearch(String searchData)
         {
+            Dictionary<String, String> searchBy = JsonConvert.DeserializeObject<Dictionary<String, String>>(searchData);
             TournamentViewModel viewModel = new TournamentViewModel();
-            viewModel.Search(JsonConvert.DeserializeObject<Dictionary<String, String>>(searchData));
-
             List<object> dataReturned = new List<object>();
 
-            foreach (TournamentModel tourny in viewModel.SearchModels)
+            viewModel.Search(searchBy);
+            foreach (TournamentModel tourny in viewModel.SearchedTournaments)
             {
                 dataReturned.Add(new
                 {

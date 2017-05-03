@@ -10,10 +10,9 @@ namespace WebApplication.Models
     {
         public ITournament Tourny { get; private set; }
         public TournamentModel Model { get; private set; }
-        public List<TournamentModel> SearchModels { get; private set; }
         public List<TournamentUserModel> Administrators { get; private set; }
         public List<TournamentUserModel> Participants { get; private set; }
-        public String titleSearch = "";
+        public List<TournamentModel> SearchedTournaments { get; private set; }
 
         public TournamentViewModel()
         {
@@ -43,8 +42,10 @@ namespace WebApplication.Models
 
         public void Init()
         {
-            this.BracketTypes = db.GetAllBracketTypes();
-            this.GameTypes = db.GetAllGameTypes();
+            //this.BracketTypes = db.GetAllBracketTypes();
+            //this.GameTypes = db.GetAllGameTypes();
+            this.BracketTypes = new List<BracketType>();
+            this.GameTypes = new List<GameType>();
             Administrators = new List<TournamentUserModel>();
             Participants = new List<TournamentUserModel>();
             GetUserPermissions();
@@ -161,14 +162,16 @@ namespace WebApplication.Models
 
         public bool RemoveUser(int accountId)
         {
-            DbError removeResult = db.DeleteTournamentUser();
+            TournamentUserModel user = Model.TournamentUsers.First(x => x.AccountID == accountId);
+            DbError removeResult = db.DeleteTournamentUser(user.TournamentUserID);
 
             return removeResult == DbError.SUCCESS;
         }
 
         public bool RemoveUser(String username)
         {
-            DbError removeResult = db.DeleteTournamentUser();
+            TournamentUserModel user = Model.TournamentUsers.First(x => x.Username == username);
+            DbError removeResult = db.DeleteTournamentUser(user.TournamentUserID);
 
             return removeResult == DbError.SUCCESS;
         }
@@ -180,7 +183,16 @@ namespace WebApplication.Models
 
         public void Search(Dictionary<String, String> searchData)
         {
-            SearchModels = db.FindTournaments(searchData);
+            if (searchData != null)
+            {
+                List<String> safeParamList = new List<string>() { "title", "startDate", "gameType", "gameTypeId" };
+                searchData = searchData.Where(k => safeParamList.Contains(k.Key)).ToDictionary(k => k.Key, k => k.Value);
+                SearchedTournaments = db.FindTournaments(searchData);
+            }
+            else
+            {
+                SearchedTournaments = new List<TournamentModel>();
+            }
         }
 
         private void GetUserPermissions()
