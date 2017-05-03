@@ -34,13 +34,13 @@ namespace WebApplication.Models
 
             switch (Model.BracketType.Type)
             {
-                case BracketTypes.SINGLE:
+                case (int)BracketType.SINGLE:
                     Bracket = new SingleElimBracket(Model);
                     break;
-                case BracketTypes.DOUBLE:
+                case (int)BracketType.DOUBLE:
                     Bracket = new DoubleElimBracket(Model);
                     break;
-                case BracketTypes.ROUNDROBIN:
+                case (int)BracketType.ROUNDROBIN:
                     Bracket = new RoundRobinBracket(Model);
                     break;
             }
@@ -191,7 +191,7 @@ namespace WebApplication.Models
 
         public Permission TournamentPermission(int accountId)
         {
-            return Model.Tournament.TournamentUsers.First(x => x.AccountID == accountId).Permission;
+            return (Permission)Model.Tournament.TournamentUsers.First(x => x.AccountID == accountId).PermissionLevel;
         }
     }
 }

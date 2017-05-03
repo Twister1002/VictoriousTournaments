@@ -100,8 +100,7 @@ namespace WebApplication.Controllers
                         matchModel = new MatchViewModel(viewModel.Bracket.GetMatch(match));
 
                         // Update this match in the database according to the reset from the bracket
-                        DbError result = db.UpdateMatch(matchModel.Model);
-                        if (result != DbError.SUCCESS)
+                        if (!matchModel.Update())
                         {
                             return Json("Unable to update match");
                         }

@@ -187,7 +187,7 @@ namespace WebApplication.Models
         {
             foreach (TournamentUserModel user in Model.TournamentUsers)
             {
-                switch (user.Permission)
+                switch ((Permission)user.PermissionLevel)
                 {
                     case Permission.TOURNAMENT_STANDARD:
                         Participants.Add(user);
