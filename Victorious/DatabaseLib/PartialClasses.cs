@@ -13,6 +13,12 @@ namespace DatabaseLib
 {
     public partial class AccountModel
     {
+        public const int FirstNameLength = 50;
+        public const int LastNameLength = 50;
+        public const int UsernameLength = 50;
+        public const int EmailLength = 100;
+        public const int PasswordLength = 50;
+
         public AccountModel()
         {
             //Tournaments = new Collection<TournamentModel>();
