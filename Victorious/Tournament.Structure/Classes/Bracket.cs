@@ -4,14 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
 	public abstract class Bracket : IBracket
 	{
 		#region Variables & Properties
-		public BracketTypeModel.BracketType BracketType
+		public int Id
+		{ get; protected set; }
+		public BracketType BracketType
 		{ get; protected set; }
 		public bool IsFinalized
 		{ get; protected set; }
@@ -39,16 +41,47 @@ namespace Tournament.Structure
 
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
-		public abstract void AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
-		public abstract void AddGame(int _matchNumber, IGame _game);
-		public abstract void RemoveLastGame(int _matchNumber);
-		public abstract void AddWin(int _matchNumber, PlayerSlot _slot);
-		public abstract void SubtractWin(int _matchNumber, PlayerSlot _slot);
-		public abstract void ResetMatchScore(int _matchNumber);
+		protected abstract void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished);
+		protected abstract void ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
+		protected abstract void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished);
 		protected abstract void UpdateRankings();
 		#endregion
 
 		#region Public Methods
+		public virtual void RestoreMatch(int _matchNumber, MatchModel _model)
+		{
+			if (_matchNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
+			}
+			if (null == _model)
+			{
+				throw new ArgumentNullException("_model");
+			}
+
+			if (null != GrandFinal &&
+				GrandFinal.MatchNumber == _matchNumber)
+			{
+				GrandFinal = new Match(_model);
+			}
+			else if (null != Matches &&
+				Matches.ContainsKey(_matchNumber))
+			{
+				Matches[_matchNumber] = new Match(_model);
+			}
+			else if (null != LowerMatches &&
+				LowerMatches.ContainsKey(_matchNumber))
+			{
+				LowerMatches[_matchNumber] = new Match(_model);
+			}
+			else
+			{
+				throw new MatchNotFoundException
+					("Match not found; match number may be invalid.");
+			}
+		}
+
 		public int NumberOfPlayers()
 		{
 			if (null == Players)
@@ -97,7 +130,7 @@ namespace Tournament.Structure
 			for (int i = 0; i < Players.Count; ++i)
 			{
 				int rand = -1;
-				while (rand < 0 || rolls.Values.Contains(rand))
+				while (rand < 0 || rolls.ContainsKey(rand))
 				{
 					rand = rng.Next(Players.Count * 3);
 				}
@@ -348,25 +381,6 @@ namespace Tournament.Structure
 			throw new PlayerNotFoundException
 				("Player not found in this Bracket!");
 		}
-		public void RemovePlayer(IPlayer _player)
-		{
-			if (null == _player)
-			{
-				throw new ArgumentNullException("_player");
-			}
-			if (null == Players)
-			{
-				throw new NullReferenceException
-					("Players is null. This shouldn't happen...");
-			}
-			if (!Players.Remove(_player))
-			{
-				throw new PlayerNotFoundException
-					("Player not found in this Bracket!");
-			}
-
-			ResetBracket();
-		}
 		public void ResetPlayers()
 		{
 			if (null == Players)
@@ -376,6 +390,64 @@ namespace Tournament.Structure
 
 			Players.Clear();
 			ResetBracket();
+		}
+
+		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			bool wasFinished = GetMatch(_matchNumber).IsFinished;
+			GameModel gameModel = GetMatch(_matchNumber)
+				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
+			UpdateScore(_matchNumber, gameModel, true, wasFinished);
+			ApplyWinEffects(_matchNumber, _winnerSlot);
+			return gameModel;
+		}
+		public virtual GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			bool wasFinished = GetMatch(_matchNumber).IsFinished;
+			GameModel removedGame = GetMatch(_matchNumber).RemoveGameNumber(_gameNumber);
+			ApplyGameRemovalEffects(_matchNumber, removedGame, wasFinished);
+			UpdateScore(_matchNumber, removedGame, false, wasFinished);
+
+			GameModel addedGame = GetMatch(_matchNumber)
+				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
+			UpdateScore(_matchNumber, addedGame, true, wasFinished);
+			ApplyWinEffects(_matchNumber, _winnerSlot);
+			return addedGame;
+		}
+		public virtual GameModel RemoveLastGame(int _matchNumber)
+		{
+			bool wasFinished = GetMatch(_matchNumber).IsFinished;
+			GameModel gameModel = GetMatch(_matchNumber).RemoveLastGame();
+			ApplyGameRemovalEffects(_matchNumber, gameModel, wasFinished);
+			UpdateScore(_matchNumber, gameModel, false, wasFinished);
+			return gameModel;
+		}
+
+		public virtual void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
+		{
+			List<GameModel> modelList = ResetMatchScore(_matchNumber);
+			GetMatch(_matchNumber).SetWinner(_winnerSlot);
+			foreach (GameModel model in modelList)
+			{
+				PlayerSlot winSlot = (model.DefenderID == model.WinnerID)
+					? PlayerSlot.Defender : PlayerSlot.unspecified;
+				winSlot = (model.ChallengerID == model.WinnerID)
+					? PlayerSlot.Challenger : winSlot;
+
+				GetMatch(_matchNumber).AddGame(model.DefenderScore, model.ChallengerScore, winSlot);
+			}
+
+			UpdateScore(_matchNumber, null, true, false);
+			ApplyWinEffects(_matchNumber, _winnerSlot);
+		}
+		public virtual List<GameModel> ResetMatchScore(int _matchNumber)
+		{
+			List<GameModel> modelList = new List<GameModel>();
+			while (GetMatch(_matchNumber).Games.Count > 0)
+			{
+				modelList.Add(RemoveLastGame(_matchNumber));
+			}
+			return modelList;
 		}
 
 		public virtual List<IMatch> GetRound(int _round)
@@ -443,10 +515,65 @@ namespace Tournament.Structure
 			throw new MatchNotFoundException
 				("Match not found; match number may be invalid.");
 		}
+		public virtual void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
+		{
+			if (_maxGamesPerMatch < 1)
+			{
+				throw new ScoreException
+					("Games per match cannot be less than 1!");
+			}
+
+			List<IMatch> round = GetRound(_round);
+			foreach (IMatch match in round)
+			{
+				if (match.IsFinished)
+				{
+					throw new InactiveMatchException
+						("One or more matches in this round is already finished!");
+				}
+			}
+
+			foreach (IMatch match in round)
+			{
+				GetMatch(match.MatchNumber).SetMaxGames(_maxGamesPerMatch);
+			}
+		}
+		public virtual void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch)
+		{
+			if (_maxGamesPerMatch < 1)
+			{
+				throw new ScoreException
+					("Games per match cannot be less than 1!");
+			}
+
+			List<IMatch> round = GetLowerRound(_round);
+			foreach (IMatch match in round)
+			{
+				if (match.IsFinished)
+				{
+					throw new InactiveMatchException
+						("One or more matches in this round is already finished!");
+				}
+			}
+
+			foreach (IMatch match in round)
+			{
+				GetMatch(match.MatchNumber).SetMaxGames(_maxGamesPerMatch);
+			}
+		}
 		public virtual void ResetMatches()
 		{
 			for (int n = 1; n <= NumberOfMatches; ++n)
 			{
+				IMatch match = GetMatch(n);
+				for (int i = 0; i < 2; ++i)
+				{
+					if (match.PreviousMatchNumbers[i] > -1 &&
+						null != match.Players[i])
+					{
+						GetMatch(n).RemovePlayer(match.Players[i].Id);
+					}
+				}
 				GetMatch(n).ResetScore();
 			}
 		}
@@ -455,13 +582,37 @@ namespace Tournament.Structure
 		#region Private Methods
 		protected virtual void ResetBracket()
 		{
+			if (null == Matches)
+			{
+				Matches = new Dictionary<int, IMatch>();
+			}
+			if (null == LowerMatches)
+			{
+				LowerMatches = new Dictionary<int, IMatch>();
+			}
+			if (null == Rankings)
+			{
+				Rankings = new List<IPlayerScore>();
+			}
+
 			IsFinished = false;
-			Matches = null;
-			LowerMatches = null;
+			Matches.Clear();
+			LowerMatches.Clear();
 			GrandFinal = null;
 			NumberOfRounds = NumberOfLowerRounds = 0;
 			NumberOfMatches = 0;
-			Rankings = null;
+			Rankings.Clear();
+		}
+		protected int SortRankingScores(IPlayerScore first, IPlayerScore second)
+		{
+			// Rankings sorting: MatchScore > GameScore > PointsScore > initial Seeding
+			int compare = -1 * (first.MatchScore.CompareTo(second.MatchScore));
+			compare = (compare != 0)
+				? compare : -1 * (first.GameScore.CompareTo(second.GameScore));
+			compare = (compare != 0)
+				? compare : -1 * (first.PointsScore.CompareTo(second.PointsScore));
+			return (compare != 0)
+				? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
 		}
 		#endregion
 	}

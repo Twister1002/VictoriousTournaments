@@ -1,8 +1,5 @@
-﻿using DataLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System;
+using DatabaseLib;
 
 namespace WebApplication.Models
 {
@@ -26,7 +23,7 @@ namespace WebApplication.Models
         };
         
         public ViewError error = ViewError.NONE;
-        protected DatabaseInterface db = new DatabaseInterface();
+        protected DbInterface db = new DbInterface();
         public String message { get; set; }
         public Exception dbException { get; set; }
     }

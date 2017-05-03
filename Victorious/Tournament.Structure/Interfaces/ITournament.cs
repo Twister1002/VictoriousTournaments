@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
@@ -23,7 +23,7 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Gets the number of Players in the tournament.
 		/// </summary>
-		/// <returns>Number of Players</returns>
+		/// <returns>Players.Count</returns>
 		int NumberOfPlayers();
 
 		/// <summary>
@@ -61,8 +61,6 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_playerId">ID of Player to remove</param>
 		void RemovePlayer(int _playerId);
-		[System.Obsolete("use RemovePlayer(int ID) instead", false)]
-		void RemovePlayer(IPlayer _player);
 
 		/// <summary>
 		/// Clears the tournament's player list.
@@ -106,7 +104,8 @@ namespace Tournament.Structure
 		/// Adds a new SingleElimBracket to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the Bracket</param>
-		void AddSingleElimBracket(List<IPlayer> _playerList);
+		/// <param name="_maxGamesPerMatch">Length of each Match</param>
+		void AddSingleElimBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1);
 #if false
 		void AddSingleElimBracket(int _numPlayers);
 #endif
@@ -115,7 +114,8 @@ namespace Tournament.Structure
 		/// Adds a new DoubleElimBracket to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the Bracket.</param>
-		void AddDoubleElimBracket(List<IPlayer> _playerList);
+		/// <param name="_maxGamesPerMatch">Length of each Match</param>
+		void AddDoubleElimBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1);
 #if false
 		void AddDoubleElimBracket(int _numPlayers);
 #endif
@@ -124,9 +124,10 @@ namespace Tournament.Structure
 		/// Adds a new Round Robin stage to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the stage.</param>
+		/// <param name="_maxGamesPerMatch">Length of each Match</param>
 		/// <param name="_numRounds">Limit of rounds for the stage.
 		/// 0 = no limit (default round robin)</param>
-		void AddRoundRobinBracket(List<IPlayer> _playerList, int _numRounds = 0);
+		void AddRoundRobinBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1, int _numRounds = 0);
 #if false
 		void AddRoundRobinBracket(int _numPlayers, int _numRounds = 0);
 #endif
@@ -136,7 +137,10 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_playerList">List of Players for the stage.</param>
 		/// <param name="_numGroups">Number of groups to divide players into.</param>
-		void AddRRGroupStage(List<IPlayer> _playerList, int _numGroups = 2);
+		/// <param name="_maxGamesPerMatch">Length of each Match</param>
+		/// <param name="_maxRounds">Limit of rounds for the stage.
+		/// 0 = no limit (default round robin)</param>
+		void AddRRGroupStage(List<IPlayer> _playerList, int _numGroups = 2, int _maxGamesPerMatch = 1, int _maxRounds = 0);
 #if false
 		void AddRRGroupStageBracket(int _numPlayers, int _numGroups = 2);
 #endif

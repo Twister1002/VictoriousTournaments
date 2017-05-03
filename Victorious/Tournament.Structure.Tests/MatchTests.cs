@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using Moq;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure.Tests
 {
@@ -322,7 +322,7 @@ namespace Tournament.Structure.Tests
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
-			m.AddGame(0, 1);
+			m.AddGame(0, 1, PlayerSlot.Challenger);
 			Assert.AreEqual(1, m.Games.Count);
 		}
 		[TestMethod]
@@ -339,7 +339,7 @@ namespace Tournament.Structure.Tests
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
-			m.AddGame(1, 0);
+			m.AddGame(1, 0, PlayerSlot.Defender);
 			Assert.AreEqual(1, m.Score[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
@@ -357,8 +357,8 @@ namespace Tournament.Structure.Tests
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
-			m.AddGame(1, 0);
-			m.AddGame(0, 1);
+			m.AddGame(1, 0, PlayerSlot.Defender);
+			m.AddGame(0, 1, PlayerSlot.Challenger);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -373,7 +373,7 @@ namespace Tournament.Structure.Tests
 			IMatch m = new Match();
 			m.AddPlayer(p1.Object);
 
-			m.AddGame(1, 0);
+			m.AddGame(1, 0, PlayerSlot.Defender);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -392,8 +392,8 @@ namespace Tournament.Structure.Tests
 			m.AddPlayer(p2.Object);
 			m.SetMaxGames(3);
 
-			m.AddGame(1, 0);
-			m.AddGame(1, 0);
+			m.AddGame(1, 0, PlayerSlot.Defender);
+			m.AddGame(1, 0, PlayerSlot.Defender);
 			Assert.AreEqual(2, m.Score[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
@@ -411,8 +411,8 @@ namespace Tournament.Structure.Tests
 			m.AddPlayer(p2.Object);
 			m.SetMaxGames(3);
 
-			m.AddGame(1, 0);
-			m.AddGame(1, 0);
+			m.AddGame(1, 0, PlayerSlot.Defender);
+			m.AddGame(1, 0, PlayerSlot.Defender);
 			Assert.IsTrue(m.IsFinished);
 		}
 		[TestMethod]
@@ -430,8 +430,8 @@ namespace Tournament.Structure.Tests
 			m.AddPlayer(p2.Object);
 			m.SetMaxGames(3);
 
-			m.AddGame(1, 0);
-			m.AddGame(1, 0);
+			m.AddGame(1, 0, PlayerSlot.Defender);
+			m.AddGame(1, 0, PlayerSlot.Defender);
 			Assert.AreEqual(PlayerSlot.Defender, m.WinnerSlot);
 		}
 		[TestMethod]
@@ -449,7 +449,7 @@ namespace Tournament.Structure.Tests
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
-			m.AddGame(1, 1);
+			m.AddGame(1, 1, PlayerSlot.unspecified);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -480,9 +480,9 @@ namespace Tournament.Structure.Tests
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
-			m.AddGame(1, 0);
+			m.AddGame(1, 0, PlayerSlot.Defender);
 			var g = m.RemoveLastGame();
-			Assert.IsInstanceOfType(g, typeof(IGame));
+			Assert.IsInstanceOfType(g, typeof(GameModel));
 		}
 		[TestMethod]
 		[TestCategory("Match")]
@@ -498,7 +498,7 @@ namespace Tournament.Structure.Tests
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
-			m.AddGame(1, 0);
+			m.AddGame(1, 0, PlayerSlot.Defender);
 			m.RemoveLastGame();
 			Assert.IsFalse(m.IsFinished);
 		}
@@ -516,7 +516,7 @@ namespace Tournament.Structure.Tests
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
-			m.AddGame(1, 0);
+			m.AddGame(1, 0, PlayerSlot.Defender);
 			m.RemoveLastGame();
 			Assert.AreEqual(PlayerSlot.unspecified, m.WinnerSlot);
 		}
@@ -535,9 +535,9 @@ namespace Tournament.Structure.Tests
 			m.AddPlayer(p2.Object);
 			m.SetMaxGames(3);
 
-			m.AddGame(1, 0);
-			m.AddGame(0, 2);
-			m.AddGame(5, 4);
+			m.AddGame(1, 0, PlayerSlot.Defender);
+			m.AddGame(0, 2, PlayerSlot.Challenger);
+			m.AddGame(5, 4, PlayerSlot.Defender);
 			m.RemoveLastGame();
 			Assert.AreEqual(2, m.Games.Count);
 		}
@@ -556,8 +556,8 @@ namespace Tournament.Structure.Tests
 			m.SetMaxGames(3);
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.AddGame(1, 0);
-			m.AddGame(25, 90);
+			m.AddGame(1, 0, PlayerSlot.Defender);
+			m.AddGame(25, 90, PlayerSlot.Challenger);
 			m.ResetScore();
 
 			Assert.AreEqual(0, m.Score[(int)PlayerSlot.Challenger]);
@@ -576,8 +576,8 @@ namespace Tournament.Structure.Tests
 			m.SetMaxGames(3);
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.AddGame(1, 0);
-			m.AddGame(25, 90);
+			m.AddGame(1, 0, PlayerSlot.Defender);
+			m.AddGame(25, 90, PlayerSlot.Challenger);
 			m.ResetScore();
 
 			Assert.AreEqual(0, m.Games.Count);
@@ -596,8 +596,8 @@ namespace Tournament.Structure.Tests
 			m.SetMaxGames(3);
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.AddGame(1, 0);
-			m.AddGame(90, 89);
+			m.AddGame(1, 0, PlayerSlot.Defender);
+			m.AddGame(90, 89, PlayerSlot.Defender);
 			m.ResetScore();
 
 			Assert.IsFalse(m.IsFinished);
@@ -616,8 +616,8 @@ namespace Tournament.Structure.Tests
 			m.SetMaxGames(3);
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.AddGame(1, 0);
-			m.AddGame(90, 89);
+			m.AddGame(1, 0, PlayerSlot.Defender);
+			m.AddGame(90, 89, PlayerSlot.Defender);
 			m.ResetScore();
 
 			Assert.AreEqual(PlayerSlot.unspecified, m.WinnerSlot);
@@ -637,7 +637,7 @@ namespace Tournament.Structure.Tests
 			IMatch m = new Match();
 			m.AddPlayer(p1.Object, PlayerSlot.Defender);
 			m.AddPlayer(p2.Object, PlayerSlot.Challenger);
-			m.AddGame(1, 0);
+			m.AddGame(1, 0, PlayerSlot.Defender);
 			m.RemovePlayer(playerId);
 
 			Assert.AreEqual(0, m.Score[(int)PlayerSlot.Defender]);
@@ -657,7 +657,7 @@ namespace Tournament.Structure.Tests
 			IMatch m = new Match();
 			m.AddPlayer(p1.Object, PlayerSlot.Defender);
 			m.AddPlayer(p2.Object, PlayerSlot.Challenger);
-			m.AddGame(1, 0);
+			m.AddGame(1, 0, PlayerSlot.Defender);
 			m.RemovePlayer(playerId);
 
 			Assert.AreEqual(0, m.Games.Count);
@@ -690,7 +690,7 @@ namespace Tournament.Structure.Tests
 			IMatch m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
-			m.AddGame(1, 0);
+			m.AddGame(1, 0, PlayerSlot.Defender);
 			m.SetMaxGames(5);
 
 			Assert.AreEqual(1, 2);

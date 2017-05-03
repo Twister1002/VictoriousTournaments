@@ -1,16 +1,23 @@
 ﻿jQuery(document).ready(function () {
     var $ = jQuery;
 
+    // Redirect to update
+    $(".tournament-update").on("click", function () {
+        window.location.replace("/Tournament/Update/" + $(this).closest("#Tournament").data("id"));
+    });
+
     // Tournament Deletion
     $(".tournament-delete").on("click", function () {
+
         if (confirm("Are you sure you want to delete this tournament? This can no be reverted.")) {
             $.ajax({
-                "url": "/Tournament/Ajax/Delete",
+                "url": "/Ajax/Tournament/Delete",
                 "type": "POST",
-                "data": { "tourny": $(this).data("id") },
+                "data": { "tourny": $(this).closest("#Tournament").data("id") },
                 "dataType": "json",
                 "success": function (json) {
-                    if (json.success) {
+                    json = JSON.parse(json);
+                    if (json.status) {
                         window.location.replace(json.redirect);
                     }
                     else {
@@ -18,24 +25,39 @@
                     }
                 },
                 "error": function (json) {
+                    json = JSON.parse(json);
                     alert(json.message);
                 }
             });
         }
     });
 
-    // View tournament standings
-    $(".tournament-standings").on("click", function () {
-        var elem = $("#TournamentStandings");
+    // Finalize Tournament 
+    $(".tournamentFinalizeButton").on("click", function () {
+        var roundData = {};
+        var jsonData = {
+            "tournyVal": $("#Tournament").data("id"),
+            "bracketVal": $(".bracket").data("bracketnum"),
+        };
 
-        if (elem.hasClass("open")) {
-            // Close the side panel
-            elem.removeClass("open");
-        }
-        else {
-            // Open the side panel
-            elem.addClass("open");
-        }
+        $.each($(".header-rounds li"), function (i, e) {
+            roundData[i + 1] = $(e).find(".bestOfMatches").val();
+        });
+
+        $.ajax({
+            "url": "/Ajax/Tournament/Finalize",
+            "type": "POST",
+            "data": { "jsonData": JSON.stringify(jsonData), "roundData": roundData },
+            "dataType": "json",
+            "success": function (json) {
+                json = JSON.parse(json);
+                location.replace(json.redirect);
+                console.log(json);
+            },
+            "error": function (json) {
+                console.log(json);
+            }
+        });
     });
 
     // Update the Date selections
@@ -55,9 +77,11 @@
     });
 
     (function ($) {
-        $("#RegistrationStartDate")
-            .datepicker("setDate", $(this).val())
-            //.datepicker("option", "minDate", "-1m")
-            .trigger("change");
+        if ($("#RegistrationStartDate").length > 0) {
+            $("#RegistrationStartDate")
+                .datepicker("setDate", $(this).val())
+                //.datepicker("option", "minDate", "-1m")
+                .trigger("change");
+        }
     })($);
 });

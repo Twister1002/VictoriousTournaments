@@ -3,14 +3,21 @@
     var section = $("#AdministratorGames");
 
     $("#AdministratorGames .gameDelete").on("click", deleteEvent);
-    $("#AdministratorGames .GameAddButton").on("click", function () {
+    $("#AdministratorGames .GameAddButton").on("click", addEvent);
+    $("#AdministratorGames .options .gameTitle").on("keydown", function (e) {
+        if (e.keyCode == 13) { // Enter
+            addEvent();
+        }
+    });
+
+    function addEvent() {
         var jsonData = {
             "function": "add",
-            "title": $("#AdministratorGames .list-table-input .gameTitle .field").val()
+            "title": $("#AdministratorGames .form .gameTitle .field").val()
         };
 
         GameUpdate(jsonData);
-    });
+    }
 
     function deleteEvent() {
         var jsonData = {
@@ -24,7 +31,7 @@
 
     function GameUpdate(jsonData) {
         $.ajax({
-            "url": "/Administrator/Ajax/Games",
+            "url": "/Ajax/Administrator/Games",
             "type": "POST",
             "data": { "jsonData": JSON.stringify(jsonData) },
             "dataType": "json",
@@ -37,21 +44,19 @@
 
                 if (json.status) {
                     var table = $("#AdministratorGames .list-table-body");
+                    table.empty();
 
-                    if (json.function == "add") {
-                        html = "<ul class='game' data-columns='3' data-gameid='" + json.data.model.GameID + "'>";
-                        html += "<li class='gameTitle'>" + json.data.model.Title + "</li>";
-                        html += "<li class='gamePlatforms'>None</li>";
-                        html += "<li class='gameDelete'><img class='icon icon-cross' src='Images/svg/cross.svg' /></li>";
+                    $.each(json.data, function (i, e) {
+                        html = "<ul class='game' data-columns='3' data-gameid='" + e.GameTypeID + "'>";
+                        html += "<li class='column gameTitle'>" + e.Title + "</li>";
+                        html += "<li class='column gamePlatforms'>None</li>";
+                        html += "<li class='column gameDelete'><span class='icon icon-cross'></span></li>";
                         html += "</ul>";
 
                         table.append(html);
+                    });
 
-                        $(".gameTitle input").val('');
-                    }
-                    else if (json.function == "delete") {
-                        table.find(".game[data-gameid='" + json.data.model.GameID + "']").remove();
-                    }
+                    $(".gameTitle input").val('');
                 }
 
                 console.log(json.message);

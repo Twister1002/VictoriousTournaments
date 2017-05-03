@@ -24,7 +24,7 @@
                             <ul class="row-clickable" data-columns="3">
                                 <li class="column">@tournament.Title</li>
                                 <li class="column">@(tournament.GameType != null ? tournament.GameType.Title : "None")</li>
-                                <li class="column">@(((DateTime)tournament.TournamentRules.TournamentStartDate).ToShortDateString())</li>
+                                <li class="column">@(tournament.TournamentStartDate.ToShortDateString())</li>
                             </ul>
                         </a>
                     }
@@ -70,7 +70,7 @@
                             <ul class="row-clickable" data-columns="3">
                                 <li class="column">@tournament.Title</li>
                                 <li class="column">GAME</li>
-                                <li class="column">@(((DateTime)tournament.TournamentRules.TournamentStartDate).ToShortDateString())</li>
+                                <li class="column">@(tournament.TournamentStartDate.ToShortDateString())</li>
                             </ul>
                         </a>
                     }
@@ -94,7 +94,7 @@
                             <ul class="row-clickable" data-columns="3">
                                 <li class="column">@tournament.Title</li>
                                 <li class="column">GAME</li>
-                                <li class="column">@(((DateTime)tournament.TournamentRules.TournamentStartDate).ToShortDateString())</li>
+                                <li class="column">@(tournament.TournamentStartDate.ToShortDateString())</li>
                             </ul>
                         </a>
                     }
@@ -109,7 +109,7 @@
             <li class="clickable-underline">@Html.ActionLink("Update Account", "Update", "Account")</li>
             <li class="clickable-underline">@Html.ActionLink("Create Tournament", "Create", "Tournament")</li>
             <li>View Profile</li>
-            @if (Model.Model.SitePermission.Permission == DataLib.Permission.SITE_ADMINISTRATOR)
+            @if (Model.Account.PermissionLevel == (int)DatabaseLib.Permission.SITE_ADMINISTRATOR)
             {
                 <li class="clickable-underline">@Html.ActionLink("Administration", "Index", "Administrator")</li>
             }

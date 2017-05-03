@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
@@ -46,9 +46,9 @@ namespace Tournament.Structure
 			this.Description = _model.Description;
 
 			this.Players = new List<IPlayer>();
-			foreach (UserInTournamentModel model in _model.UsersInTournament)
+			foreach (TournamentUserModel model in _model.TournamentUsers)
 			{
-				Players.Add(new User(model.User));
+				Players.Add(new User(model));
 			}
 
 			this.Brackets = new List<IBracket>();
@@ -57,8 +57,8 @@ namespace Tournament.Structure
 				AddBracket(RestoreBracket(bModel));
 			}
 
-			this.PrizePool = (float)(_model.TournamentRules.PrizePurse);
-			this.IsPublic = _model.TournamentRules.IsPublic;
+			this.PrizePool = (float)(_model.PrizePurse);
+			this.IsPublic = _model.IsPublic;
 		}
 		#endregion
 
@@ -202,28 +202,6 @@ namespace Tournament.Structure
 			throw new PlayerNotFoundException
 				("Player not found in this tournament!");
 		}
-		public void RemovePlayer(IPlayer _player)
-		{
-			if (null == _player)
-			{
-				throw new ArgumentNullException("_player");
-			}
-			if (null == Players)
-			{
-				throw new NullReferenceException
-					("Playerlist is null; this shouldn't happen...");
-			}
-
-			if (!Players.Remove(_player))
-			{
-				throw new PlayerNotFoundException
-					("Player not found in this tournament!");
-			}
-			foreach (IBracket bracket in Brackets)
-			{
-				bracket.RemovePlayer(_player);
-			}
-		}
 		public void ResetPlayers()
 		{
 			if (null == Players)
@@ -275,17 +253,20 @@ namespace Tournament.Structure
 			IBracket ret = null;
 			switch (_model.BracketType.Type)
 			{
-				case (BracketTypeModel.BracketType.SINGLE):
+				case (BracketType.SINGLE):
 					ret = new SingleElimBracket(_model);
 					break;
-				case (BracketTypeModel.BracketType.DOUBLE):
+				case (BracketType.DOUBLE):
 					ret = new DoubleElimBracket(_model);
 					break;
-				case (BracketTypeModel.BracketType.ROUNDROBIN):
+				case (BracketType.ROUNDROBIN):
 					ret = new RoundRobinBracket(_model);
 					break;
-				case (BracketTypeModel.BracketType.RRGROUP):
+				case (BracketType.RRGROUP):
 					ret = new RoundRobinGroups(_model);
+					break;
+				case (BracketType.GSLGROUP):
+					ret = new GSLGroups(_model);
 					break;
 				default:
 					throw new NotImplementedException();
@@ -319,9 +300,9 @@ namespace Tournament.Structure
 		}
 
 		#region Bracket Creation Methods
-		public void AddSingleElimBracket(List<IPlayer> _playerList)
+		public void AddSingleElimBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1)
 		{
-			Brackets.Add(new SingleElimBracket(_playerList));
+			Brackets.Add(new SingleElimBracket(_playerList, _maxGamesPerMatch));
 		}
 #if false
 		public void AddSingleElimBracket(int _numPlayers)
@@ -334,9 +315,9 @@ namespace Tournament.Structure
 			AddSingleElimBracket(pList);
 		}
 #endif
-		public void AddDoubleElimBracket(List<IPlayer> _playerList)
+		public void AddDoubleElimBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1)
 		{
-			Brackets.Add(new DoubleElimBracket(_playerList));
+			Brackets.Add(new DoubleElimBracket(_playerList, _maxGamesPerMatch));
 		}
 #if false
 		public void AddDoubleElimBracket(int _numPlayers)
@@ -349,9 +330,9 @@ namespace Tournament.Structure
 			AddDoubleElimBracket(pList);
 		}
 #endif
-		public void AddRoundRobinBracket(List<IPlayer> _playerList, int _numRounds = 0)
+		public void AddRoundRobinBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1, int _numRounds = 0)
 		{
-			Brackets.Add(new RoundRobinBracket(_playerList, _numRounds));
+			Brackets.Add(new RoundRobinBracket(_playerList, _maxGamesPerMatch, _numRounds));
 		}
 #if false
 		public void AddRoundRobinBracket(int _numPlayers, int _numRounds = 0)
@@ -364,9 +345,9 @@ namespace Tournament.Structure
 			AddRoundRobinBracket(pList, _numRounds);
 		}
 #endif
-		public void AddRRGroupStage(List<IPlayer> _playerList, int _numGroups = 2)
+		public void AddRRGroupStage(List<IPlayer> _playerList, int _numGroups = 2, int _maxGamesPerMatch = 1, int _maxRounds = 0)
 		{
-			Brackets.Add(new RoundRobinGroups(_playerList, _numGroups));
+			Brackets.Add(new RoundRobinGroups(_playerList, _numGroups, _maxGamesPerMatch, _maxRounds));
 		}
 #if false
 		public void AddRRGroupStageBracket(int _numPlayers, int _numGroups = 2)

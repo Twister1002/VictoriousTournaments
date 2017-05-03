@@ -1,47 +1,101 @@
-﻿using DataLib;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using Tournament.Structure;
+using DatabaseLib;
 
 namespace WebApplication.Models
 {
     public class MatchViewModel : MatchFields
     {
-        public MatchModel matchModel { get; private set; }
-        public BracketModel bracketModel { get; private set; }
-        public TournamentModel tournyModel { get; private set; }
+        public MatchModel Model { get; private set; }
+        public IMatch Match { get; private set; }
 
         public MatchViewModel()
         {
-            matchModel = new MatchModel();
+            Match = new Match();
+            Model = new MatchModel();
+        }
+
+        public MatchViewModel(IMatch match)
+        {
+            Match = match;
+            Model = Match.GetModel();
         }
 
         public MatchViewModel(int matchId)
         {
-            matchModel = db.GetMatchById(matchId);
+            Model = db.GetMatch(matchId);
+            if (Model != null)
+            {
+                Match = new Match(Model);
+            }
+            else
+            {
+                Match = new Match();
+            }
+        }
+        
+        public bool Update()
+        {
+            return db.UpdateMatch(Model) == DbError.SUCCESS;
         }
 
-        public MatchViewModel(int tournamentId, int bracketNum, int matchNum)
+        public bool DeleteGame(int gameId)
         {
-            tournyModel = db.GetTournamentById(tournamentId);
-            bracketModel = tournyModel.Brackets.ElementAt(bracketNum);
-            matchModel = tournyModel.Brackets.ElementAt(bracketNum).Matches.ElementAt(matchNum-1);
-            SetFields();
+            return db.DeleteGame(gameId) == DbError.SUCCESS;
         }
 
-        public override void ApplyChanges(int userId)
+        public bool CreateGame(GameModel game)
         {
-            matchModel.ChallengerScore  = this.ChallengerScore;
-            matchModel.DefenderScore    = this.DefenderScore;
-            matchModel.WinnerID         = this.WinnerID;
+            return db.AddGame(game) == DbError.SUCCESS;
         }
 
-        public override void SetFields()
+        public void RemoveGames()
         {
-            this.ChallengerScore    = matchModel.ChallengerScore;
-            this.DefenderScore      = matchModel.DefenderScore;
-            this.WinnerID           = matchModel.WinnerID;
+            List<GameModel> games = Model.Games.ToList();
+
+            foreach (GameModel game in games)
+            {
+                DeleteGame(game.GameID);
+            }
+        }
+
+        public IPlayer Challenger()
+        {
+            IPlayer player = Match.Players[(int)PlayerSlot.Challenger];
+            if (player == null)
+            {
+                player = new User()
+                {
+                      Name = "Winner from "+Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger]
+                };
+            }
+
+            return player;
+        }
+
+        public IPlayer Defender()
+        {
+            IPlayer player = Match.Players[(int)PlayerSlot.Defender];
+            if (player == null)
+            {
+                player = new User()
+                {
+                    Name = "Winner from " + Match.PreviousMatchNumbers[(int)PlayerSlot.Defender]
+                };
+            }
+
+            return player;
+        }
+
+        public int DefenderScore()
+        {
+            return Match.Score[(int)PlayerSlot.Defender];
+        }
+
+        public int ChallengerScore()
+        {
+            return Match.Score[(int)PlayerSlot.Challenger];
         }
     }
 }

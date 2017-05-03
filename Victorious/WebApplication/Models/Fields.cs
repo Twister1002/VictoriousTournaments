@@ -1,47 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.ComponentModel.DataAnnotations;
-using DataLib;
+using DatabaseLib;
 
 namespace WebApplication.Models
 {
     public abstract class AccountFields : ViewModel
     {
+        public int AccountId { get; set; } 
+
         //[Required(ErrorMessage = "First Name is required")]
         [DataType(DataType.Text)]
-        [StringLength(UserModel.FirstNameLength)]
+        [StringLength(AccountModel.FirstNameLength)]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
         //[Required(ErrorMessage = "Last Name is required")]
         [DataType(DataType.Text)]
-        [StringLength(UserModel.LastNameLength)]
+        [StringLength(AccountModel.LastNameLength)]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
         //[Required(ErrorMessage = "Username is required")]
         [DataType(DataType.Text)]
-        [StringLength(UserModel.UsernameLength)]
+        [StringLength(AccountModel.UsernameLength)]
         [Display(Name = "Username")]
         public string Username { get; set; }
 
         //[Required(ErrorMessage = "Email is required")]
-        [StringLength(UserModel.EmailLength)]
+        [StringLength(AccountModel.EmailLength)]
         [DataType(DataType.Text)]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
         //[Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
-        [StringLength(UserModel.PasswordLength)]
+        [StringLength(AccountModel.PasswordLength)]
         [Display(Name = "Password")]
         public string Password { get; set; }
 
         //[Compare("Password", ErrorMessage = "Passwords do not match")]
         [DataType(DataType.Password)]
-        [StringLength(UserModel.PasswordLength)]
+        [StringLength(AccountModel.PasswordLength)]
         [Display(Name = "Verify Password")]
         public string PasswordVerify { get; set; }
 
@@ -63,22 +63,30 @@ namespace WebApplication.Models
         [Required(ErrorMessage = "When will registration start?")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Registration Start")]
-        public DateTime? RegistrationStartDate { get; set; }
+        public DateTime RegistrationStartDate { get; set; }
 
         [Required(ErrorMessage = "When will registration end?")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Registration End")]
-        public DateTime? RegistrationEndDate { get; set; }
+        public DateTime RegistrationEndDate { get; set; }
 
         [Required(ErrorMessage = "When will the tournament start?")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Tournament Start")]
-        public DateTime? TournamentStartDate { get; set; }
+        public DateTime TournamentStartDate { get; set; }
 
         [Required(ErrorMessage = "When will the tournament end?")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Tournament End")]
-        public DateTime? TournamentEndDate { get; set; }
+        public DateTime TournamentEndDate { get; set; }
+
+        [DataType(DataType.DateTime)]
+        [Display(Name = "CheckIn Start")]
+        public DateTime CheckinStart { get; set; }
+
+        [DataType(DataType.DateTime)]
+        [Display(Name = "CheckIn Ends")]
+        public DateTime CheckinEnd { get; set; }
         
         public List<BracketTypeModel> BracketTypes { get; protected set; }
         public List<GameTypeModel> GameTypes { get; protected set; }
@@ -94,35 +102,31 @@ namespace WebApplication.Models
         [Display(Name = "Public")]
         public bool IsPublic { get; set; }
 
-        public abstract void ApplyChanges(int userId);
+        public abstract void ApplyChanges();
         public abstract void SetFields();
     }
 
-    public abstract class MatchFields : ViewModel {
-        [DataType(DataType.Text)]
-        public int? ChallengerScore { get; set; }
-        
-        [DataType(DataType.Text)]
-        public int? DefenderScore { get; set; }
+    public abstract class BracketFields : ViewModel
+    {
+        [Display(Name = "Best Of ")]
+        public int BestOfMatches { get; set; }
+    }
 
-        [DataType(DataType.Text)]
-        public int? WinnerID { get; set; }
-
-        public abstract void ApplyChanges(int userId);
-        public abstract void SetFields();
+    public abstract class MatchFields : ViewModel
+    {
     } 
 
-    public abstract class AdministratorFields : ViewModel
+    public abstract class GameFields : ViewModel
     {
-        [Display(Name ="Game")]
+        public int GameNumber { get; set; }
+        public int ChallengerScore { get; set; }
+        public int DefenderScore { get; set; }
+    }
+
+    public abstract class GameTypeFields : ViewModel
+    {
+        [Display(Name = "Title")]
         [DataType(DataType.Text)]
-        public String GameName { get; set; }
-
-        [Display(Name = "")]
-        public bool XBox { get; set; }
-        public bool PC { get; set; }
-        public bool PS3 { get; set; }
-
-
+        public String Title { get; set; }
     }
 }

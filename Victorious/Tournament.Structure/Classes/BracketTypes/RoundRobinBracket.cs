@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
 	public class RoundRobinBracket : Bracket
 	{
 		#region Variables & Properties
+		// inherits int Id
 		// inherits BracketType BracketType
 		// inherits bool IsFinalized
 		// inherits bool IsFinished
@@ -22,10 +23,12 @@ namespace Tournament.Structure
 		// inherits int NumberOfLowerRounds (0)
 		// inherits IMatch GrandFinal (null)
 		// inherits int NumberOfMatches
+		protected int MatchWinValue
+		{ get; set; }
 		#endregion
 
 		#region Ctors
-		public RoundRobinBracket(List<IPlayer> _players, int _numberOfRounds = 0)
+		public RoundRobinBracket(List<IPlayer> _players, int _maxGamesPerMatch = 1, int _numberOfRounds = 0)
 		{
 			if (null == _players)
 			{
@@ -52,10 +55,12 @@ namespace Tournament.Structure
 				Players = _players;
 			}
 
-			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
+			Id = 0;
+			BracketType = BracketType.ROUNDROBIN;
 			MaxRounds = _numberOfRounds;
+			MatchWinValue = 2;
 			ResetBracket();
-			CreateBracket();
+			CreateBracket(_maxGamesPerMatch);
 		}
 #if false
 		public RoundRobinBracket(int _numPlayers, int _numRounds = 0)
@@ -79,7 +84,7 @@ namespace Tournament.Structure
 		}
 #endif
 		public RoundRobinBracket()
-			: this(new List<IPlayer>(), 0)
+			: this(new List<IPlayer>())
 		{ }
 		public RoundRobinBracket(BracketModel _model)
 		{
@@ -88,27 +93,27 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_model");
 			}
 
-			BracketType = BracketTypeModel.BracketType.ROUNDROBIN;
+			this.Id = _model.BracketID;
+			this.BracketType = BracketType.ROUNDROBIN;
 			this.IsFinalized = _model.Finalized;
-
-			List<UserModel> userModels = _model.UserSeeds
-				.OrderBy(ubs => ubs.Seed)
-				.Select(ubs => ubs.User)
-				.ToList();
-			this.Players = new List<IPlayer>();
-			this.Rankings = new List<IPlayerScore>();
-			foreach (UserModel model in userModels)
-			{
-				Players.Add(new User(model));
-				Rankings.Add(new PlayerScore(model.UserID, model.Username, 0, 1));
-			}
-			
 			this.MaxRounds = 0;
+			this.MatchWinValue = 2;
 			ResetBracket();
 
-			this.Matches = new Dictionary<int, IMatch>();
+			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
+				.OrderBy(tubm => tubm.Seed)
+				.Select(tubm => tubm.TournamentUser)
+				.ToList();
+			this.Players = new List<IPlayer>();
+			foreach (TournamentUserModel model in userModels)
+			{
+				Players.Add(new User(model));
+				Rankings.Add(new PlayerScore(model.TournamentUserID, model.Username, 0, 1));
+			}
+
 			foreach (MatchModel mm in _model.Matches)
 			{
+				// Create the Match:
 				IMatch match = new Match(mm);
 				Matches.Add(match.MatchNumber, match);
 				++NumberOfMatches;
@@ -117,17 +122,25 @@ namespace Tournament.Structure
 					this.NumberOfRounds = match.RoundIndex;
 				}
 
-				for (int i = 0; i < Rankings.Count; ++i)
+				// Get the Scores, and update Rankings:
+				int defScore = 0, chalScore = 0;
+				foreach (IGame game in match.Games)
 				{
-					if (Rankings[i].Id == match.Players[(int)PlayerSlot.Defender].Id)
-					{
-						Rankings[i].Score = Rankings[i].Score + match.Score[(int)PlayerSlot.Defender];
-					}
-					else if (Rankings[i].Id == match.Players[(int)PlayerSlot.Challenger].Id)
-					{
-						Rankings[i].Score = Rankings[i].Score + match.Score[(int)PlayerSlot.Challenger];
-					}
+					defScore += game.Score[(int)PlayerSlot.Defender];
+					chalScore += game.Score[(int)PlayerSlot.Challenger];
 				}
+
+				int defIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id);
+				Rankings[defIndex].Score += match.Score[(int)PlayerSlot.Defender];
+				Rankings[defIndex].AddToScore(
+					(PlayerSlot.Defender == match.WinnerSlot) ? MatchWinValue : 0
+					, match.Score[(int)PlayerSlot.Defender], defScore, true);
+
+				int chalIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id);
+				Rankings[chalIndex].Score += match.Score[(int)PlayerSlot.Challenger];
+				Rankings[chalIndex].AddToScore(
+					(PlayerSlot.Challenger == match.WinnerSlot) ? MatchWinValue : 0
+					, match.Score[(int)PlayerSlot.Challenger], chalScore, true);
 			}
 
 			UpdateRankings();
@@ -147,17 +160,20 @@ namespace Tournament.Structure
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			ResetBracket();
+			if (_gamesPerMatch < 1)
+			{
+				throw new BracketException
+					("Games Per Match must be positive!");
+			}
 			if (Players.Count < 2)
 			{
 				return;
 			}
-			Rankings = new List<IPlayerScore>();
 			foreach (IPlayer player in Players)
 			{
 				Rankings.Add(new PlayerScore(player.Id, player.Name, 0, 1));
 			}
 
-			Matches = new Dictionary<int, IMatch>();
 			int totalRounds = (0 == Players.Count % 2)
 				? Players.Count - 1 : Players.Count;
 
@@ -203,84 +219,49 @@ namespace Tournament.Structure
 			}
 		}
 
-		public override void AddGame(int _matchNumber, int _defenderScore, int _challengerScore)
+#if false
+		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
-			if (!Matches.ContainsKey(_matchNumber))
-			{
-				throw new MatchNotFoundException
-					("Match not found; match number may be invalid.");
-			}
-
-			Matches[_matchNumber].AddGame(_defenderScore, _challengerScore);
+			GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
 			if (_defenderScore == _challengerScore)
 			{
 				throw new NotImplementedException
 					("Tie games are not (yet) supported!");
 			}
-			PlayerSlot gameWinnerSlot = (_defenderScore > _challengerScore)
-				? PlayerSlot.Defender : PlayerSlot.Challenger;
-			for (int i = 0; i < Rankings.Count; ++i)
-			{
-				if (Rankings[i].Id == Matches[_matchNumber].Players[(int)gameWinnerSlot].Id)
-				{
-					Rankings[i].Score += 1;
-					break;
-				}
-			}
-			UpdateRankings();
-
-			IsFinished = true;
-			foreach (IMatch match in Matches.Values)
-			{
-				if (!match.IsFinished)
-				{
-					IsFinished = false;
-					break;
-				}
-			}
+			AddWinEffects(_matchNumber, _winnerSlot);
+			return gameModel;
 		}
-		public override void AddGame(int _matchNumber, IGame _game)
+#endif
+#if false
+		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			if (null == _game)
+			IMatch match = GetMatch(_matchNumber);
+			bool gameFound = false;
+			foreach (IGame game in match.Games)
 			{
-				throw new ArgumentNullException("_game");
-			}
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
-			if (!Matches.ContainsKey(_matchNumber))
-			{
-				throw new MatchNotFoundException
-					("Match not found; match number may be invalid.");
-			}
-
-			Matches[_matchNumber].AddGame(_game);
-			for (int i = 0; i < Rankings.Count; ++i)
-			{
-				if (Rankings[i].Id == Matches[_matchNumber].Players[(int)(_game.WinnerSlot)].Id)
+				if (game.GameNumber == _gameNumber)
 				{
-					Rankings[i].Score = Rankings[i].Score + 1;
+					gameFound = true;
+					for (int i = 0; i < Rankings.Count; ++i)
+					{
+						if (Rankings[i].Id == match.Players[(int)(game.WinnerSlot)].Id)
+						{
+							Rankings[i].Score -= 1;
+							break;
+						}
+					}
 					break;
 				}
 			}
-			UpdateRankings();
-
-			IsFinished = true;
-			foreach (IMatch match in Matches.Values)
+			if (!gameFound)
 			{
-				if (!match.IsFinished)
-				{
-					IsFinished = false;
-					break;
-				}
+				throw new GameNotFoundException
+					("Game not found; Game Number may be invalid!");
 			}
+
+			GameModel gameModel = GetMatch(_matchNumber).UpdateGame(_gameNumber, _defenderScore, _challengerScore, _winnerSlot);
+			ApplyWinEffects(_matchNumber, _winnerSlot);
+			return gameModel;
 		}
 		public override void RemoveLastGame(int _matchNumber)
 		{
@@ -308,68 +289,6 @@ namespace Tournament.Structure
 
 			IsFinished = IsFinished && Matches[_matchNumber].IsFinished;
 		}
-
-		public override void AddWin(int _matchNumber, PlayerSlot _slot)
-		{
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
-			if (!Matches.ContainsKey(_matchNumber))
-			{
-				throw new MatchNotFoundException
-					("Match not found; match number may be invalid.");
-			}
-
-			Matches[_matchNumber].AddWin(_slot);
-			for (int i = 0; i < Rankings.Count; ++i)
-			{
-				if (Rankings[i].Id == Matches[_matchNumber].Players[(int)_slot].Id)
-				{
-					Rankings[i].Score = Rankings[i].Score + 1;
-					break;
-				}
-			}
-			UpdateRankings();
-
-			IsFinished = true;
-			foreach (IMatch match in Matches.Values)
-			{
-				if (!match.IsFinished)
-				{
-					IsFinished = false;
-					break;
-				}
-			}
-		}
-		public override void SubtractWin(int _matchNumber, PlayerSlot _slot)
-		{
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
-			if (!Matches.ContainsKey(_matchNumber))
-			{
-				throw new MatchNotFoundException
-					("Match not found; match number may be invalid.");
-			}
-
-			Matches[_matchNumber].SubtractWin(_slot);
-			for (int i = 0; i < Rankings.Count; ++i)
-			{
-				if (Rankings[i].Id == Matches[_matchNumber].Players[(int)_slot].Id)
-				{
-					Rankings[i].Score = Rankings[i].Score - 1;
-					break;
-				}
-			}
-			UpdateRankings();
-
-			IsFinished = IsFinished && Matches[_matchNumber].IsFinished;
-		}
-
 		public override void ResetMatchScore(int _matchNumber)
 		{
 			if (_matchNumber < 1)
@@ -402,6 +321,7 @@ namespace Tournament.Structure
 
 			IsFinished = false;
 		}
+#endif
 
 		public override void ResetMatches()
 		{
@@ -415,24 +335,77 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished)
+		{
+			if (null == _game)
+			{
+				// Match winner was manually set. Apply a match win to his score:
+				IMatch match = GetMatch(_matchNumber);
+				int winnerIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)(match.WinnerSlot)].Id);
+				Rankings[winnerIndex].AddToScore(MatchWinValue, 0, 0, true);
+			}
+			else
+			{
+				//PlayerSlot matchWinner = GetMatch(_matchNumber).WinnerSlot;
+				PlayerSlot gameWinner = (_game.DefenderID == _game.WinnerID)
+					? PlayerSlot.Defender : PlayerSlot.Challenger;
+				bool matchFinishChange = _wasFinished ^ GetMatch(_matchNumber).IsFinished;
+
+				// Update Defender's score:
+				int defIndex = Rankings.FindIndex(r => r.Id == _game.DefenderID);
+				bool defenderUpdate = matchFinishChange && (PlayerSlot.Defender == gameWinner);
+				Rankings[defIndex].Score += (_isAddition)
+					? Convert.ToInt16(defenderUpdate) * MatchWinValue
+					: -1 * Convert.ToInt16(defenderUpdate) * MatchWinValue;
+				Rankings[defIndex].AddToScore(Convert.ToInt16(defenderUpdate) * MatchWinValue, 1, _game.DefenderScore, _isAddition);
+
+				// Update Challenger's score:
+				int chalIndex = Rankings.FindIndex(r => r.Id == _game.ChallengerID);
+				bool challengerUpdate = matchFinishChange && (PlayerSlot.Challenger == gameWinner);
+				Rankings[chalIndex].Score += (_isAddition)
+					? Convert.ToInt16(challengerUpdate) * MatchWinValue
+					: -1 * Convert.ToInt16(challengerUpdate) * MatchWinValue;
+				Rankings[chalIndex].AddToScore(Convert.ToInt16(challengerUpdate) * MatchWinValue, 1, _game.ChallengerScore, _isAddition);
+			}
+
+			UpdateRankings();
+		}
+		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		{
+			IsFinished = true;
+			foreach (IMatch match in Matches.Values)
+			{
+				if (!match.IsFinished)
+				{
+					IsFinished = false;
+					break;
+				}
+			}
+		}
+		protected override void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished)
+		{
+			this.IsFinished = (IsFinished && GetMatch(_matchNumber).IsFinished);
+		}
+
 		protected override void UpdateRankings()
 		{
-			Rankings.Sort((first, second) => -1 * (first.Score.CompareTo(second.Score)));
-			Rankings[0].Rank = 1;
-
-			int increment = 1;
-			for (int i = 1; i < Rankings.Count; ++i)
+			Rankings.Sort(SortRankingScores);
+#if false
+			Rankings.Sort((first, second) =>
 			{
-				if (Rankings[i].Score == Rankings[i - 1].Score)
-				{
-					++increment;
-					Rankings[i].Rank = Rankings[i - 1].Rank;
-				}
-				else
-				{
-					Rankings[i].Rank = Rankings[i - 1].Rank + increment;
-					increment = 1;
-				}
+				// Rankings sorting: MatchScore > GameScore > PointsScore > initial Seeding
+				int compare = -1 * (first.MatchScore.CompareTo(second.MatchScore));
+				compare = (compare != 0)
+					? compare : -1 * (first.GameScore.CompareTo(second.GameScore));
+				compare = (compare != 0)
+					? compare : -1 * (first.PointsScore.CompareTo(second.PointsScore));
+				return (compare != 0)
+					? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
+			});
+#endif
+			for (int i = 0; i < Rankings.Count; ++i)
+			{
+				Rankings[i].Rank = i + 1;
 			}
 		}
 #endregion

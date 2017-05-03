@@ -1,12 +1,11 @@
-﻿using DataLib;
-using Json;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Tournament.Structure;
 using WebApplication.Models;
+using DatabaseLib;
 
 namespace WebApplication.Controllers
 {
@@ -22,216 +21,120 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("Match/Ajax/Match")]
-        public JsonResult MatchInfo(String match, String bracket, String tourny)
+        [Route("Ajax/Match")]
+        public JsonResult MatchInfo(String jsonData)
         {
-            MatchViewModel viewModel = new MatchViewModel(ConvertToInt(tourny), ConvertToInt(bracket), ConvertToInt(match));
-
+            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
+            MatchViewModel viewModel = new MatchViewModel(json["matchId"]);
+            
             String jsonResult = JsonConvert.SerializeObject(new {
                 status = true,
-                data = new 
-                {
-                    challenger = new
-                    {
-                        name = viewModel.matchModel.Challenger.Username,
-                        id = viewModel.matchModel.Challenger.UserID,
-                        score = viewModel.matchModel.ChallengerScore
-                    },
-                    defender = new
-                    {
-                        name = viewModel.matchModel.Defender.Username,
-                        id = viewModel.matchModel.Defender.UserID,
-                        score = viewModel.matchModel.DefenderScore
-                    },
-                    matchId = viewModel.matchModel.MatchID,
-                    matchNum = viewModel.matchModel.MatchNumber
-                }
-                
+                data = JsonMatchResponse(viewModel.Match, true)
             });
 
             return Json(jsonResult);
         }
 
         [HttpPost]
-        [Route("Match/Ajax/Update")]
-        public JsonResult MatchUpdate(String jsonData)
+        [Route("Ajax/Match/Update")]
+        public JsonResult MatchUpdate(String jsonIds, List<GameViewModel> games)
         {
-            String jsonResult = "";
-            Dictionary<string, dynamic> json = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(jsonData);
+            bool status = false;
+            String message = "No action taken";
+            object data = new { };
 
             if (Session["User.UserId"] != null)
             {
-                TournamentViewModel tournyViewModel = new TournamentViewModel((int)json["tournyId"]);
-                PlayerSlot winPlayerSlot = json["winner"] == "Defender" ? PlayerSlot.Defender : PlayerSlot.Challenger;
-                Permission userPermission = UserPermission((int)Session["User.UserId"], tournyViewModel.Model);
+                Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonIds);
+                TournamentViewModel tournamentModel = new TournamentViewModel(json["tournamentId"]);
 
-                if (userPermission == Permission.TOURNAMENT_ADMINISTRATOR)
+                if (tournamentModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
-                    tournyViewModel.ProcessTournament();
+                    tournamentModel.ProcessTournament();
+                    IBracket bracket = tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]);
+                    IMatch match = bracket.GetMatch(json["matchNum"]);
+                    BracketViewModel bracketModel = new BracketViewModel(bracket);
+                    //MatchViewModel matchModel = new MatchViewModel(match);
+                    Dictionary<int, bool> processed = new Dictionary<int, bool>();
 
-                    IBracket bracket = tournyViewModel.Tourny.Brackets.ElementAt((int)json["bracketNum"]);
-                    bracket.AddWin((int)json["matchNum"], winPlayerSlot);
-
-                    MatchModel matchModel = bracket.GetMatch((int)json["matchNum"]).GetModel();
-                    UserModel matchDefender = db.GetUserById(matchModel.DefenderID);
-                    UserModel matchChallenger = db.GetUserById(matchModel.ChallengerID);
-
-                    DbError matchResult = db.UpdateMatch(matchModel);
-                    if (matchResult == DbError.SUCCESS)
+                    // Verify these matches exists
+                    foreach (GameViewModel gameModel in games)
                     {
-                        PlayerSlot forDefender = PlayerSlot.unspecified;
-                        PlayerSlot forChallenger = PlayerSlot.unspecified;
-
-                        // Update the next matches.
-                        if (matchModel.NextMatchNumber != -1)
+                        if (match.IsFinished || gameModel.ChallengerScore == gameModel.DefenderScore)
                         {
-                            MatchModel nextWinnerMatch = bracket.GetMatch((int)matchModel.NextMatchNumber).GetModel();
-                            DbError nextWinnerMatchResult = db.UpdateMatch(nextWinnerMatch);
-
-                            switch (winPlayerSlot)
-                            {
-                                case PlayerSlot.Challenger:
-                                    // IF (NEXTMATCH.ID == CURRENTMATCH.ID) 
-                                    if (nextWinnerMatch.ChallengerID == matchModel.ChallengerID)
-                                    {
-                                        forChallenger = PlayerSlot.Challenger;
-                                    }
-                                    else if (nextWinnerMatch.DefenderID == matchModel.ChallengerID)
-                                    {
-                                        forChallenger = PlayerSlot.Defender;
-                                    }
-                                    else
-                                    {
-                                        forChallenger = PlayerSlot.unspecified;
-                                    }
-                                    break;
-                                case PlayerSlot.Defender:
-                                    if (nextWinnerMatch.ChallengerID == matchModel.DefenderID)
-                                    {
-                                        forDefender = PlayerSlot.Challenger;
-                                    }
-                                    else if (nextWinnerMatch.DefenderID == matchModel.DefenderID)
-                                    {
-                                        forDefender = PlayerSlot.Defender;
-                                    }
-                                    else
-                                    {
-                                        forDefender = PlayerSlot.unspecified;
-                                    }
-                                    break;
-                            }
+                            processed.Add(gameModel.GameNumber, false);
+                            continue;
                         }
 
-                        if (matchModel.NextLoserMatchNumber != -1)
+                        if (!match.Games.Any(x=>x.GameNumber == gameModel.GameNumber))
                         {
-                            MatchModel nextLoserMatch = bracket.GetMatch((int)matchModel.NextLoserMatchNumber).GetModel();
-                            DbError nextLoserMatchResult = db.UpdateMatch(nextLoserMatch);
-
-                            // INVERSE LOGIC -- We want to modify the loser, not the winner, but we're based on the winner.
-                            switch (winPlayerSlot)
-                            {
-                                // In this case, set the defender information.
-                                case PlayerSlot.Challenger:
-                                    // IF (NEXTMATCH.ID == CURRENTMATCH.ID) 
-                                    if (nextLoserMatch.ChallengerID == matchModel.DefenderID)
-                                    {
-                                        forDefender = PlayerSlot.Challenger;
-                                    }
-                                    else if (nextLoserMatch.DefenderID == matchModel.DefenderID)
-                                    {
-                                        forDefender = PlayerSlot.Defender;
-                                    }
-                                    else
-                                    {
-                                        forDefender = PlayerSlot.unspecified;
-                                    }
-                                    break;
-                                // In this case, set the challenger info.
-                                case PlayerSlot.Defender:
-                                    if (nextLoserMatch.ChallengerID == matchModel.ChallengerID)
-                                    {
-                                        forChallenger = PlayerSlot.Challenger;
-                                    }
-                                    else if (nextLoserMatch.DefenderID == matchModel.ChallengerID)
-                                    {
-                                        forChallenger = PlayerSlot.Defender;
-                                    }
-                                    else
-                                    {
-                                        forChallenger = PlayerSlot.unspecified;
-                                    }
-                                    break;
-                            }
+                            // We need to add this game.
+                            PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
+                            GameModel addedGameModel = bracket.AddGame(match.MatchNumber, gameModel.DefenderScore, gameModel.ChallengerScore, winner);
                         }
+                        else
+                        {
+                            processed.Add(gameModel.GameNumber, false);
+                        }
+                    }
+                    
+                    //  Load the Models
+                    MatchViewModel matchModel = new MatchViewModel(bracket.GetMatch(match.MatchNumber));
+                    MatchViewModel winnerMatchModel = matchModel.Match.NextMatchNumber != -1 ? new MatchViewModel(bracket.GetMatch(matchModel.Match.NextMatchNumber)) : null;
+                    MatchViewModel loserMatchModel = matchModel.Match.NextLoserMatchNumber != -1 ? new MatchViewModel(bracket.GetMatch(matchModel.Match.NextLoserMatchNumber)) : null;
 
-                        jsonResult = JsonConvert.SerializeObject(new
-                        {
-                            status = true,
-                            message = "Match was processed sucessfully",
-                            data = new
-                            {
-                                matchNum = matchModel.MatchNumber,
-                                defender = new
-                                {
-                                    nextRound = winPlayerSlot == PlayerSlot.Defender ? matchModel.NextMatchNumber : matchModel.NextLoserMatchNumber,
-                                    name = matchDefender.Username,
-                                    id = matchDefender.UserID,
-                                    score = matchModel.DefenderScore,
-                                    slot = forDefender
-                                },
-                                challenger = new
-                                {
-                                    nextRound = winPlayerSlot == PlayerSlot.Challenger ? matchModel.NextMatchNumber : matchModel.NextLoserMatchNumber,
-                                    name = matchChallenger.Username,
-                                    id = matchChallenger.UserID,
-                                    score = matchModel.ChallengerScore,
-                                    slot = forChallenger
-                                }
-                            }
-                        });
-                    }
-                    else
+                    // Update the bracket in the database
+                    //DbError bracketUpdate = db.UpdateBracket(bracketModel.Model);
+
+                    // Update the matches in the database
+                    object currentMatchData = null;
+                    object winnerMatchData = null;
+                    object loserMatchData = null;
+                    bool currentMatchUpdate = matchModel.Update();
+                    bool winnerMatchUpdate = winnerMatchModel != null ? winnerMatchModel.Update() : false;
+                    bool loserMatchUpdate = loserMatchModel != null ? loserMatchModel.Update() : false;
+
+                    if (currentMatchUpdate)
                     {
-                        jsonResult = JsonConvert.SerializeObject(new
-                        {
-                            status = false,
-                            message = "There was an unexpected error.",
-                            data = new {
-                                exception = new
-                                {
-                                    message = db.interfaceException.Message,
-                                    innerMessage = db.interfaceException.InnerException
-                                }
-                            }
-                        });
+                        status = true;
+                        message = "Current match was updated";
+
+                        currentMatchData = JsonMatchResponse(matchModel.Match, false);
                     }
+                    if (winnerMatchUpdate)
+                    {
+                        winnerMatchData = JsonMatchResponse(winnerMatchModel.Match, false);
+                    }
+                    if (loserMatchUpdate)
+                    {
+                        loserMatchData = JsonMatchResponse(loserMatchModel.Match, false);
+                    }
+
+                    // Prepare data
+                    data = new
+                    {
+                        processed = processed,
+                        currentMatch = currentMatchData,
+                        winnerMatch = winnerMatchData,
+                        loserMatch = loserMatchData
+                    };
                 }
                 else
                 {
-                    jsonResult = JsonConvert.SerializeObject(new
-                    {
-                        status = false,
-                        message = "You are not allowed to update this match.",
-                        data = new { }
-                    });
+                    message = "You are not authorized to do this.";
                 }
             }
             else
             {
-                jsonResult = JsonConvert.SerializeObject(new
-                {
-                    status = false,
-                    message = "You must be logged in",
-                    data = new { }
-                });
+                message = "You must login to do this action."; 
             }
 
-            return Json(jsonResult);
-        }
-
-        public Permission UserPermission(int userId, TournamentModel tournyModel)
-        {
-            return db.GetUserPermission(getUserModel(userId), tournyModel);
+            return Json(JsonConvert.SerializeObject(new
+            {
+                status = status,
+                message = message,
+                data = data
+            }));
         }
     }
 }

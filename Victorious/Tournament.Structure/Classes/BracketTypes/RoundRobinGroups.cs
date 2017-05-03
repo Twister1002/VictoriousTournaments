@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
 	public class RoundRobinGroups : GroupStage
 	{
 		#region Variables & Properties
+		// inherits int Id
 		// inherits BracketType BracketType
 		// inherits bool IsFinalized
 		// inherits bool IsFinished
@@ -27,7 +28,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Ctors
-		public RoundRobinGroups(List<IPlayer> _players, int _numberOfGroups, int _numberOfRounds = 0)
+		public RoundRobinGroups(List<IPlayer> _players, int _numberOfGroups, int _maxGamesPerMatch = 1, int _numberOfRounds = 0)
 		{
 			if (null == _players)
 			{
@@ -64,11 +65,12 @@ namespace Tournament.Structure
 				Players = _players;
 			}
 
-			BracketType = BracketTypeModel.BracketType.RRGROUP;
+			Id = 0;
+			BracketType = BracketType.RRGROUP;
 			NumberOfGroups = _numberOfGroups;
 			MaxRounds = _numberOfRounds;
 			ResetBracket();
-			CreateBracket();
+			CreateBracket(_maxGamesPerMatch);
 		}
 #if false
 		public RoundRobinGroups(int _numberOfPlayers, int _numberOfGroups)
@@ -111,19 +113,19 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_model");
 			}
 
-			this.BracketType = BracketTypeModel.BracketType.RRGROUP;
-			this.IsFinalized = _model.Finalized;
-
-			List<UserModel> userModels = _model.UserSeeds
-				.OrderBy(ubs => ubs.Seed)
-				.Select(ubs => ubs.User)
+			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
+				.OrderBy(tubm => tubm.Seed)
+				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
-			foreach (UserModel model in userModels)
+			foreach (TournamentUserModel model in userModels)
 			{
 				Players.Add(new User(model));
 			}
 
+			this.Id = _model.BracketID;
+			this.BracketType = BracketType.RRGROUP;
+			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
 			this.MaxRounds = 0;
 			ResetBracket();
@@ -132,6 +134,8 @@ namespace Tournament.Structure
 			// Find & update every Match:
 			foreach (MatchModel model in _model.Matches)
 			{
+				RestoreMatch(model.MatchNumber, model);
+#if false
 				foreach (IBracket group in Groups)
 				{
 					if (group.Players.Select(p => p.Id).ToList()
@@ -176,6 +180,7 @@ namespace Tournament.Structure
 						break;
 					}
 				}
+#endif
 			}
 
 			// Update the rankings:
@@ -196,13 +201,17 @@ namespace Tournament.Structure
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			ResetBracket();
+			if (_gamesPerMatch < 1)
+			{
+				throw new BracketException
+					("Games Per Match must be positive!");
+			}
 			if (Players.Count < 2 ||
 				NumberOfGroups > (Players.Count / 2) || NumberOfGroups < 2)
 			{
 				return;
 			}
 
-			Groups = new List<IBracket>();
 			for (int b = 0; b < NumberOfGroups; ++b)
 			{
 				List<IPlayer> pList = new List<IPlayer>();
@@ -211,18 +220,15 @@ namespace Tournament.Structure
 					pList.Add(Players[p + b]);
 				}
 
-				IBracket newGroup = new RoundRobinBracket(pList, MaxRounds);
-				newGroup.CreateBracket(_gamesPerMatch);
-				Groups.Add(newGroup);
+				Groups.Add(new RoundRobinBracket(pList, _gamesPerMatch, MaxRounds));
 			}
 
-			Rankings = new List<IPlayerScore>();
 			foreach (IBracket group in Groups)
 			{
 				NumberOfMatches += group.NumberOfMatches;
 				NumberOfRounds = (NumberOfRounds < group.NumberOfRounds)
 					? group.NumberOfRounds
-					: NumberOfRounds;
+					: this.NumberOfRounds;
 				Rankings.AddRange(group.Rankings);
 			}
 		}
@@ -242,22 +248,11 @@ namespace Tournament.Structure
 			{
 				Rankings.AddRange(group.Rankings);
 			}
-			Rankings.Sort((first, second) => -1 * (first.Score.CompareTo(second.Score)));
-			Rankings[0].Rank = 1;
 
-			int increment = 1;
-			for (int i = 1; i < Rankings.Count; ++i)
+			Rankings.Sort(SortRankingScores);
+			for (int i = 0; i < Rankings.Count; ++i)
 			{
-				if (Rankings[i].Score == Rankings[i - 1].Score)
-				{
-					++increment;
-					Rankings[i].Rank = Rankings[i - 1].Rank;
-				}
-				else
-				{
-					Rankings[i].Rank = Rankings[i - 1].Rank + increment;
-					increment = 1;
-				}
+				Rankings[i].Rank = i + 1;
 			}
 		}
 		#endregion

@@ -1,18 +1,15 @@
-﻿using DataLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using DatabaseLib;
+using WebApplication.Models.Administrator;
 
 namespace WebApplication.Models
 {
-    public class AdministratorViewModel : AdministratorFields
+    public class AdministratorViewModel : ViewModel
     {
-        public List<GameTypeModel> Games { get; private set; }
-
-        public AdministratorViewModel()
+        public GameTypeViewModel LoadGameTypes()
         {
-            Games = db.GetAllGameTypes();
+            return new GameTypeViewModel();
         }
     }
 }

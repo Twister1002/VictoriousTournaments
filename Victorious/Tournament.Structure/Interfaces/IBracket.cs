@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
 	public interface IBracket
 	{
 		#region Variables & Properties
-		BracketTypeModel.BracketType BracketType { get; }
+		int Id { get; }
+		BracketType BracketType { get; }
 
 		/// <summary>
 		/// Is Bracket creation finalized; ready to play?
@@ -23,7 +24,15 @@ namespace Tournament.Structure
 		/// </summary>
 		bool IsFinished { get; }
 
+		/// <summary>
+		/// Players list, ordered by seed.
+		/// </summary>
 		List<IPlayer> Players { get; }
+
+		/// <summary>
+		/// Ordered Rankings list, containing:
+		/// Player ID, name, score, and rank.
+		/// </summary>
 		List<IPlayerScore> Rankings { get; }
 
 		/// <summary>
@@ -32,7 +41,15 @@ namespace Tournament.Structure
 		/// </summary>
 		int MaxRounds { get; set; }
 
+		/// <summary>
+		/// Number of rounds in the upper bracket.
+		/// (if "upper" is N/A, this is total rounds)
+		/// </summary>
 		int NumberOfRounds { get; }
+
+		/// <summary>
+		/// Returns 0 if there is no lower bracket.
+		/// </summary>
 		int NumberOfLowerRounds { get; }
 
 		/// <summary>
@@ -54,33 +71,7 @@ namespace Tournament.Structure
 		/// <param name="_gamesPerMatch">Max games played each match</param>
 		void CreateBracket(int _gamesPerMatch = 1);
 
-		/// <summary>
-		/// Add/record a finished Game.
-		/// </summary>
-		/// <param name="_matchNumber">Match to contain this Game</param>
-		/// <param name="_defenderScore">Score for Defender-slot Player</param>
-		/// <param name="_challengerScore">Score for Challenger-slot Player</param>
-		void AddGame(int _matchNumber, int _defenderScore, int _challengerScore);
-		[System.Obsolete("use AddGame(int, int, int) instead", false)]
-		void AddGame(int _matchNumber, IGame _game);
-
-		/// <summary>
-		/// Delete/un-record a Match's most recent Game.
-		/// </summary>
-		/// <param name="_matchNumber">Number of Match to modify</param>
-		void RemoveLastGame(int _matchNumber);
-
-		[System.Obsolete("use AddGame(int, int, int) instead", false)]
-		void AddWin(int _matchNumber, PlayerSlot _slot);
-		[System.Obsolete("use RemoveLastGame(int) instead", false)]
-		void SubtractWin(int _matchNumber, PlayerSlot _slot);
-
-		/// <summary>
-		/// Reset score for the specified match.
-		/// Resets any affected "future" matches.
-		/// </summary>
-		/// <param name="_matchNumber">Number of specified match</param>
-		void ResetMatchScore(int _matchNumber);
+		void RestoreMatch(int _matchNumber, MatchModel _model);
 
 		/// <summary>
 		/// Gets the number of Players in the Bracket.
@@ -148,14 +139,56 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_playerId">ID of Player to remove</param>
 		void RemovePlayer(int _playerId);
-		[System.Obsolete("use RemovePlayer(int ID) instead", false)]
-		void RemovePlayer(IPlayer _player);
 
 		/// <summary>
 		/// Clears the bracket's player list.
 		/// (Deletes all Matches)
 		/// </summary>
 		void ResetPlayers();
+
+		/// <summary>
+		/// Add/record a finished Game.
+		/// </summary>
+		/// <param name="_matchNumber">Match to contain this Game</param>
+		/// <param name="_defenderScore">Score for Defender-slot Player</param>
+		/// <param name="_challengerScore">Score for Challenger-slot Player</param>
+		/// <param name="_winnerSlot">Slot of winner (Defender/Challenger)</param>
+		/// <returns>Model of the new Game</returns>
+		GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
+
+		/// <summary>
+		/// Replaces a Game with new data.
+		/// </summary>
+		/// <param name="_matchNumber">Match to contain this Game</param>
+		/// <param name="_gameNumber">Game Number to replace</param>
+		/// <param name="_defenderScore">Score for Defender-slot Player</param>
+		/// <param name="_challengerScore">Score for Challenger-slot Player</param>
+		/// <param name="_winnerSlot">Slot of winner (Defender/Challenger)</param>
+		/// <returns>Model of the new Game</returns>
+		GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
+
+		/// <summary>
+		/// Delete/un-record a Match's most recent Game.
+		/// </summary>
+		/// <param name="_matchNumber">Number of Match to modify</param>
+		/// <returns>Model of removed Game</returns>
+		GameModel RemoveLastGame(int _matchNumber);
+
+		/// <summary>
+		/// Manually set a winner for specified Match.
+		/// Winner's score will be -1.
+		/// </summary>
+		/// <param name="_matchNumber">Number of Match to affect</param>
+		/// <param name="_winnerSlot">Slot of winner (Defender/Challenger)</param>
+		void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot);
+
+		/// <summary>
+		/// Reset score for the specified match.
+		/// Resets any affected "future" matches.
+		/// </summary>
+		/// <param name="_matchNumber">Number of specified match</param>
+		/// <returns>List of Models of removed Games</returns>
+		List<GameModel> ResetMatchScore(int _matchNumber);
 
 		/// <summary>
 		/// Get all Matches in specified round.
@@ -182,7 +215,21 @@ namespace Tournament.Structure
 		IMatch GetMatch(int _matchNumber);
 
 		/// <summary>
-		/// Resets every Match to a pre-play state (no games played).
+		/// Set the max number of Games PER MATCH for one round.
+		/// </summary>
+		/// <param name="_roundIndex">Round of Matches to modify</param>
+		/// <param name="_maxGamesPerMatch">How many Games each Match may last</param>
+		void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch);
+
+		/// <summary>
+		/// Set the max number of Games PER MATCH for one lower round.
+		/// </summary>
+		/// <param name="_roundIndex">Round (lower bracket) of Matches to modify</param>
+		/// <param name="_maxGamesPerMatch">How many Games each Match may last</param>
+		void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch);
+
+		/// <summary>
+		/// Resets EVERY Match to a pre-play state (no games played).
 		/// </summary>
 		void ResetMatches();
 #endregion

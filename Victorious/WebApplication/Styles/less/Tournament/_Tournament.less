@@ -4,200 +4,63 @@
 
     .content-header {
         width: 100%;
+
         .tournamentTitle {
             margin-bottom: 0em;
+            padding: 0em;
         }
+
         .tournament-buttons {
             display: inline-block;
-
-            > * {
-                cursor: pointer;
-            }
         }
 
         .gameTitle {
             margin-top: 0em;
-            /*background-color: red;*/
         }
     }
 
-    .list-table-header ul li {
-        text-align: center;
-    }
-
-    .round {
-        vertical-align: middle;
-        height: 100%;
-        position: relative;
-    }
-
-    .match {
-        position: relative;
-        padding: .5em;
-        /*.matchNum {
-            position: relative;
-
-            .edit {
-                width: 1em;
-                height: 1em;
-
-                &.hide {
-                    img {
-                        display: none;
-                    }
-                    display:none;
-                }
-
-                .svg {
-                    position: absolute;
-                    right: 0em;
-                    top: 0em;
-                }
-            }
-        }*/
-        .matchHeader {
-            .edit {
-                &.hide {
-                    display: none;
-                }
-
-                .img {
-                    position: relative;
-                    right: 0em;
-                }
-            }
-        }
-
-        .matchData {
-            background-color: @match-color;
-            width: 100%;
-
-            .info {
-                position: relative;
-                display: block;
-                border: .1em solid @white;
-                overflow: hidden;
-
-                .defender, .challenger {
-                    position: relative;
-                    display: block;
-                    width: 100%;
-                    height: 1.75em;
-                    overflow: hidden;
-
-                    &.teamHover {
-                        background-color: @color-primary-2;
-                    }
-
-                    .seed {
-                        display: inline-block;
-                        text-align: right;
-                        width: 1.5em;
-                        padding: .3em;
-                        border-right: .1em solid @white;
-                    }
-
-                    .name {
-                        overflow: hidden;
-                        display: inline-block;
-                        padding: .2em;
-                        /*background-color: red;*/
-                    }
-
-                    .match-score {
-                        position: absolute;
-                        display: inline-block;
-                        text-align: right;
-                        padding: .25em;
-                        width: 1.5em;
-                        border-left: .1em solid @white;
-                        right: 0em;
-                    }
-
-                    .score-edit {
-                        display: none;
-                    }
-                }
-
-                .defender {
-                    border-bottom: .1em solid @white;
-                }
-            }
-        }
-
-        &.grandFinal {
-            position: relative;
-            top: -35%;
-        }
-    }
-
-
-    .match-edit-module {
-        display: none;
-
+    /*.match-edit-module {
         &.open {
-            display: inline-block;
+            display: block;
         }
 
-        &.open, > * {
-            position: absolute;
-            top: 0em;
-            left: 0em;
-            width: 100%;
-            height: 100%;
-        }
-
-        .module-background {
-            opacity: 0.9;
-            background-color: darken(@color-primary-0, 30%);
-        }
-
-        .module-close {
-            text-align: right;
-            font-size: 3em;
-        }
+        display: none;
+        position: absolute;
+        top: 0em;
+        width: 100%;
+        opacity: .9;
+        background-color: green;
+        height: 100%;
 
         .module-content {
-            width: 95%;
             padding: 1em;
-            top: 10%;
 
-            .edit {
+            .editHeader {
+                h2 {
+                    display: inline-block;
+                }
+
+                .options {
+                    display: inline-block;
+                }
+            }
+
+            .options {
+                .add-game {
+                    &.hide {
+                        display: none;
+                    }
+                    display: inline-block;
+                }
+            }
+
+            .overview {
                 display: none;
             }
 
-            .match {
-                width: 50%;
-
-                .challenger, .defender {
-                    .match-score {
-                        display: none;
-                    }
-
-                    .score-edit {
-                        right: 0em;
-                        position: absolute;
-                        display: inline-block;
-                        width: 2em;
-                        height: 100%;
-                        padding: .25em;
-                    }
-                }
+            .TournamentGame {
+                display: block;
             }
-
-            .match-submit {
-                padding-top: 1em;
-            }
-
-            .info {
-                > li {
-                    width: 100%;
-
-                    &.selected-winner {
-                        background-color: @alert-orange;
-                    }
-                }
-            }
-        }
-    }
+        }*/
+    /*}*/
 }

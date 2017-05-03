@@ -8,7 +8,6 @@ namespace Tournament.Structure.Tests
 	[TestClass]
 	public class DoubleElimBracketTests
 	{
-#if false
 #region Bracket Creation
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -42,18 +41,6 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(2, b.Players.Count);
 		}
-#if false
-		[TestMethod]
-		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB Ctor")]
-		[ExpectedException(typeof(NullReferenceException))]
-		public void DEBCtor_ThrowsNullRef_WithNullParam()
-		{
-			IBracket b = new DoubleElimBracket(null);
-
-			Assert.AreEqual(1, 2);
-		}
-#endif
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB Ctor")]
@@ -77,8 +64,8 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new DoubleElimBracket(pList);
-			//b.CreateBracket(2);
 
+			//b.CreateBracket(2);
 			Assert.AreEqual(3, b.NumberOfRounds);
 		}
 		[TestMethod]
@@ -94,8 +81,8 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new DoubleElimBracket(pList);
-			//b.CreateBracket(2);
 
+			//b.CreateBracket(2);
 			Assert.AreEqual(4, b.NumberOfLowerRounds);
 		}
 		[TestMethod]
@@ -119,7 +106,6 @@ namespace Tournament.Structure.Tests
 				List<IMatch> round = b.GetLowerRound(r);
 				numLowerMatches += round.Count;
 			}
-
 			Assert.AreEqual(6, numLowerMatches);
 		}
 		[TestMethod]
@@ -270,8 +256,8 @@ namespace Tournament.Structure.Tests
 #region Bracket Progression
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB AddWin")]
-		public void DEB_AddWin_MovesLoserToLowerBracket()
+		[TestCategory("DEB AddGame")]
+		public void DEB_AddGame_MovesLoserToLowerBracket()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 8; ++i)
@@ -283,16 +269,15 @@ namespace Tournament.Structure.Tests
 			IBracket b = new DoubleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(2, PlayerSlot.Challenger);
-
+			b.AddGame(2, 0, 10, PlayerSlot.Challenger);
 			Assert.AreEqual(b.GetMatch(2).Players[(int)PlayerSlot.Defender],
 				b.GetLowerRound(1)[0].Players[(int)PlayerSlot.Challenger]);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB AddWin")]
+		[TestCategory("DEB AddGame")]
 		[TestCategory("Rankings")]
-		public void DEBAddWin_UpperBracketWins_DoNotPopulateRankingsArray()
+		public void DEBAddGame_UpperBracketWins_DoNotAffectRankingsList()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -306,16 +291,15 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n <= 3; ++n)
 			{
-				b.AddWin(n, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
-
 			Assert.AreEqual(0, b.Rankings.Count);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB AddWin")]
+		[TestCategory("DEB AddGame")]
 		[TestCategory("Rankings")]
-		public void DEBAddWin_LowerBracketWins_PopulateRankingsArray()
+		public void DEBAddGame_LowerBracketWins_AddsLoserToRankingsList()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -329,17 +313,16 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n <= 4; ++n)
 			{
-				b.AddWin(n, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
-
 			Assert.AreEqual(b.GetMatch(4).Players[(int)PlayerSlot.Challenger].Id,
 				b.Rankings[0].Id);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB AddWin")]
+		[TestCategory("DEB AddGame")]
 		[TestCategory("Rankings")]
-		public void DEBAddWin_GrandFinalWin_AddsLoserToRankingsArray()
+		public void DEBAddGame_GrandFinalWin_AddsLoserToRankingsList()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -353,17 +336,16 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n <= b.NumberOfMatches; ++n)
 			{
-				b.AddWin(n, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
-
 			Assert.AreEqual(b.GrandFinal.Players[(int)PlayerSlot.Challenger].Id,
 				b.Rankings[1].Id);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB AddWin")]
+		[TestCategory("DEB AddGame")]
 		[TestCategory("Rankings")]
-		public void DEBAddWin_GrandFinalWin_AddsWinnerToRankingsArray()
+		public void DEBAddGame_GrandFinalWin_AddsWinnerToRankingsList()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -377,16 +359,15 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n <= b.NumberOfMatches; ++n)
 			{
-				b.AddWin(n, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
-
 			Assert.AreEqual(b.GrandFinal.Players[(int)PlayerSlot.Defender].Id,
 				b.Rankings[0].Id);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB AddWin")]
-		public void DEB_AddWin_MovesTeamsThroughLowerBracket()
+		[TestCategory("DEB AddGame")]
+		public void DEBAddGame_MovesTeamsThroughLowerBracket()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 8; ++i)
@@ -398,17 +379,17 @@ namespace Tournament.Structure.Tests
 			IBracket b = new DoubleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(1, PlayerSlot.Defender);
-			b.AddWin(2, PlayerSlot.Defender);
-			b.AddWin(b.GetLowerRound(1)[0].MatchNumber, PlayerSlot.Defender);
+			b.AddGame(1, 1, 0, PlayerSlot.Defender);
+			b.AddGame(2, 1, 0, PlayerSlot.Defender);
 
+			b.AddGame(b.GetLowerRound(1)[0].MatchNumber, 1, 0, PlayerSlot.Defender);
 			Assert.AreEqual(b.GetLowerRound(1)[0].Players[(int)PlayerSlot.Defender],
 				b.GetLowerRound(2)[0].Players[(int)PlayerSlot.Challenger]);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB AddWin")]
-		public void DEB_AddWin_DropsLoserFromSecondRound()
+		[TestCategory("DEB AddGame")]
+		public void DEBAddGame_DropsLoserFromSecondRound()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -420,17 +401,17 @@ namespace Tournament.Structure.Tests
 			IBracket b = new DoubleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(1, PlayerSlot.Defender);
-			b.AddWin(2, PlayerSlot.Defender);
-			b.AddWin(3, PlayerSlot.Defender);
+			b.AddGame(1, 1, 0, PlayerSlot.Defender);
+			b.AddGame(2, 1, 0, PlayerSlot.Defender);
 
+			b.AddGame(3, 1, 0, PlayerSlot.Defender);
 			Assert.AreEqual(b.GetMatch(3).Players[(int)PlayerSlot.Challenger],
 				b.GetLowerRound(2)[0].Players[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB AddWin")]
-		public void DEB_AddWin_MovesUpperWinnerToGrandFinal()
+		[TestCategory("DEB AddGame")]
+		public void DEBAddGame_MovesUpperWinnerToGrandFinal()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -442,17 +423,17 @@ namespace Tournament.Structure.Tests
 			IBracket b = new DoubleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(1, PlayerSlot.Defender);
-			b.AddWin(2, PlayerSlot.Defender);
-			b.AddWin(3, PlayerSlot.Challenger);
+			b.AddGame(1, 1, 0, PlayerSlot.Defender);
+			b.AddGame(2, 1, 0, PlayerSlot.Defender);
 
+			b.AddGame(3, 0, 1, PlayerSlot.Challenger);
 			Assert.AreEqual(b.GetMatch(3).Players[(int)PlayerSlot.Challenger],
 				b.GrandFinal.Players[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB AddWin")]
-		public void DEB_AddWin_MovesLowerWinnerToGrandFinal()
+		[TestCategory("DEB AddGame")]
+		public void DEBAddGame_MovesLowerWinnerToGrandFinal()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -464,19 +445,17 @@ namespace Tournament.Structure.Tests
 			IBracket b = new DoubleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(1, PlayerSlot.Defender);
-			b.AddWin(2, PlayerSlot.Defender);
-			b.AddWin(3, PlayerSlot.Defender);
-			b.AddWin(4, PlayerSlot.Defender);
-			b.AddWin(5, PlayerSlot.Defender);
-
+			for(int n = 1; n < b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
 			Assert.AreEqual(b.GetMatch(5).Players[(int)PlayerSlot.Defender],
 				b.GrandFinal.Players[(int)PlayerSlot.Challenger]);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB AddWin")]
-		public void DEB_AddWin_AddsWinsToGrandFinalMatch()
+		[TestCategory("DEB AddGame")]
+		public void DEBAddGame_AddsScoreToGrandFinalMatch()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -488,20 +467,16 @@ namespace Tournament.Structure.Tests
 			IBracket b = new DoubleElimBracket(pList);
 			//b.CreateBracket();
 
-			b.AddWin(1, PlayerSlot.Defender);
-			b.AddWin(2, PlayerSlot.Defender);
-			b.AddWin(3, PlayerSlot.Defender);
-			b.AddWin(4, PlayerSlot.Defender);
-			b.AddWin(5, PlayerSlot.Defender);
-			b.AddWin(b.GrandFinal.MatchNumber, PlayerSlot.Defender);
-
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
 			Assert.AreEqual(1, b.GrandFinal.Score[(int)PlayerSlot.Defender]);
 		}
-
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB SubtractWin")]
-		public void DEBSubtractWin_Subtracts()
+		[TestCategory("DEB AddGame")]
+		public void DEBAddGame_AddsGamesToGrandFinal_GamesList()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -511,17 +486,19 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new DoubleElimBracket(pList);
+			//b.CreateBracket();
 
-			b.GetMatch(1).SetWinsNeeded(2);
-			b.AddWin(1, PlayerSlot.Defender);
-			b.SubtractWin(1, PlayerSlot.Defender);
-
-			Assert.AreEqual(0, b.GetMatch(1).Score[(int)PlayerSlot.Defender]);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+			Assert.AreEqual(1, b.GrandFinal.Games.Count);
 		}
+
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB SubtractWin")]
-		public void DEBSubtractWin_SubtractsFromLowerBracket()
+		[TestCategory("DEB RemoveLastGame")]
+		public void DEBRemoveLastGame_RemovesFromLowerBracket()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -532,20 +509,20 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new DoubleElimBracket(pList);
 			
-			b.AddWin(1, PlayerSlot.Defender);
-			b.AddWin(2, PlayerSlot.Defender);
+			b.AddGame(1, 1, 0, PlayerSlot.Defender);
+			b.AddGame(2, 1, 0, PlayerSlot.Defender);
 			int mNum = b.GetLowerRound(1)[0].MatchNumber;
-			b.GetMatch(mNum).SetWinsNeeded(2);
-			b.AddWin(mNum, PlayerSlot.Defender);
-			b.SubtractWin(mNum, PlayerSlot.Defender);
+			b.GetMatch(mNum).SetMaxGames(3);
+			b.AddGame(mNum, 1, 0, PlayerSlot.Defender);
 
+			b.RemoveLastGame(mNum);
 			Assert.AreEqual(0, b.GetMatch(mNum).Score[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB SubtractWin")]
+		[TestCategory("DEB RemoveLastGame")]
 		[TestCategory("Rankings")]
-		public void DEBSubtractWin_UpdatesRankings_WhenMatchWinIsReversed()
+		public void DEBRemoveLastGame_CorrectlyRemovesPriorLoserFromRankingsList()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -558,17 +535,18 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n <= 4; ++n)
 			{
-				b.AddWin(n, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
-			b.SubtractWin(4, PlayerSlot.Defender);
 
+			b.RemoveLastGame(4);
 			Assert.AreEqual(0, b.Rankings.Count);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB SubtractWin")]
+		[TestCategory("DEB RemoveLastGame")]
+		[TestCategory("DEB RemovePlayerFromFutureMatches")]
 		[TestCategory("Rankings")]
-		public void DEBSubtractWin_UpdatesALLRankings_WhenMatchWinIsReversed()
+		public void DEBRemoveLastGame_UpdatesALLRankings_WhenMatchWinIsReversed()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -581,16 +559,16 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n <= b.NumberOfMatches; ++n)
 			{
-				b.AddWin(n, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
-			b.SubtractWin(4, PlayerSlot.Defender);
 
+			b.RemoveLastGame(b.GetLowerRound(1)[0].MatchNumber);
 			Assert.AreEqual(0, b.Rankings.Count);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB SubtractWin")]
-		public void DEBSubtractWin_SubtractsFromGrandFinal()
+		[TestCategory("DEB RemoveLastGame")]
+		public void DEBRemoveLastGame_RemovesFromGrandFinal()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -603,42 +581,17 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n <= b.NumberOfMatches; ++n)
 			{
-				b.AddWin(n, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
-			b.SubtractWin(b.GrandFinal.MatchNumber, PlayerSlot.Defender);
 
+			b.RemoveLastGame(b.GrandFinal.MatchNumber);
 			Assert.AreEqual(0, b.GrandFinal.Score[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB SubtractWin")]
-		public void DEBSubtractWin_DoesntIterateIfMatchDoesntReset()
-		{
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 4; ++i)
-			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i);
-				pList.Add(moq.Object);
-			}
-			IBracket b = new DoubleElimBracket(pList);
-
-			for (int n = 1; n < b.GrandFinal.MatchNumber; ++n)
-			{
-				b.GetMatch(n).SetWinsNeeded(2);
-				b.AddWin(n, PlayerSlot.Defender);
-				b.AddWin(n, PlayerSlot.Challenger);
-				b.AddWin(n, PlayerSlot.Defender);
-			}
-			b.SubtractWin(4, PlayerSlot.Challenger);
-
-			Assert.IsNotNull(b.GetMatch(5).Players[(int)PlayerSlot.Challenger]);
-		}
-		[TestMethod]
-		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB SubtractWin")]
+		[TestCategory("DEB RemoveLastGame")]
 		[ExpectedException(typeof(InvalidIndexException))]
-		public void DEBSubtractWin_ThrowsInvalidIndex_WithBadMatchNumberInput()
+		public void DEBRemoveLastGame_ThrowsInvalidIndex_WithBadMatchNumberInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -649,14 +602,14 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new DoubleElimBracket(pList);
 
-			b.SubtractWin(-1, 0);
+			b.RemoveLastGame(-1);
 			Assert.AreEqual(1, 2);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB SubtractWin")]
+		[TestCategory("DEB RemoveLastGame")]
 		[ExpectedException(typeof(MatchNotFoundException))]
-		public void DEBSubtractWin_ThrowsNotFound_WithBadMatchNumberInput()
+		public void DEBRemoveLastGame_ThrowsNotFound_WithBadMatchNumberInput()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -667,7 +620,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new DoubleElimBracket(pList);
 
-			b.SubtractWin(b.NumberOfMatches + 1, 0);
+			b.RemoveLastGame(b.NumberOfMatches + 1);
 			Assert.AreEqual(1, 2);
 		}
 
@@ -685,12 +638,12 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new DoubleElimBracket(pList);
 
-			b.GetMatch(1).SetWinsNeeded(2);
-			b.AddWin(1, PlayerSlot.Defender);
-			b.AddWin(1, PlayerSlot.Challenger);
-			b.ResetMatchScore(1);
+			b.GetMatch(1).SetMaxGames(3);
+			b.AddGame(1, 1, 0, PlayerSlot.Defender);
+			b.AddGame(1, 0, 1, PlayerSlot.Challenger);
 
-			Assert.AreEqual(0, b.GetMatch(1).Score[(int)PlayerSlot.Challenger]);
+			b.ResetMatchScore(1);
+			Assert.AreEqual(0, b.GetMatch(1).Score[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -708,14 +661,39 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n < b.NumberOfMatches; ++n)
 			{
-				b.GetMatch(n).SetWinsNeeded(2);
-				b.AddWin(n, PlayerSlot.Defender);
-				b.AddWin(n, PlayerSlot.Challenger);
-				b.AddWin(n, PlayerSlot.Defender);
+				b.GetMatch(n).SetMaxGames(3);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+				b.AddGame(n, 0, 1, PlayerSlot.Challenger);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
-			b.ResetMatchScore(4);
 
+			b.ResetMatchScore(4);
 			Assert.AreEqual(0, b.GetMatch(4).Score[(int)PlayerSlot.Challenger]);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("DEB ResetMatchScore")]
+		public void DEBResetMatch_ResetsALargeBracket()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 11; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			for (int n = 1; n < b.NumberOfMatches; ++n)
+			{
+				b.GetMatch(n).SetMaxGames(3);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+				b.AddGame(n, 0, 1, PlayerSlot.Challenger);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			b.ResetMatchScore(2);
+			Assert.AreEqual(0, b.GetMatch(2).Score[(int)PlayerSlot.Challenger]);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
@@ -733,18 +711,19 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n <= b.NumberOfMatches; ++n)
 			{
-				b.GetMatch(n).SetWinsNeeded(2);
-				b.AddWin(n, PlayerSlot.Defender);
-				b.AddWin(n, PlayerSlot.Challenger);
-				b.AddWin(n, PlayerSlot.Defender);
+				b.GetMatch(n).SetMaxGames(3);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+				b.AddGame(n, 0, 1, PlayerSlot.Challenger);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
-			b.ResetMatchScore(b.GrandFinal.MatchNumber);
 
+			b.ResetMatchScore(b.GrandFinal.MatchNumber);
 			Assert.AreEqual(0, b.GrandFinal.Score[(int)PlayerSlot.Challenger]);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB ResetMatch")]
+		[TestCategory("DEB RemovePlayerFromFutureMatches")]
 		[TestCategory("Rankings")]
 		public void DEBResetMatch_UpdatesALLRankings_WhenMatchWinIsReversed()
 		{
@@ -759,10 +738,10 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n <= b.NumberOfMatches; ++n)
 			{
-				b.AddWin(n, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
-			b.ResetMatchScore(1);
 
+			b.ResetMatchScore(1);
 			Assert.AreEqual(0, b.Rankings.Count);
 		}
 		[TestMethod]
@@ -805,25 +784,6 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB RemovePlayerFromFutureMatches")]
-		public void DEB_RPFFM_RemovesPlayer()
-		{
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 4; ++i)
-			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i);
-				pList.Add(moq.Object);
-			}
-			IBracket b = new DoubleElimBracket(pList);
-
-			b.AddWin(1, PlayerSlot.Defender);
-			b.SubtractWin(1, PlayerSlot.Defender);
-
-			Assert.IsNull(b.GetRound(2)[0].Players[(int)PlayerSlot.Defender]);
-		}
-		[TestMethod]
-		[TestCategory("DoubleElimBracket")]
-		[TestCategory("DEB RemovePlayerFromFutureMatches")]
 		public void DEB_RPFFM_RemovesPlayerFromLowerBracket()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -835,9 +795,8 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new DoubleElimBracket(pList);
 
-			b.AddWin(1, PlayerSlot.Defender);
-			b.SubtractWin(1, PlayerSlot.Defender);
-
+			b.AddGame(1, 1, 0, PlayerSlot.Defender);
+			b.RemoveLastGame(1);
 			Assert.IsNull(b.GetLowerRound(1)[0].Players[(int)PlayerSlot.Defender]);
 		}
 		[TestMethod]
@@ -856,10 +815,10 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n < b.NumberOfMatches; ++n)
 			{
-				b.AddWin(n, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
-			b.ResetMatchScore(b.GetLowerRound(1)[0].MatchNumber);
 
+			b.ResetMatchScore(b.GetLowerRound(1)[0].MatchNumber);
 			Assert.IsNull(b.GrandFinal.Players[(int)PlayerSlot.Challenger]);
 		}
 		[TestMethod]
@@ -878,10 +837,10 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n < b.NumberOfMatches; ++n)
 			{
-				b.AddWin(n, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
-			b.ResetMatchScore(b.GetLowerRound(1)[0].MatchNumber);
 
+			b.ResetMatchScore(b.GetLowerRound(1)[0].MatchNumber);
 			Assert.AreEqual(0, b.GetLowerRound(2)[0].Score[0]);
 		}
 		[TestMethod]
@@ -900,13 +859,87 @@ namespace Tournament.Structure.Tests
 
 			for (int n = 1; n < b.NumberOfMatches; ++n)
 			{
-				b.AddWin(n, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
-			b.ResetMatchScore(1);
 
+			b.ResetMatchScore(1);
 			Assert.IsNotNull(b.GetLowerRound(1)[0].Players[(int)PlayerSlot.Challenger]);
 		}
 #endregion
-#endif
+
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("SetMaxGamesForWholeRound")]
+		public void DEBSMGFWR_UpdatesCorrectUpperBracketRound()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 16; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			int games = 5;
+			int round = 2;
+			b.SetMaxGamesForWholeRound(round, games);
+			Assert.AreEqual(games, b.GetRound(round)[1].MaxGames);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("SetMaxGamesForWholeRound")]
+		public void DEBSMGFWR_DoesNotUpdateLowerBracketRound()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 16; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			int round = 2;
+			b.SetMaxGamesForWholeRound(round, 5);
+			Assert.AreEqual(1, b.GetLowerRound(round)[0].MaxGames);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("SetMaxGamesForWholeLowerRound")]
+		public void DEBSMGFWLR_CorrectlyUpdatesLowerBracketRound()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 16; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			int round = 2;
+			int games = 5;
+			b.SetMaxGamesForWholeLowerRound(round, games);
+			Assert.AreEqual(games, b.GetLowerRound(round)[1].MaxGames);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("SetMaxGamesForWholeRound")]
+		public void DEBSMGFWLR_DoesNotUpdateUpperBracketRound()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 16; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			int round = 2;
+			b.SetMaxGamesForWholeLowerRound(round, 5);
+			Assert.AreEqual(1, b.GetRound(round)[0].MaxGames);
+		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.Linq;
 using Moq;
 
 namespace Tournament.Structure.Tests
@@ -8,6 +9,7 @@ namespace Tournament.Structure.Tests
 	[TestClass]
 	public class BracketTests
 	{
+		#region Player Methods
 		[TestMethod]
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket Accessors")]
@@ -23,6 +25,93 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 
 			Assert.AreEqual(2, b.NumberOfPlayers());
+		}
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("Bracket GetPlayerSeed")]
+		public void GetPlayerSeed_ReturnsCorrectSeedValue()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i * 10);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			Assert.AreEqual(3, b.GetPlayerSeed(30));
+		}
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("Bracket GetPlayerSeed")]
+		[ExpectedException(typeof(PlayerNotFoundException))]
+		public void GetPlayerSeed_ThrowsNotFoundWithBadIDInput()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i * 10);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			b.GetPlayerSeed(11);
+
+			Assert.AreEqual(3, 2);
+		}
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("Bracket RandomizeSeeds")]
+		public void RandomizeSeeds_Randomizes_ThisIsJustForDebugging()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i * 10);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			b.RandomizeSeeds();
+
+			Assert.AreEqual(2, 2);
+		}
+
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("Bracket SetNewPlayerlist")]
+		public void SetNewPlayerlist_ReplacesOldPlayerlistWithNew()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 12; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList.Where(p => p.Id <= 8).ToList());
+
+			b.SetNewPlayerlist(pList.Where(p => p.Id > 8).ToList());
+			Assert.AreEqual(4, b.Players.Count);
+		}
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("Bracket SetNewPlayerlist")]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void SetNewPlayerlist_ThrowsNullReferenceWithNullParam()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			b.SetNewPlayerlist(null);
+			Assert.AreEqual(1, 2);
 		}
 
 		[TestMethod]
@@ -69,7 +158,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket AddPlayer")]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void AddPlayer_ThrowsNullRef_OnNullParam()
+		public void AddPlayer_ThrowsArgNullExcept_OnNullParam()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 2; ++i)
@@ -81,7 +170,6 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 
 			b.AddPlayer(null);
-
 			Assert.AreEqual(1, 2);
 		}
 		[TestMethod]
@@ -128,7 +216,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket ReplacePlayer")]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void ReplacePlayer_ThrowsNullRef_OnNullParam()
+		public void ReplacePlayer_ThrowsArgNullExcept_OnNullParam()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -156,8 +244,8 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SingleElimBracket(pList);
-			b.ReplacePlayer(new Mock<IPlayer>().Object, 6);
 
+			b.ReplacePlayer(new Mock<IPlayer>().Object, 6);
 			Assert.AreEqual(1, 2);
 		}
 		[TestMethod]
@@ -174,10 +262,9 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new DoubleElimBracket(pList);
-
 			for (int n = 1; n < b.NumberOfMatches; ++n)
 			{
-				b.AddWin(n, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
 
 			Mock<IPlayer> m = new Mock<IPlayer>();
@@ -189,30 +276,142 @@ namespace Tournament.Structure.Tests
 
 		[TestMethod]
 		[TestCategory("Bracket")]
-		[TestCategory("Bracket RemovePlayer")]
-		public void RemovePlayer_Removes()
+		[TestCategory("Bracket SwapPlayers")]
+		public void SwapPlayers_Swaps()
 		{
-			IPlayer ip = new Mock<IPlayer>().Object;
+			int i1 = 1;
+			int i2 = 6;
+
 			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 4; ++i)
+			for (int i = 1; i <= 8; ++i)
 			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
+				var moq = new Mock<IPlayer>();
 				moq.Setup(p => p.Id).Returns(i);
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			b.AddPlayer(ip);
-			b.RemovePlayer(ip);
-
-			Assert.IsFalse(b.Players.Contains(ip));
+			int playerId = b.Players[i1].Id;
+			b.SwapPlayers(i1, i2);
+			Assert.AreEqual(playerId, b.Players[i2].Id);
 		}
 		[TestMethod]
 		[TestCategory("Bracket")]
-		[TestCategory("Bracket RemovePlayer")]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void RemovePlayer_ThrowsNullRef_OnNullParam()
+		[TestCategory("Bracket SwapPlayers")]
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void SwapPlayers_ThrowsInvalidIndexWithBadParameter()
 		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 8; ++i)
+			{
+				var moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			b.SwapPlayers(0, -2);
+			Assert.AreEqual(1, 2);
+		}
+
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("Bracket ReinsertPlayer")]
+		public void ReinsertPlayer_MovesPlayerUpwardToDestinationSlot()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 8; ++i)
+			{
+				var moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			int playerId = b.Players[6].Id;
+			b.ReinsertPlayer(6, 2);
+			Assert.AreEqual(playerId, b.Players[2].Id);
+		}
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("Bracket ReinsertPlayer")]
+		public void ReinsertPlayer_ShiftsAffectedPlayersDownward()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 8; ++i)
+			{
+				var moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			int playerId = b.Players[4].Id;
+			b.ReinsertPlayer(6, 2);
+			Assert.AreEqual(playerId, b.Players[5].Id);
+		}
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("Bracket ReinsertPlayer")]
+		public void ReinsertPlayer_MovesPlayerDownwardToDestinationSlot()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 8; ++i)
+			{
+				var moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			int playerId = b.Players[2].Id;
+			b.ReinsertPlayer(2, 6);
+			Assert.AreEqual(playerId, b.Players[6].Id);
+		}
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("Bracket ReinsertPlayer")]
+		public void ReinsertPlayer_ShiftsAffectedPlayersUpward()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 8; ++i)
+			{
+				var moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			int playerId = b.Players[5].Id;
+			b.ReinsertPlayer(2, 6);
+			Assert.AreEqual(playerId, b.Players[4].Id);
+		}
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("Bracket ReinsertPlayer")]
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void ReinsertPlayer_ThrowsInvalidIndex_WithBadIndexInput()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 8; ++i)
+			{
+				var moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			b.ReinsertPlayer(2, -2);
+			Assert.AreEqual(1, 2);
+		}
+
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("Bracket RemovePlayer")]
+		public void RemovePlayer_Removes()
+		{
+			var ip = new Mock<IPlayer>();
+			ip.Setup(p => p.Id).Returns(10);
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
 			{
@@ -221,15 +420,17 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SingleElimBracket(pList);
-			b.RemovePlayer(null);
 
-			Assert.AreEqual(1, 2);
+			b.AddPlayer(ip.Object);
+			b.RemovePlayer(ip.Object.Id);
+
+			Assert.IsFalse(b.Players.Contains(ip.Object));
 		}
 		[TestMethod]
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket RemovePlayer")]
 		[ExpectedException(typeof(PlayerNotFoundException))]
-		public void RemovePlayer_ThrowsKNotFound_IfPlayerIsntPresent()
+		public void RemovePlayer_ThrowsNotFound_IfPlayerIsntPresent()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -239,7 +440,7 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SingleElimBracket(pList);
-			b.RemovePlayer(new Mock<IPlayer>().Object);
+			b.RemovePlayer(-5);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -260,10 +461,29 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SingleElimBracket(pList);
 			b.AddPlayer(ip);
 			b.CreateBracket();
-			b.RemovePlayer(ip);
+			b.RemovePlayer(ip.Id);
 
 			Assert.AreEqual(0, b.NumberOfMatches);
 		}
+
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("Bracket ResetPlayers")]
+		public void ResetPlayers_ClearsPlayerList()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 4; ++i)
+			{
+				var moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			b.ResetPlayers();
+			Assert.AreEqual(0, b.Players.Count);
+		}
+		#endregion
 
 		[TestMethod]
 		[TestCategory("Bracket")]
@@ -319,7 +539,7 @@ namespace Tournament.Structure.Tests
 
 		[TestMethod]
 		[TestCategory("Bracket")]
-		[TestCategory("Bracket Accessors")]
+		[TestCategory("Bracket GetMatch")]
 		public void GetMatch_ReturnsCorrectMatch()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
@@ -336,7 +556,7 @@ namespace Tournament.Structure.Tests
 		}
 		[TestMethod]
 		[TestCategory("Bracket")]
-		[TestCategory("Bracket Accessors")]
+		[TestCategory("Bracket GetMatch")]
 		[ExpectedException(typeof(InvalidIndexException))]
 		public void GetMatch_ThrowsInvalidIndex_WithNegativeParam()
 		{
@@ -354,7 +574,7 @@ namespace Tournament.Structure.Tests
 		}
 		[TestMethod]
 		[TestCategory("Bracket")]
-		[TestCategory("Bracket Accessors")]
+		[TestCategory("Bracket GetMatch")]
 		[ExpectedException(typeof(MatchNotFoundException))]
 		public void GetMatch_ThrowsNotFound_IfMatchNumberNotFound()
 		{
@@ -370,24 +590,61 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(1, 2);
 		}
-#if false
+
 		[TestMethod]
 		[TestCategory("Bracket")]
-		[TestCategory("Bracket ResetBracket")]
-		public void ResetBracket_Resets()
+		[TestCategory("SetMaxGamesForWholeRound")]
+		public void SMGFWR_UpdatesSingleElimBrackets()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 4; ++i)
+			for (int i = 1; i <= 16; ++i)
 			{
 				Mock<IPlayer> moq = new Mock<IPlayer>();
 				moq.Setup(p => p.Id).Returns(i);
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SingleElimBracket(pList);
-			b.ResetBracket();
 
-			Assert.AreEqual(0, b.NumberOfMatches);
+			int games = 5;
+			b.SetMaxGamesForWholeRound(2, games);
+			Assert.AreEqual(games, b.GetRound(2)[1].MaxGames);
 		}
-#endif
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("SetMaxGamesForWholeRound")]
+		[ExpectedException(typeof(ScoreException))]
+		public void SMGFWR_ThrowsScoreExcept_IfInputIsNegative()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			b.SetMaxGamesForWholeRound(1, 0);
+			Assert.AreEqual(1, 2);
+		}
+		[TestMethod]
+		[TestCategory("Bracket")]
+		[TestCategory("SetMaxGamesForWholeRound")]
+		[ExpectedException(typeof(InactiveMatchException))]
+		public void SMGFWR_ThrowsInactiveMatch_IfAffectedMatchIsFinished()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			b.AddGame(2, 1, 0, PlayerSlot.Defender);
+			b.SetMaxGamesForWholeRound(1, 3);
+			Assert.AreEqual(1, 2);
+		}
 	}
 }

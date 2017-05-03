@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using WebApplication.Models;
-using DataLib;
-using Tournament.Structure;
 using Newtonsoft.Json;
+using DatabaseLib;
 
 namespace WebApplication.Controllers
 {
@@ -19,41 +17,58 @@ namespace WebApplication.Controllers
         }
 
         // Tournament Search
-        [Route("Tournament/Search/{title?}")]
-        public ActionResult Search(String title)
+        [Route("Tournament/Search")]
+        public ActionResult Search(Dictionary<String, String> searchBy)
         {
             TournamentViewModel model = new TournamentViewModel();
-            model.Search(title);
-            
+            model.Search(searchBy);
+
             return View("Search", model);
+        }
+
+        [HttpPost]
+        [Route("Ajax/Tournament/Search")]
+        public JsonResult AjaxSearch(String searchData)
+        {
+            Dictionary<String, String> searchBy = JsonConvert.DeserializeObject<Dictionary<String, String>>(searchData);
+            TournamentViewModel viewModel = new TournamentViewModel();
+            List<object> dataReturned = new List<object>();
+
+            viewModel.Search(searchBy);
+            foreach (TournamentModel tourny in viewModel.SearchedTournaments)
+            {
+                dataReturned.Add(new
+                {
+                    id = tourny.TournamentID,
+                    title = tourny.Title,
+                    game = tourny.GameType.Title,
+                    startDate = tourny.TournamentStartDate.ToShortDateString(),
+                    isPublic = tourny.IsPublic,
+                    link = Url.Action("Tournament", "Tournament", new { guid = tourny.TournamentID })
+                });
+            }
+
+            return Json(JsonConvert.SerializeObject(dataReturned));
         }
 
         // Tournament Info
         [Route("Tournament/{guid}")]
         public ActionResult Tournament(String guid)
         {
-            int id = -1;
+            TournamentViewModel viewModel = new TournamentViewModel(guid);
+            viewModel.ProcessTournament();
 
-            if (int.TryParse(guid, out id))
+            if (viewModel.Model != null)
             {
-                TournamentViewModel viewModel = new TournamentViewModel(db.GetTournamentById(id));
-                viewModel.ProcessTournament();
-
-                if (viewModel.Model != null)
-                {
-                    return View("Tournament", viewModel);
-                }
-                else
-                {
-                    Session["Message"] = "The tournament you're looking for doesn't exist or is not publicly shared.";
-                    Session["Message.Class"] = ViewModel.ViewError.WARNING;
-                    return RedirectToAction("Search", "Tournament");
-                }
+                return View("Tournament", viewModel);
             }
             else
             {
-                return RedirectToAction("Search", "Tournament");
+                Session["Message"] = "The tournament you're looking for doesn't exist or is not publicly shared.";
+                Session["Message.Class"] = ViewModel.ViewError.WARNING;
             }
+
+            return RedirectToAction("Search", "Tournament");
         }
 
         // GET: Tournament/Create
@@ -77,7 +92,7 @@ namespace WebApplication.Controllers
         {
             if (Session["User.UserId"] != null)
             {
-                TournamentViewModel viewModel = new TournamentViewModel(db.GetTournamentById(id));
+                TournamentViewModel viewModel = new TournamentViewModel(id);
 
                 if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
@@ -115,48 +130,31 @@ namespace WebApplication.Controllers
 
             if (ModelState.IsValid)
             {
-                viewModel.ApplyChanges((int)Session["User.UserId"]);
-
-                TournamentModel model = viewModel.Model;
-                DbError result = db.AddTournament(model);
-
-                if (result == DbError.SUCCESS)
+                if (viewModel.Create((int)Session["User.UserId"]))
                 {
-                    // Lets now Register the user as an administrator
-                    //UserInTournamentModel userInModel = new UserInTournamentModel()
-                    //{
-                    //     UserID = (int)Session["User.UserId"],
-                    //     TournamentID = 
-                    //}
-                    DbError adminResult = db.AddUserToTournament(model, db.GetUserById((int)Session["User.UserId"]), Permission.TOURNAMENT_ADMINISTRATOR);
-                    if (adminResult == DbError.SUCCESS)
+                    if (viewModel.AddUser((int)Session["User.UserId"], Permission.TOURNAMENT_CREATOR))
                     {
                         // Show a success message.
                         Session["Message"] = "Your tournament was successfully created.";
                         Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
                     }
-                    else
-                    {
-                        // Create some log about this.
-                    }
-
-                    return RedirectToAction("Tournament", "Tournament", new { guid = model.TournamentID });
+                    //TODO: This should redirect to the tournament
+                    return RedirectToAction("Index", "Account");
                 }
                 else
                 {
-                    // The tournament failed to be created
-                    viewModel.dbException = db.interfaceException;
-                    viewModel.error = ViewModel.ViewError.EXCEPTION;
-                    viewModel.message = "We could not create the tournament due to an error.";
-                    return View("Create", viewModel);
+                    // Show a success message.
+                    Session["Message"] = "We were unable to create your account.";
+                    Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
                 }
             }
             else
             {
                 viewModel.error = ViewModel.ViewError.CRITICAL;
                 viewModel.message = "Please enter in the required fields listed below.";
-                return View("Create", viewModel);
             }
+
+            return View("Create", viewModel);
         }
 
         // POST: Tournament/Edit/5
@@ -166,35 +164,28 @@ namespace WebApplication.Controllers
         {
             if (Session["User.UserId"] != null)
             {
-                viewModel.SetModel(id);
-                if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+                viewModel.LoadData(id);
+
+                if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_CREATOR ||
+                    viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
-                    viewModel.ApplyChanges((int)Session["User.UserId"]);
-
-                    DbError tourny = db.UpdateTournament(viewModel.Model);
-                    DbError rules = db.UpdateRules(viewModel.Model.TournamentRules);
-
-                    if (tourny == DbError.SUCCESS && rules == DbError.SUCCESS)
+                    if (viewModel.Update((int)Session["User.UserId"]))
                     {
-                        viewModel.error = ViewModel.ViewError.SUCCESS;
-                        viewModel.message = "Edits to the tournament was successful";
-
-                        Session["Message"] = viewModel.message;
-                        Session["Message.Class"] = viewModel.error;
+                        Session["Message"] = "Edits to the tournament was successful";
+                        Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
 
                         return RedirectToAction("Tournament", "Tournament", new { guid = viewModel.Model.TournamentID });
                     }
                     else
                     {
-                        viewModel.error = ViewModel.ViewError.CRITICAL;
-                        viewModel.message = "Something went wrong while trying to update your tournament. Please try again or submit a ticket.";
-                        viewModel.dbException = db.interfaceException;
+                        Session["Message"] = "We were unable to update your tournament. Please try again soon";
+                        Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
                     }
                 }
                 else
                 {
-                    viewModel.message = "You do not have permission to update this tournament";
-                    viewModel.error = ViewModel.ViewError.EXCEPTION;
+                    Session["Message"] = "You do not have permission to update this tournament";
+                    Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
                 }
             }
             else
@@ -209,57 +200,30 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Tournament/Register/{tournamentVal}")]
-        public ActionResult Register(String tournamentVal)
+        public ActionResult Register(int tournamentId)
         {
-            int tournamentId = -1;
-            if (int.TryParse(tournamentVal, out tournamentId))
+            if (Session["User.UserId"] != null)
             {
-                if (Session["User.UserId"] != null)
+                // Verify the user doesn't exist in the tournament all ready
+                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+                if (viewModel.AddUser((int)Session["User.UserId"], Permission.TOURNAMENT_STANDARD))
                 {
-                    // Verify the user doesn't exist in the tournament all ready
-                    // Dont want duplicates
-                    TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-                    int userCount = viewModel.Model.UsersInTournament.Count(x => x.UserID == (int)Session["User.UserId"]);
-
-                    if (userCount == 0)
-                    {
-                        // Add the user to the tournament
-                        DbError error = db.AddUserToTournament(new UserInTournamentModel()
-                        {
-                            TournamentID = viewModel.Model.TournamentID,
-                            UserID = (int)Session["User.UserId"],
-                            Permission = Permission.TOURNAMENT_STANDARD
-                        });
-
-                        if (error == DbError.SUCCESS)
-                        {
-                            Session["Message"] = "You have been registered to this tournament";
-                            Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
-                        }
-                        else
-                        {
-                            Session["Message"] = "There was an error in registering you in the tournament";
-                            Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
-                        }
-                    }
-                    else
-                    {
-                        Session["Message"] = "You have all ready registered for this tournament";
-                        Session["Message.Class"] = ViewModel.ViewError.WARNING;
-                    }
+                    Session["Message"] = "You have been registered to this tournament";
+                    Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
                 }
                 else
                 {
-                    Session["Message"] = "You must login to register for this tournament";
+                    Session["Message"] = "We were unable to add you to the tournament";
                     Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
-                    return RedirectToAction("Login", "Account");
                 }
             }
             else
             {
-                Session["Message"] = "We don't seem to recognize this tournament.";
-                Session["Message.Class"] = ViewModel.ViewError.WARNING;
+                Session["Message"] = "You must login to register for this tournament";
+                Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+                return RedirectToAction("Login", "Account");
             }
+
             return RedirectToAction("Tournament", "Tournament", new { guid = tournamentId });
         }
 
@@ -267,144 +231,123 @@ namespace WebApplication.Controllers
         [Route("Tournament/Deregister")]
         public ActionResult Deregister(String tournamentVal)
         {
-            int tournamentId = -1;
-            if (int.TryParse(tournamentVal, out tournamentId))
+            if (Session["User.UserId"] != null)
             {
-                if (Session["User.UserId"] != null)
+                TournamentViewModel viewModel = new TournamentViewModel(tournamentVal);
+                if (viewModel.RemoveUser((int)Session["User.UserId"]))
                 {
-                    // We have a user logged in.
-                    TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-                    UserModel userModel = viewModel.Model.UsersInTournament.First(x => x.UserID == (int)Session["User.UserId"]).User;
-                    DbError result = db.RemoveUserFromTournament(viewModel.Model, userModel);
-                    if (result == DbError.SUCCESS)
-                    {
-                        Session["Message"] = "You have registered for this tournament.";
-                        Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
-                    }
-                    else
-                    {
-                        Session["Message"] = "We were not able to register you for this tournament. Please notify the tournament administrator.";
-                        Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
-                    }
+                    Session["Message"] = "You have registered for this tournament.";
+                    Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
                 }
                 else
                 {
-                    Session["Message"] = "You must login before you can register for a tournament.";
+                    Session["Message"] = "We were not able to register you for this tournament. Please notify the tournament administrator.";
                     Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
-                    return RedirectToAction("Login", "Account");
                 }
             }
             else
             {
-                Session["Message"] = "We don't seem to recognize this tournament.";
-                Session["Message.Class"] = ViewModel.ViewError.WARNING;
+                Session["Message"] = "You must login to do this action.";
+                Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+                return RedirectToAction("Index", "Account");
             }
-            //return View("Tournament", viewModel);
 
             return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
-        [Route("Tournament/Finalize")]
-        public ActionResult Finalize(String tourny)
+        [Route("Ajax/Tournament/Finalize")]
+        public JsonResult Finalize(String jsonData, Dictionary<String, int> roundData)
         {
+            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
+            bool status = false;
+            String message = "No action was taken";
+            String redirect = redirect = Url.Action("Tournament", "Tournament", new { guid = json["tournyVal"] });
+
             if (Session["User.UserId"] != null)
             {
-                int tournyId = this.ConvertToInt(tourny);
-                TournamentViewModel viewModel = new TournamentViewModel(tournyId);
+                // Load the tournament
+                TournamentViewModel viewModel = new TournamentViewModel(json["tournyVal"]);
                 if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
-                    DbError result = viewModel.FinalizeTournament();
-
-                    if (result == DbError.SUCCESS)
+                    if (viewModel.FinalizeTournament(roundData))
                     {
-                        Session["Message"] = "Your tournament has been finalized. No changes can be made.";
+                        status = true;
+                        message = "Your tournament has been finalized. No changes can be made.";
+
+                        Session["Message"] = message;
                         Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
                     }
                     else
                     {
-                        Session["Message"] = "An error occurred while trying to create the matches.<br/>" + viewModel.dbException.Message;
+                        message = "An error occurred while trying to create the matches.<br/>" + viewModel.dbException.Message;
+
+                        Session["Message"] = message;
                         Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
                     }
                 }
                 else
                 {
-                    Session["Message"] = "You are not permitted to do that.";
+                    message = "You are not permitted to do that.";
+
+                    Session["Message"] = message;
                     Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
                 }
             }
             else
             {
-                Session["Message"] = "You must login before you can do that.";
+                message = "You must login to do that.";
+                redirect = Url.Action("Login", "Account");
+
+                Session["Message"] = message;
                 Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
-                return RedirectToAction("Login", "Account");
             }
 
-            // Create the matches
-            return RedirectToAction("Tournament", "Tournament", new { @guid = tourny });
+            return Json(JsonConvert.SerializeObject(new { status = status, message = message, redirect = redirect }));
         }
 
         [HttpPost]
-        [Route("Tournament/Reset")]
-        public ActionResult Reset(String id)
+        [Route("Ajax/Tournament/Delete")]
+        public JsonResult Delete(String jsonData)
         {
-            return null;
-
-            int tournamentId = ConvertToInt(id);
-            TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+            object jsonResult = new { };
+            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<string, int>>(jsonData);
 
             if (Session["User.UserId"] != null)
             {
-                if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+                TournamentViewModel viewModel = new TournamentViewModel(json["tourny"]);
+                if (viewModel.Delete())
                 {
-                    viewModel.ProcessTournament();
+                    jsonResult = new
+                    {
+                        status = true,
+                        message = "Tournament was deleted.",
+                        redirect = Url.Action("Index", "Tournament")
+                    };
                 }
                 else
                 {
-
+                    jsonResult = new
+                    {
+                        status = false,
+                        message = "Unable to delete the tournament due to an error."
+                    };
                 }
             }
             else
             {
-
+                jsonResult = new
+                {
+                    status = false,
+                    message = "Please login in order to modify a tournament."
+                };
             }
+
+            return Json(JsonConvert.SerializeObject(jsonResult));
         }
 
         [HttpPost]
-        [Route("Tournament/Ajax/Delete")]
-        public JsonResult Delete(String tourny)
-        {
-            JsonResult json = new JsonResult();
-
-            if (Session["User.UserId"] != null)
-            {
-                UserModel userModel = this.getUserModel((int)Session["User.UserId"]);
-                TournamentViewModel model = new TournamentViewModel(int.Parse(tourny));
-                if (model.Model.CreatedByID == userModel.UserID)
-                {
-                    DbError result = db.DeleteTournament(model.Model);
-                    if (result == DbError.SUCCESS)
-                    {
-                        return Json(new { status = true, message = "Tournament was deleted.", redirect = Url.Action("Index", "Tournament") });
-                    }
-                    else
-                    {
-                        return Json(new { status = false, message = "Unable to delete the tournament due to an error." });
-                    }
-                }
-                else
-                {
-                    return Json(new { status = false, message = "You are not entitled to do this." });
-                }
-            }
-            else
-            {
-                return Json(new { status = false, message = "Please login in order to modify a tournament." });
-            }
-        }
-
-        [HttpPost]
-        [Route("Tournament/Ajax/PermissionChange")]
+        [Route("Ajax/PermissionChange")]
         public JsonResult PermissionChange(String jsonData)
         {
             Dictionary<string, string> json = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
@@ -425,27 +368,6 @@ namespace WebApplication.Controllers
                     message = "You must be logged in to do this action"
                 }));
             }
-        }
-
-        [HttpPost]
-        [Route("Tournament/Ajax/Standings")]
-        public JsonResult Standings(String jsonData)
-        {
-            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
-            TournamentViewModel viewModel = new TournamentViewModel(json["tournamentId"]);
-            viewModel.ProcessTournament();
-            IBracket bracket = viewModel.Tourny.Brackets[json["bracketNum"]];
-
-            return Json(JsonConvert.SerializeObject(
-                new
-                {
-                    status = true,
-                    data = new
-                    {
-                        ranks = bracket.Rankings
-                    }
-                }
-            ));
         }
     }
 }

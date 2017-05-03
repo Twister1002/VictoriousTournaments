@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataLib;
+using DatabaseLib;
 
 namespace Tournament.Structure
 {
@@ -20,9 +20,6 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		int Id { get; }
 
-		[System.Obsolete("use .GetModel()", false)]
-		MatchModel Model { get; }
-
 		/// <summary>
 		/// Is the Match set/ready to play?
 		/// </summary>
@@ -33,7 +30,17 @@ namespace Tournament.Structure
 		/// </summary>
 		bool IsFinished { get; }
 
+		/// <summary>
+		/// Is the Match winner manually set?
+		/// </summary>
+		bool IsManualWin { get; }
+
+		/// <summary>
+		/// Max number of games that MAY be played.
+		/// (ex: BO3 = 3 max games)
+		/// </summary>
 		int MaxGames { get; }
+
 		IPlayer[] Players { get; }
 
 		/// <summary>
@@ -43,7 +50,7 @@ namespace Tournament.Structure
 		PlayerSlot WinnerSlot { get; }
 
 		/// <summary>
-		/// List of completed/recorded Games.
+		/// Ordered list of completed/recorded Games.
 		/// </summary>
 		List<IGame> Games { get; }
 
@@ -87,9 +94,6 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Methods
-		[System.Obsolete("use .GetModel()", false)]
-		MatchModel GetModel(int _matchId);
-
 		/// <summary>
 		/// Create a Model for this Match.
 		/// </summary>
@@ -125,29 +129,51 @@ namespace Tournament.Structure
 		/// </summary>
 		void ResetPlayers();
 
-		void AddGame(int _defenderScore, int _challengerScore);
-
 		/// <summary>
-		/// Add/record a finished Game.
+		/// Add a Game to the Match.
+		/// Score and match state will also update.
 		/// </summary>
-		/// <param name="_game">Game-type object to add</param>
-		void AddGame(IGame _game);
-
+		/// <param name="_defenderScore">Score for first Player</param>
+		/// <param name="_challengerScore">Score for second Player</param>
+		/// <param name="_winnerSlot">Slot of winner (Defender/Challenger)</param>
+		/// <returns>Model of the new Game</returns>
+		GameModel AddGame(int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
+#if false
+		/// <summary>
+		/// Replace an existing Game with new data.
+		/// </summary>
+		/// <param name="_gameNumber">Number of Game to replace</param>
+		/// <param name="_defenderScore">Score for first Player</param>
+		/// <param name="_challengerScore">Score for second Player</param>
+		/// <param name="_winnerSlot">Slot of winner (Defender/Challenger)</param>
+		/// <returns>Model of the new Game</returns>
+		GameModel UpdateGame(int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
+#endif
 		/// <summary>
 		/// Delete/un-record the most recent Game.
 		/// </summary>
-		/// <returns>IGame that was removed</returns>
-		IGame RemoveLastGame();
+		/// <returns>Model of Game that was removed</returns>
+		GameModel RemoveLastGame();
 
-		[System.Obsolete("use AddGame(IGame) instead", false)]
-		void AddWin(PlayerSlot _slot);
-		[System.Obsolete("use RemoveLastGame() instead", false)]
-		void SubtractWin(PlayerSlot _slot);
+		/// <summary>
+		/// Delete/un-record a specific Game.
+		/// </summary>
+		/// <param name="_gameNumber">Game Number of desired Game</param>
+		/// <returns>Model of removed Game</returns>
+		GameModel RemoveGameNumber(int _gameNumber);
+
+		/// <summary>
+		/// Manually set a winner for this Match.
+		/// Winner's score will be -1.
+		/// </summary>
+		/// <param name="_winnerSlot">Slot of winning Player (Defender/Challenger)</param>
+		void SetWinner(PlayerSlot _winnerSlot);
 
 		/// <summary>
 		/// Resets Match score to 0-0.
 		/// </summary>
-		void ResetScore();
+		/// <returns>List of Models of removed Games</returns>
+		List<GameModel> ResetScore();
 
 		/// <summary>
 		/// Set the max number of Games to play this Match.
