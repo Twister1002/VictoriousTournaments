@@ -36,12 +36,13 @@
           <Property Name="Finalized" Type="bit" Nullable="false" />
           <Property Name="NumberOfGroups" Type="int" Nullable="false" />
           <Property Name="TournamentID" Type="int" />
+          <Property Name="MaxRounds" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="BracketTypes">
           <Key>
             <PropertyRef Name="BracketTypeID" />
           </Key>
-          <Property Name="BracketTypeID" Type="int" Nullable="false" StoreGeneratedPattern="None" />
+          <Property Name="BracketTypeID" Type="int" Nullable="false" />
           <Property Name="TypeName" Type="nvarchar(max)" />
           <Property Name="Type" Type="int" Nullable="false" />
         </EntityType>
@@ -88,6 +89,7 @@
           <Property Name="PrevChallengerMatchNumber" Type="int" />
           <Property Name="MaxGames" Type="int" />
           <Property Name="BracketID" Type="int" />
+          <Property Name="IsManualWin" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Tournaments">
           <Key>
@@ -119,12 +121,11 @@
           </Key>
           <Property Name="TournamentUserID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AccountID" Type="int" />
-          <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Username" Type="nvarchar" MaxLength="50" />
           <Property Name="UniformNumber" Type="int" />
           <Property Name="TournamentID" Type="int" Nullable="false" />
           <Property Name="PermissionLevel" Type="int" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="TournamentUsersBrackets">
           <Key>
@@ -318,6 +319,7 @@
           <NavigationProperty Name="TournamentUsersBrackets" Relationship="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments" FromRole="Bracket" ToRole="TournamentUsersBracket" />
           <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.FK_Brackets_Tournaments" FromRole="BracketModel" ToRole="Tournament" />
           <NavigationProperty Name="BracketType" Relationship="VictoriousDatabaseModel.FK_Brackets_BracketTypes" FromRole="BracketModel" ToRole="BracketType" />
+          <Property Name="MaxRounds" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="BracketTypeModel">
           <Key>
@@ -353,6 +355,7 @@
           <Property Name="BracketID" Type="Int32" />
           <NavigationProperty Name="Bracket" Relationship="Self.FK_Matches_Brackets" FromRole="MatchModel" ToRole="BracketModel" />
           <NavigationProperty Name="Games" Relationship="VictoriousDatabaseModel.FK_Games_Matches" FromRole="MatchModel" ToRole="GameModel" />
+          <Property Name="IsManualWin" Type="Boolean" Nullable="false" />
           </EntityType>
         <EntityType Name="GameTypeModel">
           <Key>
@@ -424,14 +427,13 @@
           </Key>
           <Property Name="TournamentUserID" Nullable="false" Type="Int32" />
           <Property Name="AccountID" Type="Int32" />
-          <Property Name="FirstName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
-          <Property Name="LastName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="UniformNumber" Type="Int32" />
           <Property Name="TournamentID" Nullable="false" Type="Int32" />
           <NavigationProperty Name="TournamentUsersBrackets" Relationship="VictoriousDatabaseModel.FK_UserBrackets_TournamentUsers" FromRole="TournamentUser" ToRole="TournamentUsersBracket" />
           <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" FromRole="TournamentUserModel" ToRole="Tournament" />
           <Property Name="Username" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="PermissionLevel" Type="Int32" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="TournamentUsersBracketModel">
           <Key>
@@ -590,6 +592,7 @@
           <EntitySetMapping Name="BracketModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.BracketModel">
               <MappingFragment StoreEntitySet="Brackets">
+                <ScalarProperty Name="MaxRounds" ColumnName="MaxRounds" />
                 <ScalarProperty Name="BracketID" ColumnName="BracketID" />
                 <ScalarProperty Name="BracketTitle" ColumnName="BracketTitle" />
                 <ScalarProperty Name="BracketTypeID" ColumnName="BracketTypeID" />
@@ -611,6 +614,7 @@
           <EntitySetMapping Name="MatchModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.MatchModel">
               <MappingFragment StoreEntitySet="Matches">
+                <ScalarProperty Name="IsManualWin" ColumnName="IsManualWin" />
                 <ScalarProperty Name="MatchID" ColumnName="MatchID" />
                 <ScalarProperty Name="ChallengerID" ColumnName="ChallengerID" />
                 <ScalarProperty Name="DefenderID" ColumnName="DefenderID" />
@@ -694,12 +698,11 @@
           <EntitySetMapping Name="TournamentUserModels">
             <EntityTypeMapping TypeName="IsTypeOf(VictoriousDatabaseModel.TournamentUserModel)">
               <MappingFragment StoreEntitySet="TournamentUsers">
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="PermissionLevel" ColumnName="PermissionLevel" />
                 <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
                 <ScalarProperty Name="UniformNumber" ColumnName="UniformNumber" />
                 <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="AccountID" ColumnName="AccountID" />
                 <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
               </MappingFragment>

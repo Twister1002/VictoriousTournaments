@@ -29,7 +29,7 @@ namespace DatabaseLib.Tests
 
             var result = db.GetTournamentUser(user.TournamentUserID);
 
-            Assert.AreEqual("Ryan", result.FirstName);
+            Assert.AreEqual("Ryan", result.Name);
         }
 
         [TestMethod]
@@ -66,8 +66,7 @@ namespace DatabaseLib.Tests
             TournamentUserModel user = new TournamentUserModel()
             {
                 
-                FirstName = "Ryan",
-                LastName = "Kelton",
+                Name = "Kelton",
                 Username = Guid.NewGuid().ToString(),
                 UniformNumber = 1
             };

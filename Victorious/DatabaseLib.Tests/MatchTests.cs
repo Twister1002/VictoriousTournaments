@@ -114,12 +114,12 @@ namespace DatabaseLib.Tests
 
             TournamentUserModel user  = db.GetMatch(db.GetAllMatchesInBracket(1)[0].MatchID).Challenger;
             MatchModel match = db.GetAllMatchesInBracket(db.GetAllBracketsInTournament(db.GetAllTournaments()[0].TournamentID)[0].BracketID)[0];
-            match.Challenger.LastName = "bob";
+            match.Challenger.Name = "bob";
             var db2 = new DbInterface();
             
             db2.UpdateTournamentUser(user);
 
-            Assert.AreEqual("bob", user.LastName);
+            Assert.AreEqual("bob", user.Name);
         }
 
         [TestMethod]
@@ -130,10 +130,10 @@ namespace DatabaseLib.Tests
             MatchModel match = new MatchModel();
             match = db.GetAllMatchesInBracket(db.GetAllBracketsInTournament(db.GetAllTournaments()[0].TournamentID)[0].BracketID)[0];
 
-            match.Challenger.FirstName = "Billy";
+            match.Challenger.Name = "Billy";
             db.UpdateMatch(match);
 
-            Assert.AreEqual("Billy", db.GetMatch(match.MatchID).Challenger.FirstName);
+            Assert.AreEqual("Billy", db.GetMatch(match.MatchID).Challenger.Name);
             
         }
 

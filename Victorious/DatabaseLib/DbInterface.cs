@@ -29,7 +29,8 @@ namespace DatabaseLib
         DOUBLE,
         ROUNDROBIN,
         RRGROUP,
-        GSLGROUP
+        GSLGROUP,
+        SWISS
     }
 
     public enum DbError
@@ -70,7 +71,11 @@ namespace DatabaseLib
                 context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 5, Type = BracketType.GSLGROUP, TypeName = "GSL Group" });
                 context.SaveChanges();
             }
-
+            if (context.BracketTypeModels.Find(6) == null)
+            {
+                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 6, Type = BracketType.GSLGROUP, TypeName = "Swiss" });
+                context.SaveChanges();
+            }
         }
 
         #region Accounts

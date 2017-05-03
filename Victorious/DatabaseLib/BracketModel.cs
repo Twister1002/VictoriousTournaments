@@ -28,6 +28,7 @@ namespace DatabaseLib
         public bool Finalized { get; set; }
         public int NumberOfGroups { get; set; }
         public Nullable<int> TournamentID { get; set; }
+        public int MaxRounds { get; set; }
     	
     	partial void OnInit();
     
