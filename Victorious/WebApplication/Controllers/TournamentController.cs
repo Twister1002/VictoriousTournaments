@@ -278,7 +278,7 @@ namespace WebApplication.Controllers
                     }
                     else
                     {
-                        message = "An error occurred while trying to create the matches.<br/>" + viewModel.dbException.Message;
+                        message = "An error occurred while trying to create the matches.";
 
                         Session["Message"] = message;
                         Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
