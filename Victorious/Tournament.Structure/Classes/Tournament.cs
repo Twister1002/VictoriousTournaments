@@ -265,6 +265,9 @@ namespace Tournament.Structure
 				case ((int)BracketType.RRGROUP):
 					ret = new RoundRobinGroups(_model);
 					break;
+				case ((int)BracketType.GSLGROUP):
+					ret = new GSLGroups(_model);
+					break;
 				default:
 					throw new NotImplementedException();
 			}
