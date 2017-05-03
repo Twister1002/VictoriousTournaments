@@ -41,7 +41,7 @@
           <Key>
             <PropertyRef Name="BracketTypeID" />
           </Key>
-          <Property Name="BracketTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BracketTypeID" Type="int" Nullable="false" StoreGeneratedPattern="None" />
           <Property Name="TypeName" Type="nvarchar(max)" />
           <Property Name="Type" Type="int" Nullable="false" />
         </EntityType>
@@ -323,9 +323,9 @@
           <Key>
             <PropertyRef Name="BracketTypeID" />
           </Key>
-          <Property Name="BracketTypeID" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+          <Property Name="BracketTypeID" Nullable="false" annotation:StoreGeneratedPattern="None" Type="Int32" />
           <Property Name="TypeName" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
-          <Property Name="Type" Nullable="false" Type="Int32" />
+          <Property Name="Type" Nullable="false" Type="VictoriousDatabaseModel.BracketType" />
           <NavigationProperty Name="Brackets" Relationship="VictoriousDatabaseModel.FK_Brackets_BracketTypes" FromRole="BracketType" ToRole="BracketModel" />
         </EntityType>
         <EntityType Name="MatchModel">
@@ -354,7 +354,7 @@
           <NavigationProperty Name="Bracket" Relationship="Self.FK_Matches_Brackets" FromRole="MatchModel" ToRole="BracketModel" />
           <NavigationProperty Name="Games" Relationship="VictoriousDatabaseModel.FK_Games_Matches" FromRole="MatchModel" ToRole="GameModel" />
           </EntityType>
-        <EntityType Name="GameType">
+        <EntityType Name="GameTypeModel">
           <Key>
             <PropertyRef Name="GameTypeID" />
           </Key>
@@ -380,7 +380,7 @@
           <EntitySet Name="BracketModels" EntityType="VictoriousDatabaseModel.BracketModel" />
           <EntitySet Name="BracketTypeModels" EntityType="VictoriousDatabaseModel.BracketTypeModel" />
           <EntitySet Name="MatchModels" EntityType="VictoriousDatabaseModel.MatchModel" />
-          <EntitySet Name="GameTypes" EntityType="Self.GameType" />
+          <EntitySet Name="GameTypeModels" EntityType="VictoriousDatabaseModel.GameTypeModel" />
           <AssociationSet Name="FK_Matches_Brackets" Association="Self.FK_Matches_Brackets">
             <End EntitySet="BracketModels" Role="BracketModel" />
             <End EntitySet="MatchModels" Role="MatchModel" />
@@ -414,7 +414,7 @@
             <End Role="BracketModel" EntitySet="BracketModels" />
           </AssociationSet>
           <AssociationSet Name="FK_Tournaments_GameTypes" Association="VictoriousDatabaseModel.FK_Tournaments_GameTypes">
-            <End Role="GameType" EntitySet="GameTypes" />
+            <End Role="GameType" EntitySet="GameTypeModels" />
             <End Role="TournamentModel" EntitySet="TournamentModels" />
           </AssociationSet>
           </EntityContainer>
@@ -562,7 +562,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Tournaments_GameTypes">
-          <End Type="VictoriousDatabaseModel.GameType" Role="GameType" Multiplicity="0..1" />
+          <End Type="VictoriousDatabaseModel.GameTypeModel" Role="GameType" Multiplicity="0..1" />
           <End Type="VictoriousDatabaseModel.TournamentModel" Role="TournamentModel" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="GameType">
@@ -573,6 +573,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EnumType Name="BracketType" a:ExternalTypeName="DatabaseLib.BracketType" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -632,8 +633,8 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="GameTypes">
-            <EntityTypeMapping TypeName="VictoriousDatabaseModel.GameType">
+          <EntitySetMapping Name="GameTypeModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.GameTypeModel">
               <MappingFragment StoreEntitySet="GameTypes">
                 <ScalarProperty Name="GameTypeID" ColumnName="GameTypeID" />
                 <ScalarProperty Name="Title" ColumnName="Title" />

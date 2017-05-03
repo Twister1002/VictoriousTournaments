@@ -105,7 +105,6 @@ namespace DatabaseLib.Tests
                 CreatedByID = 1,
                 Platform = 0,
                 EntryFee = 0,
-                GameTypeID = 1,
                 PrizePurse = 0,
             };
 

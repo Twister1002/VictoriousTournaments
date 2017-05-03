@@ -9,7 +9,7 @@
         <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketModel" PointX="2.875" PointY="3.875" Width="1.5" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketTypeModel" PointX="5.125" PointY="5.25" Width="1.5" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.MatchModel" PointX="3" PointY="8.25" Width="1.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.GameType" PointX="0.5" PointY="6.375" Width="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.GameTypeModel" PointX="0.5" PointY="6.375" Width="1.5" IsExpanded="true" />
         <AssociationConnector ManuallyRouted="false" Association="VictoriousDatabaseModel.FK_Matches_Brackets" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUserModel" PointX="2.875" PointY="0.5" Width="1.5" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUsersBracketModel" PointX="5.125" PointY="2.5" Width="1.5" />

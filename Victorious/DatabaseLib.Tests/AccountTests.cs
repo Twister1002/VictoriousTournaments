@@ -50,7 +50,7 @@ namespace DatabaseLib.Tests
         {
             var db = new DbInterface();
 
-            var account = db.GetAccountByUsername("keltonr01");
+            var account = db.GetAccount("keltonr01");
             var result = false;
             if (account.Email == "keltonr01@gmail.com" && account.PhoneNumber.Contains("9542534919"))
                 result = true;
