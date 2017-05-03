@@ -29,7 +29,18 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Methods
+		/// <summary>
+		/// Add score values to (or subtract from) this PlayerScore.
+		/// </summary>
+		/// <param name="_matchScore">Match score change</param>
+		/// <param name="_gameScore">Game score change</param>
+		/// <param name="_pointsScore">Point score change</param>
+		/// <param name="_addition">Add or subtract previous values</param>
 		void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _addition);
+
+		/// <summary>
+		/// Reset this object's Score values: match, game, and point scores
+		/// </summary>
 		void ResetScore();
 		#endregion
 	}

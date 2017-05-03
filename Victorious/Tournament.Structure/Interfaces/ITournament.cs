@@ -101,7 +101,7 @@ namespace Tournament.Structure
 
 		#region Bracket Creation Methods
 		/// <summary>
-		/// Adds a new SingleElimBracket to the tournament.
+		/// Adds a new Single Elimination bracket to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the Bracket</param>
 		/// <param name="_maxGamesPerMatch">Length of each Match</param>
@@ -111,7 +111,7 @@ namespace Tournament.Structure
 #endif
 
 		/// <summary>
-		/// Adds a new DoubleElimBracket to the tournament.
+		/// Adds a new Double Elimination bracket to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the Bracket.</param>
 		/// <param name="_maxGamesPerMatch">Length of each Match</param>
@@ -123,32 +123,43 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Adds a new Round Robin stage to the tournament.
 		/// </summary>
-		/// <param name="_playerList">List of Players for the stage.</param>
+		/// <param name="_playerList">List of Players for the stage</param>
 		/// <param name="_maxGamesPerMatch">Length of each Match</param>
-		/// <param name="_numRounds">Limit of rounds for the stage.
+		/// <param name="_numRounds">Limit of rounds for the stage
 		/// 0 = no limit (default round robin)</param>
 		void AddRoundRobinBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1, int _numRounds = 0);
 #if false
 		void AddRoundRobinBracket(int _numPlayers, int _numRounds = 0);
 #endif
 
-
+		/// <summary>
+		/// Adds a new Swiss bracket to the tournament.
+		/// </summary>
+		/// <param name="_playerList">List of Players for the stage</param>
+		/// <param name="_maxGamesPerMatch">Length of each Match</param>
+		/// <param name="_numRounds">Limit of rounds for the stage
+		/// 0 = no limit (default)</param>
 		void AddSwissBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1, int _numRounds = 0);
 
 		/// <summary>
 		/// Adds a new Round Robin Group Stage to the tournament.
 		/// </summary>
-		/// <param name="_playerList">List of Players for the stage.</param>
-		/// <param name="_numGroups">Number of groups to divide players into.</param>
+		/// <param name="_playerList">List of Players for the stage</param>
+		/// <param name="_numGroups">Number of groups to divide players into</param>
 		/// <param name="_maxGamesPerMatch">Length of each Match</param>
-		/// <param name="_maxRounds">Limit of rounds for the stage.
+		/// <param name="_maxRounds">Limit of rounds for the stage
 		/// 0 = no limit (default round robin)</param>
 		void AddRRGroupStage(List<IPlayer> _playerList, int _numGroups = 2, int _maxGamesPerMatch = 1, int _maxRounds = 0);
 #if false
 		void AddRRGroupStageBracket(int _numPlayers, int _numGroups = 2);
 #endif
 
-
+		/// <summary>
+		/// Adds a new GSL-style Group Stage to the tournament.
+		/// </summary>
+		/// <param name="_playerList">List of Players for the stage</param>
+		/// <param name="_numGroups">Number of groups to divide players into</param>
+		/// <param name="_maxGamesPerMatch">Length of each Match</param>
 		void AddGSLGroupStage(List<IPlayer> _playerList, int _numGroups = 2, int _maxGamesPerMatch = 1);
 		#endregion
 		#endregion

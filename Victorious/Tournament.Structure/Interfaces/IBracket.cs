@@ -66,7 +66,7 @@ namespace Tournament.Structure
 
 		#region Methods
 		/// <summary>
-		/// Generates the bracket (rounds & matches).
+		/// Generates the bracket (NEW rounds & matches).
 		/// </summary>
 		/// <param name="_gamesPerMatch">Max games played each match</param>
 		void CreateBracket(int _gamesPerMatch = 1);
