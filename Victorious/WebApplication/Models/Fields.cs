@@ -7,6 +7,8 @@ namespace WebApplication.Models
 {
     public abstract class AccountFields : ViewModel
     {
+        public int AccountId { get; set; } 
+
         //[Required(ErrorMessage = "First Name is required")]
         [DataType(DataType.Text)]
         [StringLength(AccountModel.FirstNameLength)]
@@ -77,6 +79,14 @@ namespace WebApplication.Models
         [DataType(DataType.DateTime)]
         [Display(Name = "Tournament End")]
         public DateTime TournamentEndDate { get; set; }
+
+        [DataType(DataType.DateTime)]
+        [Display(Name = "CheckIn Start")]
+        public DateTime CheckinStart { get; set; }
+
+        [DataType(DataType.DateTime)]
+        [Display(Name = "CheckIn Ends")]
+        public DateTime CheckinEnd { get; set; }
         
         public List<BracketTypeModel> BracketTypes { get; protected set; }
         public List<GameTypeModel> GameTypes { get; protected set; }
@@ -92,7 +102,7 @@ namespace WebApplication.Models
         [Display(Name = "Public")]
         public bool IsPublic { get; set; }
 
-        public abstract void ApplyChanges(int userId);
+        public abstract void ApplyChanges();
         public abstract void SetFields();
     }
 
@@ -115,13 +125,8 @@ namespace WebApplication.Models
 
     public abstract class GameTypeFields : ViewModel
     {
-        [Display(Name ="Title")]
+        [Display(Name = "Title")]
         [DataType(DataType.Text)]
         public String Title { get; set; }
-
-        [Display(Name = "")]
-        public bool XBox { get; set; }
-        public bool PC { get; set; }
-        public bool PS3 { get; set; }
     }
 }

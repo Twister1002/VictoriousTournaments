@@ -63,6 +63,16 @@
                     @Html.TextBoxFor(t => t.TournamentEndDate, Model.TournamentEndDate.Value.ToShortDateString().ToString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.TournamentEndDate)
                 </li>
+                <li>
+                    @Html.LabelFor(t => t.CheckinStart)
+                    @Html.TextBoxFor(t => t.CheckinStart, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.CheckinStart)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.CheckinEnd)
+                    @Html.TextBoxFor(t => t.CheckinEnd, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.CheckinEnd)
+                </li>
             </ul>
         </div>
         <div class="section">

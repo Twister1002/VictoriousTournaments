@@ -77,15 +77,17 @@ namespace WebApplication.Models
         public override void ApplyChanges()
         {
             // Non null fields
-            Account.Username      = this.Username != String.Empty ? this.Username : String.Empty;
-            Account.Email         = this.Email != String.Empty ? this.Email : String.Empty;
-            Account.FirstName     = this.FirstName != String.Empty ? this.FirstName : String.Empty;
-            Account.LastName      = this.LastName != String.Empty ? this.LastName : String.Empty;
-            Account.Password      = this.Password != String.Empty ? this.Password : String.Empty;
+            Account.AccountID       = this.AccountId;
+            Account.Username        = this.Username != String.Empty ? this.Username : String.Empty;
+            Account.Email           = this.Email != String.Empty ? this.Email : String.Empty;
+            Account.FirstName       = this.FirstName != String.Empty ? this.FirstName : String.Empty;
+            Account.LastName        = this.LastName != String.Empty ? this.LastName : String.Empty;
+            Account.Password        = this.Password != String.Empty ? this.Password : String.Empty;
         }
 
         public override void SetFields()
         {
+            this.AccountId  = Account.AccountID;
             this.Username   = Account.Username;
             this.Email      = Account.Email;
             this.LastName   = Account.LastName;
@@ -94,6 +96,9 @@ namespace WebApplication.Models
 
         public bool Create()
         {
+            ApplyChanges();
+            Account.CreatedOn = DateTime.Now;
+
             bool usernameExists = db.AccountUsernameExists(Username) == DbError.EXISTS;
             bool emailExists = db.AccountEmailExists(Email) == DbError.SUCCESS;
             bool passwordsMatch = Password == PasswordVerify;
@@ -111,6 +116,8 @@ namespace WebApplication.Models
 
         public bool Update()
         {
+            ApplyChanges();
+
             return db.UpdateAccount(Account) == DbError.SUCCESS;
         }
 

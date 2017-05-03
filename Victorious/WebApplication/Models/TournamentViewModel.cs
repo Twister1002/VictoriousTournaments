@@ -51,7 +51,7 @@ namespace WebApplication.Models
             Search(null);
         }
 
-        public override void ApplyChanges(int SessionId)
+        public override void ApplyChanges()
         {
             // Tournament Stuff
             Model.Title = this.Title;
@@ -64,25 +64,8 @@ namespace WebApplication.Models
             Model.RegistrationEndDate = this.RegistrationEndDate;
             Model.TournamentStartDate = this.TournamentStartDate;
             Model.TournamentEndDate = this.TournamentEndDate;
-            Model.LastEditedByID = SessionId;
-            Model.LastEditedOn = DateTime.Now;
-
-            // Update bracket info
-            if (Model.Brackets.Count > 0)
-            {
-                Model.Brackets.ElementAt(0).BracketTypeID = this.BracketType;
-            }
-            else
-            {
-                Model.Brackets.Add(new BracketModel() { BracketTypeID = this.BracketType, Tournament = Model });
-            }
-
-            // Tournament Creator stuff
-            if (Model.CreatedByID == 0)
-            {
-                Model.CreatedByID = SessionId;
-                Model.CreatedOn = DateTime.Now;
-            }
+            Model.CheckInBegins = this.CheckinStart;
+            Model.CheckInEnds = this.CheckinEnd;
         }
 
         public override void SetFields()
@@ -96,6 +79,8 @@ namespace WebApplication.Models
             this.RegistrationEndDate = Model.RegistrationEndDate;
             this.TournamentStartDate = Model.TournamentStartDate;
             this.TournamentEndDate = Model.TournamentEndDate;
+            this.CheckinStart = Model.CheckInBegins;
+            this.CheckinEnd = Model.CheckInEnds;
 
             if (this.BracketType != Model.Brackets.ElementAt(0).BracketTypeID)
             {
@@ -108,15 +93,32 @@ namespace WebApplication.Models
             Model = db.GetTournament(id);
         }
 
-        public bool Update()
+        public bool Update(int sessionId)
         {
+            ApplyChanges();
+            Model.LastEditedByID = sessionId;
+            Model.LastEditedOn = DateTime.Now;
+
             DbError updateResult = db.UpdateTournament(Model);
 
             return updateResult == DbError.SUCCESS;
         }
 
-        public bool Create()
+        public bool Create(int sessionId)
         {
+            ApplyChanges();
+
+            Model.CreatedOn = DateTime.Now;
+            Model.CreatedByID = sessionId;
+
+            // Create the bracket
+            BracketModel bracketModel = new BracketModel()
+            {
+                BracketTypeID = this.BracketType,
+                Tournament = Model
+            };
+
+            Model.Brackets.Add(bracketModel);
             DbError createResult = db.AddTournament(Model);
             
             return createResult == DbError.SUCCESS;
@@ -136,7 +138,11 @@ namespace WebApplication.Models
                 {
                     AccountID = account.AccountID,
                     Username = account.Username,
+                    FirstName = account.FirstName,
+                    LastName = account.LastName,
                     PermissionLevel = (int)permission,
+                    TournamentID = Model.TournamentID,
+                    Tournament = Model
                 };
 
                 DbError addResult = db.AddTournamentUser(tournamentUserModel);

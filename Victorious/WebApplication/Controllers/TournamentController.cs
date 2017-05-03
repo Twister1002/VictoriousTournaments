@@ -130,8 +130,7 @@ namespace WebApplication.Controllers
 
             if (ModelState.IsValid)
             {
-                viewModel.ApplyChanges((int)Session["User.UserId"]);
-                if (viewModel.Create())
+                if (viewModel.Create((int)Session["User.UserId"]))
                 {
                     if (viewModel.AddUser((int)Session["User.UserId"], Permission.TOURNAMENT_CREATOR))
                     {
@@ -170,9 +169,7 @@ namespace WebApplication.Controllers
                 if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_CREATOR ||
                     viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
                 {
-                    viewModel.ApplyChanges((int)Session["User.UserId"]);
-
-                    if (viewModel.Update())
+                    if (viewModel.Update((int)Session["User.UserId"]))
                     {
                         Session["Message"] = "Edits to the tournament was successful";
                         Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
