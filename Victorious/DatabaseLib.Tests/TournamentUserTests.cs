@@ -47,7 +47,7 @@ namespace DatabaseLib.Tests
         {
             var db = new DbInterface();
 
-            db.AddTournamentUserToBracket(db.GetAllUsersInTournament(1)[0].TournamentUserID, db.GetAllBracketsInTournament(db.GetAllTournaments()[0].TournamentID)[0].BracketID, 1);
+            db.AddTournamentUserToBracket(db.GetAllUsersInTournament(3)[0].TournamentUserID, db.GetAllBracketsInTournament(db.GetAllTournaments()[0].TournamentID)[0].BracketID, 1);
 
         }
 
@@ -56,7 +56,7 @@ namespace DatabaseLib.Tests
         {
             var db = new DbInterface();
 
-            var result = db.GetTournamentUserSeed(db.GetAllUsersInTournament(1)[0].TournamentUserID, db.GetAllBracketsInTournament(db.GetAllTournaments()[0].TournamentID)[0].BracketID);
+            var result = db.GetTournamentUserSeed(db.GetAllUsersInTournament(3)[0].TournamentUserID, db.GetAllBracketsInTournament(db.GetAllTournaments()[0].TournamentID)[0].BracketID);
 
             Assert.AreEqual(1, result);
         }

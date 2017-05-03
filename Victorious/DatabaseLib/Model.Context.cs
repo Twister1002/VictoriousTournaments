@@ -30,7 +30,7 @@ namespace DatabaseLib
         public virtual DbSet<BracketModel> BracketModels { get; set; }
         public virtual DbSet<BracketTypeModel> BracketTypeModels { get; set; }
         public virtual DbSet<MatchModel> MatchModels { get; set; }
-        public virtual DbSet<GameType> GameTypes { get; set; }
+        public virtual DbSet<GameTypeModel> GameTypeModels { get; set; }
         public virtual DbSet<TournamentUserModel> TournamentUserModels { get; set; }
         public virtual DbSet<TournamentUsersBracketModel> TournamentUsersBracketModels { get; set; }
         public virtual DbSet<TournamentModel> TournamentModels { get; set; }

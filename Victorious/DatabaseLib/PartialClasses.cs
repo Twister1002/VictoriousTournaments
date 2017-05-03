@@ -7,7 +7,6 @@ using System.Data.Entity.Core.Objects.DataClasses;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PropertyChanged;
 
 namespace DatabaseLib
 {
@@ -21,10 +20,10 @@ namespace DatabaseLib
 
         public AccountModel()
         {
-            //Tournaments = new Collection<TournamentModel>();
+            Tournaments = new Collection<TournamentModel>();
         }
 
-        //public ICollection<TournamentModel> Tournaments { get; set; }
+        public ICollection<TournamentModel> Tournaments { get; set; }
 
     }
 

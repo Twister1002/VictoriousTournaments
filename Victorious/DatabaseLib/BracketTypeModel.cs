@@ -23,7 +23,7 @@ namespace DatabaseLib
     
         public int BracketTypeID { get; set; }
         public string TypeName { get; set; }
-        public int Type { get; set; }
+        public DatabaseLib.BracketType Type { get; set; }
     	
     	partial void OnInit();
     

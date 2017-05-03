@@ -12,10 +12,10 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class GameType
+    public partial class GameTypeModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public GameType()
+        public GameTypeModel()
         {
             this.Tournaments = new HashSet<TournamentModel>();
     		OnInit();

@@ -45,7 +45,37 @@ namespace DatabaseLib
 
         public DbInterface()
         {
-            
+            if (context.BracketTypeModels.Find(1) == null)
+            {
+                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 1, Type = BracketType.SINGLE, TypeName = "Single Elimination" });
+                context.SaveChanges();
+            }
+            if (context.BracketTypeModels.Find(2) == null)
+            {
+                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 2, Type = BracketType.DOUBLE, TypeName = "Double Elimination" });
+                context.SaveChanges();
+            }
+            if (context.BracketTypeModels.Find(3) == null)
+            {
+                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 3, Type = BracketType.ROUNDROBIN, TypeName = "Round Robin" });
+                context.SaveChanges();
+            }
+            if (context.BracketTypeModels.Find(4) == null)
+            {
+                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 4, Type = BracketType.RRGROUP, TypeName = "RR Group" });
+                context.SaveChanges();
+            }
+            if (context.BracketTypeModels.Find(5) == null)
+            {
+                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 5, Type = BracketType.GSLGROUP, TypeName = "GSL Group" });
+                context.SaveChanges();
+            }
+
+            if (context.GameTypeModels.ToList().Count == 0)
+            {
+                // This is there to prevent a foreign key exception being thrown on insert of a tournament
+                context.GameTypeModels.Add(new GameTypeModel { Title = "Place Holder GameType" }); 
+            }
         }
 
         #region Accounts
@@ -56,6 +86,7 @@ namespace DatabaseLib
             {
                 account.CreatedOn = DateTime.Now;
                 context.AccountModels.Add(account);
+                
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -87,10 +118,12 @@ namespace DatabaseLib
         }
 
         // Updates LastLogin of passed-in account.
-        public DbError LogAccountIn(AccountModel account)
+        public DbError LogAccountIn(int accountId)
         {
             try
             {
+
+                AccountModel account = context.AccountModels.Find(accountId);
                 account.LastLogin = DateTime.Now;
                 context.SaveChanges();
             }
@@ -137,12 +170,12 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
-        public AccountModel GetAccount(int id)
+        public AccountModel GetAccount(int accountId)
         {
             AccountModel account = new AccountModel();
             try
             {
-                account = context.AccountModels.Find(id);
+                account = context.AccountModels.Find(accountId);
             }
             catch (Exception ex)
             {
@@ -153,7 +186,7 @@ namespace DatabaseLib
             return account;
         }
 
-        public AccountModel GetAccountByUsername(string username)
+        public AccountModel GetAccount(string username)
         {
             AccountModel account = new AccountModel();
             try
@@ -204,6 +237,22 @@ namespace DatabaseLib
             }
             return DbError.EXISTS;
         }
+
+        public DbError AccountEmailExists(string email)
+        {
+            try
+            {
+                AccountModel user = context.AccountModels.Single(u => u.Email == email);
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.DOES_NOT_EXIST;
+            }
+            return DbError.EXISTS;
+        }
+
 
         #endregion
 
@@ -434,12 +483,12 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
-        public TournamentUserModel GetTournamentUser(int id)
+        public TournamentUserModel GetTournamentUser(int tournamentUserId)
         {
             TournamentUserModel user = new TournamentUserModel();
             try
             {
-                user = context.TournamentUserModels.Find(id);
+                user = context.TournamentUserModels.Find(tournamentUserId);
             }
             catch (Exception ex)
             {
@@ -467,11 +516,11 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
-        public DbError DeleteTournamentUser(int id)
+        public DbError DeleteTournamentUser(int tournamentUserId)
         {
             try
             {
-                TournamentUserModel _user = context.TournamentUserModels.Find(id);
+                TournamentUserModel _user = context.TournamentUserModels.Find(tournamentUserId);
                 context.TournamentUserModels.Remove(_user);
                 //context.TournamentModels.Include(x => x.).Single(x => x.TournamentID == tournament.TournamentID).Users.Remove(_user);
                 context.SaveChanges();
@@ -659,12 +708,12 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
-        public MatchModel GetMatch(int id)
+        public MatchModel GetMatch(int matchId)
         {
             MatchModel match = new MatchModel();
             try
             {
-                match = context.MatchModels.Find(id);
+                match = context.MatchModels.Find(matchId);
                 match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
                 match.Defender = context.TournamentUserModels.Find(match.DefenderID);
             }
@@ -685,6 +734,11 @@ namespace DatabaseLib
             try
             {
                 matches = context.MatchModels.Where(x => x.BracketID == bracketId).ToList();
+                foreach (var match in matches)
+                {
+                    match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
+                    match.Defender = context.TournamentUserModels.Find(match.DefenderID);
+                }
             }
             catch (Exception ex)
             {
@@ -727,11 +781,11 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
-        public DbError DeleteMatch(int id)
+        public DbError DeleteMatch(int matchId)
         {
             try
             {
-                MatchModel _match = context.MatchModels.Find(id);
+                MatchModel _match = context.MatchModels.Find(matchId);
                 foreach (var game in _match.Games.ToList())
                 {
                     DeleteGame(game.GameID);
@@ -846,6 +900,102 @@ namespace DatabaseLib
         }
 
         #endregion
+
+
+        #region GameTypes
+
+        public DbError AddGameType(GameTypeModel gameType)
+        {
+            try
+            {
+                context.GameTypeModels.Add(gameType);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError UpdateGameType(GameTypeModel gameType)
+        {
+            try
+            {
+                GameTypeModel _gameType = context.GameTypeModels.Find(gameType.GameTypeID);
+                context.Entry(_gameType).CurrentValues.SetValues(gameType);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public List<GameTypeModel> GetAllGameTypes()
+        {
+            List<GameTypeModel> gameTypes = new List<GameTypeModel>();
+            try
+            {
+                gameTypes = context.GameTypeModels.ToList();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                gameTypes.Clear();
+                gameTypes.Add(new GameTypeModel() { GameTypeID = -1 });
+            }
+            return gameTypes;
+        }
+
+        public DbError DeleteGameType(int gameTypeId)
+        {
+            GameTypeModel _gameType = context.GameTypeModels.Find(gameTypeId);
+            try
+            {
+                context.GameTypeModels.Remove(_gameType);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        #endregion
+
+
+        #region BracketTypes
+
+        public List<BracketTypeModel> GetAllBracketTypes()
+        {
+            List<BracketTypeModel> types = new List<BracketTypeModel>();
+            try
+            {
+                types = context.BracketTypeModels.ToList();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                types.Clear();
+                return types;
+            }
+            return types;
+        }
+
+
+        #endregion
+
 
         private void WriteException(Exception ex, [CallerMemberName] string funcName = null)
         {
