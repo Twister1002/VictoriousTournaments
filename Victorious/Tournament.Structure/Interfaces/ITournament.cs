@@ -132,6 +132,9 @@ namespace Tournament.Structure
 		void AddRoundRobinBracket(int _numPlayers, int _numRounds = 0);
 #endif
 
+
+		void AddSwissBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1, int _numRounds = 0);
+
 		/// <summary>
 		/// Adds a new Round Robin Group Stage to the tournament.
 		/// </summary>
@@ -144,6 +147,9 @@ namespace Tournament.Structure
 #if false
 		void AddRRGroupStageBracket(int _numPlayers, int _numGroups = 2);
 #endif
+
+
+		void AddGSLGroupStage(List<IPlayer> _playerList, int _numGroups = 2, int _maxGamesPerMatch = 1);
 		#endregion
 		#endregion
 	}

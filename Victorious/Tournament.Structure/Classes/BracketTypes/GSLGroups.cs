@@ -56,7 +56,6 @@ namespace Tournament.Structure
 				GrandFinal = null;
 				--NumberOfMatches;
 			}
-
 #if false
 			public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 			{

@@ -326,7 +326,6 @@ namespace Tournament.Structure
 			IsFinished = false;
 		}
 #endif
-
 		public override void ResetMatches()
 		{
 			base.ResetMatches();

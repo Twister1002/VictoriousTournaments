@@ -277,7 +277,6 @@ namespace Tournament.Structure
 			base.ResetMatchScore(_matchNumber);
 		}
 #endif
-
 		public override void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch)
 		{
 			if (0 == _maxGamesPerMatch)
