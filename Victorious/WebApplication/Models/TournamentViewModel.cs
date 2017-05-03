@@ -138,8 +138,6 @@ namespace WebApplication.Models
                 {
                     AccountID = account.AccountID,
                     Username = account.Username,
-                    FirstName = account.FirstName,
-                    LastName = account.LastName,
                     PermissionLevel = (int)permission,
                     TournamentID = Model.TournamentID,
                     Tournament = Model
