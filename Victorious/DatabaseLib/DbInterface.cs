@@ -253,6 +253,26 @@ namespace DatabaseLib
             return DbError.EXISTS;
         }
 
+        public List<TournamentModel> GetTournamentsForAccount(int accountId)
+        {
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+            try
+            {
+                List<TournamentUserModel> users = new List<TournamentUserModel>();
+                users = context.TournamentUserModels.Where(x => x.AccountID == accountId).ToList();
+                foreach (var user in users)
+                {
+                    tournaments.Add(user.Tournament);
+                }
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                tournaments.Clear();
+            }
+            return tournaments;
+        }
 
         #endregion
 

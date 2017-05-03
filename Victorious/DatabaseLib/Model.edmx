@@ -121,7 +121,6 @@
           </Key>
           <Property Name="TournamentUserID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AccountID" Type="int" />
-          <Property Name="Username" Type="nvarchar" MaxLength="50" />
           <Property Name="UniformNumber" Type="int" />
           <Property Name="TournamentID" Type="int" Nullable="false" />
           <Property Name="PermissionLevel" Type="int" />
@@ -431,7 +430,6 @@
           <Property Name="TournamentID" Nullable="false" Type="Int32" />
           <NavigationProperty Name="TournamentUsersBrackets" Relationship="VictoriousDatabaseModel.FK_UserBrackets_TournamentUsers" FromRole="TournamentUser" ToRole="TournamentUsersBracket" />
           <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" FromRole="TournamentUserModel" ToRole="Tournament" />
-          <Property Name="Username" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="PermissionLevel" Type="Int32" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
@@ -702,7 +700,6 @@
                 <ScalarProperty Name="PermissionLevel" ColumnName="PermissionLevel" />
                 <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
                 <ScalarProperty Name="UniformNumber" ColumnName="UniformNumber" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="AccountID" ColumnName="AccountID" />
                 <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
               </MappingFragment>
