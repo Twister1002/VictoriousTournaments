@@ -662,9 +662,9 @@ namespace Tournament.Structure
 			NextLoserMatchNumber = _number;
 			Model.NextLoserMatchNumber = _number;
 		}
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 		private void AddGame(IGame _game)
 		{
 			if (null == _game)
@@ -722,12 +722,14 @@ namespace Tournament.Structure
 			int winsNeeded = MaxGames / 2 + 1;
 			if (Score[(int)_slot] >= winsNeeded)
 			{
+				// One player has enough game-wins to win the match
 				WinnerSlot = _slot;
 				Model.WinnerID = Players[(int)_slot].Id;
 				IsFinished = true;
 			}
 			else if (Score[0] + Score[1] >= MaxGames)
 			{
+				// MaxGames has been played without a winner: Match is over (TIE)
 				WinnerSlot = PlayerSlot.unspecified;
 				Model.WinnerID = -1;
 				IsFinished = true;
@@ -770,6 +772,6 @@ namespace Tournament.Structure
 					break;
 			}
 		}
-#endregion
+		#endregion
 	}
 }

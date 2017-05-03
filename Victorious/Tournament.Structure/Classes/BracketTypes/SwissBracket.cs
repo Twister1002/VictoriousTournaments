@@ -151,8 +151,10 @@ namespace Tournament.Structure
 		}
 		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
-			if (PlayerSlot.unspecified != _formerMatchWinnerSlot &&
-				(PlayerSlot.unspecified == GetMatch(_matchNumber).WinnerSlot))
+			IMatch match = GetMatch(_matchNumber);
+			if (!(match.IsFinished) &&
+				((PlayerSlot.unspecified != _formerMatchWinnerSlot) ||
+				(_games.Count + match.Score[0] + match.Score[1] >= match.MaxGames)))
 			{
 				CheckAndRemoveNextRound(1 + GetMatch(_matchNumber).RoundIndex);
 			}

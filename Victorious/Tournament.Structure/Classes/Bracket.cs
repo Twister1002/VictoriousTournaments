@@ -595,9 +595,9 @@ namespace Tournament.Structure
 				GetMatch(n).ResetScore();
 			}
 		}
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 		protected virtual void ResetBracket()
 		{
 			if (null == Matches)
@@ -632,6 +632,6 @@ namespace Tournament.Structure
 			return (compare != 0)
 				? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
 		}
-#endregion
+		#endregion
 	}
 }
