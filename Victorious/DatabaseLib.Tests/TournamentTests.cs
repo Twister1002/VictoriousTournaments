@@ -80,8 +80,7 @@ namespace DatabaseLib.Tests
         {
             TournamentUserModel user = new TournamentUserModel()
             {
-                FirstName = "Ryan",
-                LastName = "Kelton",
+                Name = "Ryan",
                 Username = Guid.NewGuid().ToString(),
                 UniformNumber = 1
             };

@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="140c09bfe994490da52abb1b6f930a88" Name="Diagram1" ZoomLevel="74">
+      <Diagram DiagramId="140c09bfe994490da52abb1b6f930a88" Name="Diagram1" ZoomLevel="60">
         <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountModel" PointX="0.5" PointY="8.875" Width="1.5" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketModel" PointX="2.875" PointY="3.875" Width="1.5" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketTypeModel" PointX="5.125" PointY="5.25" Width="1.5" IsExpanded="true" />

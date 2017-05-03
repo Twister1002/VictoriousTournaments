@@ -23,12 +23,11 @@ namespace DatabaseLib
     
         public int TournamentUserID { get; set; }
         public Nullable<int> AccountID { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
         public Nullable<int> UniformNumber { get; set; }
         public int TournamentID { get; set; }
         public string Username { get; set; }
         public Nullable<int> PermissionLevel { get; set; }
+        public string Name { get; set; }
     	
     	partial void OnInit();
     
