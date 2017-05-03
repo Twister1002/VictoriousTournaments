@@ -90,6 +90,7 @@
           <Property Name="MaxGames" Type="int" />
           <Property Name="BracketID" Type="int" />
           <Property Name="IsManualWin" Type="bit" Nullable="false" />
+          <Property Name="IsFinished" Type="bit" />
         </EntityType>
         <EntityType Name="Tournaments">
           <Key>
@@ -114,6 +115,7 @@
           <Property Name="CheckInBegins" Type="datetime" Nullable="false" />
           <Property Name="CheckInEnds" Type="datetime" Nullable="false" />
           <Property Name="Platform" Type="int" Nullable="false" />
+          <Property Name="InProgress" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="TournamentUsers">
           <Key>
@@ -355,6 +357,7 @@
           <NavigationProperty Name="Bracket" Relationship="Self.FK_Matches_Brackets" FromRole="MatchModel" ToRole="BracketModel" />
           <NavigationProperty Name="Games" Relationship="VictoriousDatabaseModel.FK_Games_Matches" FromRole="MatchModel" ToRole="GameModel" />
           <Property Name="IsManualWin" Type="Boolean" Nullable="false" />
+          <Property Name="IsFinished" Type="Boolean" />
           </EntityType>
         <EntityType Name="GameTypeModel">
           <Key>
@@ -498,6 +501,7 @@
           <Property Name="CheckInEnds" Nullable="false" Precision="3" Type="DateTime" />
           <Property Name="Platform" Nullable="false" Type="Int32" />
           <NavigationProperty Name="GameType" Relationship="VictoriousDatabaseModel.FK_Tournaments_GameTypes" FromRole="TournamentModel" ToRole="GameType" />
+          <Property Name="InProgress" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_Brackets_Tournaments">
           <End Type="VictoriousDatabaseModel.TournamentModel" Multiplicity="0..1" Role="Tournament" />
@@ -612,6 +616,7 @@
           <EntitySetMapping Name="MatchModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.MatchModel">
               <MappingFragment StoreEntitySet="Matches">
+                <ScalarProperty Name="IsFinished" ColumnName="IsFinished" />
                 <ScalarProperty Name="IsManualWin" ColumnName="IsManualWin" />
                 <ScalarProperty Name="MatchID" ColumnName="MatchID" />
                 <ScalarProperty Name="ChallengerID" ColumnName="ChallengerID" />
@@ -671,6 +676,7 @@
           <EntitySetMapping Name="TournamentModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentModel">
               <MappingFragment StoreEntitySet="Tournaments">
+                <ScalarProperty Name="InProgress" ColumnName="InProgress" />
                 <ScalarProperty Name="Platform" ColumnName="Platform" />
                 <ScalarProperty Name="CheckInEnds" ColumnName="CheckInEnds" />
                 <ScalarProperty Name="CheckInBegins" ColumnName="CheckInBegins" />

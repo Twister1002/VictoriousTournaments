@@ -18,7 +18,7 @@ namespace DatabaseLib
         // 1 = Site Permissions
         SITE_ADMINISTRATOR = 1, SITE_STANDARD,
         // 100 = Tournament Permissions
-        TOURNAMENT_ADMINISTRATOR = 100, TOURNAMENT_STANDARD, TOURNAMENT_CREATOR,
+        TOURNAMENT_CREATOR = 100, TOURNAMENT_ADMINISTRATOR, TOURNAMENT_STANDARD,
         // 200 = Team Permissions
         TEAM_CAPTAIN = 200, TEAM_STANDARD
     }
@@ -77,6 +77,7 @@ namespace DatabaseLib
                 context.SaveChanges();
             }
         }
+
 
         #region Accounts
 
@@ -274,6 +275,8 @@ namespace DatabaseLib
             return tournaments;
         }
 
+
+
         #endregion
 
 
@@ -413,10 +416,7 @@ namespace DatabaseLib
             {
                 List<SqlParameter> sqlparams = new List<SqlParameter>();
                 string query = string.Empty;
-                //string tournamentIdQuery = "SELECT TournamentID FROM dbo.TournamentModels AS Tournament  ";
-                //string rulesIdQuery = "SELECT TournamentID FROM TournamentRule WHERE TournamentStartDate = @StartDate";
-
-                //string[] queries = new string[] { "Tournament.Title = @Title", "Tournament.StartDate = @StartDate" };  
+                
                 if (searchParams.ContainsKey("Title"))
                 {
                     sqlparams.Add(new SqlParameter("@Title", searchParams["Title"]));
@@ -430,20 +430,10 @@ namespace DatabaseLib
                     else
                         query = "SELECT TournamentID FROM TournamentRule WHERE TournamentStartDate = @StartDate";
                 }
+               
                 tournaments = context.TournamentModels.SqlQuery(query, sqlparams).ToList();
-                //if (searchParams.ContainsKey("GameTypeID"))
-                //{
-                //    sqlparams.Add(new SqlParameter("@Game", searchParams["Game"]));
-                //    foreach (var tournament in tournaments)
-                //    {
-                //        if (tournament)
-                //    }
-                //}
+           
 
-
-
-
-                //List < TournamentModel > _tournaments = context.TournamentModels.SqlQuery("SELECT * FROM dbo.TournamentModels WHERE Title LIKE @Title", new SqlParameter("@Title", "%" + title + "%")).ToList();
 
             }
             catch (Exception ex)
@@ -451,7 +441,6 @@ namespace DatabaseLib
                 interfaceException = ex;
                 WriteException(ex);
                 tournaments.Clear();
-                tournaments.Add(new TournamentModel() { TournamentID = 0 });
             }
             return tournaments;
 
@@ -549,10 +538,28 @@ namespace DatabaseLib
             {
                 interfaceException = ex;
                 WriteException(ex);
-                return DbError.FAILED_TO_REMOVE;
+                return DbError.FAILED_TO_DELETE;
             }
             return DbError.SUCCESS;
         }
+
+        //public DbError DeleteTournamentUser(string tournamentUserName)
+        //{
+        //    try
+        //    {
+        //        TournamentUserModel _user = context.TournamentUserModels.Where(x => x.Name == tournamentUserName);
+        //        context.TournamentUserModels.Remove(_user);
+        //        //context.TournamentModels.Include(x => x.).Single(x => x.TournamentID == tournament.TournamentID).Users.Remove(_user);
+        //        context.SaveChanges();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        interfaceException = ex;
+        //        WriteException(ex);
+        //        return DbError.FAILED_TO_DELETE;
+        //    }
+        //    return DbError.SUCCESS;
+        //}
 
         public DbError AddTournamentUserToBracket(int tournamentUserId, int bracketId, int seed)
         {
