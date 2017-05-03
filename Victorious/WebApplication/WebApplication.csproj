@@ -207,6 +207,7 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdministratorViewModel.cs" />
+    <Compile Include="Models\Administrator\GameTypeViewModel.cs" />
     <Compile Include="Models\BracketViewModel.cs" />
     <Compile Include="Models\Fields.cs" />
     <Compile Include="Models\GameViewModel.cs" />

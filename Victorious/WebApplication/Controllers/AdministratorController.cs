@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.Mvc;
 using WebApplication.Models;
 using DatabaseLib;
+using WebApplication.Models.Administrator;
 
 namespace WebApplication.Controllers
 {
@@ -24,22 +25,8 @@ namespace WebApplication.Controllers
             }
         }
 
-        [Route("Administrator/Games")]
-        public ActionResult Games()
-        {
-            if (IsAdministrator())
-            {
-                return View("Games", new AdministratorViewModel());
-            }
-            else
-            {
-                return RedirectToAction("Index", "Account");
-            }
-        }
-
-
         [HttpPost]
-        [Route("Ajax/Games")]
+        [Route("Ajax/Administrator/Games")]
         public JsonResult Games(String jsonData)
         {
             object jsonReturn = new {
@@ -51,44 +38,26 @@ namespace WebApplication.Controllers
             {
                 Dictionary<string, string> json = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
                 AdministratorViewModel adminModel = new AdministratorViewModel();
-                GameTypeModel gameType;
-                DbError result = DbError.NONE;
+                GameTypeViewModel gameType = new GameTypeViewModel();
+                bool result = false;
 
-                //if (json["function"] == "add")
-                //{
-                //    gameType = new GameType()
-                //    {
-                //        Title = json["title"],
-                //    };
+                switch (json["function"])
+                {
+                    case "add":
+                        gameType.Title = json["title"];
+                        result = gameType.Create();
+                        break;
+                    case "delete":
+                        result = gameType.Delete(int.Parse(json["gameid"]));
+                        break;
+                }
 
-                //    adminModel.CreateGame(gameType);
-                //}
-                //else if (json["function"] == "delete")
-                //{
-                   
-                //}
-
-                //if (result == DbError.SUCCESS)
-                //{
-                //    jsonReturn = new {
-                //        status = true,
-                //        function = json["function"],
-                //        message = "Was able to " + json["function"] + " successfully",
-                //        data = new
-                //        {
-                //            model = gameModel
-                //        }
-                //    };
-                //}
-                //else
-                //{
-                //    jsonReturn = new
-                //    {
-                //        status = false,
-                //        message = "An error occured while taking action",
-                //        Exception = db.interfaceException.Message
-                //    };
-                //}
+                jsonReturn = new
+                {
+                    status = result,
+                    message = "Was able to " + json["function"] + " " + (result ? "successfully" : "unsuccessfully"),
+                    data = gameType.Select()
+                };
             }
 
             return Json(JsonConvert.SerializeObject(jsonReturn));
@@ -113,7 +82,7 @@ namespace WebApplication.Controllers
         {
             AccountViewModel userModel = new AccountViewModel((int)Session["User.UserId"]);
 
-            return (Permission)userModel.Model.PermissionLevel;
+            return (Permission)userModel.Account.PermissionLevel;
         }
     }
 }

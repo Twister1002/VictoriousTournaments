@@ -113,11 +113,11 @@ namespace WebApplication.Models
         public int DefenderScore { get; set; }
     }
 
-    public abstract class AdministratorFields : ViewModel
+    public abstract class GameTypeFields : ViewModel
     {
-        [Display(Name ="Game")]
+        [Display(Name ="Title")]
         [DataType(DataType.Text)]
-        public String GameName { get; set; }
+        public String Title { get; set; }
 
         [Display(Name = "")]
         public bool XBox { get; set; }

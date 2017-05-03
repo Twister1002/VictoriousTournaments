@@ -8,6 +8,6 @@
 <div id="Administrator">
     <h2>Admin Menu</h2>
     <div class="section">
-        @{ Html.RenderAction("Games", Model); }
+        @{ Html.RenderPartial("Games", Model.LoadGameTypes()); }
     </div>
 </div>
