@@ -71,11 +71,6 @@ namespace DatabaseLib
                 context.SaveChanges();
             }
 
-            if (context.GameTypeModels.ToList().Count == 0)
-            {
-                // This is there to prevent a foreign key exception being thrown on insert of a tournament
-                context.GameTypeModels.Add(new GameTypeModel { Title = "Place Holder GameType" }); 
-            }
         }
 
         #region Accounts
