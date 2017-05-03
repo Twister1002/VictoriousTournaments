@@ -93,10 +93,9 @@ namespace WebApplication.Controllers
             if (Session["User.UserId"] != null)
             {
                 TournamentViewModel viewModel = new TournamentViewModel(id);
-
-                if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+                if (viewModel.IsAdministrator((int)Session["User.UserId"]))
                 {
-                    return View("Edit", viewModel);
+                    return View("Update", viewModel);
                 }
                 else
                 {
@@ -166,8 +165,7 @@ namespace WebApplication.Controllers
             {
                 viewModel.LoadData(id);
 
-                if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_CREATOR ||
-                    viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+                if (viewModel.IsAdministrator((int)Session["User.UserId"]))
                 {
                     if (viewModel.Update((int)Session["User.UserId"]))
                     {
@@ -195,7 +193,7 @@ namespace WebApplication.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            return View("Edit", viewModel);
+            return View("Update", viewModel);
         }
 
         [HttpPost]
@@ -268,7 +266,7 @@ namespace WebApplication.Controllers
             {
                 // Load the tournament
                 TournamentViewModel viewModel = new TournamentViewModel(json["tournyVal"]);
-                if (viewModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+                if (viewModel.IsAdministrator((int)Session["User.UserId"]))
                 {
                     if (viewModel.FinalizeTournament(roundData))
                     {
@@ -347,7 +345,7 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("Ajax/PermissionChange")]
+        [Route("Ajax/Tournament/PermissionChange")]
         public JsonResult PermissionChange(String jsonData)
         {
             Dictionary<string, string> json = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);

@@ -2,7 +2,6 @@
 
 @{ 
     int columns = 3;
-    bool usePoints = Model.Bracket.BracketType == DataLib.BracketTypeModel.BracketType.DOUBLE || Model.Bracket.BracketType == DataLib.BracketTypeModel.BracketType.SINGLE ? false : true;
 }
 
 <li class="TournamentStandings">
@@ -15,7 +14,7 @@
             <ul data-columns="@columns">
                 <li class="column rank">Rank</li>
                 <li class="column name">Name</li>
-                @if (usePoints)
+                @if (Model.UsePoints())
                 {
                     <li score="column score">Score</li>
                 }
@@ -27,7 +26,7 @@
                 <ul class="position" data-columns="@columns">
                     <li class="column rank">@data.Rank</li>
                     <li class="column name">@data.Name</li>
-                    @if (usePoints)
+                    @if (Model.UsePoints())
                     {
                         <li class="column score">@data.Score</li>
                     }

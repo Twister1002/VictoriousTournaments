@@ -19,7 +19,14 @@ namespace WebApplication.Models
 
         public BracketViewModel()
         {
+            Bracket = null;
+            Model = null;
+        }
 
+        public BracketViewModel(BracketModel model)
+        {
+            Model = model;
+            LoadBracket();
         }
 
         public BracketViewModel(IBracket bracket)
@@ -31,18 +38,49 @@ namespace WebApplication.Models
         public BracketViewModel(int id)
         {
             Model = db.GetBracket(id);
+            LoadBracket();
+        }
 
-            switch (Model.BracketType.Type)
+        private void LoadBracket()
+        {
+            if (Model != null)
             {
-                case BracketType.SINGLE:
-                    Bracket = new SingleElimBracket(Model);
-                    break;
-                case BracketType.DOUBLE:
-                    Bracket = new DoubleElimBracket(Model);
-                    break;
-                case BracketType.ROUNDROBIN:
-                    Bracket = new RoundRobinBracket(Model);
-                    break;
+                if (Model.Finalized)
+                {
+                    switch (Model.BracketType.Type)
+                    {
+                        case BracketType.SINGLE:
+                            Bracket = new SingleElimBracket(Model);
+                            break;
+                        case BracketType.DOUBLE:
+                            Bracket = new DoubleElimBracket(Model);
+                            break;
+                        case BracketType.ROUNDROBIN:
+                            Bracket = new RoundRobinBracket(Model);
+                            break;
+                    }
+                }
+                else
+                {
+                    List<IPlayer> players = new List<IPlayer>();
+                    foreach (TournamentUserModel user in Model.Tournament.TournamentUsers)
+                    {
+                        players.Add(new User(user));
+                    }
+
+                    switch (Model.BracketType.Type)
+                    {
+                        case BracketType.SINGLE:
+                            Bracket = new SingleElimBracket(players);
+                            break;
+                        case BracketType.DOUBLE:
+                            Bracket = new DoubleElimBracket(players);
+                            break;
+                        case BracketType.ROUNDROBIN:
+                            Bracket = new RoundRobinBracket(players);
+                            break;
+                    }
+                }
             }
         }
 
@@ -191,7 +229,49 @@ namespace WebApplication.Models
 
         public Permission TournamentPermission(int accountId)
         {
-            return (Permission)Model.Tournament.TournamentUsers.First(x => x.AccountID == accountId).PermissionLevel;
+            TournamentUserModel model = Model.Tournament.TournamentUsers.FirstOrDefault(x => x.AccountID == accountId);
+
+            if (model != null)
+            {
+                return (Permission)model.PermissionLevel;
+            }
+            else
+            {
+                return Permission.NONE;
+            }
+        }
+        public bool IsAdministrator(int accountId)
+        {
+            Permission permission = TournamentPermission(accountId);
+            if (permission == Permission.TOURNAMENT_ADMINISTRATOR || 
+                permission == Permission.TOURNAMENT_CREATOR)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsCreator(int accountId)
+        {
+            return TournamentPermission(accountId) == Permission.TOURNAMENT_CREATOR;
+        }
+
+        public bool UsePoints()
+        {
+            if (Bracket.BracketType == BracketType.GSLGROUP || 
+                Bracket.BracketType == BracketType.RRGROUP || 
+                Bracket.BracketType == BracketType.SWISS ||
+                Bracket.BracketType == BracketType.ROUNDROBIN)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

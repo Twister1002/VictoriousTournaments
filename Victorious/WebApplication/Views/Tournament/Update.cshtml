@@ -4,8 +4,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     
     int userId = Session["User.UserId"] != null ? (int)Session["User.UserId"] : -1;
-    DataLib.Permission UserPermission = Model.UserPermission((int)Session["User.UserId"]);
-
 }
 <div id="TournamentEdit" data-tournament="@Model.Model.TournamentID">
     @using (Html.BeginForm("Edit", "Tournament", FormMethod.Post))
@@ -45,22 +43,22 @@
             <ul>
                 <li>
                     @Html.LabelFor(t => t.RegistrationStartDate)
-                    @Html.TextBoxFor(t => t.RegistrationStartDate, Model.RegistrationStartDate.Value.ToShortDateString().ToString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.RegistrationStartDate, Model.RegistrationStartDate.ToShortDateString().ToString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.RegistrationStartDate)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.RegistrationEndDate)
-                    @Html.TextBoxFor(t => t.RegistrationEndDate, Model.RegistrationEndDate.Value.ToShortDateString().ToString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.RegistrationEndDate, Model.RegistrationEndDate.ToShortDateString().ToString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.RegistrationEndDate)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.TournamentStartDate)
-                    @Html.TextBoxFor(t => t.TournamentStartDate, Model.TournamentStartDate.Value.ToShortDateString().ToString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.TournamentStartDate, Model.TournamentStartDate.ToShortDateString().ToString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.TournamentStartDate)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.TournamentEndDate)
-                    @Html.TextBoxFor(t => t.TournamentEndDate, Model.TournamentEndDate.Value.ToShortDateString().ToString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.TournamentEndDate, Model.TournamentEndDate.ToShortDateString().ToString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.TournamentEndDate)
                 </li>
                 <li>
@@ -93,11 +91,11 @@
             <li class="list-table-body">
                 @foreach (var user in Model.Administrators) // Display the Admins first
                 {
-                    <ul class="user border" data-user="@user.UserID" data-columns="3">
-                        <li class="column name">@user.Username</li>
+                    <ul class="user border" data-user="@user.TournamentUserID" data-columns="3">
+                        <li class="column name">@user.Name</li>
                         <li class="column permission">Admin</li>
                         <li class="column actions">
-                            @if (userId == Model.Model.CreatedByID && user.UserID != userId)
+                            @if (Model.IsCreator(userId) && user.AccountID != userId)
                             {
                                 <button class="demote">Demote</button>
                             }
@@ -107,15 +105,15 @@
 
                 @foreach (var user in Model.Participants) // Display the Admins Second
                 {
-                    <ul class="user border" data-user="@user.UserID" data-columns="3">
-                        <li class="column name">@user.Username</li>
+                    <ul class="user border" data-user="@user.TournamentUserID" data-columns="3">
+                        <li class="column name">@user.Name</li>
                         <li class="column permission">Participant</li>
                         <li class="column actions">
-                            @if (userId == Model.Model.CreatedByID)
+                            @if (Model.IsCreator(userId))
                             {
                                 <button class="promote">Promote</button>
                             }
-                            @if (UserPermission == DataLib.Permission.TOURNAMENT_ADMINISTRATOR)
+                            @if (Model.IsAdministrator(userId))
                             {
                                 <button class="demote">Remove</button>
                             }

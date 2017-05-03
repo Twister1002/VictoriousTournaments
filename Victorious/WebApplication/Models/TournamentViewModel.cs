@@ -138,6 +138,7 @@ namespace WebApplication.Models
                 {
                     AccountID = account.AccountID,
                     Username = account.Username,
+                    Name = account.Username,
                     PermissionLevel = (int)permission,
                     TournamentID = Model.TournamentID,
                     Tournament = Model
@@ -207,6 +208,7 @@ namespace WebApplication.Models
                         Participants.Add(user);
                         break;
                     case Permission.TOURNAMENT_ADMINISTRATOR:
+                    case Permission.TOURNAMENT_CREATOR:
                         Administrators.Add(user);
                         break;
                 }
@@ -353,9 +355,8 @@ namespace WebApplication.Models
             return bracket;
         }
 
-        public Permission UserPermission(int accountId)
+        public Permission TournamentPermission(int accountId)
         {
-
             TournamentUserModel model =
                 Model.TournamentUsers.FirstOrDefault(x =>
                 x.AccountID == accountId);
@@ -368,6 +369,25 @@ namespace WebApplication.Models
             {
                 return Permission.NONE;
             }
+        }
+
+        public bool IsAdministrator(int accountId)
+        {
+            Permission permission = TournamentPermission(accountId);
+            if (permission == Permission.TOURNAMENT_ADMINISTRATOR || 
+                permission == Permission.TOURNAMENT_CREATOR)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsCreator(int accountId)
+        {
+            return TournamentPermission(accountId) == Permission.TOURNAMENT_CREATOR;
         }
 
         public Dictionary<String, object> ChangePermission(int sessionId, int accountId, String action)
@@ -384,7 +404,7 @@ namespace WebApplication.Models
             Permission permission = Permission.NONE;
             DbError dbResult = DbError.NONE;
 
-            if (UserPermission(sessionId) == Permission.TOURNAMENT_ADMINISTRATOR)
+            if (TournamentPermission(sessionId) == Permission.TOURNAMENT_ADMINISTRATOR)
             {
                 switch (action)
                 {
