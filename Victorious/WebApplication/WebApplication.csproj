@@ -106,6 +106,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\Accounts.sql" />
+    <Content Include="App_Data\Brackets.sql" />
     <Content Include="App_Data\GameTypes.sql" />
     <Content Include="App_Data\Tournaments.sql" />
     <Content Include="App_Data\UsersToTournament.sql" />
