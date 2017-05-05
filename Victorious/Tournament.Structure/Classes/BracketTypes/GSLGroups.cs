@@ -56,7 +56,6 @@ namespace Tournament.Structure
 				GrandFinal = null;
 				--NumberOfMatches;
 			}
-
 #if false
 			public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 			{
@@ -76,7 +75,7 @@ namespace Tournament.Structure
 			#endregion
 
 			#region Private Methods
-			protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished)
+			protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false)
 			{
 				if (!_isAddition)
 				{
@@ -91,15 +90,16 @@ namespace Tournament.Structure
 				if (match.NextMatchNumber <= NumberOfMatches)
 				{
 					// Case 1: Not a final/endpoint match. Treat like a DEB:
-					base.UpdateScore(_matchNumber, _game, _isAddition, _wasFinished);
+					base.UpdateScore(_matchNumber, _games, _isAddition, _formerMatchWinnerSlot, _resetManualWin);
 					return;
 				}
 
-				PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
-					? PlayerSlot.Challenger
-					: PlayerSlot.Defender;
 				if (match.IsFinished)
 				{
+					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
+						? PlayerSlot.Challenger
+						: PlayerSlot.Defender;
+
 					if (nextLoserNumber > 0)
 					{
 						// Case 2: UB Finals.
@@ -164,6 +164,7 @@ namespace Tournament.Structure
 					}
 				}
 			}
+			// void ApplyGameRemovalEffects() just uses DEB's version.
 
 			protected override void RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 			{

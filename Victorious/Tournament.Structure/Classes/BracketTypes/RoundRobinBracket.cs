@@ -25,6 +25,8 @@ namespace Tournament.Structure
 		// inherits int NumberOfMatches
 		protected int MatchWinValue
 		{ get; set; }
+		protected int MatchTieValue
+		{ get; set; }
 		#endregion
 
 		#region Ctors
@@ -59,6 +61,7 @@ namespace Tournament.Structure
 			BracketType = BracketType.ROUNDROBIN;
 			MaxRounds = _numberOfRounds;
 			MatchWinValue = 2;
+			MatchTieValue = 1;
 			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
 		}
@@ -98,6 +101,7 @@ namespace Tournament.Structure
 			this.IsFinalized = _model.Finalized;
 			this.MaxRounds = 0;
 			this.MatchWinValue = 2;
+			this.MatchTieValue = 1;
 			ResetBracket();
 
 			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
@@ -322,50 +326,86 @@ namespace Tournament.Structure
 			IsFinished = false;
 		}
 #endif
-
 		public override void ResetMatches()
 		{
 			base.ResetMatches();
 			foreach (IPlayerScore ps in Rankings)
 			{
 				ps.Rank = 1;
-				ps.Score = 0;
+				ps.ResetScore();
 			}
 		}
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, GameModel _game, bool _isAddition, bool _wasFinished)
+		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false)
 		{
-			if (null == _game)
+			if (null == _games)
 			{
-				// Match winner was manually set. Apply a match win to his score:
+				// Match winner was manually set. Apply a match win to his score (but no games!):
 				IMatch match = GetMatch(_matchNumber);
 				int winnerIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)(match.WinnerSlot)].Id);
 				Rankings[winnerIndex].AddToScore(MatchWinValue, 0, 0, true);
 			}
+			else if (_resetManualWin)
+			{
+				// Match had a manual winner: being removed.
+				// Update score accordingly, ignoring individual game scores:
+				int winnerIndex = Rankings.FindIndex
+					(r => r.Id == GetMatch(_matchNumber).Players[(int)_formerMatchWinnerSlot].Id);
+				Rankings[winnerIndex].AddToScore(MatchWinValue, 0, 0, false);
+			}
 			else
 			{
-				//PlayerSlot matchWinner = GetMatch(_matchNumber).WinnerSlot;
-				PlayerSlot gameWinner = (_game.DefenderID == _game.WinnerID)
-					? PlayerSlot.Defender : PlayerSlot.Challenger;
-				bool matchFinishChange = _wasFinished ^ GetMatch(_matchNumber).IsFinished;
+				// Standard case: Update score for new game(s):
+				IMatch match = GetMatch(_matchNumber);
+				int defenderMatchScore = 0, defenderGameScore = 0, defenderPointScore = 0;
+				int challengerMatchScore = 0, challengerGameScore = 0, challengerPointScore = 0;
+
+				// Calculate players' MatchScore updates:
+				if ((PlayerSlot.Defender == _formerMatchWinnerSlot) ^ (PlayerSlot.Defender == match.WinnerSlot))
+				{
+					defenderMatchScore = MatchWinValue;
+				}
+				else if ((PlayerSlot.Challenger == _formerMatchWinnerSlot) ^ (PlayerSlot.Challenger == match.WinnerSlot))
+				{
+					challengerMatchScore = MatchWinValue;
+				}
+				else if ((_isAddition && match.IsFinished && (PlayerSlot.unspecified == match.WinnerSlot)) ||
+					(!_isAddition && !(match.IsFinished) && (_games.Count + match.Score[0] + match.Score[1] >= match.MaxGames)))
+				{
+					defenderMatchScore = challengerMatchScore
+						= MatchTieValue;
+				}
+
+				// Calculate players' GameScore & PointScore updates:
+				foreach (GameModel model in _games)
+				{
+					if (model.WinnerID == model.DefenderID)
+					{
+						++defenderGameScore;
+					}
+					else if (model.WinnerID == model.ChallengerID)
+					{
+						++challengerGameScore;
+					}
+					defenderPointScore += model.DefenderScore;
+					challengerPointScore += model.ChallengerScore;
+				}
 
 				// Update Defender's score:
-				int defIndex = Rankings.FindIndex(r => r.Id == _game.DefenderID);
-				bool defenderUpdate = matchFinishChange && (PlayerSlot.Defender == gameWinner);
+				int defIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id);
 				Rankings[defIndex].Score += (_isAddition)
-					? Convert.ToInt16(defenderUpdate) * MatchWinValue
-					: -1 * Convert.ToInt16(defenderUpdate) * MatchWinValue;
-				Rankings[defIndex].AddToScore(Convert.ToInt16(defenderUpdate) * MatchWinValue, 1, _game.DefenderScore, _isAddition);
+					? defenderMatchScore
+					: -1 * defenderMatchScore;
+				Rankings[defIndex].AddToScore(defenderMatchScore, defenderGameScore, defenderPointScore, _isAddition);
 
 				// Update Challenger's score:
-				int chalIndex = Rankings.FindIndex(r => r.Id == _game.ChallengerID);
-				bool challengerUpdate = matchFinishChange && (PlayerSlot.Challenger == gameWinner);
+				int chalIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id);
 				Rankings[chalIndex].Score += (_isAddition)
-					? Convert.ToInt16(challengerUpdate) * MatchWinValue
-					: -1 * Convert.ToInt16(challengerUpdate) * MatchWinValue;
-				Rankings[chalIndex].AddToScore(Convert.ToInt16(challengerUpdate) * MatchWinValue, 1, _game.ChallengerScore, _isAddition);
+					? challengerMatchScore
+					: -1 * challengerMatchScore;
+				Rankings[chalIndex].AddToScore(challengerMatchScore, challengerGameScore, challengerPointScore, _isAddition);
 			}
 
 			UpdateRankings();
@@ -382,7 +422,7 @@ namespace Tournament.Structure
 				}
 			}
 		}
-		protected override void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished)
+		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
 			this.IsFinished = (IsFinished && GetMatch(_matchNumber).IsFinished);
 		}

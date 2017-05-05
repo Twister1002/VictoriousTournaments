@@ -149,13 +149,16 @@ namespace Tournament.Structure
 				IsFinished = !(AddNewRound(GetMatch(_matchNumber).MaxGames));
 			}
 		}
-		protected override void ApplyGameRemovalEffects(int _matchNumber, GameModel _game, bool _wasFinished)
+		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
-			if (_wasFinished && !(GetMatch(_matchNumber).IsFinished))
+			IMatch match = GetMatch(_matchNumber);
+			if (!(match.IsFinished) &&
+				((PlayerSlot.unspecified != _formerMatchWinnerSlot) ||
+				(_games.Count + match.Score[0] + match.Score[1] >= match.MaxGames)))
 			{
 				CheckAndRemoveNextRound(1 + GetMatch(_matchNumber).RoundIndex);
 			}
-			base.ApplyGameRemovalEffects(_matchNumber, _game, _wasFinished);
+			base.ApplyGameRemovalEffects(_matchNumber, _games, _formerMatchWinnerSlot);
 		}
 		private bool AddNewRound(int _gamesPerMatch)
 		{

@@ -345,6 +345,10 @@ namespace Tournament.Structure
 			AddRoundRobinBracket(pList, _numRounds);
 		}
 #endif
+		public void AddSwissBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1, int _numRounds = 0)
+		{
+			Brackets.Add(new SwissBracket(_playerList, _maxGamesPerMatch, _numRounds));
+		}
 		public void AddRRGroupStage(List<IPlayer> _playerList, int _numGroups = 2, int _maxGamesPerMatch = 1, int _maxRounds = 0)
 		{
 			Brackets.Add(new RoundRobinGroups(_playerList, _numGroups, _maxGamesPerMatch, _maxRounds));
@@ -360,11 +364,11 @@ namespace Tournament.Structure
 			AddGroupStageBracket(pList, _numGroups);
 		}
 #endif
+		public void AddGSLGroupStage(List<IPlayer> _playerList, int _numGroups = 2, int _maxGamesPerMatch = 1)
+		{
+			Brackets.Add(new GSLGroups(_playerList, _numGroups, _maxGamesPerMatch));
+		}
 		#endregion
-		#endregion
-
-		#region Private Methods
-
 		#endregion
 	}
 }

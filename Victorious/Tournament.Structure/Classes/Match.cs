@@ -330,6 +330,11 @@ namespace Tournament.Structure
 				throw new InactiveMatchException
 					("Cannot add games to an inactive match!");
 			}
+			if (IsFinished && !IsManualWin)
+			{
+				throw new InactiveMatchException
+					("Cannot add games to a finished match!");
+			}
 			if (PlayerSlot.unspecified == _winnerSlot)
 			{
 				throw new NotImplementedException
@@ -666,11 +671,13 @@ namespace Tournament.Structure
 			int winsNeeded = MaxGames / 2 + 1;
 			if (Score[(int)_slot] >= winsNeeded)
 			{
+				// One player has enough game-wins to win the match
 				WinnerSlot = _slot;
 				IsFinished = true;
 			}
 			else if (Score[0] + Score[1] >= MaxGames)
 			{
+				// MaxGames has been played without a winner: Match is over (TIE)
 				WinnerSlot = PlayerSlot.unspecified;
 				IsFinished = true;
 			}
