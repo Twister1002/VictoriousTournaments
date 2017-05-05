@@ -8,6 +8,25 @@ using DatabaseLib;
 
 namespace Tournament.Structure
 {
+	internal struct Matchup
+	{
+		public int DefenderId { get; private set; }
+		public int ChallengerId { get; private set; }
+		public Matchup(int _defId, int _chalId)
+		{
+			DefenderId = _defId;
+			ChallengerId = _chalId;
+		}
+		public bool ContainsInt(int _int)
+		{
+			if (DefenderId == _int || ChallengerId == _int)
+			{
+				return true;
+			}
+			return false;
+		}
+	}
+
 	public class SwissBracket : RoundRobinBracket
 	{
 		#region Variables & Properties
@@ -23,6 +42,8 @@ namespace Tournament.Structure
 		// inherits int NumberOfLowerRounds (0)
 		// inherits IMatch GrandFinal (null)
 		// inherits int NumberOfMatches
+		private List<Matchup> Matchups
+		{ get; set; }
 		private List<int> PlayerByes
 		{ get; set; }
 		#endregion
@@ -173,6 +194,9 @@ namespace Tournament.Structure
 					if (!PlayerByes.Contains(id))
 					{
 						PlayerByes.Add(id);
+						// Add a "match win" to the player with a bye:
+						int index = Rankings.FindIndex(r => r.Id == id);
+						Rankings[index].AddToScore(MatchWinValue, 0, 0, true);
 						break;
 					}
 				}
@@ -231,6 +255,102 @@ namespace Tournament.Structure
 			}
 
 			return groups;
+		}
+
+		private int[,] CreateHeuristicGrid(List<List<int>> _groups)
+		{
+			int numCompetitors = NumberOfPlayers();
+			numCompetitors = (0 == numCompetitors % 2)
+				? numCompetitors : (numCompetitors - 1);
+			int[,] grid = new int[numCompetitors, numCompetitors];
+
+			for (int y = 0; y < numCompetitors; ++y)
+			{
+				int playerYid = -1, groupNumberY = 0;
+				for (int g = 0, playerNum = 0; g < _groups.Count; ++g)
+				{
+					if (playerNum + _groups[g].Count < y)
+					{
+						playerNum += _groups[g].Count;
+					}
+					else
+					{
+						groupNumberY = g + 1;
+						playerYid = _groups[g][y - playerNum];
+						break;
+					}
+				}
+
+				List<Matchup> matchupList = new List<Matchup>();
+				for (int i = 0; i < (_groups[groupNumberY].Count - 1) - i; ++i)
+				{
+					// Make fake matchups for the players in this group, for use later:
+					matchupList.Add(new Matchup(i, _groups[groupNumberY].Count - 1 - i));
+				}
+				int matchupYindex = matchupList.FindIndex(m => m.ContainsInt(playerYid));
+
+				for (int x = 0; x < numCompetitors; ++x)
+				{
+					if (x == y)
+					{
+						// Can't play against self! Add heuristic=100M:
+						grid[y, x] = 100000000;
+						continue;
+					}
+
+					int playerXid = -1, groupNumberX = 0;
+					for (int g = 0, playerNum = 0; g < _groups.Count; ++g)
+					{
+						if (playerNum + _groups[g].Count < x)
+						{
+							playerNum += _groups[g].Count;
+						}
+						else
+						{
+							groupNumberX = g + 1;
+							playerXid = _groups[g][x - playerNum];
+							break;
+						}
+					}
+
+					// Add heuristic=20 for each group-line crossed for this matchup:
+					grid[y, x] = Math.Abs(groupNumberX - groupNumberY) * 20;
+
+					// Add heuristic=1 for each slot *within group* away from preferred matchup:
+					int split = 0;
+					if (groupNumberY > groupNumberX)
+					{
+						split = _groups[groupNumberX].FindIndex(id => id == playerXid);
+					}
+					else if (groupNumberY < groupNumberX)
+					{
+						split = _groups[groupNumberX].FindIndex(id => id == playerXid);
+						split = (_groups[groupNumberX].Count - 1) - split;
+					}
+					else // groupNumberY == groupNumberX
+					{
+						int idealMatchup = (matchupList[matchupYindex].DefenderId == playerYid)
+							? matchupList[matchupYindex].ChallengerId
+							: matchupList[matchupYindex].DefenderId;
+						split = Math.Abs(idealMatchup - x);
+					}
+					grid[y, x] += split;
+
+					// Check for Rematch:
+					foreach (IMatch match in Matches.Values)
+					{
+						if ((match.Players[0].Id == playerXid && match.Players[1].Id == playerYid) ||
+							(match.Players[0].Id == playerYid && match.Players[1].Id == playerXid))
+						{
+							// Rematch found. Add heuristic=100K:
+							grid[y, x] += 100000;
+							break;
+						}
+					}
+				}
+			}
+
+			return grid;
 		}
 
 		private bool AddNewRound(int _gamesPerMatch)
