@@ -384,9 +384,11 @@ namespace Tournament.Structure
 					if (model.WinnerID == model.DefenderID)
 					{
 						++defenderGameScore;
+						--challengerGameScore;
 					}
 					else if (model.WinnerID == model.ChallengerID)
 					{
+						--defenderGameScore;
 						++challengerGameScore;
 					}
 					defenderPointScore += model.DefenderScore;
@@ -429,7 +431,20 @@ namespace Tournament.Structure
 
 		protected override void UpdateRankings()
 		{
-			Rankings.Sort(SortRankingScores);
+			// Calculate & Assign OpponentsPoints value for each player:
+			foreach (IPlayerScore player in Rankings)
+			{
+				player.OpponentsScore = 0;
+				foreach (IMatch match in Matches.Values.Where(m => m.IsFinished).ToList())
+				{
+					PlayerSlot oppSlot = (match.Players[(int)PlayerSlot.Defender].Id == player.Id)
+						? PlayerSlot.Challenger
+						: PlayerSlot.Defender;
+					player.OpponentsScore += Rankings
+						.Find(r => r.Id == match.Players[(int)oppSlot].Id).MatchScore;
+				}
+			}
+
 #if false
 			Rankings.Sort((first, second) =>
 			{
@@ -443,6 +458,7 @@ namespace Tournament.Structure
 					? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
 			});
 #endif
+			Rankings.Sort(SortRankingScores);
 			for (int i = 0; i < Rankings.Count; ++i)
 			{
 				Rankings[i].Rank = i + 1;

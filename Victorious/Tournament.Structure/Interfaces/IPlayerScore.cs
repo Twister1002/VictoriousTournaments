@@ -19,6 +19,7 @@ namespace Tournament.Structure
 		int Score { get; set; }
 		int MatchScore { get; set; }
 		int GameScore { get; set; }
+		int OpponentsScore { get; set; }
 		int PointsScore { get; set; }
 
 		/// <summary>
