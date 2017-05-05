@@ -41,6 +41,7 @@ namespace DatabaseLib
         public System.DateTime CheckInBegins { get; set; }
         public System.DateTime CheckInEnds { get; set; }
         public int Platform { get; set; }
+        public bool InProgress { get; set; }
     	
     	partial void OnInit();
     

@@ -2,7 +2,6 @@
 (
 	[TournamentUserID] INT NOT NULL IDENTITY , 
     [AccountID] INT NULL, 
-	[Username] NVARCHAR(50) NULL,
     [UniformNumber] INT NULL, 
     [TournamentID] INT NOT NULL,
     [PermissionLevel] INT NULL, 

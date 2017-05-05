@@ -67,7 +67,7 @@ namespace DatabaseLib.Tests
             {
                 
                 Name = "Kelton",
-                Username = Guid.NewGuid().ToString(),
+                //Username = Guid.NewGuid().ToString(),
                 UniformNumber = 1
             };
             return user;
