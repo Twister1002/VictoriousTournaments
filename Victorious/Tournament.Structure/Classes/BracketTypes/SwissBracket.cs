@@ -297,6 +297,13 @@ namespace Tournament.Structure
 						grid[y, x] = 100000000;
 						continue;
 					}
+					if (y > x)
+					{
+						// Grid is mirrored over the diagonal.
+						// If this node's twin is already computed, just copy it:
+						grid[y, x] = grid[x, y];
+						continue;
+					}
 
 					int playerXid = -1, groupNumberX = 0;
 					for (int g = 0, playerNum = 0; g < _groups.Count; ++g)
