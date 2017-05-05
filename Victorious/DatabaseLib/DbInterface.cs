@@ -500,6 +500,7 @@ namespace DatabaseLib
 
         }
 
+        [Obsolete("Use FindTournaments(Dictionary<string, string> searchParams)")]
         public List<TournamentModel> FindTournaments(string title, DateTime startDate)
         {
             List<TournamentModel> tournaments = new List<TournamentModel>();
