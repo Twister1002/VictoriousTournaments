@@ -24,6 +24,8 @@
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Games_Matches" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Brackets_BracketTypes" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Tournaments_GameTypes" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentInvite" Width="1.875" PointX="9" PointY="2.75" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.UsersCheckedIn" Width="1.875" PointX="9" PointY="4.25" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

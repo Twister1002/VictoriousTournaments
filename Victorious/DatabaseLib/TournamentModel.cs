@@ -42,6 +42,7 @@ namespace DatabaseLib
         public System.DateTime CheckInEnds { get; set; }
         public int Platform { get; set; }
         public bool InProgress { get; set; }
+        public string InviteCode { get; set; }
     	
     	partial void OnInit();
     

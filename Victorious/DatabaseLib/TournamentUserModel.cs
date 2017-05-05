@@ -27,6 +27,7 @@ namespace DatabaseLib
         public int TournamentID { get; set; }
         public Nullable<int> PermissionLevel { get; set; }
         public string Name { get; set; }
+        public string InviteCode { get; set; }
     	
     	partial void OnInit();
     
