@@ -533,6 +533,12 @@ namespace Tournament.Structure
 			throw new MatchNotFoundException
 				("Match not found; match number may be invalid.");
 		}
+		public MatchModel GetMatchModel(int _matchNumber)
+		{
+			MatchModel model = GetMatch(_matchNumber).GetModel();
+			model.BracketID = this.Id;
+			return model;
+		}
 		public virtual void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
 		{
 			if (_maxGamesPerMatch < 1)

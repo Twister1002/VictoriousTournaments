@@ -214,6 +214,9 @@ namespace Tournament.Structure
 		/// <returns>Specified Match object</returns>
 		IMatch GetMatch(int _matchNumber);
 
+
+		MatchModel GetMatchModel(int _matchNumber);
+
 		/// <summary>
 		/// Set the max number of Games PER MATCH for one round.
 		/// </summary>
