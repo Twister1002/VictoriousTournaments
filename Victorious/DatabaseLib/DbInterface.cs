@@ -87,7 +87,7 @@ namespace DatabaseLib
             {
                 account.CreatedOn = DateTime.Now;
                 context.AccountModels.Add(account);
-                
+
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -408,6 +408,22 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
+        /// <summary>
+        /// The following keys are what can be searched for:
+        ///     Title
+        ///     TournamentStartDate
+        ///     TournamentEndDate
+        ///     RegistrationStartDate
+        ///     RegistrationEndDate
+        ///     InProgress
+        ///     GameTypeID
+        ///     CreatedOn
+        ///     Platform
+        /// If no items are found and no exception is thrown, the 25 soonest begining tournaments are returned.
+        /// **When passing in a datetime param, please make sure it is in "short date" format.
+        /// </summary>
+        /// <param name="searchParams"></param>
+        /// <returns></returns>
         public List<TournamentModel> FindTournaments(Dictionary<string, string> searchParams)
         {
             List<TournamentModel> tournaments = new List<TournamentModel>();
@@ -416,24 +432,62 @@ namespace DatabaseLib
             {
                 List<SqlParameter> sqlparams = new List<SqlParameter>();
                 string query = string.Empty;
-                
+                query = "SELECT * FROM Tournaments WHERE IsPublic = 1 AND ";
                 if (searchParams.ContainsKey("Title"))
                 {
                     sqlparams.Add(new SqlParameter("@Title", searchParams["Title"]));
-                    query = "SELECT TournamentID FROM TournamentModels WHERE Title = @Title";
+                    query += "Title = @Title AND ";
                 }
-                if (searchParams.ContainsKey("StartDate"))
+                if (searchParams.ContainsKey("TournamentStartDate"))
                 {
-                    sqlparams.Add(new SqlParameter("@StartDate", DateTime.Parse(searchParams["TournamentStartDate"])));
-                    if (searchParams.ContainsKey("Title"))
-                        query += "UNION SELECT TournamentID FROM TournamentRule WHERE TournamentStartDate = @StartDate";
-                    else
-                        query = "SELECT TournamentID FROM TournamentRule WHERE TournamentStartDate = @StartDate";
+                    sqlparams.Add(new SqlParameter("@TournamentStartDate", DateTime.Parse(searchParams["TournamentStartDate"]).Date.ToString()));
+                    query += "datediff(day, TournamentStartDate, @TournamentStartDate) = 0 AND ";
                 }
-               
-                tournaments = context.TournamentModels.SqlQuery(query, sqlparams).ToList();
-           
+                if (searchParams.ContainsKey("TournamentEndDate"))
+                {
+                    sqlparams.Add(new SqlParameter("@TournamentEndDate", DateTime.Parse(searchParams["TournamentEndDate"])));
+                    query += "datediff(day, TournamentEndDate, @TournamentEndDate) = 0 AND ";
+                }
+                if (searchParams.ContainsKey("RegistrationStartDate"))
+                {
+                    sqlparams.Add(new SqlParameter("@RegistrationStartDate", DateTime.Parse(searchParams["RegistrationStartDate"])));
+                    query += "datediff(day, RegistrationStartDate, @RegistrationStartDate) = 0 AND ";
+                }
+                if (searchParams.ContainsKey("RegistrationEndDate"))
+                {
+                    sqlparams.Add(new SqlParameter("@RegistrationEndDate", DateTime.Parse(searchParams["RegistrationEndDate"])));
+                    query += "datediff(day, RegistrationEndDate, @RegistrationEndDate) = 0 AND ";
+                }
+                if (searchParams.ContainsKey("InProgress"))
+                {
+                    sqlparams.Add(new SqlParameter("@InProgress", searchParams["InProgress"]));
+                    query += "InProgress = @InProgress AND ";
+                }
+                if (searchParams.ContainsKey("GameTypeID"))
+                {
+                    sqlparams.Add(new SqlParameter("@GameTypeID", searchParams["GameTypeID"]));
+                    query += "GameTypeID = @GameTypeID AND ";
+                }
+                if (searchParams.ContainsKey("CreatedOn"))
+                {
+                    sqlparams.Add(new SqlParameter("@CreatedOn", DateTime.Parse(searchParams["CreatedOn"])));
+                    query += "datediff(day, CreatedOn, @CreatedOn) AND";
+                }
+                if (searchParams.ContainsKey("Platform"))
+                {
+                    sqlparams.Add(new SqlParameter("@Platform", searchParams["Platform"]));
+                    query += "Platform = @CreatedOn AND";
+                }
 
+                query = query.Remove(query.Count() - 4, 4);
+
+                tournaments = context.TournamentModels.SqlQuery(query, sqlparams.ToArray()).ToList();
+
+                if (tournaments.Count == 0)
+                {
+                    query = "SELECT TOP(25)* FROM Tournaments WHERE IsPublic = 1 ORDER BY TournamentStartDate ASC";
+                    tournaments = context.TournamentModels.SqlQuery(query, sqlparams.ToArray()).ToList();
+                }
 
             }
             catch (Exception ex)
@@ -707,10 +761,10 @@ namespace DatabaseLib
             {
                 MatchModel _match = new MatchModel();
                 _match = match;
-                
+
                 _match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
                 _match.Defender = context.TournamentUserModels.Find(match.DefenderID);
-                
+
                 //context.Challengers.Add(new Challenger() { TournamentUserID = _match.ChallengerID, MatchID = _match.MatchID });
                 //context.Defenders.Add(new Defender() { TournamentUserID = _match.DefenderID, MatchID = _match.MatchID });
 
