@@ -56,10 +56,10 @@ namespace WebApplication.Controllers
         public ActionResult Tournament(String guid)
         {
             TournamentViewModel viewModel = new TournamentViewModel(guid);
-            viewModel.ProcessTournament();
-
+            
             if (viewModel.Model != null)
             {
+                viewModel.ProcessTournament();
                 return View("Tournament", viewModel);
             }
             else

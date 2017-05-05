@@ -45,11 +45,18 @@
                     case DatabaseLib.BracketType.ROUNDROBIN:
                         bracketName = "RoundRobin";
                         break;
+                    case DatabaseLib.BracketType.SWISS:
+                        bracketName = "Swiss";
+                        break;
+                    default:
+                        bracketName = null;
+                        break;
                 }
 
                 <h3 class="name">@bracketName</h3>
                 <div class="options">
-                    @if (Bracket.Bracket.IsFinalized) { 
+                    @if (Bracket.Bracket.IsFinalized)
+                    {
                         if (ViewBag.isCreator)
                         {
                             <span class="icon icon-loop2 tournament-reset"></span>
@@ -71,5 +78,5 @@
                 }
             </ul>
         </div>
-    }
+                    }
 </div>

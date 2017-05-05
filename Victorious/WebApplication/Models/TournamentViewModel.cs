@@ -26,8 +26,15 @@ namespace WebApplication.Models
         public TournamentViewModel(int id)
         {
             Model = db.GetTournament(id);
-            SetFields();
-            Init();
+            if (Model.TournamentID != -1)
+            {
+                SetFields();
+                Init();
+            }
+            else
+            {
+                Model = null;
+            }
         }
 
         public TournamentViewModel(TournamentModel model)
@@ -82,7 +89,7 @@ namespace WebApplication.Models
             this.CheckinStart = Model.CheckInBegins;
             this.CheckinEnd = Model.CheckInEnds;
 
-            if (this.BracketType != Model.Brackets.ElementAt(0).BracketTypeID)
+            if (Model.Brackets.Count > 0 && this.BracketType != Model.Brackets.ElementAt(0).BracketTypeID)
             {
                 this.BracketType = Model.Brackets.ElementAt(0).BracketTypeID;
             }
@@ -293,6 +300,11 @@ namespace WebApplication.Models
 
         public void ProcessTournament()
         {
+            if (Model == null)
+            {
+                return;
+            }
+
             int bracketNum = 0;
             BracketModel bracket = Model.Brackets.ElementAt(bracketNum);
 
@@ -313,16 +325,19 @@ namespace WebApplication.Models
         {
             IBracket bracket = null;
 
-            switch ((int)bracketModel.BracketTypeID)
+            switch ((BracketType)bracketModel.BracketTypeID)
             {
-                case (int)DatabaseLib.BracketType.SINGLE:
+                case DatabaseLib.BracketType.SINGLE:
                     bracket = new SingleElimBracket(bracketModel);
                     break;
-                case (int)DatabaseLib.BracketType.DOUBLE:
+                case DatabaseLib.BracketType.DOUBLE:
                     bracket = new DoubleElimBracket(bracketModel);
                     break;
-                case (int)DatabaseLib.BracketType.ROUNDROBIN:
+                case DatabaseLib.BracketType.ROUNDROBIN:
                     bracket = new RoundRobinBracket(bracketModel);
+                    break;
+                case DatabaseLib.BracketType.SWISS:
+                    bracket = new SwissBracket(bracketModel);
                     break;
             }
 
@@ -339,16 +354,19 @@ namespace WebApplication.Models
                 players.Add(new User(userModel));
             }
 
-            switch (bracketModel.BracketTypeID)
+            switch ((BracketType)bracketModel.BracketTypeID)
             {
-                case (int)DatabaseLib.BracketType.SINGLE:
+                case DatabaseLib.BracketType.SINGLE:
                     bracket = new SingleElimBracket(players);
                     break;
-                case (int)DatabaseLib.BracketType.DOUBLE:
+                case DatabaseLib.BracketType.DOUBLE:
                     bracket = new DoubleElimBracket(players);
                     break;
-                case (int)DatabaseLib.BracketType.ROUNDROBIN:
+                case DatabaseLib.BracketType.ROUNDROBIN:
                     bracket = new RoundRobinBracket(players);
+                    break;
+                case DatabaseLib.BracketType.SWISS:
+                    bracket = new SwissBracket(players);
                     break;
             }
 

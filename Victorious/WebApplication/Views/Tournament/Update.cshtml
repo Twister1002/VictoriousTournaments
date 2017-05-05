@@ -78,14 +78,23 @@
         </div>
     }
 
+
+
     <div class="section user-section">
-        <h2>User Information</h2>
+        <h2>User Information <span class="icon icon-plus addUser"></span></h2>
         <ul class="list-table">
             <li class="list-table-header">
                 <ul class="border" data-columns="3">
-                    <li class="column">Name</li>
+                    <li class="column">Name/Email</li>
                     <li class="column">Involvement</li>
                     <li class="column">Actions</li>
+                </ul>
+            </li>
+            <li class="list-table-body addUserRow">
+                <ul class="border form" data-columns="3">
+                    <li class="column"><input type="text" placeholder="Email"/></li>
+                    <li class="column">Participant</li>
+                    <li class="column"><button class="addUserButton">Invite</button></li>
                 </ul>
             </li>
             <li class="list-table-body">
@@ -102,7 +111,6 @@
                         </li>
                     </ul>
                 }
-
                 @foreach (var user in Model.Participants) // Display the Admins Second
                 {
                     <ul class="user border" data-user="@user.TournamentUserID" data-columns="3">

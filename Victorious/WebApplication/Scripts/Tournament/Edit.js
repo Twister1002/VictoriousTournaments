@@ -67,4 +67,16 @@
             }
         });
     }
+
+    $("#TournamentEdit .user-section .addUser").on("click", function () {
+        $(this).closest(".user-section").find(".addUserRow").addClass("show");
+    });
+
+    $("#TournamentEdit .addUserRow .addUserButton").on("click", function () {
+        var dataRow = $(this).closest(".addUserRow");
+
+        var jsonData = {
+
+        };
+    });
 });
