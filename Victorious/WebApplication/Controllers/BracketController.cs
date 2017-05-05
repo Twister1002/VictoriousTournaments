@@ -29,7 +29,7 @@ namespace WebApplication.Controllers
             if (Session["User.UserId"] != null)
             {
                 BracketViewModel viewModel = new BracketViewModel(bracketId);
-                if ((int)Session["User.UserId"] == viewModel.Model.Tournament.CreatedByID)
+                if (viewModel.IsCreator((int)Session["User.UserId"]))
                 {
                     if (viewModel.ResetBracket())
                     {

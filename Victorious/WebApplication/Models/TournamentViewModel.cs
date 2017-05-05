@@ -144,7 +144,6 @@ namespace WebApplication.Models
                 TournamentUserModel tournamentUserModel = new TournamentUserModel()
                 {
                     AccountID = account.AccountID,
-                    Username = account.Username,
                     Name = account.Username,
                     PermissionLevel = (int)permission,
                     TournamentID = Model.TournamentID,
@@ -161,7 +160,7 @@ namespace WebApplication.Models
         {
             TournamentUserModel tournamentUserModel = new TournamentUserModel()
             {
-                Username = username,
+                Name = username,
                 PermissionLevel = (int)Permission.TOURNAMENT_STANDARD,
             };
 
@@ -180,7 +179,7 @@ namespace WebApplication.Models
 
         public bool RemoveUser(String username)
         {
-            TournamentUserModel user = Model.TournamentUsers.First(x => x.Username == username);
+            TournamentUserModel user = Model.TournamentUsers.First(x => x.Name == username);
             DbError removeResult = db.DeleteTournamentUser(user.TournamentUserID);
 
             return removeResult == DbError.SUCCESS;
@@ -266,7 +265,7 @@ namespace WebApplication.Models
         private void CreateMatches(BracketModel bracket, IBracket tourny)
         {
             // Verify if the tournament has not need finalized.
-            if (bracket.Matches.Count == 0)
+            if (!bracket.Finalized)
             {
                 // Add the matches to the database
                 for (int i = 1; i <= tourny.NumberOfMatches; i++)
@@ -284,7 +283,7 @@ namespace WebApplication.Models
 
             for (int i = 0; i < players.Count; i++)
             {
-                TournamentUserModel userModel = Model.TournamentUsers.First(x => x.Username == players[i].Name);
+                TournamentUserModel userModel = Model.TournamentUsers.First(x => x.Name == players[i].Name);
 
                 TournamentUsersBracketModel userSeed = new TournamentUsersBracketModel()
                 {
@@ -311,7 +310,7 @@ namespace WebApplication.Models
             Tourny = new Tournament.Structure.Tournament();
             Tourny.Title = Model.Title;
 
-            if (bracket.Matches.Count > 0)
+            if (bracket.Finalized)
             {
                 Tourny.AddBracket(BracketTournament(bracket));
             }

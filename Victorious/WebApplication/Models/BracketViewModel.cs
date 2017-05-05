@@ -58,6 +58,9 @@ namespace WebApplication.Models
                         case BracketType.ROUNDROBIN:
                             Bracket = new RoundRobinBracket(Model);
                             break;
+                        case BracketType.SWISS:
+                            Bracket = new SwissBracket(Model);
+                            break;
                     }
                 }
                 else
@@ -78,6 +81,9 @@ namespace WebApplication.Models
                             break;
                         case BracketType.ROUNDROBIN:
                             Bracket = new RoundRobinBracket(players);
+                            break;
+                        case BracketType.SWISS:
+                            Bracket = new SwissBracket(players);
                             break;
                     }
                 }
@@ -127,7 +133,7 @@ namespace WebApplication.Models
             {
                 if (result == DbError.SUCCESS)
                 {
-                    db.UpdateMatch(Bracket.GetMatch(i).GetModel());
+                    result = db.UpdateMatch(Bracket.GetMatch(i).GetModel());
                 }
                 else
                 {

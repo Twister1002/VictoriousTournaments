@@ -55,7 +55,8 @@ namespace WebApplication.Controllers
         [Route("Tournament/{guid}")]
         public ActionResult Tournament(String guid)
         {
-            TournamentViewModel viewModel = new TournamentViewModel(guid);
+            int tournamentId = ConvertToInt(guid);
+            TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
             
             if (viewModel.Model != null)
             {

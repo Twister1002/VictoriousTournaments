@@ -46,32 +46,35 @@ namespace WebApplication.Models
             Tournaments[TournamentStatus.UPCOMING] = new List<TournamentModel>();
             Tournaments[TournamentStatus.PAST] = new List<TournamentModel>();
 
+            List<TournamentModel> tournaments = db.GetTournamentsForAccount(Account.AccountID);
+
             // Filter the list down of tournaments
-            //foreach (TournamentModel tourny in Model.Tournaments)
-            //{
-            //    // OWner of tournament
-            //    if (tourny.UsersInTournament.Single(x=>x.UserID == Model.UserID).Permission == Permission.TOURNAMENT_ADMINISTRATOR)
-            //    {
-            //        Tournaments[TournamentStatus.ADMIN].Add(tourny);
-            //    }
-            //    else
-            //    {
-            //        // Active Tournament
-            //        if (tourny.TournamentRules.TournamentStartDate <= DateTime.Now && 
-            //            tourny.TournamentRules.TournamentEndDate > DateTime.Now)
-            //        {
-            //            Tournaments[TournamentStatus.ACTIVE].Add(tourny);
-            //        }
-            //        else if (tourny.TournamentRules.TournamentStartDate > DateTime.Now)
-            //        {
-            //            Tournaments[TournamentStatus.UPCOMING].Add(tourny);
-            //        }
-            //        else
-            //        {
-            //            Tournaments[TournamentStatus.PAST].Add(tourny);
-            //        }
-            //    }
-            //}
+            foreach (TournamentModel tournament in tournaments)
+            {
+                Permission userPermission = (Permission)tournament.TournamentUsers.Single(x => x.AccountID == Account.AccountID).PermissionLevel;
+                // OWner of tournament
+                if (userPermission == Permission.TOURNAMENT_CREATOR || userPermission == Permission.TOURNAMENT_ADMINISTRATOR)
+                {
+                    Tournaments[TournamentStatus.ADMIN].Add(tournament);
+                }
+                else
+                {
+                    // Active Tournament
+                    if (tournament.TournamentStartDate <= DateTime.Now &&
+                        tournament.TournamentEndDate > DateTime.Now)
+                    {
+                        Tournaments[TournamentStatus.ACTIVE].Add(tournament);
+                    }
+                    else if (tournament.TournamentStartDate > DateTime.Now)
+                    {
+                        Tournaments[TournamentStatus.UPCOMING].Add(tournament);
+                    }
+                    else
+                    {
+                        Tournaments[TournamentStatus.PAST].Add(tournament);
+                    }
+                }
+            }
         }
 
         public override void ApplyChanges()
