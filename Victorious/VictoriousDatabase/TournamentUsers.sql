@@ -6,6 +6,7 @@
     [TournamentID] INT NOT NULL,
     [PermissionLevel] INT NULL, 
     [Name] NVARCHAR(50) NOT NULL, 
+    [InviteCode] NVARCHAR(255) NULL, 
     CONSTRAINT [PK_TournamentUsers] PRIMARY KEY ([TournamentUserID]),
 	CONSTRAINT FK_TournamentUser_Tournaments FOREIGN KEY(TournamentID) REFERENCES Tournaments(TournamentID)
 

@@ -38,7 +38,6 @@ namespace DatabaseLib
             CreatedOn = DateTime.Now;
             LastEditedOn = DateTime.Now;
 
-            Brackets = new Collection<BracketModel>();
         }
 
     }
@@ -63,13 +62,13 @@ namespace DatabaseLib
     {
         partial void OnInit()
         {
-            Challenger = new TournamentUserModel();
-            Defender = new TournamentUserModel();
+            //Challenger = new TournamentUserModel();
+            //Defender = new TournamentUserModel();
         }
 
-        public virtual TournamentUserModel Challenger { get; set; }
+        public TournamentUserModel Challenger { get; set; }
 
-        public virtual TournamentUserModel Defender { get; set; }
+        public TournamentUserModel Defender { get; set; }
 
       
     }

@@ -46,6 +46,36 @@ namespace DatabaseLib
 
         public DbInterface()
         {
+            context.Configuration.LazyLoadingEnabled = false;
+            context.Configuration.ProxyCreationEnabled = false;
+
+            context.TournamentModels
+               .Include(x => x.Brackets)
+               .Load();
+            context.BracketModels
+                .Include(x => x.Matches)
+                .Include(x => x.BracketType)
+                .Include(x => x.Tournament)
+                .Include(x => x.TournamentUsersBrackets)
+                .Load();
+            context.MatchModels
+                .Include(x => x.Games)
+                .Include(x => x.Bracket)
+                .Load();
+            context.TournamentUserModels
+                .Include(x => x.Tournament)
+                .Include(x => x.TournamentUsersBrackets)
+                .Load();
+            context.GameTypeModels
+                .Load();
+            context.GameModels
+                .Load();
+            context.TournamentUsersBracketModels
+                .Include(x => x.TournamentUser)
+                .Load();
+
+            context.Configuration.ProxyCreationEnabled = false;
+
             if (context.BracketTypeModels.Find(1) == null)
             {
                 context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 1, Type = BracketType.SINGLE, TypeName = "Single Elimination" });
@@ -76,8 +106,18 @@ namespace DatabaseLib
                 context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 6, Type = BracketType.GSLGROUP, TypeName = "Swiss" });
                 context.SaveChanges();
             }
+
+
         }
 
+        public void EnableProxies()
+        {
+            context.Configuration.ProxyCreationEnabled = true;
+        }
+        public void DisableProxies()
+        {
+            context.Configuration.ProxyCreationEnabled = false;
+        }
 
         #region Accounts
 
@@ -323,10 +363,11 @@ namespace DatabaseLib
 
         public TournamentModel GetTournament(int id)
         {
+
             TournamentModel tournament = new TournamentModel();
             try
             {
-                tournament = context.TournamentModels.Single(t => t.TournamentID == id);
+                tournament = context.TournamentModels.Find(id);
             }
             catch (Exception ex)
             {
@@ -335,6 +376,7 @@ namespace DatabaseLib
                 tournament.TournamentID = -1;
             }
             return tournament;
+
         }
 
         public List<TournamentUserModel> GetAllUsersInTournament(int tournamentId)
@@ -837,13 +879,13 @@ namespace DatabaseLib
             try
             {
                 MatchModel _match = context.MatchModels.Find(match.MatchID);
+             
                 if (_match.ChallengerID != match.ChallengerID || _match.DefenderID != match.DefenderID)
                 {
                     _match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
                     _match.Defender = context.TournamentUserModels.Find(match.DefenderID);
                 }
-                UpdateTournamentUser(match.Defender);
-                UpdateTournamentUser(match.Challenger);
+          
                 if (cascade)
                 {
                     foreach (var game in _match.Games.ToList())
@@ -852,12 +894,14 @@ namespace DatabaseLib
                     }
                 }
                 context.Entry(_match).CurrentValues.SetValues(match);
+
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
                 interfaceException = ex;
                 WriteException(ex);
+                
                 return DbError.FAILED_TO_UPDATE;
             }
             return DbError.SUCCESS;
