@@ -23,6 +23,8 @@ namespace Tournament.Structure
 		// inherits int NumberOfLowerRounds (0)
 		// inherits IMatch GrandFinal (null)
 		// inherits int NumberOfMatches
+		private List<int> PlayerByes
+		{ get; set; }
 		#endregion
 
 		#region Ctors
@@ -160,6 +162,77 @@ namespace Tournament.Structure
 			}
 			base.ApplyGameRemovalEffects(_matchNumber, _games, _formerMatchWinnerSlot);
 		}
+
+		private List<List<int>> CreateGroups()
+		{
+			// If playercount is odd, find the top-ranked player to give a Bye
+			if (Players.Count % 2 > 0)
+			{
+				foreach (int id in Rankings.Select(r => r.Id))
+				{
+					if (!PlayerByes.Contains(id))
+					{
+						PlayerByes.Add(id);
+						break;
+					}
+				}
+			}
+			int byeIndex = PlayerByes.Count - 1;
+
+			// Create score-brackets (groups) of players, separated by their MatchScore:
+			List<List<int>> groups = new List<List<int>>();
+			for (int i = 0; i < Rankings.Count; ++i)
+			{
+				if (PlayerByes.Count > 0 &&
+					PlayerByes[PlayerByes.Count - 1] == Rankings[i].Id)
+				{
+					// This player has a bye this round. Do not add him to groups!
+					continue;
+				}
+
+				int prevIndex = i - 1;
+				if (PlayerByes.Count > 0 &&
+					prevIndex >= 0 &&
+					PlayerByes[PlayerByes.Count - 1] == Rankings[prevIndex].Id)
+				{
+					// Prev player has a bye this round. Decrement the index:
+					--prevIndex;
+				}
+				if (prevIndex < 0 ||
+					Rankings[i].MatchScore < Rankings[prevIndex].MatchScore)
+				{
+					// New MatchPoints value = Add a new group:
+					groups.Add(new List<int>());
+				}
+				groups[groups.Count - 1].Add(Rankings[i].Id);
+			}
+
+			// Sort the players within each group according to their accumulated opponents' scores
+#if false
+			foreach (List<int> group in groups)
+			{
+				group.Sort(
+					(first, second) =>
+					Rankings.FindIndex(r => r.Id == first)
+					.CompareTo(Rankings.FindIndex(r => r.Id == second)));
+			}
+#endif
+			// Make sure each group has an event playercount
+			for (int i = 0; i < groups.Count; ++i)
+			{
+				if (groups[i].Count % 2 > 0)
+				{
+					// If group.count is odd, take top player out of next group,
+					// and shift him up to current group:
+					int id = groups[i + 1][0];
+					groups[i].Add(id);
+					groups[i + 1].RemoveAt(0);
+				}
+			}
+
+			return groups;
+		}
+
 		private bool AddNewRound(int _gamesPerMatch)
 		{
 			if (MaxRounds > 0 && NumberOfRounds >= MaxRounds)
