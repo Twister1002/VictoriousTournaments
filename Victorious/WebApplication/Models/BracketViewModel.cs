@@ -133,7 +133,7 @@ namespace WebApplication.Models
             {
                 if (result == DbError.SUCCESS)
                 {
-                    result = db.UpdateMatch(Bracket.GetMatch(i).GetModel());
+                    result = db.UpdateMatch(Bracket.GetMatchModel(i));
                 }
                 else
                 {
