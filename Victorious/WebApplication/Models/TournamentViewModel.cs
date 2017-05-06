@@ -4,10 +4,13 @@ using System.Linq;
 using Tournament.Structure;
 using DatabaseLib;
 
+
 namespace WebApplication.Models
 {
     public class TournamentViewModel : TournamentFields
     {
+        private bool matchPlayerFix = true;
+
         public ITournament Tourny { get; private set; }
         public TournamentModel Model { get; private set; }
         public List<TournamentUserModel> Administrators { get; private set; }
@@ -92,6 +95,23 @@ namespace WebApplication.Models
             if (Model.Brackets.Count > 0 && this.BracketType != Model.Brackets.ElementAt(0).BracketTypeID)
             {
                 this.BracketType = Model.Brackets.ElementAt(0).BracketTypeID;
+            }
+        }
+
+        private void MatchPlayerFix()
+        {
+            foreach (var bracket in Model.Brackets)
+            {
+                foreach (var match in bracket.Matches)
+                {
+                    Model.Brackets.First(x => x.BracketID == bracket.BracketID)
+                        .Matches.First(x => x.MatchID == match.MatchID)
+                        .Challenger = db.GetTournamentUser(match.ChallengerID);
+
+                    Model.Brackets.First(x => x.BracketID == bracket.BracketID)
+                        .Matches.First(x => x.MatchID == match.MatchID)
+                        .Defender = db.GetTournamentUser(match.DefenderID);
+                }
             }
         }
 
@@ -313,6 +333,8 @@ namespace WebApplication.Models
             {
                 return;
             }
+
+            if (matchPlayerFix) MatchPlayerFix();
 
             int bracketNum = 0;
             BracketModel bracket = Model.Brackets.ElementAt(bracketNum);
