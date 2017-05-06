@@ -65,11 +65,19 @@
         $(this).closest(".user-section").find(".addUserRow").addClass("show");
     });
 
-    $("#TournamentEdit .addUserRow .addUserButton").on("click", function () {
-        var dataRow = $(this).closest(".addUserRow .form");
+    $("#TournamentEdit .addUserRow .name").on("keydown", function (e) {
+        if (e.keyCode == 13) { // Enter
+            AddNewUser($(this).closest(".form"));
+        }
+    });
 
+    $("#TournamentEdit .addUserRow .addUserButton").on("click", function () {
+        AddNewUser($(this).closest(".form"));
+    });
+
+    function AddNewUser($form) {
         var jsonData = {
-            "Name": dataRow.find(".name").val(),
+            "Name": $form.find(".name").val(),
             "TournamentID": $("#TournamentEdit").data("id")
         };
 
@@ -78,6 +86,9 @@
             "type": "post",
             "data": jsonData,
             "dataType": "json",
+            "beforeSend": function() {
+                $form.find(".addUserButton").attr("disabled", true);
+            },
             "success": function (json) {
                 json = JSON.parse(json);
                 console.log(json);
@@ -86,8 +97,8 @@
                     var listSection = $("#TournamentEdit .user-section .users");
 
                     html = "<ul class='user border' data-user='" + json.data.TournamentUserID + "' data-columns='3'> ";
-                    html += "<li class='column name'>"+json.data.Name+"</li> ";
-                    html += "<li class='column permission'>"+permissionDictionary[json.data.PermissionLevel]+"</li> ";
+                    html += "<li class='column name'>" + json.data.Name + "</li> ";
+                    html += "<li class='column permission'>" + permissionDictionary[json.data.PermissionLevel] + "</li> ";
                     html += "<li class='column actions'>" + PermissionButtons(json.data.actions) + "</li> ";
                     html += "<ul> ";
 
@@ -95,6 +106,7 @@
 
                     $(".user-section ul.user").find(".actions .promote").on("click", permissionPromote);
                     $(".user-section ul.user").find(".actions .demote, .actions .remove").on("click", permissionDemote);
+                    $form.find(".name").val('');
                 }
                 else {
 
@@ -102,9 +114,12 @@
             },
             "error": function (json) {
                 console.log(json);
+            },
+            "complete": function () {
+                $form.find(".addUserButton").attr("disabled", false);
             }
-        })
-    });
+        });
+    }
 
     function PermissionButtons(actions) {
         html = "";

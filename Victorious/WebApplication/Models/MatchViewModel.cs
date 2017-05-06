@@ -49,7 +49,7 @@ namespace WebApplication.Models
             {
                 Challenger = new User()
                 {
-                    Name = "Winner from " + Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger]
+                    Name = "Match " + Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger]
                 };
             }
 
@@ -58,7 +58,7 @@ namespace WebApplication.Models
             {
                 Defender = new User()
                 {
-                    Name = "Winner from " + Match.PreviousMatchNumbers[(int)PlayerSlot.Defender]
+                    Name = "Match " + Match.PreviousMatchNumbers[(int)PlayerSlot.Defender]
                 };
             }
         }
