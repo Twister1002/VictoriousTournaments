@@ -8,6 +8,7 @@
     bool tournamentStarted = (DateTime)Model.TournamentStartDate <= DateTime.Now;
     bool registrationEnded = (DateTime)Model.RegistrationEndDate <= DateTime.Now;
 
+    ViewBag.TournamentId = Model.Model.TournamentID;
     ViewBag.UserId = Session["User.UserId"] != null ? Session["User.UserId"] : -1;
     ViewBag.isAdministrator = Model.IsAdministrator(ViewBag.UserId);
     ViewBag.isCreator = Model.IsCreator(ViewBag.UserId);
@@ -59,6 +60,7 @@
                         {
                             <span class="icon icon-loop2 tournament-reset"></span>
                         }
+
                         <span class="icon icon-trophy tournament-standings"></span>
                     }
                 </div>
@@ -76,5 +78,5 @@
                 }
             </ul>
         </div>
-                    }
+    }
 </div>

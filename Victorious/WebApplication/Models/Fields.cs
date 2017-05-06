@@ -129,4 +129,11 @@ namespace WebApplication.Models
         [DataType(DataType.Text)]
         public String Title { get; set; }
     }
+
+    public class TournamentRegistrationFields : ViewModel
+    {
+        public String Name { get; set; }
+        public int TournamentID { get; set; }
+        public int AccountID { get; set; }
+    }
 }

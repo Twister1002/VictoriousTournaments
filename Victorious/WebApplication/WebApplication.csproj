@@ -251,7 +251,6 @@
     <Content Include="Views\Tournament\Update.cshtml" />
     <Content Include="Views\Tournament\Delete.cshtml" />
     <Content Include="Views\Account\Update.cshtml" />
-    <Content Include="Views\Tournament\Registration.cshtml" />
     <Content Include="Views\Tournament\Administrator\_Players.cshtml" />
     <Content Include="Styles\less\Tournament\_Tournament.less" />
     <Content Include="Styles\less\Tournament\_Create.less" />
@@ -274,6 +273,7 @@
     <Content Include="Styles\less\Tournament\_Game.less" />
     <Content Include="Styles\less\Tournament\_Bracket.less" />
     <Content Include="Views\Tournament\Brackets\Shared\_Standings.cshtml" />
+    <Content Include="Views\Tournament\RegisterForm.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

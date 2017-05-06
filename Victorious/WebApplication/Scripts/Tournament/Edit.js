@@ -1,8 +1,9 @@
 ﻿jQuery(document).ready(function () {
     var $ = jQuery;
     var permissionDictionary = {
-        2: "Admin",
-        1: "Participant",
+        100: "Creator",
+        101: "Admin",
+        102: "Participant",
         0: "None"
     };
 
@@ -19,15 +20,15 @@
 
     function PermissionAction(action, userElement) {
         jsonData = {
-            "tournyVal": $("#TournamentEdit").data("tournament"),
-            "userVal": userElement.data("user"),
+            "TournamentId": $("#TournamentEdit").data("id"),
+            "targetUser": userElement.data("user"),
             "action": action
         }
 
         $.ajax({
-            "url": "/Tournament/Ajax/PermissionChange",
+            "url": "/Ajax/Tournament/PermissionChange",
             "type": "POST",
-            "data": { "jsonData": JSON.stringify(jsonData) },
+            "data": jsonData,
             "dataType": "json",
             "beforeSend": function() {
                 // Prevent buttons from being clicked again
@@ -36,28 +37,20 @@
             "success": function (json) {
                 json = JSON.parse(json);
                 if (json.status) {
-                    demoteButton = "<button class='demote'>Demote</button> ";
-                    promoteButton = "<button class='promote'>Promote</button> ";
-                    removeButton = "<button class='remove'>Remove</button> ";
-
-                    if (json.permissionChange == 0) {
+                    if (json.data.permissionChange == 0) {
                         userElement.remove();
                     }
                     else {
                         var actions = userElement.find(".actions");
-                        actions.html('');
-                        userElement.find(".permission").text(permissionDictionary[json.permissionChange]);
+                        actions.html(PermissionButtons(json.data.actions));
 
-                        if (json.actions.Promote) actions.append(promoteButton);
-                        if (json.actions.Demote) actions.append(demoteButton);
-                        if (json.actions.Remove) actions.append(removeButton);
+                        userElement.find(".permission").text(permissionDictionary[json.data.permissionChange]);
                     }
                 }
 
                 console.log(json);
             },
             "error": function (json) {
-                json = JSON.parse(json);
                 alert(json.message);
             },
             "complete": function () {
@@ -73,10 +66,56 @@
     });
 
     $("#TournamentEdit .addUserRow .addUserButton").on("click", function () {
-        var dataRow = $(this).closest(".addUserRow");
+        var dataRow = $(this).closest(".addUserRow .form");
 
         var jsonData = {
-
+            "Name": dataRow.find(".name").val(),
+            "TournamentID": $("#TournamentEdit").data("id")
         };
+
+        $.ajax({
+            "url": "/Ajax/Tournament/Register",
+            "type": "post",
+            "data": jsonData,
+            "dataType": "json",
+            "success": function (json) {
+                json = JSON.parse(json);
+                console.log(json);
+
+                if (json.status) {
+                    var listSection = $("#TournamentEdit .user-section .users");
+
+                    html = "<ul class='user border' data-user='" + json.data.TournamentUserID + "' data-columns='3'> ";
+                    html += "<li class='column name'>"+json.data.Name+"</li> ";
+                    html += "<li class='column permission'>"+permissionDictionary[json.data.PermissionLevel]+"</li> ";
+                    html += "<li class='column actions'>" + PermissionButtons(json.data.actions) + "</li> ";
+                    html += "<ul> ";
+
+                    listSection.append(html);
+
+                    $(".user-section ul.user").find(".actions .promote").on("click", permissionPromote);
+                    $(".user-section ul.user").find(".actions .demote, .actions .remove").on("click", permissionDemote);
+                }
+                else {
+
+                }
+            },
+            "error": function (json) {
+                console.log(json);
+            }
+        })
     });
+
+    function PermissionButtons(actions) {
+        html = "";
+        demoteButton = "<button class='demote'>Demote</button> ";
+        promoteButton = "<button class='promote'>Promote</button> ";
+        removeButton = "<button class='remove'>Remove</button> ";
+
+        if (actions.Promote) html += promoteButton;
+        if (actions.Demote)  html += demoteButton;
+        if (actions.Remove) html += removeButton;
+
+        return html;
+    }
 });

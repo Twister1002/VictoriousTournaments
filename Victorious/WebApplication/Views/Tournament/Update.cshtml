@@ -5,7 +5,7 @@
     
     int userId = Session["User.UserId"] != null ? (int)Session["User.UserId"] : -1;
 }
-<div id="TournamentEdit" data-tournament="@Model.Model.TournamentID">
+<div id="TournamentEdit" data-id="@Model.Model.TournamentID">
     @using (Html.BeginForm("Edit", "Tournament", FormMethod.Post))
     {
         <div class="section form-section">
@@ -74,14 +74,20 @@
             </ul>
         </div>
         <div class="section">
-            <button type="submit">Accept Changes</button>
+            @if (!Model.Model.InProgress)
+            {
+                <button type="submit">Accept Changes</button>
+            }
         </div>
     }
-
-
-
     <div class="section user-section">
-        <h2>User Information <span class="icon icon-plus addUser"></span></h2>
+        <h2>
+            User Information 
+            @if (!Model.Model.InProgress)
+            {
+                <span class="icon icon-plus addUser"></span>
+            }
+        </h2>
         <ul class="list-table">
             <li class="list-table-header">
                 <ul class="border" data-columns="3">
@@ -92,12 +98,12 @@
             </li>
             <li class="list-table-body addUserRow">
                 <ul class="border form" data-columns="3">
-                    <li class="column"><input type="text" placeholder="Email"/></li>
+                    <li class="column"><input type="text" class="name" placeholder="Email"/></li>
                     <li class="column">Participant</li>
                     <li class="column"><button class="addUserButton">Invite</button></li>
                 </ul>
             </li>
-            <li class="list-table-body">
+            <li class="list-table-body users">
                 @foreach (var user in Model.Administrators) // Display the Admins first
                 {
                     <ul class="user border" data-user="@user.TournamentUserID" data-columns="3">
