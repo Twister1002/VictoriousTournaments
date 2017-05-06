@@ -21,6 +21,7 @@
     [BracketID] INT NULL, 
     [IsManualWin] BIT NOT NULL , 
     [IsFinished] BIT NULL, 
+    [IsReady] BIT NULL, 
     CONSTRAINT [PK_Matches] PRIMARY KEY ([MatchID]),
 	CONSTRAINT FK_Matches_Brackets FOREIGN KEY(BracketID) REFERENCES Brackets(BracketID)
 

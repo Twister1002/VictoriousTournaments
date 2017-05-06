@@ -68,6 +68,8 @@
     <Build Include="Games.sql" />
     <Build Include="GameTypes.sql" />
     <Build Include="TournamentUsersBrackets.sql" />
+    <Build Include="UsersCheckedIn.sql" />
+    <Build Include="TournamentInvites.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="VictoriousDatabase.refactorlog" />

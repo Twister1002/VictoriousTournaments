@@ -31,21 +31,23 @@ namespace DatabaseLib.Tests
 
             MatchModel match = db.GetMatch(1);
 
-            Assert.AreEqual(3, match.BracketID);
+            Assert.AreEqual(1, match.BracketID);
         }
 
         [TestMethod]
         public void Update_Match_No_Cascade()
         {
             var db = new DbInterface();
-
+            //db.context.Configuration.ProxyCreationEnabled = false;
+           
             MatchModel match = db.GetMatch(1);
 
-            match.ChallengerID = 7;
+            match.ChallengerID = 2;
+            match.DefenderScore = 50;
 
             var result = db.UpdateMatch(match);
 
-            Assert.AreEqual(DbError.SUCCESS, result);
+            Assert.AreEqual(2, match.Challenger.TournamentUserID);
         }
 
         [TestMethod]
