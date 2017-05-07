@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Core.Objects.DataClasses;
 using System.Linq;
 using System.Text;
@@ -66,8 +67,10 @@ namespace DatabaseLib
             //Defender = new TournamentUserModel();
         }
 
+        [NotMapped]
         public TournamentUserModel Challenger { get; set; }
 
+        [NotMapped]
         public TournamentUserModel Defender { get; set; }
 
       

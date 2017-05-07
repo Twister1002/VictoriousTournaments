@@ -110,15 +110,6 @@ namespace DatabaseLib
 
         }
 
-        public void EnableProxies()
-        {
-            context.Configuration.ProxyCreationEnabled = true;
-        }
-        public void DisableProxies()
-        {
-            context.Configuration.ProxyCreationEnabled = false;
-        }
-
         #region Accounts
 
         public DbError AddAccount(AccountModel account)
@@ -368,6 +359,14 @@ namespace DatabaseLib
             try
             {
                 tournament = context.TournamentModels.Find(id);
+                foreach (var bracket in tournament.Brackets)
+                {
+                    foreach (var match in bracket.Matches)
+                    {
+                        match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
+                        match.Defender = context.TournamentUserModels.Find(match.DefenderID);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -402,6 +401,15 @@ namespace DatabaseLib
             {
                 TournamentModel _tournament = context.TournamentModels.Find(tournament.TournamentID);
                 context.Entry(_tournament).CurrentValues.SetValues(tournament);
+                
+                foreach (var bracket in _tournament.Brackets)
+                {
+                    foreach (var match in bracket.Matches)
+                    {
+                        match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
+                        match.Defender = context.TournamentUserModels.Find(match.DefenderID);
+                    }
+                }
                 if (cascade)
                 {
                     foreach (BracketModel bracket in tournament.Brackets)
@@ -474,63 +482,39 @@ namespace DatabaseLib
             {
                 List<SqlParameter> sqlparams = new List<SqlParameter>();
                 string query = string.Empty;
-                query = "SELECT * FROM Tournaments WHERE IsPublic = 1 AND ";
-                if (searchParams.ContainsKey("Title"))
+                query = "SELECT * FROM Tournaments WHERE IsPublic = 1 ";
+                foreach (KeyValuePair<String, String> data in searchParams)
                 {
-                    sqlparams.Add(new SqlParameter("@Title", searchParams["Title"]));
-                    query += "Title = @Title AND ";
-                }
-                if (searchParams.ContainsKey("TournamentStartDate"))
-                {
-                    sqlparams.Add(new SqlParameter("@TournamentStartDate", DateTime.Parse(searchParams["TournamentStartDate"]).Date.ToString()));
-                    query += "datediff(day, TournamentStartDate, @TournamentStartDate) = 0 AND ";
-                }
-                if (searchParams.ContainsKey("TournamentEndDate"))
-                {
-                    sqlparams.Add(new SqlParameter("@TournamentEndDate", DateTime.Parse(searchParams["TournamentEndDate"])));
-                    query += "datediff(day, TournamentEndDate, @TournamentEndDate) = 0 AND ";
-                }
-                if (searchParams.ContainsKey("RegistrationStartDate"))
-                {
-                    sqlparams.Add(new SqlParameter("@RegistrationStartDate", DateTime.Parse(searchParams["RegistrationStartDate"])));
-                    query += "datediff(day, RegistrationStartDate, @RegistrationStartDate) = 0 AND ";
-                }
-                if (searchParams.ContainsKey("RegistrationEndDate"))
-                {
-                    sqlparams.Add(new SqlParameter("@RegistrationEndDate", DateTime.Parse(searchParams["RegistrationEndDate"])));
-                    query += "datediff(day, RegistrationEndDate, @RegistrationEndDate) = 0 AND ";
-                }
-                if (searchParams.ContainsKey("InProgress"))
-                {
-                    sqlparams.Add(new SqlParameter("@InProgress", searchParams["InProgress"]));
-                    query += "InProgress = @InProgress AND ";
-                }
-                if (searchParams.ContainsKey("GameTypeID"))
-                {
-                    sqlparams.Add(new SqlParameter("@GameTypeID", searchParams["GameTypeID"]));
-                    query += "GameTypeID = @GameTypeID AND ";
-                }
-                if (searchParams.ContainsKey("CreatedOn"))
-                {
-                    sqlparams.Add(new SqlParameter("@CreatedOn", DateTime.Parse(searchParams["CreatedOn"])));
-                    query += "datediff(day, CreatedOn, @CreatedOn) AND";
-                }
-                if (searchParams.ContainsKey("Platform"))
-                {
-                    sqlparams.Add(new SqlParameter("@Platform", searchParams["Platform"]));
-                    query += "Platform = @CreatedOn AND";
-                }
+                    if (query != String.Empty) query += " AND ";
+                    string val = data.Value;
+                    if (data.Key == "TournamentStartDate" || data.Key == "TournamentEndDate" || data.Key == "RegistrationStartDate" || 
+                        data.Key == "RegistrationEndDate" || data.Key == "CreatedOn")
+                    {
+                        val = DateTime.Parse(val).ToShortDateString();
+                        query += "datediff(day," + data.Key + ", " + "@" + data.Key + ") = 0 ";
 
-                query = query.Remove(query.Count() - 4, 4);
+                        sqlparams.Add(new SqlParameter("@" + data.Key, val));
+
+                    }
+                    else
+                    {
+                        query += data.Key + " = @" + data.Key;
+                        sqlparams.Add(new SqlParameter("@" + data.Key, val));
+
+                    }
+                }
+                
 
                 tournaments = context.TournamentModels.SqlQuery(query, sqlparams.ToArray()).ToList();
+                query = string.Empty;
 
                 if (tournaments.Count == 0)
                 {
                     query = "SELECT TOP(25)* FROM Tournaments WHERE IsPublic = 1 ORDER BY TournamentStartDate ASC";
-                    tournaments = context.TournamentModels.SqlQuery(query, sqlparams.ToArray()).ToList();
+                    tournaments = context.TournamentModels.SqlQuery(query).ToList();
                 }
 
+              
             }
             catch (Exception ex)
             {
@@ -721,6 +705,11 @@ namespace DatabaseLib
             try
             {
                 bracket = context.BracketModels.Single(b => b.BracketID == id);
+                foreach (var match in bracket.Matches)
+                {
+                    match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
+                    match.Defender = context.TournamentUserModels.Find(match.DefenderID);
+                }
             }
             catch (Exception ex)
             {
@@ -754,6 +743,11 @@ namespace DatabaseLib
             {
                 BracketModel _bracket = context.BracketModels.Find(bracket.BracketID);
                 context.Entry(_bracket).CurrentValues.SetValues(bracket);
+                foreach (var match in _bracket.Matches)
+                {
+                    match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
+                    match.Defender = context.TournamentUserModels.Find(match.DefenderID);
+                }
                 if (cascade)
                 {
                     foreach (var match in bracket.Matches)
@@ -885,7 +879,11 @@ namespace DatabaseLib
                     _match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
                     _match.Defender = context.TournamentUserModels.Find(match.DefenderID);
                 }
-          
+                if (match.Challenger == null || match.Defender == null)
+                {
+                    match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
+                    match.Defender = context.TournamentUserModels.Find(match.DefenderID);
+                }
                 if (cascade)
                 {
                     foreach (var game in _match.Games.ToList())

@@ -125,8 +125,8 @@ namespace DatabaseLib.Tests
 
             List<TournamentModel> tournaments = new List<TournamentModel>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict.Add("TournamentStartDate", DateTime.Today.ToShortDateString());
-            dict.Add("Title", "test tournament one");
+            dict.Add("TournamentStartDate", DateTime.Today.AddDays(1).ToString());
+            dict.Add("Title", "test tournament");
             dict.Add("GameTypeID", "1");
             dict.Add("InProgress", "false");
 
