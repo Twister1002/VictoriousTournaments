@@ -18,9 +18,10 @@
     [TournamentEndDate]     DATETIME NOT NULL,
     [CheckInBegins]         DATETIME NOT NULL,
     [CheckInEnds]           DATETIME NOT NULL,
-    [Platform]              INT      NOT NULL, 
+    [PlatformID]              INT      NOT NULL, 
     [InProgress] BIT NOT NULL, 
     [InviteCode] NVARCHAR(255) NULL, 
     CONSTRAINT [PK_Tournaments] PRIMARY KEY ([TournamentID]), 
-	CONSTRAINT FK_Tournaments_GameTypes FOREIGN KEY(GameTypeID) REFERENCES GameTypes(GameTypeID)
+	CONSTRAINT FK_Tournaments_GameTypes FOREIGN KEY(GameTypeID) REFERENCES GameTypes(GameTypeID),
+	CONSTRAINT FK_Tournaments_Platforms FOREIGN KEY(PlatformID) REFERENCES Platforms(PlatformID)
 )

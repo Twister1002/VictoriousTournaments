@@ -70,4 +70,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="PermissionLevel" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="004abddb-38a6-4b92-b4ae-9c124b99b16c" ChangeDateTime="05/08/2017 16:42:49">
+    <Property Name="ElementName" Value="[dbo].[Platforms].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Platforms]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PlatformID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="46f2f16f-8071-440a-96c1-a595287f6b0a" ChangeDateTime="05/08/2017 18:00:24">
+    <Property Name="ElementName" Value="[dbo].[Tournaments].[Platform]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Tournaments]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PlatformID" />
+  </Operation>
 </Operations>

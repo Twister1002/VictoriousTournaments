@@ -163,7 +163,7 @@ namespace DatabaseLib.Tests
                 CheckInEnds = DateTime.Now,
                 LastEditedByID = 1,
                 CreatedByID = 1,
-                Platform = 0,
+                //Platform = 0,
                 EntryFee = 0,
                 PrizePurse = 0,
             };

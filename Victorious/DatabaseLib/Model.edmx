@@ -93,6 +93,13 @@
           <Property Name="IsFinished" Type="bit" />
           <Property Name="IsReady" Type="bit" />
         </EntityType>
+        <EntityType Name="Platforms">
+          <Key>
+            <PropertyRef Name="PlatformID" />
+          </Key>
+          <Property Name="PlatformID" Type="int" Nullable="false" />
+          <Property Name="PlatformName" Type="nvarchar" MaxLength="50" />
+        </EntityType>
         <EntityType Name="TournamentInvites">
           <Key>
             <PropertyRef Name="Id" />
@@ -121,7 +128,7 @@
           <Property Name="TournamentEndDate" Type="datetime" Nullable="false" />
           <Property Name="CheckInBegins" Type="datetime" Nullable="false" />
           <Property Name="CheckInEnds" Type="datetime" Nullable="false" />
-          <Property Name="Platform" Type="int" Nullable="false" />
+          <Property Name="PlatformID" Type="int" Nullable="false" />
           <Property Name="InProgress" Type="bit" Nullable="false" />
           <Property Name="InviteCode" Type="nvarchar" MaxLength="255" />
         </EntityType>
@@ -208,6 +215,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Tournaments_Platforms">
+          <End Role="Platforms" Type="Self.Platforms" Multiplicity="1" />
+          <End Role="Tournaments" Type="Self.Tournaments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Platforms">
+              <PropertyRef Name="PlatformID" />
+            </Principal>
+            <Dependent Role="Tournaments">
+              <PropertyRef Name="PlatformID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_TournamentUser_Tournaments">
           <End Role="Tournaments" Type="Self.Tournaments" Multiplicity="1" />
           <End Role="TournamentUsers" Type="Self.TournamentUsers" Multiplicity="*" />
@@ -256,6 +275,7 @@
           <EntitySet Name="Games" EntityType="Self.Games" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GameTypes" EntityType="Self.GameTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Matches" EntityType="Self.Matches" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Platforms" EntityType="Self.Platforms" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TournamentInvites" EntityType="Self.TournamentInvites" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tournaments" EntityType="Self.Tournaments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TournamentUsers" EntityType="Self.TournamentUsers" Schema="dbo" store:Type="Tables" />
@@ -278,6 +298,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_Tournaments_GameTypes" Association="Self.FK_Tournaments_GameTypes">
             <End Role="GameTypes" EntitySet="GameTypes" />
+            <End Role="Tournaments" EntitySet="Tournaments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tournaments_Platforms" Association="Self.FK_Tournaments_Platforms">
+            <End Role="Platforms" EntitySet="Platforms" />
             <End Role="Tournaments" EntitySet="Tournaments" />
           </AssociationSet>
           <AssociationSet Name="FK_TournamentUser_Tournaments" Association="Self.FK_TournamentUser_Tournaments">
@@ -436,6 +460,11 @@
             <End Role="TournamentModel" EntitySet="TournamentModels" />
           </AssociationSet>
           <EntitySet Name="TournamentInvites" EntityType="VictoriousDatabaseModel.TournamentInvite" />
+          <EntitySet Name="PlatformModels" EntityType="VictoriousDatabaseModel.PlatformModel" />
+          <AssociationSet Name="FK_Tournaments_Platforms" Association="VictoriousDatabaseModel.FK_Tournaments_Platforms">
+            <End Role="Platform" EntitySet="PlatformModels" />
+            <End Role="TournamentModel" EntitySet="TournamentModels" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="TournamentUserModel">
           <Key>
@@ -516,10 +545,11 @@
           <Property Name="TournamentEndDate" Nullable="false" Precision="3" Type="DateTime" />
           <Property Name="CheckInBegins" Nullable="false" Precision="3" Type="DateTime" />
           <Property Name="CheckInEnds" Nullable="false" Precision="3" Type="DateTime" />
-          <Property Name="Platform" Nullable="false" Type="Int32" />
           <NavigationProperty Name="GameType" Relationship="VictoriousDatabaseModel.FK_Tournaments_GameTypes" FromRole="TournamentModel" ToRole="GameType" />
           <Property Name="InProgress" Type="Boolean" Nullable="false" />
           <Property Name="InviteCode" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="PlatformID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Platform" Relationship="VictoriousDatabaseModel.FK_Tournaments_Platforms" FromRole="TournamentModel" ToRole="Platform" />
         </EntityType>
         <Association Name="FK_Brackets_Tournaments">
           <End Type="VictoriousDatabaseModel.TournamentModel" Multiplicity="0..1" Role="Tournament" />
@@ -602,6 +632,26 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" />
         </EntityType>
+        <EntityType Name="PlatformModel">
+          <Key>
+            <PropertyRef Name="PlatformID" />
+          </Key>
+          <Property Name="PlatformID" Type="Int32" Nullable="false" />
+          <Property Name="PlatformName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Tournaments" Relationship="VictoriousDatabaseModel.FK_Tournaments_Platforms" FromRole="Platform" ToRole="TournamentModel" />
+        </EntityType>
+        <Association Name="FK_Tournaments_Platforms">
+          <End Type="VictoriousDatabaseModel.PlatformModel" Role="Platform" Multiplicity="1" />
+          <End Type="VictoriousDatabaseModel.TournamentModel" Role="TournamentModel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Platform">
+              <PropertyRef Name="PlatformID" />
+            </Principal>
+            <Dependent Role="TournamentModel">
+              <PropertyRef Name="PlatformID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -701,9 +751,9 @@
           <EntitySetMapping Name="TournamentModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentModel">
               <MappingFragment StoreEntitySet="Tournaments">
+                <ScalarProperty Name="PlatformID" ColumnName="PlatformID" />
                 <ScalarProperty Name="InviteCode" ColumnName="InviteCode" />
                 <ScalarProperty Name="InProgress" ColumnName="InProgress" />
-                <ScalarProperty Name="Platform" ColumnName="Platform" />
                 <ScalarProperty Name="CheckInEnds" ColumnName="CheckInEnds" />
                 <ScalarProperty Name="CheckInBegins" ColumnName="CheckInBegins" />
                 <ScalarProperty Name="TournamentEndDate" ColumnName="TournamentEndDate" />
@@ -758,6 +808,14 @@
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentInvite">
               <MappingFragment StoreEntitySet="TournamentInvites">
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PlatformModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.PlatformModel">
+              <MappingFragment StoreEntitySet="Platforms">
+                <ScalarProperty Name="PlatformName" ColumnName="PlatformName" />
+                <ScalarProperty Name="PlatformID" ColumnName="PlatformID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
