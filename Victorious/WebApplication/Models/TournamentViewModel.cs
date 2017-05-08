@@ -9,7 +9,7 @@ namespace WebApplication.Models
 {
     public class TournamentViewModel : TournamentFields
     {
-        private bool matchPlayerFix = true;
+        private bool matchPlayerFix = false;
 
         public ITournament Tourny { get; private set; }
         public TournamentModel Model { get; private set; }

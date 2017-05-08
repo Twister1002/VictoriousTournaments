@@ -27,6 +27,12 @@ namespace WebApplication.Models
             Init();
         }
 
+        public MatchViewModel(MatchModel match)
+        {
+            Match = new Match(match);
+            Model = match;
+        }
+
         public MatchViewModel(int matchId)
         {
             Model = db.GetMatch(matchId);
