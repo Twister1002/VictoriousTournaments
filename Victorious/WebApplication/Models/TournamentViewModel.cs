@@ -56,9 +56,8 @@ namespace WebApplication.Models
             this.GameTypes = db.GetAllGameTypes();
             Administrators = new List<TournamentUserModel>();
             Participants = new List<TournamentUserModel>();
+            SearchedTournaments = new List<TournamentModel>();
             GetUserPermissions();
-
-            Search(null);
         }
 
         public override void ApplyChanges()
@@ -219,16 +218,14 @@ namespace WebApplication.Models
 
         public void Search(Dictionary<String, String> searchData)
         {
-            if (searchData != null)
+            if (searchData == null)
             {
-                List<String> safeParamList = new List<string>() { "title", "startDate", "gameType", "gameTypeId" };
-                searchData = searchData.Where(k => safeParamList.Contains(k.Key)).ToDictionary(k => k.Key, k => k.Value);
-                SearchedTournaments = db.FindTournaments(searchData);
+                searchData = new Dictionary<string, string>();
             }
-            else
-            {
-                SearchedTournaments = new List<TournamentModel>();
-            }
+
+            List<String> safeParamList = new List<string>() { "title", "startDate", "gameType", "gameTypeId" };
+            searchData = searchData.Where(k => safeParamList.Contains(k.Key) && k.Value != String.Empty).ToDictionary(k => k.Key, k => k.Value);
+            SearchedTournaments = db.FindTournaments(searchData);
         }
 
         private void GetUserPermissions()
