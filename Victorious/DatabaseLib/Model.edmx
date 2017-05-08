@@ -136,6 +136,8 @@
           <Property Name="PermissionLevel" Type="int" />
           <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="InviteCode" Type="nvarchar" MaxLength="255" />
+          <Property Name="IsCheckedIn" Type="bit" />
+          <Property Name="CheckInTime" Type="datetime" />
         </EntityType>
         <EntityType Name="TournamentUsersBrackets">
           <Key>
@@ -145,12 +147,6 @@
           <Property Name="TournamentUserID" Type="int" Nullable="false" />
           <Property Name="BracketID" Type="int" Nullable="false" />
           <Property Name="Seed" Type="int" />
-        </EntityType>
-        <EntityType Name="UsersCheckedIn">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" Nullable="false" />
         </EntityType>
         <Association Name="FK_Brackets_BracketTypes">
           <End Role="BracketTypes" Type="Self.BracketTypes" Multiplicity="1" />
@@ -264,7 +260,6 @@
           <EntitySet Name="Tournaments" EntityType="Self.Tournaments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TournamentUsers" EntityType="Self.TournamentUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TournamentUsersBrackets" EntityType="Self.TournamentUsersBrackets" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="UsersCheckedIn" EntityType="Self.UsersCheckedIn" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Brackets_BracketTypes" Association="Self.FK_Brackets_BracketTypes">
             <End Role="BracketTypes" EntitySet="BracketTypes" />
             <End Role="Brackets" EntitySet="Brackets" />
@@ -441,7 +436,6 @@
             <End Role="TournamentModel" EntitySet="TournamentModels" />
           </AssociationSet>
           <EntitySet Name="TournamentInvites" EntityType="VictoriousDatabaseModel.TournamentInvite" />
-          <EntitySet Name="UsersCheckedIns" EntityType="VictoriousDatabaseModel.UsersCheckedIn" />
           </EntityContainer>
         <EntityType Name="TournamentUserModel">
           <Key>
@@ -456,6 +450,8 @@
           <Property Name="PermissionLevel" Type="Int32" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="InviteCode" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IsCheckedIn" Type="Boolean" />
+          <Property Name="CheckInTime" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="TournamentUsersBracketModel">
           <Key>
@@ -606,12 +602,6 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" />
         </EntityType>
-        <EntityType Name="UsersCheckedIn">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -738,6 +728,8 @@
           <EntitySetMapping Name="TournamentUserModels">
             <EntityTypeMapping TypeName="IsTypeOf(VictoriousDatabaseModel.TournamentUserModel)">
               <MappingFragment StoreEntitySet="TournamentUsers">
+                <ScalarProperty Name="CheckInTime" ColumnName="CheckInTime" />
+                <ScalarProperty Name="IsCheckedIn" ColumnName="IsCheckedIn" />
                 <ScalarProperty Name="InviteCode" ColumnName="InviteCode" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="PermissionLevel" ColumnName="PermissionLevel" />
@@ -765,13 +757,6 @@
           <EntitySetMapping Name="TournamentInvites">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentInvite">
               <MappingFragment StoreEntitySet="TournamentInvites">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="UsersCheckedIns">
-            <EntityTypeMapping TypeName="VictoriousDatabaseModel.UsersCheckedIn">
-              <MappingFragment StoreEntitySet="UsersCheckedIn">
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -68,7 +68,6 @@
     <Build Include="Games.sql" />
     <Build Include="GameTypes.sql" />
     <Build Include="TournamentUsersBrackets.sql" />
-    <Build Include="UsersCheckedIn.sql" />
     <Build Include="TournamentInvites.sql" />
   </ItemGroup>
   <ItemGroup>
@@ -76,5 +75,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="VictoriousDatabase.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
 </Project>

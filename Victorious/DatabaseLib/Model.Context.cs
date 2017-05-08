@@ -36,6 +36,5 @@ namespace DatabaseLib
         public virtual DbSet<TournamentModel> TournamentModels { get; set; }
         public virtual DbSet<GameModel> GameModels { get; set; }
         public virtual DbSet<TournamentInvite> TournamentInvites { get; set; }
-        public virtual DbSet<UsersCheckedIn> UsersCheckedIns { get; set; }
     }
 }

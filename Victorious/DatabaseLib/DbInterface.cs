@@ -676,6 +676,24 @@ namespace DatabaseLib
             return seed;
         }
 
+        public DbError CheckUserIn(int tournamentUserId)
+        {
+            try
+            {
+                TournamentUserModel user = context.TournamentUserModels.Find(tournamentUserId);
+                user.IsCheckedIn = true;
+                user.CheckInTime = DateTime.Now;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
         #endregion
 
 
@@ -869,7 +887,8 @@ namespace DatabaseLib
             try
             {
                 MatchModel _match = context.MatchModels.Find(match.MatchID);
-             
+                context.Entry(_match).CurrentValues.SetValues(match);
+
                 if (_match.ChallengerID != match.ChallengerID || _match.DefenderID != match.DefenderID)
                 {
                     _match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
@@ -887,7 +906,6 @@ namespace DatabaseLib
                         UpdateGame(game);
                     }
                 }
-                context.Entry(_match).CurrentValues.SetValues(match);
 
                 context.SaveChanges();
             }

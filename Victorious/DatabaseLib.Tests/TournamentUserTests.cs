@@ -95,5 +95,17 @@ namespace DatabaseLib.Tests
 
             return tournament;
         }
+
+        [TestMethod]
+        public void Check_User_In()
+        {
+            var db = new DbInterface();
+
+            db.CheckUserIn(1);
+
+            var result = db.GetTournamentUser(1).IsCheckedIn;
+
+            Assert.AreEqual(true, result);
+        }
     }
 }

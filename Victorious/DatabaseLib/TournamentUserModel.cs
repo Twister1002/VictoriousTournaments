@@ -28,6 +28,8 @@ namespace DatabaseLib
         public Nullable<int> PermissionLevel { get; set; }
         public string Name { get; set; }
         public string InviteCode { get; set; }
+        public Nullable<bool> IsCheckedIn { get; set; }
+        public Nullable<System.DateTime> CheckInTime { get; set; }
     	
     	partial void OnInit();
     
