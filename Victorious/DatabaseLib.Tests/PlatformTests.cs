@@ -18,5 +18,41 @@ namespace DatabaseLib.Tests
 
             Assert.AreEqual(15, result);
         }
+
+        [TestMethod]
+        public void Delete_Platform()
+        {
+            var db = new DbInterface();
+
+            var result = db.DeletePlatform(1);
+
+            Assert.AreEqual(DbError.SUCCESS, result);
+        }
+
+        [TestMethod]
+        public void Add_Platform()
+        {
+            var db = new DbInterface();
+
+            PlatformModel p = new PlatformModel()
+            {
+                PlatformName = "Xbox"
+            };
+            var result = db.AddPlatform(p);
+
+            Assert.AreEqual(DbError.SUCCESS, result);
+        }
+
+        [TestMethod]
+        public void Update_Platform()
+        {
+            var db = new DbInterface();
+
+            PlatformModel p = db.GetPlatform(3);
+            p.PlatformName = "Update Platform";
+            var result = db.UpdatePlatform(p);
+
+            Assert.AreEqual(DbError.SUCCESS, result);
+        }
     }
 }

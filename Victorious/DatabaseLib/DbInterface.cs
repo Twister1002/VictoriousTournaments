@@ -399,7 +399,7 @@ namespace DatabaseLib
             {
                 TournamentModel _tournament = context.TournamentModels.Find(tournament.TournamentID);
                 context.Entry(_tournament).CurrentValues.SetValues(tournament);
-                
+
                 foreach (var bracket in _tournament.Brackets)
                 {
                     foreach (var match in bracket.Matches)
@@ -485,7 +485,7 @@ namespace DatabaseLib
                 {
                     if (query != String.Empty) query += " AND ";
                     string val = data.Value;
-                    if (data.Key == "TournamentStartDate" || data.Key == "TournamentEndDate" || data.Key == "RegistrationStartDate" || 
+                    if (data.Key == "TournamentStartDate" || data.Key == "TournamentEndDate" || data.Key == "RegistrationStartDate" ||
                         data.Key == "RegistrationEndDate" || data.Key == "CreatedOn")
                     {
                         val = DateTime.Parse(val).ToShortDateString();
@@ -501,7 +501,7 @@ namespace DatabaseLib
 
                     }
                 }
-                
+
 
                 tournaments = context.TournamentModels.SqlQuery(query, sqlparams.ToArray()).ToList();
                 query = string.Empty;
@@ -512,7 +512,7 @@ namespace DatabaseLib
                     tournaments = context.TournamentModels.SqlQuery(query).ToList();
                 }
 
-              
+
             }
             catch (Exception ex)
             {
@@ -913,7 +913,7 @@ namespace DatabaseLib
             {
                 interfaceException = ex;
                 WriteException(ex);
-                
+
                 return DbError.FAILED_TO_UPDATE;
             }
             return DbError.SUCCESS;
@@ -1133,7 +1133,24 @@ namespace DatabaseLib
 
         #endregion
 
+
         #region Platforms
+
+        public DbError AddPlatform(PlatformModel platform)
+        {
+            try
+            {
+                context.PlatformModels.Add(platform);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
+        }
 
         public PlatformModel GetPlatform(int platformID)
         {
@@ -1165,6 +1182,40 @@ namespace DatabaseLib
                 platforms.Clear();
             }
             return platforms;
+        }
+
+        public DbError UpdatePlatform(PlatformModel platform)
+        {
+            try
+            {
+                PlatformModel _platform = context.PlatformModels.Find(platform.PlatformID);
+                context.Entry(_platform).CurrentValues.SetValues(platform);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError DeletePlatform(int platformId)
+        {
+            try
+            {
+                PlatformModel platform = context.PlatformModels.Find(platformId);
+                context.PlatformModels.Remove(platform);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
         }
 
         #endregion

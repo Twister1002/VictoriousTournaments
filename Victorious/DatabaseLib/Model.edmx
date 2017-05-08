@@ -97,7 +97,7 @@
           <Key>
             <PropertyRef Name="PlatformID" />
           </Key>
-          <Property Name="PlatformID" Type="int" Nullable="false" />
+          <Property Name="PlatformID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="PlatformName" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="TournamentInvites">
@@ -636,7 +636,7 @@
           <Key>
             <PropertyRef Name="PlatformID" />
           </Key>
-          <Property Name="PlatformID" Type="Int32" Nullable="false" />
+          <Property Name="PlatformID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PlatformName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Tournaments" Relationship="VictoriousDatabaseModel.FK_Tournaments_Platforms" FromRole="Platform" ToRole="TournamentModel" />
         </EntityType>
