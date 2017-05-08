@@ -25,7 +25,7 @@ namespace DatabaseLib.Tests
         {
             var db = new DbInterface();
 
-            var tournament = db.GetTournament(1);
+            var tournament = db.GetTournament(4);
 
             Assert.AreEqual("Test", tournament.Description);
         }
