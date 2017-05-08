@@ -256,7 +256,6 @@ namespace Tournament.Structure
 
 			return groups;
 		}
-
 		private int[,] CreateHeuristicGrid(List<List<int>> _groups)
 		{
 			int numCompetitors = NumberOfPlayers();
@@ -295,13 +294,6 @@ namespace Tournament.Structure
 					{
 						// Can't play against self! Add heuristic=100M:
 						grid[y, x] = 100000000;
-						continue;
-					}
-					if (y > x)
-					{
-						// Grid is mirrored over the diagonal.
-						// If this node's twin is already computed, just copy it:
-						grid[y, x] = grid[x, y];
 						continue;
 					}
 
@@ -358,6 +350,10 @@ namespace Tournament.Structure
 			}
 
 			return grid;
+		}
+		private List<Matchup> GetMatchups(int[,] _grid)
+		{
+
 		}
 
 		private bool AddNewRound(int _gamesPerMatch)
