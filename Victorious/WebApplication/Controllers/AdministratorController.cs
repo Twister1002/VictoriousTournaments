@@ -15,7 +15,9 @@ namespace WebApplication.Controllers
         [Route("Administrator")]
         public ActionResult Index()
         {
-            if (IsAdministrator())
+            LoadAccount(Session);
+
+            if (account.IsAdministrator())
             {
                 return View("Index", new AdministratorViewModel());
             }
@@ -29,15 +31,15 @@ namespace WebApplication.Controllers
         [Route("Ajax/Administrator/Games")]
         public JsonResult Games(String jsonData)
         {
+            LoadAccount(Session);
             object jsonReturn = new {
                 status = false,
                 message = "No action was taken"
             };
 
-            if (IsAdministrator())
+            if (account.IsAdministrator())
             {
-                Dictionary<string, string> json = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
-                AdministratorViewModel adminModel = new AdministratorViewModel();
+                Dictionary<String, String> json = JsonConvert.DeserializeObject<Dictionary<String, String>>(jsonData);
                 GameTypeViewModel gameType = new GameTypeViewModel();
                 bool result = false;
 
@@ -63,26 +65,28 @@ namespace WebApplication.Controllers
             return Json(JsonConvert.SerializeObject(jsonReturn));
         }
 
-        private bool IsAdministrator()
+        [HttpPost]
+        [Route("Ajax/Administrator/Platform")]
+        public JsonResult Platform(String jsonData)
         {
-            if (Session["User.UserId"] != null && UserPermission() == Permission.SITE_ADMINISTRATOR)
+            bool status = false;
+            String message = "No action taken";
+
+            Dictionary<String, String> json = JsonConvert.DeserializeObject<Dictionary<String, String>>(jsonData);
+            PlatformTypeViewModel viewModel = new PlatformTypeViewModel();
+
+            switch (json["function"])
             {
-                return true;
+                case "add":
+                    viewModel.Platform = json["Platform"];
+                    viewModel.Create();
+                    break;
+                case "delete":
+                    viewModel.Delete(int.Parse(json["PlatformId"]));
+                    break;
             }
-            else
-            {
-                Session["Message"] = "You do not have access to see this.";
-                Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
 
-                return false;
-            }
-        }
-
-        public Permission UserPermission()
-        {
-            AccountViewModel userModel = new AccountViewModel((int)Session["User.UserId"]);
-
-            return (Permission)userModel.Account.PermissionLevel;
+            return Json("");
         }
     }
 }

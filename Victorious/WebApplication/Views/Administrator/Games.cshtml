@@ -6,28 +6,23 @@
         <ul class="list-table">
             <li class="list-table-header">
                 <ul class="form options" data-columns="2">
-                    <li class="column gameTitle">@Html.TextBoxFor(x => x.Title, null, new { @class = "field", placeholder="Game Name" })</li>
-                    @*<li class="column gamePlatforms">CHECKBOXES</li>*@
+                    <li class="column gameTitle">@Html.TextBoxFor(x => x.Title, null, new { @class = "field", placeholder = "Game Name" })</li>
                     <li class="column gameAdd"> <button type="button" class="GameAddButton">Add Game</button></li>
                 </ul>
             </li>
             <li class="list-table-header">
                 <ul data-columns="2">
                     <li class="column">Name</li>
-                    @*<li class="column">Platforms</li>*@
                     <li class="column">&nbsp;</li>
                 </ul>
             </li>
             <li class="list-table-body border">
-                @{
-                    foreach (var game in Model.Select())
-                    {
-                        <ul class="game" data-columns="2" data-gameid="@game.GameTypeID">
-                            <li class="column gameTitle">@game.Title</li>
-                            @*<li class="column gamePlatforms">Unknown</li>*@
-                            <li class="column gameDelete"><span class="icon icon-cross"></span></li>
-                        </ul>
-                    }
+                @foreach (var game in Model.Select())
+                {
+                    <ul class="game" data-columns="2" data-gameid="@game.GameTypeID">
+                        <li class="column gameTitle">@game.Title</li>
+                        <li class="column gameDelete"><span class="icon icon-cross"></span></li>
+                    </ul>
                 }
             </li>
         </ul>

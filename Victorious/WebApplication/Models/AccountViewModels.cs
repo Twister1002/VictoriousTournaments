@@ -136,5 +136,15 @@ namespace WebApplication.Models
 
             return false;
         }
+
+        public Permission SitePermission()
+        {
+            return (Permission)Account.PermissionLevel;
+        }
+
+        public bool IsAdministrator()
+        {
+            return SitePermission() == Permission.SITE_ADMINISTRATOR;
+        }
     }
 }
