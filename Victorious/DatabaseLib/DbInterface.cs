@@ -130,6 +130,7 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
+        [Obsolete]
         public DbError AccountExists(AccountModel account)
         {
             AccountModel _account;
@@ -141,7 +142,6 @@ namespace DatabaseLib
             {
                 interfaceException = ex;
                 WriteException(ex);
-                throw;
             }
             if (account == null)
                 return DbError.DOES_NOT_EXIST;
@@ -213,7 +213,7 @@ namespace DatabaseLib
             {
                 interfaceException = ex;
                 WriteException(ex);
-                account.AccountID = -1;
+                account = null;
             }
             return account;
         }
@@ -229,8 +229,7 @@ namespace DatabaseLib
             {
                 interfaceException = ex;
                 WriteException(ex);
-                account.AccountID = -1;
-                return account;
+                account = null;
             }
             return account;
         }
@@ -250,7 +249,6 @@ namespace DatabaseLib
                 interfaceException = ex;
                 accountModels.Clear();
                 WriteException(ex);
-                accountModels.Add(new AccountModel() { AccountID = -1 });
             }
             return accountModels;
         }
@@ -372,7 +370,7 @@ namespace DatabaseLib
             {
                 interfaceException = ex;
                 WriteException(ex);
-                tournament.TournamentID = -1;
+                tournament = null;
             }
             return tournament;
 
@@ -568,7 +566,6 @@ namespace DatabaseLib
                 interfaceException = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_ADD;
-                throw;
             }
             return DbError.SUCCESS;
         }
@@ -584,7 +581,7 @@ namespace DatabaseLib
             {
                 interfaceException = ex;
                 WriteException(ex);
-                user.TournamentUserID = -1;
+                user = null;
             }
             return user;
         }
@@ -662,6 +659,7 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
+        // Return -1 on error
         public int GetTournamentUserSeed(int tournamentUserId, int bracketId)
         {
             int seed = 0;
@@ -676,6 +674,24 @@ namespace DatabaseLib
                 seed = -1;
             }
             return seed;
+        }
+
+        public DbError CheckUserIn(int tournamentUserId)
+        {
+            try
+            {
+                TournamentUserModel user = context.TournamentUserModels.Find(tournamentUserId);
+                user.IsCheckedIn = true;
+                user.CheckInTime = DateTime.Now;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
         }
 
         #endregion
@@ -714,9 +730,8 @@ namespace DatabaseLib
             catch (Exception ex)
             {
                 interfaceException = ex;
-                bracket.BracketID = -1;
                 WriteException(ex);
-                return bracket;
+                bracket = null;
             }
             return bracket;
         }
@@ -839,8 +854,7 @@ namespace DatabaseLib
             {
                 interfaceException = ex;
                 WriteException(ex);
-                match.MatchID = -1;
-                return match;
+                match = null;
             }
             return match;
         }
@@ -873,7 +887,8 @@ namespace DatabaseLib
             try
             {
                 MatchModel _match = context.MatchModels.Find(match.MatchID);
-             
+                context.Entry(_match).CurrentValues.SetValues(match);
+
                 if (_match.ChallengerID != match.ChallengerID || _match.DefenderID != match.DefenderID)
                 {
                     _match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
@@ -891,7 +906,6 @@ namespace DatabaseLib
                         UpdateGame(game);
                     }
                 }
-                context.Entry(_match).CurrentValues.SetValues(match);
 
                 context.SaveChanges();
             }
@@ -958,7 +972,7 @@ namespace DatabaseLib
             {
                 interfaceException = ex;
                 WriteException(ex);
-                game.GameID = -1;
+                game = null;
             }
             return game;
         }
@@ -1073,7 +1087,6 @@ namespace DatabaseLib
                 interfaceException = ex;
                 WriteException(ex);
                 gameTypes.Clear();
-                gameTypes.Add(new GameTypeModel() { GameTypeID = -1 });
             }
             return gameTypes;
         }
@@ -1117,6 +1130,42 @@ namespace DatabaseLib
             return types;
         }
 
+
+        #endregion
+
+        #region Platforms
+
+        public PlatformModel GetPlatform(int platformID)
+        {
+            PlatformModel platform = new PlatformModel();
+            try
+            {
+                platform = context.PlatformModels.Find(platformID);
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                platform = null;
+            }
+            return platform;
+        }
+
+        public List<PlatformModel> GetAllPlatforms()
+        {
+            List<PlatformModel> platforms = new List<PlatformModel>();
+            try
+            {
+                platforms = context.PlatformModels.ToList();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                platforms.Clear();
+            }
+            return platforms;
+        }
 
         #endregion
 

@@ -12,29 +12,21 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class TournamentUserModel
+    public partial class PlatformModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public TournamentUserModel()
+        public PlatformModel()
         {
-            this.TournamentUsersBrackets = new HashSet<TournamentUsersBracketModel>();
+            this.Tournaments = new HashSet<TournamentModel>();
     		OnInit();
         }
     
-        public int TournamentUserID { get; set; }
-        public Nullable<int> AccountID { get; set; }
-        public Nullable<int> UniformNumber { get; set; }
-        public int TournamentID { get; set; }
-        public Nullable<int> PermissionLevel { get; set; }
-        public string Name { get; set; }
-        public string InviteCode { get; set; }
-        public Nullable<bool> IsCheckedIn { get; set; }
-        public Nullable<System.DateTime> CheckInTime { get; set; }
+        public int PlatformID { get; set; }
+        public string PlatformName { get; set; }
     	
     	partial void OnInit();
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
-        public virtual TournamentModel Tournament { get; set; }
+        public virtual ICollection<TournamentModel> Tournaments { get; set; }
     }
 }

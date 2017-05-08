@@ -25,7 +25,7 @@ namespace DatabaseLib.Tests
         {
             var db = new DbInterface();
 
-            var tournament = db.GetTournament(1);
+            var tournament = db.GetTournament(4);
 
             Assert.AreEqual("Test", tournament.Description);
         }
@@ -163,7 +163,7 @@ namespace DatabaseLib.Tests
                 CheckInEnds = DateTime.Now,
                 LastEditedByID = 1,
                 CreatedByID = 1,
-                Platform = 0,
+                //Platform = 0,
                 EntryFee = 0,
                 PrizePurse = 0,
             };
