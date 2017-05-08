@@ -8,7 +8,7 @@ namespace WebApplication.Models.Administrator
 {
     public class GameTypeViewModel : GameTypeFields
     {
-        private List<GameTypeModel> GameTypes;
+        public List<GameTypeModel> GameTypes { get; private set; }
         public GameTypeModel GameType { get; private set; }
 
         public GameTypeViewModel()
@@ -52,20 +52,6 @@ namespace WebApplication.Models.Administrator
         public List<GameTypeModel> Select()
         {
             return GameTypes;
-        }
-        
-        public bool Select(int gameTypeId)
-        {
-            GameType = GameTypes.First(x => x.GameTypeID == gameTypeId);
-
-            return true;
-        }
-
-        public bool Select(String title)
-        {
-            GameType = GameTypes.First(x => x.Title == title);
-
-            return true;
         }
 
         private void Reload()

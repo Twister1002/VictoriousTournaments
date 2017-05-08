@@ -30,11 +30,13 @@ namespace WebApplication.Models.Administrator
 
         public bool Create()
         {
+            Reload();
             return false;
         }
 
         public bool Update()
         {
+            Reload();
             return false;
         }
 
@@ -43,16 +45,14 @@ namespace WebApplication.Models.Administrator
             return false;
         }
 
-        public bool Select()
+        public List<PlatformModel> Select()
         {
-            platforms = db.GetAllPlatforms();
-            return true;
+            return platforms;
         }
 
-        public List<PlatformModel> SelectAll()
+        private void Reload()
         {
-            Select();
-            return platforms;
+            platforms = db.GetAllPlatforms();
         }
     }
 }
