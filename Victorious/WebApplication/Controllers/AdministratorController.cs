@@ -79,14 +79,22 @@ namespace WebApplication.Controllers
             {
                 case "add":
                     viewModel.Platform = json["Platform"];
-                    viewModel.Create();
+                    status = viewModel.Create();
                     break;
                 case "delete":
-                    viewModel.Delete(int.Parse(json["PlatformId"]));
+                    status = viewModel.Delete(int.Parse(json["PlatformId"]));
                     break;
             }
 
-            return Json("");
+            message = "Was able to " + json["function"] + " " + (status ? "" : "un") + "successfully";
+
+
+            return Json(JsonConvert.SerializeObject(new
+            {
+                status = status,
+                message = message,
+                platforms = viewModel.SelectAll()
+            }));
         }
     }
 }

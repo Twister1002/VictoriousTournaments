@@ -54,6 +54,7 @@ namespace WebApplication.Models
         {
             this.BracketTypes = db.GetAllBracketTypes();
             this.GameTypes = db.GetAllGameTypes();
+            this.PlatformTypes = db.GetAllPlatforms();
             Administrators = new List<TournamentUserModel>();
             Participants = new List<TournamentUserModel>();
             SearchedTournaments = new List<TournamentModel>();
@@ -66,6 +67,7 @@ namespace WebApplication.Models
             Model.Title = this.Title;
             Model.Description = this.Description;
             Model.GameTypeID = this.GameType;
+            Model.PlatformID = this.PlatformType;
 
             // Tournament Rule Stuff
             Model.IsPublic = this.IsPublic;
@@ -82,6 +84,7 @@ namespace WebApplication.Models
             this.Title = Model.Title;
             this.Description = Model.Description;
             this.GameType = Model.GameTypeID;
+            this.PlatformType = Model.PlatformID;
 
             this.IsPublic = Model.IsPublic;
             this.RegistrationStartDate = Model.RegistrationStartDate;

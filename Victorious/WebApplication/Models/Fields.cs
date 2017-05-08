@@ -90,7 +90,7 @@ namespace WebApplication.Models
         
         public List<BracketTypeModel> BracketTypes { get; protected set; }
         public List<GameTypeModel> GameTypes { get; protected set; }
-        public List<String> PlatformTypes { get; protected set; }
+        public List<PlatformModel> PlatformTypes { get; protected set; }
 
         [Display(Name = "Bracket Type")]
         [Required(ErrorMessage ="Select a bracket type")]

@@ -41,6 +41,18 @@
             "success": function (json) {
                 json = JSON.parse(json);
                 console.log(json);
+
+                var $table = $("#TournamentPlatforms .list-table-body");
+
+                $table.empty();
+                $.each(json.platforms, function (i, e) {
+                    html = "<ul class='platform' data-columns='2' data-id='" + e.PlatformID + "'>";
+                    html += "<li class='column'>" + e.PlatformName + "</li>";
+                    html += "<li class='column'><span class='icon icon-cross'></span></li>";
+                    html += "</ul>";
+
+                    $table.append(html);
+                });
             },
             "error": function (json) {
                 console.log(json);

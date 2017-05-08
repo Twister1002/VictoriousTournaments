@@ -19,8 +19,8 @@
             <li class="list-table-body border">
                 @foreach (var platform in Model.platforms)
                 {
-                    <ul class="platforms" data-columns="2" data-id="@platform.PlatformID">
-                        <li class="column">@platform.Title</li>
+                    <ul class="platform" data-columns="2" data-id="@platform.PlatformID">
+                        <li class="column">@platform.PlatformName</li>
                         <li class="column"><span class="icon icon-cross"></span></li>
                     </ul>
                 }
