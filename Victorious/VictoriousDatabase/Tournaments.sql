@@ -23,5 +23,5 @@
     [InviteCode] NVARCHAR(255) NULL, 
     CONSTRAINT [PK_Tournaments] PRIMARY KEY ([TournamentID]), 
 	CONSTRAINT FK_Tournaments_GameTypes FOREIGN KEY(GameTypeID) REFERENCES GameTypes(GameTypeID),
-	CONSTRAINT FK_Tournaments_Platforms FOREIGN KEY(PlatformID) REFERENCES Platforms(PlatformID)
+	CONSTRAINT FK_Tournaments_Platforms FOREIGN KEY([PlatformID]) REFERENCES Platforms([PlatformID])
 )

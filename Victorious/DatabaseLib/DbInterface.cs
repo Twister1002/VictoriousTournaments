@@ -1133,6 +1133,42 @@ namespace DatabaseLib
 
         #endregion
 
+        #region Platforms
+
+        public PlatformModel GetPlatform(int platformID)
+        {
+            PlatformModel platform = new PlatformModel();
+            try
+            {
+                platform = context.PlatformModels.Find(platformID);
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                platform = null;
+            }
+            return platform;
+        }
+
+        public List<PlatformModel> GetAllPlatforms()
+        {
+            List<PlatformModel> platforms = new List<PlatformModel>();
+            try
+            {
+                platforms = context.PlatformModels.ToList();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                platforms.Clear();
+            }
+            return platforms;
+        }
+
+        #endregion
+
 
         private void WriteException(Exception ex, [CallerMemberName] string funcName = null)
         {
