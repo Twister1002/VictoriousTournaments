@@ -226,7 +226,7 @@ namespace WebApplication.Models
                 searchData = new Dictionary<String, String>();
             }
 
-            List<String> safeParamList = new List<String>() { "title", "startDate", "gameType", "gameTypeId" };
+            List<String> safeParamList = new List<String>() { "Title", "GameTypeID", "PlatformID", "TournamentStartDate" };
             searchData = searchData.Where(k => safeParamList.Contains(k.Key) && k.Value != String.Empty).ToDictionary(k => k.Key, k => k.Value);
             SearchedTournaments = db.FindTournaments(searchData);
         }
