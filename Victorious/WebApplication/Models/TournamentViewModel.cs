@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tournament.Structure;
 using DatabaseLib;
-
+using WebApplication.Utility;
 
 namespace WebApplication.Models
 {
@@ -137,6 +137,7 @@ namespace WebApplication.Models
 
             Model.CreatedOn = DateTime.Now;
             Model.CreatedByID = sessionId;
+            Model.InviteCode = Codes.GenerateInviteCode();
 
             // Create the bracket
             BracketModel bracketModel = new BracketModel()
