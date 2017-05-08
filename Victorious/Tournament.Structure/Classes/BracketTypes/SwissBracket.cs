@@ -241,7 +241,7 @@ namespace Tournament.Structure
 					.CompareTo(Rankings.FindIndex(r => r.Id == second)));
 			}
 #endif
-			// Make sure each group has an event playercount
+			// Make sure each group has an even playercount
 			for (int i = 0; i < groups.Count; ++i)
 			{
 				if (groups[i].Count % 2 > 0)
@@ -256,7 +256,7 @@ namespace Tournament.Structure
 
 			return groups;
 		}
-		private int[,] CreateHeuristicGrid(List<List<int>> _groups)
+		private List<int[]> GetMatchupHeuristics(List<List<int>> _groups)
 		{
 			int numCompetitors = NumberOfPlayers();
 			numCompetitors = (0 == numCompetitors % 2)
@@ -349,11 +349,25 @@ namespace Tournament.Structure
 				}
 			}
 
-			return grid;
-		}
-		private List<Matchup> GetMatchups(int[,] _grid)
-		{
+			List<int[]> heuristicGraph = new List<int[]>();
 
+			for (int y = 0; y < (numCompetitors - 1); ++y)
+			{
+				for (int x = 1; x < numCompetitors; ++x)
+				{
+					if (y >= x)
+					{
+						continue;
+					}
+
+					// Possible matchup ("edge" for graph):
+					// [Defender index, Challenger index, heuristic value]
+					int[] edge = new int[3] { y, x, (grid[y, x] + grid[x, y]) };
+					heuristicGraph.Add(edge);
+				}
+			}
+
+			return heuristicGraph;
 		}
 
 		private bool AddNewRound(int _gamesPerMatch)
