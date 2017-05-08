@@ -537,5 +537,10 @@ namespace WebApplication.Models
         {
             return Model.TournamentUsers.Any(x => x.AccountID == accountId);
         }
+
+        public bool CanEdit()
+        {
+            return Model.InProgress ? false : true;
+        }
     }
 }
