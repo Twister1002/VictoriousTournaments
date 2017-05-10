@@ -47,9 +47,50 @@ namespace DatabaseLib.Tests
         {
             var db = new DbInterface();
 
-            db.AddTournamentUserToBracket(db.GetAllUsersInTournament(3)[0].TournamentUserID, db.GetAllBracketsInTournament(db.GetAllTournaments()[0].TournamentID)[0].BracketID, 1);
+            TournamentUsersBracketModel t = new TournamentUsersBracketModel()
+            {
+                TournamentUserID = 1,
+                BracketID = 1,
+                Seed = 1
+            };
+            var result = db.AddTournamentUsersBracket(t);
+
+            Assert.AreEqual(DbError.SUCCESS, result);
 
         }
+
+        [TestMethod]
+        public void Update_TournamentUsersBracket()
+        {
+            var db = new DbInterface();
+
+            TournamentUsersBracketModel t = new TournamentUsersBracketModel()
+            {
+                TournamentUserID = 1,
+                BracketID = 1,
+                Seed = 2
+            };
+            var result = db.UpdateTournamentUsersBracket(t);
+
+            Assert.AreEqual(DbError.SUCCESS, result);
+        }
+
+        [TestMethod]
+        public void Delete_TournamentUsersBracket()
+        {
+            var db = new DbInterface();
+
+            TournamentUsersBracketModel t = new TournamentUsersBracketModel()
+            {
+                TournamentUserID = 1,
+                BracketID = 1,
+                Seed = 1
+            };
+            var result = db.DeleteTournamentUsersBrackets(t);
+
+            Assert.AreEqual(DbError.SUCCESS, result);
+        }
+
 
         [TestMethod]
         public void Get_User_Seed()

@@ -95,7 +95,7 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TournamentInvite.cs">
+    <Compile Include="TournamentInviteModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="TournamentModel.cs">

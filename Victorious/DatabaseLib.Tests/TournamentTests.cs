@@ -126,15 +126,40 @@ namespace DatabaseLib.Tests
             List<TournamentModel> tournaments = new List<TournamentModel>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
             dict.Add("TournamentStartDate", DateTime.Today.ToString());
-            dict.Add("Title", "test tournament");
+            dict.Add("Title", "test tournament one");
             dict.Add("GameTypeID", "1");
             dict.Add("InProgress", "false");
-
-            tournaments = db.FindTournaments(dict);
+            var count = 3;
+            tournaments = db.FindTournaments(dict, count);
             var result = tournaments.Count;
 
-            Assert.AreEqual(1, result);
+            Assert.AreEqual(count, result);
         }
+
+        [TestMethod]
+        public void Add_Invite_Code_GUID()
+        {
+            var db = new DbInterface();
+
+            var guid = Guid.NewGuid().ToString();
+            var result = db.AddTournamentInviteCode(guid);
+
+            Assert.AreEqual(DbError.SUCCESS, result);
+
+        }
+
+        [TestMethod]
+        public void Check_Invite_Code_Exists()
+        {
+            var db = new DbInterface();
+
+            var guid = "98ed7a71-b0f7-4c97-907a-e7b238b4daed";
+            var result = db.InviteCodeExists(guid);
+
+            Assert.AreEqual(DbError.EXISTS, result);
+
+        }
+
 
 
         private TournamentUserModel NewTournamentUser()
@@ -166,6 +191,7 @@ namespace DatabaseLib.Tests
                 PlatformID = 3,
                 EntryFee = 0,
                 PrizePurse = 0,
+                GameTypeID = 1
             };
 
             return tournament;
