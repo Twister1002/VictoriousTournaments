@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Tournament.Structure;
 using DatabaseLib;
-
+using WebApplication.Utility;
 
 namespace WebApplication.Models
 {
     public class TournamentViewModel : TournamentFields
     {
-        private bool matchPlayerFix = true;
+        private bool matchPlayerFix = false;
 
         public ITournament Tourny { get; private set; }
         public TournamentModel Model { get; private set; }
@@ -54,11 +54,11 @@ namespace WebApplication.Models
         {
             this.BracketTypes = db.GetAllBracketTypes();
             this.GameTypes = db.GetAllGameTypes();
+            this.PlatformTypes = db.GetAllPlatforms();
             Administrators = new List<TournamentUserModel>();
             Participants = new List<TournamentUserModel>();
+            SearchedTournaments = new List<TournamentModel>();
             GetUserPermissions();
-
-            Search(null);
         }
 
         public override void ApplyChanges()
@@ -67,6 +67,7 @@ namespace WebApplication.Models
             Model.Title = this.Title;
             Model.Description = this.Description;
             Model.GameTypeID = this.GameType;
+            Model.PlatformID = this.PlatformType;
 
             // Tournament Rule Stuff
             Model.IsPublic = this.IsPublic;
@@ -83,6 +84,7 @@ namespace WebApplication.Models
             this.Title = Model.Title;
             this.Description = Model.Description;
             this.GameType = Model.GameTypeID;
+            this.PlatformType = Model.PlatformID;
 
             this.IsPublic = Model.IsPublic;
             this.RegistrationStartDate = Model.RegistrationStartDate;
@@ -137,6 +139,7 @@ namespace WebApplication.Models
 
             Model.CreatedOn = DateTime.Now;
             Model.CreatedByID = sessionId;
+            Model.InviteCode = Codes.GenerateInviteCode();
 
             // Create the bracket
             BracketModel bracketModel = new BracketModel()
@@ -218,16 +221,14 @@ namespace WebApplication.Models
 
         public void Search(Dictionary<String, String> searchData)
         {
-            if (searchData != null)
+            if (searchData == null)
             {
-                List<String> safeParamList = new List<string>() { "title", "startDate", "gameType", "gameTypeId" };
-                searchData = searchData.Where(k => safeParamList.Contains(k.Key)).ToDictionary(k => k.Key, k => k.Value);
-                SearchedTournaments = db.FindTournaments(searchData);
+                searchData = new Dictionary<String, String>();
             }
-            else
-            {
-                SearchedTournaments = new List<TournamentModel>();
-            }
+
+            List<String> safeParamList = new List<String>() { "Title", "GameTypeID", "PlatformID", "TournamentStartDate" };
+            searchData = searchData.Where(k => safeParamList.Contains(k.Key) && k.Value != String.Empty).ToDictionary(k => k.Key, k => k.Value);
+            SearchedTournaments = db.FindTournaments(searchData);
         }
 
         private void GetUserPermissions()
@@ -536,6 +537,11 @@ namespace WebApplication.Models
         public bool isRegistered(int accountId)
         {
             return Model.TournamentUsers.Any(x => x.AccountID == accountId);
+        }
+
+        public bool CanEdit()
+        {
+            return !Model.InProgress ? true : false;
         }
     }
 }

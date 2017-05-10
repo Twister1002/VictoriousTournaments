@@ -90,6 +90,7 @@ namespace WebApplication.Models
         
         public List<BracketTypeModel> BracketTypes { get; protected set; }
         public List<GameTypeModel> GameTypes { get; protected set; }
+        public List<PlatformModel> PlatformTypes { get; protected set; }
 
         [Display(Name = "Bracket Type")]
         [Required(ErrorMessage ="Select a bracket type")]
@@ -98,6 +99,10 @@ namespace WebApplication.Models
         [Display(Name ="Game")]
         [Required(ErrorMessage ="Select a game")]
         public int? GameType { get; set; }
+
+        [Display(Name = "Platform")]
+        [Required(ErrorMessage = "Choose a platform")]
+        public int PlatformType { get; set; } 
 
         [Display(Name = "Public")]
         public bool IsPublic { get; set; }
@@ -123,6 +128,13 @@ namespace WebApplication.Models
         public int DefenderScore { get; set; }
     }
 
+    public class TournamentRegistrationFields : ViewModel
+    {
+        public String Name { get; set; }
+        public int TournamentID { get; set; }
+        public int AccountID { get; set; }
+    }
+
     public abstract class GameTypeFields : ViewModel
     {
         [Display(Name = "Title")]
@@ -130,10 +142,10 @@ namespace WebApplication.Models
         public String Title { get; set; }
     }
 
-    public class TournamentRegistrationFields : ViewModel
+    public abstract class PlatformTypeFields : ViewModel
     {
-        public String Name { get; set; }
-        public int TournamentID { get; set; }
-        public int AccountID { get; set; }
+        [Display(Name = "Platform")]
+        [DataType(DataType.Text)]
+        public String Platform { get; set; }
     }
 }

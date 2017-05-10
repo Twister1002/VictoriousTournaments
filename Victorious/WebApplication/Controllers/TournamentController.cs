@@ -42,6 +42,7 @@ namespace WebApplication.Controllers
                     id = tourny.TournamentID,
                     title = tourny.Title,
                     game = tourny.GameType.Title,
+                    platform = tourny.Platform != null ? tourny.Platform.PlatformName : "None",
                     startDate = tourny.TournamentStartDate.ToShortDateString(),
                     isPublic = tourny.IsPublic,
                     link = Url.Action("Tournament", "Tournament", new { guid = tourny.TournamentID })

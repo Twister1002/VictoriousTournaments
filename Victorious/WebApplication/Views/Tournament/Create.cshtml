@@ -30,6 +30,11 @@
                     @Html.ValidationMessageFor(t => t.BracketType)
                 </li>
                 <li>
+                    @Html.LabelFor(t => t.PlatformType)
+                    @Html.DropDownListFor(t => t.PlatformType, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---")
+                    @Html.ValidationMessageFor(t => t.PlatformType)
+                </li>
+                <li>
                     @Html.LabelFor(t => t.IsPublic)
                     @Html.CheckBoxFor(t => t.IsPublic)
                     @Html.ValidationMessageFor(t => t.IsPublic)

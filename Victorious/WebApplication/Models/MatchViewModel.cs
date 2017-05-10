@@ -27,6 +27,13 @@ namespace WebApplication.Models
             Init();
         }
 
+        public MatchViewModel(MatchModel match)
+        {
+            Model = match;
+            LoadPlayerObjects();
+            Match = new Match(match);
+        }
+
         public MatchViewModel(int matchId)
         {
             Model = db.GetMatch(matchId);
@@ -40,6 +47,19 @@ namespace WebApplication.Models
             }
 
             Init();
+        }
+
+        // Acquires data from the database if the objects are null
+        private void LoadPlayerObjects()
+        {
+            if (Model.Challenger == null)
+            {
+                Model.Challenger = db.GetTournamentUser(Model.ChallengerID);
+            }
+            if (Model.Defender == null)
+            {
+                Model.Defender = db.GetTournamentUser(Model.DefenderID);
+            }
         }
 
         private void Init()
@@ -65,7 +85,24 @@ namespace WebApplication.Models
         
         public bool Update()
         {
-            return db.UpdateMatch(Model) == DbError.SUCCESS;
+            DbError matchUpdate = db.UpdateMatch(Model);
+            DbError gameUpdate = DbError.NONE;
+            foreach (GameModel game in Model.Games)
+            {
+                if (game.GameID == -1)
+                {
+                    gameUpdate = db.AddGame(game);
+                }
+                else
+                {
+                    gameUpdate = db.UpdateGame(game);
+                }
+            }
+
+            bool matchResult = matchUpdate == DbError.SUCCESS;
+            bool gameResult = gameUpdate == DbError.SUCCESS || gameUpdate == DbError.NONE;
+
+            return matchResult && gameResult;
         }
 
         public bool DeleteGame(int gameId)

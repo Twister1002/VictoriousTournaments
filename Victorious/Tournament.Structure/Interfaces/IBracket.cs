@@ -174,6 +174,9 @@ namespace Tournament.Structure
 		/// <returns>Model of removed Game</returns>
 		GameModel RemoveLastGame(int _matchNumber);
 
+
+		GameModel RemoveGameNumber(int _matchNumber, int _gameNumber);
+
 		/// <summary>
 		/// Manually set a winner for specified Match.
 		/// Winner's score will be -1.

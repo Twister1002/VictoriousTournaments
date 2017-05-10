@@ -10,4 +10,7 @@
     <div class="section">
         @{ Html.RenderPartial("Games", Model.LoadGameTypes()); }
     </div>
+    <div class="section">
+        @{ Html.RenderPartial("Platforms", Model.LoadPlatformTypes()); }
+    </div>
 </div>

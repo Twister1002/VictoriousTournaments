@@ -11,20 +11,24 @@
     }
 
     // Mouse Events
-    $(".TournamentMatch .overview .defender, .TournamentMatch .overview .challenger").on("mouseover", function () {
+    $(".TournamentMatch .defender, .TournamentMatch .challenger").on("mouseover", MouseOverEvents);
+    $(".TournamentMatch .defender, .TournamentMatch .challenger").on("mouseleave", MouseLeaveEvents);
+
+    function MouseOverEvents() {
         //console.log("Entered: " + $(this).data("seed"));
         var userid = $(this).data("id");
         if (userid > -1) {
-            $(".TournamentMatch .overview [data-id='" + userid + "']").addClass("teamHover");
+            $(".TournamentMatch .defender[data-id='" + userid + "'], .TournamentMatch .challenger[data-id='" + userid + "']").addClass("teamHover");
         }
-    });
-    $(".TournamentMatch .overview .defender, .TournamentMatch .overview .challenger").on("mouseleave", function () {
+    }
+
+    function MouseLeaveEvents() {
         //console.log("Left: " + $(this).data("seed"));
         var userid = $(this).data("id");
         if (userid > -1) {
-            $(".TournamentMatch .overview [data-id='" + userid + "']").removeClass("teamHover");
+            $(".TournamentMatch .defender[data-id='" + userid + "'], .TournamentMatch .challenger[data-id='" + userid + "']").removeClass("teamHover");
         }
-    });
+    }
 
     $(".TournamentGames .options .close").on("click", function () {
         $(this).closest(".TournamentGames").removeClass("open");
@@ -85,17 +89,16 @@
                     MatchOptionsUpdate(json.data, $games);
                 }
                 else {
-                    alert(json.message);
                     console.log(json.exception);
                 }
             },
             "error": function (json) {
                 json = JSON.parse(json);
-                $(".match-edit-module").removeClass("open");
-                alert("There was an error in acquiring this match data: " + json.message);
+                console.log(json);
+                matchElem.find(".TournamentGames").removeClass("open");
             },
             "complete": function () {
-                $(".match-edit-module .match .selected-winner").removeClass("selected-winner");
+
             }
         });
     });
@@ -257,13 +260,18 @@
 
     // Helper method to add games to details
     function AddGameToDetails(data, $games) {
-        html = "<ul data-columns='3' data-gameNum='"+data.gameNum+"'>";
-        html += "<li class='column game-number'>Game " + data.gameNum + "</li>";
-        html += "<li class='column score'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li>";
-        html += "<li class='column score'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li>";
-        html += "</ul>";
+        html = "<ul data-columns='4' data-gameNum='"+data.gameNum+"'> ";
+        html += "<li class='column game-number'>Game " + data.gameNum + "</li> ";
+        html += "<li class='column defender score' data-id='"+data.defender.id+"'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li> ";
+        html += "<li class='column challenger score' data-id='" + data.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li> ";
+        html += "<li class='column'><span class='icon icon-cross removeGame'></span></li> ";
+        html += "</ul> ";
 
         $games.find(".games").append(html);
+
+        // Register the hover events
+        $(".TournamentMatch .defender, .TournamentMatch .challenger").on("mouseover", MouseOverEvents);
+        $(".TournamentMatch .defender, .TournamentMatch .challenger").on("mouseleave", MouseLeaveEvents);
     }
 
     function CanAddGames($games) {
@@ -315,9 +323,9 @@
 
                     $.each(json.data.ranks, function (i, e) {
                         html = "<ul class='position' data-columns='3'>";
-                        html += "<li class='rank'>" + e.Rank + "</li>";
-                        html += "<li class='name'>" + e.Name + "</li>";
-                        if (e.score > -1) html += "<li class='score'>" + e.Score + "</li>";
+                        html += "<li class='column rank'>" + e.Rank + "</li>";
+                        html += "<li class='column name'>" + e.Name + "</li>";
+                        if (e.Score != -1) html += "<li class='column score'>" + (e.Score > -1 ? e.Score : "") + "</li>";
                         html += "</ul>";
 
                         standings.append(html);
@@ -325,12 +333,11 @@
                 }
             },
             "error": function (json) {
-
+                console.log(json);
             },
             "complete": function () {
 
             }
         });
     }
-
 });

@@ -5,7 +5,7 @@
     $("#AdministratorGames .gameDelete").on("click", deleteEvent);
     $("#AdministratorGames .GameAddButton").on("click", addEvent);
     $("#AdministratorGames .options .gameTitle").on("keydown", function (e) {
-        if (e.keyCode == 13) { // Enter
+        if (e && e.keyCode == 13) { // Enter
             addEvent();
         }
     });
@@ -47,9 +47,8 @@
                     table.empty();
 
                     $.each(json.data, function (i, e) {
-                        html = "<ul class='game' data-columns='3' data-gameid='" + e.GameTypeID + "'>";
+                        html = "<ul class='game' data-columns='2' data-gameid='" + e.GameTypeID + "'>";
                         html += "<li class='column gameTitle'>" + e.Title + "</li>";
-                        html += "<li class='column gamePlatforms'>None</li>";
                         html += "<li class='column gameDelete'><span class='icon icon-cross'></span></li>";
                         html += "</ul>";
 

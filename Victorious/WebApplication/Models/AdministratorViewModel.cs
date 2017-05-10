@@ -11,5 +11,10 @@ namespace WebApplication.Models
         {
             return new GameTypeViewModel();
         }
+
+        public PlatformTypeViewModel LoadPlatformTypes()
+        {
+            return new PlatformTypeViewModel();
+        }
     }
 }
