@@ -541,7 +541,7 @@ namespace WebApplication.Models
 
         public bool CanEdit()
         {
-            return Model.InProgress ? false : true;
+            return !Model.InProgress ? true : false;
         }
     }
 }

@@ -26,9 +26,18 @@ namespace WebApplication.Controllers
         {
             Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
             MatchViewModel viewModel = new MatchViewModel(json["matchId"]);
-            
+            bool status = false;
+            String message = "Match doesn't exist or failed to load";
+
+            if (viewModel.Model != null)
+            {
+                status = true;
+                message = "Match was loaded.";
+            }
+
             String jsonResult = JsonConvert.SerializeObject(new {
-                status = true,
+                status = status,
+                message = message,
                 data = JsonMatchResponse(viewModel.Match, true)
             });
 

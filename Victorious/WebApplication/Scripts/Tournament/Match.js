@@ -85,17 +85,16 @@
                     MatchOptionsUpdate(json.data, $games);
                 }
                 else {
-                    alert(json.message);
                     console.log(json.exception);
                 }
             },
             "error": function (json) {
                 json = JSON.parse(json);
-                $(".match-edit-module").removeClass("open");
-                alert("There was an error in acquiring this match data: " + json.message);
+                console.log(json);
+                matchElem.find(".TournamentGames").removeClass("open");
             },
             "complete": function () {
-                $(".match-edit-module .match .selected-winner").removeClass("selected-winner");
+
             }
         });
     });
@@ -261,6 +260,7 @@
         html += "<li class='column game-number'>Game " + data.gameNum + "</li>";
         html += "<li class='column score'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li>";
         html += "<li class='column score'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li>";
+        //html += "<li class='column'><span class='icon icon-cross removeGame'></span></li>";
         html += "</ul>";
 
         $games.find(".games").append(html);
