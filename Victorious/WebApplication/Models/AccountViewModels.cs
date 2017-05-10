@@ -127,7 +127,7 @@ namespace WebApplication.Models
         public bool Login()
         {
             Account = db.GetAccount(Username);
-            if (Account.AccountID != -1 && Account.Password == Password)
+            if (Account != null && Account.Password == Password)
             {
                 Account.LastLogin = DateTime.Now;
                 db.UpdateAccount(Account);
