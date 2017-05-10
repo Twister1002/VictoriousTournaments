@@ -127,6 +127,7 @@ namespace WebApplication.Models
             ApplyChanges();
             Model.LastEditedByID = sessionId;
             Model.LastEditedOn = DateTime.Now;
+            Model.Brackets.ElementAt(0).BracketTypeID = this.BracketType;
 
             DbError updateResult = db.UpdateTournament(Model);
 

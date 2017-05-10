@@ -20,7 +20,7 @@
         <div class="tournament-buttons">
             @if (ViewBag.isAdministrator)
             {
-                <span class="icon icon-pencil tournament-update"></span>
+                <a href="@Url.Action("Update", "Tournament", new { tournamentId = Model.Model.TournamentID })"><span class="icon icon-pencil"></span></a>
                 <span class="icon icon-cross tournament-delete"></span>
             }
         </div>
