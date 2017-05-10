@@ -764,6 +764,61 @@ namespace DatabaseLib
 
         #endregion
 
+        #region TournamentInvites
+
+        public DbError AddTournamentInviteCode(string inviteCode)
+        {
+            try
+            {
+                TournamentInviteModel model = new TournamentInviteModel()
+                {
+                    InviteCode = inviteCode
+                };
+                context.TournamentInviteModels.Add(model);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
+        }
+
+        /// <summary>
+        /// Checks the database to see if the invite code has already been used for a tournament.
+        /// </summary>
+        /// <param name="inviteCode"></param>
+        /// <returns>
+        /// ERROR if an exception is thrown.
+        /// DOES_NOT_EXIST if the invite code was not found in the database.
+        /// EXISTS if the code was found in the database.
+        /// </returns>
+        public DbError InviteCodeExists(string inviteCode)
+        {
+            TournamentInviteModel _invite;
+            try
+            {
+                _invite = context.TournamentInviteModels.Find(inviteCode);
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.ERROR;
+            }
+            if (_invite == null)
+            {
+                return DbError.DOES_NOT_EXIST;
+            }
+            return DbError.EXISTS;
+        }
+
+
+
+        #endregion
+
 
         #region Brackets
 

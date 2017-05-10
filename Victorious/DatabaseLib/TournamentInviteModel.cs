@@ -12,8 +12,8 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class TournamentInvite
+    public partial class TournamentInviteModel
     {
-        public int Id { get; set; }
+        public string InviteCode { get; set; }
     }
 }

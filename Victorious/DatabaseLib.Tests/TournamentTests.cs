@@ -136,6 +136,31 @@ namespace DatabaseLib.Tests
             Assert.AreEqual(count, result);
         }
 
+        [TestMethod]
+        public void Add_Invite_Code_GUID()
+        {
+            var db = new DbInterface();
+
+            var guid = Guid.NewGuid().ToString();
+            var result = db.AddTournamentInviteCode(guid);
+
+            Assert.AreEqual(DbError.SUCCESS, result);
+
+        }
+
+        [TestMethod]
+        public void Check_Invite_Code_Exists()
+        {
+            var db = new DbInterface();
+
+            var guid = "98ed7a71-b0f7-4c97-907a-e7b238b4daed";
+            var result = db.InviteCodeExists(guid);
+
+            Assert.AreEqual(DbError.EXISTS, result);
+
+        }
+
+
 
         private TournamentUserModel NewTournamentUser()
         {
