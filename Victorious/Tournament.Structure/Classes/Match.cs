@@ -650,12 +650,6 @@ namespace Tournament.Structure
 		}
 		private void AddWin(PlayerSlot _slot)
 		{
-			if (_slot != PlayerSlot.Defender &&
-				_slot != PlayerSlot.Challenger)
-			{
-				throw new InvalidSlotException
-					("PlayerSlot must be 0 or 1!");
-			}
 			if (IsFinished)
 			{
 				throw new InactiveMatchException
@@ -665,6 +659,17 @@ namespace Tournament.Structure
 			{
 				throw new InactiveMatchException
 					("Match is not begun; can't add a win!");
+			}
+			if (PlayerSlot.unspecified == _slot)
+			{
+				// Adding a tie: do nothing to Score
+				return;
+			}
+			if (_slot != PlayerSlot.Defender &&
+				_slot != PlayerSlot.Challenger)
+			{
+				throw new InvalidSlotException
+					("PlayerSlot must be 0 or 1!");
 			}
 
 			Score[(int)_slot] += 1;
@@ -685,16 +690,21 @@ namespace Tournament.Structure
 		}
 		private void SubtractWin(PlayerSlot _slot)
 		{
+			if (!IsReady)
+			{
+				throw new InactiveMatchException
+					("Match is not begun; can't subtract wins!");
+			}
+			if (PlayerSlot.unspecified == _slot)
+			{
+				// Removing a tie: do nothing to Score
+				return;
+			}
 			if (_slot != PlayerSlot.Defender &&
 				_slot != PlayerSlot.Challenger)
 			{
 				throw new InvalidSlotException
 					("PlayerSlot must be 0 or 1!");
-			}
-			if (!IsReady)
-			{
-				throw new InactiveMatchException
-					("Match is not begun; can't subtract wins!");
 			}
 			if (Score[(int)_slot] <= 0)
 			{
