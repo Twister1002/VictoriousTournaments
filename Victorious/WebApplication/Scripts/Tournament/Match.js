@@ -11,20 +11,24 @@
     }
 
     // Mouse Events
-    $(".TournamentMatch .overview .defender, .TournamentMatch .overview .challenger").on("mouseover", function () {
+    $(".TournamentMatch .defender, .TournamentMatch .challenger").on("mouseover", MouseOverEvents);
+    $(".TournamentMatch .defender, .TournamentMatch .challenger").on("mouseleave", MouseLeaveEvents);
+
+    function MouseOverEvents() {
         //console.log("Entered: " + $(this).data("seed"));
         var userid = $(this).data("id");
         if (userid > -1) {
-            $(".TournamentMatch .overview [data-id='" + userid + "']").addClass("teamHover");
+            $(".TournamentMatch .defender[data-id='" + userid + "'], .TournamentMatch .challenger[data-id='" + userid + "']").addClass("teamHover");
         }
-    });
-    $(".TournamentMatch .overview .defender, .TournamentMatch .overview .challenger").on("mouseleave", function () {
+    }
+
+    function MouseLeaveEvents() {
         //console.log("Left: " + $(this).data("seed"));
         var userid = $(this).data("id");
         if (userid > -1) {
-            $(".TournamentMatch .overview [data-id='" + userid + "']").removeClass("teamHover");
+            $(".TournamentMatch .defender[data-id='" + userid + "'], .TournamentMatch .challenger[data-id='" + userid + "']").removeClass("teamHover");
         }
-    });
+    }
 
     $(".TournamentGames .options .close").on("click", function () {
         $(this).closest(".TournamentGames").removeClass("open");
@@ -256,14 +260,18 @@
 
     // Helper method to add games to details
     function AddGameToDetails(data, $games) {
-        html = "<ul data-columns='3' data-gameNum='"+data.gameNum+"'>";
-        html += "<li class='column game-number'>Game " + data.gameNum + "</li>";
-        html += "<li class='column score'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li>";
-        html += "<li class='column score'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li>";
-        //html += "<li class='column'><span class='icon icon-cross removeGame'></span></li>";
-        html += "</ul>";
+        html = "<ul data-columns='4' data-gameNum='"+data.gameNum+"'> ";
+        html += "<li class='column game-number'>Game " + data.gameNum + "</li> ";
+        html += "<li class='column defender score' data-id='"+data.defender.id+"'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li> ";
+        html += "<li class='column challenger score' data-id='" + data.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li> ";
+        html += "<li class='column'><span class='icon icon-cross removeGame'></span></li> ";
+        html += "</ul> ";
 
         $games.find(".games").append(html);
+
+        // Register the hover events
+        $(".TournamentMatch .defender, .TournamentMatch .challenger").on("mouseover", MouseOverEvents);
+        $(".TournamentMatch .defender, .TournamentMatch .challenger").on("mouseleave", MouseLeaveEvents);
     }
 
     function CanAddGames($games) {
