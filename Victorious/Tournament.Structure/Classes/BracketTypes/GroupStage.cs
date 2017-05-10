@@ -69,7 +69,20 @@ namespace Tournament.Structure
 
 			GameModel gameModel = Groups[groupIndex].RemoveLastGame(fixedMatchNumber);
 			ApplyGameRemovalEffects(_matchNumber, new List<GameModel>() { gameModel }, matchWinnerSlot);
-			//UpdateScore(_matchNumber, gameModel, false);
+			//UpdateScore(fixedMatchNumber, new List<GameModel>() { gameModel }, false, matchWinnerSlot);
+			UpdateRankings();
+			return gameModel;
+		}
+		public override GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
+		{
+			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
+			int groupIndex;
+			int fixedMatchNumber = _matchNumber;
+			GetMatchData(ref fixedMatchNumber, out groupIndex);
+
+			GameModel gameModel = Groups[groupIndex].RemoveGameNumber(fixedMatchNumber, _gameNumber);
+			ApplyGameRemovalEffects(_matchNumber, new List<GameModel>() { gameModel }, matchWinnerSlot);
+			//UpdateScore(fixedMatchNumber, new List<GameModel>() { gameModel }, false, matchWinnerSlot);
 			UpdateRankings();
 			return gameModel;
 		}
