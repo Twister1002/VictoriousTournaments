@@ -85,7 +85,15 @@ namespace Tournament.Structure
 			Id = 0;
 			BracketType = BracketType.SWISS;
 			MaxRounds = _numberOfRounds;
-			ResetBracket();
+			if (Players.Count > 8 && MaxRounds > (Players.Count / 2))
+			{
+				MaxRounds = Players.Count / 2;
+			}
+			else if (Players.Count <= 8 && MaxRounds >= Players.Count)
+			{
+				MaxRounds = Players.Count - 1;
+			}
+			
 			CreateBracket(_maxGamesPerMatch);
 		}
 		public SwissBracket()
@@ -315,6 +323,12 @@ namespace Tournament.Structure
 				}
 				newRoundMatchups.Add(newMatchup);
 			}
+			if (newRoundMatchups.Count < (NumberOfPlayers() / 2))
+			{
+				// Not enough Matchups were created!
+				// (probably means: unable to create enough legal matches)
+				return false;
+			}
 
 			// Add the new round, and create Match objects:
 			++NumberOfRounds;
@@ -424,18 +438,29 @@ namespace Tournament.Structure
 			int numCompetitors = NumberOfPlayers();
 			numCompetitors = (0 == numCompetitors % 2)
 				? numCompetitors : (numCompetitors - 1);
+			// competitors array is used to reference player-indexes when there's a bye:
+			int[] competitors = new int[numCompetitors];
+			for (int i = 0, pOffset = 0; i < numCompetitors; ++i)
+			{
+				if (PlayerByes.Count > 0 &&
+					PlayerByes[PlayerByes.Count - 1] == i)
+				{
+					++pOffset;
+				}
+				competitors[i] = i + pOffset;
+			}
 			int[,] heuristicGrid = new int[numCompetitors, numCompetitors];
 
 			for (int y = 0; y < numCompetitors; ++y)
 			{
-				int playerYindex = -1, groupNumberY = 0;
+				int playerYindex = -1, groupNumberY = -1;
 				for (int g = 0; g < _groups.Count; ++g)
 				{
-					playerYindex = _groups[g].FindIndex(num => num == y);
+					playerYindex = _groups[g].FindIndex(num => num == competitors[y]);
 
 					if (playerYindex > -1)
 					{
-						groupNumberY = g + 1;
+						groupNumberY = g;
 						break;
 					}
 				}
@@ -457,14 +482,14 @@ namespace Tournament.Structure
 						continue;
 					}
 
-					int playerXindex = -1, groupNumberX = 0;
+					int playerXindex = -1, groupNumberX = -1;
 					for (int g = 0; g < _groups.Count; ++g)
 					{
-						playerXindex = _groups[g].FindIndex(num => num == x);
+						playerXindex = _groups[g].FindIndex(num => num == competitors[x]);
 
 						if (playerXindex > -1)
 						{
-							groupNumberX = g + 1;
+							groupNumberX = g;
 							break;
 						}
 					}
@@ -492,15 +517,13 @@ namespace Tournament.Structure
 					heuristicGrid[y, x] += split;
 
 					// Check for Rematch:
-					int playerXid = Players[playerXindex].Id;
-					int playerYid = Players[playerYindex].Id;
-					foreach (IMatch match in Matches.Values)
+					foreach (Matchup matchup in Matchups)
 					{
-						if ((match.Players[0].Id == playerXid && match.Players[1].Id == playerYid) ||
-							(match.Players[0].Id == playerYid && match.Players[1].Id == playerXid))
+						if (matchup.ContainsInt(competitors[x]) &&
+							matchup.ContainsInt(competitors[y]))
 						{
-							// Rematch found. Add heuristic=100K:
-							heuristicGrid[y, x] += 100000;
+							// Rematch found. Add heuristic=100M:
+							heuristicGrid[y, x] += 1000000000;
 							break;
 						}
 					}
@@ -516,12 +539,18 @@ namespace Tournament.Structure
 				{
 					if (y >= x)
 					{
+						// Skip edges we've found, and self-edges
 						continue;
 					}
 
 					// Possible matchup ("edge" for graph):
-					// [Defender index, Challenger index, heuristic value]
-					int[] edge = new int[3] { y, x, (heuristicGrid[y, x] + heuristicGrid[x, y]) };
+					// [Defender index, Challenger index, negative heuristic value]
+					int[] edge = new int[3]
+					{
+						competitors[y],
+						competitors[x],
+						(-1 * (heuristicGrid[y, x] + heuristicGrid[x, y]))
+					};
 					heuristicGraph.Add(edge);
 				}
 			}
