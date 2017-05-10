@@ -427,6 +427,16 @@ namespace Tournament.Structure
 			UpdateScore(_matchNumber, modelList, false, winnerSlot);
 			return modelList[0];
 		}
+		public virtual GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
+		{
+			PlayerSlot winnerSlot = GetMatch(_matchNumber).WinnerSlot;
+			List<GameModel> modelList = new List<GameModel>();
+
+			modelList.Add(GetMatch(_matchNumber).RemoveGameNumber(_gameNumber));
+			ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
+			UpdateScore(_matchNumber, modelList, false, winnerSlot);
+			return modelList[0];
+		}
 
 		public virtual void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
 		{
@@ -532,6 +542,12 @@ namespace Tournament.Structure
 
 			throw new MatchNotFoundException
 				("Match not found; match number may be invalid.");
+		}
+		public MatchModel GetMatchModel(int _matchNumber)
+		{
+			MatchModel model = GetMatch(_matchNumber).GetModel();
+			model.BracketID = this.Id;
+			return model;
 		}
 		public virtual void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
 		{

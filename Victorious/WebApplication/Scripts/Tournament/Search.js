@@ -9,10 +9,12 @@
 
     $("#TournamentSearch .options .searchButton").on("click", function () {
         var jsonData = {
-            "title": $("#TournamentSearch .options .title").val(),
-            "gameTypeId": $("#TournamentSearch .options .gameType").val(),
-            "startDate": $("#TournamentSearch .options .startDate").val()
-        }
+            "Title": $("#TournamentSearch .options .title").val(),
+            "GameTypeID": $("#TournamentSearch .options .gameType").val(),
+            "PlatformID": $("#TournamentSearch .options .platformType").val(),
+            "TournamentStartDate": $("#TournamentSearch .options .startDate").val(),
+        };
+
         $.ajax({
             "url": "/Ajax/Tournament/Search",
             "type": "post",
@@ -28,14 +30,15 @@
 
                 // Add all the elements found
                 $.each(json, function (i, e) {
-                    html = "<a class='column' href='" + e.link + "'>";
-                    html += "<ul class='column-clickable' data-columns='4'>";
-                    html += "<li class='column'>" + e.title + "</li>";
-                    html += "<li class='column'>" + e.game + "</li>";
-                    html += "<li class='column'>" + e.startDate + "</li>";
-                    html += "<li class='column'>" + (e.isPublic ? "Public" : "Private") + "</li>";
-                    html += "</ul>";
-                    html += "</a>";
+                    html = "<a class='column' href='" + e.link + "'> ";
+                    html += "<ul class='column-clickable' data-columns='5'> ";
+                    html += "<li class='column'>" + e.title + "</li> ";
+                    html += "<li class='column'>" + e.game + "</li> ";
+                    html += "<li class='column'>" + e.platform + "</li> ";
+                    html += "<li class='column'>" + e.startDate + "</li> ";
+                    html += "<li class='column'>" + (e.isPublic ? "Public" : "Private") + "</li> ";
+                    html += "</ul> ";
+                    html += "</a> ";
 
                     tournaments.append(html);
                 });

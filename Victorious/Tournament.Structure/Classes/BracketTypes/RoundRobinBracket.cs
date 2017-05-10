@@ -112,7 +112,7 @@ namespace Tournament.Structure
 			foreach (TournamentUserModel model in userModels)
 			{
 				Players.Add(new User(model));
-				Rankings.Add(new PlayerScore(model.TournamentUserID, model.Username, 0, 1));
+				Rankings.Add(new PlayerScore(model.TournamentUserID, model.Name, 0, 1));
 			}
 
 			foreach (MatchModel mm in _model.Matches)

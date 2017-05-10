@@ -5,7 +5,6 @@ using DatabaseLib;
 
 namespace WebApplication.Models
 {
-
     public enum TournamentStatus
     {
         ADMIN,
@@ -16,24 +15,24 @@ namespace WebApplication.Models
 
     public class AccountViewModel : AccountFields
     {
-        public AccountModel Model { get; private set; }
+        public AccountModel Account { get; private set; }
         public Dictionary<TournamentStatus, List<TournamentModel>> Tournaments { get; private set; }
 
         public AccountViewModel()
         {
-            Model = new AccountModel();
+            Account = new AccountModel();
             Init();
         }
 
         public AccountViewModel(int id)
         {
-            Model = db.GetAccount(id);
+            Account = db.GetAccount(id);
             Init();
         }
 
         public AccountViewModel(AccountModel model)
         {
-            Model = model;
+            Account = model;
             Init();
         }
 
@@ -47,54 +46,62 @@ namespace WebApplication.Models
             Tournaments[TournamentStatus.UPCOMING] = new List<TournamentModel>();
             Tournaments[TournamentStatus.PAST] = new List<TournamentModel>();
 
+            List<TournamentModel> tournaments = db.GetTournamentsForAccount(Account.AccountID);
+
             // Filter the list down of tournaments
-            //foreach (TournamentModel tourny in Model.Tournaments)
-            //{
-            //    // OWner of tournament
-            //    if (tourny.UsersInTournament.Single(x=>x.UserID == Model.UserID).Permission == Permission.TOURNAMENT_ADMINISTRATOR)
-            //    {
-            //        Tournaments[TournamentStatus.ADMIN].Add(tourny);
-            //    }
-            //    else
-            //    {
-            //        // Active Tournament
-            //        if (tourny.TournamentRules.TournamentStartDate <= DateTime.Now && 
-            //            tourny.TournamentRules.TournamentEndDate > DateTime.Now)
-            //        {
-            //            Tournaments[TournamentStatus.ACTIVE].Add(tourny);
-            //        }
-            //        else if (tourny.TournamentRules.TournamentStartDate > DateTime.Now)
-            //        {
-            //            Tournaments[TournamentStatus.UPCOMING].Add(tourny);
-            //        }
-            //        else
-            //        {
-            //            Tournaments[TournamentStatus.PAST].Add(tourny);
-            //        }
-            //    }
-            //}
+            foreach (TournamentModel tournament in tournaments)
+            {
+                Permission userPermission = (Permission)tournament.TournamentUsers.Single(x => x.AccountID == Account.AccountID).PermissionLevel;
+                // OWner of tournament
+                if (userPermission == Permission.TOURNAMENT_CREATOR || userPermission == Permission.TOURNAMENT_ADMINISTRATOR)
+                {
+                    Tournaments[TournamentStatus.ADMIN].Add(tournament);
+                }
+                else
+                {
+                    // Active Tournament
+                    if (tournament.TournamentStartDate <= DateTime.Now &&
+                        tournament.TournamentEndDate > DateTime.Now)
+                    {
+                        Tournaments[TournamentStatus.ACTIVE].Add(tournament);
+                    }
+                    else if (tournament.TournamentStartDate > DateTime.Now)
+                    {
+                        Tournaments[TournamentStatus.UPCOMING].Add(tournament);
+                    }
+                    else
+                    {
+                        Tournaments[TournamentStatus.PAST].Add(tournament);
+                    }
+                }
+            }
         }
 
         public override void ApplyChanges()
         {
             // Non null fields
-            Model.Username      = this.Username != String.Empty ? this.Username : String.Empty;
-            Model.Email         = this.Email != String.Empty ? this.Email : String.Empty;
-            Model.FirstName     = this.FirstName != String.Empty ? this.FirstName : String.Empty;
-            Model.LastName      = this.LastName != String.Empty ? this.LastName : String.Empty;
-            Model.Password      = this.Password != String.Empty ? this.Password : String.Empty;
+            Account.AccountID       = this.AccountId;
+            Account.Username        = this.Username != String.Empty ? this.Username : String.Empty;
+            Account.Email           = this.Email != String.Empty ? this.Email : String.Empty;
+            Account.FirstName       = this.FirstName != String.Empty ? this.FirstName : String.Empty;
+            Account.LastName        = this.LastName != String.Empty ? this.LastName : String.Empty;
+            Account.Password        = this.Password != String.Empty ? this.Password : String.Empty;
         }
 
         public override void SetFields()
         {
-            this.Username   = Model.Username;
-            this.Email      = Model.Email;
-            this.LastName   = Model.LastName;
-            this.FirstName  = Model.FirstName;
+            this.AccountId  = Account.AccountID;
+            this.Username   = Account.Username;
+            this.Email      = Account.Email;
+            this.LastName   = Account.LastName;
+            this.FirstName  = Account.FirstName;
         }
 
         public bool Create()
         {
+            ApplyChanges();
+            Account.CreatedOn = DateTime.Now;
+
             bool usernameExists = db.AccountUsernameExists(Username) == DbError.EXISTS;
             bool emailExists = db.AccountEmailExists(Email) == DbError.SUCCESS;
             bool passwordsMatch = Password == PasswordVerify;
@@ -102,7 +109,7 @@ namespace WebApplication.Models
 
             if (!usernameExists && !emailExists && passwordsMatch)
             {
-                return db.AddAccount(Model) == DbError.SUCCESS;
+                return db.AddAccount(Account) == DbError.SUCCESS;
             }
             else
             {
@@ -112,19 +119,32 @@ namespace WebApplication.Models
 
         public bool Update()
         {
-            return db.UpdateAccount(Model) == DbError.SUCCESS;
+            ApplyChanges();
+
+            return db.UpdateAccount(Account) == DbError.SUCCESS;
         }
 
         public bool Login()
         {
-            AccountModel user = db.GetAccount(Username);
-            if (user.Password == Password)
+            Account = db.GetAccount(Username);
+            if (Account.AccountID != -1 && Account.Password == Password)
             {
-                Model.LastLogin = DateTime.Now;
+                Account.LastLogin = DateTime.Now;
+                db.UpdateAccount(Account);
                 return true;
             }
 
             return false;
+        }
+
+        public Permission SitePermission()
+        {
+            return (Permission)Account.PermissionLevel;
+        }
+
+        public bool IsAdministrator()
+        {
+            return SitePermission() == Permission.SITE_ADMINISTRATOR;
         }
     }
 }

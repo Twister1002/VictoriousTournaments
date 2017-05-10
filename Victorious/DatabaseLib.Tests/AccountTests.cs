@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DatabaseLib.Tests
 {
@@ -79,6 +81,16 @@ namespace DatabaseLib.Tests
             Assert.AreEqual(DbError.SUCCESS, result);
         }
 
+        [TestMethod]
+        public void Get_Tournaments_For_Account()
+        {
+            var db = new DbInterface();
+
+            List<TournamentModel> accountTournaments = db.GetTournamentsForAccount(1);
+            List<TournamentModel> tournaments = db.GetAllTournaments().GetRange(0, 2);
+            var result = (!tournaments.Except(accountTournaments).Any() && !accountTournaments.Except(tournaments).Any());
+            Assert.AreEqual(true, result);
+        }
 
     }
 }

@@ -1,0 +1,43 @@
+﻿@model WebApplication.Models.TournamentRegistrationFields
+
+@{
+    ViewBag.Title = "TournamentRegistration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="TournamentRegister">
+    <h2>@ViewBag.Tournament.Title</h2>
+    <h3 class="gameTitle">@ViewBag.Tournament.GameType.Title</h3>
+    <div class="description">
+        @ViewBag.Tournament.Description
+    </div>
+    <p>
+        @if (Model.AccountID > 0)
+            {
+                if (ViewBag.isRegistered)
+                {
+                    using (Html.BeginForm("Deregister", "Tournament", FormMethod.Post))
+                    {
+                    @Html.TextBoxFor(x => x.TournamentID, new { @readonly = "readonly", @hidden = "hidden" })
+                    @Html.TextBoxFor(x => x.AccountID, new { @readonly = "readonly",@hidden = "hidden" })
+                    @Html.TextBoxFor(x => x.Name, new { @readonly = "readonly", @hidden = "hidden" })
+                    <button type="submit">Deregister for tournament</button>
+                }
+            }
+            else
+            {
+                using (Html.BeginForm("Register", "Tournament", FormMethod.Post))
+                {
+                    @Html.TextBoxFor(x => x.TournamentID, new { @readonly = "readonly", @hidden = "hidden" })
+                    @Html.TextBoxFor(x => x.AccountID, new { @readonly = "readonly", @hidden = "hidden" })
+                    @Html.TextBoxFor(x => x.Name, new { @readonly = "readonly", @hidden = "hidden" })
+                    <button type="submit">Register for tournament</button>
+                }
+            }
+        }
+        else
+        {
+            <div class="message warning">You must @Html.ActionLink("login", "Login", "Account", new { }, new { @class = "clickable-underline" }) to register for a tournament.</div>
+        }
+    </p>
+</div>

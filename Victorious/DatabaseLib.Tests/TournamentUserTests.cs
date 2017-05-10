@@ -29,7 +29,7 @@ namespace DatabaseLib.Tests
 
             var result = db.GetTournamentUser(user.TournamentUserID);
 
-            Assert.AreEqual("Ryan", result.FirstName);
+            Assert.AreEqual("Ryan", result.Name);
         }
 
         [TestMethod]
@@ -66,9 +66,8 @@ namespace DatabaseLib.Tests
             TournamentUserModel user = new TournamentUserModel()
             {
                 
-                FirstName = "Ryan",
-                LastName = "Kelton",
-                Username = Guid.NewGuid().ToString(),
+                Name = "Kelton",
+                //Username = Guid.NewGuid().ToString(),
                 UniformNumber = 1
             };
             return user;
@@ -88,13 +87,25 @@ namespace DatabaseLib.Tests
                 CheckInEnds = DateTime.Now,
                 LastEditedByID = 1,
                 CreatedByID = 1,
-                Platform = 0,
+                //Platform = 0,
                 EntryFee = 0,
                 GameTypeID = 0,
                 PrizePurse = 0,
             };
 
             return tournament;
+        }
+
+        [TestMethod]
+        public void Check_User_In()
+        {
+            var db = new DbInterface();
+
+            db.CheckUserIn(1);
+
+            var result = db.GetTournamentUser(1).IsCheckedIn;
+
+            Assert.AreEqual(true, result);
         }
     }
 }

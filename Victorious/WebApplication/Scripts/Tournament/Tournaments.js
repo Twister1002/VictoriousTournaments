@@ -13,7 +13,7 @@
             $.ajax({
                 "url": "/Ajax/Tournament/Delete",
                 "type": "POST",
-                "data": { "tourny": $(this).closest("#Tournament").data("id") },
+                "data": { "tournamentId": $(this).closest("#Tournament").data("id") },
                 "dataType": "json",
                 "success": function (json) {
                     json = JSON.parse(json);

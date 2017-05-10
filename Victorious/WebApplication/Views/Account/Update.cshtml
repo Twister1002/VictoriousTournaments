@@ -10,6 +10,7 @@
     {
         <div class="section">
             @Html.TextBoxFor(m => m.Username, new { @hidden = "hidden", @required = "required", @readonly = "readonly" })
+            @Html.TextBoxFor(m => m.AccountId, new { @hidden = "hidden", @required = "required", @readonly = "readonly" })
             <ul>
                 <li>
                     @Html.LabelFor(m => m.Email)

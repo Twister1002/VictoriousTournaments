@@ -7,6 +7,8 @@ namespace WebApplication.Models
 {
     public abstract class AccountFields : ViewModel
     {
+        public int AccountId { get; set; } 
+
         //[Required(ErrorMessage = "First Name is required")]
         [DataType(DataType.Text)]
         [StringLength(AccountModel.FirstNameLength)]
@@ -77,9 +79,18 @@ namespace WebApplication.Models
         [DataType(DataType.DateTime)]
         [Display(Name = "Tournament End")]
         public DateTime TournamentEndDate { get; set; }
+
+        [DataType(DataType.DateTime)]
+        [Display(Name = "CheckIn Start")]
+        public DateTime CheckinStart { get; set; }
+
+        [DataType(DataType.DateTime)]
+        [Display(Name = "CheckIn Ends")]
+        public DateTime CheckinEnd { get; set; }
         
         public List<BracketTypeModel> BracketTypes { get; protected set; }
         public List<GameTypeModel> GameTypes { get; protected set; }
+        public List<PlatformModel> PlatformTypes { get; protected set; }
 
         [Display(Name = "Bracket Type")]
         [Required(ErrorMessage ="Select a bracket type")]
@@ -89,10 +100,14 @@ namespace WebApplication.Models
         [Required(ErrorMessage ="Select a game")]
         public int? GameType { get; set; }
 
+        [Display(Name = "Platform")]
+        [Required(ErrorMessage = "Choose a platform")]
+        public int PlatformType { get; set; } 
+
         [Display(Name = "Public")]
         public bool IsPublic { get; set; }
 
-        public abstract void ApplyChanges(int userId);
+        public abstract void ApplyChanges();
         public abstract void SetFields();
     }
 
@@ -113,15 +128,24 @@ namespace WebApplication.Models
         public int DefenderScore { get; set; }
     }
 
-    public abstract class AdministratorFields : ViewModel
+    public class TournamentRegistrationFields : ViewModel
     {
-        [Display(Name ="Game")]
-        [DataType(DataType.Text)]
-        public String GameName { get; set; }
+        public String Name { get; set; }
+        public int TournamentID { get; set; }
+        public int AccountID { get; set; }
+    }
 
-        [Display(Name = "")]
-        public bool XBox { get; set; }
-        public bool PC { get; set; }
-        public bool PS3 { get; set; }
+    public abstract class GameTypeFields : ViewModel
+    {
+        [Display(Name = "Title")]
+        [DataType(DataType.Text)]
+        public String Title { get; set; }
+    }
+
+    public abstract class PlatformTypeFields : ViewModel
+    {
+        [Display(Name = "Platform")]
+        [DataType(DataType.Text)]
+        public String Platform { get; set; }
     }
 }

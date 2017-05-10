@@ -315,9 +315,9 @@
 
                     $.each(json.data.ranks, function (i, e) {
                         html = "<ul class='position' data-columns='3'>";
-                        html += "<li class='rank'>" + e.Rank + "</li>";
-                        html += "<li class='name'>" + e.Name + "</li>";
-                        if (e.score > -1) html += "<li class='score'>" + e.Score + "</li>";
+                        html += "<li class='column rank'>" + e.Rank + "</li>";
+                        html += "<li class='column name'>" + e.Name + "</li>";
+                        if (e.Score != -1) html += "<li class='column score'>" + (e.Score > -1 ? e.Score : "") + "</li>";
                         html += "</ul>";
 
                         standings.append(html);
@@ -325,12 +325,11 @@
                 }
             },
             "error": function (json) {
-
+                console.log(json);
             },
             "complete": function () {
 
             }
         });
     }
-
 });

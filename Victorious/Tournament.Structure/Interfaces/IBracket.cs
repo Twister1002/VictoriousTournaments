@@ -174,6 +174,9 @@ namespace Tournament.Structure
 		/// <returns>Model of removed Game</returns>
 		GameModel RemoveLastGame(int _matchNumber);
 
+
+		GameModel RemoveGameNumber(int _matchNumber, int _gameNumber);
+
 		/// <summary>
 		/// Manually set a winner for specified Match.
 		/// Winner's score will be -1.
@@ -213,6 +216,9 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Match Number of the desired Match</param>
 		/// <returns>Specified Match object</returns>
 		IMatch GetMatch(int _matchNumber);
+
+
+		MatchModel GetMatchModel(int _matchNumber);
 
 		/// <summary>
 		/// Set the max number of Games PER MATCH for one round.

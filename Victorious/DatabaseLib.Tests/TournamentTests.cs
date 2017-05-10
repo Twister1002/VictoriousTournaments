@@ -25,7 +25,7 @@ namespace DatabaseLib.Tests
         {
             var db = new DbInterface();
 
-            var tournament = db.GetTournament(1);
+            var tournament = db.GetTournament(4);
 
             Assert.AreEqual("Test", tournament.Description);
         }
@@ -55,7 +55,7 @@ namespace DatabaseLib.Tests
             GameModel game = db.GetGame(3);
             var matches = db.GetAllMatchesInBracket(brackets[0].BracketID);
             matches[0].ChallengerID = 7;
-            
+
             var result = db.UpdateTournament(tournament, true);
 
             Assert.AreEqual(DbError.SUCCESS, result);
@@ -74,15 +74,75 @@ namespace DatabaseLib.Tests
 
             Assert.AreEqual(DbError.SUCCESS, result);
         }
-      
+
+        public void Search_By_Title()
+        {
+            var db = new DbInterface();
+
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("Title", "Test Tournament One");
+            tournaments = db.FindTournaments(dict);
+            var result = tournaments.Count;
+
+            Assert.AreEqual(2, result);
+        }
+
+        [TestMethod]
+        public void Search_By_Start_Date()
+        {
+            var db = new DbInterface();
+
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("TournamentStartDate", DateTime.Today.ToShortDateString());
+            tournaments = db.FindTournaments(dict);
+            var result = tournaments.Count;
+
+            Assert.AreEqual(1, result);
+        }
+
+        [TestMethod]
+        public void Search_Return_Default()
+        {
+            var db = new DbInterface();
+
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            var date = new DateTime();
+            date = DateTime.Today.AddDays(1);
+            dict.Add("TournamentStartDate", DateTime.Today.ToShortDateString());
+            tournaments = db.FindTournaments(dict);
+            var result = tournaments.Count;
+
+            Assert.AreEqual(db.GetAllTournaments().Count, result);
+        }
+
+        [TestMethod]
+        public void Search_By_Dates_And_Strings()
+        {
+            var db = new DbInterface();
+
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("TournamentStartDate", DateTime.Today.ToString());
+            dict.Add("Title", "test tournament");
+            dict.Add("GameTypeID", "1");
+            dict.Add("InProgress", "false");
+
+            tournaments = db.FindTournaments(dict);
+            var result = tournaments.Count;
+
+            Assert.AreEqual(1, result);
+        }
+
 
         private TournamentUserModel NewTournamentUser()
         {
             TournamentUserModel user = new TournamentUserModel()
             {
-                FirstName = "Ryan",
-                LastName = "Kelton",
-                Username = Guid.NewGuid().ToString(),
+                Name = "Ryan",
+                //Username = Guid.NewGuid().ToString(),
                 UniformNumber = 1
             };
             return user;
@@ -103,7 +163,7 @@ namespace DatabaseLib.Tests
                 CheckInEnds = DateTime.Now,
                 LastEditedByID = 1,
                 CreatedByID = 1,
-                Platform = 0,
+                PlatformID = 3,
                 EntryFee = 0,
                 PrizePurse = 0,
             };

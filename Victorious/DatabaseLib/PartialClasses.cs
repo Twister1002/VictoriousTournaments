@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Core.Objects.DataClasses;
 using System.Linq;
 using System.Text;
@@ -38,7 +39,6 @@ namespace DatabaseLib
             CreatedOn = DateTime.Now;
             LastEditedOn = DateTime.Now;
 
-            Brackets = new Collection<BracketModel>();
         }
 
     }
@@ -63,13 +63,15 @@ namespace DatabaseLib
     {
         partial void OnInit()
         {
-            Challenger = new TournamentUserModel();
-            Defender = new TournamentUserModel();
+            //Challenger = new TournamentUserModel();
+            //Defender = new TournamentUserModel();
         }
 
-        public virtual TournamentUserModel Challenger { get; set; }
+        [NotMapped]
+        public TournamentUserModel Challenger { get; set; }
 
-        public virtual TournamentUserModel Defender { get; set; }
+        [NotMapped]
+        public TournamentUserModel Defender { get; set; }
 
       
     }

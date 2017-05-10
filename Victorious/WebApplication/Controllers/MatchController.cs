@@ -48,7 +48,7 @@ namespace WebApplication.Controllers
                 Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonIds);
                 TournamentViewModel tournamentModel = new TournamentViewModel(json["tournamentId"]);
 
-                if (tournamentModel.UserPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+                if (tournamentModel.IsAdministrator((int)Session["User.UserId"]))
                 {
                     tournamentModel.ProcessTournament();
                     IBracket bracket = tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]);
@@ -79,9 +79,9 @@ namespace WebApplication.Controllers
                     }
                     
                     //  Load the Models
-                    MatchViewModel matchModel = new MatchViewModel(bracket.GetMatch(match.MatchNumber));
-                    MatchViewModel winnerMatchModel = matchModel.Match.NextMatchNumber != -1 ? new MatchViewModel(bracket.GetMatch(matchModel.Match.NextMatchNumber)) : null;
-                    MatchViewModel loserMatchModel = matchModel.Match.NextLoserMatchNumber != -1 ? new MatchViewModel(bracket.GetMatch(matchModel.Match.NextLoserMatchNumber)) : null;
+                    MatchViewModel matchModel = new MatchViewModel(bracket.GetMatchModel(match.MatchNumber));
+                    MatchViewModel winnerMatchModel = matchModel.Match.NextMatchNumber != -1 ? new MatchViewModel(bracket.GetMatchModel(matchModel.Match.NextMatchNumber)) : null;
+                    MatchViewModel loserMatchModel = matchModel.Match.NextLoserMatchNumber != -1 ? new MatchViewModel(bracket.GetMatchModel(matchModel.Match.NextLoserMatchNumber)) : null;
 
                     // Update the bracket in the database
                     //DbError bracketUpdate = db.UpdateBracket(bracketModel.Model);

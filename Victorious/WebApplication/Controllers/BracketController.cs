@@ -29,7 +29,7 @@ namespace WebApplication.Controllers
             if (Session["User.UserId"] != null)
             {
                 BracketViewModel viewModel = new BracketViewModel(bracketId);
-                if ((int)Session["User.UserId"] == viewModel.Model.Tournament.CreatedByID)
+                if (viewModel.IsCreator((int)Session["User.UserId"]))
                 {
                     if (viewModel.ResetBracket())
                     {
@@ -81,9 +81,9 @@ namespace WebApplication.Controllers
             if (Session["User.UserId"] != null)
             {
                 BracketViewModel viewModel = new BracketViewModel(bracketId);
-                MatchViewModel matchViewModel = new MatchViewModel(viewModel.Bracket.GetMatch(matchNum));
+                MatchViewModel matchViewModel = new MatchViewModel(viewModel.Bracket.GetMatchModel(matchNum));
 
-                if (viewModel.TournamentPermission((int)Session["User.UserId"]) == Permission.TOURNAMENT_ADMINISTRATOR)
+                if (viewModel.IsAdministrator((int)Session["User.UserId"]))
                 {
                     List<int> matchesAffected = viewModel.MatchesAffectedList(matchNum);
                     List<object> matchResponse = new List<object>();
@@ -97,7 +97,7 @@ namespace WebApplication.Controllers
                         matchModel.RemoveGames();
 
                         // Reset the model
-                        matchModel = new MatchViewModel(viewModel.Bracket.GetMatch(match));
+                        matchModel = new MatchViewModel(viewModel.Bracket.GetMatchModel(match));
 
                         // Update this match in the database according to the reset from the bracket
                         if (!matchModel.Update())
@@ -111,6 +111,7 @@ namespace WebApplication.Controllers
                     status = true;
                     message = "Matches are reset";
                     data = matchResponse;
+
                 }
                 else
                 {

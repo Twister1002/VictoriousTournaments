@@ -68,11 +68,21 @@
     <Build Include="Games.sql" />
     <Build Include="GameTypes.sql" />
     <Build Include="TournamentUsersBrackets.sql" />
+    <Build Include="TournamentInvites.sql" />
+    <Build Include="Platforms.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="VictoriousDatabase.refactorlog" />
   </ItemGroup>
   <ItemGroup>
     <None Include="VictoriousDatabase.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Script.PostDeployment1.sql" />
   </ItemGroup>
 </Project>

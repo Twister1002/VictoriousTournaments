@@ -10,6 +10,9 @@ namespace WebApplication.Models
         public MatchModel Model { get; private set; }
         public IMatch Match { get; private set; }
 
+        public IPlayer Challenger { get; private set;}
+        public IPlayer Defender { get; private set; }
+
         public MatchViewModel()
         {
             Match = new Match();
@@ -20,6 +23,15 @@ namespace WebApplication.Models
         {
             Match = match;
             Model = Match.GetModel();
+
+            Init();
+        }
+
+        public MatchViewModel(MatchModel match)
+        {
+            Model = match;
+            LoadPlayerObjects();
+            Match = new Match(match);
         }
 
         public MatchViewModel(int matchId)
@@ -33,11 +45,64 @@ namespace WebApplication.Models
             {
                 Match = new Match();
             }
+
+            Init();
+        }
+
+        // Acquires data from the database if the objects are null
+        private void LoadPlayerObjects()
+        {
+            if (Model.Challenger == null)
+            {
+                Model.Challenger = db.GetTournamentUser(Model.ChallengerID);
+            }
+            if (Model.Defender == null)
+            {
+                Model.Defender = db.GetTournamentUser(Model.DefenderID);
+            }
+        }
+
+        private void Init()
+        {
+            Challenger = Match.Players[(int)PlayerSlot.Challenger];
+            if (Challenger == null)
+            {
+                Challenger = new User()
+                {
+                    Name = "Match " + Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger]
+                };
+            }
+
+            Defender = Match.Players[(int)PlayerSlot.Defender];
+            if (Defender == null)
+            {
+                Defender = new User()
+                {
+                    Name = "Match " + Match.PreviousMatchNumbers[(int)PlayerSlot.Defender]
+                };
+            }
         }
         
         public bool Update()
         {
-            return db.UpdateMatch(Model) == DbError.SUCCESS;
+            DbError matchUpdate = db.UpdateMatch(Model);
+            DbError gameUpdate = DbError.NONE;
+            foreach (GameModel game in Model.Games)
+            {
+                if (game.GameID == -1)
+                {
+                    gameUpdate = db.AddGame(game);
+                }
+                else
+                {
+                    gameUpdate = db.UpdateGame(game);
+                }
+            }
+
+            bool matchResult = matchUpdate == DbError.SUCCESS;
+            bool gameResult = gameUpdate == DbError.SUCCESS || gameUpdate == DbError.NONE;
+
+            return matchResult && gameResult;
         }
 
         public bool DeleteGame(int gameId)
@@ -58,34 +123,6 @@ namespace WebApplication.Models
             {
                 DeleteGame(game.GameID);
             }
-        }
-
-        public IPlayer Challenger()
-        {
-            IPlayer player = Match.Players[(int)PlayerSlot.Challenger];
-            if (player == null)
-            {
-                player = new User()
-                {
-                      Name = "Winner from "+Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger]
-                };
-            }
-
-            return player;
-        }
-
-        public IPlayer Defender()
-        {
-            IPlayer player = Match.Players[(int)PlayerSlot.Defender];
-            if (player == null)
-            {
-                player = new User()
-                {
-                    Name = "Winner from " + Match.PreviousMatchNumbers[(int)PlayerSlot.Defender]
-                };
-            }
-
-            return player;
         }
 
         public int DefenderScore()
