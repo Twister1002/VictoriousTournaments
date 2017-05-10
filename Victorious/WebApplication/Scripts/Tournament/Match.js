@@ -90,7 +90,7 @@
                     MatchOptionsUpdate(json.data, $games);
                 }
                 else {
-                    console.log(json.exception);
+                    console.log(json.message);
                 }
             },
             "error": function (json) {
