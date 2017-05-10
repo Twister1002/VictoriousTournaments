@@ -17,6 +17,7 @@ namespace DatabaseLib
         public int TournamentUserID { get; set; }
         public int BracketID { get; set; }
         public Nullable<int> Seed { get; set; }
+        public int TournamentID { get; set; }
     	
     	partial void OnInit();
     

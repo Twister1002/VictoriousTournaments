@@ -97,7 +97,7 @@
           <Key>
             <PropertyRef Name="PlatformID" />
           </Key>
-          <Property Name="PlatformID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="PlatformID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PlatformName" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="TournamentInvites">
@@ -154,6 +154,7 @@
           <Property Name="TournamentUserID" Type="int" Nullable="false" />
           <Property Name="BracketID" Type="int" Nullable="false" />
           <Property Name="Seed" Type="int" />
+          <Property Name="TournamentID" Type="int" Nullable="false" />
         </EntityType>
         <Association Name="FK_Brackets_BracketTypes">
           <End Role="BracketTypes" Type="Self.BracketTypes" Multiplicity="1" />
@@ -492,6 +493,7 @@
           <Property Name="Seed" Type="Int32" />
           <NavigationProperty Name="Bracket" Relationship="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments" FromRole="TournamentUsersBracket" ToRole="Bracket" />
           <NavigationProperty Name="TournamentUser" Relationship="VictoriousDatabaseModel.FK_UserBrackets_TournamentUsers" FromRole="TournamentUsersBracket" ToRole="TournamentUser" />
+          <Property Name="TournamentID" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="FK_UsersBrackets_Tournaments">
           <End Type="VictoriousDatabaseModel.BracketModel" Multiplicity="1" Role="Bracket">
@@ -742,6 +744,7 @@
           <EntitySetMapping Name="TournamentUsersBracketModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentUsersBracketModel">
               <MappingFragment StoreEntitySet="TournamentUsersBrackets">
+                <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
                 <ScalarProperty Name="Seed" ColumnName="Seed" />
                 <ScalarProperty Name="BracketID" ColumnName="BracketID" />
                 <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />

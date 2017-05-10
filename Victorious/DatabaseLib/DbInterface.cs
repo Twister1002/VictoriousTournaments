@@ -480,7 +480,7 @@ namespace DatabaseLib
             {
                 List<SqlParameter> sqlparams = new List<SqlParameter>();
                 string query = string.Empty;
-                query = "SELECT TOP("+ returnCount +")* FROM Tournaments WHERE IsPublic = 1 ";
+                query = "SELECT TOP(" + returnCount + ")* FROM Tournaments WHERE IsPublic = 1 ";
                 foreach (KeyValuePair<String, String> data in searchParams)
                 {
                     if (query != String.Empty) query += " AND ";
@@ -639,6 +639,7 @@ namespace DatabaseLib
         //    return DbError.SUCCESS;
         //}
 
+        [Obsolete("Use AddTournamentUserToBracket(TournamentUsersBracketModel)")]
         public DbError AddTournamentUserToBracket(int tournamentUserId, int bracketId, int seed)
         {
             try
@@ -657,6 +658,73 @@ namespace DatabaseLib
                 return DbError.FAILED_TO_UPDATE;
             }
             return DbError.SUCCESS;
+        }
+
+        public DbError AddTournamentUsersBracket(TournamentUsersBracketModel model)
+        {
+            try
+            {
+                context.TournamentUsersBracketModels.Add(model);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError UpdateTournamentUsersBracket(TournamentUsersBracketModel model)
+        {
+            try
+            {
+                TournamentUsersBracketModel _model = context.TournamentUsersBracketModels.Find(model.TournamentUserID, model.BracketID);
+                context.Entry(_model).CurrentValues.SetValues(model);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        // Uses the model instead of ID because TournamentUsersBracket has a composite primary key
+        public DbError DeleteTournamentUsersBrackets(TournamentUsersBracketModel model)
+        {
+            try
+            {
+                TournamentUsersBracketModel _model = context.TournamentUsersBracketModels.Find(model.BracketID, model.TournamentUserID);
+                context.TournamentUsersBracketModels.Remove(_model);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public TournamentUsersBracketModel GetTournamentUserBracket(TournamentUsersBracketModel model)
+        {
+            TournamentUsersBracketModel _model;
+            try
+            {
+                _model = context.TournamentUsersBracketModels.Find(model.BracketID, model.TournamentUserID);
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                _model = null;
+            }
+            return _model;
         }
 
         // Return -1 on error
