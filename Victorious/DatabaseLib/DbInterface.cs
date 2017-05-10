@@ -472,7 +472,7 @@ namespace DatabaseLib
         /// </summary>
         /// <param name="searchParams"></param>
         /// <returns></returns>
-        public List<TournamentModel> FindTournaments(Dictionary<string, string> searchParams)
+        public List<TournamentModel> FindTournaments(Dictionary<string, string> searchParams, int returnCount = 25)
         {
             List<TournamentModel> tournaments = new List<TournamentModel>();
 
@@ -480,7 +480,7 @@ namespace DatabaseLib
             {
                 List<SqlParameter> sqlparams = new List<SqlParameter>();
                 string query = string.Empty;
-                query = "SELECT * FROM Tournaments WHERE IsPublic = 1 ";
+                query = "SELECT TOP("+ returnCount +")* FROM Tournaments WHERE IsPublic = 1 ";
                 foreach (KeyValuePair<String, String> data in searchParams)
                 {
                     if (query != String.Empty) query += " AND ";
@@ -501,16 +501,16 @@ namespace DatabaseLib
 
                     }
                 }
-
+                query += " ORDER BY TournamentStartDate ASC";
 
                 tournaments = context.TournamentModels.SqlQuery(query, sqlparams.ToArray()).ToList();
                 query = string.Empty;
 
-                if (tournaments.Count == 0)
-                {
-                    query = "SELECT TOP(25)* FROM Tournaments WHERE IsPublic = 1 ORDER BY TournamentStartDate ASC";
-                    tournaments = context.TournamentModels.SqlQuery(query).ToList();
-                }
+                //if (tournaments.Count == 0)
+                //{
+                //    query = "SELECT TOP(25)* FROM Tournaments WHERE IsPublic = 1 ORDER BY TournamentStartDate ASC";
+                //    tournaments = context.TournamentModels.SqlQuery(query).ToList();
+                //}
 
 
             }

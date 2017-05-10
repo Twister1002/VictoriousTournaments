@@ -126,14 +126,14 @@ namespace DatabaseLib.Tests
             List<TournamentModel> tournaments = new List<TournamentModel>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
             dict.Add("TournamentStartDate", DateTime.Today.ToString());
-            dict.Add("Title", "test tournament");
+            dict.Add("Title", "test tournament one");
             dict.Add("GameTypeID", "1");
             dict.Add("InProgress", "false");
-
-            tournaments = db.FindTournaments(dict);
+            var count = 3;
+            tournaments = db.FindTournaments(dict, count);
             var result = tournaments.Count;
 
-            Assert.AreEqual(1, result);
+            Assert.AreEqual(count, result);
         }
 
 
@@ -166,6 +166,7 @@ namespace DatabaseLib.Tests
                 PlatformID = 3,
                 EntryFee = 0,
                 PrizePurse = 0,
+                GameTypeID = 1
             };
 
             return tournament;
