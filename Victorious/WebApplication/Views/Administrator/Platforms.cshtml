@@ -6,7 +6,7 @@
         <ul class="list-table">
             <li class="list-table-header">
                 <ul class="form options" data-columns="2">
-                    <li class="column">@Html.TextBoxFor(x => x.Platform, new { @class = "platform", placeholder = "Platform" })</li>
+                    <li class="column">@Html.TextBoxFor(x => x.Platform, new { @class = "platformTitle", placeholder = "Platform" })</li>
                     <li class="column"><button type="button" class="AddPlatform">Add Platform</button></li>
                 </ul>
             </li>
@@ -21,7 +21,7 @@
                 {
                     <ul class="platform" data-columns="2" data-id="@platform.PlatformID">
                         <li class="column">@platform.PlatformName</li>
-                        <li class="column"><span class="icon icon-cross"></span></li>
+                        <li class="column"><span class="icon icon-cross removePlatform"></span></li>
                     </ul>
                 }
             </li>

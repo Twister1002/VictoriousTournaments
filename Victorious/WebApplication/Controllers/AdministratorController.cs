@@ -75,7 +75,7 @@ namespace WebApplication.Controllers
             Dictionary<String, String> json = JsonConvert.DeserializeObject<Dictionary<String, String>>(jsonData);
             PlatformTypeViewModel viewModel = new PlatformTypeViewModel();
 
-            switch (json["function"])
+            switch (json["action"])
             {
                 case "add":
                     viewModel.Platform = json["Platform"];

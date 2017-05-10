@@ -1,27 +1,27 @@
 ﻿jQuery(document).ready(function () {
     var $ = jQuery;
-    var $platform = $(".#AdministratorPlatforms");
+    var $platform = $("#AdministratorPlatforms");
     
-    $platform.find(".options .platform").on("keydown", function () {
-        if (e.keyCode == 13) { // Enter
+    $("#AdministratorPlatforms .list-table-body .platforms .removePlatform").on("click", RemovePlatform);
+    $("#AdministratorPlatforms .options .AddPlatform").on("click", AddPlatform);
+    $("#AdministratorPlatforms .options .platformTitle").on("keydown", function (e) {
+        if (e && e.keyCode == 13) { // Enter
             AddPlatform();
         }
     });
-    $platform.find(".options .AddPlatform").on("click", AddPlatform());
-    $platform.find(".list-table-body .platforms .removePlatform").on("click",  RemovePlatform(this));
 
     function AddPlatform() {
         var jsonData = {
-            "Platform": $platform.find(".options .platform"),
+            "Platform": $platform.find(".options .platformTitle").val(),
             "action": "add"
         };
 
         PlatformChange(jsonData);
     }
 
-    function RemovePlatform(elem) {
+    function RemovePlatform() {
         var jsonData = {
-            "PlatformId": $(elem).closest("ul").data("id"),
+            "PlatformId": $(this).closest("ul").data("id"),
             "action": "delete"
         };
 
@@ -30,21 +30,21 @@
 
     function PlatformChange(jsonData) {
         $.ajax({
-            "url": "/Ajax/Administrator/Platforms",
+            "url": "/Ajax/Administrator/Platform",
             "type": "post",
-            "data": jsonData,
+            "data": { "jsonData": JSON.stringify(jsonData) },
             "dataType": "json",
             "beforeSend": function () {
                 $platform.find(".options .AddPlatform").attr("disabled", true);
-                $platform.find(".options .platform").attr("disabled", true);
+                $platform.find(".options .platformTitle").attr("disabled", true);
             },
             "success": function (json) {
                 json = JSON.parse(json);
                 console.log(json);
 
                 var $table = $("#TournamentPlatforms .list-table-body");
-
                 $table.empty();
+
                 $.each(json.platforms, function (i, e) {
                     html = "<ul class='platform' data-columns='2' data-id='" + e.PlatformID + "'>";
                     html += "<li class='column'>" + e.PlatformName + "</li>";
@@ -59,8 +59,8 @@
             },
             "complete": function () {
                 $platform.find(".options .AddPlatform").attr("disabled", false);
-                $platform.find(".options .platform").attr("disabled", false);
+                $platform.find(".options .platformTitle").attr("disabled", false);
             }
-        })
+        });
     }
 });

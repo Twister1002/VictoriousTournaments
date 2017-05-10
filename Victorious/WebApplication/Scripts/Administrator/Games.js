@@ -5,7 +5,7 @@
     $("#AdministratorGames .gameDelete").on("click", deleteEvent);
     $("#AdministratorGames .GameAddButton").on("click", addEvent);
     $("#AdministratorGames .options .gameTitle").on("keydown", function (e) {
-        if (e.keyCode == 13) { // Enter
+        if (e && e.keyCode == 13) { // Enter
             addEvent();
         }
     });

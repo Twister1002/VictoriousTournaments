@@ -30,8 +30,16 @@ namespace WebApplication.Models.Administrator
 
         public bool Create()
         {
+            ApplyFields();
+            DbError result = DbError.NONE;
+
+            if (!String.IsNullOrEmpty(Model.PlatformName))
+            {
+                result = db.AddPlatform(Model);
+            }
+
             Reload();
-            return false;
+            return result == DbError.SUCCESS;
         }
 
         public bool Update()
@@ -42,7 +50,10 @@ namespace WebApplication.Models.Administrator
 
         public bool Delete(int platformId)
         {
-            return false;
+            DbError result = db.DeletePlatform(platformId);
+
+            Reload();
+            return result == DbError.SUCCESS;
         }
 
         public List<PlatformModel> Select()

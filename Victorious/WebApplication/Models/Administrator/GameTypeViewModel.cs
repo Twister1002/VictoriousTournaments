@@ -26,7 +26,7 @@ namespace WebApplication.Models.Administrator
         {
             Title = GameType.Title;
         }
-        
+
         public bool Update()
         {
             return false;
@@ -35,7 +35,12 @@ namespace WebApplication.Models.Administrator
         public bool Create()
         {
             ApplyFields();
-            DbError result = db.AddGameType(GameType);
+            DbError result = DbError.NONE;
+
+            if (!String.IsNullOrEmpty(GameType.Title))
+            {
+                result = db.AddGameType(GameType);
+            }
 
             Reload();
             return result == DbError.SUCCESS;
