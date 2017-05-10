@@ -10,20 +10,26 @@ namespace Tournament.Structure
 {
 	internal struct Matchup
 	{
-		public int DefenderId { get; private set; }
-		public int ChallengerId { get; private set; }
-		public Matchup(int _defId, int _chalId)
+		public int DefenderIndex { get; private set; }
+		public int ChallengerIndex { get; private set; }
+		public Matchup(int _defIndex, int _chalIndex)
 		{
-			DefenderId = _defId;
-			ChallengerId = _chalId;
+			DefenderIndex = _defIndex;
+			ChallengerIndex = _chalIndex;
 		}
+
 		public bool ContainsInt(int _int)
 		{
-			if (DefenderId == _int || ChallengerId == _int)
+			if (DefenderIndex == _int || ChallengerIndex == _int)
 			{
 				return true;
 			}
 			return false;
+		}
+		public bool HasMatchingPlayers(Matchup _m)
+		{
+			return (this.ContainsInt(_m.DefenderIndex) &&
+				this.ContainsInt(_m.ChallengerIndex));
 		}
 	}
 
@@ -77,7 +83,7 @@ namespace Tournament.Structure
 			}
 
 			Id = 0;
-			//BracketType = BracketTypeModel.BracketType.SWISS;
+			BracketType = BracketType.SWISS;
 			MaxRounds = _numberOfRounds;
 			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
@@ -88,7 +94,45 @@ namespace Tournament.Structure
 		public SwissBracket(BracketModel _model)
 			: base(_model)
 		{
-			//BracketType = BracketTypeModel.BracketType.SWISS;
+			BracketType = BracketType.SWISS;
+
+			for (int r = 1; r <= NumberOfRounds; ++r)
+			{
+				List<IMatch> round = GetRound(r);
+				List<int> playersInRound = new List<int>();
+
+				foreach (IMatch match in round)
+				{
+					// For each Match, add a Matchup to the private list:
+					int defIndex = Players.FindIndex(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id);
+					int chalIndex = Players.FindIndex(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id);
+
+					playersInRound.Add(defIndex);
+					playersInRound.Add(chalIndex);
+					Matchups.Add(new Matchup(defIndex, chalIndex));
+				}
+				if (playersInRound.Count < Players.Count)
+				{
+					// Find the player with a bye this round (if exists),
+					// add him to Byes list, and award points:
+					for (int i = 0; i < Players.Count; ++i)
+					{
+						if (!(playersInRound.Contains(i)))
+						{
+							PlayerByes.Add(Players[i].Id);
+							int rIndex = Rankings.FindIndex(p => p.Id == Players[i].Id);
+							Rankings[rIndex].AddToScore(MatchWinValue, 0, 0, true);
+							break;
+						}
+					}
+				}
+			}
+
+			if (PlayerByes.Count > 0)
+			{
+				// If we added points for byes, we need to update rankings:
+				UpdateRankings();
+			}
 		}
 		#endregion
 
@@ -105,11 +149,6 @@ namespace Tournament.Structure
 			{
 				return;
 			}
-			if (0 != Players.Count % 2)
-			{
-				throw new BracketException
-					("Swiss brackets must have an even number of players!");
-			}
 
 			foreach (IPlayer player in Players)
 			{
@@ -117,6 +156,8 @@ namespace Tournament.Structure
 			}
 
 			// Create first-round matches:
+			AddSwissRound(_gamesPerMatch);
+#if false
 			int divisionPoint = Players.Count / 2;
 			NumberOfRounds = 1;
 			for (int m = 0; m < divisionPoint; ++m, ++NumberOfMatches)
@@ -131,6 +172,7 @@ namespace Tournament.Structure
 
 				Matches.Add(match.MatchNumber, match);
 			}
+#endif
 		}
 
 #if false
@@ -164,12 +206,28 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected override void ResetBracket()
+		{
+			base.ResetBracket();
+
+			if (null == Matchups)
+			{
+				Matchups = new List<Matchup>();
+			}
+			if (null == PlayerByes)
+			{
+				PlayerByes = new List<int>();
+			}
+			Matchups.Clear();
+			PlayerByes.Clear();
+		}
 		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			base.ApplyWinEffects(_matchNumber, _slot);
 			if (this.IsFinished)
 			{
-				IsFinished = !(AddNewRound(GetMatch(_matchNumber).MaxGames));
+				IsFinished = !(AddSwissRound(GetMatch(_matchNumber).MaxGames));
+				//IsFinished = !(AddNewRound(GetMatch(_matchNumber).MaxGames));
 			}
 		}
 		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
@@ -220,25 +278,68 @@ namespace Tournament.Structure
 			// Determine the next round of matchups:
 			IronPython.Runtime.List pySolution = maxWeightMatching(heuristicGraph, true);
 
+			// Make sure all the new matchups are Swiss-legal:
+			List<Matchup> newRoundMatchups = new List<Matchup>();
+			for (int i = 0; i < pySolution.Count; ++i)
+			{
+				// 'i' = 'player 1 index'
+				// 'pySolution[i]' = 'player 2 index'
+				int player2index = Convert.ToInt32(pySolution[i]);
+				if (i == player2index)
+				{
+					// Player is matched against himself!
+					return false;
+				}
+				if (i > player2index)
+				{
+					continue;
+				}
+
+				Matchup newMatchup = new Matchup(i, player2index);
+				foreach (Matchup m in Matchups)
+				{
+					if (m.HasMatchingPlayers(newMatchup))
+					{
+						// This is a rematch from a previous round!
+						return false;
+					}
+				}
+				foreach (Matchup m in newRoundMatchups)
+				{
+					if (m.ContainsInt(newMatchup.DefenderIndex) ||
+						m.ContainsInt(newMatchup.ChallengerIndex))
+					{
+						// A player has multiple matchups this round!
+						return false;
+					}
+				}
+				newRoundMatchups.Add(newMatchup);
+			}
+
 			// Add the new round, and create Match objects:
 			++NumberOfRounds;
 			int mIndex = 1;
-			for (int i = 0; i < pySolution.Count; ++i)
+			foreach (Matchup matchup in newRoundMatchups)
 			{
-				// 'i' is 'player 1 index'
-				int player2index = Convert.ToInt32(pySolution[i]);
-				if (i < player2index)
-				{
-					IMatch match = new Match();
-					match.SetMatchNumber(++NumberOfMatches);
-					match.SetRoundIndex(NumberOfRounds);
-					match.SetMatchIndex(mIndex++);
-					match.SetMaxGames(_gamesPerMatch);
-					match.AddPlayer(Players[i]);
-					match.AddPlayer(Players[player2index]);
+				IMatch match = new Match();
+				match.SetMatchNumber(++NumberOfMatches);
+				match.SetRoundIndex(NumberOfRounds);
+				match.SetMatchIndex(mIndex++);
+				match.SetMaxGames(_gamesPerMatch);
+				match.AddPlayer(Players[matchup.DefenderIndex]);
+				match.AddPlayer(Players[matchup.ChallengerIndex]);
 
-					Matches.Add(match.MatchNumber, match);
-				}
+				Matches.Add(match.MatchNumber, match);
+			}
+			Matchups.AddRange(newRoundMatchups);
+
+			// Now that we have a new legal round...
+			// Award points to the player with a bye, if there is one:
+			if (PlayerByes.Count > 0)
+			{
+				int rIndex = Rankings.FindIndex(r => r.Id == PlayerByes[PlayerByes.Count - 1]);
+				Rankings[rIndex].AddToScore(MatchWinValue, 0, 0, true);
+				UpdateRankings();
 			}
 
 			return true;
@@ -246,6 +347,7 @@ namespace Tournament.Structure
 		private List<List<int>> CreateGroups()
 		{
 			// If playercount is odd, find the top-ranked player to give a Bye
+			// (no player should have >1 bye)
 			int currentByeId = -1;
 			if (Players.Count % 2 > 0)
 			{
@@ -254,9 +356,6 @@ namespace Tournament.Structure
 					if (!PlayerByes.Contains(id))
 					{
 						PlayerByes.Add(id);
-						// Add a "match win" to the player with a bye (store the player's ID):
-						int index = Rankings.FindIndex(r => r.Id == id);
-						Rankings[index].AddToScore(MatchWinValue, 0, 0, true);
 						currentByeId = id;
 						break;
 					}
@@ -385,9 +484,9 @@ namespace Tournament.Structure
 					}
 					else // groupNumberY == groupNumberX
 					{
-						int idealMatchup = (matchupList[matchupYindex].DefenderId == playerYindex)
-							? matchupList[matchupYindex].ChallengerId
-							: matchupList[matchupYindex].DefenderId;
+						int idealMatchup = (matchupList[matchupYindex].DefenderIndex == playerYindex)
+							? matchupList[matchupYindex].ChallengerIndex
+							: matchupList[matchupYindex].DefenderIndex;
 						split = Math.Abs(idealMatchup - playerXindex);
 					}
 					heuristicGrid[y, x] += split;
@@ -429,7 +528,7 @@ namespace Tournament.Structure
 
 			return heuristicGraph;
 		}
-
+#if false
 		private bool AddNewRound(int _gamesPerMatch)
 		{
 #if false
@@ -487,7 +586,7 @@ namespace Tournament.Structure
 
 			return true;
 		}
-
+#endif
 		private void CheckAndRemoveNextRound(int _nextRoundIndex)
 		{
 #if false
