@@ -550,14 +550,15 @@ namespace Tournament.Structure
 					("Invalid match number called by recursive method!");
 			}
 
-			if (Matches[_matchNumber].Players
+			IMatch match = GetMatch(_matchNumber);
+			if (match.Players
 				.Where(p => p != null)
 				.Any(p => p.Id == _playerId))
 			{
-				if (Matches[_matchNumber].IsFinished)
+				if (match.IsFinished)
 				{
 					// Remove any advanced Players from future Matches:
-					RemovePlayerFromFutureMatches(Matches[_matchNumber].NextMatchNumber, _playerId);
+					RemovePlayerFromFutureMatches(match.NextMatchNumber, match.Players[(int)(match.WinnerSlot)].Id);
 				}
 
 				Matches[_matchNumber].RemovePlayer(_playerId);
