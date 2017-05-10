@@ -15,63 +15,63 @@ SET @count = 1
 
 -- Platform inserts
 
-INSERT Platforms SELECT @count, 'Xbox'
+INSERT Platforms SELECT 'Xbox'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'Xbox')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'Xbox 360'
+INSERT Platforms SELECT 'Xbox 360'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'Xbox 360')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'Xbox One'
+INSERT Platforms SELECT'Xbox One'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'Xbox One')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'PlayStation 1'
+INSERT Platforms SELECT 'PlayStation 1'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'PlayStation 1')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'PlayStation 2'
+INSERT Platforms SELECT 'PlayStation 2'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'PlayStation 2')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'PlayStation 3'
+INSERT Platforms SELECT 'PlayStation 3'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'PlayStation 3')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'PlayStation 4'
+INSERT Platforms SELECT 'PlayStation 4'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'PlayStation 4')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'PC'
+INSERT Platforms SELECT 'PC'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'PC')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'Nintendo 64'
+INSERT Platforms SELECT 'Nintendo 64'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'Nintendo 64')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'Super NES'
+INSERT Platforms SELECT 'Super NES'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'Super NES')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'NES'
+INSERT Platforms SELECT 'NES'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'NES')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'GameCube'
+INSERT Platforms SELECT 'GameCube'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'GameCube')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'Wii'
+INSERT Platforms SELECT 'Wii'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'Wii')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'Wii U'
+INSERT Platforms SELECT 'Wii U'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'Wii U')
 SET @count = @count + 1
 
-INSERT Platforms SELECT @count, 'Nintendo Switch'
+INSERT Platforms SELECT 'Nintendo Switch'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'Nintendo Switch')
 SET @count = @count + 1
 

@@ -125,7 +125,7 @@ namespace DatabaseLib.Tests
 
             List<TournamentModel> tournaments = new List<TournamentModel>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict.Add("TournamentStartDate", DateTime.Today.AddDays(1).ToString());
+            dict.Add("TournamentStartDate", DateTime.Today.ToString());
             dict.Add("Title", "test tournament");
             dict.Add("GameTypeID", "1");
             dict.Add("InProgress", "false");
@@ -163,7 +163,7 @@ namespace DatabaseLib.Tests
                 CheckInEnds = DateTime.Now,
                 LastEditedByID = 1,
                 CreatedByID = 1,
-                //Platform = 0,
+                PlatformID = 3,
                 EntryFee = 0,
                 PrizePurse = 0,
             };
