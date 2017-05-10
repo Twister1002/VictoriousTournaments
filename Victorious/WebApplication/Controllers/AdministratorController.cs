@@ -86,7 +86,7 @@ namespace WebApplication.Controllers
                     break;
             }
 
-            message = "Was able to " + json["function"] + " " + (status ? "" : "un") + "successfully";
+            message = "Was able to " + json["action"] + " " + (status ? "" : "un") + "successfully";
 
 
             return Json(JsonConvert.SerializeObject(new
