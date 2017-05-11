@@ -211,6 +211,14 @@ namespace Tournament.Structure
 			CheckAndRemoveNextRound(1 + GetMatch(_matchNumber).RoundIndex);
 		}
 #endif
+
+		public override void ResetMatches()
+		{
+			base.ResetMatches();
+
+			// TODO : All rounds beyond the first probably need to be deleted.
+			// This includes the Matchups and PlayerByes lists
+		}
 		#endregion
 
 		#region Private Methods
@@ -276,7 +284,7 @@ namespace Tournament.Structure
 
 			// Get possible matchups and heuristics:
 			List<List<int>> scoreBrackets = CreateGroups();
-			List<int[]> heuristicGraph = GetMatchupHeuristics(scoreBrackets);
+			List<int[]> possibleMatches = GetHeuristicEdges(scoreBrackets);
 
 			// Access the Python weight-matching script:
 			var engine = IronPython.Hosting.Python.CreateEngine();
@@ -284,7 +292,7 @@ namespace Tournament.Structure
 			engine.ExecuteFile("mwmatching.py", scope);
 			dynamic maxWeightMatching = scope.GetVariable("maxWeightMatching");
 			// Determine the next round of matchups:
-			IronPython.Runtime.List pySolution = maxWeightMatching(heuristicGraph, true);
+			IronPython.Runtime.List pySolution = maxWeightMatching(possibleMatches, true);
 
 			// Make sure all the new matchups are Swiss-legal:
 			List<Matchup> newRoundMatchups = new List<Matchup>();
@@ -298,7 +306,7 @@ namespace Tournament.Structure
 					// Player is matched against himself!
 					return false;
 				}
-				if (i > player2index)
+				else if (i > player2index)
 				{
 					continue;
 				}
@@ -408,8 +416,8 @@ namespace Tournament.Structure
 					(Players.FindIndex(p => p.Id == Rankings[i].Id));
 			}
 
-#if false
 			// Sort the players within each group according to their accumulated opponents' scores
+#if false
 			foreach (List<int> group in groups)
 			{
 				group.Sort(
@@ -433,7 +441,7 @@ namespace Tournament.Structure
 
 			return groups;
 		}
-		private List<int[]> GetMatchupHeuristics(List<List<int>> _groups)
+		private List<int[]> GetHeuristicEdges(List<List<int>> _groups)
 		{
 			int numCompetitors = NumberOfPlayers();
 			numCompetitors = (0 == numCompetitors % 2)
@@ -449,8 +457,9 @@ namespace Tournament.Structure
 				}
 				competitors[i] = i + pOffset;
 			}
-			int[,] heuristicGrid = new int[numCompetitors, numCompetitors];
 
+			// Create a grid to store h-values for all possible matchups
+			int[,] heuristicGrid = new int[numCompetitors, numCompetitors];
 			for (int y = 0; y < numCompetitors; ++y)
 			{
 				int playerYindex = -1, groupNumberY = -1;
@@ -522,15 +531,16 @@ namespace Tournament.Structure
 						if (matchup.ContainsInt(competitors[x]) &&
 							matchup.ContainsInt(competitors[y]))
 						{
-							// Rematch found. Add heuristic=100M:
-							heuristicGrid[y, x] += 1000000000;
+							// Rematch found. Add heuristic=100K:
+							heuristicGrid[y, x] += 100000;
 							break;
 						}
 					}
 				}
 			}
 
-			// NOW WE CREATE THE ACTUAL HEURISTIC LIST/GRAPH
+			// Translate the big grid into a list of heuristic "edges":
+			// Each node is a player, each edge is a possible matchup
 			List<int[]> heuristicGraph = new List<int[]>();
 
 			for (int y = 0; y < (numCompetitors - 1); ++y)
@@ -543,8 +553,8 @@ namespace Tournament.Structure
 						continue;
 					}
 
-					// Possible matchup ("edge" for graph):
-					// [Defender index, Challenger index, negative heuristic value]
+					// Edge: [Defender index, Challenger index, negative heuristic value]
+					// The sign is flipped on the h-value for use with the weight-function later
 					int[] edge = new int[3]
 					{
 						competitors[y],
@@ -618,6 +628,7 @@ namespace Tournament.Structure
 #endif
 		private void CheckAndRemoveNextRound(int _nextRoundIndex)
 		{
+			// TODO : this should probably be implemented at some point
 #if false
 			if (_nextRoundIndex > NumberOfRounds)
 			{
