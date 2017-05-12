@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.Mvc;
 using WebApplication.Models;
 using DatabaseLib;
+using WebApplication.Models.Administrator;
 
 namespace WebApplication.Controllers
 {
@@ -14,7 +15,9 @@ namespace WebApplication.Controllers
         [Route("Administrator")]
         public ActionResult Index()
         {
-            if (IsAdministrator())
+            LoadAccount(Session);
+
+            if (account.IsAdministrator())
             {
                 return View("Index", new AdministratorViewModel());
             }
@@ -24,96 +27,74 @@ namespace WebApplication.Controllers
             }
         }
 
-        [Route("Administrator/Games")]
-        public ActionResult Games()
-        {
-            if (IsAdministrator())
-            {
-                return View("Games", new AdministratorViewModel());
-            }
-            else
-            {
-                return RedirectToAction("Index", "Account");
-            }
-        }
-
-
         [HttpPost]
-        [Route("Ajax/Games")]
+        [Route("Ajax/Administrator/Games")]
         public JsonResult Games(String jsonData)
         {
+            LoadAccount(Session);
             object jsonReturn = new {
                 status = false,
                 message = "No action was taken"
             };
 
-            if (IsAdministrator())
+            if (account.IsAdministrator())
             {
-                Dictionary<string, string> json = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
-                AdministratorViewModel adminModel = new AdministratorViewModel();
-                GameTypeModel gameType;
-                DbError result = DbError.NONE;
+                Dictionary<String, String> json = JsonConvert.DeserializeObject<Dictionary<String, String>>(jsonData);
+                GameTypeViewModel gameType = new GameTypeViewModel();
+                bool result = false;
 
-                //if (json["function"] == "add")
-                //{
-                //    gameType = new GameType()
-                //    {
-                //        Title = json["title"],
-                //    };
+                switch (json["function"])
+                {
+                    case "add":
+                        gameType.Title = json["title"];
+                        result = gameType.Create();
+                        break;
+                    case "delete":
+                        result = gameType.Delete(int.Parse(json["gameid"]));
+                        break;
+                }
 
-                //    adminModel.CreateGame(gameType);
-                //}
-                //else if (json["function"] == "delete")
-                //{
-                   
-                //}
-
-                //if (result == DbError.SUCCESS)
-                //{
-                //    jsonReturn = new {
-                //        status = true,
-                //        function = json["function"],
-                //        message = "Was able to " + json["function"] + " successfully",
-                //        data = new
-                //        {
-                //            model = gameModel
-                //        }
-                //    };
-                //}
-                //else
-                //{
-                //    jsonReturn = new
-                //    {
-                //        status = false,
-                //        message = "An error occured while taking action",
-                //        Exception = db.interfaceException.Message
-                //    };
-                //}
+                jsonReturn = new
+                {
+                    status = result,
+                    message = "Was able to " + json["function"] + " " + (result ? "successfully" : "unsuccessfully"),
+                    data = gameType.Select().Select(x => new { x.GameTypeID, x.Title }).ToList()
+                };
             }
 
             return Json(JsonConvert.SerializeObject(jsonReturn));
         }
 
-        private bool IsAdministrator()
+        [HttpPost]
+        [Route("Ajax/Administrator/Platform")]
+        public JsonResult Platform(String jsonData)
         {
-            if (Session["User.UserId"] != null && UserPermission() == Permission.SITE_ADMINISTRATOR)
+            bool status = false;
+            String message = "No action taken";
+
+            Dictionary<String, String> json = JsonConvert.DeserializeObject<Dictionary<String, String>>(jsonData);
+            PlatformTypeViewModel viewModel = new PlatformTypeViewModel();
+
+            switch (json["action"])
             {
-                return true;
+                case "add":
+                    viewModel.Platform = json["Platform"];
+                    status = viewModel.Create();
+                    break;
+                case "delete":
+                    status = viewModel.Delete(int.Parse(json["PlatformId"]));
+                    break;
             }
-            else
+
+            message = "Was able to " + json["action"] + " " + (status ? "" : "un") + "successfully";
+
+
+            return Json(JsonConvert.SerializeObject(new
             {
-                Session["Message"] = "You do not have access to see this.";
-                Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
-
-                return false;
-            }
-        }
-
-        public Permission UserPermission()
-        {
-            AccountViewModel userModel = new AccountViewModel((int)Session["User.UserId"]);
-
-            return (Permission)userModel.Model.PermissionLevel;
+                status = status,
+                message = message,
+                platforms = viewModel.Select().Select(x => new { x.PlatformID, x.PlatformName }).ToList()
+            }));
         }
     }
 }

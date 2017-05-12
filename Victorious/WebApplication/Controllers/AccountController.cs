@@ -56,8 +56,8 @@ namespace WebApplication.Controllers
             {
                 if (viewModel.Login())
                 {
-                    Session["User.UserId"] = viewModel.Model.AccountID;
-                    Session["User.Name"] = viewModel.FirstName;
+                    Session["User.UserId"] = viewModel.Account.AccountID;
+                    Session["User.Name"] = viewModel.Account.FirstName;
                 }
                 else
                 {
@@ -66,7 +66,7 @@ namespace WebApplication.Controllers
                 }
             }
 
-            return View("Index", viewModel);
+            return RedirectToAction("Index", "Account");
         }
 
         [Route("Account/Register")]
@@ -97,9 +97,7 @@ namespace WebApplication.Controllers
                 return View(viewModel);
             }
             else
-            { 
-                viewModel.ApplyChanges();
-
+            {
                 if (viewModel.Create())
                 {
                     // User Registraion was successful
@@ -141,11 +139,8 @@ namespace WebApplication.Controllers
             if (Session["User.UserId"] != null)
             {
                 // Verify the user being updated is legitly the user logged in
-                if (viewModel.Model.AccountID == (int)Session["User.UserId"])
+                if (viewModel.AccountId == (int)Session["User.UserId"])
                 {
-                    // Apply the changes
-                    viewModel.ApplyChanges();
-
                     if (viewModel.Update())
                     {
                         viewModel.error = ViewModel.ViewError.SUCCESS;
@@ -173,6 +168,7 @@ namespace WebApplication.Controllers
             }
             else
             {
+                Session.RemoveAll();
                 Session["Message"] = "Please login to edit your account information";
                 Session["Message.Class"] = ViewModel.ViewError.WARNING;
                 return RedirectToAction("Login", "Account");

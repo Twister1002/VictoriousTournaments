@@ -1,18 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Mvc;
 using Tournament.Structure;
+using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
     public abstract class VictoriousController : Controller
     {
+        protected AccountViewModel account;
         Dictionary<String, object> jsonResponse;
 
         public VictoriousController()
         {
             jsonResponse = new Dictionary<String, object>();
+            account = new AccountViewModel();
+        }
 
+        public void LoadAccount(HttpSessionStateBase session)
+        {
+            if (Session != null)
+            {
+                if (Session["User.UserId"] != null)
+                {
+                    account = new AccountViewModel((int)Session["User.UserId"]);
+                }
+            }
         }
 
         public int ConvertToInt(String x)

@@ -62,7 +62,6 @@
     <Compile Include="BracketTypeModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="Class1.cs" />
     <Compile Include="C__RefactorLog.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -92,7 +91,13 @@
       <DependentUpon>Model.edmx</DependentUpon>
     </Compile>
     <Compile Include="PartialClasses.cs" />
+    <Compile Include="PlatformModel.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TournamentInviteModel.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="TournamentModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>

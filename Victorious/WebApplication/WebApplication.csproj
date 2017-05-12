@@ -105,6 +105,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Accounts.sql" />
+    <Content Include="App_Data\Brackets.sql" />
+    <Content Include="App_Data\GameTypes.sql" />
+    <Content Include="App_Data\masterSQL.sql" />
+    <Content Include="App_Data\Tournaments.sql" />
+    <Content Include="App_Data\TournamentUsers.sql" />
     <Content Include="Content\fonts\icomoon.svg" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\svg\checkmark.svg" />
@@ -175,6 +181,7 @@
     <None Include="Properties\PublishProfiles\IIS.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\Administrator\Games.js" />
+    <Content Include="Scripts\Administrator\Platforms.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />
     <Content Include="Scripts\jquery-3.1.1.slim.js" />
@@ -207,6 +214,8 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdministratorViewModel.cs" />
+    <Compile Include="Models\Administrator\GameTypeViewModel.cs" />
+    <Compile Include="Models\Administrator\PlatformTypeViewModel.cs" />
     <Compile Include="Models\BracketViewModel.cs" />
     <Compile Include="Models\Fields.cs" />
     <Compile Include="Models\GameViewModel.cs" />
@@ -215,6 +224,7 @@
     <Compile Include="Models\TournamentViewModel.cs" />
     <Compile Include="Models\ViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\Codes.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
@@ -241,10 +251,9 @@
     <Content Include="Styles\less\_nav.less" />
     <Content Include="Styles\less\_list-table.less" />
     <Content Include="Styles\less\_icons.less" />
-    <Content Include="Views\Tournament\Edit.cshtml" />
+    <Content Include="Views\Tournament\Update.cshtml" />
     <Content Include="Views\Tournament\Delete.cshtml" />
     <Content Include="Views\Account\Update.cshtml" />
-    <Content Include="Views\Tournament\Registration.cshtml" />
     <Content Include="Views\Tournament\Administrator\_Players.cshtml" />
     <Content Include="Styles\less\Tournament\_Tournament.less" />
     <Content Include="Styles\less\Tournament\_Create.less" />
@@ -267,6 +276,9 @@
     <Content Include="Styles\less\Tournament\_Game.less" />
     <Content Include="Styles\less\Tournament\_Bracket.less" />
     <Content Include="Views\Tournament\Brackets\Shared\_Standings.cshtml" />
+    <Content Include="Views\Tournament\RegisterForm.cshtml" />
+    <Content Include="Views\Administrator\Platforms.cshtml" />
+    <Content Include="Styles\less\Administrator\Platforms.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -275,7 +287,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Scripts\Account\" />
     <Folder Include="Views\Bracket\" />
     <Folder Include="Views\Match\" />

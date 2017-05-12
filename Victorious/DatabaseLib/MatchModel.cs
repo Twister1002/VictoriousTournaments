@@ -40,6 +40,9 @@ namespace DatabaseLib
         public Nullable<int> PrevChallengerMatchNumber { get; set; }
         public Nullable<int> MaxGames { get; set; }
         public Nullable<int> BracketID { get; set; }
+        public bool IsManualWin { get; set; }
+        public Nullable<bool> IsFinished { get; set; }
+        public Nullable<bool> IsReady { get; set; }
     	
     	partial void OnInit();
     

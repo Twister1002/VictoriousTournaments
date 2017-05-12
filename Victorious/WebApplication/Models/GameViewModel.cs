@@ -32,5 +32,20 @@ namespace WebApplication.Models
             Game = game;
             Model = Game.GetModel();
         }
+
+        public bool Create()
+        {
+            return false;
+        }
+
+        public bool Delete()
+        {
+            return db.DeleteGame(Model.GameID) == DbError.SUCCESS;
+        }
+
+        public bool Update()
+        {
+            return false;
+        }
     }
 }

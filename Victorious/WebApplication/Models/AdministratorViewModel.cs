@@ -1,31 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using DatabaseLib;
+using WebApplication.Models.Administrator;
 
 namespace WebApplication.Models
 {
-    public class AdministratorViewModel : AdministratorFields
+    public class AdministratorViewModel : ViewModel
     {
-        public List<GameTypeModel> Games { get; private set; }
-
-        public AdministratorViewModel()
+        public GameTypeViewModel LoadGameTypes()
         {
-            //Games = db.GetAllGameTypes();
+            return new GameTypeViewModel();
         }
 
-        public bool CreateGame(GameTypeModel game)
+        public PlatformTypeViewModel LoadPlatformTypes()
         {
-            return false;
-        }
-
-        public bool UpdateGame(GameTypeModel game)
-        {
-            return false;
-        }
-
-        public bool DeleteGame(GameTypeModel game)
-        {
-            return false;
+            return new PlatformTypeViewModel();
         }
     }
 }

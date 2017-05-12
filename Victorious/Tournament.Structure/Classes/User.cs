@@ -76,9 +76,7 @@ namespace Tournament.Structure
 			}
 
 			this.Id = _model.TournamentUserID;
-			this.Name = _model.Username;
-			this.Firstname = _model.FirstName;
-			this.Lastname = _model.LastName;
+			this.Name = _model.Name;
 		}
 		#endregion
 
@@ -98,9 +96,7 @@ namespace Tournament.Structure
 			TournamentUserModel model = new TournamentUserModel();
 			model.TournamentUserID = this.Id;
 			model.AccountID = this.Id;
-			model.Username = this.Name;
-			model.FirstName = this.Firstname;
-			model.LastName = this.Lastname;
+			model.Name = this.Name;
 			return model;
 		}
 		public override TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed)
