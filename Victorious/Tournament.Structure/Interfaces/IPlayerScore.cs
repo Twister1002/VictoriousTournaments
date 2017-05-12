@@ -47,7 +47,7 @@ namespace Tournament.Structure
 		void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _addition);
 
 		/// <summary>
-		/// Reset this object's Score values: match, game, and point scores
+		/// Reset this object's Score values: match, opponent, game, and point scores
 		/// </summary>
 		void ResetScore();
 		#endregion

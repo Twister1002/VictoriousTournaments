@@ -572,13 +572,15 @@ namespace Tournament.Structure
 					}
 				}
 
-				List<Matchup> matchupList = new List<Matchup>();
-				for (int i = 0; (i * 2) < (_groups[groupNumberY].Count - 1); ++i)
+				List<Matchup> groupYmatchups = new List<Matchup>();
+				int divisionPoint = Convert.ToInt32(_groups[groupNumberY].Count * 0.5);
+				for (int i = 0; i < divisionPoint; ++i)
 				{
 					// Make fake "preferred" matchups for the players in this group, for use later:
-					matchupList.Add(new Matchup(i, _groups[groupNumberY].Count - 1 - i));
+					// SLIDE pairing:
+					groupYmatchups.Add(new Matchup(i, i + divisionPoint));
 				}
-				int matchupYindex = matchupList.FindIndex(m => m.ContainsInt(playerYindex));
+				int matchupYindex = groupYmatchups.FindIndex(m => m.ContainsInt(playerYindex));
 
 				for (int x = 0; x < numCompetitors; ++x)
 				{
@@ -606,19 +608,44 @@ namespace Tournament.Structure
 
 					// Add heuristic=1 for each slot *within group* away from preferred matchup:
 					int split = 0;
-					if (groupNumberY > groupNumberX)
+					if (groupNumberY == groupNumberX)
 					{
-						split = playerXindex;
+						int idealMatchup = (groupYmatchups[matchupYindex].DefenderIndex == playerYindex)
+							? groupYmatchups[matchupYindex].ChallengerIndex
+							: groupYmatchups[matchupYindex].DefenderIndex;
+						split = Math.Abs(idealMatchup - playerXindex);
 					}
-					else if (groupNumberY < groupNumberX)
+					else
 					{
-						split = (_groups[groupNumberX].Count - 1) - playerXindex;
-					}
-					else // groupNumberY == groupNumberX
-					{
-						int idealMatchup = (matchupList[matchupYindex].DefenderIndex == playerYindex)
-							? matchupList[matchupYindex].ChallengerIndex
-							: matchupList[matchupYindex].DefenderIndex;
+						List<Matchup> groupXmatchups = new List<Matchup>();
+						divisionPoint = Convert.ToInt32(_groups[groupNumberX].Count * 0.5);
+						for (int i = 0; i < divisionPoint; ++i)
+						{
+							// Make fake "preferred" matchups for the players in this group:
+							// SLIDE pairing:
+							groupXmatchups.Add(new Matchup(i, i + divisionPoint));
+						}
+
+						int matchupXindex, idealMatchup;
+						if (groupNumberY > groupNumberX)
+						{
+							// First player is "adding onto" BACK of groupX
+							matchupXindex = groupXmatchups
+								.FindIndex(m => m.ContainsInt(_groups[groupNumberX].Count - 1));
+							idealMatchup =
+								(groupXmatchups[matchupXindex].DefenderIndex == _groups[groupNumberX].Count - 1)
+								? groupXmatchups[matchupXindex].ChallengerIndex
+								: groupXmatchups[matchupXindex].DefenderIndex;
+						}
+						else // if (groupNumberY < groupNumberX)
+						{
+							// PlayerY is "adding onto" FRONT of groupX
+							matchupXindex = groupXmatchups.FindIndex(m => m.ContainsInt(0));
+							idealMatchup =
+								(groupXmatchups[matchupXindex].DefenderIndex == 0)
+								? groupXmatchups[matchupXindex].ChallengerIndex
+								: groupXmatchups[matchupXindex].DefenderIndex;
+						}
 						split = Math.Abs(idealMatchup - playerXindex);
 					}
 					heuristicGrid[y, x] += split;

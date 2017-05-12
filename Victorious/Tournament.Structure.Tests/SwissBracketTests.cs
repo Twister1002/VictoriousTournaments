@@ -84,7 +84,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("SwissBracket")]
 		[TestCategory("Swiss CreateBracket")]
 		[TestCategory("AddSwissRound")]
-		public void SwissCreateBracket_UsesStandardSlaughterMatchups()
+		public void SwissCreateBracket_UsesStandardSlideMatchups()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 8; ++i)
@@ -95,8 +95,8 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SwissBracket(pList);
 
-			// Match(1) is Player[first] vs Player[last]
-			Assert.AreEqual(b.Players[b.NumberOfPlayers() - 1].Id,
+			// Match(1) is Player[0] vs Player[4]
+			Assert.AreEqual(b.Players[b.NumberOfPlayers() / 2].Id,
 				b.GetMatch(1).Players[(int)PlayerSlot.Challenger].Id);
 		}
 		[TestMethod]
@@ -178,8 +178,8 @@ namespace Tournament.Structure.Tests
 				b.AddGame(n, 0, 1, PlayerSlot.Challenger);
 			}
 
-			Assert.IsTrue(b.GetMatch(2).Players[(int)(b.GetMatch(2).WinnerSlot)].Id == b.GetMatch(4).Players[(int)PlayerSlot.Defender].Id &&
-				b.GetMatch(1).Players[(int)(b.GetMatch(1).WinnerSlot)].Id == b.GetMatch(4).Players[(int)PlayerSlot.Challenger].Id);
+			Assert.IsTrue(b.GetMatch(1).Players[(int)(b.GetMatch(1).WinnerSlot)].Id == b.GetMatch(4).Players[(int)PlayerSlot.Defender].Id &&
+				b.GetMatch(2).Players[(int)(b.GetMatch(2).WinnerSlot)].Id == b.GetMatch(4).Players[(int)PlayerSlot.Challenger].Id);
 		}
 		[TestMethod]
 		[TestCategory("SwissBracket")]
@@ -213,7 +213,7 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new SwissBracket(pList, 1, 24);
+			IBracket b = new SwissBracket(pList);
 
 			for (int n = 1; n <= b.NumberOfMatches; ++n)
 			{
