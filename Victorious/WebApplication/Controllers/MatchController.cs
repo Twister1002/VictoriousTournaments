@@ -53,7 +53,7 @@ namespace WebApplication.Controllers
             String message = "No action taken";
             object data = new { };
 
-            if (account != null)
+            if (account != null && games == null)
             {
                 Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonIds);
                 TournamentViewModel tournamentModel = new TournamentViewModel(json["tournamentId"]);
