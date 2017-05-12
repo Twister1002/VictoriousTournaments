@@ -14,7 +14,7 @@ namespace DatabaseLib.Tests
             var db = new DbInterface();
 
             var tournament = NewTournament();
-
+            tournament.InviteCode = "10003";
             var result = db.AddTournament(tournament);
 
             Assert.AreEqual(DbError.SUCCESS, result);
@@ -49,19 +49,30 @@ namespace DatabaseLib.Tests
         {
             var db = new DbInterface();
 
-            var tournament = db.GetAllTournaments()[0];
+            var tournament = db.GetTournament(4);
             var brackets = db.GetAllBracketsInTournament(tournament.TournamentID);
             brackets[0].Finalized = false;
             GameModel game = db.GetGame(3);
             var matches = db.GetAllMatchesInBracket(brackets[0].BracketID);
-            matches[0].ChallengerID = 7;
+            matches[0].ChallengerID = 3;
 
             var result = db.UpdateTournament(tournament, true);
 
             Assert.AreEqual(DbError.SUCCESS, result);
         }
 
+        [TestMethod]
+        public void Update_Tournament_And_Invite_Code()
+        {
+            var db = new DbInterface();
 
+            var tournament = db.GetTournament(1004);
+            tournament.InviteCode = "10002";
+            var result = db.UpdateTournament(tournament);
+
+            Assert.AreEqual(DbError.SUCCESS, result);
+
+        }
 
         [TestMethod]
         public void Delete_Tournaent()
