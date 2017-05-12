@@ -6,9 +6,5 @@ namespace WebApplication.Tests.Models
     [TestClass]
     public class MatchViewModelUnit
     {
-        [TestMethod]
-        public void TestMethod1()
-        {
-        }
     }
 }

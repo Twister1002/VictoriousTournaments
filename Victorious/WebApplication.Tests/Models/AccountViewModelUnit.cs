@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplication.Models;
-using DataLib;
+using DatabaseLib;
 
 namespace WebApplication.Tests.Models
 {
@@ -15,7 +15,7 @@ namespace WebApplication.Tests.Models
         {
             // Arrange
             AccountViewModel viewModel = new AccountViewModel();
-            UserModel model = new UserModel()
+            AccountModel model = new AccountModel()
             {
                 FirstName = "Tyler",
                 LastName = "Yeary",
@@ -34,7 +34,7 @@ namespace WebApplication.Tests.Models
             viewModel.ApplyChanges();
 
             // Assert
-            Assert.AreEqual<UserModel>(model, viewModel.Model);
+            Assert.AreEqual<AccountModel>(model, viewModel.Account);
         }
     }
 }

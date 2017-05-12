@@ -6,9 +6,5 @@ namespace WebApplication.Tests.Controllers
     [TestClass]
     public class AdministratorControllerUnit
     {
-        [TestMethod]
-        public void TestMethod1()
-        {
-        }
     }
 }
