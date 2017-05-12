@@ -15,7 +15,7 @@ namespace Tournament.Structure
 		int Id { get; }
 		string Name { get; }
 
-		[System.Obsolete("use MatchScore&GameScore instead", false)]
+		[System.Obsolete("use MatchScore&GameScore instead", true)]
 		int Score { get; set; }
 		int MatchScore { get; set; }
 		int GameScore { get; set; }

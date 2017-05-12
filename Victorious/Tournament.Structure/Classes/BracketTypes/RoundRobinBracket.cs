@@ -135,13 +135,11 @@ namespace Tournament.Structure
 				}
 
 				int defIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id);
-				Rankings[defIndex].Score += match.Score[(int)PlayerSlot.Defender];
 				Rankings[defIndex].AddToScore(
 					(PlayerSlot.Defender == match.WinnerSlot) ? MatchWinValue : 0
 					, match.Score[(int)PlayerSlot.Defender], defScore, true);
 
 				int chalIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id);
-				Rankings[chalIndex].Score += match.Score[(int)PlayerSlot.Challenger];
 				Rankings[chalIndex].AddToScore(
 					(PlayerSlot.Challenger == match.WinnerSlot) ? MatchWinValue : 0
 					, match.Score[(int)PlayerSlot.Challenger], chalScore, true);
@@ -397,16 +395,10 @@ namespace Tournament.Structure
 
 				// Update Defender's score:
 				int defIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id);
-				Rankings[defIndex].Score += (_isAddition)
-					? defenderMatchScore
-					: -1 * defenderMatchScore;
 				Rankings[defIndex].AddToScore(defenderMatchScore, defenderGameScore, defenderPointScore, _isAddition);
 
 				// Update Challenger's score:
 				int chalIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id);
-				Rankings[chalIndex].Score += (_isAddition)
-					? challengerMatchScore
-					: -1 * challengerMatchScore;
 				Rankings[chalIndex].AddToScore(challengerMatchScore, challengerGameScore, challengerPointScore, _isAddition);
 			}
 
@@ -435,35 +427,30 @@ namespace Tournament.Structure
 			foreach (IPlayerScore player in Rankings)
 			{
 				player.OpponentsScore = 0;
-				foreach (IMatch match in Matches.Values.Where(m => m.IsFinished).ToList())
-				{
-					PlayerSlot oppSlot = (match.Players[(int)PlayerSlot.Defender].Id == player.Id)
-						? PlayerSlot.Challenger
-						: PlayerSlot.Defender;
-					player.OpponentsScore += Rankings
-						.Find(r => r.Id == match.Players[(int)oppSlot].Id).MatchScore;
-				}
+			}
+			foreach (IMatch match in Matches.Values.Where(m => m.IsFinished).ToList())
+			{
+				Rankings
+					.Find(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id)
+					.OpponentsScore
+					+= Rankings
+					.Find(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id)
+					.MatchScore;
+				Rankings
+					.Find(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id)
+					.OpponentsScore
+					+= Rankings
+					.Find(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id)
+					.MatchScore;
 			}
 
-#if false
-			Rankings.Sort((first, second) =>
-			{
-				// Rankings sorting: MatchScore > GameScore > PointsScore > initial Seeding
-				int compare = -1 * (first.MatchScore.CompareTo(second.MatchScore));
-				compare = (compare != 0)
-					? compare : -1 * (first.GameScore.CompareTo(second.GameScore));
-				compare = (compare != 0)
-					? compare : -1 * (first.PointsScore.CompareTo(second.PointsScore));
-				return (compare != 0)
-					? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
-			});
-#endif
+			// Sort the list and apply Ranks:
 			Rankings.Sort(SortRankingScores);
 			for (int i = 0; i < Rankings.Count; ++i)
 			{
 				Rankings[i].Rank = i + 1;
 			}
 		}
-#endregion
+		#endregion
 	}
 }
