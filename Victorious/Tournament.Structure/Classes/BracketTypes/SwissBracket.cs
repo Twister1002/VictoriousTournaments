@@ -250,8 +250,55 @@ namespace Tournament.Structure
 		{
 			base.ResetMatches();
 
-			// TODO : All rounds beyond the first probably need to be deleted.
-			// This includes the Matchups and PlayerByes lists
+			Matchups.Clear();
+			PlayerByes.Clear();
+
+			for (int n = 1; n <= NumberOfMatches; ++n)
+			{
+				// Create Matchups for all first-round Matches:
+				if (Matches[n].RoundIndex == 1)
+				{
+					int defIndex = Players.FindIndex
+						(p => p.Id == Matches[n].Players[(int)PlayerSlot.Defender].Id);
+					int chalIndex = Players.FindIndex
+						(p => p.Id == Matches[n].Players[(int)PlayerSlot.Challenger].Id);
+					Matchups.Add(new Matchup(defIndex, chalIndex));
+				}
+				// Delete any Matches after first round:
+				else
+				{
+					Matches.Remove(n);
+				}
+			}
+			NumberOfMatches = Matches.Count;
+			NumberOfRounds = 1;
+
+			if (NumberOfPlayers() % 2 > 0)
+			{
+				// If Playercount is odd, find the player with a bye:
+				for (int p = 0; p < NumberOfPlayers(); ++p)
+				{
+					bool isByeIndex = true;
+					foreach (Matchup matchup in Matchups)
+					{
+						if (matchup.ContainsInt(p))
+						{
+							isByeIndex = false;
+							break;
+						}
+					}
+
+					if (isByeIndex)
+					{
+						// Add player to the Byes list and update his score:
+						PlayerByes.Add(Players[p].Id);
+						int rIndex = Rankings.FindIndex(r => r.Id == Players[p].Id);
+						Rankings[rIndex].AddToScore(MatchWinValue, 0, 0, true);
+						UpdateRankings();
+						break;
+					}
+				}
+			}
 		}
 		#endregion
 
