@@ -31,6 +31,13 @@ namespace Tournament.Structure
 
 		#region Methods
 		/// <summary>
+		/// Replace the Player's information.
+		/// </summary>
+		/// <param name="_id">New player ID</param>
+		/// <param name="_name">New player name</param>
+		void ReplacePlayerData(int _id, string _name);
+
+		/// <summary>
 		/// Add score values to (or subtract from) this PlayerScore.
 		/// </summary>
 		/// <param name="_matchScore">Match score change</param>

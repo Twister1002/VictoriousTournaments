@@ -112,7 +112,7 @@ namespace Tournament.Structure
 			foreach (TournamentUserModel model in userModels)
 			{
 				Players.Add(new User(model));
-				Rankings.Add(new PlayerScore(model.TournamentUserID, model.Name, 0, 1));
+				Rankings.Add(new PlayerScore(model.TournamentUserID, model.Name));
 			}
 
 			foreach (MatchModel mm in _model.Matches)
@@ -175,7 +175,7 @@ namespace Tournament.Structure
 			}
 			foreach (IPlayer player in Players)
 			{
-				Rankings.Add(new PlayerScore(player.Id, player.Name, 0, 1));
+				Rankings.Add(new PlayerScore(player.Id, player.Name));
 			}
 
 			int totalRounds = (0 == Players.Count % 2)

@@ -80,12 +80,12 @@ namespace Tournament.Structure
 			if (GrandFinal.IsFinished)
 			{
 				IPlayer winningPlayer = GrandFinal.Players[(int)GrandFinal.WinnerSlot];
-				Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, -1, 1));
+				Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
 				IPlayer losingPlayer = GrandFinal.Players[
 					(PlayerSlot.Defender == GrandFinal.WinnerSlot)
 					? (int)PlayerSlot.Challenger
 					: (int)PlayerSlot.Defender];
-				Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, 2));
+				Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, 2));
 
 				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				this.IsFinished = true;
@@ -320,12 +320,15 @@ namespace Tournament.Structure
 #endif
 
 					Rankings.Add(new PlayerScore
-						(match.Players[(int)loserSlot].Id, match.Players[(int)loserSlot].Name, -1, rank));
+						(match.Players[(int)loserSlot].Id,
+						match.Players[(int)loserSlot].Name,
+						rank));
 					if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
 					{
 						Rankings.Add(new PlayerScore
 							(match.Players[(int)(match.WinnerSlot)].Id,
-							match.Players[(int)(match.WinnerSlot)].Name, -1, 1));
+							match.Players[(int)(match.WinnerSlot)].Name,
+							1));
 					}
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
@@ -455,7 +458,7 @@ namespace Tournament.Structure
 							(PlayerSlot.Defender == match.WinnerSlot)
 							? (int)PlayerSlot.Challenger
 							: (int)PlayerSlot.Defender];
-						Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, rank));
+						Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
 					}
 				}
 			}
@@ -473,7 +476,7 @@ namespace Tournament.Structure
 							(PlayerSlot.Defender == match.WinnerSlot)
 							? (int)PlayerSlot.Challenger
 							: (int)PlayerSlot.Defender];
-						Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, rank));
+						Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
 					}
 				}
 			}

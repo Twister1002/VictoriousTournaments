@@ -249,10 +249,8 @@ namespace Tournament.Structure
 				{
 					if (Rankings[i].Id == Players[_index].Id)
 					{
-						int score = Rankings[i].Score;
-						int rank = Rankings[i].Rank;
-						Rankings[i] = new PlayerScore
-							(_player.Id, _player.Name, score, rank);
+						Rankings[i].ReplacePlayerData(_player.Id, _player.Name);
+						break;
 					}
 				}
 			}

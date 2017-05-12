@@ -160,7 +160,7 @@ namespace Tournament.Structure
 
 			foreach (IPlayer player in Players)
 			{
-				Rankings.Add(new PlayerScore(player.Id, player.Name, 0, 1));
+				Rankings.Add(new PlayerScore(player.Id, player.Name));
 			}
 
 			// Create first-round matches:
