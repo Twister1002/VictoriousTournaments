@@ -1,4 +1,12 @@
 ﻿CREATE TABLE [dbo].[TournamentInvites]
 (
-	[InviteCode] NVARCHAR(256) NOT NULL PRIMARY KEY
+	[InviteCode] NVARCHAR(256) NOT NULL , 
+    [TournamentID] INT NOT NULL,
+    [DateExpires] DATE NOT NULL, 
+    [IsExpired] BIT NOT NULL, 
+    [DateCreated] DATE NOT NULL, 
+    [NumberOfUses] INT NOT NULL DEFAULT 0, 
+	--CONSTRAINT FK_TournamentInvites_Tournament FOREIGN KEY (TournamentID) REFERENCES Tournaments(TournamentID), 
+    CONSTRAINT [PK_TournamentInvites] PRIMARY KEY ([InviteCode])
+
 )

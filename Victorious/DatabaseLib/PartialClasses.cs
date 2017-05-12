@@ -19,13 +19,21 @@ namespace DatabaseLib
         public const int EmailLength = 100;
         public const int PasswordLength = 50;
 
-        public AccountModel()
+        partial void OnInit()
         {
             Tournaments = new Collection<TournamentModel>();
         }
 
         public ICollection<TournamentModel> Tournaments { get; set; }
 
+    }
+
+    public partial class TournamentInviteModel
+    {
+        partial void OnInit()
+        {
+            //Tournaments = new Collection<TournamentModel>();
+        }
     }
 
     public partial class TournamentModel

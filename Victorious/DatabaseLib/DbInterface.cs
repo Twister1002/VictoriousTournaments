@@ -333,8 +333,8 @@ namespace DatabaseLib
             TournamentModel _tournament = new TournamentModel();
             try
             {
-                if (AddTournamentInviteCode(tournament.InviteCode) == DbError.EXISTS)
-                    return DbError.INVITE_CODE_EXISTS;
+                //if (AddTournamentInviteCode(tournament.InviteCode) == DbError.EXISTS)
+                //    return DbError.INVITE_CODE_EXISTS;
                 _tournament = tournament;
 
                 _tournament.CreatedOn = DateTime.Now;
@@ -779,6 +779,7 @@ namespace DatabaseLib
 
         #region TournamentInvites
 
+        [Obsolete("Use AddTournamentInvite(TournamentInviteModel tournamentInvite)")]
         public DbError AddTournamentInviteCode(string inviteCode)
         {
             try
@@ -832,10 +833,108 @@ namespace DatabaseLib
             return DbError.EXISTS;
         }
 
+        public DbError AddTournamentInvite(TournamentInviteModel tournamentInvite)
+        {
+            try
+            {
+                context.TournamentInviteModels.Add(tournamentInvite);
+                AssignTournamentInviteCode(tournamentInvite);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
+        }
 
+        private bool AssignTournamentInviteCode(TournamentInviteModel tournamentInvite)
+        {
+            try
+            {
+                TournamentModel _tournament = context.TournamentModels.Find(tournamentInvite.TournamentID);
+                _tournament.InviteCode = tournamentInvite.InviteCode;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public TournamentInviteModel GetTournamentInvite(string inviteCode)
+        {
+            TournamentInviteModel tournamentInvite = new TournamentInviteModel();
+            try
+            {
+                tournamentInvite = context.TournamentInviteModels.Find(inviteCode);
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+            }
+            return tournamentInvite;
+        }
+
+        public DbError UpdateTournamentInvite(TournamentInviteModel tournamentInvite)
+        {
+            try
+            {
+                TournamentInviteModel _tournamentInvite = context.TournamentInviteModels.Find(tournamentInvite.InviteCode);
+                context.Entry(_tournamentInvite).CurrentValues.SetValues(tournamentInvite);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError DeleteTournamentInvite(string inviteCode)
+        {
+            try
+            {
+                TournamentInviteModel _tournamentInvite = context.TournamentInviteModels.Find(inviteCode);
+                context.TournamentInviteModels.Remove(_tournamentInvite);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
+        }
 
         #endregion
 
+
+        #region AccountInvites
+
+        DbError AddAccountInvite(AccountInviteModel accountInvite)
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
+        }
+
+        #endregion
 
         #region Brackets
 

@@ -14,7 +14,7 @@ namespace DatabaseLib.Tests
             var db = new DbInterface();
 
             var tournament = NewTournament();
-            tournament.InviteCode = "10003";
+            //tournament.InviteCode = "10003";
             var result = db.AddTournament(tournament);
 
             Assert.AreEqual(DbError.SUCCESS, result);
@@ -61,18 +61,18 @@ namespace DatabaseLib.Tests
             Assert.AreEqual(DbError.SUCCESS, result);
         }
 
-        [TestMethod]
-        public void Update_Tournament_And_Invite_Code()
-        {
-            var db = new DbInterface();
+        //[TestMethod]
+        //public void Update_Tournament_And_Invite_Code()
+        //{
+        //    var db = new DbInterface();
 
-            var tournament = db.GetTournament(1004);
-            tournament.InviteCode = "10002";
-            var result = db.UpdateTournament(tournament);
+        //    var tournament = db.GetTournament(1004);
+        //    tournament.InviteCode = "10002";
+        //    var result = db.UpdateTournament(tournament);
 
-            Assert.AreEqual(DbError.SUCCESS, result);
+        //    Assert.AreEqual(DbError.SUCCESS, result);
 
-        }
+        //}
 
         [TestMethod]
         public void Delete_Tournaent()
@@ -147,29 +147,29 @@ namespace DatabaseLib.Tests
             Assert.AreEqual(count, result);
         }
 
-        [TestMethod]
-        public void Add_Invite_Code_GUID()
-        {
-            var db = new DbInterface();
+        //[TestMethod]
+        //public void Add_Invite_Code_GUID()
+        //{
+        //    var db = new DbInterface();
 
-            var guid = Guid.NewGuid().ToString();
-            var result = db.AddTournamentInviteCode(guid);
+        //    var guid = Guid.NewGuid().ToString();
+        //    var result = db.AddTournamentInviteCode(guid);
 
-            Assert.AreEqual(DbError.SUCCESS, result);
+        //    Assert.AreEqual(DbError.SUCCESS, result);
 
-        }
+        //}
 
-        [TestMethod]
-        public void Check_Invite_Code_Exists()
-        {
-            var db = new DbInterface();
+        //[TestMethod]
+        //public void Check_Invite_Code_Exists()
+        //{
+        //    var db = new DbInterface();
 
-            var guid = "98ed7a71-b0f7-4c97-907a-e7b238b4daed";
-            var result = db.InviteCodeExists(guid);
+        //    var guid = "98ed7a71-b0f7-4c97-907a-e7b238b4daed";
+        //    var result = db.InviteCodeExists(guid);
 
-            Assert.AreEqual(DbError.EXISTS, result);
+        //    Assert.AreEqual(DbError.EXISTS, result);
 
-        }
+        //}
 
 
 
