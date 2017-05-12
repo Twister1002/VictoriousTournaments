@@ -6,6 +6,12 @@ using DatabaseLib;
 
 namespace WebApplication.Models
 {
+    public enum BracketSection
+    {
+        UPPER,
+        LOWER
+    }
+
     public class BracketViewModel : BracketFields
     {
         public struct RoundData
@@ -278,6 +284,69 @@ namespace WebApplication.Models
             {
                 return false;
             }
+        }
+
+        public List<bool> RoundShowing(BracketSection section)
+        {
+            List<bool> showMatches = new List<bool>();
+            bool isPowerRule = IsPowerOfTwo(Bracket.Players.Count);
+            int roundNum = 1;
+
+            if (section == BracketSection.UPPER)
+            {
+                for (int i = 1; Bracket.GetRound(roundNum).Count != 0; i++)
+                {
+                    bool show = false;
+
+                    if (Bracket.Players.Count >= 8)
+                    {
+                        if (isPowerRule)
+                        {
+                            if (i <= 2 || i % 2 == 0) show = true;
+                            else show = false;
+                        }
+                        else
+                        {
+                            if (i <= 2 || i % 2 == 1) show = true;
+                            else show = false;
+                        }
+                    }
+                    else
+                    {
+                        show = true;
+                    }
+
+                    showMatches.Add(show);
+                    if (show) roundNum++;
+                }
+            }
+            else if (section == BracketSection.LOWER)
+            {
+                for (int i = 1; Bracket.GetLowerRound(roundNum).Count != 0; i++)
+                {
+                    bool show = false;
+
+                    if (isPowerRule)
+                    {
+                        show = true;
+                    }
+                    else
+                    {
+                        if (i == 1) show = false;
+                        else show = true;
+                    }
+
+                    showMatches.Add(show);
+                    if (show) roundNum++;
+                }
+            }
+            
+            return showMatches;
+        }
+
+        public bool IsPowerOfTwo(int val)
+        {
+            return (val != 0) && ((val & (val-1)) == 0);
         }
     }
 }
