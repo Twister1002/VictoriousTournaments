@@ -212,6 +212,21 @@ namespace Tournament.Structure
 		}
 #endif
 
+		public override void ReplacePlayer(IPlayer _player, int _index)
+		{
+			int oldId = Players[_index].Id;
+			base.ReplacePlayer(_player, _index);
+
+			// Replace the old player's ID in the Byes list:
+			for (int i = 0; i < PlayerByes.Count; ++i)
+			{
+				if (PlayerByes[i] == oldId)
+				{
+					PlayerByes[i] = _player.Id;
+				}
+			}
+		}
+
 		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			throw new NotImplementedException

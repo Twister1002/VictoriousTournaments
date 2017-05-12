@@ -220,7 +220,7 @@ namespace Tournament.Structure
 			}
 			ResetBracket();
 		}
-		public void ReplacePlayer(IPlayer _player, int _index)
+		public virtual void ReplacePlayer(IPlayer _player, int _index)
 		{
 			if (null == _player)
 			{
