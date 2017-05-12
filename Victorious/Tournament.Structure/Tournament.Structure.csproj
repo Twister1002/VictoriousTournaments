@@ -97,6 +97,7 @@
     <Compile Include="Classes\BracketTypes\RoundRobinBracket.cs" />
     <Compile Include="Classes\BracketTypes\RoundRobinGroups.cs" />
     <Compile Include="Classes\BracketTypes\SwissBracket.cs" />
+    <Compile Include="SeedComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DatabaseLib\DatabaseLib.csproj">

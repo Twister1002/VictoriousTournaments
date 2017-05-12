@@ -242,6 +242,8 @@ namespace Tournament.Structure
 			base.ApplyWinEffects(_matchNumber, _slot);
 			if (this.IsFinished)
 			{
+				// If all matches are finished, try to generate a new round.
+				// If successful, reset IsFinished:
 				IsFinished = !(AddSwissRound(GetMatch(_matchNumber).MaxGames));
 				//IsFinished = !(AddNewRound(GetMatch(_matchNumber).MaxGames));
 			}

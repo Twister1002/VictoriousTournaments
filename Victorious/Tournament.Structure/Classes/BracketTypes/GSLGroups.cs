@@ -277,7 +277,7 @@ namespace Tournament.Structure
 			}
 
 			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
-				.OrderBy(tubm => tubm.Seed)
+				.OrderBy(tubm => tubm.Seed, new SeedComparer())
 				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
