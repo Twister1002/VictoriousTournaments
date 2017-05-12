@@ -284,16 +284,15 @@ namespace WebApplication.Models
 
         public List<bool> RoundShowing(BracketSection section)
         {
-            List<List<bool>> roundDisplays = new List<List<bool>>()
-            {
-                new List<bool>(),
-                new List<bool>()
-            };
-
-
             List<bool> showMatches = new List<bool>();
             bool isPowerRule = IsPowerOfTwo(Bracket.Players.Count);
             int roundNum = 1;
+
+            if (Bracket.BracketType != BracketType.DOUBLE)
+            {
+                for (int i = 0; i < Bracket.NumberOfRounds; i++) showMatches.Add(true);
+                return showMatches;
+            }
 
             if (section == BracketSection.UPPER)
             {

@@ -7,6 +7,10 @@
     List<bool> lowerDisplay = Model.RoundShowing(WebApplication.Models.BracketSection.LOWER);
 }
 
+@{
+    ViewBag.roundDisplay = upperDisplay;
+    Html.RenderPartial("Brackets/Shared/_Header", Model, new ViewDataDictionary(ViewData));
+}
 <li class="list-table-body">
     <ul class="round border" data-columns="@rounds">
         @{ roundNum = 1; }
@@ -24,6 +28,10 @@
             </li>
         }
     </ul>
+</li>
+
+@{ ViewBag.roundDisplay = lowerDisplay; Html.RenderPartial("Brackets/Shared/_Header", Model, new ViewDataDictionary(ViewData)); }
+<li class="list-table-body">
     <ul class="round" data-columns="@rounds">
         @{ roundNum = 1; }
         @foreach (bool display in lowerDisplay)
@@ -40,6 +48,8 @@
             </li>
         }
     </ul>
+</li>
+<li class="list-table-body">
     <ul class="round" data-columns="@rounds">
         @for (int i = 1; i <= rounds; i++)
         {

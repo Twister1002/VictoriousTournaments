@@ -71,8 +71,7 @@
                     {
                         Html.RenderPartial("Administrator/_Finalize");
                     }
-
-                    Html.RenderPartial("Brackets/Shared/_Header", Bracket, new ViewDataDictionary(ViewData));
+                    
                     Html.RenderPartial("Brackets/" + bracketName, Bracket, new ViewDataDictionary(ViewData));
                     Html.RenderPartial("Brackets/Shared/_Standings", Bracket);
                 }
