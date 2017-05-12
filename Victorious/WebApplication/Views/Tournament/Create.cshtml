@@ -31,7 +31,7 @@
                 </li>
                 <li>
                     @Html.LabelFor(t => t.PlatformType)
-                    @Html.DropDownListFor(t => t.PlatformType, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---", new { disabled = (Model.CanEdit() ? "" : "disabled"), @readonly = (Model.CanEdit() ? "" : "readonly") })
+                    @Html.DropDownListFor(t => t.PlatformType, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---")
                     @Html.ValidationMessageFor(t => t.PlatformType)
                 </li>
                 <li>

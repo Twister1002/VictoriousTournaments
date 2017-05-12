@@ -2,7 +2,7 @@
     var $ = jQuery;
     var $platform = $("#AdministratorPlatforms");
     
-    $("#AdministratorPlatforms .list-table-body .platforms .removePlatform").on("click", RemovePlatform);
+    $("#AdministratorPlatforms .platform .removePlatform").on("click", RemovePlatform);
     $("#AdministratorPlatforms .options .AddPlatform").on("click", AddPlatform);
     $("#AdministratorPlatforms .options .platformTitle").on("keydown", function (e) {
         if (e && e.keyCode == 13) { // Enter
@@ -42,17 +42,22 @@
                 json = JSON.parse(json);
                 console.log(json);
 
-                var $table = $("#TournamentPlatforms .list-table-body");
+                var $table = $("#AdministratorPlatforms .list-table-body");
                 $table.empty();
 
                 $.each(json.platforms, function (i, e) {
                     html = "<ul class='platform' data-columns='2' data-id='" + e.PlatformID + "'>";
                     html += "<li class='column'>" + e.PlatformName + "</li>";
-                    html += "<li class='column'><span class='icon icon-cross'></span></li>";
+                    html += "<li class='column'><span class='icon icon-cross removePlatform'></span></li>";
                     html += "</ul>";
 
                     $table.append(html);
                 });
+
+                $platform.find(".options .platformTitle").val('');
+
+                // Give everyone the event
+                $table.find(".removePlatform").off("click").on("click", RemovePlatform);
             },
             "error": function (json) {
                 console.log(json);

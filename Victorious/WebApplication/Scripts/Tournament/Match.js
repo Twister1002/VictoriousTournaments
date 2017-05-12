@@ -11,20 +11,25 @@
     }
 
     // Mouse Events
-    $(".TournamentMatch .overview .defender, .TournamentMatch .overview .challenger").on("mouseover", function () {
+    $(".TournamentMatch .defender, .TournamentMatch .challenger").on("mouseover", MouseOverEvents);
+    $(".TournamentMatch .defender, .TournamentMatch .challenger").on("mouseleave", MouseLeaveEvents);
+    $(".TournamentGames .removeGame").on("click", RemoveGame);
+
+    function MouseOverEvents() {
         //console.log("Entered: " + $(this).data("seed"));
         var userid = $(this).data("id");
         if (userid > -1) {
-            $(".TournamentMatch .overview [data-id='" + userid + "']").addClass("teamHover");
+            $(".TournamentMatch .defender[data-id='" + userid + "'], .TournamentMatch .challenger[data-id='" + userid + "']").addClass("teamHover");
         }
-    });
-    $(".TournamentMatch .overview .defender, .TournamentMatch .overview .challenger").on("mouseleave", function () {
+    }
+
+    function MouseLeaveEvents() {
         //console.log("Left: " + $(this).data("seed"));
         var userid = $(this).data("id");
         if (userid > -1) {
-            $(".TournamentMatch .overview [data-id='" + userid + "']").removeClass("teamHover");
+            $(".TournamentMatch .defender[data-id='" + userid + "'], .TournamentMatch .challenger[data-id='" + userid + "']").removeClass("teamHover");
         }
-    });
+    }
 
     $(".TournamentGames .options .close").on("click", function () {
         $(this).closest(".TournamentGames").removeClass("open");
@@ -85,17 +90,16 @@
                     MatchOptionsUpdate(json.data, $games);
                 }
                 else {
-                    alert(json.message);
-                    console.log(json.exception);
+                    console.log(json.message);
                 }
             },
             "error": function (json) {
                 json = JSON.parse(json);
-                $(".match-edit-module").removeClass("open");
-                alert("There was an error in acquiring this match data: " + json.message);
+                console.log(json);
+                matchElem.find(".TournamentGames").removeClass("open");
             },
             "complete": function () {
-                $(".match-edit-module .match .selected-winner").removeClass("selected-winner");
+
             }
         });
     });
@@ -242,8 +246,8 @@
         overview.find(".challenger").attr("data-id", json.challenger.id).data("id", json.challenger.id);
 
         // Update the Game data 
-        games.find(".defender-name").text(json.defender.name);
-        games.find(".challenger-name").text(json.challenger.name);
+        games.find(".defender.name").text(json.defender.name);
+        games.find(".challengername").text(json.challenger.name);
 
         // Verify if the match is ready
         if (json.ready) {
@@ -257,13 +261,19 @@
 
     // Helper method to add games to details
     function AddGameToDetails(data, $games) {
-        html = "<ul data-columns='3' data-gameNum='"+data.gameNum+"'>";
-        html += "<li class='column game-number'>Game " + data.gameNum + "</li>";
-        html += "<li class='column score'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li>";
-        html += "<li class='column score'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li>";
-        html += "</ul>";
+        html = "<ul data-columns='4' data-gameid='"+data.id+"' data-gamenum='"+data.gameNum+"'> ";
+        html += "<li class='column game-number'>Game " + data.gameNum + "</li> ";
+        html += "<li class='column defender score' data-id='"+data.defender.id+"'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li> ";
+        html += "<li class='column challenger score' data-id='" + data.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li> ";
+        html += "<li class='column'><span class='icon icon-cross removeGame'></span></li> ";
+        html += "</ul> ";
 
         $games.find(".games").append(html);
+
+        // Register the hover events
+        $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseover").on("mouseover", MouseOverEvents);
+        $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseleave").on("mouseleave", MouseLeaveEvents);
+        $(".TournamentMatch .removeGame").off("click").on("click", RemoveGame);
     }
 
     function CanAddGames($games) {
@@ -291,6 +301,51 @@
         else {
             $games.find(".update-games").removeClass("hide");
         }
+    }
+
+    function RemoveGame() {
+        var $game = $(this).closest("ul");
+
+        var jsonData = {
+            "bracketId": $game.closest(".bracket").data("id"),
+            "matchId": $game.closest(".TournamentMatch").data("id"),
+            "matchNum": $game.closest(".TournamentMatch").data("matchnum"),
+            "gameId": $game.data("gameid"),
+            "gameNum": $game.data("gamenum"),
+        };
+
+        $.ajax({
+            "url": "/Ajax/Match/RemoveGame",
+            "type": "post",
+            "data": { "jsonData": JSON.stringify(jsonData) },
+            "dataType": "json",
+            "beforeSend": function () {
+
+            },
+            "success": function (json) {
+                json = JSON.parse(json);
+                console.log(json);
+
+                if (json.status) {
+                    $.each(json.data, function (i, e) {
+                        $match = $(".TournamentMatch[data-id='" + e.matchId + "']");
+                        MatchUpdate(e, $match);
+                        MatchOptionsUpdate(e, $match);
+                    });
+
+                    UpdateStandings($("#Tournament").data("id"), $game.closest(".bracket").data("bracketnum"));
+                }
+                else {
+                    console.log(json.message);
+                }
+            },
+            "error": function (json) {
+                console.log(json);
+            },
+            "complete": function () {
+
+            }
+        });
     }
 
     function UpdateStandings(tournyId, bracket) {

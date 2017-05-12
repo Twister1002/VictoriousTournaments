@@ -26,9 +26,18 @@ namespace WebApplication.Controllers
         {
             Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
             MatchViewModel viewModel = new MatchViewModel(json["matchId"]);
-            
+            bool status = false;
+            String message = "Match doesn't exist or failed to load";
+
+            if (viewModel.Model != null)
+            {
+                status = true;
+                message = "Match was loaded.";
+            }
+
             String jsonResult = JsonConvert.SerializeObject(new {
-                status = true,
+                status = status,
+                message = message,
                 data = JsonMatchResponse(viewModel.Match, true)
             });
 
@@ -39,16 +48,17 @@ namespace WebApplication.Controllers
         [Route("Ajax/Match/Update")]
         public JsonResult MatchUpdate(String jsonIds, List<GameViewModel> games)
         {
+            LoadAccount(Session);
             bool status = false;
             String message = "No action taken";
             object data = new { };
 
-            if (Session["User.UserId"] != null)
+            if (account != null)
             {
                 Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonIds);
                 TournamentViewModel tournamentModel = new TournamentViewModel(json["tournamentId"]);
 
-                if (tournamentModel.IsAdministrator((int)Session["User.UserId"]))
+                if (tournamentModel.IsAdministrator(account.AccountId))
                 {
                     tournamentModel.ProcessTournament();
                     IBracket bracket = tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]);
@@ -134,6 +144,52 @@ namespace WebApplication.Controllers
                 status = status,
                 message = message,
                 data = data
+            }));
+        }
+
+        [HttpPost]
+        [Route("Ajax/Match/RemoveGame")]
+        public JsonResult RemoveGame(String jsonData)
+        {
+            bool status = false;
+            String message = "No action taken";
+            object data = new { };
+
+            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
+            BracketViewModel bracketViewModel = new BracketViewModel(json["bracketId"]);
+            List<int> matchesAffected = bracketViewModel.MatchesAffectedList(json["matchNum"]);
+            List<object> matchDataAffected = new List<object>();
+
+            GameModel gameRemoved = bracketViewModel.Bracket.RemoveGameNumber(json["matchNum"], json["gameNum"]);
+            GameViewModel removeGameViewModel = new GameViewModel(gameRemoved);
+            if (removeGameViewModel.Delete())
+            {
+                status = true;
+                message = "Matches are affected.";
+
+                foreach (int matchNum in matchesAffected)
+                {
+                    // Load the original and load one from the bracket
+                    MatchViewModel modified = new MatchViewModel(bracketViewModel.Bracket.GetMatchModel(matchNum));
+                    MatchViewModel original = new MatchViewModel(modified.Match.Id);
+
+                    List<IGame> games = original.Match.Games.Where(x => !modified.Match.Games.Any(y => y.Id == x.Id)).ToList();
+                    foreach (IGame game in games)
+                    {
+                        GameViewModel gameViewModel = new GameViewModel(game);
+                        gameViewModel.Delete();
+                    }
+
+                    modified.Update();
+                    matchDataAffected.Add(JsonMatchResponse(modified.Match, true));
+                }
+            }            
+
+            return Json(JsonConvert.SerializeObject(new
+            {
+                status = status,
+                message = message,
+                data = matchDataAffected
             }));
         }
     }

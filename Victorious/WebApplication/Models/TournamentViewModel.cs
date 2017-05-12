@@ -127,6 +127,7 @@ namespace WebApplication.Models
             ApplyChanges();
             Model.LastEditedByID = sessionId;
             Model.LastEditedOn = DateTime.Now;
+            Model.Brackets.ElementAt(0).BracketTypeID = this.BracketType;
 
             DbError updateResult = db.UpdateTournament(Model);
 
@@ -541,7 +542,7 @@ namespace WebApplication.Models
 
         public bool CanEdit()
         {
-            return Model.InProgress ? false : true;
+            return !Model.InProgress ? true : false;
         }
     }
 }

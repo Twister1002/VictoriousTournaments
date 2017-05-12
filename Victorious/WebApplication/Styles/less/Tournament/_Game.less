@@ -26,13 +26,23 @@
         }
     }
 
-    .name {
-        text-align: center;
+    /* OVERRIDE */
+    ul.list-table {
+        li.list-table-header, li.list-table-body {
+            ul {
+                .column {
+                    text-align: center;
+                    text-overflow: clip;
+                    overflow: hidden;
+                    white-space:nowrap;
+                }
+
+                .grid(4);
+            }
+        }
     }
 
     .score {
-        text-align: center;
-
         input {
             width: 2.5em;
             &.invalid {

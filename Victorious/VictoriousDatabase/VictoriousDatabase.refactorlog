@@ -112,4 +112,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="PlatformID" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="f9eec222-07b8-4145-9e67-ac7802a2a0ba" ChangeDateTime="05/10/2017 18:44:53">
+    <Property Name="ElementName" Value="[dbo].[TournamentInvites].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="InviteCodes" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b0318afb-ddda-4bd6-ad76-bb37a4284338" ChangeDateTime="05/10/2017 18:45:18">
+    <Property Name="ElementName" Value="[dbo].[TournamentInvites].[InviteCodes]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="InviteCode" />
+  </Operation>
 </Operations>

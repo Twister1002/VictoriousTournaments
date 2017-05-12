@@ -107,7 +107,10 @@ namespace WebApplication.Models
 
         public bool DeleteGame(int gameId)
         {
-            return db.DeleteGame(gameId) == DbError.SUCCESS;
+            bool gameResult = db.DeleteGame(gameId) == DbError.SUCCESS;
+            bool matchUpdate = Update();
+
+            return matchUpdate && gameResult;
         }
 
         public bool CreateGame(GameModel game)

@@ -97,14 +97,14 @@
           <Key>
             <PropertyRef Name="PlatformID" />
           </Key>
-          <Property Name="PlatformID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="PlatformID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PlatformName" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="TournamentInvites">
           <Key>
-            <PropertyRef Name="Id" />
+            <PropertyRef Name="InviteCode" />
           </Key>
-          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="InviteCode" Type="nvarchar" MaxLength="256" Nullable="false" />
         </EntityType>
         <EntityType Name="Tournaments">
           <Key>
@@ -130,7 +130,7 @@
           <Property Name="CheckInEnds" Type="datetime" Nullable="false" />
           <Property Name="PlatformID" Type="int" Nullable="false" />
           <Property Name="InProgress" Type="bit" Nullable="false" />
-          <Property Name="InviteCode" Type="nvarchar" MaxLength="255" />
+          <Property Name="InviteCode" Type="nvarchar" MaxLength="256" />
         </EntityType>
         <EntityType Name="TournamentUsers">
           <Key>
@@ -154,6 +154,7 @@
           <Property Name="TournamentUserID" Type="int" Nullable="false" />
           <Property Name="BracketID" Type="int" Nullable="false" />
           <Property Name="Seed" Type="int" />
+          <Property Name="TournamentID" Type="int" Nullable="false" />
         </EntityType>
         <Association Name="FK_Brackets_BracketTypes">
           <End Role="BracketTypes" Type="Self.BracketTypes" Multiplicity="1" />
@@ -459,12 +460,12 @@
             <End Role="GameType" EntitySet="GameTypeModels" />
             <End Role="TournamentModel" EntitySet="TournamentModels" />
           </AssociationSet>
-          <EntitySet Name="TournamentInvites" EntityType="VictoriousDatabaseModel.TournamentInvite" />
           <EntitySet Name="PlatformModels" EntityType="VictoriousDatabaseModel.PlatformModel" />
           <AssociationSet Name="FK_Tournaments_Platforms" Association="VictoriousDatabaseModel.FK_Tournaments_Platforms">
             <End Role="Platform" EntitySet="PlatformModels" />
             <End Role="TournamentModel" EntitySet="TournamentModels" />
           </AssociationSet>
+          <EntitySet Name="TournamentInviteModels" EntityType="VictoriousDatabaseModel.TournamentInviteModel" />
           </EntityContainer>
         <EntityType Name="TournamentUserModel">
           <Key>
@@ -492,6 +493,7 @@
           <Property Name="Seed" Type="Int32" />
           <NavigationProperty Name="Bracket" Relationship="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments" FromRole="TournamentUsersBracket" ToRole="Bracket" />
           <NavigationProperty Name="TournamentUser" Relationship="VictoriousDatabaseModel.FK_UserBrackets_TournamentUsers" FromRole="TournamentUsersBracket" ToRole="TournamentUser" />
+          <Property Name="TournamentID" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="FK_UsersBrackets_Tournaments">
           <End Type="VictoriousDatabaseModel.BracketModel" Multiplicity="1" Role="Bracket">
@@ -547,7 +549,7 @@
           <Property Name="CheckInEnds" Nullable="false" Precision="3" Type="DateTime" />
           <NavigationProperty Name="GameType" Relationship="VictoriousDatabaseModel.FK_Tournaments_GameTypes" FromRole="TournamentModel" ToRole="GameType" />
           <Property Name="InProgress" Type="Boolean" Nullable="false" />
-          <Property Name="InviteCode" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="InviteCode" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="PlatformID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Platform" Relationship="VictoriousDatabaseModel.FK_Tournaments_Platforms" FromRole="TournamentModel" ToRole="Platform" />
         </EntityType>
@@ -626,12 +628,6 @@
           </ReferentialConstraint>
         </Association>
         <EnumType Name="BracketType" a:ExternalTypeName="DatabaseLib.BracketType" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
-        <EntityType Name="TournamentInvite">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-        </EntityType>
         <EntityType Name="PlatformModel">
           <Key>
             <PropertyRef Name="PlatformID" />
@@ -652,6 +648,12 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="TournamentInviteModel">
+          <Key>
+            <PropertyRef Name="InviteCode" />
+          </Key>
+          <Property Name="InviteCode" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -742,6 +744,7 @@
           <EntitySetMapping Name="TournamentUsersBracketModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentUsersBracketModel">
               <MappingFragment StoreEntitySet="TournamentUsersBrackets">
+                <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
                 <ScalarProperty Name="Seed" ColumnName="Seed" />
                 <ScalarProperty Name="BracketID" ColumnName="BracketID" />
                 <ScalarProperty Name="TournamentUserID" ColumnName="TournamentUserID" />
@@ -804,18 +807,18 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="TournamentInvites">
-            <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentInvite">
-              <MappingFragment StoreEntitySet="TournamentInvites">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="PlatformModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.PlatformModel">
               <MappingFragment StoreEntitySet="Platforms">
                 <ScalarProperty Name="PlatformName" ColumnName="PlatformName" />
                 <ScalarProperty Name="PlatformID" ColumnName="PlatformID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TournamentInviteModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentInviteModel">
+              <MappingFragment StoreEntitySet="TournamentInvites">
+              <ScalarProperty Name="InviteCode" ColumnName="InviteCode" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
