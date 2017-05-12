@@ -152,14 +152,10 @@ namespace WebApplication.Models
 
         public int TotalRounds()
         {
-            if (Bracket.GrandFinal != null)
-            {
-                return Math.Max(Bracket.NumberOfRounds, Bracket.NumberOfLowerRounds) + 1;
-            }
-            else
-            {
-                return Math.Max(Bracket.NumberOfRounds, Bracket.NumberOfLowerRounds);
-            }
+            int maxRounds = Math.Max(Bracket.NumberOfRounds, Bracket.NumberOfLowerRounds);
+            if (Bracket.GrandFinal != null) maxRounds++;
+
+            return maxRounds;
         }
 
         public List<IMatch> UpperMatches(int round)
@@ -288,6 +284,13 @@ namespace WebApplication.Models
 
         public List<bool> RoundShowing(BracketSection section)
         {
+            List<List<bool>> roundDisplays = new List<List<bool>>()
+            {
+                new List<bool>(),
+                new List<bool>()
+            };
+
+
             List<bool> showMatches = new List<bool>();
             bool isPowerRule = IsPowerOfTwo(Bracket.Players.Count);
             int roundNum = 1;

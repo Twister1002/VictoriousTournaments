@@ -2,47 +2,54 @@
 
 @{
     int rounds = Model.TotalRounds();
+    int roundNum = 1;
+    List<bool> upperDisplay = Model.RoundShowing(WebApplication.Models.BracketSection.UPPER);
+    List<bool> lowerDisplay = Model.RoundShowing(WebApplication.Models.BracketSection.LOWER);
 }
 
 <li class="list-table-body">
-    <ul class="round" data-columns="@rounds">
-        @for (int i = 1; i <= rounds; i++)
+    <ul class="round border" data-columns="@rounds">
+        @{ roundNum = 1; }
+        @foreach (bool display in upperDisplay)
         {
             <li class="column">
-                @foreach (var match in Model.Bracket.GetRound(i))
+                @if (display)
                 {
-                    Html.RenderPartial("Brackets/Shared/_Match", new WebApplication.Models.MatchViewModel(match), new ViewDataDictionary(ViewData));
-                }
-            </li>
-        }
-    </ul>
-    <ul class="round" data-columns="@rounds">
-        @for (int i = 1; i <= rounds; i++)
-        {
-            <li class="column">
-                @foreach (var match in Model.Bracket.GetLowerRound(i))
-                {
-                    Html.RenderPartial("Brackets/Shared/_Match", new WebApplication.Models.MatchViewModel(match), new ViewDataDictionary(ViewData));
-                }
-            </li>
-        }
-    </ul>
-    <ul class="round" data-columns="@rounds">
-        @for (int i = 1; i <= rounds; i++)
-        {
-            if (i != rounds)
-            {
-                <li class="column"></li>
-            }
-            else
-            {
-                <li class="column">
-                    @{
-                        ViewBag.isGrandFinal = true;
-                        Html.RenderPartial("Brackets/Shared/_Match", new WebApplication.Models.MatchViewModel(Model.Bracket.GrandFinal), new ViewDataDictionary(ViewData));
+                    foreach (var match in Model.Bracket.GetRound(roundNum))
+                    {
+                        Html.RenderPartial("Brackets/Shared/_Match", new WebApplication.Models.MatchViewModel(match), new ViewDataDictionary(ViewData));
                     }
-                </li>
-            }
+                    roundNum++;
+                }
+            </li>
+        }
+    </ul>
+    <ul class="round" data-columns="@rounds">
+        @{ roundNum = 1; }
+        @foreach (bool display in lowerDisplay)
+        {
+            <li class="column">
+                @if (display)
+                {
+                    foreach (var match in Model.Bracket.GetLowerRound(roundNum))
+                    {
+                        Html.RenderPartial("Brackets/Shared/_Match", new WebApplication.Models.MatchViewModel(match), new ViewDataDictionary(ViewData));
+                    }
+                    roundNum++;
+                }
+            </li>
+        }
+    </ul>
+    <ul class="round" data-columns="@rounds">
+        @for (int i = 1; i <= rounds; i++)
+        {
+            <li class="column">
+                @if (i == rounds)
+                {
+                    ViewBag.isGrandFinal = true;
+                    Html.RenderPartial("Brackets/Shared/_Match", new WebApplication.Models.MatchViewModel(Model.Bracket.GrandFinal), new ViewDataDictionary(ViewData));
+                }
+            </li>
         }
     </ul>
 </li>
