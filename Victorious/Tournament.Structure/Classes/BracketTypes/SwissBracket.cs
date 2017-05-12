@@ -212,6 +212,40 @@ namespace Tournament.Structure
 		}
 #endif
 
+		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			throw new NotImplementedException
+				("Cannot update games in a Swiss bracket! (yet)");
+		}
+		public override GameModel RemoveLastGame(int _matchNumber)
+		{
+			if (GetMatch(_matchNumber).RoundIndex < (NumberOfRounds - 1))
+			{
+				throw new BracketException
+					("Cannot affect matches too far back in Swiss brackets!");
+			}
+			return base.RemoveLastGame(_matchNumber);
+		}
+		public override GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
+		{
+			if (GetMatch(_matchNumber).RoundIndex < (NumberOfRounds - 1))
+			{
+				throw new BracketException
+					("Cannot affect matches too far back in Swiss brackets!");
+			}
+			return base.RemoveGameNumber(_matchNumber, _gameNumber);
+		}
+
+		public override List<GameModel> ResetMatchScore(int _matchNumber)
+		{
+			if (GetMatch(_matchNumber).RoundIndex < (NumberOfRounds - 1))
+			{
+				throw new BracketException
+					("Cannot affect matches too far back in Swiss brackets!");
+			}
+			return base.ResetMatchScore(_matchNumber);
+		}
+
 		public override void ResetMatches()
 		{
 			base.ResetMatches();
