@@ -2,6 +2,18 @@
     .section {
         li {
             padding: .5em 0em;
+
+            .input-validation-error {
+                background-color: @alert-red;
+
+                option {
+                    color: @white;
+                }
+            }
+
+            .field-validation-error {
+                display: none;
+            }
         }
     }
 }
