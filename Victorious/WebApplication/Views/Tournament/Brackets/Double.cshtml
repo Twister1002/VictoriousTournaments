@@ -9,6 +9,7 @@
 
 @{
     ViewBag.roundDisplay = upperDisplay;
+    ViewBag.grandFinalShow = true;
     Html.RenderPartial("Brackets/Shared/_Header", Model, new ViewDataDictionary(ViewData));
 }
 <li class="list-table-body">
@@ -30,7 +31,11 @@
     </ul>
 </li>
 
-@{ ViewBag.roundDisplay = lowerDisplay; Html.RenderPartial("Brackets/Shared/_Header", Model, new ViewDataDictionary(ViewData)); }
+@{ 
+    ViewBag.roundDisplay = lowerDisplay;
+    ViewBag.grandFinalShow = false;
+    Html.RenderPartial("Brackets/Shared/_Header", Model, new ViewDataDictionary(ViewData));
+}
 <li class="list-table-body">
     <ul class="round" data-columns="@rounds">
         @{ roundNum = 1; }
