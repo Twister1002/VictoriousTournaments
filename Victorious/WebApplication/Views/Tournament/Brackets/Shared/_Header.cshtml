@@ -2,18 +2,19 @@
 
 @{ 
     int roundNum = 1;
+    bool grandFinal = ViewBag.GrandFinalShow != null ? ViewBag.GrandFinalShow : false;
 }
 
 <li class="list-table-header bracket-header">
-    <ul class="header-rounds form @ViewBag.Class" data-type="@ViewBag.Class" data-columns="@Model.TotalDispalyRounds()">
+    <ul class="header-rounds form" data-columns="@Model.TotalDispalyRounds()">
         @foreach (bool display in ViewBag.RoundShowing)
         {
-            <li class="column">
+            <li class="column" data-type="@ViewBag.Class">
                 @if (display)
                 {
                     var details = Model.GetRoundHeaders(roundNum, ViewBag.Section);
 
-                    <div>Round @details.roundNum</div>
+                    <div>@details.title</div>
 
                     if (!Model.Bracket.IsFinalized && ViewBag.isAdministrator)
                     {
@@ -28,12 +29,12 @@
                 }
             </li>
         }
-        @if (ViewBag.GrandFinalShow != null && ViewBag.GrandFinalShow)
+        @if (grandFinal)
         {
-            var details = Model.GetRoundHeaders(roundNum, ViewBag.Section);
+            var details = Model.GetRoundHeaders(roundNum, WebApplication.Models.BracketSection.FINAL);
 
-            <li class="column">
-                <div>Round @details.roundNum</div>
+            <li class="column" data-type="final">
+                <div>@details.title</div>
 
                 @if (!Model.Bracket.IsFinalized && ViewBag.isAdministrator)
                 {

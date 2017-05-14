@@ -40,8 +40,21 @@
             "bracketVal": $(".bracket").data("bracketnum"),
         };
 
-        $.each($(".header-rounds li"), function (i, e) {
-            roundData[i + 1] = $(e).find(".bestOfMatches").val();
+        $.each($(".header-rounds"), function (i, e) {
+            var roundNum = 1;
+            
+            $.each($(e).find("li"), function (ii, ee) {
+                var type = $(ee).data("type");
+                var element = $(ee).find(".bestOfMatches");
+
+                if (element.length) {
+                    if (!roundData.hasOwnProperty(type)) {
+                        roundData[type] = {};
+                    }
+                    roundData[type][roundNum] = element.val();
+                    roundNum++;
+                }
+            });
         });
 
         $.ajax({

@@ -359,14 +359,15 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Ajax/Tournament/Finalize")]
-        public JsonResult Finalize(String jsonData, Dictionary<String, int> roundData)
+        public JsonResult Finalize(String jsonData, Dictionary<String, Dictionary<String, int>> roundData)
         {
+            LoadAccount(Session);
             Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
             bool status = false;
             String message = "No action was taken";
             String redirect = redirect = Url.Action("Tournament", "Tournament", new { guid = json["tournyVal"] });
-
-            if (Session["User.UserId"] != null)
+            
+            if (account != null)
             {
                 // Load the tournament
                 TournamentViewModel viewModel = new TournamentViewModel(json["tournyVal"]);

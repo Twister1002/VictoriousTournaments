@@ -9,17 +9,19 @@ namespace WebApplication.Models
     public enum BracketSection
     {
         UPPER,
-        LOWER
+        LOWER,
+        FINAL
+    }
+
+    public struct RoundHeader
+    {
+        public int roundNum;
+        public int bestOf;
+        public String title;
     }
 
     public class BracketViewModel : BracketFields
     {
-        public struct RoundData
-        {
-            public int roundNum;
-            public int bestOf;
-        };
-
         public IBracket Bracket { get; private set; }
         public BracketModel Model { get; private set; }
 
@@ -158,60 +160,18 @@ namespace WebApplication.Models
             return maxRounds;
         }
 
-        public List<IMatch> UpperMatches(int round)
-        {
-            return Bracket.GetRound(round);
-        }
-
-        public List<IMatch> LowerMatches(int round)
-        {
-            return Bracket.GetLowerRound(round);
-        }
-
-        public List<RoundData> RoundInfo()
-        {
-            List<RoundData> data = new List<RoundData>();
-            int totalRounds = TotalRounds();
-
-            for (int i = 1; i <= totalRounds; i++)
-            {
-                RoundData? roundInfo = null;
-
-                if (Bracket.GetRound(i).Count > 0)
-                {
-                    roundInfo = new RoundData() { roundNum = i, bestOf = Bracket.GetRound(i)[0].MaxGames };
-                }
-                else if (i == totalRounds && Bracket.GrandFinal != null)
-                {
-                    roundInfo = new RoundData() { roundNum = i, bestOf = Bracket.GrandFinal.MaxGames };
-                }
-
-                if (roundInfo == null)
-                {
-                    // Check the lower rounds;
-                    if (Bracket.GetLowerRound(i).Count > 0)
-                    {
-                        roundInfo = new RoundData() { roundNum = i, bestOf = Bracket.GetLowerRound(i)[0].MaxGames };
-                    }
-                }
-
-                data.Add((RoundData)roundInfo);
-            }
-
-            return data;
-        }
-
         public List<int> MatchesAffectedList(int matchNum)
         {
             List<int> matchesAffected = new List<int>();
             IMatch head = Bracket.GetMatch(matchNum);
             matchesAffected.Add(matchNum);
-            
+
             if (head.NextMatchNumber != -1)
             {
                 List<int> matches = MatchesAffectedList(head.NextMatchNumber);
 
-                foreach (int match in matches) {
+                foreach (int match in matches)
+                {
                     if (!matchesAffected.Exists((i) => i == match))
                     {
                         matchesAffected.Add(match);
@@ -235,51 +195,66 @@ namespace WebApplication.Models
             return matchesAffected;
         }
 
-        public Permission TournamentPermission(int accountId)
+        public RoundHeader GetRoundHeaders(int roundNum, BracketSection section)
         {
-            TournamentUserModel model = Model.Tournament.TournamentUsers.FirstOrDefault(x => x.AccountID == accountId);
+            RoundHeader headers = new RoundHeader();
+            List<IMatch> matches = new List<IMatch>();
 
-            if (model != null)
+            if (section == BracketSection.UPPER)
             {
-                return (Permission)model.PermissionLevel;
+                matches = Bracket.GetRound(roundNum);
+                headers.title = RoundTitle(roundNum, Bracket.NumberOfRounds);
+            }
+            else if (section == BracketSection.LOWER)
+            {
+                matches = Bracket.GetLowerRound(roundNum);
+                headers.title = RoundTitle(roundNum, Bracket.NumberOfLowerRounds);
+            }
+            else if (section == BracketSection.FINAL)
+            {
+                matches.Add(Bracket.GrandFinal);
+                headers.title = "Grand Final";
+            }
+
+            if (matches.Count > 0)
+            {
+                headers.roundNum = matches[0].RoundIndex;
+                headers.bestOf = matches[0].MaxGames;
+            }
+
+            return headers;
+        }
+
+        private String RoundTitle(int roundNum, int maxRounds)
+        {
+            if (roundNum == maxRounds)
+            {
+                return "Finals";
+            }
+            else if (roundNum == (maxRounds - 1))
+            {
+                return "Semi-Finals";
+            }
+            else if (roundNum == (maxRounds - 2))
+            {
+                return "Quarter Finals";
             }
             else
             {
-                return Permission.NONE;
-            }
-        }
-        public bool IsAdministrator(int accountId)
-        {
-            Permission permission = TournamentPermission(accountId);
-            if (permission == Permission.TOURNAMENT_ADMINISTRATOR || 
-                permission == Permission.TOURNAMENT_CREATOR)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
+                return "Round " + roundNum;
             }
         }
 
-        public bool IsCreator(int accountId)
+        public int TotalDispalyRounds()
         {
-            return TournamentPermission(accountId) == Permission.TOURNAMENT_CREATOR;
-        }
+            int upper = RoundShowing(BracketSection.UPPER).Count;
+            int lower = RoundShowing(BracketSection.LOWER).Count;
 
-        public bool UsePoints()
-        {
-            if (Bracket.BracketType == BracketType.GSLGROUP || 
-                Bracket.BracketType == BracketType.RRGROUP || 
-                Bracket.BracketType == BracketType.SWISS ||
-                Bracket.BracketType == BracketType.ROUNDROBIN)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            int maxDisplay = Math.Max(upper, lower);
+
+            if (Bracket.GrandFinal != null) maxDisplay++;
+
+            return maxDisplay;
         }
 
         public List<bool> RoundShowing(BracketSection section)
@@ -342,13 +317,63 @@ namespace WebApplication.Models
                     if (show) roundNum++;
                 }
             }
-            
+
             return showMatches;
+        }
+
+        #region HelperMethods
+        public Permission TournamentPermission(int accountId)
+        {
+            TournamentUserModel model = Model.Tournament.TournamentUsers.FirstOrDefault(x => x.AccountID == accountId);
+
+            if (model != null)
+            {
+                return (Permission)model.PermissionLevel;
+            }
+            else
+            {
+                return Permission.NONE;
+            }
+        }
+
+        public bool IsAdministrator(int accountId)
+        {
+            Permission permission = TournamentPermission(accountId);
+            if (permission == Permission.TOURNAMENT_ADMINISTRATOR ||
+                permission == Permission.TOURNAMENT_CREATOR)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsCreator(int accountId)
+        {
+            return TournamentPermission(accountId) == Permission.TOURNAMENT_CREATOR;
+        }
+
+        public bool UsePoints()
+        {
+            if (Bracket.BracketType == BracketType.GSLGROUP ||
+                Bracket.BracketType == BracketType.RRGROUP ||
+                Bracket.BracketType == BracketType.SWISS ||
+                Bracket.BracketType == BracketType.ROUNDROBIN)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public bool IsPowerOfTwo(int val)
         {
-            return (val != 0) && ((val & (val-1)) == 0);
+            return (val != 0) && ((val & (val - 1)) == 0);
         }
+        #endregion
     }
 }

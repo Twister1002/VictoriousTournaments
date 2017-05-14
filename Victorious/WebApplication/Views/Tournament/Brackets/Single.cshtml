@@ -1,14 +1,16 @@
 ﻿@model WebApplication.Models.BracketViewModel
 
 @{
-    ViewBag.roundDisplay = Model.RoundShowing(WebApplication.Models.BracketSection.UPPER);
+    ViewBag.Section = WebApplication.Models.BracketSection.UPPER;
+    ViewBag.RoundShowing = Model.RoundShowing(WebApplication.Models.BracketSection.UPPER);
+    ViewBag.Class = "upper";
 
     Html.RenderPartial("Brackets/Shared/_Header", Model, new ViewDataDictionary(ViewData));
 }
 
 <li class="list-table-body">
-    <ul class="round" data-columns="@ViewBag.roundDisplay.Count">
-        @for (int i = 1; i <= ViewBag.roundDisplay.Count; i++)
+    <ul class="round" data-columns="@Model.TotalDispalyRounds()">
+        @for (int i = 1; i <= Model.TotalDispalyRounds(); i++)
         {
             <li class="column">
                 @foreach (var match in Model.Bracket.GetRound(i))

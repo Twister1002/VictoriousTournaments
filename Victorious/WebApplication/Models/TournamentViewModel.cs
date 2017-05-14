@@ -249,7 +249,7 @@ namespace WebApplication.Models
             }
         }
 
-        public bool FinalizeTournament(Dictionary<String, int> roundData)
+        public bool FinalizeTournament(Dictionary<String, Dictionary<String, int>> roundData)
         {
             // Load the tournament first
             ProcessTournament();
@@ -260,16 +260,23 @@ namespace WebApplication.Models
             IBracket tourny = Tourny.Brackets[bracketNum];
 
             // Set max games for every round
-            foreach (KeyValuePair<String, int> data in roundData)
+            foreach (KeyValuePair<String, Dictionary<String, int>> roundInfo in roundData)
             {
-                tourny.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
-                tourny.SetMaxGamesForWholeLowerRound(int.Parse(data.Key), data.Value);
-            }
-
-            // Verify the grand final round
-            if (tourny.GrandFinal != null)
-            {
-                tourny.GrandFinal.SetMaxGames(roundData.Last().Value);
+                foreach (KeyValuePair<String, int> data in roundInfo.Value)
+                {
+                    switch (roundInfo.Key)
+                    {
+                        case "upper":
+                            tourny.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
+                            break;
+                        case "lower":
+                            tourny.SetMaxGamesForWholeLowerRound(int.Parse(data.Key), data.Value);
+                            break;
+                        case "final":
+                            tourny.GrandFinal.SetMaxGames(data.Value);
+                            break;
+                    }
+                }
             }
 
             // Process
