@@ -247,7 +247,7 @@
 
         // Update the Game data 
         games.find(".defender.name").text(json.defender.name);
-        games.find(".challengername").text(json.challenger.name);
+        games.find(".challenger.name").text(json.challenger.name);
 
         // Verify if the match is ready
         if (json.ready) {
@@ -297,6 +297,7 @@
         // Verify the match is finished
         if (json.finished) {
             $games.find(".update-games").addClass("hide");
+            $games.find(".options .add-game").addClass("hide");
         }
         else {
             $games.find(".update-games").removeClass("hide");
