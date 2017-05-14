@@ -328,13 +328,20 @@
                 console.log(json);
 
                 if (json.status) {
+                    UpdateStandings($("#Tournament").data("id"), $game.closest(".bracket").data("bracketnum"));
+
                     $.each(json.data, function (i, e) {
                         $match = $(".TournamentMatch[data-id='" + e.matchId + "']");
                         MatchUpdate(e, $match);
                         MatchOptionsUpdate(e, $match);
-                    });
 
-                    UpdateStandings($("#Tournament").data("id"), $game.closest(".bracket").data("bracketnum"));
+                        // Update the games
+                        $games = $match.find(".TournamentGames");
+                        $games.find(".games").empty();
+                        $.each(e.games, function (ii, ee) {
+                            AddGameToDetails(ee, $games);
+                        });
+                    });
                 }
                 else {
                     console.log(json.message);
