@@ -48,15 +48,12 @@ namespace WebApplication.Controllers
 
         protected object JsonMatchResponse(IMatch match, bool includeGames)
         {
+            MatchViewModel matchModel = new MatchViewModel(match);
             List<object> gameData = new List<object>();
-            IPlayer challenger = match.Players[(int)PlayerSlot.Challenger] != null ?
-                match.Players[(int)PlayerSlot.Challenger] :
-                new User() { Name = "From Match "+match.PreviousMatchNumbers[(int)PlayerSlot.Challenger] };
 
-            IPlayer defender = match.Players[(int)PlayerSlot.Defender] != null ?
-                match.Players[(int)PlayerSlot.Defender] :
-                new User() { Name = "From Match " + match.PreviousMatchNumbers[(int)PlayerSlot.Defender] };
-            
+            IPlayer Challenger = matchModel.Challenger;
+            IPlayer Defender = matchModel.Defender;
+
             if (includeGames)
             {
                 foreach (IGame game in match.Games)
@@ -71,8 +68,8 @@ namespace WebApplication.Controllers
                 matchNum = match.MatchNumber,
                 ready = match.IsReady,
                 finished = match.IsFinished,
-                challenger = JsonPlayerDataResponse(challenger, match.Score[(int)PlayerSlot.Challenger]),
-                defender = JsonPlayerDataResponse(defender, match.Score[(int)PlayerSlot.Defender]),
+                challenger = JsonPlayerDataResponse(Challenger, match.Score[(int)PlayerSlot.Challenger]),
+                defender = JsonPlayerDataResponse(Defender, match.Score[(int)PlayerSlot.Defender]),
                 games = gameData
             };
         }
