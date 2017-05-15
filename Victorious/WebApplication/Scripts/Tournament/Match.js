@@ -380,7 +380,7 @@
                         html = "<ul class='position' data-columns='3'>";
                         html += "<li class='column rank'>" + e.Rank + "</li>";
                         html += "<li class='column name'>" + e.Name + "</li>";
-                        if (e.Score != -1) html += "<li class='column score'>" + (e.Score > -1 ? e.Score : "") + "</li>";
+                        if (e.Score != -1) html += "<li class='column score'>" + (e.MatchScore > -1 ? e.MatchScore : "") + "</li>";
                         html += "</ul>";
 
                         standings.append(html);
