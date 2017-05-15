@@ -54,45 +54,6 @@ namespace WebApplication.Controllers
             return Json(JsonConvert.SerializeObject(dataReturned));
         }
 
-        // Tournament Info
-        [HttpGet]
-        [Route("Tournament/{guid}")]
-        public ActionResult Tournament(String guid)
-        {
-            int tournamentId = ConvertToInt(guid);
-            LoadAccount(Session);
-            TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-
-            if (viewModel.Model != null)
-            {
-                if (!viewModel.Model.InProgress && !viewModel.IsAdministrator(account.AccountId))
-                {
-                    ViewBag.Tournament = viewModel.Model;
-                    ViewBag.isRegistered = viewModel.isRegistered(account.AccountId);
-                    TournamentRegistrationFields fields = new TournamentRegistrationFields()
-                    {
-                        AccountID = account.AccountId,
-                        TournamentID = viewModel.Model.TournamentID
-                    };
-
-                    return View("RegisterForm", fields);
-                }
-                else
-                {
-                    viewModel.ProcessTournament();
-                    return View("Tournament", viewModel);
-                }
-            }
-            else
-            {
-                Session["Message"] = "The tournament you're looking for doesn't exist or is not publicly shared.";
-                Session["Message.Class"] = ViewModel.ViewError.WARNING;
-            }
-
-            
-            return RedirectToAction("Search", "Tournament");
-        }
-
         // GET: Tournament/Create
         [HttpGet]
         [Route("Tournament/Create")]
@@ -137,6 +98,73 @@ namespace WebApplication.Controllers
 
                 return RedirectToAction("Login", "Account");
             }
+        }
+
+        /// <summary>
+        /// Displays the tournament
+        /// </summary>
+        /// <param name="guid">the ID of the tournament</param>
+        /// <param name="inviteCode">The Invite code</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("Tournament/{guid}")]
+        public ActionResult Tournament(String guid, String inviteCode)
+        {
+            LoadAccount(Session);
+            int tournamentId = ConvertToInt(guid);
+            TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+            bool isAdmin = viewModel.IsAdministrator(account.AccountId);
+
+            if (viewModel.Model != null)
+            {
+                // Should we check for registrations or view the tournament?
+                if (!viewModel.Model.InProgress && !isAdmin)
+                {
+                    // Verify if the user has an invite code or the invite code is valid
+                    if (viewModel.Model.IsPublic || viewModel.Model.InviteCode == inviteCode)
+                    {
+                        // Allow the tournament registration to be shown
+                        ViewBag.Tournament = viewModel.Model;
+                        ViewBag.isRegistered = viewModel.isRegistered(account.AccountId);
+                        TournamentRegistrationFields fields = new TournamentRegistrationFields()
+                        {
+                            AccountID = account.AccountId,
+                            TournamentID = viewModel.Model.TournamentID
+                        };
+
+                        return View("RegisterForm", fields);
+                    }
+                    else
+                    {
+                        Session["Message"] = "This tournament is not accepting registrations.";
+                        Session["Message.Class"] = ViewModel.ViewError.WARNING;
+                        return View("Search", "Tournament");
+                    }
+                }
+                else
+                {
+                    // Verify if the user is allowed to view the tournament
+                    if (viewModel.Model.IsPublic || viewModel.Model.InviteCode == inviteCode || isAdmin)
+                    {
+                        viewModel.ProcessTournament();
+                        return View("Tournament", viewModel);
+                    }
+                    else
+                    {
+                        Session["Message"] = "This tournament is not available to view.";
+                        Session["Message.Class"] = ViewModel.ViewError.WARNING;
+                        return RedirectToAction("Search", "Tournament");
+                    }
+                }
+            }
+            else
+            {
+                Session["Message"] = "The tournament you're looking for doesn't exist or is not publicly shared.";
+                Session["Message.Class"] = ViewModel.ViewError.WARNING;
+            }
+
+
+            return RedirectToAction("Search", "Tournament");
         }
 
         // POST: Tournament/Create

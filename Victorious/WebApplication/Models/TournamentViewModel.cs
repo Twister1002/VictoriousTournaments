@@ -122,6 +122,11 @@ namespace WebApplication.Models
             Model = db.GetTournament(id);
         }
 
+        public void LoadModel(TournamentModel model)
+        {
+            Model = model;
+        }
+
         public bool Update(int sessionId)
         {
             ApplyChanges();
@@ -299,6 +304,24 @@ namespace WebApplication.Models
             bool TournamentUpdated = db.UpdateTournament(Model) == DbError.SUCCESS;
 
             return bracketUpdated && TournamentUpdated;
+        }
+
+        public bool IsValidInviteCode(String inviteCode)
+        {
+            Dictionary<String, String> search = new Dictionary<String, String>();
+            search.Add("InviteCode", inviteCode);
+
+            List<TournamentModel> models = db.FindTournaments(search);
+
+            if (models.Count == 1)
+            {
+                LoadModel(models[0]);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private void CreateMatches(BracketModel bracketModel, IBracket bracket)
@@ -551,5 +574,9 @@ namespace WebApplication.Models
         {
             return !Model.InProgress ? true : false;
         }
+
+        #region Helpers
+
+        #endregion
     }
 }
