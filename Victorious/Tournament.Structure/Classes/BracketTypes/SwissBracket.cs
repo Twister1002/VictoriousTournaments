@@ -544,7 +544,7 @@ namespace Tournament.Structure
 			for (int i = 0, pOffset = 0; i < numCompetitors; ++i)
 			{
 				if (PlayerByes.Count > 0 &&
-					PlayerByes[PlayerByes.Count - 1] == i)
+					PlayerByes[PlayerByes.Count - 1] == Players[i].Id)
 				{
 					++pOffset;
 				}
