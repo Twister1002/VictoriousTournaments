@@ -314,7 +314,7 @@ namespace Tournament.Structure
 				(_games.Count + match.Score[0] + match.Score[1] >= match.MaxGames)))
 			{
 				// We just invalidated future match results.
-				// Instead of updating, we need to reset/recalculate:
+				// Instead of regular updating, we need to reset/recalculate:
 				RecalculateRankings();
 				UpdateRankings();
 			}
