@@ -212,8 +212,11 @@ namespace WebApplication.Models
             }
             else if (section == BracketSection.FINAL)
             {
-                matches.Add(Bracket.GrandFinal);
-                headers.title = "Grand Final";
+                if (Bracket.GrandFinal != null)
+                {
+                    matches.Add(Bracket.GrandFinal);
+                    headers.title = "Grand Final";
+                }
             }
 
             if (matches.Count > 0)
