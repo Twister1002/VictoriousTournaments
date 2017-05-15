@@ -220,7 +220,7 @@ namespace Tournament.Structure
 			}
 			ResetBracket();
 		}
-		public void ReplacePlayer(IPlayer _player, int _index)
+		public virtual void ReplacePlayer(IPlayer _player, int _index)
 		{
 			if (null == _player)
 			{
@@ -249,10 +249,8 @@ namespace Tournament.Structure
 				{
 					if (Rankings[i].Id == Players[_index].Id)
 					{
-						int score = Rankings[i].Score;
-						int rank = Rankings[i].Rank;
-						Rankings[i] = new PlayerScore
-							(_player.Id, _player.Name, score, rank);
+						Rankings[i].ReplacePlayerData(_player.Id, _player.Name);
+						break;
 					}
 				}
 			}
@@ -639,8 +637,10 @@ namespace Tournament.Structure
 		}
 		protected int SortRankingScores(IPlayerScore first, IPlayerScore second)
 		{
-			// Rankings sorting: MatchScore > GameScore > PointsScore > initial Seeding
+			// Rankings sorting: MatchScore > OpponentsScore > GameScore > PointsScore > initial Seeding
 			int compare = -1 * (first.MatchScore.CompareTo(second.MatchScore));
+			compare = (compare != 0)
+				? compare : -1 * (first.OpponentsScore.CompareTo(second.OpponentsScore));
 			compare = (compare != 0)
 				? compare : -1 * (first.GameScore.CompareTo(second.GameScore));
 			compare = (compare != 0)

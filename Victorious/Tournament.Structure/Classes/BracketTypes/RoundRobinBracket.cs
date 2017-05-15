@@ -105,14 +105,14 @@ namespace Tournament.Structure
 			ResetBracket();
 
 			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
-				.OrderBy(tubm => tubm.Seed)
+				.OrderBy(tubm => tubm.Seed, new SeedComparer())
 				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
 			foreach (TournamentUserModel model in userModels)
 			{
 				Players.Add(new User(model));
-				Rankings.Add(new PlayerScore(model.TournamentUserID, model.Name, 0, 1));
+				Rankings.Add(new PlayerScore(model.TournamentUserID, model.Name));
 			}
 
 			foreach (MatchModel mm in _model.Matches)
@@ -135,13 +135,11 @@ namespace Tournament.Structure
 				}
 
 				int defIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id);
-				Rankings[defIndex].Score += match.Score[(int)PlayerSlot.Defender];
 				Rankings[defIndex].AddToScore(
 					(PlayerSlot.Defender == match.WinnerSlot) ? MatchWinValue : 0
 					, match.Score[(int)PlayerSlot.Defender], defScore, true);
 
 				int chalIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id);
-				Rankings[chalIndex].Score += match.Score[(int)PlayerSlot.Challenger];
 				Rankings[chalIndex].AddToScore(
 					(PlayerSlot.Challenger == match.WinnerSlot) ? MatchWinValue : 0
 					, match.Score[(int)PlayerSlot.Challenger], chalScore, true);
@@ -175,7 +173,7 @@ namespace Tournament.Structure
 			}
 			foreach (IPlayer player in Players)
 			{
-				Rankings.Add(new PlayerScore(player.Id, player.Name, 0, 1));
+				Rankings.Add(new PlayerScore(player.Id, player.Name));
 			}
 
 			int totalRounds = (0 == Players.Count % 2)
@@ -384,9 +382,11 @@ namespace Tournament.Structure
 					if (model.WinnerID == model.DefenderID)
 					{
 						++defenderGameScore;
+						--challengerGameScore;
 					}
 					else if (model.WinnerID == model.ChallengerID)
 					{
+						--defenderGameScore;
 						++challengerGameScore;
 					}
 					defenderPointScore += model.DefenderScore;
@@ -395,16 +395,10 @@ namespace Tournament.Structure
 
 				// Update Defender's score:
 				int defIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id);
-				Rankings[defIndex].Score += (_isAddition)
-					? defenderMatchScore
-					: -1 * defenderMatchScore;
 				Rankings[defIndex].AddToScore(defenderMatchScore, defenderGameScore, defenderPointScore, _isAddition);
 
 				// Update Challenger's score:
 				int chalIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id);
-				Rankings[chalIndex].Score += (_isAddition)
-					? challengerMatchScore
-					: -1 * challengerMatchScore;
 				Rankings[chalIndex].AddToScore(challengerMatchScore, challengerGameScore, challengerPointScore, _isAddition);
 			}
 
@@ -429,25 +423,34 @@ namespace Tournament.Structure
 
 		protected override void UpdateRankings()
 		{
-			Rankings.Sort(SortRankingScores);
-#if false
-			Rankings.Sort((first, second) =>
+			// Calculate & Assign OpponentsPoints value for each player:
+			foreach (IPlayerScore player in Rankings)
 			{
-				// Rankings sorting: MatchScore > GameScore > PointsScore > initial Seeding
-				int compare = -1 * (first.MatchScore.CompareTo(second.MatchScore));
-				compare = (compare != 0)
-					? compare : -1 * (first.GameScore.CompareTo(second.GameScore));
-				compare = (compare != 0)
-					? compare : -1 * (first.PointsScore.CompareTo(second.PointsScore));
-				return (compare != 0)
-					? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
-			});
-#endif
+				player.OpponentsScore = 0;
+			}
+			foreach (IMatch match in Matches.Values.Where(m => m.IsFinished).ToList())
+			{
+				Rankings
+					.Find(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id)
+					.OpponentsScore
+					+= Rankings
+					.Find(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id)
+					.MatchScore;
+				Rankings
+					.Find(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id)
+					.OpponentsScore
+					+= Rankings
+					.Find(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id)
+					.MatchScore;
+			}
+
+			// Sort the list and apply Ranks:
+			Rankings.Sort(SortRankingScores);
 			for (int i = 0; i < Rankings.Count; ++i)
 			{
 				Rankings[i].Rank = i + 1;
 			}
 		}
-#endregion
+		#endregion
 	}
 }
