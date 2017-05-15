@@ -103,7 +103,7 @@ namespace DatabaseLib
             }
             if (context.BracketTypeModels.Find(6) == null)
             {
-                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 6, Type = BracketType.GSLGROUP, TypeName = "Swiss" });
+                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 6, Type = BracketType.SWISS, TypeName = "Swiss" });
                 context.SaveChanges();
             }
 
