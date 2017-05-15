@@ -230,17 +230,24 @@ namespace WebApplication.Models
 
         private String RoundTitle(int roundNum, int maxRounds)
         {
-            if (roundNum == maxRounds)
+            if (Bracket.BracketType == BracketType.SINGLE || Bracket.BracketType == BracketType.DOUBLE)
             {
-                return "Finals";
-            }
-            else if (roundNum == (maxRounds - 1))
-            {
-                return "Semi-Finals";
-            }
-            else if (roundNum == (maxRounds - 2))
-            {
-                return "Quarter Finals";
+                if (roundNum == maxRounds)
+                {
+                    return "Finals";
+                }
+                else if (roundNum == (maxRounds - 1))
+                {
+                    return "Semi-Finals";
+                }
+                else if (roundNum == (maxRounds - 2))
+                {
+                    return "Quarter Finals";
+                }
+                else
+                {
+                    return "Round " + roundNum;
+                }
             }
             else
             {
@@ -376,6 +383,12 @@ namespace WebApplication.Models
         public bool IsPowerOfTwo(int val)
         {
             return (val != 0) && ((val & (val - 1)) == 0);
+        }
+        #endregion
+
+        #region events
+        delegate void RoundNumberChangedEvent(IBracket bracket) {
+
         }
         #endregion
     }

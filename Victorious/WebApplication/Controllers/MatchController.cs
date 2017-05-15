@@ -68,12 +68,12 @@ namespace WebApplication.Controllers
                         IBracket bracket = tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]);
                         IMatch match = bracket.GetMatch(json["matchNum"]);
                         BracketViewModel bracketModel = new BracketViewModel(bracket);
-                        //MatchViewModel matchModel = new MatchViewModel(match);
                         Dictionary<int, bool> processed = new Dictionary<int, bool>();
 
                         // Verify these matches exists
                         foreach (GameViewModel gameModel in games)
                         {
+                            // Tie game check
                             if (match.IsFinished || gameModel.ChallengerScore == gameModel.DefenderScore)
                             {
                                 processed.Add(gameModel.GameNumber, false);
