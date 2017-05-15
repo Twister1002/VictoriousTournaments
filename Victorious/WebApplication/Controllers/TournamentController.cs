@@ -138,7 +138,6 @@ namespace WebApplication.Controllers
                     {
                         Session["Message"] = "This tournament is not accepting registrations.";
                         Session["Message.Class"] = ViewModel.ViewError.WARNING;
-                        return View("Search", "Tournament");
                     }
                 }
                 else
@@ -153,7 +152,6 @@ namespace WebApplication.Controllers
                     {
                         Session["Message"] = "This tournament is not available to view.";
                         Session["Message.Class"] = ViewModel.ViewError.WARNING;
-                        return RedirectToAction("Search", "Tournament");
                     }
                 }
             }
