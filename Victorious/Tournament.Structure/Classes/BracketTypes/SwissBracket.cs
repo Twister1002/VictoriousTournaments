@@ -317,6 +317,7 @@ namespace Tournament.Structure
 				// Instead of regular updating, we need to reset/recalculate:
 				RecalculateRankings();
 				UpdateRankings();
+				OnUpdatedBracket(new BracketEventArgs(true));
 			}
 			else
 			{
@@ -330,7 +331,12 @@ namespace Tournament.Structure
 			{
 				// If all matches are finished, try to generate a new round.
 				// If successful, reset IsFinished:
-				IsFinished = !(AddSwissRound(GetMatch(_matchNumber).MaxGames));
+				if (AddSwissRound(GetMatch(_matchNumber).MaxGames))
+				{
+					IsFinished = false;
+					OnUpdatedBracket(new BracketEventArgs(true));
+				}
+				
 			}
 		}
 		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)

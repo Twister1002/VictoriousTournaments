@@ -39,6 +39,18 @@ namespace Tournament.Structure
 		{ get; protected set; }
 		#endregion
 
+		#region Events
+		public event EventHandler<BracketEventArgs> UpdateBracket;
+		protected void OnUpdatedBracket(BracketEventArgs _e)
+		{
+			EventHandler<BracketEventArgs> handler = UpdateBracket;
+			if (null != handler)
+			{
+				handler(this, _e);
+			}
+		}
+		#endregion
+
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
 		protected abstract void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false);

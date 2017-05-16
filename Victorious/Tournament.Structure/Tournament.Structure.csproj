@@ -81,6 +81,7 @@
     <Compile Include="Classes\Exceptions.cs" />
     <Compile Include="Classes\Game.cs" />
     <Compile Include="Classes\BracketTypes\GroupStage.cs" />
+    <Compile Include="CustomEventArgs.cs" />
     <Compile Include="Interfaces\IGroupStage.cs" />
     <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Interfaces\IBracket.cs" />
