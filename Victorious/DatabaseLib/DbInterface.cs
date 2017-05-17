@@ -790,7 +790,7 @@ namespace DatabaseLib
                 }
                 TournamentInviteModel model = new TournamentInviteModel()
                 {
-                    InviteCode = inviteCode
+                    TournamentInviteCode = inviteCode
                 };
                 context.TournamentInviteModels.Add(model);
                 context.SaveChanges();
@@ -804,15 +804,7 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
-        /// <summary>
-        /// Checks the database to see if the invite code has already been used for a tournament.
-        /// </summary>
-        /// <param name="inviteCode"></param>
-        /// <returns>
-        /// ERROR if an exception is thrown.
-        /// DOES_NOT_EXIST if the invite code was not found in the database.
-        /// EXISTS if the code was found in the database.
-        /// </returns>
+        [Obsolete("Use GetTournamentInvite(string inviteCode). Will return null if nothing is found")]
         public DbError InviteCodeExists(string inviteCode)
         {
             TournamentInviteModel _invite;
@@ -855,7 +847,7 @@ namespace DatabaseLib
             try
             {
                 TournamentModel _tournament = context.TournamentModels.Find(tournamentInvite.TournamentID);
-                _tournament.InviteCode = tournamentInvite.InviteCode;
+                _tournament.InviteCode = tournamentInvite.TournamentInviteCode;
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -884,7 +876,7 @@ namespace DatabaseLib
         {
             try
             {
-                TournamentInviteModel _tournamentInvite = context.TournamentInviteModels.Find(tournamentInvite.InviteCode);
+                TournamentInviteModel _tournamentInvite = context.TournamentInviteModels.Find(tournamentInvite.TournamentInviteCode);
                 context.Entry(_tournamentInvite).CurrentValues.SetValues(tournamentInvite);
                 context.SaveChanges();
             }
@@ -919,11 +911,12 @@ namespace DatabaseLib
 
         #region AccountInvites
 
-        DbError AddAccountInvite(AccountInviteModel accountInvite)
+        public DbError AddAccountInvite(AccountInviteModel accountInvite)
         {
             try
             {
-
+                context.AccountInviteModels.Add(accountInvite);
+                context.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -934,7 +927,58 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
+        public AccountInviteModel GetAcountInvite(string inviteCode)
+        {
+            AccountInviteModel accountInvite = new AccountInviteModel();
+            try
+            {
+                accountInvite = context.AccountInviteModels.Find(inviteCode);
+            }
+            catch (Exception ex)
+            {
+                WriteException(ex);
+                interfaceException = ex;
+                accountInvite = null;
+            }
+            return accountInvite;
+        }
+
+        public DbError UpdateAccountInvite(AccountInviteModel accountInvite)
+        {
+            try
+            {
+                AccountInviteModel _accountInvite = context.AccountInviteModels.Find(accountInvite.AccountInviteCode);
+                context.Entry(_accountInvite).CurrentValues.SetValues(accountInvite);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                WriteException(ex);
+                interfaceException = ex;
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError DeleteAccountInvite(string inviteCode)
+        {
+            try
+            {
+                AccountInviteModel _accountInvite = context.AccountInviteModels.Find(inviteCode);
+                context.AccountInviteModels.Remove(_accountInvite);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
+        }
+
         #endregion
+
 
         #region Brackets
 
@@ -1464,5 +1508,6 @@ namespace DatabaseLib
         {
             Console.WriteLine("Exception " + ex + " in " + funcName);
         }
+
     }
 }

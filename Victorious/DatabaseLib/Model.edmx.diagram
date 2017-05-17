@@ -27,8 +27,8 @@
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Brackets_Tournaments" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Tournaments_GameTypes" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Tournaments_Platforms" />
-        <AssociationConnector Association="VictoriousDatabaseModel.FK_Tournaments_TournamentInvites" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_Tournaments_TournamentInvites1" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

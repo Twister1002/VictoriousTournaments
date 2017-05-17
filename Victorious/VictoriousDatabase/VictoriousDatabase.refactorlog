@@ -203,4 +203,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="AccountInviteCode" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="338cf7e7-8945-43e7-9c92-bf9d1e02217f" ChangeDateTime="05/17/2017 15:12:30">
+    <Property Name="ElementName" Value="[dbo].[TournamentInvites].[InviteCode]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TournamentInviteCode" />
+  </Operation>
 </Operations>

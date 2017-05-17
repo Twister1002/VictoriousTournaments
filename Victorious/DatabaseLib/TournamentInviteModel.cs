@@ -21,12 +21,12 @@ namespace DatabaseLib
     		OnInit();
         }
     
-        public string InviteCode { get; set; }
         public int TournamentID { get; set; }
         public System.DateTime DateExpires { get; set; }
         public bool IsExpired { get; set; }
         public System.DateTime DateCreated { get; set; }
         public int NumberOfUses { get; set; }
+        public string TournamentInviteCode { get; set; }
     	
     	partial void OnInit();
     

@@ -115,9 +115,9 @@
         </EntityType>
         <EntityType Name="TournamentInvites">
           <Key>
-            <PropertyRef Name="InviteCode" />
+            <PropertyRef Name="TournamentInviteCode" />
           </Key>
-          <Property Name="InviteCode" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="TournamentInviteCode" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="TournamentID" Type="int" Nullable="false" />
           <Property Name="DateExpires" Type="date" Nullable="false" />
           <Property Name="IsExpired" Type="bit" Nullable="false" />
@@ -251,7 +251,7 @@
           <End Role="Tournaments" Type="Self.Tournaments" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="TournamentInvites">
-              <PropertyRef Name="InviteCode" />
+              <PropertyRef Name="TournamentInviteCode" />
             </Principal>
             <Dependent Role="Tournaments">
               <PropertyRef Name="InviteCode" />
@@ -503,13 +503,13 @@
             <End Role="PlatformModel" EntitySet="PlatformModels" />
             <End Role="Tournament" EntitySet="TournamentModels" />
           </AssociationSet>
-          <AssociationSet Name="FK_Tournaments_TournamentInvites" Association="VictoriousDatabaseModel.FK_Tournaments_TournamentInvites">
-            <End Role="TournamentInvite" EntitySet="TournamentInviteModels" />
-            <End Role="Tournament" EntitySet="TournamentModels" />
-          </AssociationSet>
           <AssociationSet Name="FK_TournamentUser_Tournaments" Association="VictoriousDatabaseModel.FK_TournamentUser_Tournaments">
             <End Role="Tournament" EntitySet="TournamentModels" />
             <End Role="TournamentUserModel" EntitySet="TournamentUserModels" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tournaments_TournamentInvites1" Association="VictoriousDatabaseModel.FK_Tournaments_TournamentInvites1">
+            <End Role="TournamentInviteModel" EntitySet="TournamentInviteModels" />
+            <End Role="TournamentModel" EntitySet="TournamentModels" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="TournamentUserModel">
@@ -625,7 +625,7 @@
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="DateExpires" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="IsExpired" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Account" Relationship="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy" FromRole="AccountInviteModel" ToRole="Account" />
+          <NavigationProperty Name="SentBy" Relationship="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy" FromRole="AccountInviteModel" ToRole="Account" />
         </EntityType>
         <EntityType Name="AccountModel">
           <Key>
@@ -659,15 +659,15 @@
         </Association>
         <EntityType Name="TournamentInviteModel">
           <Key>
-            <PropertyRef Name="InviteCode" />
+            <PropertyRef Name="TournamentInviteCode" />
           </Key>
-          <Property Name="InviteCode" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="TournamentID" Type="Int32" Nullable="false" />
           <Property Name="DateExpires" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="IsExpired" Type="Boolean" Nullable="false" />
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="NumberOfUses" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Tournaments" Relationship="VictoriousDatabaseModel.FK_Tournaments_TournamentInvites" FromRole="TournamentInvite" ToRole="Tournament" />
+          <Property Name="TournamentInviteCode" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Tournaments" Relationship="VictoriousDatabaseModel.FK_Tournaments_TournamentInvites1" FromRole="TournamentInviteModel" ToRole="TournamentModel" />
         </EntityType>
         <EntityType Name="TournamentModel">
           <Key>
@@ -697,8 +697,8 @@
           <NavigationProperty Name="Brackets" Relationship="VictoriousDatabaseModel.FK_Brackets_Tournaments" FromRole="Tournament" ToRole="BracketModel" />
           <NavigationProperty Name="GameType" Relationship="VictoriousDatabaseModel.FK_Tournaments_GameTypes" FromRole="Tournament" ToRole="GameTypeModel" />
           <NavigationProperty Name="Platform" Relationship="VictoriousDatabaseModel.FK_Tournaments_Platforms" FromRole="Tournament" ToRole="PlatformModel" />
-          <NavigationProperty Name="TournamentInvite" Relationship="VictoriousDatabaseModel.FK_Tournaments_TournamentInvites" FromRole="Tournament" ToRole="TournamentInvite" />
           <NavigationProperty Name="TournamentUsers" Relationship="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" FromRole="Tournament" ToRole="TournamentUserModel" />
+          <NavigationProperty Name="TournamentInvite" Relationship="VictoriousDatabaseModel.FK_Tournaments_TournamentInvites1" FromRole="TournamentModel" ToRole="TournamentInviteModel" />
         </EntityType>
         <Association Name="FK_Brackets_Tournaments">
           <End Type="VictoriousDatabaseModel.TournamentModel" Role="Tournament" Multiplicity="0..1" />
@@ -736,18 +736,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Tournaments_TournamentInvites">
-          <End Type="VictoriousDatabaseModel.TournamentInviteModel" Role="TournamentInvite" Multiplicity="0..1" />
-          <End Type="VictoriousDatabaseModel.TournamentModel" Role="Tournament" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="TournamentInvite">
-              <PropertyRef Name="InviteCode" />
-            </Principal>
-            <Dependent Role="Tournament">
-              <PropertyRef Name="InviteCode" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_TournamentUser_Tournaments">
           <End Type="VictoriousDatabaseModel.TournamentModel" Role="Tournament" Multiplicity="1" />
           <End Type="VictoriousDatabaseModel.TournamentUserModel" Role="TournamentUserModel" Multiplicity="*" />
@@ -757,6 +745,18 @@
             </Principal>
             <Dependent Role="TournamentUserModel">
               <PropertyRef Name="TournamentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tournaments_TournamentInvites1">
+          <End Type="VictoriousDatabaseModel.TournamentInviteModel" Role="TournamentInviteModel" Multiplicity="0..1" />
+          <End Type="VictoriousDatabaseModel.TournamentModel" Role="TournamentModel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TournamentInviteModel">
+              <PropertyRef Name="TournamentInviteCode" />
+            </Principal>
+            <Dependent Role="TournamentModel">
+              <PropertyRef Name="InviteCode" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -911,12 +911,12 @@
           <EntitySetMapping Name="TournamentInviteModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentInviteModel">
               <MappingFragment StoreEntitySet="TournamentInvites">
+                <ScalarProperty Name="TournamentInviteCode" ColumnName="TournamentInviteCode" />
                 <ScalarProperty Name="NumberOfUses" ColumnName="NumberOfUses" />
                 <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
                 <ScalarProperty Name="IsExpired" ColumnName="IsExpired" />
                 <ScalarProperty Name="DateExpires" ColumnName="DateExpires" />
                 <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
-                <ScalarProperty Name="InviteCode" ColumnName="InviteCode" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

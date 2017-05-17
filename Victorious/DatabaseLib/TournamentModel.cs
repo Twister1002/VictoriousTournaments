@@ -50,8 +50,8 @@ namespace DatabaseLib
         public virtual ICollection<BracketModel> Brackets { get; set; }
         public virtual GameTypeModel GameType { get; set; }
         public virtual PlatformModel Platform { get; set; }
-        public virtual TournamentInviteModel TournamentInvite { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentUserModel> TournamentUsers { get; set; }
+        public virtual TournamentInviteModel TournamentInvite { get; set; }
     }
 }

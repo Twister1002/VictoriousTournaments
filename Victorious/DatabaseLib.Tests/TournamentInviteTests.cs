@@ -16,7 +16,7 @@ namespace DatabaseLib.Tests
                 DateCreated = DateTime.Today,
                 DateExpires = DateTime.Today.AddDays(1),
                 IsExpired = false,
-                InviteCode = "30000",
+                TournamentInviteCode = "30000",
                 NumberOfUses = 0,
                 TournamentID = 1  
             };
@@ -33,7 +33,7 @@ namespace DatabaseLib.Tests
 
             TournamentInviteModel invite = db.GetTournamentInvite("10000");
 
-            Assert.AreEqual("10000", invite.InviteCode);
+            Assert.AreEqual("10000", invite.TournamentInviteCode);
         }
 
         [TestMethod]
@@ -42,7 +42,7 @@ namespace DatabaseLib.Tests
             var db = new DbInterface();
 
             TournamentInviteModel invite = db.GetTournamentInvite("10000");
-            
+            invite.IsExpired = true;
             var result = db.UpdateTournamentInvite(invite);
 
             Assert.AreEqual(result, DbError.SUCCESS);
