@@ -189,6 +189,13 @@ namespace DatabaseLib.Tests
            
         }
 
+        [TestMethod]
+        public void Get_Tournament_Via_Repo()
+        {
+            var repo = new TournamentRepository();
+
+            var tournament = repo.GetTournament(1);
+        }
 
         private TournamentUserModel NewTournamentUser()
         {
