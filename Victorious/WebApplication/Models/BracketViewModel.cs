@@ -54,7 +54,9 @@ namespace WebApplication.Models
 
         private void LoadEvents()
         {
-            
+            Bracket.MatchesModified += OnMatchesUpdated;
+            Bracket.RoundAdded += OnRoundAdd;
+            Bracket.RoundDeleted += OnRoundDelete;
         }
 
         private void LoadBracket()
@@ -395,9 +397,38 @@ namespace WebApplication.Models
         #endregion
 
         #region events
-        public void OnRoundAmountChange(IBracket bracket)
+        public void OnMatchesUpdated(object sender, BracketEventArgs bracketChanges)
         {
+            foreach (MatchModel match in bracketChanges.UpdatedMatches)
+            {
+                db.UpdateMatch(match);
+            }
 
+            foreach (int games in bracketChanges.deletedGameIDs)
+            {
+                db.DeleteGame(games);
+            }
+        }
+
+        public void OnRoundAdd(object sender, BracketEventArgs bracketChanges)
+        {
+            foreach (MatchModel match in bracketChanges.UpdatedMatches)
+            {
+                db.AddMatch(match);
+            }
+        }
+
+        public void OnRoundDelete(object sender, BracketEventArgs bracketChanges)
+        {
+            foreach (int games in bracketChanges.deletedGameIDs)
+            {
+                db.DeleteGame(games);
+            }
+
+            foreach (MatchModel match in bracketChanges.UpdatedMatches)
+            {
+                db.DeleteMatch(match.MatchID);
+            }
         }
 
         #endregion

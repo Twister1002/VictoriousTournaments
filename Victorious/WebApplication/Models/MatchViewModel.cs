@@ -49,6 +49,15 @@ namespace WebApplication.Models
             Init();
         }
 
+        /// <summary>
+        /// This will reload the model from one of two sources
+        /// </summary>
+        /// <param name="fromDatabase">true: Reloads from database; false: Reloads from IMatch</param>
+        public void ReloadModel(MatchModel model)
+        {
+            Model = model;
+        }
+
         // Acquires data from the database if the objects are null
         private void LoadPlayerObjects()
         {
