@@ -449,10 +449,31 @@ namespace Tournament.Structure
 		}
 		public virtual GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			//////////////////
-			// REWRITE THIS!!
-			//////////////////
+			int gameIndex = GetMatch(_matchNumber).Games.FindIndex(g => g.GameNumber == _gameNumber);
+			if (gameIndex < 0)
+			{
+				// Case 1: Game doesn't exist:
+				throw new GameNotFoundException
+					("Game not found; Game Number may be invalid!");
+			}
+			if (GetMatch(_matchNumber).Games[gameIndex].WinnerSlot == _winnerSlot)
+			{
+				// Case 2: Game winner won't change.
+				// Just modify the game's score:
+				GetMatch(_matchNumber).Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;
+				GetMatch(_matchNumber).Games[gameIndex].Score[(int)PlayerSlot.Challenger] = _challengerScore;
 
+				GameModel gameModel = GetMatch(_matchNumber).Games[gameIndex].GetModel();
+				gameModel.MatchID = GetMatch(_matchNumber).Id;
+				return gameModel;
+			}
+			else
+			{
+				// Case 3: Game winner changes:
+				throw new NotImplementedException
+					("Can't update this Game with new values! Try removing and adding instead.");
+			}
+#if false
 			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
 			List<GameModel> modelList = new List<GameModel>();
 
@@ -474,6 +495,7 @@ namespace Tournament.Structure
 			}
 			OnMatchesModified(alteredMatches);
 			return addedGame;
+#endif
 		}
 		public virtual GameModel RemoveLastGame(int _matchNumber)
 		{
