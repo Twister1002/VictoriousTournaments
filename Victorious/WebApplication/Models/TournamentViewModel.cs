@@ -136,6 +136,20 @@ namespace WebApplication.Models
 
             DbError updateResult = db.UpdateTournament(Model);
 
+            if (updateResult == DbError.SUCCESS)
+            {
+                // Lets update the new users that were created.
+                foreach (TournamentUserModel user in Users)
+                {
+                    user.TournamentID = Model.TournamentID;
+                    user.IsCheckedIn = false;
+                    user.PermissionLevel = (int)Permission.TOURNAMENT_STANDARD;
+
+                    db.AddTournamentUser(user);
+                }
+
+            }
+
             return updateResult == DbError.SUCCESS;
         }
 

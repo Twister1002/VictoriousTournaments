@@ -1,5 +1,6 @@
 ﻿jQuery(document).ready(function () {
     var $ = jQuery;
+    var addedUserIndex = 0;
     var permissionDictionary = {
         100: "Creator",
         101: "Admin",
@@ -62,17 +63,16 @@
     }
 
     $("#TournamentEdit .user-section .addUser").on("click", function () {
-        $(this).closest(".user-section").find(".addUserRow").addClass("show");
-    });
-
-    $("#TournamentEdit .addUserRow .name").on("keydown", function (e) {
-        if (e.keyCode == 13) { // Enter
-            AddNewUser($(this).closest(".form"));
-        }
-    });
-
-    $("#TournamentEdit .addUserRow .addUserButton").on("click", function () {
-        AddNewUser($(this).closest(".form"));
+        //$(this).closest(".user-section").find(".addUserRow").addClass("show");
+        html = "<ul class='user border form' data-user='-1' data-columns='4'> ";
+        html += "<li class='column name'><input type='text' name='Users[" + addedUserIndex + "].Name' id='Users[" + addedUserIndex + "].Name' maxlength='50' placeholder='Email or Username'/></li> ";
+        html += "<li class='column permission'>Not Saved</li> ";
+        html += "<li class='column checkedIn'><span class='icon icon-checkmark'></span></li> ";
+        html += "<li class='column actions'><button class='demote'>Remove</button></li> ";
+        html += "</ul> ";
+        
+        addedUserIndex++;
+        $(this).closest(".user-section").find(".users").append(html);
     });
 
     function AddNewUser($form) {
