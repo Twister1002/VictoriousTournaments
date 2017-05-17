@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using Moq;
 
 namespace DatabaseLib.Tests
 {
@@ -171,6 +172,22 @@ namespace DatabaseLib.Tests
 
         //}
 
+
+        [TestMethod]
+        public void Add_Tournament_Via_Repo()
+        {
+            var repo = new TournamentRepository();
+            var tournament = NewTournament();
+            var result = repo.AddTournament(tournament);
+
+            Assert.AreEqual(DbError.SUCCESS, result);
+        }
+
+        [TestMethod]
+        public void Add_Tournament_Moq()
+        {
+           
+        }
 
 
         private TournamentUserModel NewTournamentUser()

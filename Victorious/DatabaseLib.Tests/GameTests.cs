@@ -13,9 +13,9 @@ namespace DatabaseLib.Tests
 
             GameModel game = new GameModel()
             {
-                MatchID = 2,
-                ChallengerID = db.GetMatch(2).ChallengerID,
-                DefenderID = db.GetMatch(2).DefenderID,
+                MatchID = 1,
+                ChallengerID = db.GetMatch(1).ChallengerID,
+                DefenderID = db.GetMatch(1).DefenderID,
                 GameNumber = 1
             };
 
