@@ -201,18 +201,22 @@ namespace Tournament.Structure
 		{
 			UpdateRankings();
 		}
-		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			UpdateFinishStatus();
+			return (new List<MatchModel>());
 		}
-		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
+		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
 			if (PlayerSlot.unspecified == _formerMatchWinnerSlot)
 			{
 				this.IsFinished = false;
-				return;
 			}
-			UpdateFinishStatus();
+			else
+			{
+				UpdateFinishStatus();
+			}
+			return (new List<MatchModel>());
 		}
 		protected void UpdateFinishStatus()
 		{

@@ -401,7 +401,7 @@ namespace Tournament.Structure
 
 			UpdateRankings();
 		}
-		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			IsFinished = true;
 			foreach (IMatch match in Matches.Values)
@@ -412,10 +412,14 @@ namespace Tournament.Structure
 					break;
 				}
 			}
+
+			return (new List<MatchModel>());
 		}
-		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
+		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
 			this.IsFinished = (IsFinished && GetMatch(_matchNumber).IsFinished);
+
+			return (new List<MatchModel>());
 		}
 
 		protected override void UpdateRankings()

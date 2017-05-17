@@ -126,8 +126,10 @@ namespace Tournament.Structure
 
 				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 			}
-			protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+			protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 			{
+				List<MatchModel> alteredMatches = new List<MatchModel>();
+
 				int nextWinnerNumber;
 				int nextLoserNumber;
 				IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
@@ -135,11 +137,9 @@ namespace Tournament.Structure
 				if (match.NextMatchNumber <= NumberOfMatches)
 				{
 					// Case 1: Not a final/endpoint match. Treat like a DEB:
-					base.ApplyWinEffects(_matchNumber, _slot);
-					return;
+					alteredMatches.AddRange(base.ApplyWinEffects(_matchNumber, _slot));
 				}
-
-				if (match.IsFinished)
+				else if (match.IsFinished)
 				{
 					if (nextLoserNumber > 0)
 					{
@@ -150,6 +150,7 @@ namespace Tournament.Structure
 							: PlayerSlot.Defender;
 						GetMatch(nextLoserNumber).AddPlayer
 							(match.Players[(int)loserSlot], PlayerSlot.Defender);
+						alteredMatches.Add(GetMatchModel(nextLoserNumber));
 						// Check lower bracket completion:
 						if (GetLowerRound(NumberOfLowerRounds)[0].IsFinished)
 						{
@@ -166,14 +167,16 @@ namespace Tournament.Structure
 						}
 					}
 				}
+
+				return alteredMatches;
 			}
 			// void ApplyGameRemovalEffects() just uses DEB's version.
 
-			protected override List<int> RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
+			protected override List<MatchModel> RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 			{
 				if (_matchNumber > NumberOfMatches)
 				{
-					return new List<int>();
+					return new List<MatchModel>();
 				}
 				return base.RemovePlayerFromFutureMatches(_matchNumber, _playerId);
 			}
