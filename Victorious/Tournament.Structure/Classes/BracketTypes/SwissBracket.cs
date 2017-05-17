@@ -104,7 +104,7 @@ namespace Tournament.Structure
 		public SwissBracket(BracketModel _model)
 			: base(_model)
 		{
-			BracketType = BracketType.SWISS;
+			//BracketType = BracketType.SWISS;
 
 			for (int r = 1; r <= NumberOfRounds; ++r)
 			{
@@ -335,7 +335,6 @@ namespace Tournament.Structure
 					IsFinished = false;
 					OnUpdatedBracket(new BracketEventArgs(true));
 				}
-				
 			}
 		}
 		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)

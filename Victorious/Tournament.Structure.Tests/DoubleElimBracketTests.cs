@@ -216,6 +216,24 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(b.NumberOfMatches, b.GrandFinal.MatchNumber);
 		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("DEB CreateBracket")]
+		public void DEBCreateBracket_GeneratesFor20Players()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 20; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 3);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			var v = b.GetRound(2);
+			List<IMatch> roundOne = b.GetRound(1);
+			Assert.AreEqual(4, roundOne.Count);
+		}
 #endregion
 
 		[TestMethod]

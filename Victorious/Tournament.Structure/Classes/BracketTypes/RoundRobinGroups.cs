@@ -124,7 +124,7 @@ namespace Tournament.Structure
 			}
 
 			this.Id = _model.BracketID;
-			this.BracketType = BracketType.RRGROUP;
+			this.BracketType = _model.BracketType.Type;
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
 			this.MaxRounds = 0;
