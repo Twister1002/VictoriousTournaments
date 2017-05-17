@@ -70,8 +70,9 @@ namespace Tournament.Structure
 			}
 
 			UpdateRankings();
-			if (null != GrandFinal || GrandFinal.IsFinished)
+			if (null != GrandFinal && GrandFinal.IsFinished)
 			{
+				// Add GrandFinal results to Rankings:
 				IPlayer winningPlayer = GrandFinal.Players[(int)GrandFinal.WinnerSlot];
 				Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
 				IPlayer losingPlayer = GrandFinal.Players[

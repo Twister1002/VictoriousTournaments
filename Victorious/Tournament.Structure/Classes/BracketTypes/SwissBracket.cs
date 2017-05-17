@@ -104,8 +104,6 @@ namespace Tournament.Structure
 		public SwissBracket(BracketModel _model)
 			: base(_model)
 		{
-			//BracketType = BracketType.SWISS;
-
 			for (int r = 1; r <= NumberOfRounds; ++r)
 			{
 				List<IMatch> round = GetRound(r);
