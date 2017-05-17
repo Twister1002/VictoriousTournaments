@@ -798,39 +798,6 @@ namespace Tournament.Structure
 				}
 			}
 		}
-
-#if false
-		private void CheckAndRemoveNextRound(int _nextRoundIndex)
-		{
-			// TODO : this should probably be implemented at some point
-			if (_nextRoundIndex > NumberOfRounds)
-			{
-				return;
-			}
-			CheckAndRemoveNextRound(1 + _nextRoundIndex);
-
-			bool deleteNextRound = true;
-			List<IMatch> nextRound = GetRound(_nextRoundIndex);
-			foreach (IMatch match in nextRound)
-			{
-				if (match.Games.Count > 0)
-				{
-					deleteNextRound = false;
-					break;
-				}
-			}
-
-			if (deleteNextRound)
-			{
-				foreach (IMatch match in nextRound)
-				{
-					Matches.Remove(match.MatchNumber);
-					--NumberOfMatches;
-				}
-				--NumberOfRounds;
-			}
-		}
-#endif
 #endregion
 	}
 }
