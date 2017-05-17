@@ -87,7 +87,7 @@ namespace Tournament.Structure
 			}
 			
 			this.Id = _model.BracketID;
-			this.BracketType = BracketType.SINGLE;
+			this.BracketType = _model.BracketType.Type;
 			this.IsFinalized = _model.Finalized;
 
 			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
@@ -103,24 +103,26 @@ namespace Tournament.Structure
 			ResetBracket();
 			int totalMatches = Players.Count - 1;
 
-			this.Matches = new Dictionary<int, IMatch>();
-			foreach (MatchModel mm in _model.Matches)
+			foreach (MatchModel mm in _model.Matches.OrderBy(m => m.MatchNumber))
 			{
 				IMatch match = new Match(mm);
 				if (match.RoundIndex > NumberOfRounds)
 				{
 					this.NumberOfRounds = match.RoundIndex;
 				}
-				Matches.Add(match.MatchNumber, match);
 
-				++NumberOfMatches;
-				if (NumberOfMatches >= totalMatches)
+				if (match.MatchNumber <= totalMatches)
+				{
+					Matches.Add(match.MatchNumber, match);
+				}
+				else
 				{
 					break;
 				}
 			}
-
+			this.NumberOfMatches = Matches.Count;
 			this.Rankings = new List<IPlayerScore>();
+
 			if (BracketType.SINGLE == BracketType)
 			{
 				UpdateRankings();

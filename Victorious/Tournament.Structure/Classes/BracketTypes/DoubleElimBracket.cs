@@ -44,35 +44,38 @@ namespace Tournament.Structure
 		public DoubleElimBracket(BracketModel _model)
 			: base(_model)
 		{
-			this.IsFinished = false;
-			this.BracketType = BracketType.DOUBLE;
-
 			if (CalculateTotalLowerBracketMatches(Players.Count) > 0)
 			{
 				int numOfGrandFinal = _model.Matches.Count - 1;
-				int i = 0;
 
-				this.LowerMatches = new Dictionary<int, IMatch>();
+				//this.LowerMatches = new Dictionary<int, IMatch>();
 				foreach (MatchModel mm in _model.Matches)
 				{
-					if (i >= Matches.Count
-						&& i < numOfGrandFinal)
+					if (Matches.ContainsKey(mm.MatchNumber))
 					{
+						// Case 1: match is upper bracket:
+						continue;
+					}
+					if (mm.MatchNumber == numOfGrandFinal)
+					{
+						// Case 2: match is grand final:
+						this.GrandFinal = new Match(mm);
+					}
+					else
+					{
+						// Case 3: match is lower bracket:
 						IMatch match = new Match(mm);
 						if (match.RoundIndex > NumberOfLowerRounds)
 						{
 							this.NumberOfLowerRounds = match.RoundIndex;
 						}
 						LowerMatches.Add(match.MatchNumber, match);
-						++NumberOfMatches;
 					}
-					else if (i == numOfGrandFinal)
-					{
-						this.GrandFinal = new Match(mm);
-						++NumberOfMatches;
-					}
-
-					++i;
+				}
+				this.NumberOfMatches = Matches.Count + LowerMatches.Count;
+				if (null != GrandFinal)
+				{
+					++NumberOfMatches;
 				}
 			}
 

@@ -97,7 +97,7 @@ namespace Tournament.Structure
 			}
 
 			this.Id = _model.BracketID;
-			this.BracketType = BracketType.ROUNDROBIN;
+			this.BracketType = _model.BracketType.Type;
 			this.IsFinalized = _model.Finalized;
 			this.MaxRounds = 0;
 			this.MatchWinValue = 2;
