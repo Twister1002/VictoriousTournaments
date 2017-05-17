@@ -35,18 +35,26 @@ namespace WebApplication.Models
         {
             Model = model;
             LoadBracket();
+            LoadEvents();
         }
 
         public BracketViewModel(IBracket bracket)
         {
             Bracket = bracket;
             Model = null;
+            LoadEvents();
         }
 
         public BracketViewModel(int id)
         {
             Model = db.GetBracket(id);
             LoadBracket();
+            LoadEvents();
+        }
+
+        private void LoadEvents()
+        {
+            
         }
 
         private void LoadBracket()
@@ -387,9 +395,11 @@ namespace WebApplication.Models
         #endregion
 
         #region events
-        delegate void RoundNumberChangedEvent(IBracket bracket) {
+        public void OnRoundAmountChange(IBracket bracket)
+        {
 
         }
+
         #endregion
     }
 }

@@ -225,6 +225,7 @@
     <Compile Include="Models\ViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\Codes.cs" />
+    <Compile Include="Utility\Events\BracketRoundValueChangedEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
