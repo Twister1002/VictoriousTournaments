@@ -68,6 +68,7 @@ namespace Tournament.Structure
 		event EventHandler<BracketEventArgs> RoundAdded;
 		event EventHandler<BracketEventArgs> RoundDeleted;
 		event EventHandler<BracketEventArgs> MatchesModified;
+		event EventHandler<BracketEventArgs> GamesDeleted;
 		#endregion
 
 		#region Methods

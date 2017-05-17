@@ -574,6 +574,7 @@ namespace Tournament.Structure
 						(match.NextMatchNumber, match.Players[(int)(match.WinnerSlot)].Id));
 				}
 
+				OnGamesDeleted(match.Games);
 				Matches[_matchNumber].RemovePlayer(_playerId);
 			}
 			alteredMatches.Add(GetMatchModel(match.MatchNumber));

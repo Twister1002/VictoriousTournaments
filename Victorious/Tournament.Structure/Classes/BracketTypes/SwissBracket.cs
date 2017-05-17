@@ -706,6 +706,7 @@ namespace Tournament.Structure
 		private List<MatchModel> RemoveFutureRounds(int _currentRoundIndex)
 		{
 			List<MatchModel> removedMatches = new List<MatchModel>();
+			List<int> deletedGameIDs = new List<int>();
 
 			// Recursive call on all rounds after this one:
 			int nextRoundIndex = 1 + _currentRoundIndex;
@@ -722,6 +723,7 @@ namespace Tournament.Structure
 			foreach (int n in nextRoundMatchNumbers)
 			{
 				removedMatches.Add(GetMatchModel(n));
+				deletedGameIDs.AddRange(GetMatch(n).Games.Select(g => g.Id));
 				Matches.Remove(n);
 			}
 			// Also delete associated Matchups and Bye:
@@ -735,6 +737,7 @@ namespace Tournament.Structure
 			NumberOfMatches = Matches.Count;
 			NumberOfRounds = _currentRoundIndex;
 
+			OnGamesDeleted(deletedGameIDs);
 			return removedMatches;
 		}
 

@@ -43,6 +43,7 @@ namespace Tournament.Structure
 		public event EventHandler<BracketEventArgs> RoundAdded;
 		public event EventHandler<BracketEventArgs> RoundDeleted;
 		public event EventHandler<BracketEventArgs> MatchesModified;
+		public event EventHandler<BracketEventArgs> GamesDeleted;
 		protected void OnRoundAdded(BracketEventArgs _e)
 		{
 			RoundAdded?.Invoke(this, _e);
@@ -59,7 +60,26 @@ namespace Tournament.Structure
 		{
 			if (null != _modelList && _modelList.Count > 0)
 			{
-				OnMatchesModified(new BracketEventArgs(_modelList));
+				OnMatchesModified(new BracketEventArgs(_modelList
+					.OrderBy(m => m.MatchNumber).ToList()));
+			}
+		}
+		protected void OnGamesDeleted(BracketEventArgs _e)
+		{
+			GamesDeleted?.Invoke(this, _e);
+		}
+		protected void OnGamesDeleted(List<IGame> _games)
+		{
+			if (null != _games && _games.Count > 0)
+			{
+				OnGamesDeleted(new BracketEventArgs(_games.Select(g => g.Id).ToList()));
+			}
+		}
+		protected void OnGamesDeleted(List<int> _gameIDs)
+		{
+			if (null != _gameIDs && _gameIDs.Count > 0)
+			{
+				OnGamesDeleted(new BracketEventArgs(_gameIDs));
 			}
 		}
 		#endregion
@@ -429,6 +449,10 @@ namespace Tournament.Structure
 		}
 		public virtual GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
+			//////////////////
+			// REWRITE THIS!!
+			//////////////////
+
 			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
 			List<GameModel> modelList = new List<GameModel>();
 
