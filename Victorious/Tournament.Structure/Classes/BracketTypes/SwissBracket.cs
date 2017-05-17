@@ -317,7 +317,6 @@ namespace Tournament.Structure
 				// Instead of regular updating, we need to reset/recalculate:
 				RecalculateRankings();
 				UpdateRankings();
-				OnUpdatedBracket(new BracketEventArgs(true));
 			}
 			else
 			{
@@ -350,6 +349,7 @@ namespace Tournament.Structure
 				RemoveFutureRounds(match.RoundIndex);
 				//CheckAndRemoveNextRound(1 + GetMatch(_matchNumber).RoundIndex);
 				this.IsFinished = false;
+				OnUpdatedBracket(new BracketEventArgs(true));
 			}
 			else
 			{

@@ -78,7 +78,7 @@
     <Compile Include="Classes\Match.cs" />
     <Compile Include="Classes\BracketTypes\SingleElimBracket.cs" />
     <Compile Include="Classes\BracketTypes\DoubleElimBracket.cs" />
-    <Compile Include="Classes\Exceptions.cs" />
+    <Compile Include="Exceptions.cs" />
     <Compile Include="Classes\Game.cs" />
     <Compile Include="Classes\BracketTypes\GroupStage.cs" />
     <Compile Include="CustomEventArgs.cs" />
