@@ -172,7 +172,16 @@ namespace WebApplication.Models
                 Tournament = Model
             };
 
+            TournamentInviteModel inviteModel = new TournamentInviteModel()
+            {
+                IsExpired = false,
+                DateCreated = DateTime.Now,
+                TournamentID = Model.TournamentID,
+                TournamentInviteCode = Model.InviteCode
+            };
+
             Model.Brackets.Add(bracketModel);
+            DbError createInvite = db.AddTournamentInvite(inviteModel);
             DbError createResult = db.AddTournament(Model);
 
             return createResult == DbError.SUCCESS;
