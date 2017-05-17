@@ -169,13 +169,13 @@ namespace Tournament.Structure
 			}
 			// void ApplyGameRemovalEffects() just uses DEB's version.
 
-			protected override void RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
+			protected override List<int> RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 			{
 				if (_matchNumber > NumberOfMatches)
 				{
-					return;
+					return new List<int>();
 				}
-				base.RemovePlayerFromFutureMatches(_matchNumber, _playerId);
+				return base.RemovePlayerFromFutureMatches(_matchNumber, _playerId);
 			}
 			protected override void UpdateRankings()
 			{

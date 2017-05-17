@@ -409,11 +409,13 @@ namespace Tournament.Structure
 			return (normalizedPlayers - 2);
 		}
 
-		protected override void RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
+		protected override List<int> RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 		{
+			List<int> alteredMatchNumbers = new List<int>();
+
 			if (_matchNumber < 1 || _playerId == -1)
 			{
-				return;
+				return alteredMatchNumbers;
 			}
 
 			int nextWinnerNumber;
@@ -430,14 +432,17 @@ namespace Tournament.Structure
 						? PlayerSlot.Challenger
 						: PlayerSlot.Defender;
 
-					RemovePlayerFromFutureMatches
-						(nextWinnerNumber, match.Players[(int)(match.WinnerSlot)].Id);
-					RemovePlayerFromFutureMatches
-						(nextLoserNumber, match.Players[(int)loserSlot].Id);
+					alteredMatchNumbers.AddRange(RemovePlayerFromFutureMatches
+						(nextWinnerNumber, match.Players[(int)(match.WinnerSlot)].Id));
+					alteredMatchNumbers.AddRange(RemovePlayerFromFutureMatches
+						(nextLoserNumber, match.Players[(int)loserSlot].Id));
 				}
 
 				GetMatch(_matchNumber).RemovePlayer(_playerId);
 			}
+			alteredMatchNumbers.Add(match.MatchNumber);
+
+			return alteredMatchNumbers.OrderBy(i => i).ToList();
 		}
 
 		protected override void UpdateRankings()
