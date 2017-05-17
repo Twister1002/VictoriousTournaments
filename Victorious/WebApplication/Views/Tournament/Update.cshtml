@@ -43,9 +43,16 @@
                     @Html.ValidationMessageFor(t => t.PlatformType)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.IsPublic)
-                    @Html.CheckBoxFor(t => t.IsPublic, disabledAttributes)
-                    @Html.ValidationMessageFor(t => t.IsPublic)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.PublicViewing)
+                    @Html.CheckBoxFor(t => t.PublicViewing, disabledAttributes)
+                    @Html.ValidationMessageFor(t => t.PublicViewing)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.PublicRegistration)
+                    @Html.CheckBoxFor(t => t.PublicRegistration, disabledAttributes)
+                    @Html.ValidationMessageFor(t => t.PublicRegistration)
                 </li>
             </ul>
         </div>
@@ -74,12 +81,12 @@
                 </li>
                 <li>
                     @Html.LabelFor(t => t.CheckinStart)
-                    @Html.TextBoxFor(t => t.CheckinStart, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.CheckinStart, new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.CheckinStart)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.CheckinEnd)
-                    @Html.TextBoxFor(t => t.CheckinEnd, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.CheckinEnd, new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.CheckinEnd)
                 </li>
             </ul>
