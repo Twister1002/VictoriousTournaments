@@ -46,7 +46,7 @@ namespace Tournament.Structure
 		{
 			if (CalculateTotalLowerBracketMatches(Players.Count) > 0)
 			{
-				int numOfGrandFinal = _model.Matches.Count - 1;
+				int numOfGrandFinal = _model.Matches.Count;
 
 				//this.LowerMatches = new Dictionary<int, IMatch>();
 				foreach (MatchModel mm in _model.Matches)
@@ -77,7 +77,7 @@ namespace Tournament.Structure
 			}
 
 			UpdateRankings();
-			if (GrandFinal.IsFinished)
+			if (null != GrandFinal || GrandFinal.IsFinished)
 			{
 				IPlayer winningPlayer = GrandFinal.Players[(int)GrandFinal.WinnerSlot];
 				Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
@@ -96,11 +96,12 @@ namespace Tournament.Structure
 		#region Public Methods
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
-			base.CreateBracket(_gamesPerMatch);
-			if (0 == NumberOfMatches)
+			if (Players.Count < 4)
 			{
 				return;
 			}
+
+			base.CreateBracket(_gamesPerMatch);
 
 			List<List<IMatch>> roundList = new List<List<IMatch>>();
 			int totalMatches = CalculateTotalLowerBracketMatches(Players.Count);
