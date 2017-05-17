@@ -15,10 +15,11 @@ namespace Tournament.Structure
 		int Id { get; }
 		string Name { get; }
 
-		[System.Obsolete("use MatchScore&GameScore instead", false)]
+		[System.Obsolete("use MatchScore&GameScore instead", true)]
 		int Score { get; set; }
 		int MatchScore { get; set; }
 		int GameScore { get; set; }
+		int OpponentsScore { get; set; }
 		int PointsScore { get; set; }
 
 		/// <summary>
@@ -30,6 +31,13 @@ namespace Tournament.Structure
 
 		#region Methods
 		/// <summary>
+		/// Replace the Player's information.
+		/// </summary>
+		/// <param name="_id">New player ID</param>
+		/// <param name="_name">New player name</param>
+		void ReplacePlayerData(int _id, string _name);
+
+		/// <summary>
 		/// Add score values to (or subtract from) this PlayerScore.
 		/// </summary>
 		/// <param name="_matchScore">Match score change</param>
@@ -39,7 +47,7 @@ namespace Tournament.Structure
 		void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _addition);
 
 		/// <summary>
-		/// Reset this object's Score values: match, game, and point scores
+		/// Reset this object's Score values: match, opponent, game, and point scores
 		/// </summary>
 		void ResetScore();
 		#endregion

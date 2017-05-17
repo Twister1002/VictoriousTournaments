@@ -13,9 +13,8 @@ namespace WebApplication.Models.Administrator
 
         public PlatformTypeViewModel()
         {
-            platforms = new List<PlatformModel>();
             Model = new PlatformModel();
-            Select();
+            Reload();
         }
 
         public void ApplyFields()

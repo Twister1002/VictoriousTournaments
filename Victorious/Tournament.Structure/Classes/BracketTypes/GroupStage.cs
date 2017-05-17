@@ -36,7 +36,45 @@ namespace Tournament.Structure
 			GetMatchData(ref _matchNumber, out groupIndex);
 			Groups[groupIndex].RestoreMatch(_matchNumber, _model);
 		}
-		
+
+		public override void ReplacePlayer(IPlayer _player, int _index)
+		{
+			if (null == _player)
+			{
+				throw new ArgumentNullException("_player");
+			}
+			if (_index < 0 || _index >= Players.Count)
+			{
+				throw new InvalidIndexException
+					("Invalid index; outside Playerlist bounds.");
+			}
+			if (null == Players[_index])
+			{
+				throw new NotImplementedException
+					("Player to replace doesn't exist!");
+			}
+
+			// Find existing Player's group, and replace him inside:
+			foreach (IBracket group in Groups)
+			{
+				int innerGroupIndex = group.Players
+					.FindIndex(p => p.Id == this.Players[_index].Id);
+				if (innerGroupIndex > -1)
+				{
+					group.ReplacePlayer(_player, innerGroupIndex);
+					break;
+				}
+			}
+
+			// Replace existing Player in Rankings and Playerlist:
+			int rankIndex = Rankings.FindIndex(r => r.Id == Players[_index].Id);
+			if (rankIndex > -1)
+			{
+				Rankings[rankIndex].ReplacePlayerData(_player.Id, _player.Name);
+			}
+			Players[_index] = _player;
+		}
+
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			int groupIndex;

@@ -91,7 +91,7 @@ namespace Tournament.Structure
 			this.IsFinalized = _model.Finalized;
 
 			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
-				.OrderBy(tubm => tubm.Seed)
+				.OrderBy(tubm => tubm.Seed, new SeedComparer())
 				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
@@ -129,7 +129,7 @@ namespace Tournament.Structure
 					// Add Finals winner to Rankings:
 					IPlayer winningPlayer = Matches[NumberOfMatches]
 						.Players[(int)Matches[NumberOfMatches].WinnerSlot];
-					Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, -1, 1));
+					Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 					this.IsFinished = true;
 				}
@@ -447,13 +447,16 @@ namespace Tournament.Structure
 					}
 #endif
 					Rankings.Add(new PlayerScore
-						(match.Players[(int)loserSlot].Id, match.Players[(int)loserSlot].Name, -1, rank));
+						(match.Players[(int)loserSlot].Id,
+						match.Players[(int)loserSlot].Name,
+						rank));
 					if (nextWinnerNumber < 0)
 					{
 						// Finals match: Add winner to Rankings:
 						Rankings.Add(new PlayerScore
 							(match.Players[(int)(match.WinnerSlot)].Id,
-							match.Players[(int)(match.WinnerSlot)].Name, -1, 1));
+							match.Players[(int)(match.WinnerSlot)].Name,
+							1));
 						IsFinished = true;
 					}
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
@@ -550,14 +553,15 @@ namespace Tournament.Structure
 					("Invalid match number called by recursive method!");
 			}
 
-			if (Matches[_matchNumber].Players
+			IMatch match = GetMatch(_matchNumber);
+			if (match.Players
 				.Where(p => p != null)
 				.Any(p => p.Id == _playerId))
 			{
-				if (Matches[_matchNumber].IsFinished)
+				if (match.IsFinished)
 				{
 					// Remove any advanced Players from future Matches:
-					RemovePlayerFromFutureMatches(Matches[_matchNumber].NextMatchNumber, _playerId);
+					RemovePlayerFromFutureMatches(match.NextMatchNumber, match.Players[(int)(match.WinnerSlot)].Id);
 				}
 
 				Matches[_matchNumber].RemovePlayer(_playerId);
@@ -578,7 +582,7 @@ namespace Tournament.Structure
 						(PlayerSlot.Defender == match.WinnerSlot)
 						? (int)PlayerSlot.Challenger
 						: (int)PlayerSlot.Defender];
-					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, rank));
+					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
 				}
 			}
 

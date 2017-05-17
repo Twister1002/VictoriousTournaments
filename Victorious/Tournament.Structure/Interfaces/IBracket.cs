@@ -174,7 +174,12 @@ namespace Tournament.Structure
 		/// <returns>Model of removed Game</returns>
 		GameModel RemoveLastGame(int _matchNumber);
 
-
+		/// <summary>
+		/// Delete/un-record a Game from within a Match.
+		/// </summary>
+		/// <param name="_matchNumber">Number of Match to modify</param>
+		/// <param name="_gameNumber">Number of Game to delete</param>
+		/// <returns>Model of removed Game</returns>
 		GameModel RemoveGameNumber(int _matchNumber, int _gameNumber);
 
 		/// <summary>
@@ -217,7 +222,12 @@ namespace Tournament.Structure
 		/// <returns>Specified Match object</returns>
 		IMatch GetMatch(int _matchNumber);
 
-
+		/// <summary>
+		/// Retrieve a Model of the specified Match.
+		/// This will include the Match's BracketID.
+		/// </summary>
+		/// <param name="_matchNumber">Number of desired Match</param>
+		/// <returns>Model of specified Match</returns>
 		MatchModel GetMatchModel(int _matchNumber);
 
 		/// <summary>

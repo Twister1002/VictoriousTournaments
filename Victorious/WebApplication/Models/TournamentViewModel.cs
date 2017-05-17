@@ -122,11 +122,17 @@ namespace WebApplication.Models
             Model = db.GetTournament(id);
         }
 
+        public void LoadModel(TournamentModel model)
+        {
+            Model = model;
+        }
+
         public bool Update(int sessionId)
         {
             ApplyChanges();
             Model.LastEditedByID = sessionId;
             Model.LastEditedOn = DateTime.Now;
+            Model.Brackets.ElementAt(0).BracketTypeID = this.BracketType;
 
             DbError updateResult = db.UpdateTournament(Model);
 
@@ -248,7 +254,7 @@ namespace WebApplication.Models
             }
         }
 
-        public bool FinalizeTournament(Dictionary<String, int> roundData)
+        public bool FinalizeTournament(Dictionary<String, Dictionary<String, int>> roundData)
         {
             // Load the tournament first
             ProcessTournament();
@@ -259,16 +265,23 @@ namespace WebApplication.Models
             IBracket tourny = Tourny.Brackets[bracketNum];
 
             // Set max games for every round
-            foreach (KeyValuePair<String, int> data in roundData)
+            foreach (KeyValuePair<String, Dictionary<String, int>> roundInfo in roundData)
             {
-                tourny.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
-                tourny.SetMaxGamesForWholeLowerRound(int.Parse(data.Key), data.Value);
-            }
-
-            // Verify the grand final round
-            if (tourny.GrandFinal != null)
-            {
-                tourny.GrandFinal.SetMaxGames(roundData.Last().Value);
+                foreach (KeyValuePair<String, int> data in roundInfo.Value)
+                {
+                    switch (roundInfo.Key)
+                    {
+                        case "upper":
+                            tourny.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
+                            break;
+                        case "lower":
+                            tourny.SetMaxGamesForWholeLowerRound(int.Parse(data.Key), data.Value);
+                            break;
+                        case "final":
+                            tourny.GrandFinal.SetMaxGames(data.Value);
+                            break;
+                    }
+                }
             }
 
             // Process
@@ -291,6 +304,24 @@ namespace WebApplication.Models
             bool TournamentUpdated = db.UpdateTournament(Model) == DbError.SUCCESS;
 
             return bracketUpdated && TournamentUpdated;
+        }
+
+        public bool IsValidInviteCode(String inviteCode)
+        {
+            Dictionary<String, String> search = new Dictionary<String, String>();
+            search.Add("InviteCode", inviteCode);
+
+            List<TournamentModel> models = db.FindTournaments(search);
+
+            if (models.Count == 1)
+            {
+                LoadModel(models[0]);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private void CreateMatches(BracketModel bracketModel, IBracket bracket)
@@ -543,5 +574,9 @@ namespace WebApplication.Models
         {
             return !Model.InProgress ? true : false;
         }
+
+        #region Helpers
+
+        #endregion
     }
 }

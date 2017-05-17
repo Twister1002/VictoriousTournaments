@@ -106,7 +106,8 @@ namespace Tournament.Structure
 						// Add winner to top of Rankings:
 						Rankings.Add(new PlayerScore
 							(match.Players[(int)(match.WinnerSlot)].Id,
-							match.Players[(int)(match.WinnerSlot)].Name, -1, 1));
+							match.Players[(int)(match.WinnerSlot)].Name,
+							1));
 					}
 					else
 					{
@@ -114,10 +115,12 @@ namespace Tournament.Structure
 						// Add both players to Rankings:
 						Rankings.Add(new PlayerScore
 							(match.Players[(int)(match.WinnerSlot)].Id,
-							match.Players[(int)(match.WinnerSlot)].Name, -1, 2));
+							match.Players[(int)(match.WinnerSlot)].Name,
+							2));
 						Rankings.Add(new PlayerScore
 							(match.Players[(int)loserSlot].Id,
-							match.Players[(int)loserSlot].Name, -1, 3));
+							match.Players[(int)loserSlot].Name,
+							3));
 					}
 				}
 
@@ -183,7 +186,8 @@ namespace Tournament.Structure
 				{
 					Rankings.Add(new PlayerScore
 						(upperFinal.Players[(int)(upperFinal.WinnerSlot)].Id,
-						upperFinal.Players[(int)(upperFinal.WinnerSlot)].Name, -1, 1));
+						upperFinal.Players[(int)(upperFinal.WinnerSlot)].Name,
+						1));
 				}
 				IMatch lowerFinal = GetLowerRound(NumberOfLowerRounds)[0];
 				if (lowerFinal.IsFinished)
@@ -193,10 +197,12 @@ namespace Tournament.Structure
 						: PlayerSlot.Defender;
 					Rankings.Add(new PlayerScore
 						(lowerFinal.Players[(int)(lowerFinal.WinnerSlot)].Id,
-						lowerFinal.Players[(int)(lowerFinal.WinnerSlot)].Name, -1, 2));
+						lowerFinal.Players[(int)(lowerFinal.WinnerSlot)].Name,
+						2));
 					Rankings.Add(new PlayerScore
 						(lowerFinal.Players[(int)loserSlot].Id,
-						lowerFinal.Players[(int)loserSlot].Name, -1, 3));
+						lowerFinal.Players[(int)loserSlot].Name,
+						3));
 				}
 
 				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
@@ -277,7 +283,7 @@ namespace Tournament.Structure
 			}
 
 			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
-				.OrderBy(tubm => tubm.Seed)
+				.OrderBy(tubm => tubm.Seed, new SeedComparer())
 				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();

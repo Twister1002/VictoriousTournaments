@@ -2,7 +2,7 @@
 using System.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using DataLib;
+using DatabaseLib;
 using WebApplication.Models;
 using System.Linq;
 
@@ -11,35 +11,6 @@ namespace WebApplication.Tests.Models
     [TestClass]
     public class TournamentViewModelUnit
     {
-        [TestMethod]
-        [TestCategory("TournamentModel")]
-        public void TournamentViewModel_SetModel_SetsValidModel()
-        {
-            // Arrange
-            TournamentModel model = CreateModel();
-            TournamentViewModel viewModel = new TournamentViewModel();
-
-            // Act 
-            viewModel.SetModel(model);
-
-            // Assert
-            Assert.AreEqual(model, viewModel.Model);
-        }
-
-        [TestMethod]
-        [TestCategory("TournamentModel")]
-        public void TournamentViewModel_SetModel_SetsNullModel()
-        {
-            // Arrange
-            TournamentViewModel viewModel = new TournamentViewModel();
-
-            // Act 
-            viewModel.SetModel(null);
-
-            // Assert
-            Assert.AreEqual(null, viewModel.Model);
-        }
-
         [TestMethod]
         [TestCategory("TournamentModel")]
         public void TournamentViewModel_Constructor_SetsModel()
@@ -57,45 +28,43 @@ namespace WebApplication.Tests.Models
         [TestMethod]
         [TestCategory("TournamentModel")]
         [TestCategory("Permissions")]
-        public void TournamentViewModel_UserPermission_Returns_PermissionTournamentAdministrator()
+        public void TournamentViewModel_UserPermission_UserIsAdministrator()
         {
             // Arrange
             int userId = 3;
-            Permission expected = Permission.TOURNAMENT_ADMINISTRATOR;
 
             TournamentModel model = CreateModel();
             TournamentViewModel viewModel = new TournamentViewModel(model);
 
             // Act 
-            Permission userPermission = viewModel.UserPermission(userId);
+            bool isAdmin = viewModel.IsAdministrator(userId);
 
             // Assert
-            Assert.AreEqual(expected, Permission.TOURNAMENT_ADMINISTRATOR);
+            Assert.AreEqual(true, isAdmin);
         }
 
         [TestMethod]
         [TestCategory("TournamentModel")]
         [TestCategory("Permissions")]
-        public void TournamentViewModel_UserPermission_Returns_PermissionTournamentStandard()
+        public void TournamentViewModel_UserPermission_UserIsNotAdministrator()
         {
             // Arrange
-            int userId = 1;
-            Permission permission = Permission.TOURNAMENT_STANDARD;
+            int userId = 2;
 
             TournamentModel model = CreateModel();
             TournamentViewModel viewModel = new TournamentViewModel(model);
 
             // Act 
-            Permission userPermission = viewModel.UserPermission(userId);
+            bool isAdmin = viewModel.IsAdministrator(userId);
 
             // Assert
-            Assert.AreEqual(permission, Permission.TOURNAMENT_STANDARD);
+            Assert.AreEqual(false, isAdmin);
         }
 
         [TestMethod]
         [TestCategory("TournamentModel")]
         [TestCategory("Permissions")]
-        public void TournamentViewModel_UserPermission_Returns_PermissionNone()
+        public void TournamentViewModel_UserPermission_UserHasNoPermissions()
         {
             // Arrange
             int userId = 7;
@@ -104,10 +73,10 @@ namespace WebApplication.Tests.Models
             TournamentViewModel viewModel = new TournamentViewModel(model);
 
             // Act 
-            Permission userPermission = viewModel.UserPermission(userId);
+            bool isAdmin = viewModel.IsAdministrator(userId);
 
             // Assert
-            Assert.AreEqual(userPermission, Permission.NONE);
+            Assert.AreEqual(true, isAdmin);
         }
 
         [TestMethod]
@@ -146,15 +115,6 @@ namespace WebApplication.Tests.Models
             {
                 TournamentID = 1,
                 CreatedByID = 3,
-                TournamentRulesID = 1,
-                TournamentRules = new TournamentRuleModel()
-                {
-                    IsPublic = true,
-                    RegistrationStartDate = DateTime.Now,
-                    RegistrationEndDate = DateTime.Now.AddDays(1),
-                    TournamentStartDate = DateTime.Now.AddDays(2),
-                    TournamentEndDate = DateTime.Now.AddDays(3),
-                },
             };
             AddUsersToModel(model);
             CreateBracket(model);
@@ -165,46 +125,46 @@ namespace WebApplication.Tests.Models
 
         private void AddUsersToModel(TournamentModel model)
         {
-            model.UsersInTournament.Add(new UserInTournamentModel()
+            model.TournamentUsers.Add(new TournamentUserModel()
             {
-                Permission = Permission.TOURNAMENT_STANDARD,
+                PermissionLevel = (int)Permission.TOURNAMENT_STANDARD,
                 TournamentID = 1,
-                UserID = 1
+                AccountID = 1
             });
-            model.UsersInTournament.Add(new UserInTournamentModel()
+            model.TournamentUsers.Add(new TournamentUserModel()
             {
-                Permission = Permission.TOURNAMENT_STANDARD,
+                PermissionLevel = (int)Permission.TOURNAMENT_STANDARD,
                 TournamentID = 1,
-                UserID = 2
+                AccountID = 2
             });
-            model.UsersInTournament.Add(new UserInTournamentModel()
+            model.TournamentUsers.Add(new TournamentUserModel()
             {
-                Permission = Permission.TOURNAMENT_ADMINISTRATOR,
+                PermissionLevel = (int)Permission.TOURNAMENT_ADMINISTRATOR,
                 TournamentID = 1,
-                UserID = 3
+                AccountID = 3
             });
-            model.UsersInTournament.Add(new UserInTournamentModel()
+            model.TournamentUsers.Add(new TournamentUserModel()
             {
-                Permission = Permission.TOURNAMENT_STANDARD,
+                PermissionLevel = (int)Permission.TOURNAMENT_STANDARD,
                 TournamentID = 1,
-                UserID = 4
+                AccountID = 4
             });
-            model.UsersInTournament.Add(new UserInTournamentModel()
+            model.TournamentUsers.Add(new TournamentUserModel()
             {
-                Permission = Permission.TOURNAMENT_ADMINISTRATOR,
+                PermissionLevel = (int)Permission.TOURNAMENT_ADMINISTRATOR,
                 TournamentID = 1,
-                UserID = 5
+                AccountID = 5
             });
-            model.UsersInTournament.Add(new UserInTournamentModel()
+            model.TournamentUsers.Add(new TournamentUserModel()
             {
-                Permission = Permission.TOURNAMENT_STANDARD,
+                PermissionLevel = (int)Permission.TOURNAMENT_STANDARD,
                 TournamentID = 1,
-                UserID = 6
+                AccountID = 6
             });
-            model.UsersInTournament.Add(new UserInTournamentModel()
+            model.TournamentUsers.Add(new TournamentUserModel()
             {
                 TournamentID = 1,
-                UserID = 7
+                AccountID = 7
             });
         }
 
@@ -216,7 +176,7 @@ namespace WebApplication.Tests.Models
                 BracketTypeID = 1,
                 BracketType = new BracketTypeModel()
                 {
-                    Type = BracketTypeModel.BracketType.SINGLE,
+                    Type = BracketType.SINGLE,
                     BracketTypeID = 1,
                     TypeName = "Single Eleminiation"
                 },

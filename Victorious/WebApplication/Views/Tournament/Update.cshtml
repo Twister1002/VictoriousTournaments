@@ -12,7 +12,7 @@
     disabledAttributes = new { disabled = "disabled", @readonly = "readonly" };
 }
 <div id="TournamentEdit" data-id="@Model.Model.TournamentID">
-    @using (Html.BeginForm("Edit", "Tournament", FormMethod.Post))
+    @using (Html.BeginForm("Update", "Tournament", new { tournamentId = Model.Model.TournamentID }, FormMethod.Post))
     {
         <div class="section form-section">
             <h2>Basic Information</h2>
@@ -134,7 +134,7 @@
                         <li class="column name">@user.Name</li>
                         <li class="column permission">Participant</li>
                         <li class="column actions">
-                            @if (Model.IsCreator(userId) && Model.CanEdit())
+                            @if (Model.IsCreator(userId) && user.AccountID != null && Model.CanEdit())
                             {
                                 <button class="promote">Promote</button>
                             }

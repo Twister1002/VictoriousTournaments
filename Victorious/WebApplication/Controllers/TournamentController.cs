@@ -10,6 +10,7 @@ namespace WebApplication.Controllers
 {
     public class TournamentController : VictoriousController
     {
+        [HttpGet]
         [Route("Tournament")]
         public ActionResult Index()
         {
@@ -17,6 +18,7 @@ namespace WebApplication.Controllers
         }
 
         // Tournament Search
+        [HttpGet]
         [Route("Tournament/Search")]
         public ActionResult Search(Dictionary<String, String> searchBy)
         {
@@ -52,45 +54,8 @@ namespace WebApplication.Controllers
             return Json(JsonConvert.SerializeObject(dataReturned));
         }
 
-        // Tournament Info
-        [Route("Tournament/{guid}")]
-        public ActionResult Tournament(String guid)
-        {
-            int tournamentId = ConvertToInt(guid);
-            LoadAccount(Session);
-            TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-
-            if (viewModel.Model != null)
-            {
-                if (!viewModel.Model.InProgress && !viewModel.IsAdministrator(account.AccountId))
-                {
-                    ViewBag.Tournament = viewModel.Model;
-                    ViewBag.isRegistered = viewModel.isRegistered(account.AccountId);
-                    TournamentRegistrationFields fields = new TournamentRegistrationFields()
-                    {
-                        AccountID = account.AccountId,
-                        TournamentID = viewModel.Model.TournamentID
-                    };
-
-                    return View("RegisterForm", fields);
-                }
-                else
-                {
-                    viewModel.ProcessTournament();
-                    return View("Tournament", viewModel);
-                }
-            }
-            else
-            {
-                Session["Message"] = "The tournament you're looking for doesn't exist or is not publicly shared.";
-                Session["Message.Class"] = ViewModel.ViewError.WARNING;
-            }
-
-            
-            return RedirectToAction("Search", "Tournament");
-        }
-
         // GET: Tournament/Create
+        [HttpGet]
         [Route("Tournament/Create")]
         public ActionResult Create()
         {
@@ -106,13 +71,15 @@ namespace WebApplication.Controllers
         }
 
         // GET: Tournament/Edit/5
-        [Route("Tournament/Update/{id}")]
-        public ActionResult Update(int id)
+        [HttpGet]
+        [Route("Tournament/Update")]
+        public ActionResult Update(int tournamentId)
         {
-            if (Session["User.UserId"] != null)
+            LoadAccount(Session);
+            if (account != null)
             {
-                TournamentViewModel viewModel = new TournamentViewModel(id);
-                if (viewModel.IsAdministrator((int)Session["User.UserId"]))
+                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+                if (viewModel.IsAdministrator(account.AccountId))
                 {
                     return View("Update", viewModel);
                 }
@@ -131,6 +98,71 @@ namespace WebApplication.Controllers
 
                 return RedirectToAction("Login", "Account");
             }
+        }
+
+        /// <summary>
+        /// Displays the tournament
+        /// </summary>
+        /// <param name="guid">the ID of the tournament</param>
+        /// <param name="inviteCode">The Invite code</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("Tournament/{guid}")]
+        public ActionResult Tournament(String guid, String inviteCode)
+        {
+            LoadAccount(Session);
+            int tournamentId = ConvertToInt(guid);
+            TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+            bool isAdmin = viewModel.IsAdministrator(account.AccountId);
+
+            if (viewModel.Model != null)
+            {
+                // Should we check for registrations or view the tournament?
+                if (!viewModel.Model.InProgress && !isAdmin)
+                {
+                    // Verify if the user has an invite code or the invite code is valid
+                    if (viewModel.Model.IsPublic || viewModel.Model.InviteCode == inviteCode)
+                    {
+                        // Allow the tournament registration to be shown
+                        ViewBag.Tournament = viewModel.Model;
+                        ViewBag.isRegistered = viewModel.isRegistered(account.AccountId);
+                        TournamentRegistrationFields fields = new TournamentRegistrationFields()
+                        {
+                            AccountID = account.AccountId,
+                            TournamentID = viewModel.Model.TournamentID
+                        };
+
+                        return View("RegisterForm", fields);
+                    }
+                    else
+                    {
+                        Session["Message"] = "This tournament is not accepting registrations.";
+                        Session["Message.Class"] = ViewModel.ViewError.WARNING;
+                    }
+                }
+                else
+                {
+                    // Verify if the user is allowed to view the tournament
+                    if (viewModel.Model.IsPublic || viewModel.Model.InviteCode == inviteCode || isAdmin)
+                    {
+                        viewModel.ProcessTournament();
+                        return View("Tournament", viewModel);
+                    }
+                    else
+                    {
+                        Session["Message"] = "This tournament is not available to view.";
+                        Session["Message.Class"] = ViewModel.ViewError.WARNING;
+                    }
+                }
+            }
+            else
+            {
+                Session["Message"] = "The tournament you're looking for doesn't exist or is not publicly shared.";
+                Session["Message.Class"] = ViewModel.ViewError.WARNING;
+            }
+
+
+            return RedirectToAction("Search", "Tournament");
         }
 
         // POST: Tournament/Create
@@ -178,15 +210,16 @@ namespace WebApplication.Controllers
         // POST: Tournament/Edit/5
         [HttpPost]
         [Route("Tournament/Update")]
-        public ActionResult Update(TournamentViewModel viewModel, int id)
+        public ActionResult Update(TournamentViewModel viewModel, int tournamentId)
         {
-            if (Session["User.UserId"] != null)
+            LoadAccount(Session);
+            if (account != null)
             {
-                viewModel.LoadData(id);
+                viewModel.LoadData(tournamentId);
 
-                if (viewModel.IsAdministrator((int)Session["User.UserId"]))
+                if (viewModel.IsAdministrator(account.AccountId))
                 {
-                    if (viewModel.Update((int)Session["User.UserId"]))
+                    if (viewModel.Update(account.AccountId))
                     {
                         Session["Message"] = "Edits to the tournament was successful";
                         Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
@@ -297,11 +330,12 @@ namespace WebApplication.Controllers
                 data = new
                 {
                     TournamentUserID = user.TournamentUserID,
+                    AccountID = user.AccountID,
                     Name = user.Name,
                     PermissionLevel = user.PermissionLevel,
                     actions = new
                     {
-                        Promote = true,
+                        Promote = false,
                         Demote = false,
                         Remove = true
                     }
@@ -351,14 +385,15 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Ajax/Tournament/Finalize")]
-        public JsonResult Finalize(String jsonData, Dictionary<String, int> roundData)
+        public JsonResult Finalize(String jsonData, Dictionary<String, Dictionary<String, int>> roundData)
         {
+            LoadAccount(Session);
             Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
             bool status = false;
             String message = "No action was taken";
             String redirect = redirect = Url.Action("Tournament", "Tournament", new { guid = json["tournyVal"] });
-
-            if (Session["User.UserId"] != null)
+            
+            if (account != null)
             {
                 // Load the tournament
                 TournamentViewModel viewModel = new TournamentViewModel(json["tournyVal"]);
