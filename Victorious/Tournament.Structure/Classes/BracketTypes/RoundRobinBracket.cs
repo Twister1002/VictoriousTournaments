@@ -99,7 +99,7 @@ namespace Tournament.Structure
 			this.Id = _model.BracketID;
 			this.BracketType = _model.BracketType.Type;
 			this.IsFinalized = _model.Finalized;
-			this.MaxRounds = 0;
+			this.MaxRounds = _model.MaxRounds;
 			this.MatchWinValue = 2;
 			this.MatchTieValue = 1;
 			ResetBracket();
@@ -120,11 +120,7 @@ namespace Tournament.Structure
 				// Create the Match:
 				IMatch match = new Match(mm);
 				Matches.Add(match.MatchNumber, match);
-				++NumberOfMatches;
-				if (match.RoundIndex > NumberOfRounds)
-				{
-					this.NumberOfRounds = match.RoundIndex;
-				}
+				this.NumberOfRounds = Math.Max(NumberOfRounds, match.RoundIndex);
 
 				// Get the Scores, and update Rankings:
 				int defScore = 0, chalScore = 0;
@@ -144,6 +140,7 @@ namespace Tournament.Structure
 					(PlayerSlot.Challenger == match.WinnerSlot) ? MatchWinValue : 0
 					, match.Score[(int)PlayerSlot.Challenger], chalScore, true);
 			}
+			NumberOfMatches = Matches.Count;
 
 			UpdateRankings();
 			this.IsFinished = true;

@@ -65,11 +65,8 @@ namespace Tournament.Structure
 					{
 						// Case 3: match is lower bracket:
 						IMatch match = new Match(mm);
-						if (match.RoundIndex > NumberOfLowerRounds)
-						{
-							this.NumberOfLowerRounds = match.RoundIndex;
-						}
 						LowerMatches.Add(match.MatchNumber, match);
+						this.NumberOfLowerRounds = Math.Max(NumberOfLowerRounds, match.RoundIndex);
 					}
 				}
 				this.NumberOfMatches = Matches.Count + LowerMatches.Count;

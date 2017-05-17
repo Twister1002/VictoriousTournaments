@@ -105,15 +105,11 @@ namespace Tournament.Structure
 
 			foreach (MatchModel mm in _model.Matches.OrderBy(m => m.MatchNumber))
 			{
-				IMatch match = new Match(mm);
-				if (match.RoundIndex > NumberOfRounds)
+				if (mm.MatchNumber <= totalMatches)
 				{
-					this.NumberOfRounds = match.RoundIndex;
-				}
-
-				if (match.MatchNumber <= totalMatches)
-				{
-					Matches.Add(match.MatchNumber, match);
+					IMatch match = new Match(mm);
+					Matches.Add(mm.MatchNumber, match);
+					this.NumberOfRounds = Math.Max(NumberOfRounds, match.RoundIndex);
 				}
 				else
 				{
