@@ -439,6 +439,67 @@ namespace Tournament.Structure.Tests
 
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB UpdateGame")]
+		public void SEBUpdateGame_ChangesGame()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList, 3);
+			b.AddGame(1, 3, 1, PlayerSlot.Defender);
+
+			b.UpdateGame(1, 1, 1, 2, PlayerSlot.Challenger);
+			Assert.AreEqual(0, b.GetMatch(1).Score[(int)PlayerSlot.Defender]);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB UpdateGame")]
+		public void SEBUpdateGame_ChangesMatchOutcome()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			b.AddGame(1, 3, 1, PlayerSlot.Defender);
+			int oldWinnerId = b.GetRound(2)[0].Players[(int)PlayerSlot.Defender].Id;
+
+			b.UpdateGame(1, 1, 1, 2, PlayerSlot.Challenger);
+			Assert.AreNotEqual(oldWinnerId,
+				b.GetRound(2)[0].Players[(int)PlayerSlot.Defender].Id);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB UpdateGame")]
+		public void SEBUpdateGame_ChangesRankings()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 2, 1, PlayerSlot.Defender);
+			}
+			int oldWinnerId = b.Rankings[0].Id;
+
+			b.UpdateGame(b.NumberOfMatches, 1, 1, 2, PlayerSlot.Challenger);
+			Assert.AreNotEqual(oldWinnerId, b.Rankings[0].Id);
+		}
+
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB RemoveLastGame")]
 		public void SEBRemoveLastGame_SubtractsScore()
 		{
@@ -552,6 +613,8 @@ namespace Tournament.Structure.Tests
 			b.RemoveLastGame(b.NumberOfMatches + 1);
 			Assert.AreEqual(1, 2);
 		}
+
+		
 
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]

@@ -330,7 +330,12 @@ namespace Tournament.Structure
 			{
 				// If all matches are finished, try to generate a new round.
 				// If successful, reset IsFinished:
-				IsFinished = !(AddSwissRound(GetMatch(_matchNumber).MaxGames));
+				if (AddSwissRound(GetMatch(_matchNumber).MaxGames))
+				{
+					IsFinished = false;
+					OnUpdatedBracket(new BracketEventArgs(true));
+				}
+				
 			}
 		}
 		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
@@ -344,6 +349,7 @@ namespace Tournament.Structure
 				RemoveFutureRounds(match.RoundIndex);
 				//CheckAndRemoveNextRound(1 + GetMatch(_matchNumber).RoundIndex);
 				this.IsFinished = false;
+				OnUpdatedBracket(new BracketEventArgs(true));
 			}
 			else
 			{
@@ -544,7 +550,7 @@ namespace Tournament.Structure
 			for (int i = 0, pOffset = 0; i < numCompetitors; ++i)
 			{
 				if (PlayerByes.Count > 0 &&
-					PlayerByes[PlayerByes.Count - 1] == i)
+					PlayerByes[PlayerByes.Count - 1] == Players[i].Id)
 				{
 					++pOffset;
 				}

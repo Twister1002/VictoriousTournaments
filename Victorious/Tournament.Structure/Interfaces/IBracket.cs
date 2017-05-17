@@ -64,6 +64,10 @@ namespace Tournament.Structure
 		int NumberOfMatches { get; }
 		#endregion
 
+		#region Events
+		event EventHandler<BracketEventArgs> UpdateBracket;
+		#endregion
+
 		#region Methods
 		/// <summary>
 		/// Generates the bracket (NEW rounds & matches).

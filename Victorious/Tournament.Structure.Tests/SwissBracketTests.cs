@@ -109,7 +109,7 @@ namespace Tournament.Structure.Tests
 			for (int i = 0; i < 9; ++i)
 			{
 				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i);
+				moq.Setup(p => p.Id).Returns(i + 3);
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SwissBracket(pList);
@@ -207,10 +207,10 @@ namespace Tournament.Structure.Tests
 		public void Swiss_RoundCountTester()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 16; ++i)
+			for (int i = 0; i < 13; ++i)
 			{
 				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i);
+				moq.Setup(p => p.Id).Returns(i + 5);
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SwissBracket(pList);

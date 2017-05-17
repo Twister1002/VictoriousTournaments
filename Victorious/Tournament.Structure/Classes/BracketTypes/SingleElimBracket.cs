@@ -541,11 +541,13 @@ namespace Tournament.Structure
 			}
 		}
 
-		protected virtual void RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
+		protected virtual List<int> RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 		{
+			List<int> alteredMatchNumbers = new List<int>();
+
 			if (_matchNumber < 1 || _playerId == -1)
 			{
-				return;
+				return alteredMatchNumbers;
 			}
 			if (!Matches.ContainsKey(_matchNumber))
 			{
@@ -561,11 +563,15 @@ namespace Tournament.Structure
 				if (match.IsFinished)
 				{
 					// Remove any advanced Players from future Matches:
-					RemovePlayerFromFutureMatches(match.NextMatchNumber, match.Players[(int)(match.WinnerSlot)].Id);
+					alteredMatchNumbers.AddRange(RemovePlayerFromFutureMatches
+						(match.NextMatchNumber, match.Players[(int)(match.WinnerSlot)].Id));
 				}
 
 				Matches[_matchNumber].RemovePlayer(_playerId);
 			}
+			alteredMatchNumbers.Add(match.MatchNumber);
+
+			return alteredMatchNumbers.OrderBy(i => i).ToList();
 		}
 
 		protected override void UpdateRankings()
