@@ -8,29 +8,23 @@ using DatabaseLib;
 
 namespace Tournament.Structure
 {
-	public class BracketEventArgs :EventArgs
+	public class BracketEventArgs : EventArgs
 	{
-		public bool UpdateBracket
-		{ get; private set; }
 		public List<MatchModel> UpdatedMatches
 		{ get; private set; }
-		public List<GameModel> UpdatedGames
+		public List<int> DeletedGameIDs
 		{ get; private set; }
 
-		public BracketEventArgs(bool _update, List<MatchModel> _matches, List<GameModel> _games)
+		public BracketEventArgs(List<MatchModel> _matches, List<int> _gameIDs)
 		{
-			UpdateBracket = _update;
 			UpdatedMatches = _matches;
-			UpdatedGames = _games;
+			DeletedGameIDs = _gameIDs;
 		}
-		public BracketEventArgs(bool _update)
-			: this(true, null, null)
-		{ }
 		public BracketEventArgs(List<MatchModel> _matches)
-			: this(false, _matches, null)
+			: this(_matches, new List<int>())
 		{ }
-		public BracketEventArgs(List<GameModel> _games)
-			: this(false, null, _games)
+		public BracketEventArgs(List<int> _gameIDs)
+			: this(new List<MatchModel>(), _gameIDs)
 		{ }
 	}
 }

@@ -323,7 +323,7 @@ namespace Tournament.Structure
 				base.UpdateScore(_matchNumber, _games, _isAddition, _formerMatchWinnerSlot, _resetManualWin);
 			}
 		}
-		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			base.ApplyWinEffects(_matchNumber, _slot);
 			if (this.IsFinished)
@@ -333,11 +333,20 @@ namespace Tournament.Structure
 				if (AddSwissRound(GetMatch(_matchNumber).MaxGames))
 				{
 					IsFinished = false;
-					OnUpdatedBracket(new BracketEventArgs(true));
+
+					List<MatchModel> modelList = new List<MatchModel>();
+					List<IMatch> addedRound = GetRound(NumberOfRounds);
+					foreach (IMatch match in addedRound)
+					{
+						modelList.Add(GetMatchModel(match.MatchNumber));
+					}
+					OnRoundAdded(new BracketEventArgs(modelList));
 				}
 			}
+
+			return (new List<MatchModel>());
 		}
-		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
+		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
 			IMatch match = GetMatch(_matchNumber);
 			if (!(match.IsFinished) &&
@@ -345,15 +354,16 @@ namespace Tournament.Structure
 				(_games.Count + match.Score[0] + match.Score[1] >= match.MaxGames)))
 			{
 				// This removal invalidates future matches. Delete them:
-				RemoveFutureRounds(match.RoundIndex);
-				//CheckAndRemoveNextRound(1 + GetMatch(_matchNumber).RoundIndex);
+				List<MatchModel> removedMatches = RemoveFutureRounds(match.RoundIndex);
 				this.IsFinished = false;
-				OnUpdatedBracket(new BracketEventArgs(true));
+				OnRoundDeleted(new BracketEventArgs(removedMatches));
 			}
 			else
 			{
 				base.ApplyGameRemovalEffects(_matchNumber, _games, _formerMatchWinnerSlot);
 			}
+
+			return (new List<MatchModel>());
 		}
 
 		private bool AddSwissRound(int _gamesPerMatch)
@@ -693,15 +703,18 @@ namespace Tournament.Structure
 			return heuristicGraph;
 		}
 
-		private void RemoveFutureRounds(int _currentRoundIndex)
+		private List<MatchModel> RemoveFutureRounds(int _currentRoundIndex)
 		{
+			List<MatchModel> removedMatches = new List<MatchModel>();
+			List<int> deletedGameIDs = new List<int>();
+
 			// Recursive call on all rounds after this one:
 			int nextRoundIndex = 1 + _currentRoundIndex;
 			if (nextRoundIndex > NumberOfRounds)
 			{
-				return;
+				return removedMatches;
 			}
-			RemoveFutureRounds(nextRoundIndex);
+			removedMatches.AddRange(RemoveFutureRounds(nextRoundIndex));
 
 			// Get & delete all Matches in this round:
 			List<int> nextRoundMatchNumbers = GetRound(nextRoundIndex)
@@ -709,6 +722,8 @@ namespace Tournament.Structure
 				.ToList();
 			foreach (int n in nextRoundMatchNumbers)
 			{
+				removedMatches.Add(GetMatchModel(n));
+				deletedGameIDs.AddRange(GetMatch(n).Games.Select(g => g.Id));
 				Matches.Remove(n);
 			}
 			// Also delete associated Matchups and Bye:
@@ -721,6 +736,9 @@ namespace Tournament.Structure
 			// Update bracket Properties:
 			NumberOfMatches = Matches.Count;
 			NumberOfRounds = _currentRoundIndex;
+
+			OnGamesDeleted(deletedGameIDs);
+			return removedMatches;
 		}
 
 		private void RecalculateRankings()

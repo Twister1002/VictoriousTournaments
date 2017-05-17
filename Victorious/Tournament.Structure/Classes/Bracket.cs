@@ -40,13 +40,46 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Events
-		public event EventHandler<BracketEventArgs> UpdateBracket;
-		protected void OnUpdatedBracket(BracketEventArgs _e)
+		public event EventHandler<BracketEventArgs> RoundAdded;
+		public event EventHandler<BracketEventArgs> RoundDeleted;
+		public event EventHandler<BracketEventArgs> MatchesModified;
+		public event EventHandler<BracketEventArgs> GamesDeleted;
+		protected void OnRoundAdded(BracketEventArgs _e)
 		{
-			EventHandler<BracketEventArgs> handler = UpdateBracket;
-			if (null != handler)
+			RoundAdded?.Invoke(this, _e);
+		}
+		protected void OnRoundDeleted(BracketEventArgs _e)
+		{
+			RoundDeleted?.Invoke(this, _e);
+		}
+		protected void OnMatchesModified(BracketEventArgs _e)
+		{
+			MatchesModified?.Invoke(this, _e);
+		}
+		protected void OnMatchesModified(List<MatchModel> _modelList)
+		{
+			if (null != _modelList && _modelList.Count > 0)
 			{
-				handler(this, _e);
+				OnMatchesModified(new BracketEventArgs(_modelList
+					.OrderBy(m => m.MatchNumber).ToList()));
+			}
+		}
+		protected void OnGamesDeleted(BracketEventArgs _e)
+		{
+			GamesDeleted?.Invoke(this, _e);
+		}
+		protected void OnGamesDeleted(List<IGame> _games)
+		{
+			if (null != _games && _games.Count > 0)
+			{
+				OnGamesDeleted(new BracketEventArgs(_games.Select(g => g.Id).ToList()));
+			}
+		}
+		protected void OnGamesDeleted(List<int> _gameIDs)
+		{
+			if (null != _gameIDs && _gameIDs.Count > 0)
+			{
+				OnGamesDeleted(new BracketEventArgs(_gameIDs));
 			}
 		}
 		#endregion
@@ -54,8 +87,8 @@ namespace Tournament.Structure
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
 		protected abstract void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false);
-		protected abstract void ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
-		protected abstract void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot);
+		protected abstract List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
+		protected abstract List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot);
 		protected abstract void UpdateRankings();
 		#endregion
 
@@ -409,22 +442,37 @@ namespace Tournament.Structure
 			GameModel gameModel = GetMatch(_matchNumber)
 				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
 			UpdateScore(_matchNumber, new List<GameModel>() { gameModel }, true, matchWinnerSlot);
-			ApplyWinEffects(_matchNumber, _winnerSlot);
+			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
+
+			OnMatchesModified(alteredMatches);
 			return gameModel;
 		}
 		public virtual GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
+			//////////////////
+			// REWRITE THIS!!
+			//////////////////
+
 			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
 			List<GameModel> modelList = new List<GameModel>();
 
 			modelList.Add(GetMatch(_matchNumber).RemoveGameNumber(_gameNumber));
-			ApplyGameRemovalEffects(_matchNumber, modelList, matchWinnerSlot);
+			List<MatchModel> clearedMatches = ApplyGameRemovalEffects(_matchNumber, modelList, matchWinnerSlot);
 			UpdateScore(_matchNumber, modelList, false, matchWinnerSlot);
 
 			GameModel addedGame = GetMatch(_matchNumber)
 				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
 			UpdateScore(_matchNumber, new List<GameModel>() { addedGame }, true, _winnerSlot);
-			ApplyWinEffects(_matchNumber, _winnerSlot);
+			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
+
+			foreach (MatchModel model in clearedMatches)
+			{
+				if (!alteredMatches.Any(m => m.MatchID == model.MatchID))
+				{
+					alteredMatches.Add(model);
+				}
+			}
+			OnMatchesModified(alteredMatches);
 			return addedGame;
 		}
 		public virtual GameModel RemoveLastGame(int _matchNumber)
@@ -433,8 +481,10 @@ namespace Tournament.Structure
 			List<GameModel> modelList = new List<GameModel>();
 
 			modelList.Add(GetMatch(_matchNumber).RemoveLastGame());
-			ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
+			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
 			UpdateScore(_matchNumber, modelList, false, winnerSlot);
+
+			OnMatchesModified(alteredMatches);
 			return modelList[0];
 		}
 		public virtual GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
@@ -443,8 +493,10 @@ namespace Tournament.Structure
 			List<GameModel> modelList = new List<GameModel>();
 
 			modelList.Add(GetMatch(_matchNumber).RemoveGameNumber(_gameNumber));
-			ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
+			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
 			UpdateScore(_matchNumber, modelList, false, winnerSlot);
+
+			OnMatchesModified(alteredMatches);
 			return modelList[0];
 		}
 
@@ -465,7 +517,9 @@ namespace Tournament.Structure
 				GetMatch(_matchNumber).AddGame(model.DefenderScore, model.ChallengerScore, winSlot);
 			}
 			UpdateScore(_matchNumber, null, true, PlayerSlot.unspecified);
-			ApplyWinEffects(_matchNumber, _winnerSlot);
+			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
+
+			OnMatchesModified(alteredMatches);
 		}
 		public virtual List<GameModel> ResetMatchScore(int _matchNumber)
 		{
@@ -474,8 +528,10 @@ namespace Tournament.Structure
 			bool wasManualWin = match.IsManualWin;
 
 			List<GameModel> modelList = GetMatch(_matchNumber).ResetScore();
-			ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
+			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
 			UpdateScore(_matchNumber, modelList, false, winnerSlot, wasManualWin);
+
+			OnMatchesModified(alteredMatches);
 			return modelList;
 #if false
 			List<GameModel> modelList = new List<GameModel>();
