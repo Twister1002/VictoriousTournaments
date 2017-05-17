@@ -68,7 +68,7 @@
     <Compile Include="C__RefactorLog.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="DbInterface.cs" />
+    <Compile Include="DatabaseRepository.cs" />
     <Compile Include="GameModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>

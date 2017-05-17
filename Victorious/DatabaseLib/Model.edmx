@@ -149,6 +149,8 @@
           <Property Name="PlatformID" Type="int" Nullable="false" />
           <Property Name="InProgress" Type="bit" Nullable="false" />
           <Property Name="InviteCode" Type="nvarchar" MaxLength="256" />
+          <Property Name="PublicRegistration" Type="bit" Nullable="false" />
+          <Property Name="PublicViewing" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="TournamentUsers">
           <Key>
@@ -699,6 +701,8 @@
           <NavigationProperty Name="Platform" Relationship="VictoriousDatabaseModel.FK_Tournaments_Platforms" FromRole="Tournament" ToRole="PlatformModel" />
           <NavigationProperty Name="TournamentUsers" Relationship="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" FromRole="Tournament" ToRole="TournamentUserModel" />
           <NavigationProperty Name="TournamentInvite" Relationship="VictoriousDatabaseModel.FK_Tournaments_TournamentInvites1" FromRole="TournamentModel" ToRole="TournamentInviteModel" />
+          <Property Name="PublicRegistration" Type="Boolean" Nullable="false" />
+          <Property Name="PublicViewing" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_Brackets_Tournaments">
           <End Type="VictoriousDatabaseModel.TournamentModel" Role="Tournament" Multiplicity="0..1" />
@@ -923,6 +927,8 @@
           <EntitySetMapping Name="TournamentModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentModel">
               <MappingFragment StoreEntitySet="Tournaments">
+                <ScalarProperty Name="PublicViewing" ColumnName="PublicViewing" />
+                <ScalarProperty Name="PublicRegistration" ColumnName="PublicRegistration" />
                 <ScalarProperty Name="InviteCode" ColumnName="InviteCode" />
                 <ScalarProperty Name="InProgress" ColumnName="InProgress" />
                 <ScalarProperty Name="PlatformID" ColumnName="PlatformID" />

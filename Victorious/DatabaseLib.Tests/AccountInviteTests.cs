@@ -9,7 +9,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Add_Account_Invite()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             AccountInviteModel invite = new AccountInviteModel()
             {
@@ -29,7 +29,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Update_Account_Invite()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             AccountInviteModel invite = db.GetAcountInvite("10000");
             invite.IsExpired = true;
@@ -41,7 +41,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Delete_Account_Invite()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var result = db.DeleteAccountInvite("10000");
 

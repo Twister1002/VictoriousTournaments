@@ -9,7 +9,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_All_BracketTypes()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var result = db.GetAllBracketTypes().Count;
 

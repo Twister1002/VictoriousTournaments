@@ -10,7 +10,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Add_Bracket()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var bracket = new BracketModel()
             {
@@ -29,7 +29,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_Bracket()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
             
             var result = db.GetBracket(3);
 
@@ -39,7 +39,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Update_Bracket_No_Cascade()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             BracketModel bracket = db.GetBracket(3);
 
@@ -53,7 +53,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Delete_Bracket()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
         }
 
     }

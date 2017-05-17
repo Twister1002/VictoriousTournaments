@@ -43,6 +43,8 @@ namespace DatabaseLib
         public int PlatformID { get; set; }
         public bool InProgress { get; set; }
         public string InviteCode { get; set; }
+        public bool PublicRegistration { get; set; }
+        public bool PublicViewing { get; set; }
     	
     	partial void OnInit();
     

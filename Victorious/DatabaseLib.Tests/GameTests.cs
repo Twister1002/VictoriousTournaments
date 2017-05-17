@@ -9,7 +9,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Add_Game()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             GameModel game = new GameModel()
             {
@@ -27,7 +27,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_Game()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var result = db.GetGame(1);
 
@@ -37,7 +37,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Update_Game_No_Cascade()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var game = db.GetGame(1);
             game.GameNumber = 2;
@@ -49,7 +49,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Delete_Game()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var result = db.DeleteGame(1);
 

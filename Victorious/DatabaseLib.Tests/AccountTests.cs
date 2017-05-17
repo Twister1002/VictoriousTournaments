@@ -11,7 +11,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Add_User_Acccount()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
             var user = new AccountModel()
             {
                 FirstName = "Ryan",
@@ -30,7 +30,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Username_Exists_Exists()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var result = db.AccountUsernameExists("keltonr01");
 
@@ -40,7 +40,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Username_Does_Not_Exist()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var result = db.AccountUsernameExists("keltonr02");
 
@@ -50,7 +50,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_Account_By_Username()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var account = db.GetAccount("keltonr01");
             var result = false;
@@ -63,7 +63,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Delete_Account()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var user = new AccountModel()
             {
@@ -84,7 +84,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_Tournaments_For_Account()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             List<TournamentModel> accountTournaments = db.GetTournamentsForAccount(1);
             List<TournamentModel> tournaments = db.GetAllTournaments().GetRange(0, 2);

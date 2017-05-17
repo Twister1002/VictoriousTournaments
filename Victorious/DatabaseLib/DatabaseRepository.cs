@@ -38,13 +38,13 @@ namespace DatabaseLib
         ERROR = -1, NONE = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_REMOVE, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS, CONCURRENCY_ERROR, INVITE_CODE_EXISTS
     };
 
-    public class DbInterface
+    public class DatabaseRepository
     {
         VictoriousEntities context = new VictoriousEntities();
 
         public Exception interfaceException;
 
-        public DbInterface()
+        public DatabaseRepository()
         {
             context.Configuration.LazyLoadingEnabled = false;
             context.Configuration.ProxyCreationEnabled = false;
