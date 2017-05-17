@@ -277,6 +277,8 @@ namespace Tournament.Structure
 					("Invalid index; outside Playerlist bounds.");
 			}
 
+			List<MatchModel> alteredMatches = new List<MatchModel>();
+
 			if (null != Players[_index])
 			{
 				// Replace existing Player in any Matches
@@ -285,6 +287,7 @@ namespace Tournament.Structure
 					try
 					{
 						GetMatch(n).ReplacePlayer(_player, Players[_index].Id);
+						alteredMatches.Add(GetMatchModel(n));
 					}
 					catch (PlayerNotFoundException)
 					{ }
@@ -301,6 +304,7 @@ namespace Tournament.Structure
 			}
 
 			Players[_index] = _player;
+			OnMatchesModified(alteredMatches);
 		}
 		public void SwapPlayers(int _index1, int _index2)
 		{
@@ -685,19 +689,41 @@ namespace Tournament.Structure
 		}
 		public virtual void ResetMatches()
 		{
+			List<MatchModel> alteredMatches = new List<MatchModel>();
+			List<int> deletedGameIDs = new List<int>();
+
 			for (int n = 1; n <= NumberOfMatches; ++n)
 			{
 				IMatch match = GetMatch(n);
+				bool affected = false;
+
+				if (match.IsManualWin || match.Games.Count > 0)
+				{
+					// Populate the list for GamesDeleted event:
+					affected = true;
+					deletedGameIDs.AddRange(match.Games.Select(g => g.Id));
+				}
 				for (int i = 0; i < 2; ++i)
 				{
+					// Remove Players (but only if they advanced into this match):
 					if (match.PreviousMatchNumbers[i] > -1 &&
 						null != match.Players[i])
 					{
+						affected = true;
 						GetMatch(n).RemovePlayer(match.Players[i].Id);
 					}
 				}
+
 				GetMatch(n).ResetScore();
+				if (affected)
+				{
+					// Populate the list for MatchesModified event:
+					alteredMatches.Add(GetMatchModel(n));
+				}
 			}
+
+			OnGamesDeleted(deletedGameIDs);
+			OnMatchesModified(alteredMatches);
 		}
 		#endregion
 
