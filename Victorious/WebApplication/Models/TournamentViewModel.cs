@@ -28,11 +28,13 @@ namespace WebApplication.Models
 
         public TournamentViewModel(int id)
         {
+            Init();
+
             Model = db.GetTournament(id);
             if (Model != null)
             {
                 SetFields();
-                Init();
+                GetUserPermissions();
             }
             else
             {
@@ -42,12 +44,15 @@ namespace WebApplication.Models
 
         public TournamentViewModel(TournamentModel model)
         {
+            Init();
+
             if (model != null)
             {
                 Model = model;
                 SetFields();
             }
-            Init();
+            
+            GetUserPermissions();
         }
 
         public void Init()
@@ -55,10 +60,10 @@ namespace WebApplication.Models
             this.BracketTypes = db.GetAllBracketTypes();
             this.GameTypes = db.GetAllGameTypes();
             this.PlatformTypes = db.GetAllPlatforms();
+            this.PublicViewing = true;
             Administrators = new List<TournamentUserModel>();
             Participants = new List<TournamentUserModel>();
             SearchedTournaments = new List<TournamentModel>();
-            GetUserPermissions();
         }
 
         public override void ApplyChanges()
@@ -68,9 +73,8 @@ namespace WebApplication.Models
             Model.Description = this.Description;
             Model.GameTypeID = this.GameType;
             Model.PlatformID = this.PlatformType;
-
-            // Tournament Rule Stuff
-            Model.IsPublic = this.IsPublic;
+            Model.PublicViewing = this.PublicViewing;
+            Model.PublicRegistration = this.PublicRegistration;
             Model.RegistrationStartDate = this.RegistrationStartDate;
             Model.RegistrationEndDate = this.RegistrationEndDate;
             Model.TournamentStartDate = this.TournamentStartDate;
@@ -85,8 +89,8 @@ namespace WebApplication.Models
             this.Description = Model.Description;
             this.GameType = Model.GameTypeID;
             this.PlatformType = Model.PlatformID;
-
-            this.IsPublic = Model.IsPublic;
+            this.PublicViewing = Model.PublicViewing;
+            this.PublicRegistration = Model.PublicRegistration;
             this.RegistrationStartDate = Model.RegistrationStartDate;
             this.RegistrationEndDate = Model.RegistrationEndDate;
             this.TournamentStartDate = Model.TournamentStartDate;

@@ -105,8 +105,10 @@ namespace WebApplication.Models
         [Required(ErrorMessage = "Choose a platform")]
         public int PlatformType { get; set; } 
 
-        [Display(Name = "Public")]
-        public bool IsPublic { get; set; }
+        [Display(Name = "Public Viewing")]
+        public bool PublicViewing { get; set; }
+        [Display(Name = "Public Registation")]
+        public bool PublicRegistration { get; set; }
 
         public abstract void ApplyChanges();
         public abstract void SetFields();

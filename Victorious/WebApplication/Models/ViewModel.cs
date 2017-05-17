@@ -23,7 +23,7 @@ namespace WebApplication.Models
         };
         
         public ViewError error = ViewError.NONE;
-        protected DbInterface db = new DbInterface();
+        protected DatabaseRepository db = new DatabaseRepository();
         public String message { get; set; }
         public Exception dbException { get; set; }
     }

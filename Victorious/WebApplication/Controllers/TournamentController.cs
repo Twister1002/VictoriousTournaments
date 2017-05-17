@@ -46,7 +46,8 @@ namespace WebApplication.Controllers
                     game = tourny.GameType.Title,
                     platform = tourny.Platform != null ? tourny.Platform.PlatformName : "None",
                     startDate = tourny.TournamentStartDate.ToShortDateString(),
-                    isPublic = tourny.IsPublic,
+                    publicRegistration = tourny.PublicRegistration,
+                    publicViewing = tourny.PublicViewing,
                     link = Url.Action("Tournament", "Tournament", new { guid = tourny.TournamentID })
                 });
             }
@@ -121,7 +122,7 @@ namespace WebApplication.Controllers
                 if (!viewModel.Model.InProgress && !isAdmin)
                 {
                     // Verify if the user has an invite code or the invite code is valid
-                    if (viewModel.Model.IsPublic || viewModel.Model.InviteCode == inviteCode)
+                    if (viewModel.PublicRegistration || viewModel.Model.InviteCode == inviteCode)
                     {
                         // Allow the tournament registration to be shown
                         ViewBag.Tournament = viewModel.Model;
@@ -143,7 +144,7 @@ namespace WebApplication.Controllers
                 else
                 {
                     // Verify if the user is allowed to view the tournament
-                    if (viewModel.Model.IsPublic || viewModel.Model.InviteCode == inviteCode || isAdmin)
+                    if (viewModel.Model.PublicViewing || viewModel.Model.InviteCode == inviteCode || isAdmin)
                     {
                         viewModel.ProcessTournament();
                         return View("Tournament", viewModel);
@@ -189,7 +190,7 @@ namespace WebApplication.Controllers
                         Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
                     }
                     //TODO: This should redirect to the tournament
-                    return RedirectToAction("Index", "Account");
+                    return RedirectToAction("Tournament", "Tournament", new { guid = viewModel.Model.TournamentID });
                 }
                 else
                 {

@@ -15,7 +15,7 @@ namespace WebApplication.Tests.Models
         public void Account_Fields_ApplyFields_SetsFieldsToModel()
         {
             // Arrange
-            Mock<DbInterface> db = new Mock<DbInterface>();
+            Mock<DatabaseRepository> db = new Mock<DatabaseRepository>();
             db.Setup(x => x.AddAccount(GenerateModel()));
 
             AccountViewModel viewModel = new AccountViewModel();
