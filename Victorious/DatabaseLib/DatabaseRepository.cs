@@ -35,16 +35,16 @@ namespace DatabaseLib
 
     public enum DbError
     {
-        ERROR = -1, NONE = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_REMOVE, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS, CONCURRENCY_ERROR
+        ERROR = -1, NONE = 0, SUCCESS, FAILED_TO_ADD, FAILED_TO_REMOVE, FAILED_TO_UPDATE, FAILED_TO_DELETE, TIMEOUT, DOES_NOT_EXIST, EXISTS, CONCURRENCY_ERROR, INVITE_CODE_EXISTS
     };
 
-    public class DbInterface
+    public class DatabaseRepository
     {
         VictoriousEntities context = new VictoriousEntities();
 
         public Exception interfaceException;
 
-        public DbInterface()
+        public DatabaseRepository()
         {
             context.Configuration.LazyLoadingEnabled = false;
             context.Configuration.ProxyCreationEnabled = false;
@@ -103,7 +103,7 @@ namespace DatabaseLib
             }
             if (context.BracketTypeModels.Find(6) == null)
             {
-                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 6, Type = BracketType.GSLGROUP, TypeName = "Swiss" });
+                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 6, Type = BracketType.SWISS, TypeName = "Swiss" });
                 context.SaveChanges();
             }
 
@@ -333,6 +333,8 @@ namespace DatabaseLib
             TournamentModel _tournament = new TournamentModel();
             try
             {
+                //if (AddTournamentInviteCode(tournament.InviteCode) == DbError.EXISTS)
+                //    return DbError.INVITE_CODE_EXISTS;
                 _tournament = tournament;
 
                 _tournament.CreatedOn = DateTime.Now;
@@ -395,39 +397,49 @@ namespace DatabaseLib
 
         public DbError UpdateTournament(TournamentModel tournament, bool cascade = false)
         {
-            try
+            using (var db = new VictoriousEntities())
             {
-                TournamentModel _tournament = context.TournamentModels.Find(tournament.TournamentID);
-                context.Entry(_tournament).CurrentValues.SetValues(tournament);
+                try
+                {
+                    //db.Configuration.ProxyCreationEnabled = false;
 
-                foreach (var bracket in _tournament.Brackets)
-                {
-                    foreach (var match in bracket.Matches)
+                    TournamentModel _tournament = db.TournamentModels.Find(tournament.TournamentID);
+                    if (tournament.InviteCode != _tournament.InviteCode)
                     {
-                        match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
-                        match.Defender = context.TournamentUserModels.Find(match.DefenderID);
+                        if (AddTournamentInviteCode(tournament.InviteCode) == DbError.EXISTS)
+                            return DbError.INVITE_CODE_EXISTS;
                     }
+                    db.Entry(_tournament).CurrentValues.SetValues(tournament);
+
+                    foreach (var bracket in _tournament.Brackets)
+                    {
+                        foreach (var match in bracket.Matches)
+                        {
+                            match.Challenger = db.TournamentUserModels.Find(match.ChallengerID);
+                            match.Defender = db.TournamentUserModels.Find(match.DefenderID);
+                        }
+                    }
+                    if (cascade)
+                    {
+                        foreach (BracketModel bracket in tournament.Brackets)
+                        {
+                            UpdateBracket(bracket, true);
+                        }
+                        foreach (var tournamentUser in db.TournamentUserModels)
+                        {
+                            UpdateTournamentUser(tournamentUser);
+                        }
+                    }
+                    db.SaveChanges();
                 }
-                if (cascade)
+                catch (Exception ex)
                 {
-                    foreach (BracketModel bracket in tournament.Brackets)
-                    {
-                        UpdateBracket(bracket, true);
-                    }
-                    foreach (var tournamentUser in context.TournamentUserModels)
-                    {
-                        UpdateTournamentUser(tournamentUser);
-                    }
+                    interfaceException = ex;
+                    WriteException(ex);
+                    return DbError.FAILED_TO_UPDATE;
                 }
-                context.SaveChanges();
+                return DbError.SUCCESS;
             }
-            catch (Exception ex)
-            {
-                interfaceException = ex;
-                WriteException(ex);
-                return DbError.FAILED_TO_UPDATE;
-            }
-            return DbError.SUCCESS;
         }
 
         public DbError DeleteTournament(int id)
@@ -764,15 +776,21 @@ namespace DatabaseLib
 
         #endregion
 
+
         #region TournamentInvites
 
+        [Obsolete("Use AddTournamentInvite(TournamentInviteModel tournamentInvite)")]
         public DbError AddTournamentInviteCode(string inviteCode)
         {
             try
             {
+                if (InviteCodeExists(inviteCode) == DbError.EXISTS)
+                {
+                    return DbError.EXISTS;
+                }
                 TournamentInviteModel model = new TournamentInviteModel()
                 {
-                    InviteCode = inviteCode
+                    TournamentInviteCode = inviteCode
                 };
                 context.TournamentInviteModels.Add(model);
                 context.SaveChanges();
@@ -786,15 +804,7 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
-        /// <summary>
-        /// Checks the database to see if the invite code has already been used for a tournament.
-        /// </summary>
-        /// <param name="inviteCode"></param>
-        /// <returns>
-        /// ERROR if an exception is thrown.
-        /// DOES_NOT_EXIST if the invite code was not found in the database.
-        /// EXISTS if the code was found in the database.
-        /// </returns>
+        [Obsolete("Use GetTournamentInvite(string inviteCode). Will return null if nothing is found")]
         public DbError InviteCodeExists(string inviteCode)
         {
             TournamentInviteModel _invite;
@@ -815,7 +825,157 @@ namespace DatabaseLib
             return DbError.EXISTS;
         }
 
+        public DbError AddTournamentInvite(TournamentInviteModel tournamentInvite)
+        {
+            try
+            {
+                context.TournamentInviteModels.Add(tournamentInvite);
+                AssignTournamentInviteCode(tournamentInvite);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
+        }
 
+        private bool AssignTournamentInviteCode(TournamentInviteModel tournamentInvite)
+        {
+            try
+            {
+                TournamentModel _tournament = context.TournamentModels.Find(tournamentInvite.TournamentID);
+                _tournament.InviteCode = tournamentInvite.TournamentInviteCode;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public TournamentInviteModel GetTournamentInvite(string inviteCode)
+        {
+            TournamentInviteModel tournamentInvite = new TournamentInviteModel();
+            try
+            {
+                tournamentInvite = context.TournamentInviteModels.Find(inviteCode);
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+            }
+            return tournamentInvite;
+        }
+
+        public DbError UpdateTournamentInvite(TournamentInviteModel tournamentInvite)
+        {
+            try
+            {
+                TournamentInviteModel _tournamentInvite = context.TournamentInviteModels.Find(tournamentInvite.TournamentInviteCode);
+                context.Entry(_tournamentInvite).CurrentValues.SetValues(tournamentInvite);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError DeleteTournamentInvite(string inviteCode)
+        {
+            try
+            {
+                TournamentInviteModel _tournamentInvite = context.TournamentInviteModels.Find(inviteCode);
+                context.TournamentInviteModels.Remove(_tournamentInvite);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        #endregion
+
+
+        #region AccountInvites
+
+        public DbError AddAccountInvite(AccountInviteModel accountInvite)
+        {
+            try
+            {
+                context.AccountInviteModels.Add(accountInvite);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_ADD;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public AccountInviteModel GetAcountInvite(string inviteCode)
+        {
+            AccountInviteModel accountInvite = new AccountInviteModel();
+            try
+            {
+                accountInvite = context.AccountInviteModels.Find(inviteCode);
+            }
+            catch (Exception ex)
+            {
+                WriteException(ex);
+                interfaceException = ex;
+                accountInvite = null;
+            }
+            return accountInvite;
+        }
+
+        public DbError UpdateAccountInvite(AccountInviteModel accountInvite)
+        {
+            try
+            {
+                AccountInviteModel _accountInvite = context.AccountInviteModels.Find(accountInvite.AccountInviteCode);
+                context.Entry(_accountInvite).CurrentValues.SetValues(accountInvite);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                WriteException(ex);
+                interfaceException = ex;
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+        }
+
+        public DbError DeleteAccountInvite(string inviteCode)
+        {
+            try
+            {
+                AccountInviteModel _accountInvite = context.AccountInviteModels.Find(inviteCode);
+                context.AccountInviteModels.Remove(_accountInvite);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
+        }
 
         #endregion
 
@@ -1348,5 +1508,6 @@ namespace DatabaseLib
         {
             Console.WriteLine("Exception " + ex + " in " + funcName);
         }
+
     }
 }

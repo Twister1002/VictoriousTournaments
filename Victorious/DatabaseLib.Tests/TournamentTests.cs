@@ -11,10 +11,10 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Add_Tournament()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var tournament = NewTournament();
-
+            //tournament.InviteCode = "10003";
             var result = db.AddTournament(tournament);
 
             Assert.AreEqual(DbError.SUCCESS, result);
@@ -23,7 +23,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_Tournament()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var tournament = db.GetTournament(4);
 
@@ -33,7 +33,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Update_Tournament_No_Cascade()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var tournament = NewTournament();
             db.AddTournament(tournament);
@@ -47,26 +47,37 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Update_Tournament_Cascade()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
-            var tournament = db.GetAllTournaments()[0];
+            var tournament = db.GetTournament(4);
             var brackets = db.GetAllBracketsInTournament(tournament.TournamentID);
             brackets[0].Finalized = false;
             GameModel game = db.GetGame(3);
             var matches = db.GetAllMatchesInBracket(brackets[0].BracketID);
-            matches[0].ChallengerID = 7;
+            matches[0].ChallengerID = 3;
 
             var result = db.UpdateTournament(tournament, true);
 
             Assert.AreEqual(DbError.SUCCESS, result);
         }
 
+        //[TestMethod]
+        //public void Update_Tournament_And_Invite_Code()
+        //{
+        //    var db = new DbInterface();
 
+        //    var tournament = db.GetTournament(1004);
+        //    tournament.InviteCode = "10002";
+        //    var result = db.UpdateTournament(tournament);
+
+        //    Assert.AreEqual(DbError.SUCCESS, result);
+
+        //}
 
         [TestMethod]
         public void Delete_Tournaent()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var tournament = db.GetAllTournaments()[0];
 
@@ -77,7 +88,7 @@ namespace DatabaseLib.Tests
 
         public void Search_By_Title()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             List<TournamentModel> tournaments = new List<TournamentModel>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -91,7 +102,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Search_By_Start_Date()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             List<TournamentModel> tournaments = new List<TournamentModel>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -105,7 +116,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Search_Return_Default()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             List<TournamentModel> tournaments = new List<TournamentModel>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -121,7 +132,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Search_By_Dates_And_Strings()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             List<TournamentModel> tournaments = new List<TournamentModel>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -136,29 +147,29 @@ namespace DatabaseLib.Tests
             Assert.AreEqual(count, result);
         }
 
-        [TestMethod]
-        public void Add_Invite_Code_GUID()
-        {
-            var db = new DbInterface();
+        //[TestMethod]
+        //public void Add_Invite_Code_GUID()
+        //{
+        //    var db = new DbInterface();
 
-            var guid = Guid.NewGuid().ToString();
-            var result = db.AddTournamentInviteCode(guid);
+        //    var guid = Guid.NewGuid().ToString();
+        //    var result = db.AddTournamentInviteCode(guid);
 
-            Assert.AreEqual(DbError.SUCCESS, result);
+        //    Assert.AreEqual(DbError.SUCCESS, result);
 
-        }
+        //}
 
-        [TestMethod]
-        public void Check_Invite_Code_Exists()
-        {
-            var db = new DbInterface();
+        //[TestMethod]
+        //public void Check_Invite_Code_Exists()
+        //{
+        //    var db = new DbInterface();
 
-            var guid = "98ed7a71-b0f7-4c97-907a-e7b238b4daed";
-            var result = db.InviteCodeExists(guid);
+        //    var guid = "98ed7a71-b0f7-4c97-907a-e7b238b4daed";
+        //    var result = db.InviteCodeExists(guid);
 
-            Assert.AreEqual(DbError.EXISTS, result);
+        //    Assert.AreEqual(DbError.EXISTS, result);
 
-        }
+        //}
 
 
 

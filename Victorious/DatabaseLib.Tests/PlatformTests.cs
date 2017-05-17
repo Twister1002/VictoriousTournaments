@@ -10,7 +10,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_All_Platforms()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             List<PlatformModel> platforms = new List<PlatformModel>();
             platforms = db.GetAllPlatforms();
@@ -22,7 +22,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Delete_Platform()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             var result = db.DeletePlatform(1);
 
@@ -32,7 +32,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Add_Platform()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             PlatformModel p = new PlatformModel()
             {
@@ -46,7 +46,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Update_Platform()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             PlatformModel p = db.GetPlatform(3);
             p.PlatformName = "Update Platform";

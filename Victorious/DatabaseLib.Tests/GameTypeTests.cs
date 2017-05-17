@@ -10,7 +10,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Add_GameType()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             GameTypeModel gameType = new GameTypeModel()
             {
@@ -24,7 +24,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_All_GameTypes()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             List<GameTypeModel> games = db.GetAllGameTypes();
 
@@ -36,7 +36,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Update_GameTypes()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             GameTypeModel game = db.GetAllGameTypes()[0];
             game.Title = "Rocket League";
@@ -48,7 +48,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Delete_GameType()
         {
-            var db = new DbInterface();
+            var db = new DatabaseRepository();
 
             GameTypeModel game = db.GetAllGameTypes()[0];
             db.DeleteGameType(game.GameTypeID);

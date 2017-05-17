@@ -14,6 +14,23 @@ namespace DatabaseLib
     
     public partial class TournamentInviteModel
     {
-        public string InviteCode { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public TournamentInviteModel()
+        {
+            this.Tournaments = new HashSet<TournamentModel>();
+    		OnInit();
+        }
+    
+        public int TournamentID { get; set; }
+        public System.DateTime DateExpires { get; set; }
+        public bool IsExpired { get; set; }
+        public System.DateTime DateCreated { get; set; }
+        public int NumberOfUses { get; set; }
+        public string TournamentInviteCode { get; set; }
+    	
+    	partial void OnInit();
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TournamentModel> Tournaments { get; set; }
     }
 }
