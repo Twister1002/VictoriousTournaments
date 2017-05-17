@@ -115,6 +115,7 @@ namespace WebApplication.Controllers
             int tournamentId = ConvertToInt(guid);
             TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
             bool isAdmin = viewModel.IsAdministrator(account.AccountId);
+            bool isParticipant = viewModel.IsParticipant(account.AccountId);
 
             if (viewModel.Model != null)
             {
@@ -144,7 +145,7 @@ namespace WebApplication.Controllers
                 else
                 {
                     // Verify if the user is allowed to view the tournament
-                    if (viewModel.Model.PublicViewing || viewModel.Model.InviteCode == inviteCode || isAdmin)
+                    if (viewModel.Model.PublicViewing || viewModel.Model.InviteCode == inviteCode || isAdmin || isParticipant)
                     {
                         viewModel.ProcessTournament();
                         return View("Tournament", viewModel);
@@ -285,7 +286,6 @@ namespace WebApplication.Controllers
         public ActionResult Deregister(TournamentRegistrationFields userData)
         {
             LoadAccount(Session);
-
             if (userData.AccountID == account.AccountId)
             {
                 TournamentViewModel viewModel = new TournamentViewModel(userData.TournamentID);
@@ -336,6 +336,39 @@ namespace WebApplication.Controllers
                 status = status,
                 message = message,
                 data = data
+            }));
+        }
+
+        [HttpPost]
+        [Route("Ajax/Tournament/CheckIn")]
+        public JsonResult CheckIn(int tournamentId)
+        {
+            LoadAccount(Session);
+            bool status = false;
+            String message = "No action taken";
+
+            if (account != null)
+            {
+                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+                if (viewModel.UserCheckedIn(account.AccountId))
+                {
+                    status = true;
+                    message = "User is checkedin";
+                }
+                else
+                {
+                    message = "User was not checked in";
+                }
+            }
+            else
+            {
+                message = "Account not logged in";
+            }
+
+            return Json(JsonConvert.SerializeObject(new
+            {
+                status = status,
+                message = message
             }));
         }
 

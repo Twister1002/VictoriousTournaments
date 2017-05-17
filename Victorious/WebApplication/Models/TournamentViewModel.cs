@@ -463,6 +463,31 @@ namespace WebApplication.Models
             return bracket;
         }
 
+        public bool isCheckedIn(int accountId)
+        {
+            TournamentUserModel userModel = Model.TournamentUsers.FirstOrDefault(x => x.AccountID == accountId);
+            bool checkedIn = userModel.IsCheckedIn != null ? (bool)userModel.IsCheckedIn : false;
+            return checkedIn;
+        }
+
+        public bool UserCheckedIn(int accountId)
+        {
+            TournamentUserModel userModel = Model.TournamentUsers.First(x => x.AccountID == accountId);
+
+            return db.CheckUserIn(userModel.TournamentUserID) == DbError.SUCCESS;
+        }
+
+        public bool isRegistered(int accountId)
+        {
+            return Model.TournamentUsers.Any(x => x.AccountID == accountId);
+        }
+
+        public bool CanEdit()
+        {
+            return !Model.InProgress ? true : false;
+        }
+
+        #region Permissions 
         public Permission TournamentPermission(int accountId)
         {
             TournamentUserModel model =
@@ -476,6 +501,21 @@ namespace WebApplication.Models
             else
             {
                 return Permission.NONE;
+            }
+        }
+
+        public bool IsParticipant(int accountId)
+        {
+            Permission permission = TournamentPermission(accountId);
+            if (permission == Permission.TOURNAMENT_STANDARD ||
+                permission == Permission.TOURNAMENT_ADMINISTRATOR ||
+                permission == Permission.TOURNAMENT_CREATOR)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -503,7 +543,7 @@ namespace WebApplication.Models
             bool status = false;
             String message = "No action taken";
             object data = new { };
-            
+
             TournamentUserModel targetAccount = Model.TournamentUsers.First(x => x.TournamentUserID == tournamentUserId);
             Dictionary<String, bool> permissionActions = new Dictionary<string, bool>();
             permissionActions.Add("Demote", false);
@@ -528,7 +568,7 @@ namespace WebApplication.Models
                             permissionActions["Demote"] = true;
 
                             dbResult = db.UpdateTournamentUser(targetAccount);
-                            
+
                         }
                         break;
                     case "demote":
@@ -591,17 +631,7 @@ namespace WebApplication.Models
                 data = data
             };
         }
-
-        public bool isRegistered(int accountId)
-        {
-            return Model.TournamentUsers.Any(x => x.AccountID == accountId);
-        }
-
-        public bool CanEdit()
-        {
-            return !Model.InProgress ? true : false;
-        }
-
+        #endregion
         #region Helpers
 
         #endregion

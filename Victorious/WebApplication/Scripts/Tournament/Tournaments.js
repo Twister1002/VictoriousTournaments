@@ -73,6 +73,27 @@
         });
     });
 
+    $("#Tournament .bracket .options .checkIn").on("click", function () {
+        $.ajax({
+            "url": "/Ajax/Tournament/CheckIn",
+            "type": "post",
+            "data": { tournamentId: $("#Tournament").data("id") },
+            "dataType": "json",
+            "success": function (json) {
+                json = JSON.parse(json);
+
+                if (json.status) {
+                    $("#Tournament .bracket .options .checkIn").remove();
+                }
+
+                console.log(json.message);
+            },
+            "error": function (json) {
+                console.log(json);
+            }
+        });
+    });
+    
     // Update the Date selections
     $("#RegistrationStartDate").on("change", function () {
         $("#RegistrationEndDate").datepicker("option", "minDate", new Date($(this).val()));

@@ -4,12 +4,15 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     int userId = Session["User.UserId"] != null ? (int)Session["User.UserId"] : -1;
-    object disabledAttributes = new { };
+    object attributes = new { };
+    object dateAttributes = new { @class = "datepicker" };
 }
 @if (!Model.CanEdit())
 {
     <div class="message warning">No changes can be made to this tournament.</div>
-    disabledAttributes = new { disabled = "disabled", @readonly = "readonly" };
+    attributes = new { disabled = "disabled", @readonly = "readonly" };
+    dateAttributes = new { disabled = "disabled", @readonly = "readonly" };
+
 }
 <div id="TournamentEdit" data-id="@Model.Model.TournamentID">
     @using (Html.BeginForm("Update", "Tournament", new { tournamentId = Model.Model.TournamentID }, FormMethod.Post))
@@ -19,39 +22,39 @@
             <ul>
                 <li>
                     @Html.LabelFor(t => t.Title)
-                    @Html.TextBoxFor(t => t.Title, disabledAttributes)
+                    @Html.TextBoxFor(t => t.Title, attributes)
                     @Html.ValidationMessageFor(t => t.Title)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.Description)
-                    @Html.TextBoxFor(t => t.Description, disabledAttributes)
+                    @Html.TextBoxFor(t => t.Description, attributes)
                     @Html.ValidationMessageFor(t => t.Description)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.GameType)
-                    @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---", disabledAttributes)
+                    @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---", attributes)
                     @Html.ValidationMessageFor(t => t.GameType)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.BracketType)
-                    @Html.DropDownListFor(t => t.BracketType, new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---", disabledAttributes)
+                    @Html.DropDownListFor(t => t.BracketType, new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---", attributes)
                     @Html.ValidationMessageFor(t => t.BracketType)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.PlatformType)
-                    @Html.DropDownListFor(t => t.PlatformType, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---", disabledAttributes)
+                    @Html.DropDownListFor(t => t.PlatformType, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---", attributes)
                     @Html.ValidationMessageFor(t => t.PlatformType)
                 </li>
                 <li>
                 </li>
                 <li>
                     @Html.LabelFor(t => t.PublicViewing)
-                    @Html.CheckBoxFor(t => t.PublicViewing, disabledAttributes)
+                    @Html.CheckBoxFor(t => t.PublicViewing, attributes)
                     @Html.ValidationMessageFor(t => t.PublicViewing)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.PublicRegistration)
-                    @Html.CheckBoxFor(t => t.PublicRegistration, disabledAttributes)
+                    @Html.CheckBoxFor(t => t.PublicRegistration, attributes)
                     @Html.ValidationMessageFor(t => t.PublicRegistration)
                 </li>
             </ul>
@@ -61,32 +64,32 @@
             <ul>
                 <li>
                     @Html.LabelFor(t => t.RegistrationStartDate)
-                    @Html.TextBoxFor(t => t.RegistrationStartDate, Model.RegistrationStartDate.ToShortDateString().ToString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.RegistrationStartDate, Model.RegistrationStartDate.ToShortDateString().ToString(), dateAttributes)
                     @Html.ValidationMessageFor(t => t.RegistrationStartDate)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.RegistrationEndDate)
-                    @Html.TextBoxFor(t => t.RegistrationEndDate, Model.RegistrationEndDate.ToShortDateString().ToString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.RegistrationEndDate, Model.RegistrationEndDate.ToShortDateString().ToString(), dateAttributes)
                     @Html.ValidationMessageFor(t => t.RegistrationEndDate)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.TournamentStartDate)
-                    @Html.TextBoxFor(t => t.TournamentStartDate, Model.TournamentStartDate.ToShortDateString().ToString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.TournamentStartDate, Model.TournamentStartDate.ToShortDateString().ToString(), dateAttributes)
                     @Html.ValidationMessageFor(t => t.TournamentStartDate)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.TournamentEndDate)
-                    @Html.TextBoxFor(t => t.TournamentEndDate, Model.TournamentEndDate.ToShortDateString().ToString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.TournamentEndDate, Model.TournamentEndDate.ToShortDateString().ToString(), dateAttributes)
                     @Html.ValidationMessageFor(t => t.TournamentEndDate)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.CheckinStart)
-                    @Html.TextBoxFor(t => t.CheckinStart, new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.CheckinStart, Model.CheckinStart.ToShortDateString().ToString(), dateAttributes)
                     @Html.ValidationMessageFor(t => t.CheckinStart)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.CheckinEnd)
-                    @Html.TextBoxFor(t => t.CheckinEnd, new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.CheckinEnd, Model.CheckinEnd.ToShortDateString().ToString(), dateAttributes)
                     @Html.ValidationMessageFor(t => t.CheckinEnd)
                 </li>
             </ul>
