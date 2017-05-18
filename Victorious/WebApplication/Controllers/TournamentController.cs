@@ -341,16 +341,33 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Ajax/Tournament/CheckIn")]
-        public JsonResult CheckIn(int tournamentId)
+        public JsonResult CheckIn(int tournamentId, int tournamentUserId = -1)
         {
             LoadAccount(Session);
             bool status = false;
+            bool isCheckedIn = false;
             String message = "No action taken";
 
-            if (account != null)
+
+            if (tournamentUserId != -1)
             {
                 TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-                if (viewModel.UserCheckedIn(account.AccountId))
+                if (viewModel.UserCheckIn(tournamentUserId))
+                {
+                    status = true;
+                    message = "User is checkedin";
+                }
+                else
+                {
+                    message = "User was not checked in";
+                }
+
+                isCheckedIn = viewModel.isUserCheckedIn(tournamentUserId);
+            }
+            else if (account != null)
+            {
+                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+                if (viewModel.AccountCheckIn(account.AccountId))
                 {
                     status = true;
                     message = "User is checkedin";
@@ -368,7 +385,8 @@ namespace WebApplication.Controllers
             return Json(JsonConvert.SerializeObject(new
             {
                 status = status,
-                message = message
+                message = message,
+                isCheckedIn = isCheckedIn
             }));
         }
 

@@ -463,16 +463,30 @@ namespace WebApplication.Models
             return bracket;
         }
 
-        public bool isCheckedIn(int accountId)
+        public bool isAccountCheckedIn(int accountId)
         {
             TournamentUserModel userModel = Model.TournamentUsers.FirstOrDefault(x => x.AccountID == accountId);
             bool checkedIn = userModel.IsCheckedIn != null ? (bool)userModel.IsCheckedIn : false;
             return checkedIn;
         }
 
-        public bool UserCheckedIn(int accountId)
+        public bool isUserCheckedIn(int tournamentUserId)
+        {
+            TournamentUserModel userModel = Model.TournamentUsers.FirstOrDefault(x => x.TournamentUserID == tournamentUserId);
+            bool checkedIn = userModel.IsCheckedIn != null ? (bool)userModel.IsCheckedIn : false;
+            return checkedIn;
+        }
+
+        public bool AccountCheckIn(int accountId)
         {
             TournamentUserModel userModel = Model.TournamentUsers.First(x => x.AccountID == accountId);
+
+            return db.CheckUserIn(userModel.TournamentUserID) == DbError.SUCCESS;
+        }
+
+        public bool UserCheckIn(int tournamentUserId)
+        {
+            TournamentUserModel userModel = Model.TournamentUsers.First(x => x.TournamentUserID == tournamentUserId);
 
             return db.CheckUserIn(userModel.TournamentUserID) == DbError.SUCCESS;
         }

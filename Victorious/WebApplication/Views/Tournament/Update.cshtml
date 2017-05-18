@@ -111,13 +111,6 @@
                         <li class="column">Actions</li>
                     </ul>
                 </li>
-                @*<li class="list-table-body addUserRow">
-                        <ul class="border form" data-columns="3">
-                            <li class="column"><input type="text" class="name" placeholder="Email"/></li>
-                            <li class="column">Participant</li>
-                            <li class="column"><button class="addUserButton">Invite</button></li>
-                        </ul>
-                    </li>*@
                 <li class="list-table-body users">
                     @foreach (var user in Model.Administrators) // Display the Admins first
                 {
@@ -138,7 +131,7 @@
                         <ul class="user border" data-user="@user.TournamentUserID" data-columns="4">
                             <li class="column name">@user.Name</li>
                             <li class="column permission">Participant</li>
-                            <li class="column"><span class='icon icon-checkmark'></span></li>
+                            <li class="column"><span class='icon icon-checkmark checkedIn @(Model.isUserCheckedIn(user.TournamentUserID) ? "green" : "red")'></span></li>
                             <li class="column actions">
                                 @if (Model.IsCreator(userId) && user.AccountID != null && Model.CanEdit())
                                 {

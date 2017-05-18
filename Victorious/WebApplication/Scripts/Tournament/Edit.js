@@ -69,11 +69,44 @@
         }
     }
 
+    $("#TournamentEdit .user-section .user .checkedIn").on("click", CheckUserIn);
+    
+    function CheckUserIn() {
+        var $this = $(this);
+
+        $.ajax({
+            "url": "/Ajax/Tournament/CheckIn",
+            "type": "post",
+            "data": {"TournamentId": $("#TournamentEdit").data("id"),"tournamentUserId": $(this).closest(".user").data("user")},
+            "dataType": "json",
+            "beforeSend": function() {
+                $this.off("click");
+            },
+            "success": function (json) {
+                json = JSON.parse(json);
+
+                if (json.status) {
+                    $this.removeClass("green");
+                    $this.removeClass("red");
+                    $this.addClass(json.isCheckedIn ? "green" : "red");
+                }
+                
+                console.log(json.message);
+            },
+            "error": function (json) {
+                console.log(json);
+            },
+            "complete": function() {
+                $this.on("click", CheckUserIn)
+            }
+        });
+    }
+
     $("#TournamentEdit .user-section .addUser").on("click", function () {
         html = "<ul class='user border form' data-user='-1' data-columns='4'> ";
         html += "<li class='column name'><input type='text' name='Users[" + addedUserIndex + "].Name' id='Users[" + addedUserIndex + "].Name' maxlength='50' placeholder='Email or Username'/></li> ";
         html += "<li class='column permission'>Not Saved</li> ";
-        html += "<li class='column checkedIn'><span class='icon icon-checkmark'></span></li> ";
+        html += "<li class='column'><span class='icon icon-checkmark checkedIn'></span></li> ";
         html += "<li class='column actions'><button type='button' class='demote'>Remove</button></li> ";
         html += "</ul> ";
         
