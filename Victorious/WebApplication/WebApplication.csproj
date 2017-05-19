@@ -180,6 +180,7 @@
     <Content Include="Content\fonts\icomoon.woff" />
     <None Include="Properties\PublishProfiles\Tournament.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
+    <Content Include="Scripts\Administrator\Brackets.js" />
     <Content Include="Scripts\Administrator\Games.js" />
     <Content Include="Scripts\Administrator\Platforms.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
@@ -214,6 +215,7 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdministratorViewModel.cs" />
+    <Compile Include="Models\Administrator\BracketTypeViewModel.cs" />
     <Compile Include="Models\Administrator\GameTypeViewModel.cs" />
     <Compile Include="Models\Administrator\PlatformTypeViewModel.cs" />
     <Compile Include="Models\BracketViewModel.cs" />
@@ -279,6 +281,7 @@
     <Content Include="Views\Tournament\RegisterForm.cshtml" />
     <Content Include="Views\Administrator\Platforms.cshtml" />
     <Content Include="Styles\less\Administrator\Platforms.less" />
+    <Content Include="Views\Administrator\Brackets.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

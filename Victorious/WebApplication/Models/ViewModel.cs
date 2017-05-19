@@ -23,7 +23,11 @@ namespace WebApplication.Models
         };
         
         public ViewError error = ViewError.NONE;
-        protected DatabaseRepository db = new DatabaseRepository();
+#if DEBUG
+        protected DatabaseRepository db = new DatabaseRepository("Debug");
+#elif !DEBUG
+        protected DatabaseRepository db = new DatabaseRepository("Production");
+#endif
         public String message { get; set; }
         public Exception dbException { get; set; }
     }
