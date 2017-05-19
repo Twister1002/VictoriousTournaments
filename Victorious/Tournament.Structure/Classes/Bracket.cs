@@ -162,7 +162,7 @@ namespace Tournament.Structure
 				{
 					Players = new List<IPlayer>();
 				}
-				ResetBracket();
+				DeleteBracketData();
 				return;
 			}
 
@@ -203,7 +203,7 @@ namespace Tournament.Structure
 			}
 
 			Players = pList;
-			ResetBracket();
+			DeleteBracketData();
 		}
 		public void SetNewPlayerlist(List<IPlayer> _players)
 		{
@@ -232,7 +232,7 @@ namespace Tournament.Structure
 					Players.Add(player);
 				}
 			}
-			ResetBracket();
+			DeleteBracketData();
 		}
 		public void AddPlayer(IPlayer _player)
 		{
@@ -263,7 +263,7 @@ namespace Tournament.Structure
 			{
 				Players.Add(_player);
 			}
-			ResetBracket();
+			DeleteBracketData();
 		}
 		public virtual void ReplacePlayer(IPlayer _player, int _index)
 		{
@@ -333,7 +333,7 @@ namespace Tournament.Structure
 				Players[_index1] = Players[_index2];
 				Players[_index2] = tmp;
 			}
-			ResetBracket();
+			DeleteBracketData();
 		}
 		public void ReinsertPlayer(int _oldIndex, int _newIndex)
 		{
@@ -406,7 +406,7 @@ namespace Tournament.Structure
 				Players[_newIndex] = tmp;
 			}
 
-			ResetBracket();
+			DeleteBracketData();
 		}
 		public void RemovePlayer(int _playerId)
 		{
@@ -421,7 +421,7 @@ namespace Tournament.Structure
 				if (Players[i].Id == _playerId)
 				{
 					Players.RemoveAt(i);
-					ResetBracket();
+					DeleteBracketData();
 					return;
 				}
 			}
@@ -436,7 +436,7 @@ namespace Tournament.Structure
 			}
 
 			Players.Clear();
-			ResetBracket();
+			DeleteBracketData();
 		}
 
 		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
@@ -728,7 +728,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected virtual void ResetBracket()
+		protected virtual void ResetBracketData()
 		{
 			if (null == Matches)
 			{
@@ -751,6 +751,26 @@ namespace Tournament.Structure
 			NumberOfMatches = 0;
 			Rankings.Clear();
 		}
+		protected void DeleteBracketData()
+		{
+			List<MatchModel> alteredMatches = new List<MatchModel>();
+			List<int> deletedGameIDs = new List<int>();
+			if (NumberOfMatches > 0 && null != Matches)
+			{
+				for (int n = 1; n <= NumberOfMatches; ++n)
+				{
+					MatchModel match = GetMatchModel(n);
+					alteredMatches.Add(match);
+					deletedGameIDs.AddRange(match.Games.Select(g => g.GameID));
+				}
+			}
+
+			ResetBracketData();
+
+			OnGamesDeleted(deletedGameIDs);
+			OnMatchesModified(alteredMatches);
+		}
+
 		protected int SortRankingScores(IPlayerScore first, IPlayerScore second)
 		{
 			// Rankings sorting: MatchScore > OpponentsScore > GameScore > PointsScore > initial Seeding

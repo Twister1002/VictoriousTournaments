@@ -69,7 +69,6 @@ namespace Tournament.Structure
 			BracketType = BracketType.RRGROUP;
 			NumberOfGroups = _numberOfGroups;
 			MaxRounds = _numberOfRounds;
-			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
 		}
 #if false
@@ -128,7 +127,6 @@ namespace Tournament.Structure
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
 			this.MaxRounds = 0;
-			ResetBracket();
 			CreateBracket();
 
 			// Find & update every Match:
@@ -200,7 +198,7 @@ namespace Tournament.Structure
 		#region Public Methods
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
-			ResetBracket();
+			ResetBracketData();
 			if (_gamesPerMatch < 1)
 			{
 				throw new BracketException

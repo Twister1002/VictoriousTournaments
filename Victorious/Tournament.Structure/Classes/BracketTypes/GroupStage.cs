@@ -230,9 +230,9 @@ namespace Tournament.Structure
 				}
 			}
 		}
-		protected override void ResetBracket()
+		protected override void ResetBracketData()
 		{
-			base.ResetBracket();
+			base.ResetBracketData();
 
 			if (null == Groups)
 			{
