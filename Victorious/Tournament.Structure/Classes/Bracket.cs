@@ -167,7 +167,7 @@ namespace Tournament.Structure
 			}
 
 			List<IPlayer> pList = new List<IPlayer>();
-
+			
 			// Get random rolls for each player
 			// (match rolls -> player-index)
 			Random rng = new Random();
@@ -716,6 +716,8 @@ namespace Tournament.Structure
 					alteredMatches.Add(GetMatchModel(n));
 				}
 			}
+			IsFinished = false;
+			IsFinalized = false;
 
 			OnGamesDeleted(deletedGameIDs);
 			OnMatchesModified(alteredMatches);

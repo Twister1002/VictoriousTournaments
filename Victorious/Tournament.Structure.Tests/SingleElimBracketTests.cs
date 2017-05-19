@@ -1044,6 +1044,101 @@ namespace Tournament.Structure.Tests
 			b.RemoveLastGame(1);
 			Assert.IsNull(b.GetMatch(31).Players[(int)PlayerSlot.Defender]);
 		}
+
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB ResetMatches")]
+		public void SEBResetMatches_SetsAllMatchesToNotFinished()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			b.ResetMatches();
+			int finishedMatches = 0;
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				if (b.GetMatch(n).IsFinished)
+				{
+					++finishedMatches;
+				}
+			}
+			Assert.AreEqual(0, finishedMatches);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB ResetMatches")]
+		public void SEBResetMatches_RemovesAllGames()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList, 3);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			b.ResetMatches();
+			int gamesCount = 0;
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				gamesCount += b.GetMatch(n).Games.Count;
+			}
+			Assert.AreEqual(0, gamesCount);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB ResetMatches")]
+		public void SEBResetMatches_RemovesAllAdvancedPlayers()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.SetMatchWinner(n, PlayerSlot.Defender);
+			}
+
+			b.ResetMatches();
+			int advancedPlayers = 0;
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				IMatch match = b.GetMatch(n);
+				if (1 == match.RoundIndex)
+				{
+					continue;
+				}
+
+				for (int i = 0; i < match.Players.Length; ++i)
+				{
+					if (null != match.Players[i])
+					{
+						++advancedPlayers;
+					}
+				}
+			}
+			Assert.AreEqual(0, advancedPlayers);
+		}
 		#endregion
 
 		[TestMethod]
