@@ -12,10 +12,12 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Add_Tournament()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
+            //var db = new DatabaseRepository();
+
 
             var tournament = NewTournament();
-            //tournament.InviteCode = "10003";
+            tournament.InviteCode = "10009";
             var result = db.AddTournament(tournament);
 
             Assert.AreEqual(DbError.SUCCESS, result);
@@ -24,7 +26,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_Tournament()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             var tournament = db.GetTournament(4);
 
@@ -34,7 +36,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Update_Tournament_No_Cascade()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             var tournament = NewTournament();
             db.AddTournament(tournament);
@@ -48,7 +50,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Update_Tournament_Cascade()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             var tournament = db.GetTournament(4);
             var brackets = db.GetAllBracketsInTournament(tournament.TournamentID);
@@ -78,7 +80,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Delete_Tournaent()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             var tournament = db.GetAllTournaments()[0];
 
@@ -89,7 +91,7 @@ namespace DatabaseLib.Tests
 
         public void Search_By_Title()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             List<TournamentModel> tournaments = new List<TournamentModel>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -103,7 +105,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Search_By_Start_Date()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             List<TournamentModel> tournaments = new List<TournamentModel>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -117,7 +119,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Search_Return_Default()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             List<TournamentModel> tournaments = new List<TournamentModel>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -133,7 +135,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Search_By_Dates_And_Strings()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             List<TournamentModel> tournaments = new List<TournamentModel>();
             Dictionary<string, string> dict = new Dictionary<string, string>();

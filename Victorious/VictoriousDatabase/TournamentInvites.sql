@@ -2,7 +2,7 @@
 (
 	[TournamentInviteCode] NVARCHAR(256) NOT NULL , 
     [TournamentID] INT NOT NULL,
-    [DateExpires] DATE NOT NULL, 
+    [DateExpires] DATE NULL, 
     [IsExpired] BIT NOT NULL, 
     [DateCreated] DATE NOT NULL, 
     [NumberOfUses] INT NOT NULL DEFAULT 0, 

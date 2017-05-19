@@ -4,13 +4,40 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using System.Data.Entity.Core.Objects.DataClasses;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
+using System.Data.Entity.Utilities;
+using System.Data.Entity.SqlServer;
+
 
 namespace DatabaseLib
 {
+    public partial class VictoriousEntities : DbContext
+    {
+        //public VictoriousEntities(string server, string targetDb) : 
+        //    base(@"metadata=res://*/Model.csdl|res://*/Model.ssdl|res://*/Model.msl;provider=System.Data.SqlClient;provider connection string=';data source="+server+";initial catalog="+targetDb+";integrated security=True;MultipleActiveResultSets=True;App=EntityFramework';")
+        //{
+        //    SqlConnectionStringBuilder sqlBuilder = new SqlConnectionStringBuilder();
+        //    sqlBuilder.DataSource = server;
+        //    sqlBuilder.InitialCatalog = targetDb;
+
+
+        //}
+
+        public VictoriousEntities(string name) :
+           base(name)
+        {
+            
+
+
+        }
+
+    }
+
     public partial class AccountModel
     {
         public const int FirstNameLength = 50;
@@ -40,9 +67,6 @@ namespace DatabaseLib
     {
         partial void OnInit()
         {
-
-            IsPublic = true;
-         
             WinnerID = -1;
             CreatedOn = DateTime.Now;
             LastEditedOn = DateTime.Now;

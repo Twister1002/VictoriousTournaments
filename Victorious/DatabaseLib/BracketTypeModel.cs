@@ -24,6 +24,7 @@ namespace DatabaseLib
         public int BracketTypeID { get; set; }
         public string TypeName { get; set; }
         public DatabaseLib.BracketType Type { get; set; }
+        public bool IsActive { get; set; }
     	
     	partial void OnInit();
     

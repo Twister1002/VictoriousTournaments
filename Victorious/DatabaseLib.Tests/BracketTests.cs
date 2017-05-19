@@ -10,11 +10,11 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Add_Bracket()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             var bracket = new BracketModel()
             {
-                BracketTitle = "Bracket",
+                //BracketTitle = "Bracket",
                 BracketTypeID = 2,
                 Finalized = true,
                 TournamentID = db.GetAllTournaments()[0].TournamentID,
@@ -29,21 +29,21 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_Bracket()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
             
             var result = db.GetBracket(3);
 
-            Assert.AreEqual("Bracket", result.BracketTitle);
+            //Assert.AreEqual("Bracket", result.BracketTitle);
         }
 
         [TestMethod]
         public void Update_Bracket_No_Cascade()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             BracketModel bracket = db.GetBracket(3);
 
-            bracket.BracketTitle = "new title";
+            //bracket.BracketTitle = "new title";
 
             var result = db.UpdateBracket(bracket);
 
@@ -53,7 +53,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Delete_Bracket()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
         }
 
     }

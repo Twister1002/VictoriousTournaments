@@ -40,12 +40,13 @@ namespace DatabaseLib
 
     public class DatabaseRepository
     {
-        VictoriousEntities context = new VictoriousEntities();
+        VictoriousEntities context;
 
         public Exception interfaceException;
 
-        public DatabaseRepository()
+        public DatabaseRepository(string name)
         {
+            context = new VictoriousEntities(name);
             context.Configuration.LazyLoadingEnabled = false;
             context.Configuration.ProxyCreationEnabled = false;
 
@@ -330,18 +331,39 @@ namespace DatabaseLib
         public DbError AddTournament(TournamentModel tournament)
         {
 
-            TournamentModel _tournament = new TournamentModel();
+            //TournamentModel _tournament = new TournamentModel();
             try
             {
+                TournamentInviteModel invite = new TournamentInviteModel()
+                {
+                    DateCreated = DateTime.Now,
+                    IsExpired = false,
+                    NumberOfUses = 0,
+                    TournamentID = tournament.TournamentID,
+                    TournamentInviteCode = tournament.InviteCode,
+
+                };
+                if (GetTournamentInvite(tournament.InviteCode) == null)
+                {
+                    AddTournamentInvite(invite);
+                }
+                else
+                {
+                    return DbError.INVITE_CODE_EXISTS;
+                }
                 //if (AddTournamentInviteCode(tournament.InviteCode) == DbError.EXISTS)
                 //    return DbError.INVITE_CODE_EXISTS;
-                _tournament = tournament;
 
-                _tournament.CreatedOn = DateTime.Now;
-                _tournament.LastEditedOn = DateTime.Now;
+                //_tournament = tournament;
+
+                tournament.CreatedOn = DateTime.Now;
+                tournament.LastEditedOn = DateTime.Now;
+                //context.SaveChanges();
+                context.TournamentModels.Add(tournament);
                 context.SaveChanges();
-                context.TournamentModels.Add(_tournament);
-                context.SaveChanges();
+                invite.TournamentID = tournament.TournamentID;
+                UpdateTournamentInvite(invite);
+
             }
             catch (Exception ex)
             {
@@ -404,11 +426,7 @@ namespace DatabaseLib
                     //db.Configuration.ProxyCreationEnabled = false;
 
                     TournamentModel _tournament = db.TournamentModels.Find(tournament.TournamentID);
-                    if (tournament.InviteCode != _tournament.InviteCode)
-                    {
-                        if (AddTournamentInviteCode(tournament.InviteCode) == DbError.EXISTS)
-                            return DbError.INVITE_CODE_EXISTS;
-                    }
+
                     db.Entry(_tournament).CurrentValues.SetValues(tournament);
 
                     foreach (var bracket in _tournament.Brackets)
@@ -419,17 +437,7 @@ namespace DatabaseLib
                             match.Defender = db.TournamentUserModels.Find(match.DefenderID);
                         }
                     }
-                    if (cascade)
-                    {
-                        foreach (BracketModel bracket in tournament.Brackets)
-                        {
-                            UpdateBracket(bracket, true);
-                        }
-                        foreach (var tournamentUser in db.TournamentUserModels)
-                        {
-                            UpdateTournamentUser(tournamentUser);
-                        }
-                    }
+
                     db.SaveChanges();
                 }
                 catch (Exception ex)
@@ -651,7 +659,7 @@ namespace DatabaseLib
         //    return DbError.SUCCESS;
         //}
 
-        [Obsolete("Use AddTournamentUserToBracket(TournamentUsersBracketModel)")]
+        [Obsolete("Use AddTournamentUsersBracket(TournamentUsersBracketModel)")]
         public DbError AddTournamentUserToBracket(int tournamentUserId, int bracketId, int seed)
         {
             try
@@ -830,7 +838,7 @@ namespace DatabaseLib
             try
             {
                 context.TournamentInviteModels.Add(tournamentInvite);
-                AssignTournamentInviteCode(tournamentInvite);
+                //AssignTournamentInviteCode(tournamentInvite);
                 context.SaveChanges();
             }
             catch (Exception ex)

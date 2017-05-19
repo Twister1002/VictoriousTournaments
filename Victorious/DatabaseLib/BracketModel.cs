@@ -23,7 +23,6 @@ namespace DatabaseLib
         }
     
         public int BracketID { get; set; }
-        public string BracketTitle { get; set; }
         public int BracketTypeID { get; set; }
         public bool Finalized { get; set; }
         public int NumberOfGroups { get; set; }
