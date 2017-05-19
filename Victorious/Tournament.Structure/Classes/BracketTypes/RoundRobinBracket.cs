@@ -62,7 +62,6 @@ namespace Tournament.Structure
 			MaxRounds = _numberOfRounds;
 			MatchWinValue = 2;
 			MatchTieValue = 1;
-			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
 		}
 		public RoundRobinBracket()
@@ -81,7 +80,7 @@ namespace Tournament.Structure
 			this.MaxRounds = _model.MaxRounds;
 			this.MatchWinValue = 2;
 			this.MatchTieValue = 1;
-			ResetBracket();
+			ResetBracketData();
 
 			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
 				.OrderBy(tubm => tubm.Seed, new SeedComparer())
@@ -137,7 +136,7 @@ namespace Tournament.Structure
 		#region Public Methods
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
-			ResetBracket();
+			ResetBracketData();
 			if (_gamesPerMatch < 1)
 			{
 				throw new BracketException

@@ -58,7 +58,6 @@ namespace Tournament.Structure
 
 			Id = 0;
 			BracketType = BracketType.SINGLE;
-			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
 		}
 		public SingleElimBracket()
@@ -86,7 +85,7 @@ namespace Tournament.Structure
 				Players.Add(new User(model));
 			}
 
-			ResetBracket();
+			ResetBracketData();
 			int totalUBMatches = Players.Count - 1;
 
 			foreach (MatchModel mm in _model.Matches.OrderBy(m => m.MatchNumber))
@@ -124,7 +123,7 @@ namespace Tournament.Structure
 		#region Public Methods
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
-			ResetBracket();
+			ResetBracketData();
 			if (_gamesPerMatch < 1)
 			{
 				throw new BracketException

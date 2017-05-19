@@ -147,7 +147,7 @@ namespace Tournament.Structure
 		#region Public Methods
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
-			ResetBracket();
+			ResetBracketData();
 			if (_gamesPerMatch < 1)
 			{
 				throw new BracketException
@@ -288,9 +288,9 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void ResetBracket()
+		protected override void ResetBracketData()
 		{
-			base.ResetBracket();
+			base.ResetBracketData();
 
 			if (null == Matchups)
 			{

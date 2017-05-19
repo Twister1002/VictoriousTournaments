@@ -21,8 +21,6 @@ namespace Tournament.Structure
 		{ get; private set; }
 		public float PrizePool
 		{ get; set; }
-		public bool IsPublic
-		{ get; set; }
 		#endregion
 
 		#region Ctors
@@ -33,7 +31,6 @@ namespace Tournament.Structure
 			Players = new List<IPlayer>();
 			Brackets = new List<IBracket>();
 			PrizePool = 0.0f;
-			IsPublic = false;
 		}
 		public Tournament(TournamentModel _model)
 		{
@@ -58,7 +55,6 @@ namespace Tournament.Structure
 			}
 
 			this.PrizePool = (float)(_model.PrizePurse);
-			this.IsPublic = _model.IsPublic;
 		}
 		#endregion
 

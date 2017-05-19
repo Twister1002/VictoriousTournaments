@@ -272,7 +272,6 @@ namespace Tournament.Structure
 			Id = 0;
 			BracketType = BracketType.GSLGROUP;
 			NumberOfGroups = _numberOfGroups;
-			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
 		}
 		public GSLGroups()
@@ -299,7 +298,6 @@ namespace Tournament.Structure
 			this.BracketType = _model.BracketType.Type;
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
-			ResetBracket();
 			CreateBracket();
 
 			foreach (MatchModel model in _model.Matches)
@@ -312,7 +310,7 @@ namespace Tournament.Structure
 		#region Public Methods
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
-			ResetBracket();
+			ResetBracketData();
 			if (_gamesPerMatch < 1)
 			{
 				throw new BracketException

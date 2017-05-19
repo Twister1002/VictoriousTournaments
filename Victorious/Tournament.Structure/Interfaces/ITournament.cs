@@ -16,7 +16,6 @@ namespace Tournament.Structure
 		List<IPlayer> Players { get; }
 		List<IBracket> Brackets { get; }
 		float PrizePool { get; set; }
-		bool IsPublic { get; set; }
 		#endregion
 
 		#region Methods
