@@ -500,7 +500,7 @@ namespace DatabaseLib
             {
                 List<SqlParameter> sqlparams = new List<SqlParameter>();
                 string query = string.Empty;
-                query = "SELECT TOP(" + returnCount + ")* FROM Tournaments WHERE IsPublic = 1 ";
+                query = "SELECT TOP(" + returnCount + ")* FROM Tournaments WHERE PublicViewing = 1 ";
                 foreach (KeyValuePair<String, String> data in searchParams)
                 {
                     if (query != String.Empty) query += " AND ";
@@ -1404,12 +1404,41 @@ namespace DatabaseLib
 
         #region BracketTypes
 
-        public List<BracketTypeModel> GetAllBracketTypes()
+        //[Obsolete("Use GetAllBracketTypes(bool returnOnlyActive)")]
+        //public List<BracketTypeModel> GetAllBracketTypes()
+        //{
+        //    List<BracketTypeModel> types = new List<BracketTypeModel>();
+        //    try
+        //    {
+        //        types = context.BracketTypeModels.ToList();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        interfaceException = ex;
+        //        WriteException(ex);
+        //        types.Clear();
+        //        return types;
+        //    }
+        //    return types;
+        //}
+
+        public List<BracketTypeModel> GetAllBracketTypes(bool returnOnlyActive = true)
         {
             List<BracketTypeModel> types = new List<BracketTypeModel>();
             try
             {
-                types = context.BracketTypeModels.ToList();
+                if (returnOnlyActive)
+                {
+                    foreach (var bracketType in context.BracketTypeModels.ToList())
+                    {
+                        if (bracketType.IsActive)
+                            types.Add(bracketType);
+                    }
+                }
+                else
+                {
+                    types = context.BracketTypeModels.ToList();
+                }
             }
             catch (Exception ex)
             {
@@ -1419,6 +1448,24 @@ namespace DatabaseLib
                 return types;
             }
             return types;
+        }
+
+        public DbError UpdateBracketType(BracketTypeModel bracketType)
+        {
+            try
+            {
+                BracketTypeModel _bracketType = context.BracketTypeModels.Find(bracketType.BracketTypeID);
+                context.Entry(_bracketType).CurrentValues.SetValues(bracketType);
+                context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
         }
 
 
