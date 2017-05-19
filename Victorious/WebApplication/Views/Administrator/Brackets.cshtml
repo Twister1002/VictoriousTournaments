@@ -13,7 +13,7 @@
             <li class="list-table-body border">
                 @foreach (var bracket in Model.Brackets)
                 {
-                    <ul class="bracket" data-columns="2" data-enabled="@bracket.IsActive" data-bracketid="@bracket.BracketTypeID">
+                    <ul class="bracket" data-columns="2" data-enabled="@bracket.IsActive" data-id="@bracket.BracketTypeID">
                         <li class="column bracketType">@bracket.TypeName</li>
                         <li class="column bracketChange">
                             @if (bracket.IsActive)

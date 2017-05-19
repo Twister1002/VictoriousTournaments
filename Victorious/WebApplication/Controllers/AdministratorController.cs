@@ -113,7 +113,7 @@ namespace WebApplication.Controllers
             {
                 status = status,
                 message = message,
-                platforms = viewModel.Brackets
+                brackets = viewModel.Brackets.Select(x => new { x.BracketTypeID, x.TypeName, x.IsActive })
             }));
         }
     }

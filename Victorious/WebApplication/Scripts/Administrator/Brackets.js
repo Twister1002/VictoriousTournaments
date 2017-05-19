@@ -4,28 +4,30 @@
     $("#AdministratorBrackets .bracket .icon").on("click", BracketTypeChange);
 
     function BracketTypeChange() {
-        $this = $(this);
+        $brackets = $(this).closest(".list-table-body");
 
         $.ajax({
             "url": "/Ajax/Administrator/Bracket",
             "type": "post",
-            "data": { "bracketTypeId": $this.closest(".bracket").data("bracketid") },
+            "data": { "bracketTypeId": $(this).closest(".bracket").data("id") },
             "dataType": "json",
             "beforeSend": function () {
-                $this.off("click");
+                $brackets.find(".icon").off("click");
             },
             "success": function (json) {
                 json = JSON.parse(json);
 
                 if (json.status) {
-                    $this.removeClass();
-
-                    if (json.isEnabled) {
-                        $this.addClass("green icon icon-checkmark");
-                    }
-                    else {
-                        $this.addClass("red icon icon-cross");
-                    }
+                    $.each(json.brackets, function (i, e) {
+                        $icon = $("#AdministratorBrackets .bracket[data-id='" + e.BracketTypeID + "'] .icon");
+                        $icon.removeClass();
+                        if (e.IsActive) {
+                            $icon.addClass("green icon icon-checkmark");
+                        }
+                        else {
+                            $icon.addClass("red icon icon-cross");
+                        }
+                    });
                 }
 
                 console.log(json.message);
@@ -34,7 +36,7 @@
                 console.log(json);
             },
             "complete": function() {
-                $this.on("click", BracketTypeChange);
+                $brackets.find(".icon").on("click", BracketTypeChange);
             }
         });
     }

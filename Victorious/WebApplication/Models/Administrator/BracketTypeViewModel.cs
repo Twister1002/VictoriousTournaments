@@ -12,7 +12,12 @@ namespace WebApplication.Models.Administrator
 
         public BracketTypeViewModel()
         {
-            Brackets = db.GetAllBracketTypes();
+            Select();
+        }
+
+        private void Select()
+        {
+            Brackets = db.GetAllBracketTypes(false);
         }
 
         public bool Update(int bracketTypeId)
@@ -20,7 +25,10 @@ namespace WebApplication.Models.Administrator
             BracketTypeModel model = Brackets.First(y => y.BracketTypeID == bracketTypeId);
             model.IsActive = model.IsActive ? false : true;
 
-            return db.UpdateBracketType(model) == DbError.SUCCESS;
+            bool updated = db.UpdateBracketType(model) == DbError.SUCCESS;
+
+            Select();
+            return updated; 
         }
     }
 }
