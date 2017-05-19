@@ -147,7 +147,6 @@ namespace WebApplication.Controllers
                     // Verify if the user is allowed to view the tournament
                     if (viewModel.Model.PublicViewing || viewModel.Model.InviteCode == inviteCode || isAdmin || isParticipant)
                     {
-                        viewModel.ProcessTournament();
                         return View("Tournament", viewModel);
                     }
                     else

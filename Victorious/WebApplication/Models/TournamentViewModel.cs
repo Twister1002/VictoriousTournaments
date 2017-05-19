@@ -21,6 +21,7 @@ namespace WebApplication.Models
         {
             Model = new TournamentModel();
             Init();
+            ProcessTournament();
         }
 
         public TournamentViewModel(String id) : this(int.Parse(id))
@@ -40,6 +41,7 @@ namespace WebApplication.Models
             {
                 Model = null;
             }
+            ProcessTournament();
         }
 
         public TournamentViewModel(TournamentModel model)
@@ -53,6 +55,7 @@ namespace WebApplication.Models
             }
             
             GetUserPermissions();
+            ProcessTournament();
         }
 
         public void Init()
@@ -161,10 +164,6 @@ namespace WebApplication.Models
         {
             ApplyChanges();
 
-            Model.CreatedOn = DateTime.Now;
-            Model.CreatedByID = sessionId;
-            Model.InviteCode = Codes.GenerateInviteCode();
-
             // Create the bracket
             BracketModel bracketModel = new BracketModel()
             {
@@ -172,40 +171,22 @@ namespace WebApplication.Models
                 Tournament = Model
             };
 
-            TournamentInviteModel inviteModel = new TournamentInviteModel()
-            {
-                IsExpired = false,
-                DateCreated = DateTime.Now,
-                TournamentID = Model.TournamentID,
-                TournamentInviteCode = Model.InviteCode
-            };
-
             Model.Brackets.Add(bracketModel);
-            DbError createInvite = db.AddTournamentInvite(inviteModel);
-            DbError createResult = db.AddTournament(Model);
+
+            Model.CreatedOn = DateTime.Now;
+            Model.CreatedByID = sessionId;
+
+            DbError createResult = DbError.NONE;
+            do
+            {
+                Model.InviteCode = Codes.GenerateInviteCode();
+                createResult = db.AddTournament(Model);
+            }
+            while (createResult == DbError.INVITE_CODE_EXISTS);
 
             return createResult == DbError.SUCCESS;
         }
-        
-        public bool AddUser(String name)
-        {
-            DbError addResult = DbError.NONE;
-            TournamentUserModel tournamentUserModel = new TournamentUserModel()
-            {
-                Name = name,
-                PermissionLevel = (int)Permission.TOURNAMENT_STANDARD,
-                TournamentID = Model.TournamentID,
-                Tournament = Model
-            };
 
-            // Verify this name doesn't exist.
-            if (!Model.TournamentUsers.Any(x => x.Name == name))
-            {
-                addResult = db.AddTournamentUser(tournamentUserModel);
-            }
-
-            return addResult == DbError.SUCCESS;
-        }
         public bool AddUser(int accountId, Permission permission)
         {
             // Verify this user doesn't exist in the tournament
@@ -283,9 +264,6 @@ namespace WebApplication.Models
 
         public bool FinalizeTournament(Dictionary<String, Dictionary<String, int>> roundData)
         {
-            // Load the tournament first
-            ProcessTournament();
-
             // Set variables
             int bracketNum = 0;
             BracketModel bracket = Model.Brackets.ElementAt(bracketNum);
@@ -333,24 +311,6 @@ namespace WebApplication.Models
             return bracketUpdated && TournamentUpdated;
         }
 
-        public bool IsValidInviteCode(String inviteCode)
-        {
-            Dictionary<String, String> search = new Dictionary<String, String>();
-            search.Add("InviteCode", inviteCode);
-
-            List<TournamentModel> models = db.FindTournaments(search);
-
-            if (models.Count == 1)
-            {
-                LoadModel(models[0]);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         private void CreateMatches(BracketModel bracketModel, IBracket bracket)
         {
             // Verify if the tournament has not need finalized.
@@ -381,12 +341,11 @@ namespace WebApplication.Models
                     Seed = tourny.GetPlayerSeed(players[i].Id)
                 };
 
-                //db.AddTournamentUserToBracket(userSeed);
-                db.AddTournamentUserToBracket(userModel.TournamentUserID, bracket.BracketID, tourny.GetPlayerSeed(players[i].Id));
+                db.AddTournamentUsersBracket(userSeed);
             }
         }
 
-        public void ProcessTournament()
+        private void ProcessTournament()
         {
             if (Model == null)
             {

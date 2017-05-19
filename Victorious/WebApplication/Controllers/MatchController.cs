@@ -64,9 +64,6 @@ namespace WebApplication.Controllers
 
                     if (tournamentModel.IsAdministrator(account.AccountId))
                     {
-                        tournamentModel.ProcessTournament();
-                        //IBracket bracket = tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]);
-                        //IMatch match = bracket.GetMatch(json["matchNum"]);
                         BracketViewModel bracketModel = new BracketViewModel(tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]));
                         MatchViewModel matchModel = new MatchViewModel(bracketModel.Bracket.GetMatch(json["matchNum"]));
                         Dictionary<int, bool> processed = new Dictionary<int, bool>();
@@ -95,19 +92,12 @@ namespace WebApplication.Controllers
                         
                         //  Load the Models
                         matchModel.ReloadModel(bracketModel.Bracket.GetMatchModel(matchModel.Match.MatchNumber));
-                        MatchViewModel winnerMatchModel = matchModel.Match.NextMatchNumber != -1 ? new MatchViewModel(bracketModel.Bracket.GetMatchModel(matchModel.Match.NextMatchNumber)) : null;
-                        MatchViewModel loserMatchModel = matchModel.Match.NextLoserMatchNumber != -1 ? new MatchViewModel(bracketModel.Bracket.GetMatchModel(matchModel.Match.NextLoserMatchNumber)) : null;
-
-                        // Update the bracket in the database
-                        //DbError bracketUpdate = db.UpdateBracket(bracketModel.Model);
 
                         // Update the matches in the database
                         object currentMatchData = null;
                         object winnerMatchData = null;
                         object loserMatchData = null;
                         bool currentMatchUpdate = matchModel.Update();
-                        bool winnerMatchUpdate = winnerMatchModel != null ? winnerMatchModel.Update() : false;
-                        bool loserMatchUpdate = loserMatchModel != null ? loserMatchModel.Update() : false;
 
                         if (currentMatchUpdate)
                         {
@@ -115,14 +105,10 @@ namespace WebApplication.Controllers
                             message = "Current match was updated";
 
                             currentMatchData = JsonMatchResponse(matchModel.Match, false);
-                        }
-                        if (winnerMatchUpdate)
-                        {
-                            winnerMatchData = JsonMatchResponse(winnerMatchModel.Match, false);
-                        }
-                        if (loserMatchUpdate)
-                        {
-                            loserMatchData = JsonMatchResponse(loserMatchModel.Match, false);
+                            if (matchModel.Match.NextMatchNumber != -1)
+                                winnerMatchData = JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextMatchNumber), false);
+                            if (matchModel.Match.NextLoserMatchNumber != -1) 
+                                loserMatchData = JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextLoserMatchNumber), false);
                         }
 
                         // Prepare data

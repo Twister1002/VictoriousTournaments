@@ -125,44 +125,6 @@ namespace WebApplication.Models
             return db.UpdateBracket(model) == DbError.SUCCESS;
         }
 
-        public bool ResetBracket()
-        {
-            DbError result = DbError.SUCCESS;
-
-            // Delete the games first
-            for (int i = 1; i <= Bracket.NumberOfMatches; i++)
-            {
-                IMatch match = Bracket.GetMatch(i);
-
-                // Delete every game associated with this bracket
-                foreach (IGame game in match.Games)
-                {
-                    if (result == DbError.SUCCESS)
-                    {
-                        result = db.DeleteGame(game.Id);
-                    }
-                }
-            }
-
-            // Reset the bracket
-            Bracket.ResetMatches();
-
-            // Update every match with this bracket
-            for (int i = 1; i <= Bracket.NumberOfMatches; i++)
-            {
-                if (result == DbError.SUCCESS)
-                {
-                    result = db.UpdateMatch(Bracket.GetMatchModel(i));
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return result == DbError.SUCCESS;
-        }
-
         public int TotalRounds()
         {
             int maxRounds = Math.Max(Bracket.NumberOfRounds, Bracket.NumberOfLowerRounds);
@@ -397,7 +359,7 @@ namespace WebApplication.Models
         }
         #endregion
 
-        #region events
+        #region Events
         public void OnMatchesUpdated(object sender, BracketEventArgs args)
         {
             foreach (MatchModel match in args.UpdatedMatches)
@@ -418,7 +380,7 @@ namespace WebApplication.Models
                 db.AddMatch(match);
             }
         }
-
+        
         public void OnRoundDelete(object sender, BracketEventArgs args)
         {
             foreach (int games in args.DeletedGameIDs)
@@ -434,9 +396,9 @@ namespace WebApplication.Models
 
         public void OnGamesDeleted(object sender, BracketEventArgs args)
         {
-            foreach (MatchModel match in args.UpdatedMatches)
+            foreach (int gameId in args.DeletedGameIDs)
             {
-                db.DeleteMatch(match.MatchID);
+                db.DeleteGame(gameId);
             }
         }
 
