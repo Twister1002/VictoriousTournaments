@@ -63,6 +63,7 @@
     <Compile Include="BracketModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="BracketRepository.cs" />
     <Compile Include="BracketTypeModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -77,6 +78,7 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="IAccountRepository.cs" />
+    <Compile Include="IBracketRepository.cs" />
     <Compile Include="ITournamentRepository.cs" />
     <Compile Include="MatchModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
