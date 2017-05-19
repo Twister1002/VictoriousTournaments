@@ -44,7 +44,6 @@
             <PropertyRef Name="BracketID" />
           </Key>
           <Property Name="BracketID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="BracketTitle" Type="nvarchar(max)" />
           <Property Name="BracketTypeID" Type="int" Nullable="false" />
           <Property Name="Finalized" Type="bit" Nullable="false" />
           <Property Name="NumberOfGroups" Type="int" Nullable="false" />
@@ -102,9 +101,6 @@
           <Property Name="PrevChallengerMatchNumber" Type="int" />
           <Property Name="MaxGames" Type="int" />
           <Property Name="BracketID" Type="int" />
-          <Property Name="IsManualWin" Type="bit" Nullable="false" />
-          <Property Name="IsFinished" Type="bit" />
-          <Property Name="IsReady" Type="bit" />
         </EntityType>
         <EntityType Name="Platforms">
           <Key>
@@ -139,7 +135,6 @@
           <Property Name="LastEditedByID" Type="int" Nullable="false" />
           <Property Name="EntryFee" Type="money" />
           <Property Name="PrizePurse" Type="money" Nullable="false" />
-          <Property Name="IsPublic" Type="bit" Nullable="false" />
           <Property Name="RegistrationStartDate" Type="datetime" Nullable="false" />
           <Property Name="RegistrationEndDate" Type="datetime" Nullable="false" />
           <Property Name="TournamentStartDate" Type="datetime" Nullable="false" />
@@ -386,7 +381,6 @@
             <PropertyRef Name="BracketID" />
           </Key>
           <Property Name="BracketID" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
-          <Property Name="BracketTitle" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="BracketTypeID" Nullable="false" Type="Int32" />
           <Property Name="Finalized" Nullable="false" Type="Boolean" />
           <Property Name="NumberOfGroups" Nullable="false" Type="Int32" />
@@ -431,9 +425,6 @@
           <Property Name="BracketID" Type="Int32" />
           <NavigationProperty Name="Bracket" Relationship="Self.FK_Matches_Brackets" FromRole="MatchModel" ToRole="BracketModel" />
           <NavigationProperty Name="Games" Relationship="VictoriousDatabaseModel.FK_Games_Matches" FromRole="MatchModel" ToRole="GameModel" />
-          <Property Name="IsManualWin" Type="Boolean" Nullable="false" />
-          <Property Name="IsFinished" Type="Boolean" />
-          <Property Name="IsReady" Type="Boolean" />
           </EntityType>
         <EntityType Name="GameTypeModel">
           <Key>
@@ -686,7 +677,6 @@
           <Property Name="LastEditedByID" Type="Int32" Nullable="false" />
           <Property Name="EntryFee" Type="Decimal" Precision="19" Scale="4" />
           <Property Name="PrizePurse" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
-          <Property Name="IsPublic" Type="Boolean" Nullable="false" />
           <Property Name="RegistrationStartDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="RegistrationEndDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="TournamentStartDate" Type="DateTime" Nullable="false" Precision="3" />
@@ -782,7 +772,6 @@
               <MappingFragment StoreEntitySet="Brackets">
                 <ScalarProperty Name="MaxRounds" ColumnName="MaxRounds" />
                 <ScalarProperty Name="BracketID" ColumnName="BracketID" />
-                <ScalarProperty Name="BracketTitle" ColumnName="BracketTitle" />
                 <ScalarProperty Name="BracketTypeID" ColumnName="BracketTypeID" />
                 <ScalarProperty Name="Finalized" ColumnName="Finalized" />
                 <ScalarProperty Name="NumberOfGroups" ColumnName="NumberOfGroups" />
@@ -802,9 +791,6 @@
           <EntitySetMapping Name="MatchModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.MatchModel">
               <MappingFragment StoreEntitySet="Matches">
-                <ScalarProperty Name="IsReady" ColumnName="IsReady" />
-                <ScalarProperty Name="IsFinished" ColumnName="IsFinished" />
-                <ScalarProperty Name="IsManualWin" ColumnName="IsManualWin" />
                 <ScalarProperty Name="MatchID" ColumnName="MatchID" />
                 <ScalarProperty Name="ChallengerID" ColumnName="ChallengerID" />
                 <ScalarProperty Name="DefenderID" ColumnName="DefenderID" />
@@ -938,7 +924,6 @@
                 <ScalarProperty Name="TournamentStartDate" ColumnName="TournamentStartDate" />
                 <ScalarProperty Name="RegistrationEndDate" ColumnName="RegistrationEndDate" />
                 <ScalarProperty Name="RegistrationStartDate" ColumnName="RegistrationStartDate" />
-                <ScalarProperty Name="IsPublic" ColumnName="IsPublic" />
                 <ScalarProperty Name="PrizePurse" ColumnName="PrizePurse" />
                 <ScalarProperty Name="EntryFee" ColumnName="EntryFee" />
                 <ScalarProperty Name="LastEditedByID" ColumnName="LastEditedByID" />

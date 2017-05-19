@@ -33,7 +33,6 @@ namespace DatabaseLib
         public int LastEditedByID { get; set; }
         public Nullable<decimal> EntryFee { get; set; }
         public decimal PrizePurse { get; set; }
-        public bool IsPublic { get; set; }
         public System.DateTime RegistrationStartDate { get; set; }
         public System.DateTime RegistrationEndDate { get; set; }
         public System.DateTime TournamentStartDate { get; set; }
