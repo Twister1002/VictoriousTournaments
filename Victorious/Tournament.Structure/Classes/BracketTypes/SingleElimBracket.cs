@@ -61,20 +61,6 @@ namespace Tournament.Structure
 			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
 		}
-#if false
-		public SingleElimBracket(int _numPlayers)
-		{
-			Players = new List<IPlayer>();
-			for (int i = 0; i < _numPlayers; ++i)
-			{
-				Players.Add(new User());
-			}
-
-			BracketType = BracketTypeModel.BracketType.SINGLE;
-			ResetBracket();
-			CreateBracket();
-		}
-#endif
 		public SingleElimBracket()
 			: this(new List<IPlayer>())
 		{ }
@@ -308,95 +294,6 @@ namespace Tournament.Structure
 			#endregion
 		}
 
-#if false
-		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
-		{
-			GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
-			AddWinEffects(_matchNumber, _winnerSlot);
-			return gameModel;
-		}
-#endif
-#if false
-		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
-		{
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-			if (!match.Games.Exists(g => g.GameNumber == _gameNumber))
-			{
-				throw new GameNotFoundException
-					("Game not found; Game Number may be invalid!");
-			}
-
-			bool needToUpdateRankings = false;
-			if (match.IsFinished &&
-				match.WinnerSlot != _winnerSlot)
-			{
-				needToUpdateRankings = true;
-				// Remove advanced players from future matches:
-				RemovePlayerFromFutureMatches
-					(nextWinnerNumber, ref match.Players[(int)(match.WinnerSlot)]);
-			}
-
-			GameModel gameModel = GetMatch(_matchNumber).UpdateGame(_gameNumber, _defenderScore, _challengerScore, _winnerSlot);
-
-			if (needToUpdateRankings)
-			{
-				IsFinished = false;
-				UpdateRankings();
-			}
-
-			ApplyWinEffects(_matchNumber, _winnerSlot);
-			return gameModel;
-		}
-		public override void RemoveLastGame(int _matchNumber)
-		{
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-			bool needToUpdateRankings = false;
-
-			if (match.IsFinished)
-			{
-				needToUpdateRankings = true;
-				// Remove advanced players from future matches:
-				RemovePlayerFromFutureMatches
-					(nextWinnerNumber, ref match.Players[(int)(match.WinnerSlot)]);
-			}
-
-			// Remove the game and update rankings:
-			GetMatch(_matchNumber).RemoveLastGame();
-			if (needToUpdateRankings)
-			{
-				IsFinished = false;
-				UpdateRankings();
-			}
-		}
-		public override void ResetMatchScore(int _matchNumber)
-		{
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-			bool needToUpdateRankings = false;
-
-			if (match.IsFinished)
-			{
-				needToUpdateRankings = true;
-				// Remove advanced players from future matches:
-				RemovePlayerFromFutureMatches
-					(match.NextMatchNumber, ref match.Players[(int)match.WinnerSlot]);
-			}
-
-			// Reset score and update rankings:
-			GetMatch(_matchNumber).ResetScore();
-			if (needToUpdateRankings)
-			{
-				IsFinished = false;
-				UpdateRankings();
-			}
-		}
-#endif
-
 		public override void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
 		{
 			if (0 == _maxGamesPerMatch % 2)
@@ -430,20 +327,7 @@ namespace Tournament.Structure
 						? PlayerSlot.Challenger
 						: PlayerSlot.Defender;
 					int rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
-#if false
-					if (null != LowerMatches && LowerMatches.ContainsKey(_matchNumber))
-					{
-						rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
-					}
-					else if (null != Matches && Matches.ContainsKey(_matchNumber))
-					{
-						rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
-					}
-					else if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
-					{
-						rank = 2;
-					}
-#endif
+
 					Rankings.Add(new PlayerScore
 						(match.Players[(int)loserSlot].Id,
 						match.Players[(int)loserSlot].Name,
