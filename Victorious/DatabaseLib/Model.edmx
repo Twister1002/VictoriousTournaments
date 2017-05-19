@@ -57,6 +57,7 @@
           <Property Name="BracketTypeID" Type="int" Nullable="false" />
           <Property Name="TypeName" Type="nvarchar(max)" />
           <Property Name="Type" Type="int" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Games">
           <Key>
@@ -399,6 +400,7 @@
           <Property Name="TypeName" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="Type" Nullable="false" Type="VictoriousDatabaseModel.BracketType" />
           <NavigationProperty Name="Brackets" Relationship="VictoriousDatabaseModel.FK_Brackets_BracketTypes" FromRole="BracketType" ToRole="BracketModel" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="MatchModel">
           <Key>
@@ -782,6 +784,7 @@
           <EntitySetMapping Name="BracketTypeModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.BracketTypeModel">
               <MappingFragment StoreEntitySet="BracketTypes">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="BracketTypeID" ColumnName="BracketTypeID" />
                 <ScalarProperty Name="TypeName" ColumnName="TypeName" />
                 <ScalarProperty Name="Type" ColumnName="Type" />

@@ -9,7 +9,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Add_Tournament_User()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             var user = NewTournamentUser();
             user.TournamentID = db.GetAllTournaments()[0].TournamentID;
@@ -24,7 +24,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_Tournament_User_By_Id()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
             var user = NewTournamentUser();
 
             var result = db.GetTournamentUser(user.TournamentUserID);
@@ -35,7 +35,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Delete_Tournament_User()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             var result = db.DeleteTournamentUser(0);
 
@@ -45,7 +45,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Add_User_To_Bracket()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             TournamentUsersBracketModel t = new TournamentUsersBracketModel()
             {
@@ -62,7 +62,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Update_TournamentUsersBracket()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             TournamentUsersBracketModel t = new TournamentUsersBracketModel()
             {
@@ -78,7 +78,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Delete_TournamentUsersBracket()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             TournamentUsersBracketModel t = new TournamentUsersBracketModel()
             {
@@ -95,7 +95,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_User_Seed()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             var result = db.GetTournamentUserSeed(db.GetAllUsersInTournament(3)[0].TournamentUserID, db.GetAllBracketsInTournament(db.GetAllTournaments()[0].TournamentID)[0].BracketID);
 
@@ -140,7 +140,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Check_User_In()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             db.CheckUserIn(1);
 
