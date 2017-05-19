@@ -94,7 +94,7 @@ namespace WebApplication.Controllers
                         }
                         
                         //  Load the Models
-                        matchModel.ReloadModel(bracketModel.Bracket.GetMatchModel(matchModel.Match.Id));
+                        matchModel.ReloadModel(bracketModel.Bracket.GetMatchModel(matchModel.Match.MatchNumber));
                         MatchViewModel winnerMatchModel = matchModel.Match.NextMatchNumber != -1 ? new MatchViewModel(bracketModel.Bracket.GetMatchModel(matchModel.Match.NextMatchNumber)) : null;
                         MatchViewModel loserMatchModel = matchModel.Match.NextLoserMatchNumber != -1 ? new MatchViewModel(bracketModel.Bracket.GetMatchModel(matchModel.Match.NextLoserMatchNumber)) : null;
 
