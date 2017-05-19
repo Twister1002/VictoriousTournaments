@@ -19,9 +19,8 @@ namespace WebApplication.Models
 
         public TournamentViewModel()
         {
-            Model = new TournamentModel();
+            Model = null;
             Init();
-            ProcessTournament();
         }
 
         public TournamentViewModel(String id) : this(int.Parse(id))
