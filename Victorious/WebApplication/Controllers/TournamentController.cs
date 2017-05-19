@@ -114,11 +114,12 @@ namespace WebApplication.Controllers
             LoadAccount(Session);
             int tournamentId = ConvertToInt(guid);
             TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-            bool isAdmin = viewModel.IsAdministrator(account.AccountId);
-            bool isParticipant = viewModel.IsParticipant(account.AccountId);
-
+            
             if (viewModel.Model != null)
             {
+                bool isAdmin = viewModel.IsAdministrator(account.AccountId);
+                bool isParticipant = viewModel.IsParticipant(account.AccountId);
+
                 // Should we check for registrations or view the tournament?
                 if (!viewModel.Model.InProgress && !isAdmin)
                 {

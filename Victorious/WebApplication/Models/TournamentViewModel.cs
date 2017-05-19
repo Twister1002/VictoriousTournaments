@@ -19,7 +19,7 @@ namespace WebApplication.Models
 
         public TournamentViewModel()
         {
-            Model = null;
+            Model = new TournamentModel();
             Init();
         }
 
