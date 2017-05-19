@@ -9,7 +9,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Add_TournamentInvite()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             TournamentInviteModel invite = new TournamentInviteModel()
             {
@@ -29,7 +29,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_Tournament_Invite()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             TournamentInviteModel invite = db.GetTournamentInvite("10000");
 
@@ -39,7 +39,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Update_Tournament_Invite()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             TournamentInviteModel invite = db.GetTournamentInvite("10003");
             invite.IsExpired = true;
@@ -51,7 +51,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void DeleteTournamentInvite()
         {
-            var db = new DatabaseRepository();
+            var db = new DatabaseRepository("VictoriousEntities");
 
             var result = db.DeleteTournamentInvite("10003");
 
