@@ -40,9 +40,6 @@ namespace DatabaseLib
     {
         partial void OnInit()
         {
-
-            IsPublic = true;
-         
             WinnerID = -1;
             CreatedOn = DateTime.Now;
             LastEditedOn = DateTime.Now;

@@ -14,7 +14,7 @@ namespace DatabaseLib.Tests
 
             var bracket = new BracketModel()
             {
-                BracketTitle = "Bracket",
+                //BracketTitle = "Bracket",
                 BracketTypeID = 2,
                 Finalized = true,
                 TournamentID = db.GetAllTournaments()[0].TournamentID,
@@ -33,7 +33,7 @@ namespace DatabaseLib.Tests
             
             var result = db.GetBracket(3);
 
-            Assert.AreEqual("Bracket", result.BracketTitle);
+            //Assert.AreEqual("Bracket", result.BracketTitle);
         }
 
         [TestMethod]
@@ -43,7 +43,7 @@ namespace DatabaseLib.Tests
 
             BracketModel bracket = db.GetBracket(3);
 
-            bracket.BracketTitle = "new title";
+            //bracket.BracketTitle = "new title";
 
             var result = db.UpdateBracket(bracket);
 

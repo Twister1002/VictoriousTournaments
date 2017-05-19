@@ -11,7 +11,6 @@
     [LastEditedByID]    INT            NOT NULL, 
 	[EntryFee]              MONEY    NULL,
     [PrizePurse]            MONEY    NOT NULL,
-    [IsPublic]              BIT      NOT NULL,
     [RegistrationStartDate] DATETIME NOT NULL,
     [RegistrationEndDate]   DATETIME NOT NULL,
     [TournamentStartDate]   DATETIME NOT NULL,

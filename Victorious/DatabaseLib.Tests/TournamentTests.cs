@@ -14,7 +14,7 @@ namespace DatabaseLib.Tests
             var db = new DatabaseRepository();
 
             var tournament = NewTournament();
-            //tournament.InviteCode = "10003";
+            tournament.InviteCode = "10006";
             var result = db.AddTournament(tournament);
 
             Assert.AreEqual(DbError.SUCCESS, result);
