@@ -140,7 +140,7 @@ namespace WebApplication.Models
 
             DbError updateResult = db.UpdateTournament(Model);
 
-            if (updateResult == DbError.SUCCESS)
+            if (updateResult == DbError.SUCCESS && this.Users != null)
             {
                 // Lets update the new users that were created.
                 foreach (TournamentUserModel user in Users)
