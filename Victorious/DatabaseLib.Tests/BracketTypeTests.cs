@@ -17,5 +17,16 @@ namespace DatabaseLib.Tests
             Assert.AreEqual(5, result);
         }
 
+        [TestMethod]
+        public void Update_Bracket_Types()
+        {
+            var db = new DatabaseRepository("VictoriousEntities");
+
+            var bracketType = db.GetAllBracketTypes()[0];
+            bracketType.IsActive = false;
+            var result = db.UpdateBracketType(bracketType);
+            Assert.AreEqual(DbError.SUCCESS, result);
+        }
+
     }
 }
