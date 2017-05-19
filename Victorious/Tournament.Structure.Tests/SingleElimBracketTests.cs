@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Moq;
 using System.Linq;
 
+using DatabaseLib;
+
 namespace Tournament.Structure.Tests
 {
 	[TestClass]
@@ -1138,6 +1140,95 @@ namespace Tournament.Structure.Tests
 				}
 			}
 			Assert.AreEqual(0, advancedPlayers);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB ResetMatches")]
+		public void SEBResetMatches_FiresOneMatchesEvent_AndOneGamesEvent()
+		{
+			int gamesDeletedEvents = 0;
+			int matchesModifiedEvents = 0;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			b.GamesDeleted += delegate (object sender, BracketEventArgs e)
+			{
+				++gamesDeletedEvents;
+			};
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				++matchesModifiedEvents;
+			};
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			matchesModifiedEvents = 0;
+			b.ResetMatches();
+			Assert.IsTrue(1 == gamesDeletedEvents &&
+				1 == matchesModifiedEvents);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB ResetMatches")]
+		public void SEBResetMatches_FiresEventWithDeletedGames()
+		{
+			List<int> deletedGames = new List<int>();
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			b.GamesDeleted += delegate (object sender, BracketEventArgs e)
+			{
+				deletedGames.AddRange(e.DeletedGameIDs);
+			};
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			b.ResetMatches();
+			Assert.AreEqual(b.NumberOfMatches, deletedGames.Count);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("SEB ResetMatches")]
+		public void SEBResetMatches_FiresEventWithModifiedMatchModels()
+		{
+			List<MatchModel> modifiedMatches = new List<MatchModel>();
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				modifiedMatches.AddRange(e.UpdatedMatches);
+			};
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			modifiedMatches.Clear();
+			b.ResetMatches();
+			Assert.AreEqual(b.NumberOfMatches, modifiedMatches.Count);
 		}
 		#endregion
 
