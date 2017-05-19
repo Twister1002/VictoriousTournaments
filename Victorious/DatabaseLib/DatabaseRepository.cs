@@ -500,7 +500,7 @@ namespace DatabaseLib
             {
                 List<SqlParameter> sqlparams = new List<SqlParameter>();
                 string query = string.Empty;
-                query = "SELECT TOP(" + returnCount + ")* FROM Tournaments WHERE IsPublic = 1 ";
+                query = "SELECT TOP(" + returnCount + ")* FROM Tournaments WHERE PublicViewing = 1 ";
                 foreach (KeyValuePair<String, String> data in searchParams)
                 {
                     if (query != String.Empty) query += " AND ";

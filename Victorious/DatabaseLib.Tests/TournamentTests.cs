@@ -128,7 +128,7 @@ namespace DatabaseLib.Tests
             tournaments = db.FindTournaments(dict);
             var result = tournaments.Count;
 
-            Assert.AreEqual(db.GetAllTournaments().Count, result);
+            Assert.AreEqual(2, result);
         }
 
         [TestMethod]
