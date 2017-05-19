@@ -467,6 +467,10 @@ namespace Tournament.Structure
 				GetMatch(_matchNumber).Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;
 				GetMatch(_matchNumber).Games[gameIndex].Score[(int)PlayerSlot.Challenger] = _challengerScore;
 
+				////////////////////////////////
+				// NOTE : DOES NOT UPDATE RANKINGS!
+				////////////////////////////////
+
 				GameModel gameModel = GetMatch(_matchNumber).Games[gameIndex].GetModel();
 				gameModel.MatchID = GetMatch(_matchNumber).Id;
 				return gameModel;
@@ -559,15 +563,6 @@ namespace Tournament.Structure
 
 			OnMatchesModified(alteredMatches);
 			return modelList;
-#if false
-			List<GameModel> modelList = new List<GameModel>();
-			IMatch match = GetMatch(_matchNumber);
-			while (GetMatch(_matchNumber).Games.Count > 0)
-			{
-				modelList.Add(RemoveLastGame(_matchNumber));
-			}
-			return modelList;
-#endif
 		}
 
 		public virtual List<IMatch> GetRound(int _round)
