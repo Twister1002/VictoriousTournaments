@@ -41,6 +41,7 @@ namespace Tournament.Structure
 		{ get; set; }
 		#endregion
 
+		#region Ctors
 		/// <summary>
 		/// Constructor for ELIMINATION-type brackets.
 		/// Sets Score=-1.
@@ -73,6 +74,17 @@ namespace Tournament.Structure
 		public PlayerScore()
 			: this(0, "")
 		{ }
+		#endregion
+
+		#region Public Methods
+		public int[] GetRecord()
+		{
+			int[] record = new int[3];
+			record[(int)Record.Wins] = Wins;
+			record[(int)Record.Losses] = Losses;
+			record[(int)Record.Ties] = Ties;
+			return record;
+		}
 
 		public void ReplacePlayerData(int _id, string _name)
 		{
@@ -87,6 +99,7 @@ namespace Tournament.Structure
 			GameScore += (_gameScore * add);
 			PointsScore += (_pointsScore * add);
 		}
+
 		public int CalculateScore(int _matchWinValue, int _matchTieValue, int _matchLossValue)
 		{
 			int score = 0;
@@ -94,6 +107,12 @@ namespace Tournament.Structure
 			score += (MatchRecord.Ties * _matchTieValue);
 			score += (MatchRecord.Losses * _matchLossValue);
 			return score;
+		}
+		public void ResetScore()
+		{
+			MatchRecord.Reset();
+			GameScore = PointsScore = 0;
+			OpponentsScore = 0;
 		}
 
 		public void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _isAddition)
@@ -111,12 +130,6 @@ namespace Tournament.Structure
 					break;
 			}
 		}
-
-		public void ResetScore()
-		{
-			MatchRecord.Reset();
-			GameScore = PointsScore = 0;
-			OpponentsScore = 0;
-		}
+		#endregion
 	}
 }

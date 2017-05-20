@@ -12,7 +12,12 @@ namespace Tournament.Structure
 		Defender = 0,
 		Challenger = 1
 	};
-
+	public enum Record
+	{
+		Wins = 0,
+		Losses = 1,
+		Ties = 2
+	};
 	public enum Outcome
 	{
 		Loss,

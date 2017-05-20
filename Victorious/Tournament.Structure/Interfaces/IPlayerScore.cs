@@ -37,6 +37,12 @@ namespace Tournament.Structure
 
 		#region Methods
 		/// <summary>
+		/// Get an array of [W, L, T], ordered by Records enum.
+		/// </summary>
+		/// <returns>int[3] array showing [W, L, T]</returns>
+		int[] GetRecord();
+
+		/// <summary>
 		/// Replace the Player's information.
 		/// </summary>
 		/// <param name="_id">New player ID</param>
@@ -61,13 +67,13 @@ namespace Tournament.Structure
 		/// <returns></returns>
 		int CalculateScore(int _matchWinValue, int _matchTieValue, int _matchLossValue);
 
-		[System.Obsolete("use AddMatchOutcome instead", true)]
-		void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _isAddition);
-
 		/// <summary>
 		/// Reset this object's W/L Record & Score values.
 		/// </summary>
 		void ResetScore();
+
+		[System.Obsolete("use AddMatchOutcome instead", true)]
+		void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _isAddition);
 		#endregion
 	}
 }
