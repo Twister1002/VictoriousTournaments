@@ -129,7 +129,7 @@ namespace Tournament.Structure
 						{
 							PlayerByes.Add(Players[i].Id);
 							int rIndex = Rankings.FindIndex(p => p.Id == Players[i].Id);
-							Rankings[rIndex].AddToScore(MatchWinValue, 0, 0, true);
+							Rankings[rIndex].AddMatchOutcome(Outcome.Win, 0, 0, true);
 							break;
 						}
 					}
@@ -278,7 +278,7 @@ namespace Tournament.Structure
 						// Add player to the Byes list and update his score:
 						PlayerByes.Add(Players[p].Id);
 						int rIndex = Rankings.FindIndex(r => r.Id == Players[p].Id);
-						Rankings[rIndex].AddToScore(MatchWinValue, 0, 0, true);
+						Rankings[rIndex].AddMatchOutcome(Outcome.Win, 0, 0, true);
 						UpdateRankings();
 						break;
 					}
@@ -466,7 +466,7 @@ namespace Tournament.Structure
 			if (PlayerByes.Count > 0)
 			{
 				int rIndex = Rankings.FindIndex(r => r.Id == PlayerByes[PlayerByes.Count - 1]);
-				Rankings[rIndex].AddToScore(MatchWinValue, 0, 0, true);
+				Rankings[rIndex].AddMatchOutcome(Outcome.Win, 0, 0, true);
 				UpdateRankings();
 			}
 
@@ -510,7 +510,7 @@ namespace Tournament.Structure
 					--prevIndex;
 				}
 				if (prevIndex < 0 ||
-					Rankings[i].MatchScore < Rankings[prevIndex].MatchScore)
+					Rankings[i].CalculateScore(MatchWinValue, MatchTieValue, 0) < Rankings[prevIndex].CalculateScore(MatchWinValue, MatchTieValue, 0))
 				{
 					// New MatchPoints value = Add a new group:
 					groups.Add(new List<int>());
@@ -749,7 +749,7 @@ namespace Tournament.Structure
 			foreach (int playerId in PlayerByes)
 			{
 				Rankings.Find(r => r.Id == playerId)
-					.AddToScore(MatchWinValue, 0, 0, true);
+					.AddMatchOutcome(Outcome.Win, 0, 0, true);
 			}
 			foreach (IMatch match in Matches.Values)
 			{
@@ -758,11 +758,26 @@ namespace Tournament.Structure
 				{
 					// Just add a MatchWin to winning player:
 					Rankings.Find(r => r.Id == match.Players[(int)match.WinnerSlot].Id)
-						.AddToScore(MatchWinValue, 0, 0, true);
+						.AddMatchOutcome(Outcome.Win, 0, 0, true);
 				}
 				// Case 2: Match has at least 1 completed Game:
 				else if (match.Games.Count > 0)
 				{
+					// Get the Match's outcome:
+					Outcome defOutcome = Outcome.Tie;
+					Outcome chalOutcome = Outcome.Tie;
+					switch (match.WinnerSlot)
+					{
+						case PlayerSlot.Defender:
+							defOutcome = Outcome.Win;
+							chalOutcome = Outcome.Loss;
+							break;
+						case PlayerSlot.Challenger:
+							defOutcome = Outcome.Loss;
+							chalOutcome = Outcome.Win;
+							break;
+					}
+
 					// Total each player's game-wins and points:
 					int defGameScore = 0, defPointsScore = 0;
 					int chalGameScore = 0, chalPointsScore = 0;
@@ -783,11 +798,9 @@ namespace Tournament.Structure
 
 					// Add each player's totals to their scores:
 					Rankings.Find(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id)
-						.AddToScore((PlayerSlot.Defender == match.WinnerSlot) ? MatchWinValue : 0,
-						defGameScore, defPointsScore, true);
+						.AddMatchOutcome(defOutcome, defGameScore, defPointsScore, true);
 					Rankings.Find(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id)
-						.AddToScore((PlayerSlot.Challenger == match.WinnerSlot) ? MatchWinValue : 0,
-						chalGameScore, chalPointsScore, true);
+						.AddMatchOutcome(chalOutcome, chalGameScore, chalPointsScore, true);
 				}
 				// Case 3: Match has no Games played:
 				else

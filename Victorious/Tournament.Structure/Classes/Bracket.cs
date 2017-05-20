@@ -37,6 +37,10 @@ namespace Tournament.Structure
 		{ get; protected set; }
 		public int NumberOfMatches
 		{ get; protected set; }
+		protected int MatchWinValue
+		{ get; set; }
+		protected int MatchTieValue
+		{ get; set; }
 		#endregion
 
 		#region Events
@@ -771,7 +775,8 @@ namespace Tournament.Structure
 		protected int SortRankingScores(IPlayerScore first, IPlayerScore second)
 		{
 			// Rankings sorting: MatchScore > OpponentsScore > GameScore > PointsScore > initial Seeding
-			int compare = -1 * (first.MatchScore.CompareTo(second.MatchScore));
+			int compare = -1 * ((first.Wins * MatchWinValue + first.Ties * MatchTieValue)
+				.CompareTo(second.Wins * MatchWinValue + second.Ties * MatchTieValue));
 			compare = (compare != 0)
 				? compare : -1 * (first.OpponentsScore.CompareTo(second.OpponentsScore));
 			compare = (compare != 0)

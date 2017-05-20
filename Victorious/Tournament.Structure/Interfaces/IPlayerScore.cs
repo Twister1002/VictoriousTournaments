@@ -15,9 +15,15 @@ namespace Tournament.Structure
 		int Id { get; }
 		string Name { get; }
 
-		[System.Obsolete("use MatchScore&GameScore instead", true)]
-		int Score { get; set; }
-		int MatchScore { get; set; }
+		int Wins { get; }
+		int W { get; }
+		int Ties { get; }
+		int T { get; }
+		int Losses { get; }
+		int L { get; }
+
+		[System.Obsolete("use W/L/T instead", false)]
+		int MatchScore { get; }
 		int GameScore { get; set; }
 		int OpponentsScore { get; set; }
 		int PointsScore { get; set; }
@@ -38,16 +44,28 @@ namespace Tournament.Structure
 		void ReplacePlayerData(int _id, string _name);
 
 		/// <summary>
-		/// Add score values to (or subtract from) this PlayerScore.
+		/// Add/subtract outcome of one Match to this PlayerScore.
 		/// </summary>
-		/// <param name="_matchScore">Match score change</param>
+		/// <param name="_outcome">Win, Loss, or Tie</param>
 		/// <param name="_gameScore">Game score change</param>
 		/// <param name="_pointsScore">Point score change</param>
-		/// <param name="_addition">Add or subtract previous values</param>
-		void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _addition);
+		/// <param name="_isAddition">Add or subtract these values</param>
+		void AddMatchOutcome(Outcome _outcome, int _gameScore, int _pointsScore, bool _isAddition);
 
 		/// <summary>
-		/// Reset this object's Score values: match, opponent, game, and point scores
+		/// Get a score representative of this player's W/L record.
+		/// </summary>
+		/// <param name="_matchWinValue">Value of each Win (def: 2)</param>
+		/// <param name="_matchTieValue">Value of each Tie (def: 1)</param>
+		/// <param name="_matchLossValue">Value of each Loss (def: 0)</param>
+		/// <returns></returns>
+		int CalculateScore(int _matchWinValue, int _matchTieValue, int _matchLossValue);
+
+		[System.Obsolete("use AddMatchOutcome instead", true)]
+		void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _isAddition);
+
+		/// <summary>
+		/// Reset this object's W/L Record & Score values.
 		/// </summary>
 		void ResetScore();
 		#endregion

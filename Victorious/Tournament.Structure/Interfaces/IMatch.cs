@@ -7,14 +7,7 @@ using System.Threading.Tasks;
 using DatabaseLib;
 
 namespace Tournament.Structure
-{
-	public enum PlayerSlot
-	{
-		unspecified = -1,
-		Defender = 0,
-		Challenger = 1
-	};
-	
+{	
 	public interface IMatch
 	{
 		#region Variables & Properties

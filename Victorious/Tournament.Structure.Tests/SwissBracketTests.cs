@@ -133,7 +133,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SwissBracket(pList);
 
-			Assert.IsTrue(b.Rankings[0].MatchScore > 0);
+			Assert.IsTrue(b.Rankings[0].Wins > 0);
 		}
 		#endregion
 

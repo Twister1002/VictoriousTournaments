@@ -13,10 +13,24 @@ namespace Tournament.Structure
 		{ get; private set; }
 		public string Name
 		{ get; private set; }
-		public int Score
+
+		private PlayerRecord MatchRecord
 		{ get; set; }
+		public int Wins
+		{ get { return MatchRecord.Wins; } }
+		public int W
+		{ get { return MatchRecord.Wins; } }
+		public int Ties
+		{ get { return MatchRecord.Ties; } }
+		public int T
+		{ get { return MatchRecord.Ties; } }
+		public int Losses
+		{ get { return MatchRecord.Losses; } }
+		public int L
+		{ get { return MatchRecord.Losses; } }
+
 		public int MatchScore
-		{ get; set; }
+		{ get { return CalculateScore(2, 1, 0); } }
 		public int OpponentsScore
 		{ get; set; }
 		public int GameScore
@@ -28,7 +42,7 @@ namespace Tournament.Structure
 		#endregion
 
 		/// <summary>
-		/// Constructor for KNOCKOUT-type brackets.
+		/// Constructor for ELIMINATION-type brackets.
 		/// Sets Score=-1.
 		/// </summary>
 		/// <param name="_id">Player ID</param>
@@ -39,7 +53,8 @@ namespace Tournament.Structure
 			this.Id = _id;
 			this.Name = _name;
 			this.Rank = _rank;
-			MatchScore = OpponentsScore = GameScore = PointsScore = -1;
+			//MatchRecord = new PlayerRecord();
+			OpponentsScore = GameScore = PointsScore = -1;
 		}
 		/// <summary>
 		/// Constructor for SCORE-based brackets.
@@ -52,7 +67,8 @@ namespace Tournament.Structure
 			this.Id = _id;
 			this.Name = _name;
 			Rank = 1;
-			MatchScore = OpponentsScore = GameScore = PointsScore = 0;
+			MatchRecord = new PlayerRecord();
+			OpponentsScore = GameScore = PointsScore = 0;
 		}
 		public PlayerScore()
 			: this(0, "")
@@ -63,24 +79,43 @@ namespace Tournament.Structure
 			this.Id = _id;
 			this.Name = _name;
 		}
-		public void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _addition)
+
+		public void AddMatchOutcome(Outcome _outcome, int _gameScore, int _pointsScore, bool _isAddition)
 		{
-			if (_addition)
+			int add = (_isAddition) ? 1 : -1;
+			MatchRecord.AddOutcome(_outcome, _isAddition);
+			GameScore += (_gameScore * add);
+			PointsScore += (_pointsScore * add);
+		}
+		public int CalculateScore(int _matchWinValue, int _matchTieValue, int _matchLossValue)
+		{
+			int score = 0;
+			score += (MatchRecord.Wins * _matchWinValue);
+			score += (MatchRecord.Ties * _matchTieValue);
+			score += (MatchRecord.Losses * _matchLossValue);
+			return score;
+		}
+
+		public void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _isAddition)
+		{
+			switch (_matchScore)
 			{
-				this.MatchScore += _matchScore;
-				this.GameScore += _gameScore;
-				this.PointsScore += _pointsScore;
-			}
-			else
-			{
-				this.MatchScore -= _matchScore;
-				this.GameScore -= _gameScore;
-				this.PointsScore -= _pointsScore;
+				case 2:
+					AddMatchOutcome(Outcome.Win, _gameScore, _pointsScore, _isAddition);
+					break;
+				case 1:
+					AddMatchOutcome(Outcome.Tie, _gameScore, _pointsScore, _isAddition);
+					break;
+				case 0:
+					AddMatchOutcome(Outcome.Loss, _gameScore, _pointsScore, _isAddition);
+					break;
 			}
 		}
+
 		public void ResetScore()
 		{
-			MatchScore = GameScore = PointsScore = 0;
+			MatchRecord.Reset();
+			GameScore = PointsScore = 0;
 			OpponentsScore = 0;
 		}
 	}
