@@ -576,7 +576,7 @@ namespace Tournament.Structure
 			PlayerSlot winnerSlot = match.WinnerSlot;
 			bool wasManualWin = match.IsManualWin;
 
-			List<GameModel> modelList = GetMatch(_matchNumber).ResetScore();
+			List<GameModel> modelList = match.ResetScore();
 			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
 			UpdateScore(_matchNumber, modelList, false, winnerSlot, wasManualWin);
 
@@ -629,7 +629,7 @@ namespace Tournament.Structure
 				throw new InvalidIndexException
 					("Match number cannot be less than 1!");
 			}
-
+			
 			if (null != GrandFinal &&
 				GrandFinal.MatchNumber == _matchNumber)
 			{
@@ -664,6 +664,12 @@ namespace Tournament.Structure
 			}
 
 			List<IMatch> round = GetRound(_round);
+			if (round.Any(m => m.IsFinished))
+			{
+				throw new InactiveMatchException
+					("One or more matches in this round is already finished!");
+			}
+#if false
 			foreach (IMatch match in round)
 			{
 				if (match.IsFinished)
@@ -672,6 +678,7 @@ namespace Tournament.Structure
 						("One or more matches in this round is already finished!");
 				}
 			}
+#endif
 
 			foreach (IMatch match in round)
 			{
@@ -687,6 +694,12 @@ namespace Tournament.Structure
 			}
 
 			List<IMatch> round = GetLowerRound(_round);
+			if (round.Any(m => m.IsFinished))
+			{
+				throw new InactiveMatchException
+					("One or more matches in this round is already finished!");
+			}
+#if false
 			foreach (IMatch match in round)
 			{
 				if (match.IsFinished)
@@ -695,6 +708,7 @@ namespace Tournament.Structure
 						("One or more matches in this round is already finished!");
 				}
 			}
+#endif
 
 			foreach (IMatch match in round)
 			{
@@ -724,11 +738,11 @@ namespace Tournament.Structure
 						null != match.Players[i])
 					{
 						affected = true;
-						GetMatch(n).RemovePlayer(match.Players[i].Id);
+						match.RemovePlayer(match.Players[i].Id);
 					}
 				}
 
-				GetMatch(n).ResetScore();
+				match.ResetScore();
 				if (affected)
 				{
 					// Populate the list for MatchesModified event:
