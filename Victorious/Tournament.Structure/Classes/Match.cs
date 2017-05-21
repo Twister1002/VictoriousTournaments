@@ -67,6 +67,9 @@ namespace Tournament.Structure
 		}
 		public Match(IMatch _match)
 		{
+			throw new NotImplementedException
+				("Copy ctor hasn't been used, so isn't up-to-date.");
+#if false
 			if (null == _match)
 			{
 				throw new ArgumentNullException("_match");
@@ -75,7 +78,7 @@ namespace Tournament.Structure
 			this.Id = _match.Id;
 			this.IsReady = _match.IsReady;
 			this.IsFinished = _match.IsFinished;
-			this.IsManualWin = _match.IsManualWin;
+			this.IsManualWin = _match.IsManualWin; // NOTE : This needs fixing.
 			this.MaxGames = _match.MaxGames;
 			this.WinnerSlot = _match.WinnerSlot;
 			this.RoundIndex = _match.RoundIndex;
@@ -108,6 +111,7 @@ namespace Tournament.Structure
 				//this.Games.Add(game);
 				this.AddGame(game);
 			}
+#endif
 		}
 		public Match(MatchModel _model)
 		{
@@ -119,9 +123,8 @@ namespace Tournament.Structure
 			this.Id = _model.MatchID;
 			this.MaxGames = (null == _model.MaxGames)
 				? 1 : (int)(_model.MaxGames);
-			int winsNeeded = MaxGames / 2 + 1;
 
-			Players = new IPlayer[2];
+			this.Players = new IPlayer[2];
 			Players[(int)PlayerSlot.Defender] = (null == _model.Defender)
 				? null : new User(_model.Defender);
 			Players[(int)PlayerSlot.Challenger] = (null == _model.Challenger)
@@ -129,42 +132,40 @@ namespace Tournament.Structure
 			IsReady = (null == Players[0] || null == Players[1])
 				? false : true;
 
-			Games = new List<IGame>();
-			Score = new int[2] { 0, 0 };
+			this.Games = new List<IGame>();
+			this.Score = new int[2] { 0, 0 };
+			this.IsManualWin = false;
+			if (_model.IsManualWin)
+			{
+				PlayerSlot winnerSlot = (_model.WinnerID == _model.DefenderID)
+					? PlayerSlot.Defender : PlayerSlot.Challenger;
+				SetWinner(winnerSlot);
+			}
+
 			foreach (GameModel model in _model.Games.OrderBy(m => m.GameNumber))
 			{
-				this.AddGame(new Game(model));
+				AddGame(new Game(model));
 			}
+			int winsNeeded = MaxGames / 2 + 1;
 			if (Score[0] > winsNeeded || Score[1] > winsNeeded)
 			{
 				throw new ScoreException
 					("Score cannot be higher than the match allows!");
 			}
-			WinnerSlot = PlayerSlot.unspecified;
-			if (Score[(int)PlayerSlot.Defender] == winsNeeded)
+			if (!this.IsManualWin)
 			{
-				WinnerSlot = PlayerSlot.Defender;
+				WinnerSlot = PlayerSlot.unspecified;
+				if (Score[(int)PlayerSlot.Defender] == winsNeeded)
+				{
+					WinnerSlot = PlayerSlot.Defender;
+				}
+				else if (Score[(int)PlayerSlot.Challenger] == winsNeeded)
+				{
+					WinnerSlot = PlayerSlot.Challenger;
+				}
+				IsFinished = (PlayerSlot.unspecified == WinnerSlot)
+					? false : true;
 			}
-			else if (Score[(int)PlayerSlot.Challenger] == winsNeeded)
-			{
-				WinnerSlot = PlayerSlot.Challenger;
-			}
-			IsFinished = (PlayerSlot.unspecified == WinnerSlot)
-				? false : true;
-
-#if false
-			// Check for (and set) a manual win:
-			this.IsManualWin = _m.IsManualWin;
-			if (IsManualWin)
-			{
-				this.WinnerSlot = (_m.DefenderID == _m.WinnerID)
-					? PlayerSlot.Defender : PlayerSlot.Challenger;
-				Score[(int)PlayerSlot.Defender] = 0;
-				Score[(int)PlayerSlot.Challenger] = 0;
-				Score[(int)WinnerSlot] = -1;
-				IsFinished = true;
-			}
-#endif
 
 			RoundIndex = (int)(_model.RoundIndex);
 			MatchIndex = (int)(_model.MatchIndex);
