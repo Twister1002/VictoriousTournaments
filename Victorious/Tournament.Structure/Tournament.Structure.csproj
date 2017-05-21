@@ -99,6 +99,7 @@
     <Compile Include="Classes\BracketTypes\RoundRobinGroups.cs" />
     <Compile Include="Classes\BracketTypes\SwissBracket.cs" />
     <Compile Include="Classes\SeedComparer.cs" />
+    <Compile Include="StructsAndEnums.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DatabaseLib\DatabaseLib.csproj">

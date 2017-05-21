@@ -12,7 +12,6 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		string Title { get; set; }
-		string Description { get; set; }
 		List<IPlayer> Players { get; }
 		List<IBracket> Brackets { get; }
 		float PrizePool { get; set; }

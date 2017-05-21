@@ -138,7 +138,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
-			b.AddGame(1, 1, 0, PlayerSlot.Defender);
+			b.AddGame(1, 0, 1, PlayerSlot.Challenger);
 			Assert.AreEqual(b.GetMatch(1).Players[(int)(b.GetMatch(1).WinnerSlot)].Id,
 				b.Rankings[0].Id);
 		}
