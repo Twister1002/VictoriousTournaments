@@ -445,11 +445,12 @@ namespace Tournament.Structure
 
 		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
+			IMatch match = GetMatch(_matchNumber);
+			PlayerSlot oldWinnerSlot = match.WinnerSlot;
 
-			GameModel gameModel = GetMatch(_matchNumber)
+			GameModel gameModel = match
 				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
-			UpdateScore(_matchNumber, new List<GameModel>() { gameModel }, true, matchWinnerSlot);
+			UpdateScore(_matchNumber, new List<GameModel>() { gameModel }, true, oldWinnerSlot);
 			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
 
 			OnMatchesModified(alteredMatches);
@@ -457,26 +458,27 @@ namespace Tournament.Structure
 		}
 		public virtual GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			int gameIndex = GetMatch(_matchNumber).Games.FindIndex(g => g.GameNumber == _gameNumber);
+			IMatch match = GetMatch(_matchNumber);
+			int gameIndex = match.Games.FindIndex(g => g.GameNumber == _gameNumber);
 			if (gameIndex < 0)
 			{
 				// Case 1: Game doesn't exist:
 				throw new GameNotFoundException
 					("Game not found; Game Number may be invalid!");
 			}
-			if (GetMatch(_matchNumber).Games[gameIndex].WinnerSlot == _winnerSlot)
+			if (match.Games[gameIndex].WinnerSlot == _winnerSlot)
 			{
 				// Case 2: Game winner won't change.
 				// Just modify the game's score:
-				GetMatch(_matchNumber).Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;
-				GetMatch(_matchNumber).Games[gameIndex].Score[(int)PlayerSlot.Challenger] = _challengerScore;
+				match.Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;
+				match.Games[gameIndex].Score[(int)PlayerSlot.Challenger] = _challengerScore;
 
 				////////////////////////////////
 				// NOTE : DOES NOT UPDATE RANKINGS!
 				////////////////////////////////
 
-				GameModel gameModel = GetMatch(_matchNumber).Games[gameIndex].GetModel();
-				gameModel.MatchID = GetMatch(_matchNumber).Id;
+				GameModel gameModel = match.Games[gameIndex].GetModel();
+				gameModel.MatchID = match.Id;
 				return gameModel;
 			}
 			else
@@ -511,22 +513,24 @@ namespace Tournament.Structure
 		}
 		public virtual GameModel RemoveLastGame(int _matchNumber)
 		{
-			PlayerSlot winnerSlot = GetMatch(_matchNumber).WinnerSlot;
+			IMatch match = GetMatch(_matchNumber);
+			PlayerSlot oldWinnerSlot = match.WinnerSlot;
 			List<GameModel> modelList = new List<GameModel>();
 
-			modelList.Add(GetMatch(_matchNumber).RemoveLastGame());
-			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
-			UpdateScore(_matchNumber, modelList, false, winnerSlot);
+			modelList.Add(match.RemoveLastGame());
+			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, oldWinnerSlot);
+			UpdateScore(_matchNumber, modelList, false, oldWinnerSlot);
 
 			OnMatchesModified(alteredMatches);
 			return modelList[0];
 		}
 		public virtual GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
 		{
-			PlayerSlot winnerSlot = GetMatch(_matchNumber).WinnerSlot;
+			IMatch match = GetMatch(_matchNumber);
+			PlayerSlot winnerSlot = match.WinnerSlot;
 			List<GameModel> modelList = new List<GameModel>();
 
-			modelList.Add(GetMatch(_matchNumber).RemoveGameNumber(_gameNumber));
+			modelList.Add(match.RemoveGameNumber(_gameNumber));
 			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
 			UpdateScore(_matchNumber, modelList, false, winnerSlot);
 
@@ -536,11 +540,22 @@ namespace Tournament.Structure
 
 		public virtual void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
 		{
+			IMatch match = GetMatch(_matchNumber);
+			bool winnerChange = (_winnerSlot != match.WinnerSlot);
+			List<GameModel> modelList = new List<GameModel>();
+
 			// Reset the match, and save the games:
-			List<GameModel> modelList = ResetMatchScore(_matchNumber);
+			if (winnerChange)
+			{
+				modelList = ResetMatchScore(_matchNumber);
+			}
+			else
+			{
+				modelList = match.ResetScore();
+			}
 
 			// Set the match winner, THEN re-add the games and update:
-			GetMatch(_matchNumber).SetWinner(_winnerSlot);
+			match.SetWinner(_winnerSlot);
 			foreach (GameModel model in modelList)
 			{
 				PlayerSlot winSlot = (model.DefenderID == model.WinnerID)
@@ -548,7 +563,7 @@ namespace Tournament.Structure
 				winSlot = (model.ChallengerID == model.WinnerID)
 					? PlayerSlot.Challenger : winSlot;
 
-				GetMatch(_matchNumber).AddGame(model.DefenderScore, model.ChallengerScore, winSlot);
+				match.AddGame(model.DefenderScore, model.ChallengerScore, winSlot);
 			}
 			UpdateScore(_matchNumber, null, true, PlayerSlot.unspecified);
 			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
