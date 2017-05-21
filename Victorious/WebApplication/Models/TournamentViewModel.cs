@@ -77,12 +77,14 @@ namespace WebApplication.Models
             Model.PlatformID = this.PlatformType;
             Model.PublicViewing = this.PublicViewing;
             Model.PublicRegistration = this.PublicRegistration;
-            Model.RegistrationStartDate = this.RegistrationStartDate;
-            Model.RegistrationEndDate = this.RegistrationEndDate;
-            Model.TournamentStartDate = this.TournamentStartDate;
-            Model.TournamentEndDate = this.TournamentEndDate;
-            Model.CheckInBegins = this.CheckinStart;
-            Model.CheckInEnds = this.CheckinEnd;
+
+            // Adding Dates and Times
+            Model.RegistrationStartDate = this.RegistrationStartDate +  this.RegistrationStartTime.TimeOfDay;
+            Model.RegistrationEndDate = this.RegistrationEndDate +      this.RegistrationEndTime.TimeOfDay;
+            Model.TournamentStartDate = this.TournamentStartDate +      this.TournamentStartTime.TimeOfDay;
+            Model.TournamentEndDate = this.TournamentEndDate +          this.TournamentEndTime.TimeOfDay;
+            Model.CheckInBegins = this.CheckinStartDate +               this.CheckinStartTime.TimeOfDay;
+            Model.CheckInEnds = this.CheckinEndDate +                   this.CheckinEndTime.TimeOfDay;
         }
 
         public override void SetFields()
@@ -93,12 +95,22 @@ namespace WebApplication.Models
             this.PlatformType = Model.PlatformID;
             this.PublicViewing = Model.PublicViewing;
             this.PublicRegistration = Model.PublicRegistration;
+
+            // Dates
             this.RegistrationStartDate = Model.RegistrationStartDate;
             this.RegistrationEndDate = Model.RegistrationEndDate;
             this.TournamentStartDate = Model.TournamentStartDate;
             this.TournamentEndDate = Model.TournamentEndDate;
-            this.CheckinStart = Model.CheckInBegins;
-            this.CheckinEnd = Model.CheckInEnds;
+            this.CheckinStartDate = Model.CheckInBegins;
+            this.CheckinEndDate = Model.CheckInEnds;
+
+            // Times
+            this.RegistrationStartTime = Model.RegistrationStartDate;
+            this.RegistrationEndTime = Model.RegistrationEndDate;
+            this.TournamentStartTime = Model.TournamentStartDate;
+            this.TournamentEndTime = Model.TournamentEndDate;
+            this.CheckinStartTime = Model.CheckInBegins;
+            this.CheckinEndTime = Model.CheckInEnds;
 
             if (Model.Brackets.Count > 0 && this.BracketType != Model.Brackets.ElementAt(0).BracketTypeID)
             {

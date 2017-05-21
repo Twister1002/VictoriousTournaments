@@ -109,13 +109,4 @@
     $("#TournamentStartDate").on("change", function () {
         $("#TournamentEndDate").datepicker("option", "minDate", new Date($(this).val()));
     });
-
-    (function ($) {
-        if ($("#RegistrationStartDate").length > 0) {
-            $("#RegistrationStartDate")
-                .datepicker("setDate", $(this).val())
-                //.datepicker("option", "minDate", "-1m")
-                .trigger("change");
-        }
-    })($);
 });

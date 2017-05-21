@@ -82,12 +82,36 @@ namespace WebApplication.Models
 
         [DataType(DataType.DateTime)]
         [Display(Name = "CheckIn Start")]
-        public DateTime CheckinStart { get; set; }
+        public DateTime CheckinStartDate { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Name = "CheckIn Ends")]
-        public DateTime CheckinEnd { get; set; }
-        
+        public DateTime CheckinEndDate { get; set; }
+
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
+        public DateTime RegistrationStartTime { get; set; }
+
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
+        public DateTime RegistrationEndTime { get; set; }
+
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
+        public DateTime TournamentStartTime { get; set; }
+
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
+        public DateTime TournamentEndTime { get; set; }
+
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
+        public DateTime CheckinStartTime { get; set; }
+
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
+        public DateTime CheckinEndTime { get; set; }
+
         public List<BracketTypeModel> BracketTypes { get; protected set; }
         public List<GameTypeModel> GameTypes { get; protected set; }
         public List<PlatformModel> PlatformTypes { get; protected set; }

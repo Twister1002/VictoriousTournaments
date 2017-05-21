@@ -6,12 +6,14 @@
     int userId = Session["User.UserId"] != null ? (int)Session["User.UserId"] : -1;
     object attributes = new { };
     object dateAttributes = new { @class = "datepicker" };
+    object timeAttributes = new { @class = "timepicker" };
 }
 @if (!Model.CanEdit())
 {
     <div class="message warning">No changes can be made to this tournament.</div>
     attributes = new { disabled = "disabled", @readonly = "readonly" };
-    dateAttributes = new { disabled = "disabled", @readonly = "readonly" };
+    dateAttributes = new { @class = "datepicker", disabled = "disabled", @readonly = "readonly" };
+    timeAttributes = new { @class = "timepicker", disabled = "disabled", @readonly = "readonly" };
 
 }
 <div id="TournamentEdit" data-id="@Model.Model.TournamentID">
@@ -64,33 +66,45 @@
             <ul>
                 <li>
                     @Html.LabelFor(t => t.RegistrationStartDate)
-                    @Html.TextBoxFor(t => t.RegistrationStartDate, Model.RegistrationStartDate.ToShortDateString().ToString(), dateAttributes)
+                    @Html.TextBoxFor(t => t.RegistrationStartDate, "{0:MM/dd/yyyy}", dateAttributes)
                     @Html.ValidationMessageFor(t => t.RegistrationStartDate)
+
+                    @Html.TextBoxFor(t => t.RegistrationStartTime, "{0:hh:mm tt}", timeAttributes)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.RegistrationEndDate)
-                    @Html.TextBoxFor(t => t.RegistrationEndDate, Model.RegistrationEndDate.ToShortDateString().ToString(), dateAttributes)
+                    @Html.TextBoxFor(t => t.RegistrationEndDate, "{0:MM/dd/yyyy}", dateAttributes)
                     @Html.ValidationMessageFor(t => t.RegistrationEndDate)
+
+                    @Html.TextBoxFor(t => t.RegistrationEndTime, "{0:hh:mm tt}", timeAttributes)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.TournamentStartDate)
-                    @Html.TextBoxFor(t => t.TournamentStartDate, Model.TournamentStartDate.ToShortDateString().ToString(), dateAttributes)
+                    @Html.TextBoxFor(t => t.TournamentStartDate, "{0:MM/dd/yyyy}", dateAttributes)
                     @Html.ValidationMessageFor(t => t.TournamentStartDate)
+
+                    @Html.TextBoxFor(t => t.TournamentStartTime, "{0:hh:mm tt}", timeAttributes)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.TournamentEndDate)
-                    @Html.TextBoxFor(t => t.TournamentEndDate, Model.TournamentEndDate.ToShortDateString().ToString(), dateAttributes)
+                    @Html.TextBoxFor(t => t.TournamentEndDate, "{0:MM/dd/yyyy}", dateAttributes)
                     @Html.ValidationMessageFor(t => t.TournamentEndDate)
+
+                    @Html.TextBoxFor(t => t.TournamentEndTime, "{0:hh:mm tt}", timeAttributes)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.CheckinStart)
-                    @Html.TextBoxFor(t => t.CheckinStart, Model.CheckinStart.ToShortDateString().ToString(), dateAttributes)
-                    @Html.ValidationMessageFor(t => t.CheckinStart)
+                    @Html.LabelFor(t => t.CheckinStartDate)
+                    @Html.TextBoxFor(t => t.CheckinStartDate, "{0:MM/dd/yyyy}", dateAttributes)
+                    @Html.ValidationMessageFor(t => t.CheckinStartDate)
+
+                    @Html.TextBoxFor(t => t.CheckinStartTime, "{0:hh:mm tt}", timeAttributes)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.CheckinEnd)
-                    @Html.TextBoxFor(t => t.CheckinEnd, Model.CheckinEnd.ToShortDateString().ToString(), dateAttributes)
-                    @Html.ValidationMessageFor(t => t.CheckinEnd)
+                    @Html.LabelFor(t => t.CheckinEndDate)
+                    @Html.TextBoxFor(t => t.CheckinEndDate, "{0:MM/dd/yyyy}", dateAttributes)
+                    @Html.ValidationMessageFor(t => t.CheckinEndDate)
+
+                    @Html.TextBoxFor(t => t.CheckinEndTime, "{0:hh:mm tt}", timeAttributes)
                 </li>
             </ul>
         </div>
