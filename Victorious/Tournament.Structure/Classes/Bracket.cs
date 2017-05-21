@@ -273,8 +273,9 @@ namespace Tournament.Structure
 				{
 					try
 					{
-						GetMatch(n).ReplacePlayer(_player, Players[_index].Id);
-						alteredMatches.Add(GetMatchModel(n));
+						IMatch match = GetMatch(n);
+						match.ReplacePlayer(_player, Players[_index].Id);
+						alteredMatches.Add(GetMatchModel(match));
 					}
 					catch (PlayerNotFoundException)
 					{ }
@@ -737,7 +738,7 @@ namespace Tournament.Structure
 				if (affected)
 				{
 					// Populate the list for MatchesModified event:
-					alteredMatches.Add(GetMatchModel(n));
+					alteredMatches.Add(GetMatchModel(match));
 				}
 			}
 			IsFinished = false;
@@ -790,6 +791,13 @@ namespace Tournament.Structure
 
 			OnGamesDeleted(deletedGameIDs);
 			OnMatchesModified(alteredMatches);
+		}
+
+		protected MatchModel GetMatchModel(IMatch _match)
+		{
+			MatchModel model = _match.GetModel();
+			model.BracketID = this.Id;
+			return model;
 		}
 
 		protected int SortRankingScores(IPlayerScore first, IPlayerScore second)
