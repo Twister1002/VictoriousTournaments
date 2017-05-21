@@ -109,28 +109,11 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_model");
 			}
 
-			if (null != GrandFinal &&
-				GrandFinal.MatchNumber == _matchNumber)
-			{
-				GrandFinal = new Match(_model);
-			}
-			else if (null != Matches &&
-				Matches.ContainsKey(_matchNumber))
-			{
-				Matches[_matchNumber] = new Match(_model);
-			}
-			else if (null != LowerMatches &&
-				LowerMatches.ContainsKey(_matchNumber))
-			{
-				LowerMatches[_matchNumber] = new Match(_model);
-			}
-			else
-			{
-				throw new MatchNotFoundException
-					("Match not found; match number may be invalid.");
-			}
+			IMatch match = GetMatch(_matchNumber);
+			match = new Match(_model);
 		}
 
+		#region Player Methods
 		public int NumberOfPlayers()
 		{
 			if (null == Players)
@@ -442,7 +425,9 @@ namespace Tournament.Structure
 			Players.Clear();
 			DeleteBracketData();
 		}
+		#endregion
 
+		#region Match & Game Methods
 		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			IMatch match = GetMatch(_matchNumber);
@@ -583,7 +568,9 @@ namespace Tournament.Structure
 			OnMatchesModified(alteredMatches);
 			return modelList;
 		}
+		#endregion
 
+		#region Accessors
 		public virtual List<IMatch> GetRound(int _round)
 		{
 			if (null == Matches)
@@ -655,6 +642,8 @@ namespace Tournament.Structure
 			model.BracketID = this.Id;
 			return model;
 		}
+		#endregion
+		#region Mutators
 		public virtual void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
 		{
 			if (_maxGamesPerMatch < 1)
@@ -715,6 +704,8 @@ namespace Tournament.Structure
 				GetMatch(match.MatchNumber).SetMaxGames(_maxGamesPerMatch);
 			}
 		}
+		#endregion
+
 		public virtual void ResetMatches()
 		{
 			List<MatchModel> alteredMatches = new List<MatchModel>();

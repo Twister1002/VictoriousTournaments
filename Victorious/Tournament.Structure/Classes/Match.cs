@@ -129,7 +129,7 @@ namespace Tournament.Structure
 				? null : new User(_model.Defender);
 			Players[(int)PlayerSlot.Challenger] = (null == _model.Challenger)
 				? null : new User(_model.Challenger);
-			IsReady = (null == Players[0] || null == Players[1])
+			this.IsReady = (null == Players[0] || null == Players[1])
 				? false : true;
 
 			this.Games = new List<IGame>();
@@ -154,26 +154,26 @@ namespace Tournament.Structure
 			}
 			if (!this.IsManualWin)
 			{
-				WinnerSlot = PlayerSlot.unspecified;
+				this.WinnerSlot = PlayerSlot.unspecified;
 				if (Score[(int)PlayerSlot.Defender] == winsNeeded)
 				{
-					WinnerSlot = PlayerSlot.Defender;
+					this.WinnerSlot = PlayerSlot.Defender;
 				}
 				else if (Score[(int)PlayerSlot.Challenger] == winsNeeded)
 				{
-					WinnerSlot = PlayerSlot.Challenger;
+					this.WinnerSlot = PlayerSlot.Challenger;
 				}
-				IsFinished = (PlayerSlot.unspecified == WinnerSlot)
+				this.IsFinished = (PlayerSlot.unspecified == WinnerSlot)
 					? false : true;
 			}
 
-			RoundIndex = (int)(_model.RoundIndex);
-			MatchIndex = (int)(_model.MatchIndex);
-			MatchNumber = _model.MatchNumber;
-			NextMatchNumber = (int)(_model.NextMatchNumber);
-			NextLoserMatchNumber = (int)(_model.NextLoserMatchNumber);
+			this.RoundIndex = (int)(_model.RoundIndex);
+			this.MatchIndex = (int)(_model.MatchIndex);
+			this.MatchNumber = _model.MatchNumber;
+			this.NextMatchNumber = (int)(_model.NextMatchNumber);
+			this.NextLoserMatchNumber = (int)(_model.NextLoserMatchNumber);
 
-			PreviousMatchNumbers = new int[2] { -1, -1 };
+			this.PreviousMatchNumbers = new int[2] { -1, -1 };
 			PreviousMatchNumbers[(int)PlayerSlot.Defender] =
 				(null == _model.PrevDefenderMatchNumber)
 				? -1 : (int)(_model.PrevDefenderMatchNumber);
@@ -211,23 +211,15 @@ namespace Tournament.Structure
 			model.Games = new List<GameModel>();
 			foreach (IGame game in this.Games)
 			{
-				GameModel gm = new GameModel();
-				gm.GameID = game.Id;
-				gm.ChallengerID = game.PlayerIDs[(int)PlayerSlot.Challenger];
-				gm.DefenderID = game.PlayerIDs[(int)PlayerSlot.Defender];
-				gm.WinnerID = (PlayerSlot.unspecified == game.WinnerSlot)
-					? (int)(game.WinnerSlot) : game.PlayerIDs[(int)(game.WinnerSlot)];
+				GameModel gm = game.GetModel();
 				gm.MatchID = this.Id;
-				gm.GameNumber = game.GameNumber;
-				gm.ChallengerScore = game.Score[(int)PlayerSlot.Challenger];
-				gm.DefenderScore = game.Score[(int)PlayerSlot.Defender];
-
 				model.Games.Add(gm);
 			}
 
 			return model;
 		}
 
+		#region Player Methods
 		public void AddPlayer(IPlayer _player, PlayerSlot _slot = PlayerSlot.unspecified)
 		{
 			if (_slot != PlayerSlot.unspecified &&
@@ -323,7 +315,9 @@ namespace Tournament.Structure
 			ResetScore();
 			IsReady = false;
 		}
+		#endregion
 
+		#region Game & Score Methods
 		public GameModel AddGame(int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			if (!IsReady)
@@ -347,13 +341,15 @@ namespace Tournament.Structure
 					("Score cannot be negative!");
 			}
 
+			List<int> gameNumbers = Games.Select(g => g.GameNumber).ToList();
 			int gameNum = 1;
 			// Find the lowest (positive) Game Number we can add:
-			while (Games.Select(g => g.GameNumber).ToList().Contains(gameNum))
+			while (gameNumbers.Contains(gameNum))
 			{
 				++gameNum;
 			}
 			IGame game = new Game(this.Id, gameNum);
+			// Add Game's data (players and score):
 			for (int i = 0; i < 2; ++i)
 			{
 				game.PlayerIDs[i] = this.Players[i].Id;
@@ -506,7 +502,9 @@ namespace Tournament.Structure
 			Games.Clear();
 			return modelList;
 		}
+		#endregion
 
+		#region Mutators
 		public void SetMaxGames(int _numberOfGames)
 		{
 			if (IsFinished)
@@ -622,6 +620,7 @@ namespace Tournament.Structure
 			NextLoserMatchNumber = _number;
 		}
 		#endregion
+		#endregion
 
 		#region Private Methods
 		private void AddGame(IGame _game)
@@ -630,23 +629,8 @@ namespace Tournament.Structure
 			{
 				throw new ArgumentNullException("_game");
 			}
-#if false
-            _game.MatchId = this.Id;
-			_game.GameNumber = (_game.GameNumber > 0)
-				? _game.GameNumber : (Games.Count + 1);
-			_game.PlayerIDs[(int)PlayerSlot.Defender] = this.Players[(int)PlayerSlot.Defender].Id;
-			_game.PlayerIDs[(int)PlayerSlot.Challenger] = this.Players[(int)PlayerSlot.Challenger].Id;
 
-            foreach (IGame game in Games)
-			{
-				if (game.Id == _game.Id || game.GameNumber == _game.GameNumber)
-				{
-					throw new DuplicateObjectException
-						("New game cannot match an existing game!");
-				}
-			}
-#endif
-            AddWin(_game.WinnerSlot);
+			AddWin(_game.WinnerSlot);
 			Games.Add(_game);
 		}
 		private void AddWin(PlayerSlot _slot)
