@@ -11,18 +11,7 @@ namespace Tournament.Structure
 	public class DoubleElimBracket : SingleElimBracket
 	{
 		#region Variables & Properties
-		// inherits int Id
-		// inherits BracketType BracketType
-		// inherits bool IsFinalized
-		// inherits bool IsFinished
-		// inherits List<IPlayer> Players
-		// inherits List<IPlayerScore> Rankings
-		// inherits Dictionary<int, IMatch> Matches
-		// inherits int NumberOfRounds
-		// inherits Dictionary<int, IMatch> LowerMatches
-		// inherits int NumberOfLowerRounds
-		// inherits IMatch GrandFinal
-		// inherits int NumberOfMatches
+
 		#endregion
 
 		#region Ctors
@@ -304,8 +293,8 @@ namespace Tournament.Structure
 					{
 						if (_matchNumber == nextMatch.PreviousMatchNumbers[i])
 						{
-							GetMatch(nextLoserNumber).AddPlayer(match.Players[(int)loserSlot], (PlayerSlot)i);
-							alteredMatches.Add(GetMatchModel(nextLoserNumber));
+							nextMatch.AddPlayer(match.Players[(int)loserSlot], (PlayerSlot)i);
+							alteredMatches.Add(GetMatchModel(nextMatch));
 							break;
 						}
 					}
@@ -389,11 +378,12 @@ namespace Tournament.Structure
 				}
 
 				OnGamesDeleted(match.Games);
-				GetMatch(_matchNumber).RemovePlayer(_playerId);
+				match.RemovePlayer(_playerId);
 			}
-			alteredMatches.Add(GetMatchModel(match.MatchNumber));
+			alteredMatches.Add(GetMatchModel(match));
 
-			return (alteredMatches.OrderBy(m => m.MatchNumber).ToList());
+			return alteredMatches;
+			//return (alteredMatches.OrderBy(m => m.MatchNumber).ToList());
 		}
 
 		protected override void UpdateRankings()
@@ -439,6 +429,6 @@ namespace Tournament.Structure
 
 			Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 		}
-#endregion
+		#endregion
 	}
 }
