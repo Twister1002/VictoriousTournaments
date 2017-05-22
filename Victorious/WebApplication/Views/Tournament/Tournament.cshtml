@@ -63,7 +63,7 @@
 
                         <span class="icon icon-trophy tournament-standings"></span>
 
-                        if (!Model.isAccountCheckedIn(ViewBag.UserId))
+                        if (ViewBag.UserId != -1 && !Model.isAccountCheckedIn(ViewBag.UserId))
                         {
                             <button class="checkIn">CheckIn</button>
                         }
