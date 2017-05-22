@@ -28,7 +28,6 @@ namespace DatabaseLib
         public virtual DbSet<C__RefactorLog> C__RefactorLog { get; set; }
         public virtual DbSet<BracketModel> BracketModels { get; set; }
         public virtual DbSet<BracketTypeModel> BracketTypeModels { get; set; }
-        public virtual DbSet<MatchModel> MatchModels { get; set; }
         public virtual DbSet<GameTypeModel> GameTypeModels { get; set; }
         public virtual DbSet<TournamentUserModel> TournamentUserModels { get; set; }
         public virtual DbSet<TournamentUsersBracketModel> TournamentUsersBracketModels { get; set; }
@@ -38,5 +37,6 @@ namespace DatabaseLib
         public virtual DbSet<AccountModel> AccountModels { get; set; }
         public virtual DbSet<TournamentInviteModel> TournamentInviteModels { get; set; }
         public virtual DbSet<TournamentModel> TournamentModels { get; set; }
+        public virtual DbSet<MatchModel> MatchModels { get; set; }
     }
 }

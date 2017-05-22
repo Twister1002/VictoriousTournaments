@@ -17,8 +17,8 @@ namespace DatabaseLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public BracketModel()
         {
-            this.Matches = new HashSet<MatchModel>();
             this.TournamentUsersBrackets = new HashSet<TournamentUsersBracketModel>();
+            this.Matches = new HashSet<MatchModel>();
     		OnInit();
         }
     
@@ -32,10 +32,10 @@ namespace DatabaseLib
     	partial void OnInit();
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MatchModel> Matches { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
         public virtual BracketTypeModel BracketType { get; set; }
         public virtual TournamentModel Tournament { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MatchModel> Matches { get; set; }
     }
 }
