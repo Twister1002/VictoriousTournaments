@@ -67,6 +67,7 @@
     <Compile Include="BracketTypeModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="BracketTypeRepository.cs" />
     <Compile Include="C__RefactorLog.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -74,15 +75,23 @@
     <Compile Include="GameModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="GameRepository.cs" />
     <Compile Include="GameTypeModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="GameTypeRepository.cs" />
     <Compile Include="IAccountRepository.cs" />
     <Compile Include="IBracketRepository.cs" />
+    <Compile Include="IBracketTypeRepository.cs" />
+    <Compile Include="IGameRepository.cs" />
+    <Compile Include="IGameTypeRepository.cs" />
+    <Compile Include="IMatchRepository.cs" />
+    <Compile Include="IPlatformRepository.cs" />
     <Compile Include="ITournamentRepository.cs" />
     <Compile Include="MatchModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="MatchRepository.cs" />
     <Compile Include="Model.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -102,6 +111,7 @@
     <Compile Include="PlatformModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="PlatformRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TournamentInviteModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
