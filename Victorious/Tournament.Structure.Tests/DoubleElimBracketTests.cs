@@ -298,10 +298,10 @@ namespace Tournament.Structure.Tests
 		public void DEB_AddGame_MovesLoserToLowerBracket()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 8; ++i)
+			for (int i = 0; i < 4; ++i)
 			{
 				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i);
+				moq.Setup(p => p.Id).Returns(i + 1);
 				pList.Add(moq.Object);
 			}
 			IBracket b = new DoubleElimBracket(pList);
