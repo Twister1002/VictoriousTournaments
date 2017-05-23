@@ -419,26 +419,26 @@ namespace DatabaseLib
 
         public DbError UpdateTournament(TournamentModel tournament, bool cascade = false)
         {
-            using (var db = new VictoriousEntities())
+            using (var dbTemp = new VictoriousEntities("Debug"))
             {
                 try
                 {
                     //db.Configuration.ProxyCreationEnabled = false;
 
-                    TournamentModel _tournament = db.TournamentModels.Find(tournament.TournamentID);
+                    TournamentModel _tournament = dbTemp.TournamentModels.Find(tournament.TournamentID);
 
-                    db.Entry(_tournament).CurrentValues.SetValues(tournament);
+                    dbTemp.Entry(_tournament).CurrentValues.SetValues(tournament);
 
                     foreach (var bracket in _tournament.Brackets)
                     {
                         foreach (var match in bracket.Matches)
                         {
-                            match.Challenger = db.TournamentUserModels.Find(match.ChallengerID);
-                            match.Defender = db.TournamentUserModels.Find(match.DefenderID);
+                            match.Challenger = dbTemp.TournamentUserModels.Find(match.ChallengerID);
+                            match.Defender = dbTemp.TournamentUserModels.Find(match.DefenderID);
                         }
                     }
 
-                    db.SaveChanges();
+                    dbTemp.SaveChanges();
                 }
                 catch (Exception ex)
                 {
@@ -860,6 +860,8 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
+                //interfaceException = ex;
+                WriteException(ex);
                 return false;
             }
             return true;
