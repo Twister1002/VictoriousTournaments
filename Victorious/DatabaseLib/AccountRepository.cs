@@ -10,12 +10,17 @@ namespace DatabaseLib
     public class AccountRepository : IAccountRepository
     {
         private VictoriousEntities context;
-        public Exception interfaceException;
+        public Exception exception;
 
         public AccountRepository()
         {
             context = new VictoriousEntities();
 
+        }
+
+        public AccountRepository(VictoriousEntities context)
+        {
+            this.context = context;
         }
 
         public DbError AccountEmailExists(string email)
@@ -26,7 +31,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
             }
@@ -41,7 +46,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 WriteException(ex);
                 return DbError.DOES_NOT_EXIST;
             }
@@ -59,7 +64,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_ADD;
             }
@@ -76,7 +81,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_DELETE;
             }
@@ -92,7 +97,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 WriteException(ex);
                 account = null;
             }
@@ -108,7 +113,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 WriteException(ex);
                 account = null;
             }
@@ -127,7 +132,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 accountModels.Clear();
                 WriteException(ex);
             }
@@ -148,7 +153,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 WriteException(ex);
                 tournaments.Clear();
             }
@@ -166,7 +171,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }
@@ -183,7 +188,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_UPDATE;
             }

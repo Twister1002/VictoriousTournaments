@@ -88,6 +88,7 @@
     <Compile Include="IMatchRepository.cs" />
     <Compile Include="IPlatformRepository.cs" />
     <Compile Include="ITournamentRepository.cs" />
+    <Compile Include="IUnitOfWork.cs" />
     <Compile Include="MatchModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>

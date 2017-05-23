@@ -10,11 +10,11 @@ namespace DatabaseLib
     public class TournamentRepository : ITournamentRepository, IDisposable
     {
         private VictoriousEntities context;
-        public Exception interfaceException;
+        public Exception exception;
 
         public TournamentRepository()
         {
-            //context = new VictoriousEntities();
+            context = new VictoriousEntities();
         }
 
         public TournamentRepository(VictoriousEntities context)
@@ -27,19 +27,15 @@ namespace DatabaseLib
             TournamentModel _tournament = new TournamentModel();
             try
             {
-                //if (AddTournamentInviteCode(tournament.InviteCode) == DbError.EXISTS)
-                //    return DbError.INVITE_CODE_EXISTS;
                 _tournament = tournament;
-
                 _tournament.CreatedOn = DateTime.Now;
                 _tournament.LastEditedOn = DateTime.Now;
                 context.SaveChanges();
                 context.TournamentModels.Add(_tournament);
-                context.SaveChanges();
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 WriteException(ex);
                 return DbError.FAILED_TO_ADD;
             }
@@ -48,7 +44,28 @@ namespace DatabaseLib
 
         public DbError DeleteTournament(int tournamentId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                TournamentModel _tournament = context.TournamentModels.Find(tournamentId);
+
+                //foreach (var bracket in _tournament.Brackets.ToList())
+                //{
+                //    DeleteBracket(bracket.BracketID);
+                //}
+                //foreach (var user in _tournament.TournamentUsers.ToList())
+                //{
+                //    DeleteTournamentUser(user.TournamentUserID);
+                //}
+                //context.TournamentModels.Remove(_tournament);
+                //context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_DELETE;
+            }
+            return DbError.SUCCESS;
         }
 
         public IList<TournamentModel> GetAllTournaments()
@@ -60,7 +77,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 WriteException(ex);
                 tournaments.Clear();
             }
@@ -73,29 +90,17 @@ namespace DatabaseLib
             try
             {
                 tournament = context.TournamentModels.Find(tournamentId);
-                foreach (var bracket in tournament.Brackets)
-                {
-                    foreach (var match in bracket.Matches)
-                    {
-                        match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
-                        match.Defender = context.TournamentUserModels.Find(match.DefenderID);
-                    }
-                }
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 WriteException(ex);
                 tournament = null;
             }
             return tournament;
         }
 
-        public void Save()
-        {
-            throw new NotImplementedException();
-        }
-
+       
         public DbError UpdateTournament(TournamentModel tournament)
         {
             using (var db = new VictoriousEntities())
@@ -114,11 +119,11 @@ namespace DatabaseLib
                         }
                     }
                    
-                    db.SaveChanges();
+                    //db.SaveChanges();
                 }
                 catch (Exception ex)
                 {
-                    interfaceException = ex;
+                    exception = ex;
                     WriteException(ex);
                     return DbError.FAILED_TO_UPDATE;
                 }
@@ -175,7 +180,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
-                interfaceException = ex;
+                exception = ex;
                 WriteException(ex);
                 list.Clear();
             }

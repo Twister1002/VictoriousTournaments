@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public class UnitOfWork : IDisposable
+    public class UnitOfWork : IUnitOfWork
     {
         private VictoriousEntities context = new VictoriousEntities();
         private ITournamentRepository tournamentRepository;
@@ -18,6 +18,19 @@ namespace DatabaseLib
         private IMatchRepository matchRepository;
         private IPlatformRepository platformRepository;
 
+        public UnitOfWork(VictoriousEntities context = null)
+        {
+            if (context != null)
+            {
+                this.context = context; 
+            }
+        }
+
+        public void Save()
+        {
+            context.SaveChanges();
+        }
+
         public ITournamentRepository TournamentRepository
         {
             get
@@ -27,6 +40,18 @@ namespace DatabaseLib
                     this.tournamentRepository = new TournamentRepository(context);
                 }
                 return tournamentRepository;
+            }
+        }
+
+        public IAccountRepository AccountRepository
+        {
+            get
+            {
+                if (this.accountRepository == null)
+                {
+                    this.accountRepository = new AccountRepository(context);
+                }
+                return accountRepository;
             }
         }
 
