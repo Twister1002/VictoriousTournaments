@@ -11,7 +11,21 @@ namespace Tournament.Structure
 	public class DoubleElimBracket : SingleElimBracket
 	{
 		#region Variables & Properties
-
+		// int Id
+		// BracketType BracketType
+		// bool IsFinalized
+		// bool IsFinished
+		// List<IPlayer> Players
+		// List<IPlayerScore> Rankings
+		// int MaxRounds
+		// Dictionary<int, IMatch> Matches
+		// int NumberOfRounds
+		// Dictionary<int, IMatch> LowerMatches
+		// int NumberOfLowerRounds
+		// IMatch GrandFinal
+		// int NumberOfMatches
+		// int MatchWinValue
+		// int MatchTieValue
 		#endregion
 
 		#region Ctors
@@ -147,6 +161,8 @@ namespace Tournament.Structure
 						roundList[r][m].AddPreviousMatchNumber(roundList[r + 1][m].MatchNumber);
 						roundList[r + 1][m].SetNextMatchNumber(currNum);
 					}
+
+					flipSeeds = !flipSeeds;
 				}
 				else if (!rIndexIsEven && roundList[r + 1].Count == (roundList[r].Count * 2))
 				{
