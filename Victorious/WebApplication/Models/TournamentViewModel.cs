@@ -150,11 +150,14 @@ namespace WebApplication.Models
             ApplyChanges();
             Model.LastEditedByID = sessionId;
             Model.LastEditedOn = DateTime.Now;
-            Model.Brackets.ElementAt(0).BracketTypeID = this.BracketType;
 
-            DbError updateResult = db.UpdateTournament(Model);
+            BracketModel bracket = Model.Brackets.ElementAt(0);
+            bracket.BracketTypeID = this.BracketType;
 
-            if (updateResult == DbError.SUCCESS && this.Users != null)
+            DbError updateTournament = db.UpdateTournament(Model);
+            DbError updateBracket = db.UpdateBracket(bracket);
+
+            if (updateTournament == DbError.SUCCESS && this.Users != null)
             {
                 // Lets update the new users that were created.
                 foreach (TournamentUserModel user in Users)
@@ -168,7 +171,7 @@ namespace WebApplication.Models
 
             }
 
-            return updateResult == DbError.SUCCESS;
+            return updateTournament == DbError.SUCCESS;
         }
 
         public bool Create(int sessionId)
