@@ -186,9 +186,32 @@ namespace DatabaseLib.Tests
         }
 
         [TestMethod]
-        public void Add_Tournament_Moq()
+        public void Get_Tournament_Moq()
         {
-           
+            var tournament = new TournamentModel()
+            {
+                Title = "Test Tournament",
+                Description = "Test",
+                RegistrationStartDate = DateTime.Now,
+                RegistrationEndDate = DateTime.Now,
+                TournamentStartDate = DateTime.Now,
+                TournamentEndDate = DateTime.Now,
+                CheckInBegins = DateTime.Now,
+                CheckInEnds = DateTime.Now,
+                LastEditedByID = 1,
+                CreatedByID = 1,
+                PlatformID = 3,
+                EntryFee = 0,
+                PrizePurse = 0,
+                GameTypeID = 1
+            };
+            var tournamentRepo = new Mock<ITournamentRepository>();
+            tournamentRepo.Setup(x => x.AddTournament(tournament));
+            var unitOfWork = new Mock<UnitOfWork>();
+            unitOfWork.Setup(x => x.TournamentRepository).Returns(tournamentRepo.Object);
+
+            tournamentRepo.Verify();
+
         }
 
         [TestMethod]

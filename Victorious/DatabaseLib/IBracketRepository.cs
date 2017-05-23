@@ -12,7 +12,7 @@ namespace DatabaseLib
 
         BracketModel GetBracket(int id);
 
-        List<BracketModel> GetAllBracketsInTournament(int tournamentId);
+        IList<BracketModel> GetAllBracketsInTournament(int tournamentId);
 
         DbError UpdateBracket(BracketModel bracket);
 

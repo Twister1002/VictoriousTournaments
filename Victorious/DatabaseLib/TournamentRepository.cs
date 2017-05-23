@@ -14,7 +14,12 @@ namespace DatabaseLib
 
         public TournamentRepository()
         {
-            context = new VictoriousEntities();
+            //context = new VictoriousEntities();
+        }
+
+        public TournamentRepository(VictoriousEntities context)
+        {
+            this.context = context;
         }
 
         public DbError AddTournament(TournamentModel tournament)

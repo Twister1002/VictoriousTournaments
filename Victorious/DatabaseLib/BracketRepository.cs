@@ -56,7 +56,7 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
-        public List<BracketModel> GetAllBracketsInTournament(int tournamentId)
+        public IList<BracketModel> GetAllBracketsInTournament(int tournamentId)
         {
             List<BracketModel> brackets = new List<BracketModel>();
             try

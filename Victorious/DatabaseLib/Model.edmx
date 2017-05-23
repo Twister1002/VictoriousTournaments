@@ -102,6 +102,7 @@
           <Property Name="PrevChallengerMatchNumber" Type="int" />
           <Property Name="MaxGames" Type="int" />
           <Property Name="BracketID" Type="int" />
+          <Property Name="IsManualWin" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Platforms">
           <Key>
@@ -427,6 +428,7 @@
           <Property Name="BracketID" Type="Int32" />
           <NavigationProperty Name="Bracket" Relationship="Self.FK_Matches_Brackets" FromRole="MatchModel" ToRole="BracketModel" />
           <NavigationProperty Name="Games" Relationship="VictoriousDatabaseModel.FK_Games_Matches" FromRole="MatchModel" ToRole="GameModel" />
+          <Property Name="IsManualWin" Type="Boolean" Nullable="false" />
           </EntityType>
         <EntityType Name="GameTypeModel">
           <Key>
@@ -794,6 +796,7 @@
           <EntitySetMapping Name="MatchModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.MatchModel">
               <MappingFragment StoreEntitySet="Matches">
+                <ScalarProperty Name="IsManualWin" ColumnName="IsManualWin" />
                 <ScalarProperty Name="MatchID" ColumnName="MatchID" />
                 <ScalarProperty Name="ChallengerID" ColumnName="ChallengerID" />
                 <ScalarProperty Name="DefenderID" ColumnName="DefenderID" />
