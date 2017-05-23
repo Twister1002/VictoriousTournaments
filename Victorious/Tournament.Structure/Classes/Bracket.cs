@@ -543,7 +543,8 @@ namespace Tournament.Structure
 
 			// Fire Event with any Matches that changed:
 			alteredMatches.Add(GetMatchModel(match));
-			OnMatchesModified(alteredMatches);
+			OnMatchesModified(new BracketEventArgs
+				(alteredMatches, modelList.Select(g => g.GameID).ToList()));
 			// Return a Model of the removed Game:
 			return modelList[0];
 		}
@@ -596,7 +597,8 @@ namespace Tournament.Structure
 
 			// Fire Event with any Matches that changed:
 			alteredMatches.Add(GetMatchModel(match));
-			OnMatchesModified(alteredMatches);
+			OnMatchesModified(new BracketEventArgs
+				(alteredMatches, modelList.Select(g => g.GameID).ToList()));
 			// Return Models of any removed Games:
 			return modelList;
 		}
