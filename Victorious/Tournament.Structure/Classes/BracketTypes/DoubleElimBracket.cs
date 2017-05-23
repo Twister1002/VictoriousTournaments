@@ -184,6 +184,8 @@ namespace Tournament.Structure
 					// Round is abnormal. Case is not possible
 					// (unless we later decide to include it)
 				}
+
+				flipSeeds = !flipSeeds;
 			}
 
 			r = roundList.Count - 1;
