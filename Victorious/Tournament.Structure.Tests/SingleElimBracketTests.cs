@@ -1333,6 +1333,31 @@ namespace Tournament.Structure.Tests
 			Assert.AreEqual(matchNum, model.MatchNumber);
 		}
 		[TestMethod]
+		[TestCategory("RemoveLastGame")]
+		[TestCategory("MatchesModified")]
+		public void SEBRemoveGame_FiresMatchesModifiedEvent_WithRemovedGameID()
+		{
+			int removedGames = 0;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList, 3);
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				removedGames = e.DeletedGameIDs.Count;
+			};
+			b.AddGame(1, 3, 2, PlayerSlot.Defender);
+
+			b.RemoveLastGame(1);
+			Assert.AreEqual(1, removedGames);
+		}
+
+		[TestMethod]
 		[TestCategory("ResetMatchScore")]
 		[TestCategory("MatchesModified")]
 		public void SEBResetMatchScore_FiresMatchesModifiedEvent_WithAllAffectedMatches()
@@ -1370,6 +1395,49 @@ namespace Tournament.Structure.Tests
 		}
 		[TestMethod]
 		[TestCategory("ResetMatchScore")]
+		[TestCategory("GamesDeleted")]
+		[TestCategory("MatchesModified")]
+		public void SEBResetMatchScore_FiresEvents_ForAllRemovedGames()
+		{
+			int chainLength = 1;
+			int gamesDeleted = 0;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 17; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList, 3);
+			b.GamesDeleted += delegate (object sender, BracketEventArgs e)
+			{
+				gamesDeleted += e.DeletedGameIDs.Count;
+			};
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				gamesDeleted += e.DeletedGameIDs.Count;
+			};
+			IMatch m = b.GetMatch(1);
+			while (m.NextMatchNumber > 0)
+			{
+				// Follow the chain to find how many Matches we'll touch:
+				m = b.GetMatch(m.NextMatchNumber);
+				++chainLength;
+			}
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+				b.AddGame(n, 0, 1, PlayerSlot.Challenger);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			b.ResetMatchScore(1);
+			Assert.AreEqual(chainLength * 3, gamesDeleted);
+		}
+
+		[TestMethod]
+		[TestCategory("ResetMatchScore")]
 		[TestCategory("MatchesModified")]
 		public void SEBResetMatches_FiresMatchesModifiedEvent_WithAllAffectedMatches()
 		{
@@ -1395,7 +1463,39 @@ namespace Tournament.Structure.Tests
 			b.ResetMatches();
 			Assert.AreEqual(b.NumberOfMatches, matchesAffected);
 		}
+		[TestMethod]
+		[TestCategory("ResetMatchScore")]
+		[TestCategory("MatchesModified")]
+		[TestCategory("GamesDeleted")]
+		public void SEBResetMatches_FiresEvents_WithAllRemovedGames()
+		{
+			int deletedGames = 0;
 
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 17; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList, 3);
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				deletedGames += e.DeletedGameIDs.Count;
+			};
+			b.GamesDeleted += delegate (object sender, BracketEventArgs e)
+			{
+				deletedGames += e.DeletedGameIDs.Count;
+			};
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			b.ResetMatches();
+			Assert.AreEqual(b.NumberOfMatches * 2, deletedGames);
+		}
 		#endregion
 
 		[TestMethod]
