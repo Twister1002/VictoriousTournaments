@@ -11,7 +11,21 @@ namespace Tournament.Structure
 	public class SingleElimBracket : Bracket
 	{
 		#region Variables & Properties
-
+		// int Id
+		// BracketType BracketType
+		// bool IsFinalized
+		// bool IsFinished
+		// List<IPlayer> Players
+		// List<IPlayerScore> Rankings
+		// int MaxRounds -- unused
+		// Dictionary<int, IMatch> Matches
+		// int NumberOfRounds
+		// Dictionary<int, IMatch> LowerMatches -- unused
+		// int NumberOfLowerRounds -- unused
+		// IMatch GrandFinal -- unused
+		// int NumberOfMatches
+		// int MatchWinValue -- unused
+		// int MatchTieValue -- unused
 		#endregion
 
 		#region Ctors

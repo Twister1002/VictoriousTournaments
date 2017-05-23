@@ -91,7 +91,7 @@ namespace Tournament.Structure.Tests
 		public void DEB_CreateBracket_CreatesLowerBracketMatches()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 8; ++i)
+			for (int i = 0; i < 32; ++i)
 			{
 				Mock<IPlayer> moq = new Mock<IPlayer>();
 				moq.Setup(p => p.Id).Returns(i);
@@ -106,7 +106,7 @@ namespace Tournament.Structure.Tests
 				List<IMatch> round = b.GetLowerRound(r);
 				numLowerMatches += round.Count;
 			}
-			Assert.AreEqual(6, numLowerMatches);
+			Assert.AreEqual(30, numLowerMatches);
 		}
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
