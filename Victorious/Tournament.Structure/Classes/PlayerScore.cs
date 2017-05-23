@@ -102,8 +102,7 @@ namespace Tournament.Structure
 
 		public int CalculateScore(int _matchWinValue, int _matchTieValue, int _matchLossValue)
 		{
-			int score = 0;
-			score += (MatchRecord.Wins * _matchWinValue);
+			int score = (MatchRecord.Wins * _matchWinValue);
 			score += (MatchRecord.Ties * _matchTieValue);
 			score += (MatchRecord.Losses * _matchLossValue);
 			return score;
