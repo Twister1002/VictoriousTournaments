@@ -208,10 +208,11 @@ namespace Tournament.Structure
 		#region Private Methods
 		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false)
 		{
+			IMatch match = GetMatch(_matchNumber);
+
 			if (null == _games)
 			{
 				// Match winner was manually set. Apply a match win to his score (but no games!):
-				IMatch match = GetMatch(_matchNumber);
 				int winnerIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)(match.WinnerSlot)].Id);
 				Rankings[winnerIndex].AddMatchOutcome(Outcome.Win, 0, 0, true);
 			}
@@ -220,13 +221,12 @@ namespace Tournament.Structure
 				// Match had a manual winner: being removed.
 				// Update score accordingly, ignoring individual game scores:
 				int winnerIndex = Rankings.FindIndex
-					(r => r.Id == GetMatch(_matchNumber).Players[(int)_formerMatchWinnerSlot].Id);
+					(r => r.Id == match.Players[(int)_formerMatchWinnerSlot].Id);
 				Rankings[winnerIndex].AddMatchOutcome(Outcome.Win, 0, 0, false);
 			}
 			else
 			{
 				// Standard case: Update score for new game(s):
-				IMatch match = GetMatch(_matchNumber);
 				Outcome defOutcome = Outcome.Tie;
 				Outcome chalOutcome = Outcome.Tie;
 				int defenderGameScore = 0, defenderPointScore = 0;
@@ -235,22 +235,14 @@ namespace Tournament.Structure
 				// Calculate players' MatchScore updates:
 				if ((PlayerSlot.Defender == _formerMatchWinnerSlot) ^ (PlayerSlot.Defender == match.WinnerSlot))
 				{
-					//defenderMatchScore = MatchWinValue;
 					defOutcome = Outcome.Win;
 					chalOutcome = Outcome.Loss;
 				}
 				else if ((PlayerSlot.Challenger == _formerMatchWinnerSlot) ^ (PlayerSlot.Challenger == match.WinnerSlot))
 				{
-					//challengerMatchScore = MatchWinValue;
 					defOutcome = Outcome.Loss;
 					chalOutcome = Outcome.Win;
 				}
-				//else if ((_isAddition && match.IsFinished && (PlayerSlot.unspecified == match.WinnerSlot)) ||
-				//	(!_isAddition && !(match.IsFinished) && (_games.Count + match.Score[0] + match.Score[1] >= match.MaxGames)))
-				//{
-				//	defenderMatchScore = challengerMatchScore
-				//		= MatchTieValue;
-				//}
 
 				// Calculate players' GameScore & PointScore updates:
 				foreach (GameModel model in _games)

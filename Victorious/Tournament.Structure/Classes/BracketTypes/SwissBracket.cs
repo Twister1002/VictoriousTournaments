@@ -38,18 +38,7 @@ namespace Tournament.Structure
 	public class SwissBracket : RoundRobinBracket
 	{
 		#region Variables & Properties
-		// inherits int Id
-		// inherits BracketType BracketType
-		// inherits bool IsFinalized
-		// inherits bool IsFinished
-		// inherits List<IPlayer> Players
-		// inherits List<IPlayerScore> Rankings
-		// inherits Dictionary<int, IMatch> Matches
-		// inherits int NumberOfRounds
-		// inherits Dictionary<int, IMatch> LowerMatches (null)
-		// inherits int NumberOfLowerRounds (0)
-		// inherits IMatch GrandFinal (null)
-		// inherits int NumberOfMatches
+		//
 		private List<Matchup> Matchups
 		{ get; set; }
 		private List<int> PlayerByes
@@ -95,7 +84,7 @@ namespace Tournament.Structure
 			{
 				MaxRounds = Players.Count - 1;
 			}
-			
+
 			CreateBracket(_maxGamesPerMatch);
 		}
 		public SwissBracket()
@@ -200,8 +189,11 @@ namespace Tournament.Structure
 
 		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			throw new NotImplementedException
-				("Cannot update games in a Swiss bracket! (yet)");
+			return (base.UpdateGame(_matchNumber, _gameNumber, _defenderScore, _challengerScore, _winnerSlot));
+
+			///////////////////////////////////////////
+			// This may need modifications later...
+			///////////////////////////////////////////
 		}
 		public override GameModel RemoveLastGame(int _matchNumber)
 		{
@@ -809,6 +801,6 @@ namespace Tournament.Structure
 				}
 			}
 		}
-#endregion
+		#endregion
 	}
 }

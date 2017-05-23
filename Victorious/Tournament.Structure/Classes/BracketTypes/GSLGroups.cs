@@ -13,18 +13,7 @@ namespace Tournament.Structure
 		private class GSLBracket : DoubleElimBracket
 		{
 			#region Variables & Properties
-			// inherits int Id
-			// inherits BracketType BracketType
-			// inherits bool IsFinalized
-			// inherits bool IsFinished
-			// inherits List<IPlayer> Players
-			// inherits List<IPlayerScore> Rankings
-			// inherits Dictionary<int, IMatch> Matches
-			// inherits int NumberOfRounds
-			// inherits Dictionary<int, IMatch> LowerMatches (null)
-			// inherits int NumberOfLowerRounds (0)
-			// inherits IMatch GrandFinal (null)
-			// inherits int NumberOfMatches
+
 			#endregion
 
 			#region Ctors
@@ -56,22 +45,6 @@ namespace Tournament.Structure
 				GrandFinal = null;
 				--NumberOfMatches;
 			}
-#if false
-			public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
-			{
-				GameModel gameModel = null;
-				if (GetMatch(_matchNumber).NextMatchNumber <= NumberOfMatches)
-				{
-					gameModel = base.AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
-				}
-				else
-				{
-					gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
-					AddWinEffects(_matchNumber, _winnerSlot);
-				}
-				return gameModel;
-			}
-#endif
 			#endregion
 
 			#region Private Methods
@@ -214,20 +187,7 @@ namespace Tournament.Structure
 		}
 
 		#region Variables & Properties
-		// inherits int Id
-		// inherits BracketType BracketType
-		// inherits bool IsFinalized
-		// inherits bool IsFinished
-		// inherits List<IPlayer> Players
-		// inherits List<IPlayerScore> Rankings
-		// inherits Dictionary<int, IMatch> Matches (null)
-		// inherits int NumberOfRounds
-		// inherits Dictionary<int, IMatch> LowerMatches (null)
-		// inherits int NumberOfLowerRounds (0)
-		// inherits IMatch GrandFinal (null)
-		// inherits int NumberOfMatches
-		// inherits List<IBracket> Groups
-		// inherits int NumberOfGroups
+
 		#endregion
 
 		#region Ctors

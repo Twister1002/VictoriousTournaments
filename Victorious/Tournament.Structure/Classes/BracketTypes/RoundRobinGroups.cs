@@ -11,20 +11,7 @@ namespace Tournament.Structure
 	public class RoundRobinGroups : GroupStage
 	{
 		#region Variables & Properties
-		// inherits int Id
-		// inherits BracketType BracketType
-		// inherits bool IsFinalized
-		// inherits bool IsFinished
-		// inherits List<IPlayer> Players
-		// inherits List<IPlayerScore> Rankings
-		// inherits Dictionary<int, IMatch> Matches (null)
-		// inherits int NumberOfRounds
-		// inherits Dictionary<int, IMatch> LowerMatches (null)
-		// inherits int NumberOfLowerRounds (0)
-		// inherits IMatch GrandFinal (null)
-		// inherits int NumberOfMatches
-		// inherits List<IBracket> Groups
-		// inherits int NumberOfGroups
+
 		#endregion
 
 		#region Ctors
@@ -71,37 +58,6 @@ namespace Tournament.Structure
 			MaxRounds = _numberOfRounds;
 			CreateBracket(_maxGamesPerMatch);
 		}
-#if false
-		public RoundRobinGroups(int _numberOfPlayers, int _numberOfGroups)
-		{
-			if (_numberOfPlayers < 0)
-			{
-				throw new ArgumentOutOfRangeException
-					("_numberOfPlayers", "Can't have negative players!");
-			}
-			if (_numberOfGroups < 2)
-			{
-				throw new ArgumentOutOfRangeException
-					("_numberOfGroups", "Must have more than 1 group!");
-			}
-			if (_numberOfGroups > (_numberOfPlayers / 2))
-			{
-				throw new ArgumentOutOfRangeException
-					("_numberOfGroups", "Must have at least two players per group!");
-			}
-
-			Players = new List<IPlayer>();
-			for (int i = 0; i < _numberOfPlayers; ++i)
-			{
-				Players.Add(new User());
-			}
-
-			//BracketType = BracketTypeModel.BracketType.RRGROUP;
-			NumberOfGroups = _numberOfGroups;
-			ResetBracket();
-			CreateBracket();
-		}
-#endif
 		public RoundRobinGroups()
 			: this(new List<IPlayer>(), 0, 0)
 		{ }
@@ -133,52 +89,6 @@ namespace Tournament.Structure
 			foreach (MatchModel model in _model.Matches)
 			{
 				RestoreMatch(model.MatchNumber, model);
-#if false
-				foreach (IBracket group in Groups)
-				{
-					if (group.Players.Select(p => p.Id).ToList()
-						.Contains((int)(model.DefenderID)))
-					{
-						// Update Match's score:
-						group.GetMatch(model.MatchNumber)
-							.SetMaxGames((ushort)(model.MaxGames));
-						//group.GetMatch(model.MatchNumber)
-						//	.SetWinsNeeded((ushort)(model.WinsNeeded));
-
-						List<GameModel> gModelList = model.Games
-							.OrderBy(g => g.GameNumber).ToList();
-						foreach (GameModel gmodel in gModelList)
-						{
-							group.AddGame(model.MatchNumber, new Game(gmodel));
-						}
-#if false
-						if (model.DefenderScore < model.ChallengerScore)
-						{
-							for (int i = 0; i < model.DefenderScore; ++i)
-							{
-								group.AddWin(model.MatchNumber, PlayerSlot.Defender);
-							}
-							for (int i = 0; i < model.ChallengerScore; ++i)
-							{
-								group.AddWin(model.MatchNumber, PlayerSlot.Challenger);
-							}
-						}
-						else
-						{
-							for (int i = 0; i < model.ChallengerScore; ++i)
-							{
-								group.AddWin(model.MatchNumber, PlayerSlot.Challenger);
-							}
-							for (int i = 0; i < model.DefenderScore; ++i)
-							{
-								group.AddWin(model.MatchNumber, PlayerSlot.Defender);
-							}
-						}
-#endif
-						break;
-					}
-				}
-#endif
 			}
 
 			// Update the rankings:
