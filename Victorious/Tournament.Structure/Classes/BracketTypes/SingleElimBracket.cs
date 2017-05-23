@@ -357,7 +357,7 @@ namespace Tournament.Structure
 						{
 							nextMatch.AddPlayer
 								(match.Players[(int)(match.WinnerSlot)], (PlayerSlot)i);
-							alteredMatches.Add(GetMatchModel(match));
+							alteredMatches.Add(GetMatchModel(nextMatch));
 							break;
 						}
 					}
