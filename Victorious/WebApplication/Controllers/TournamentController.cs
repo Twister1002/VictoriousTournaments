@@ -114,7 +114,7 @@ namespace WebApplication.Controllers
             LoadAccount(Session);
             int tournamentId = ConvertToInt(guid);
             TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-            
+
             if (viewModel.Model != null)
             {
                 bool isAdmin = viewModel.IsAdministrator(account.AccountId);
@@ -124,19 +124,21 @@ namespace WebApplication.Controllers
                 if (!viewModel.Model.InProgress && !isAdmin)
                 {
                     // Verify if the user has an invite code or the invite code is valid
-                    if (viewModel.PublicRegistration || viewModel.Model.InviteCode == inviteCode && 
-                        (viewModel.RegistrationStartDate < DateTime.Now && viewModel.RegistrationEndDate > DateTime.Now))
+                    if (viewModel.PublicRegistration || viewModel.Model.InviteCode == inviteCode)
                     {
-                            // Allow the tournament registration to be shown
-                            ViewBag.Tournament = viewModel.Model;
-                            ViewBag.isRegistered = viewModel.isRegistered(account.AccountId);
-                            TournamentRegistrationFields fields = new TournamentRegistrationFields()
-                            {
-                                AccountID = account.AccountId,
-                                TournamentID = viewModel.Model.TournamentID
-                            };
+                        TournamentRegistrationFields fields = new TournamentRegistrationFields()
+                        {
+                            AccountID = account.AccountId,
+                            TournamentID = viewModel.Model.TournamentID
+                        };
 
-                            return View("RegisterForm", fields);
+                        // Allow the tournament registration to be shown
+                        ViewBag.Tournament = viewModel.Model;
+                        ViewBag.isRegistered = viewModel.isRegistered(account.AccountId);
+                        ViewBag.CanRegister = viewModel.CanRegister();
+
+
+                        return View("RegisterForm", fields);
                     }
                     else
                     {
@@ -256,7 +258,7 @@ namespace WebApplication.Controllers
         public ActionResult Register(TournamentRegistrationFields userData)
         {
             LoadAccount(Session);
-            
+
             if (userData.AccountID == account.AccountId)
             {
                 TournamentViewModel viewModel = new TournamentViewModel(userData.TournamentID);
@@ -278,7 +280,7 @@ namespace WebApplication.Controllers
                 Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
                 return RedirectToAction("Login", "Account");
             }
-            
+
             return RedirectToAction("Tournament", "Tournament", new { guid = userData.TournamentID });
         }
 
@@ -400,7 +402,7 @@ namespace WebApplication.Controllers
             bool status = false;
             String message = "No action was taken";
             String redirect = redirect = Url.Action("Tournament", "Tournament", new { guid = json["tournyVal"] });
-            
+
             if (account != null)
             {
                 // Load the tournament

@@ -622,6 +622,17 @@ namespace WebApplication.Models
         #endregion
         #region Helpers
 
+        public bool CanRegister()
+        {
+            if (RegistrationStartDate < DateTime.Now && RegistrationEndDate > DateTime.Now)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         #endregion
     }
 }
