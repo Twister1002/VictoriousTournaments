@@ -3,6 +3,7 @@
         $("#TournamentSearch .options .title").val('');
         $("#TournamentSearch .options .gameType").val('');
         $("#TournamentSearch .options .startDate").val('');
+        $("#TournamentSearch .options .platformType").val('');
 
         $("#TournamentSearch .options .searchButton").click();
     });
