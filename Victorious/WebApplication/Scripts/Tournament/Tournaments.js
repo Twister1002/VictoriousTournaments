@@ -93,20 +93,45 @@
             }
         });
     });
-    
-    // Update the Date selections
-    $("#RegistrationStartDate").on("change", function () {
-        $("#RegistrationEndDate").datepicker("option", "minDate", new Date($(this).val()));
-        $("#TournamentStartDate").datepicker("option", "minDate", new Date($(this).val()));
-        $("#TournamentEndDate").datepicker("option", "minDate", new Date($(this).val()));
+
+    // Tournament Information Updating and functions
+
+    // Show the standings
+    $("#Tournament  .tournamentData").on("click", function () {
+        var elem = $(".TournamentInfo");
+
+        if (elem.hasClass("open")) {
+            // Close the side panel
+            elem.removeClass("open");
+        }
+        else {
+            // Open the side panel
+            elem.addClass("open");
+        }
     });
 
-    $("#RegistrationEndDate").on("change", function () {
-        $("#TournamentStartDate").datepicker("option", "minDate", new Date($(this).val()));
-        $("#TournamentEndDate").datepicker("option", "minDate", new Date($(this).val()));
+    $(".TournamentInfo .close").on("click", function () {
+        $(this).closest(".TournamentInfo").removeClass("open");
     });
 
-    $("#TournamentStartDate").on("change", function () {
-        $("#TournamentEndDate").datepicker("option", "minDate", new Date($(this).val()));
-    });
+    // Torunament Bracket Information
+    $(".TournamentInfo .bracketNum").on("click", BracketNumberSelected);
+    // Tournament Infomation
+    $(".TournamentInfo .selection.info").on("click", InfoSelected);
+
+    function BracketNumberSelected() {
+        var bracketId = $(this).data("bracket");
+        $(".TournamentInfo .bracketData, .TournamentInfo .bracketNum").removeClass("show");
+
+        $(this).addClass("show");
+        $(this).siblings(".TournamentInfo .bracketData[data-bracket='" + bracketId + "']").addClass("show");
+    }
+
+    function InfoSelected() {
+        var bracket = $(this).closest(".bracketData");
+        var info = $(this).data("show");
+
+        $(this).addClass("show").siblings().removeClass("show");
+        bracket.find("." + info).addClass("show").siblings().removeClass("show");
+    }
 });

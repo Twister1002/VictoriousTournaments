@@ -16,11 +16,11 @@
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
     <div class="content-header">
-        <h2 class="tournamentTitle">@Model.Model.Title</h2>
+        <h2 class="tournamentTitle"><span class="icon icon-menu tournamentData"></span> @Model.Model.Title</h2>
         <div class="tournament-buttons">
             @if (ViewBag.isAdministrator)
             {
-                <a href="@Url.Action("Update", "Tournament", new { tournamentId = Model.Model.TournamentID })"><span class="icon icon-pencil"></span></a>
+                <span class="icon icon-pencil tournament-update"></span>
                 <span class="icon icon-cross tournament-delete"></span>
             }
         </div>
@@ -56,13 +56,6 @@
                 <div class="options">
                     @if (Bracket.Bracket.IsFinalized)
                     {
-                        if (ViewBag.isCreator)
-                        {
-                            <span class="icon icon-loop2 tournament-reset"></span>
-                        }
-
-                        <span class="icon icon-trophy tournament-standings"></span>
-
                         if (Model.IsParticipant(ViewBag.UserId) && ViewBag.UserId != -1 && !Model.isAccountCheckedIn(ViewBag.UserId))
                         {
                             <button class="checkIn">CheckIn</button>
@@ -76,11 +69,11 @@
                     {
                         Html.RenderPartial("Administrator/_Finalize");
                     }
-                    
+
                     Html.RenderPartial("Brackets/" + bracketName, Bracket, new ViewDataDictionary(ViewData));
-                    Html.RenderPartial("Brackets/Shared/_Standings", Bracket);
                 }
             </ul>
         </div>
     }
+    @{ Html.RenderPartial("Brackets/Shared/_Standings", Model, new ViewDataDictionary(ViewData)); }
 </div>

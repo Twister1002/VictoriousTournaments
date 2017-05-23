@@ -1,40 +1,76 @@
-﻿@model WebApplication.Models.BracketViewModel
+﻿@model WebApplication.Models.TournamentViewModel
 
-@{
-    int columns = 3;
-}
+<div class="TournamentInfo">
+    <span class="icon icon-cross close"></span>
+    <div class="details" data-columns="@Model.Model.Brackets.Count">
+        @for (int i = 0; i < Model.Model.Brackets.Count; i++)
+        {
+            <div class="bracketNum column" data-bracket="@i">@i</div>
+        }
+        @for (int i = 0; i < Model.Model.Brackets.Count; i++)
+        {
+            var bracket = Model.Model.Brackets.ElementAt(i);
+            Tournament.Structure.IBracket tourny = new Tournament.Structure.SingleElimBracket();
+            if (i < Model.Tourny.Brackets.Count) { tourny = Model.Tourny.Brackets.ElementAt(i); }
+            
+            <div class="bracketData" data-bracket="@i">
+                <ul class="list-table">
+                    <li class="list-table-header">
+                        <ul data-columns="3">
+                            <li class="column selection info" data-show="playerInfo">Players</li>
+                            <li class="column selection info" data-show="standingInfo">Standings</li>
+                            <li class="column selection info" data-show="resetInfo">Reset</li>
+                        </ul>
+                    </li>
 
-<li class="TournamentStandings">
-    <label>Standings</label>
-    <div class="options">
-        <span class="icon icon-cross close"></span>
-    </div>
-    <ul class="list-table standings">
-        <li class="list-table-header">
-            <ul data-columns="@columns">
-                <li class="column rank">Rank</li>
-                <li class="column name">Name</li>
-                @if (Model.UsePoints())
-                {
-                    <li class="column score">W - L - T</li>
-                }
-            </ul>
-        </li>
-        <li class="list-table-body">
-            @if (Model.Bracket.Rankings != null)
-            {
-                foreach (var data in Model.Bracket.Rankings)
-                {
-                    <ul class="position" data-columns="@columns">
-                        <li class="column rank">@data.Rank</li>
-                        <li class="column name">@data.Name</li>
-                        @if (Model.UsePoints())
-                        {
-                            <li class="column score">@data.Wins - @data.Losses - @data.Ties</li>
+                    <li class="list-table-body infoSection playerInfo">
+                        <ul class="header" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 4 : 2)">
+                            <li class="column">Name</li>
+                            <li class="column">Status</li>
+                            @if (ViewBag.isAdministrator)
+                            {
+                                <li class="column">Present</li>
+                                    <li class="column">Actions</li>
+                            }
+                        </ul>
+                        @{
+                            var people = Model.Model.TournamentUsers.OrderBy(x => x.PermissionLevel);
+                            foreach (var person in people)
+                            {
+                                <ul class="data" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 4 : 2)">
+                                    <li class="column">@person.Name</li>
+                                    <li class="column">@person.PermissionLevel</li>
+                                    @if (ViewBag.isAdministrator)
+                                    {
+                                        <li class="column"><span class="icon icon-checkmark @(Model.isUserCheckedIn(person.TournamentUserID) ? "green" : "red")"></span></li>
+                                            <li class="column">Actions</li>
+                                    }
+                                </ul>
+                            }
                         }
-                    </ul>
-                }
-            }
-        </li>
-    </ul>
-</li>
+                    </li>
+
+                    <li class="list-table-header infoSection standingInfo">
+                        <ul class="header" data-columns="3">
+                            <li class="column">Rank</li>
+                            <li class="column">Name</li>
+                            <li class="column">Score</li>
+                        </ul>
+                        @foreach (var rank in tourny.Rankings)
+                        {
+                            <ul class="data" data-columns="3">
+                                <li class="column">@rank.Rank</li>
+                                <li class="column">@rank.Name</li>
+                                <li class="column">Score</li>
+                            </ul>
+                        }
+                    </li>
+
+                    <li class="list-table-body infoSection resetInfo">
+                        Are you sure you want to reset this bracket?
+                    </li>
+                </ul>
+            </div>
+        }
+    </div>
+</div>
