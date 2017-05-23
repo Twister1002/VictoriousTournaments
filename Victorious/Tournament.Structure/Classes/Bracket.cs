@@ -434,12 +434,16 @@ namespace Tournament.Structure
 			IMatch match = GetMatch(_matchNumber);
 			PlayerSlot oldWinnerSlot = match.WinnerSlot;
 
+			// Add the new Game and update Bracket & Rankings:
 			GameModel gameModel = match
 				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
 			UpdateScore(_matchNumber, new List<GameModel>() { gameModel }, true, oldWinnerSlot);
 			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
 
+			// Fire Event with any Matches that changed:
+			alteredMatches.Add(GetMatchModel(match));
 			OnMatchesModified(alteredMatches);
+			// Return a Model of the new Game:
 			return gameModel;
 		}
 		public virtual GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
@@ -463,6 +467,9 @@ namespace Tournament.Structure
 				// NOTE : DOES NOT UPDATE RANKINGS!
 				////////////////////////////////
 
+				// Fire Event with the changed Match data:
+				OnMatchesModified(new List<MatchModel> { GetMatchModel(match) });
+				// Return a Model of the altered Game:
 				GameModel gameModel = match.Games[gameIndex].GetModel();
 				gameModel.MatchID = match.Id;
 				return gameModel;
@@ -499,16 +506,29 @@ namespace Tournament.Structure
 		}
 		public virtual GameModel RemoveLastGame(int _matchNumber)
 		{
+			IGame lastGame = GetMatch(_matchNumber).Games.LastOrDefault();
+			if (null == lastGame)
+			{
+				throw new GameNotFoundException
+					("No Games to remove!");
+			}
+			return (RemoveGameNumber(_matchNumber, lastGame.GameNumber));
+#if false
 			IMatch match = GetMatch(_matchNumber);
 			PlayerSlot oldWinnerSlot = match.WinnerSlot;
 			List<GameModel> modelList = new List<GameModel>();
 
+			// Remove the Game and update the Bracket & Rankings:
 			modelList.Add(match.RemoveLastGame());
 			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, oldWinnerSlot);
 			UpdateScore(_matchNumber, modelList, false, oldWinnerSlot);
 
+			// Fire Event with any Matches that changed:
+			alteredMatches.Add(GetMatchModel(match));
 			OnMatchesModified(alteredMatches);
+			// Return a Model of the removed Game:
 			return modelList[0];
+#endif
 		}
 		public virtual GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
 		{
@@ -516,11 +536,15 @@ namespace Tournament.Structure
 			PlayerSlot winnerSlot = match.WinnerSlot;
 			List<GameModel> modelList = new List<GameModel>();
 
+			// Remove the Game and update the Bracket & Rankings:
 			modelList.Add(match.RemoveGameNumber(_gameNumber));
 			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
 			UpdateScore(_matchNumber, modelList, false, winnerSlot);
 
+			// Fire Event with any Matches that changed:
+			alteredMatches.Add(GetMatchModel(match));
 			OnMatchesModified(alteredMatches);
+			// Return a Model of the removed Game:
 			return modelList[0];
 		}
 
@@ -540,7 +564,7 @@ namespace Tournament.Structure
 				modelList = match.ResetScore();
 			}
 
-			// Set the match winner, THEN re-add the games and update:
+			// Set the match winner, THEN re-add the games:
 			match.SetWinner(_winnerSlot);
 			foreach (GameModel model in modelList)
 			{
@@ -551,9 +575,12 @@ namespace Tournament.Structure
 
 				match.AddGame(model.DefenderScore, model.ChallengerScore, winSlot);
 			}
+			// Update the Bracket & Rankings:
 			UpdateScore(_matchNumber, null, true, PlayerSlot.unspecified);
 			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
 
+			// Fire Event with any Matches that changed:
+			alteredMatches.Add(GetMatchModel(match));
 			OnMatchesModified(alteredMatches);
 		}
 		public virtual List<GameModel> ResetMatchScore(int _matchNumber)
@@ -562,11 +589,15 @@ namespace Tournament.Structure
 			PlayerSlot winnerSlot = match.WinnerSlot;
 			bool wasManualWin = match.IsManualWin;
 
+			// Reset the Match's score, remove any Games, update Bracket & Rankings:
 			List<GameModel> modelList = match.ResetScore();
 			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
 			UpdateScore(_matchNumber, modelList, false, winnerSlot, wasManualWin);
 
+			// Fire Event with any Matches that changed:
+			alteredMatches.Add(GetMatchModel(match));
 			OnMatchesModified(alteredMatches);
+			// Return Models of any removed Games:
 			return modelList;
 		}
 		#endregion
