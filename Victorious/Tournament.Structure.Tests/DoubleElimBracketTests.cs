@@ -2,6 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using Moq;
+using System.Linq;
+
+using DatabaseLib;
 
 namespace Tournament.Structure.Tests
 {
@@ -903,7 +906,66 @@ namespace Tournament.Structure.Tests
 			b.ResetMatchScore(1);
 			Assert.IsNotNull(b.GetLowerRound(1)[0].Players[(int)PlayerSlot.Challenger]);
 		}
-#endregion
+		#endregion
+
+		#region Events
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("AddGame")]
+		[TestCategory("MatchesModified")]
+		public void DEBAddGame_ThrowsMatchesModifiedEvent_IncludesLowerRoundAdvancement()
+		{
+			int affectedMatches = 0;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+			b.SetMatchWinner(1, PlayerSlot.Defender);
+			b.SetMatchWinner(2, PlayerSlot.Defender);
+
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				affectedMatches = e.UpdatedMatches.Count;
+			};
+			b.AddGame(b.GetLowerRound(1)[0].MatchNumber, 3, 2, PlayerSlot.Defender);
+			Assert.AreEqual(2, affectedMatches);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("AddGame")]
+		[TestCategory("MatchesModified")]
+		public void DEBResetMatchScore_ThrowsMatchesModifiedEvent_WithAllAffectedMatches()
+		{
+			int expectedAffected = 6;
+			int affectedMatches = 0;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 5; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.SetMatchWinner(n, PlayerSlot.Challenger);
+			}
+
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				affectedMatches = e.UpdatedMatches.Count;
+			};
+			b.ResetMatchScore(1);
+			Assert.AreEqual(expectedAffected, affectedMatches);
+		}
+
+		#endregion
 
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]

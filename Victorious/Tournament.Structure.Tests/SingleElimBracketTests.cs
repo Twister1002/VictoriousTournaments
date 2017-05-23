@@ -1234,6 +1234,7 @@ namespace Tournament.Structure.Tests
 
 		#region Events
 		[TestMethod]
+		[TestCategory("SingleElimBracket")]
 		[TestCategory("AddGame")]
 		[TestCategory("MatchesModified")]
 		public void SEBAddGame_ThrowsMatchesModifiedEvent_HoldingCurrentMatch()
