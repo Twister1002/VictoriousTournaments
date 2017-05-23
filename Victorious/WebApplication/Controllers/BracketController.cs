@@ -124,6 +124,7 @@ namespace WebApplication.Controllers
                 new
                 {
                     status = true,
+                    usePoints = (bracket.BracketType == BracketType.DOUBLE || bracket.BracketType == BracketType.SINGLE ? false : true),
                     data = new
                     {
                         ranks = bracket.Rankings

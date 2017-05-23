@@ -380,7 +380,12 @@
                         html = "<ul class='position' data-columns='3'> ";
                         html += "<li class='column rank'>" + e.Rank + "</li> ";
                         html += "<li class='column name'>" + e.Name + "</li> ";
-                        if (e.Score != -1) html += "<li class='column score'>" + (e.MatchScore > -1 ? e.Wins + " - " + e.Losses + " - " + e.Ties : "") + "</li> ";
+                        if (e.usePoints) {
+                            html += "<li class='column score'>" + e.Wins + " - " + e.Losses + " - " + e.Ties + "</li> ";
+                        }
+                        else {
+                            html += "<li class='column score'></li> "
+                        }
                         html += "</ul> ";
 
                         standings.append(html);
