@@ -124,18 +124,19 @@ namespace WebApplication.Controllers
                 if (!viewModel.Model.InProgress && !isAdmin)
                 {
                     // Verify if the user has an invite code or the invite code is valid
-                    if (viewModel.PublicRegistration || viewModel.Model.InviteCode == inviteCode)
+                    if (viewModel.PublicRegistration || viewModel.Model.InviteCode == inviteCode && 
+                        (viewModel.RegistrationStartDate < DateTime.Now && viewModel.RegistrationEndDate > DateTime.Now))
                     {
-                        // Allow the tournament registration to be shown
-                        ViewBag.Tournament = viewModel.Model;
-                        ViewBag.isRegistered = viewModel.isRegistered(account.AccountId);
-                        TournamentRegistrationFields fields = new TournamentRegistrationFields()
-                        {
-                            AccountID = account.AccountId,
-                            TournamentID = viewModel.Model.TournamentID
-                        };
+                            // Allow the tournament registration to be shown
+                            ViewBag.Tournament = viewModel.Model;
+                            ViewBag.isRegistered = viewModel.isRegistered(account.AccountId);
+                            TournamentRegistrationFields fields = new TournamentRegistrationFields()
+                            {
+                                AccountID = account.AccountId,
+                                TournamentID = viewModel.Model.TournamentID
+                            };
 
-                        return View("RegisterForm", fields);
+                            return View("RegisterForm", fields);
                     }
                     else
                     {
