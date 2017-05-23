@@ -17,15 +17,15 @@ namespace Tournament.Structure
 		// bool IsFinished
 		// List<IPlayer> Players
 		// List<IPlayerScore> Rankings
-		// int MaxRounds
+		// int MaxRounds -- unused
 		// Dictionary<int, IMatch> Matches
 		// int NumberOfRounds
 		// Dictionary<int, IMatch> LowerMatches
 		// int NumberOfLowerRounds
 		// IMatch GrandFinal
 		// int NumberOfMatches
-		// int MatchWinValue
-		// int MatchTieValue
+		// int MatchWinValue -- unused
+		// int MatchTieValue -- unused
 		#endregion
 
 		#region Ctors

@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using Moq;
+using System.Linq;
 
 namespace Tournament.Structure.Tests
 {
@@ -201,6 +202,222 @@ namespace Tournament.Structure.Tests
 			}
 
 			Assert.AreNotEqual(b.Players[0].Id, b.Rankings[0].Id);
+		}
+
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("ReplacePlayer")]
+		public void SwissReplacePlayer_ReplacesPlayerIDinByesList()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 7; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList);
+
+			int pId = 50;
+			Mock<IPlayer> player = new Mock<IPlayer>();
+			player.Setup(p => p.Id).Returns(pId);
+			b.ReplacePlayer(player.Object, 0);
+			// 0-index had a first-round bye.
+
+			int firstRdMatches = b.NumberOfMatches;
+			for (int n = 1; n <= firstRdMatches; ++n)
+			{
+				b.SetMatchWinner(n, PlayerSlot.Defender);
+			}
+			// Second round is now generated.
+			// If new player was correctly added to the Byes list...
+			// He will be in exactly 1 second-round match:
+			List<IMatch> round2 = b.GetRound(2);
+			Assert.AreEqual(1, round2.Where(m => m.Players.Select(p => p.Id).Contains(pId)).ToList().Count);
+		}
+
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("RemoveLastGame")]
+		[ExpectedException(typeof(BracketException))]
+		public void SwissRemoveLastGame_ThrowsBracketExcep_IfTooManyRoundsAreAfter()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 32; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList);
+			int matchesPerRound = b.NumberOfMatches;
+			for (int i = 0; i < 3; ++i)
+			{
+				for (int n = 1; n <= matchesPerRound; ++n)
+				{
+					b.AddGame(n + (i * matchesPerRound), 1, 0, PlayerSlot.Defender);
+				}
+			}
+
+			b.RemoveLastGame(1);
+			Assert.AreEqual(1, 2);
+		}
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("RemoveGameNumber")]
+		[ExpectedException(typeof(BracketException))]
+		public void SwissRemoveGameNumber_ThrowsBracketExcep_IfTooManyRoundsAreAfter()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 32; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList, 3);
+			int matchesPerRound = b.NumberOfMatches;
+			for (int i = 0; i < 3; ++i)
+			{
+				for (int n = 1; n <= matchesPerRound; ++n)
+				{
+					b.AddGame(n + (i * matchesPerRound), 1, 0, PlayerSlot.Defender);
+					b.AddGame(n + (i * matchesPerRound), 1, 0, PlayerSlot.Defender);
+				}
+			}
+
+			b.RemoveGameNumber(1, 1);
+			Assert.AreEqual(1, 2);
+		}
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("ResetMatchScore")]
+		[ExpectedException(typeof(BracketException))]
+		public void SwissResetMatchScore_ThrowsBracketExcep_IfTooManyRoundsAreAfter()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 32; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList, 3);
+			int matchesPerRound = b.NumberOfMatches;
+			for (int i = 0; i < 3; ++i)
+			{
+				for (int n = 1; n <= matchesPerRound; ++n)
+				{
+					b.AddGame(n + (i * matchesPerRound), 1, 0, PlayerSlot.Defender);
+					b.AddGame(n + (i * matchesPerRound), 1, 0, PlayerSlot.Defender);
+				}
+			}
+
+			b.ResetMatchScore(1);
+			Assert.AreEqual(1, 2);
+		}
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("ResetMatchScore")]
+		public void SwissResetMatchScore_DeletesFollowingRound_IfMatchWinIsReversed()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 32; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList, 3);
+			int matchesPerRound = b.NumberOfMatches;
+			for (int n = 1; n <= matchesPerRound; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			b.ResetMatchScore(matchesPerRound);
+			Assert.AreEqual(matchesPerRound, b.NumberOfMatches);
+		}
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("ResetMatchScore")]
+		public void SwissResetMatchScore_RecalculatesRankings_IfMatchWinIsReversed()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 33; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList, 3);
+			int matchesPerRound = b.NumberOfMatches;
+			for (int n = 1; n <= matchesPerRound; ++n)
+			{
+				b.SetMatchWinner(n, PlayerSlot.Challenger);
+			}
+			for (int n = 1; n < (matchesPerRound * 2); ++n)
+			{
+				b.AddGame(n + matchesPerRound, 25, 15, PlayerSlot.Defender);
+				b.AddGame(n + matchesPerRound, 25, 15, PlayerSlot.Defender);
+			}
+
+			int highScore = b.Rankings[0].GameScore;
+			b.ResetMatchScore(matchesPerRound + 1);
+			Assert.IsTrue(b.Rankings[0].GameScore < highScore);
+		}
+
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("ResetMatches")]
+		public void SwissResetMatches_DeletesAllMatchesAfterFirstRound()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 32; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList);
+			int matchesPerRound = b.NumberOfMatches;
+			for (int i = 0; i < 3; ++i)
+			{
+				for (int n = 1; n <= matchesPerRound; ++n)
+				{
+					b.SetMatchWinner(n + (i * matchesPerRound), PlayerSlot.Defender);
+				}
+			}
+
+			b.ResetMatches();
+			Assert.AreEqual(matchesPerRound, b.NumberOfMatches);
+		}
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("ResetMatches")]
+		public void SwissResetMatches_ReAddsAutowinToPlayerWithBye()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 9; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList);
+			int matchesPerRound = b.NumberOfMatches;
+			for (int i = 0; i < 2; ++i)
+			{
+				for (int n = 1; n <= matchesPerRound; ++n)
+				{
+					b.SetMatchWinner(n + (i * matchesPerRound), PlayerSlot.Defender);
+				}
+			}
+
+			b.ResetMatches();
+			int rIndex = b.Rankings.FindIndex(r => r.Id == b.Players[0].Id);
+			Assert.AreEqual(1, b.Rankings[rIndex].Wins);
 		}
 
 		[TestMethod]
