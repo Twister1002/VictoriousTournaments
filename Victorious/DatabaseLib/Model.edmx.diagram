@@ -15,7 +15,7 @@
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentRule" Width="1.5" PointX="3.25" PointY="20.875" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.GameModel" PointX="7.875" PointY="8.75" Width="1.875" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Brackets_BracketTypes" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.PlatformModel" Width="1.875" PointX="3" PointY="9" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.PlatformModel" Width="1.875" PointX="3" PointY="7.5" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountInviteModel" Width="1.875" PointX="3" PointY="10.625" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountModel" Width="2" PointX="0.5" PointY="10.375" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy" />

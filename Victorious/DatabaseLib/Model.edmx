@@ -401,7 +401,7 @@
           <Property Name="TypeName" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="Type" Nullable="false" Type="VictoriousDatabaseModel.BracketType" />
           <NavigationProperty Name="Brackets" Relationship="VictoriousDatabaseModel.FK_Brackets_BracketTypes" FromRole="BracketType" ToRole="BracketModel" />
-          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" DefaultValue="True" />
         </EntityType>
         <EntityType Name="GameTypeModel">
           <Key>

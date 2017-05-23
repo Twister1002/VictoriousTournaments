@@ -43,13 +43,13 @@ namespace DatabaseLib
         VictoriousEntities context;
 
         public Exception interfaceException;
-
+        private string connectionStringName;
         public DatabaseRepository(string name)
         {
             context = new VictoriousEntities(name);
             context.Configuration.LazyLoadingEnabled = false;
             context.Configuration.ProxyCreationEnabled = false;
-
+            connectionStringName = name;
             context.TournamentModels
                .Include(x => x.Brackets)
                .Load();
@@ -419,7 +419,7 @@ namespace DatabaseLib
 
         public DbError UpdateTournament(TournamentModel tournament, bool cascade = false)
         {
-            using (var dbTemp = new VictoriousEntities("Debug"))
+            using (var dbTemp = new VictoriousEntities(connectionStringName))
             {
                 try
                 {
