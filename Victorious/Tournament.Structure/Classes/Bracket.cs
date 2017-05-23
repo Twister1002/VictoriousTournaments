@@ -37,13 +37,62 @@ namespace Tournament.Structure
 		{ get; protected set; }
 		public int NumberOfMatches
 		{ get; protected set; }
+		protected int MatchWinValue
+		{ get; set; }
+		protected int MatchTieValue
+		{ get; set; }
+		#endregion
+
+		#region Events
+		public event EventHandler<BracketEventArgs> RoundAdded;
+		public event EventHandler<BracketEventArgs> RoundDeleted;
+		public event EventHandler<BracketEventArgs> MatchesModified;
+		public event EventHandler<BracketEventArgs> GamesDeleted;
+		protected void OnRoundAdded(BracketEventArgs _e)
+		{
+			RoundAdded?.Invoke(this, _e);
+		}
+		protected void OnRoundDeleted(BracketEventArgs _e)
+		{
+			RoundDeleted?.Invoke(this, _e);
+		}
+		protected void OnMatchesModified(BracketEventArgs _e)
+		{
+			MatchesModified?.Invoke(this, _e);
+		}
+		protected void OnMatchesModified(List<MatchModel> _modelList)
+		{
+			if (null != _modelList && _modelList.Count > 0)
+			{
+				OnMatchesModified(new BracketEventArgs(_modelList
+					.OrderBy(m => m.MatchNumber).ToList()));
+			}
+		}
+		protected void OnGamesDeleted(BracketEventArgs _e)
+		{
+			GamesDeleted?.Invoke(this, _e);
+		}
+		protected void OnGamesDeleted(List<IGame> _games)
+		{
+			if (null != _games && _games.Count > 0)
+			{
+				OnGamesDeleted(new BracketEventArgs(_games.Select(g => g.Id).ToList()));
+			}
+		}
+		protected void OnGamesDeleted(List<int> _gameIDs)
+		{
+			if (null != _gameIDs && _gameIDs.Count > 0)
+			{
+				OnGamesDeleted(new BracketEventArgs(_gameIDs));
+			}
+		}
 		#endregion
 
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
 		protected abstract void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false);
-		protected abstract void ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
-		protected abstract void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot);
+		protected abstract List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
+		protected abstract List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot);
 		protected abstract void UpdateRankings();
 		#endregion
 
@@ -60,28 +109,11 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_model");
 			}
 
-			if (null != GrandFinal &&
-				GrandFinal.MatchNumber == _matchNumber)
-			{
-				GrandFinal = new Match(_model);
-			}
-			else if (null != Matches &&
-				Matches.ContainsKey(_matchNumber))
-			{
-				Matches[_matchNumber] = new Match(_model);
-			}
-			else if (null != LowerMatches &&
-				LowerMatches.ContainsKey(_matchNumber))
-			{
-				LowerMatches[_matchNumber] = new Match(_model);
-			}
-			else
-			{
-				throw new MatchNotFoundException
-					("Match not found; match number may be invalid.");
-			}
+			IMatch match = GetMatch(_matchNumber);
+			match = new Match(_model);
 		}
 
+		#region Player Methods
 		public int NumberOfPlayers()
 		{
 			if (null == Players)
@@ -117,12 +149,12 @@ namespace Tournament.Structure
 				{
 					Players = new List<IPlayer>();
 				}
-				ResetBracket();
+				DeleteBracketData();
 				return;
 			}
 
 			List<IPlayer> pList = new List<IPlayer>();
-
+			
 			// Get random rolls for each player
 			// (match rolls -> player-index)
 			Random rng = new Random();
@@ -158,7 +190,7 @@ namespace Tournament.Structure
 			}
 
 			Players = pList;
-			ResetBracket();
+			DeleteBracketData();
 		}
 		public void SetNewPlayerlist(List<IPlayer> _players)
 		{
@@ -187,7 +219,7 @@ namespace Tournament.Structure
 					Players.Add(player);
 				}
 			}
-			ResetBracket();
+			DeleteBracketData();
 		}
 		public void AddPlayer(IPlayer _player)
 		{
@@ -218,7 +250,7 @@ namespace Tournament.Structure
 			{
 				Players.Add(_player);
 			}
-			ResetBracket();
+			DeleteBracketData();
 		}
 		public virtual void ReplacePlayer(IPlayer _player, int _index)
 		{
@@ -232,6 +264,8 @@ namespace Tournament.Structure
 					("Invalid index; outside Playerlist bounds.");
 			}
 
+			List<MatchModel> alteredMatches = new List<MatchModel>();
+
 			if (null != Players[_index])
 			{
 				// Replace existing Player in any Matches
@@ -239,7 +273,9 @@ namespace Tournament.Structure
 				{
 					try
 					{
-						GetMatch(n).ReplacePlayer(_player, Players[_index].Id);
+						IMatch match = GetMatch(n);
+						match.ReplacePlayer(_player, Players[_index].Id);
+						alteredMatches.Add(GetMatchModel(match));
 					}
 					catch (PlayerNotFoundException)
 					{ }
@@ -256,6 +292,7 @@ namespace Tournament.Structure
 			}
 
 			Players[_index] = _player;
+			OnMatchesModified(alteredMatches);
 		}
 		public void SwapPlayers(int _index1, int _index2)
 		{
@@ -284,7 +321,7 @@ namespace Tournament.Structure
 				Players[_index1] = Players[_index2];
 				Players[_index2] = tmp;
 			}
-			ResetBracket();
+			DeleteBracketData();
 		}
 		public void ReinsertPlayer(int _oldIndex, int _newIndex)
 		{
@@ -357,7 +394,7 @@ namespace Tournament.Structure
 				Players[_newIndex] = tmp;
 			}
 
-			ResetBracket();
+			DeleteBracketData();
 		}
 		public void RemovePlayer(int _playerId)
 		{
@@ -372,7 +409,7 @@ namespace Tournament.Structure
 				if (Players[i].Id == _playerId)
 				{
 					Players.RemoveAt(i);
-					ResetBracket();
+					DeleteBracketData();
 					return;
 				}
 			}
@@ -387,62 +424,124 @@ namespace Tournament.Structure
 			}
 
 			Players.Clear();
-			ResetBracket();
+			DeleteBracketData();
 		}
+		#endregion
 
+		#region Match & Game Methods
 		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
+			IMatch match = GetMatch(_matchNumber);
+			PlayerSlot oldWinnerSlot = match.WinnerSlot;
 
-			GameModel gameModel = GetMatch(_matchNumber)
+			GameModel gameModel = match
 				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
-			UpdateScore(_matchNumber, new List<GameModel>() { gameModel }, true, matchWinnerSlot);
-			ApplyWinEffects(_matchNumber, _winnerSlot);
+			UpdateScore(_matchNumber, new List<GameModel>() { gameModel }, true, oldWinnerSlot);
+			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
+
+			OnMatchesModified(alteredMatches);
 			return gameModel;
 		}
 		public virtual GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
+			IMatch match = GetMatch(_matchNumber);
+			int gameIndex = match.Games.FindIndex(g => g.GameNumber == _gameNumber);
+			if (gameIndex < 0)
+			{
+				// Case 1: Game doesn't exist:
+				throw new GameNotFoundException
+					("Game not found; Game Number may be invalid!");
+			}
+			if (match.Games[gameIndex].WinnerSlot == _winnerSlot)
+			{
+				// Case 2: Game winner won't change.
+				// Just modify the game's score:
+				match.Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;
+				match.Games[gameIndex].Score[(int)PlayerSlot.Challenger] = _challengerScore;
+
+				////////////////////////////////
+				// NOTE : DOES NOT UPDATE RANKINGS!
+				////////////////////////////////
+
+				GameModel gameModel = match.Games[gameIndex].GetModel();
+				gameModel.MatchID = match.Id;
+				return gameModel;
+			}
+			else
+			{
+				// Case 3: Game winner changes:
+				throw new NotImplementedException
+					("Can't update this Game with new values! Try removing and adding instead.");
+			}
+#if false
 			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
 			List<GameModel> modelList = new List<GameModel>();
 
 			modelList.Add(GetMatch(_matchNumber).RemoveGameNumber(_gameNumber));
-			ApplyGameRemovalEffects(_matchNumber, modelList, matchWinnerSlot);
+			List<MatchModel> clearedMatches = ApplyGameRemovalEffects(_matchNumber, modelList, matchWinnerSlot);
 			UpdateScore(_matchNumber, modelList, false, matchWinnerSlot);
 
 			GameModel addedGame = GetMatch(_matchNumber)
 				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
 			UpdateScore(_matchNumber, new List<GameModel>() { addedGame }, true, _winnerSlot);
-			ApplyWinEffects(_matchNumber, _winnerSlot);
+			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
+
+			foreach (MatchModel model in clearedMatches)
+			{
+				if (!alteredMatches.Any(m => m.MatchID == model.MatchID))
+				{
+					alteredMatches.Add(model);
+				}
+			}
+			OnMatchesModified(alteredMatches);
 			return addedGame;
+#endif
 		}
 		public virtual GameModel RemoveLastGame(int _matchNumber)
 		{
-			PlayerSlot winnerSlot = GetMatch(_matchNumber).WinnerSlot;
+			IMatch match = GetMatch(_matchNumber);
+			PlayerSlot oldWinnerSlot = match.WinnerSlot;
 			List<GameModel> modelList = new List<GameModel>();
 
-			modelList.Add(GetMatch(_matchNumber).RemoveLastGame());
-			ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
-			UpdateScore(_matchNumber, modelList, false, winnerSlot);
+			modelList.Add(match.RemoveLastGame());
+			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, oldWinnerSlot);
+			UpdateScore(_matchNumber, modelList, false, oldWinnerSlot);
+
+			OnMatchesModified(alteredMatches);
 			return modelList[0];
 		}
 		public virtual GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
 		{
-			PlayerSlot winnerSlot = GetMatch(_matchNumber).WinnerSlot;
+			IMatch match = GetMatch(_matchNumber);
+			PlayerSlot winnerSlot = match.WinnerSlot;
 			List<GameModel> modelList = new List<GameModel>();
 
-			modelList.Add(GetMatch(_matchNumber).RemoveGameNumber(_gameNumber));
-			ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
+			modelList.Add(match.RemoveGameNumber(_gameNumber));
+			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
 			UpdateScore(_matchNumber, modelList, false, winnerSlot);
+
+			OnMatchesModified(alteredMatches);
 			return modelList[0];
 		}
 
 		public virtual void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
 		{
+			IMatch match = GetMatch(_matchNumber);
+			bool winnerChange = (_winnerSlot != match.WinnerSlot);
+			List<GameModel> modelList = new List<GameModel>();
+
 			// Reset the match, and save the games:
-			List<GameModel> modelList = ResetMatchScore(_matchNumber);
+			if (winnerChange)
+			{
+				modelList = ResetMatchScore(_matchNumber);
+			}
+			else
+			{
+				modelList = match.ResetScore();
+			}
 
 			// Set the match winner, THEN re-add the games and update:
-			GetMatch(_matchNumber).SetWinner(_winnerSlot);
+			match.SetWinner(_winnerSlot);
 			foreach (GameModel model in modelList)
 			{
 				PlayerSlot winSlot = (model.DefenderID == model.WinnerID)
@@ -450,10 +549,12 @@ namespace Tournament.Structure
 				winSlot = (model.ChallengerID == model.WinnerID)
 					? PlayerSlot.Challenger : winSlot;
 
-				GetMatch(_matchNumber).AddGame(model.DefenderScore, model.ChallengerScore, winSlot);
+				match.AddGame(model.DefenderScore, model.ChallengerScore, winSlot);
 			}
 			UpdateScore(_matchNumber, null, true, PlayerSlot.unspecified);
-			ApplyWinEffects(_matchNumber, _winnerSlot);
+			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
+
+			OnMatchesModified(alteredMatches);
 		}
 		public virtual List<GameModel> ResetMatchScore(int _matchNumber)
 		{
@@ -461,21 +562,16 @@ namespace Tournament.Structure
 			PlayerSlot winnerSlot = match.WinnerSlot;
 			bool wasManualWin = match.IsManualWin;
 
-			List<GameModel> modelList = GetMatch(_matchNumber).ResetScore();
-			ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
+			List<GameModel> modelList = match.ResetScore();
+			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
 			UpdateScore(_matchNumber, modelList, false, winnerSlot, wasManualWin);
-			return modelList;
-#if false
-			List<GameModel> modelList = new List<GameModel>();
-			IMatch match = GetMatch(_matchNumber);
-			while (GetMatch(_matchNumber).Games.Count > 0)
-			{
-				modelList.Add(RemoveLastGame(_matchNumber));
-			}
-			return modelList;
-#endif
-		}
 
+			OnMatchesModified(alteredMatches);
+			return modelList;
+		}
+		#endregion
+
+		#region Accessors
 		public virtual List<IMatch> GetRound(int _round)
 		{
 			if (null == Matches)
@@ -521,7 +617,7 @@ namespace Tournament.Structure
 				throw new InvalidIndexException
 					("Match number cannot be less than 1!");
 			}
-
+			
 			if (null != GrandFinal &&
 				GrandFinal.MatchNumber == _matchNumber)
 			{
@@ -547,6 +643,8 @@ namespace Tournament.Structure
 			model.BracketID = this.Id;
 			return model;
 		}
+		#endregion
+		#region Mutators
 		public virtual void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
 		{
 			if (_maxGamesPerMatch < 1)
@@ -556,6 +654,12 @@ namespace Tournament.Structure
 			}
 
 			List<IMatch> round = GetRound(_round);
+			if (round.Any(m => m.IsFinished))
+			{
+				throw new InactiveMatchException
+					("One or more matches in this round is already finished!");
+			}
+#if false
 			foreach (IMatch match in round)
 			{
 				if (match.IsFinished)
@@ -564,6 +668,7 @@ namespace Tournament.Structure
 						("One or more matches in this round is already finished!");
 				}
 			}
+#endif
 
 			foreach (IMatch match in round)
 			{
@@ -579,6 +684,12 @@ namespace Tournament.Structure
 			}
 
 			List<IMatch> round = GetLowerRound(_round);
+			if (round.Any(m => m.IsFinished))
+			{
+				throw new InactiveMatchException
+					("One or more matches in this round is already finished!");
+			}
+#if false
 			foreach (IMatch match in round)
 			{
 				if (match.IsFinished)
@@ -587,32 +698,59 @@ namespace Tournament.Structure
 						("One or more matches in this round is already finished!");
 				}
 			}
+#endif
 
 			foreach (IMatch match in round)
 			{
 				GetMatch(match.MatchNumber).SetMaxGames(_maxGamesPerMatch);
 			}
 		}
+		#endregion
+
 		public virtual void ResetMatches()
 		{
+			List<MatchModel> alteredMatches = new List<MatchModel>();
+			List<int> deletedGameIDs = new List<int>();
+
 			for (int n = 1; n <= NumberOfMatches; ++n)
 			{
 				IMatch match = GetMatch(n);
+				bool affected = false;
+
+				if (match.IsManualWin || match.Games.Count > 0)
+				{
+					// Populate the list for GamesDeleted event:
+					affected = true;
+					deletedGameIDs.AddRange(match.Games.Select(g => g.Id));
+				}
 				for (int i = 0; i < 2; ++i)
 				{
+					// Remove Players (but only if they advanced into this match):
 					if (match.PreviousMatchNumbers[i] > -1 &&
 						null != match.Players[i])
 					{
-						GetMatch(n).RemovePlayer(match.Players[i].Id);
+						affected = true;
+						match.RemovePlayer(match.Players[i].Id);
 					}
 				}
-				GetMatch(n).ResetScore();
+
+				match.ResetScore();
+				if (affected)
+				{
+					// Populate the list for MatchesModified event:
+					alteredMatches.Add(GetMatchModel(match));
+				}
 			}
+			IsFinished = false;
+			IsFinalized = false;
+
+			OnGamesDeleted(deletedGameIDs);
+			OnMatchesModified(alteredMatches);
 		}
 		#endregion
 
 		#region Private Methods
-		protected virtual void ResetBracket()
+		protected virtual void ResetBracketData()
 		{
 			if (null == Matches)
 			{
@@ -635,10 +773,38 @@ namespace Tournament.Structure
 			NumberOfMatches = 0;
 			Rankings.Clear();
 		}
+		protected void DeleteBracketData()
+		{
+			List<MatchModel> alteredMatches = new List<MatchModel>();
+			List<int> deletedGameIDs = new List<int>();
+			if (NumberOfMatches > 0 && null != Matches)
+			{
+				for (int n = 1; n <= NumberOfMatches; ++n)
+				{
+					MatchModel match = GetMatchModel(n);
+					alteredMatches.Add(match);
+					deletedGameIDs.AddRange(match.Games.Select(g => g.GameID));
+				}
+			}
+
+			ResetBracketData();
+
+			OnGamesDeleted(deletedGameIDs);
+			OnMatchesModified(alteredMatches);
+		}
+
+		protected MatchModel GetMatchModel(IMatch _match)
+		{
+			MatchModel model = _match.GetModel();
+			model.BracketID = this.Id;
+			return model;
+		}
+
 		protected int SortRankingScores(IPlayerScore first, IPlayerScore second)
 		{
 			// Rankings sorting: MatchScore > OpponentsScore > GameScore > PointsScore > initial Seeding
-			int compare = -1 * (first.MatchScore.CompareTo(second.MatchScore));
+			int compare = -1 * ((first.Wins * MatchWinValue + first.Ties * MatchTieValue)
+				.CompareTo(second.Wins * MatchWinValue + second.Ties * MatchTieValue));
 			compare = (compare != 0)
 				? compare : -1 * (first.OpponentsScore.CompareTo(second.OpponentsScore));
 			compare = (compare != 0)

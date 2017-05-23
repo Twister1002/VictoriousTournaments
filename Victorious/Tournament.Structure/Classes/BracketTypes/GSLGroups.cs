@@ -126,8 +126,10 @@ namespace Tournament.Structure
 
 				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 			}
-			protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+			protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 			{
+				List<MatchModel> alteredMatches = new List<MatchModel>();
+
 				int nextWinnerNumber;
 				int nextLoserNumber;
 				IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
@@ -135,11 +137,9 @@ namespace Tournament.Structure
 				if (match.NextMatchNumber <= NumberOfMatches)
 				{
 					// Case 1: Not a final/endpoint match. Treat like a DEB:
-					base.ApplyWinEffects(_matchNumber, _slot);
-					return;
+					alteredMatches.AddRange(base.ApplyWinEffects(_matchNumber, _slot));
 				}
-
-				if (match.IsFinished)
+				else if (match.IsFinished)
 				{
 					if (nextLoserNumber > 0)
 					{
@@ -150,6 +150,7 @@ namespace Tournament.Structure
 							: PlayerSlot.Defender;
 						GetMatch(nextLoserNumber).AddPlayer
 							(match.Players[(int)loserSlot], PlayerSlot.Defender);
+						alteredMatches.Add(GetMatchModel(nextLoserNumber));
 						// Check lower bracket completion:
 						if (GetLowerRound(NumberOfLowerRounds)[0].IsFinished)
 						{
@@ -166,16 +167,18 @@ namespace Tournament.Structure
 						}
 					}
 				}
+
+				return alteredMatches;
 			}
 			// void ApplyGameRemovalEffects() just uses DEB's version.
 
-			protected override void RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
+			protected override List<MatchModel> RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 			{
 				if (_matchNumber > NumberOfMatches)
 				{
-					return;
+					return new List<MatchModel>();
 				}
-				base.RemovePlayerFromFutureMatches(_matchNumber, _playerId);
+				return base.RemovePlayerFromFutureMatches(_matchNumber, _playerId);
 			}
 			protected override void UpdateRankings()
 			{
@@ -269,7 +272,6 @@ namespace Tournament.Structure
 			Id = 0;
 			BracketType = BracketType.GSLGROUP;
 			NumberOfGroups = _numberOfGroups;
-			ResetBracket();
 			CreateBracket(_maxGamesPerMatch);
 		}
 		public GSLGroups()
@@ -293,10 +295,9 @@ namespace Tournament.Structure
 			}
 
 			this.Id = _model.BracketID;
-			this.BracketType = BracketType.GSLGROUP;
+			this.BracketType = _model.BracketType.Type;
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
-			ResetBracket();
 			CreateBracket();
 
 			foreach (MatchModel model in _model.Matches)
@@ -309,7 +310,7 @@ namespace Tournament.Structure
 		#region Public Methods
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
-			ResetBracket();
+			ResetBracketData();
 			if (_gamesPerMatch < 1)
 			{
 				throw new BracketException

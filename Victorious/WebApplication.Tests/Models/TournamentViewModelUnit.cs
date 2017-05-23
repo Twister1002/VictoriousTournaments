@@ -180,7 +180,6 @@ namespace WebApplication.Tests.Models
                     BracketTypeID = 1,
                     TypeName = "Single Eleminiation"
                 },
-                BracketTitle = "Unit Test",
                 Finalized = false,
                 Tournament = model
             });

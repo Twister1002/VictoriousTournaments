@@ -112,6 +112,7 @@
     <Content Include="App_Data\Tournaments.sql" />
     <Content Include="App_Data\TournamentUsers.sql" />
     <Content Include="Content\fonts\icomoon.svg" />
+    <Content Include="Styles\css\jquery.timepicker.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\svg\checkmark.svg" />
     <Content Include="Content\svg\cross.svg" />
@@ -178,8 +179,9 @@
     <Content Include="Content\fonts\icomoon.eot" />
     <Content Include="Content\fonts\icomoon.ttf" />
     <Content Include="Content\fonts\icomoon.woff" />
-    <None Include="Properties\PublishProfiles\IIS.pubxml" />
+    <None Include="Properties\PublishProfiles\Tournament.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
+    <Content Include="Scripts\Administrator\Brackets.js" />
     <Content Include="Scripts\Administrator\Games.js" />
     <Content Include="Scripts\Administrator\Platforms.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
@@ -188,6 +190,8 @@
     <Content Include="Scripts\jquery-3.1.1.slim.min.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\jquery.timepicker.js" />
+    <Content Include="Scripts\jquery.timepicker.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\scripts.js" />
     <Content Include="Scripts\Tournament\Bracket.js" />
@@ -214,6 +218,7 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdministratorViewModel.cs" />
+    <Compile Include="Models\Administrator\BracketTypeViewModel.cs" />
     <Compile Include="Models\Administrator\GameTypeViewModel.cs" />
     <Compile Include="Models\Administrator\PlatformTypeViewModel.cs" />
     <Compile Include="Models\BracketViewModel.cs" />
@@ -279,6 +284,7 @@
     <Content Include="Views\Tournament\RegisterForm.cshtml" />
     <Content Include="Views\Administrator\Platforms.cshtml" />
     <Content Include="Styles\less\Administrator\Platforms.less" />
+    <Content Include="Views\Administrator\Brackets.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -288,8 +294,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\Account\" />
-    <Folder Include="Views\Bracket\" />
-    <Folder Include="Views\Match\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DatabaseLib\DatabaseLib.csproj">

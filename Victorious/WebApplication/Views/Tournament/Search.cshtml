@@ -39,7 +39,7 @@
                             <li class="column">@(tournyModel.GameType != null ? tournyModel.GameType.Title : "None")</li>
                             <li class="column">@(tournyModel.Platform != null ? tournyModel.Platform.PlatformName : "None")</li>
                             <li class="column">@(tournyModel.TournamentStartDate.ToShortDateString())</li>
-                            <li class="column">@(tournyModel.IsPublic ? "Public" : "Private")</li>
+                            <li class="column">@(tournyModel.PublicRegistration ? "Public" : "Private")</li>
                         </ul>
                     </a>
                 }

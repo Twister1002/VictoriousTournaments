@@ -4,12 +4,17 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     int userId = Session["User.UserId"] != null ? (int)Session["User.UserId"] : -1;
-    object disabledAttributes = new { };
+    object attributes = new { };
+    object dateAttributes = new { @class = "datepicker" };
+    object timeAttributes = new { @class = "timepicker" };
 }
 @if (!Model.CanEdit())
 {
     <div class="message warning">No changes can be made to this tournament.</div>
-    disabledAttributes = new { disabled = "disabled", @readonly = "readonly" };
+    attributes = new { disabled = "disabled", @readonly = "readonly" };
+    dateAttributes = new { @class = "datepicker", disabled = "disabled", @readonly = "readonly" };
+    timeAttributes = new { @class = "timepicker", disabled = "disabled", @readonly = "readonly" };
+
 }
 <div id="TournamentEdit" data-id="@Model.Model.TournamentID">
     @using (Html.BeginForm("Update", "Tournament", new { tournamentId = Model.Model.TournamentID }, FormMethod.Post))
@@ -19,33 +24,40 @@
             <ul>
                 <li>
                     @Html.LabelFor(t => t.Title)
-                    @Html.TextBoxFor(t => t.Title, disabledAttributes)
+                    @Html.TextBoxFor(t => t.Title, attributes)
                     @Html.ValidationMessageFor(t => t.Title)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.Description)
-                    @Html.TextBoxFor(t => t.Description, disabledAttributes)
+                    @Html.TextBoxFor(t => t.Description, attributes)
                     @Html.ValidationMessageFor(t => t.Description)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.GameType)
-                    @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---" , disabledAttributes)
+                    @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---", attributes)
                     @Html.ValidationMessageFor(t => t.GameType)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.BracketType)
-                    @Html.DropDownListFor(t => t.BracketType, new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---", disabledAttributes)
+                    @Html.DropDownListFor(t => t.BracketType, new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---", attributes)
                     @Html.ValidationMessageFor(t => t.BracketType)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.PlatformType)
-                    @Html.DropDownListFor(t => t.PlatformType, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---", disabledAttributes)
+                    @Html.DropDownListFor(t => t.PlatformType, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---", attributes)
                     @Html.ValidationMessageFor(t => t.PlatformType)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.IsPublic)
-                    @Html.CheckBoxFor(t => t.IsPublic, disabledAttributes)
-                    @Html.ValidationMessageFor(t => t.IsPublic)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.PublicViewing)
+                    @Html.CheckBoxFor(t => t.PublicViewing, attributes)
+                    @Html.ValidationMessageFor(t => t.PublicViewing)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.PublicRegistration)
+                    @Html.CheckBoxFor(t => t.PublicRegistration, attributes)
+                    @Html.ValidationMessageFor(t => t.PublicRegistration)
                 </li>
             </ul>
         </div>
@@ -54,33 +66,98 @@
             <ul>
                 <li>
                     @Html.LabelFor(t => t.RegistrationStartDate)
-                    @Html.TextBoxFor(t => t.RegistrationStartDate, Model.RegistrationStartDate.ToShortDateString().ToString(), new { @class = "datepicker"})
+                    @Html.TextBoxFor(t => t.RegistrationStartDate, "{0:MM/dd/yyyy}", dateAttributes)
                     @Html.ValidationMessageFor(t => t.RegistrationStartDate)
+
+                    @Html.TextBoxFor(t => t.RegistrationStartTime, "{0:hh:mm tt}", timeAttributes)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.RegistrationEndDate)
-                    @Html.TextBoxFor(t => t.RegistrationEndDate, Model.RegistrationEndDate.ToShortDateString().ToString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.RegistrationEndDate, "{0:MM/dd/yyyy}", dateAttributes)
                     @Html.ValidationMessageFor(t => t.RegistrationEndDate)
+
+                    @Html.TextBoxFor(t => t.RegistrationEndTime, "{0:hh:mm tt}", timeAttributes)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.TournamentStartDate)
-                    @Html.TextBoxFor(t => t.TournamentStartDate, Model.TournamentStartDate.ToShortDateString().ToString(), new { @class = "datepicker"})
+                    @Html.TextBoxFor(t => t.TournamentStartDate, "{0:MM/dd/yyyy}", dateAttributes)
                     @Html.ValidationMessageFor(t => t.TournamentStartDate)
+
+                    @Html.TextBoxFor(t => t.TournamentStartTime, "{0:hh:mm tt}", timeAttributes)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.TournamentEndDate)
-                    @Html.TextBoxFor(t => t.TournamentEndDate, Model.TournamentEndDate.ToShortDateString().ToString(), new { @class = "datepicker"})
+                    @Html.TextBoxFor(t => t.TournamentEndDate, "{0:MM/dd/yyyy}", dateAttributes)
                     @Html.ValidationMessageFor(t => t.TournamentEndDate)
+
+                    @Html.TextBoxFor(t => t.TournamentEndTime, "{0:hh:mm tt}", timeAttributes)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.CheckinStart)
-                    @Html.TextBoxFor(t => t.CheckinStart, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker"})
-                    @Html.ValidationMessageFor(t => t.CheckinStart)
+                    @Html.LabelFor(t => t.CheckinStartDate)
+                    @Html.TextBoxFor(t => t.CheckinStartDate, "{0:MM/dd/yyyy}", dateAttributes)
+                    @Html.ValidationMessageFor(t => t.CheckinStartDate)
+
+                    @Html.TextBoxFor(t => t.CheckinStartTime, "{0:hh:mm tt}", timeAttributes)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.CheckinEnd)
-                    @Html.TextBoxFor(t => t.CheckinEnd, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
-                    @Html.ValidationMessageFor(t => t.CheckinEnd)
+                    @Html.LabelFor(t => t.CheckinEndDate)
+                    @Html.TextBoxFor(t => t.CheckinEndDate, "{0:MM/dd/yyyy}", dateAttributes)
+                    @Html.ValidationMessageFor(t => t.CheckinEndDate)
+
+                    @Html.TextBoxFor(t => t.CheckinEndTime, "{0:hh:mm tt}", timeAttributes)
+                </li>
+            </ul>
+        </div>
+        <div class="section user-section">
+            <h2>
+                User Information
+                @if (!Model.Model.InProgress)
+                {
+                    <span class="icon icon-plus addUser"></span>
+                }
+            </h2>
+            <ul class="list-table">
+                <li class="list-table-header">
+                    <ul class="border" data-columns="4">
+                        <li class="column">Name/Email</li>
+                        <li class="column">Involvement</li>
+                        <li class="column">Checked In</li>
+                        <li class="column">Actions</li>
+                    </ul>
+                </li>
+                <li class="list-table-body users">
+                    @foreach (var user in Model.Administrators) // Display the Admins first
+                {
+                        <ul class="user border" data-user="@user.TournamentUserID" data-columns="4">
+                            <li class="column name">@user.Name</li>
+                            <li class="column permission">Admin</li>
+                            <li class="column"><span class='icon icon-checkmark'></span></li>
+                            <li class="column actions">
+                                @if ((Model.IsCreator(userId) && user.AccountID != userId) && Model.CanEdit())
+                                {
+                                    <button class="demote">Demote</button>
+                                }
+                            </li>
+                        </ul>
+                    }
+                    @foreach (var user in Model.Participants) // Display the Participats Second
+                {
+                        <ul class="user border" data-user="@user.TournamentUserID" data-columns="4">
+                            <li class="column name">@user.Name</li>
+                            <li class="column permission">Participant</li>
+                            <li class="column"><span class='icon icon-checkmark checkedIn @(Model.isUserCheckedIn(user.TournamentUserID) ? "green" : "red")'></span></li>
+                            <li class="column actions">
+                                @if (Model.IsCreator(userId) && user.AccountID != null && Model.CanEdit())
+                                {
+                                    <button class="promote">Promote</button>
+                                }
+                                @if (Model.IsAdministrator(userId) && Model.CanEdit())
+                                {
+                                    <button class="demote">Remove</button>
+                                }
+                            </li>
+                        </ul>
+                    }
                 </li>
             </ul>
         </div>
@@ -91,61 +168,4 @@
             }
         </div>
     }
-    <div class="section user-section">
-        <h2>
-            User Information 
-            @if (!Model.Model.InProgress)
-            {
-                <span class="icon icon-plus addUser"></span>
-            }
-        </h2>
-        <ul class="list-table">
-            <li class="list-table-header">
-                <ul class="border" data-columns="3">
-                    <li class="column">Name/Email</li>
-                    <li class="column">Involvement</li>
-                    <li class="column">Actions</li>
-                </ul>
-            </li>
-            <li class="list-table-body addUserRow">
-                <ul class="border form" data-columns="3">
-                    <li class="column"><input type="text" class="name" placeholder="Email"/></li>
-                    <li class="column">Participant</li>
-                    <li class="column"><button class="addUserButton">Invite</button></li>
-                </ul>
-            </li>
-            <li class="list-table-body users">
-                @foreach (var user in Model.Administrators) // Display the Admins first
-                {
-                    <ul class="user border" data-user="@user.TournamentUserID" data-columns="3">
-                        <li class="column name">@user.Name</li>
-                        <li class="column permission">Admin</li>
-                        <li class="column actions">
-                            @if ((Model.IsCreator(userId) && user.AccountID != userId) && Model.CanEdit())
-                            {
-                                <button class="demote">Demote</button>
-                            }
-                        </li>
-                    </ul>
-                }
-                @foreach (var user in Model.Participants) // Display the Participats Second
-                {
-                    <ul class="user border" data-user="@user.TournamentUserID" data-columns="3">
-                        <li class="column name">@user.Name</li>
-                        <li class="column permission">Participant</li>
-                        <li class="column actions">
-                            @if (Model.IsCreator(userId) && user.AccountID != null && Model.CanEdit())
-                            {
-                                <button class="promote">Promote</button>
-                            }
-                            @if (Model.IsAdministrator(userId) && Model.CanEdit())
-                            {
-                                <button class="demote">Remove</button>
-                            }
-                        </li>
-                    </ul>
-                }
-            </li>
-        </ul>
-    </div>
 </div>

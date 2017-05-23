@@ -96,5 +96,25 @@ namespace WebApplication.Controllers
                 platforms = viewModel.Select().Select(x => new { x.PlatformID, x.PlatformName }).ToList()
             }));
         }
+
+        [HttpPost]
+        [Route("Ajax/Administrator/Bracket")]
+        public JsonResult Bracket(int bracketTypeId)
+        {
+            bool status = false;
+            String message = "No action taken";
+            
+            BracketTypeViewModel viewModel = new BracketTypeViewModel();
+            status = viewModel.Update(bracketTypeId);
+            message = "BracketType was updated " + (status ? "" : "un") + "successfully";
+
+
+            return Json(JsonConvert.SerializeObject(new
+            {
+                status = status,
+                message = message,
+                brackets = viewModel.Brackets.Select(x => new { x.BracketTypeID, x.TypeName, x.IsActive })
+            }));
+        }
     }
 }

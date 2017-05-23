@@ -138,7 +138,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new RoundRobinBracket(pList);
 
-			b.AddGame(1, 1, 0, PlayerSlot.Defender);
+			b.AddGame(1, 0, 1, PlayerSlot.Challenger);
 			Assert.AreEqual(b.GetMatch(1).Players[(int)(b.GetMatch(1).WinnerSlot)].Id,
 				b.Rankings[0].Id);
 		}
@@ -282,6 +282,57 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(1, 1);
 		}
-#endregion
+
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("ReplacePlayer")]
+		public void RRB_ReplacePlayer_Replaces()
+		{
+			Mock<IPlayer> playerMoq = new Mock<IPlayer>();
+			playerMoq.Setup(p => p.Id).Returns(10);
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+
+			int pIndex = 3;
+			b.ReplacePlayer(playerMoq.Object, pIndex);
+			Assert.AreEqual(playerMoq.Object, b.Players[pIndex]);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("ReplacePlayer")]
+		public void RRB_ReplacePlayer_ReplacesPlayerInRankings()
+		{
+			Mock<IPlayer> playerMoq = new Mock<IPlayer>();
+			playerMoq.Setup(p => p.Id).Returns(10);
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList, 3);
+			List<IMatch> firstRound = b.GetRound(1);
+			foreach (IMatch match in firstRound)
+			{
+				b.AddGame(match.MatchNumber, 1, 0, PlayerSlot.Defender);
+				b.AddGame(match.MatchNumber, 0, 1, PlayerSlot.Challenger);
+				b.AddGame(match.MatchNumber, 1, 0, PlayerSlot.Defender);
+			}
+
+			int pIndex = 3;
+			int rankIndex = b.Rankings.FindIndex(r => r.Id == b.Players[pIndex].Id);
+			b.ReplacePlayer(playerMoq.Object, pIndex);
+			Assert.AreEqual(playerMoq.Object.Id, b.Rankings[rankIndex].Id);
+		}
+		#endregion
 	}
 }

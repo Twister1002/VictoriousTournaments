@@ -387,11 +387,11 @@
           <Property Name="Finalized" Nullable="false" Type="Boolean" />
           <Property Name="NumberOfGroups" Nullable="false" Type="Int32" />
           <Property Name="TournamentID" Type="Int32" />
-          <NavigationProperty Name="Matches" Relationship="Self.FK_Matches_Brackets" FromRole="BracketModel" ToRole="MatchModel" />
           <NavigationProperty Name="TournamentUsersBrackets" Relationship="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments" FromRole="Bracket" ToRole="TournamentUsersBracket" />
           <NavigationProperty Name="BracketType" Relationship="VictoriousDatabaseModel.FK_Brackets_BracketTypes" FromRole="BracketModel" ToRole="BracketType" />
           <Property Name="MaxRounds" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.FK_Brackets_Tournaments" FromRole="BracketModel" ToRole="Tournament" />
+          <NavigationProperty Name="Matches" Relationship="VictoriousDatabaseModel.FK_Matches_Brackets" FromRole="BracketModel" ToRole="Match" />
         </EntityType>
         <EntityType Name="BracketTypeModel">
           <Key>
@@ -401,35 +401,8 @@
           <Property Name="TypeName" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="Type" Nullable="false" Type="VictoriousDatabaseModel.BracketType" />
           <NavigationProperty Name="Brackets" Relationship="VictoriousDatabaseModel.FK_Brackets_BracketTypes" FromRole="BracketType" ToRole="BracketModel" />
-          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" DefaultValue="True" />
         </EntityType>
-        <EntityType Name="MatchModel">
-          <Key>
-            <PropertyRef Name="MatchID" />
-          </Key>
-          <Property Name="MatchID" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
-          <Property Name="ChallengerID" Nullable="false" Type="Int32" />
-          <Property Name="DefenderID" Nullable="false" Type="Int32" />
-          <Property Name="WinnerID" Type="Int32" />
-          <Property Name="ChallengerScore" Type="Int32" />
-          <Property Name="DefenderScore" Type="Int32" />
-          <Property Name="RoundIndex" Type="Int32" />
-          <Property Name="MatchNumber" Nullable="false" Type="Int32" />
-          <Property Name="StartDateTime" Precision="3" Type="DateTime" />
-          <Property Name="EndDateTime" Precision="3" Type="DateTime" />
-          <Property Name="MatchDuration" Precision="7" Type="Time" />
-          <Property Name="MatchIndex" Type="Int32" />
-          <Property Name="NextMatchNumber" Type="Int32" />
-          <Property Name="PrevMatchIndex" Type="Int32" />
-          <Property Name="NextLoserMatchNumber" Type="Int32" />
-          <Property Name="PrevDefenderMatchNumber" Type="Int32" />
-          <Property Name="PrevChallengerMatchNumber" Type="Int32" />
-          <Property Name="MaxGames" Type="Int32" />
-          <Property Name="BracketID" Type="Int32" />
-          <NavigationProperty Name="Bracket" Relationship="Self.FK_Matches_Brackets" FromRole="MatchModel" ToRole="BracketModel" />
-          <NavigationProperty Name="Games" Relationship="VictoriousDatabaseModel.FK_Games_Matches" FromRole="MatchModel" ToRole="GameModel" />
-          <Property Name="IsManualWin" Type="Boolean" Nullable="false" />
-          </EntityType>
         <EntityType Name="GameTypeModel">
           <Key>
             <PropertyRef Name="GameTypeID" />
@@ -438,28 +411,11 @@
           <Property Name="Title" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
           <NavigationProperty Name="Tournaments" Relationship="VictoriousDatabaseModel.FK_Tournaments_GameTypes" FromRole="GameTypeModel" ToRole="Tournament" />
         </EntityType>
-        <Association Name="FK_Matches_Brackets">
-          <End Type="VictoriousDatabaseModel.BracketModel" Multiplicity="0..1" Role="BracketModel" />
-          <End Type="VictoriousDatabaseModel.MatchModel" Multiplicity="*" Role="MatchModel" />
-          <ReferentialConstraint>
-            <Principal Role="BracketModel">
-              <PropertyRef Name="BracketID" />
-            </Principal>
-            <Dependent Role="MatchModel">
-              <PropertyRef Name="BracketID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="VictoriousEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="C__RefactorLog" EntityType="Self.C__RefactorLog" />
           <EntitySet Name="BracketModels" EntityType="VictoriousDatabaseModel.BracketModel" />
           <EntitySet Name="BracketTypeModels" EntityType="VictoriousDatabaseModel.BracketTypeModel" />
-          <EntitySet Name="MatchModels" EntityType="VictoriousDatabaseModel.MatchModel" />
           <EntitySet Name="GameTypeModels" EntityType="VictoriousDatabaseModel.GameTypeModel" />
-          <AssociationSet Name="FK_Matches_Brackets" Association="Self.FK_Matches_Brackets">
-            <End EntitySet="BracketModels" Role="BracketModel" />
-            <End EntitySet="MatchModels" Role="MatchModel" />
-          </AssociationSet>
           <EntitySet Name="TournamentUserModels" EntityType="VictoriousDatabaseModel.TournamentUserModel" />
           <EntitySet Name="TournamentUsersBracketModels" EntityType="VictoriousDatabaseModel.TournamentUsersBracketModel" />
           <AssociationSet Name="FK_UsersBrackets_Tournaments" Association="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments">
@@ -471,10 +427,6 @@
             <End EntitySet="TournamentUsersBracketModels" Role="TournamentUsersBracket" />
           </AssociationSet>
           <EntitySet Name="GameModels" EntityType="VictoriousDatabaseModel.GameModel" />
-          <AssociationSet Name="FK_Games_Matches" Association="VictoriousDatabaseModel.FK_Games_Matches">
-            <End EntitySet="MatchModels" Role="MatchModel" />
-            <End EntitySet="GameModels" Role="GameModel" />
-          </AssociationSet>
           <AssociationSet Name="FK_Brackets_BracketTypes" Association="VictoriousDatabaseModel.FK_Brackets_BracketTypes">
             <End Role="BracketType" EntitySet="BracketTypeModels" />
             <End Role="BracketModel" EntitySet="BracketModels" />
@@ -507,6 +459,15 @@
           <AssociationSet Name="FK_TournamentUser_Tournaments" Association="VictoriousDatabaseModel.FK_TournamentUser_Tournaments">
             <End Role="Tournament" EntitySet="TournamentModels" />
             <End Role="TournamentUserModel" EntitySet="TournamentUserModels" />
+          </AssociationSet>
+          <EntitySet Name="MatchModels" EntityType="VictoriousDatabaseModel.MatchModel" />
+          <AssociationSet Name="FK_Matches_Brackets" Association="VictoriousDatabaseModel.FK_Matches_Brackets">
+            <End Role="BracketModel" EntitySet="BracketModels" />
+            <End Role="Match" EntitySet="MatchModels" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Games_Matches" Association="VictoriousDatabaseModel.FK_Games_Matches">
+            <End Role="Match" EntitySet="MatchModels" />
+            <End Role="GameModel" EntitySet="GameModels" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="TournamentUserModel">
@@ -577,20 +538,8 @@
           <Property Name="GameNumber" Nullable="false" Type="Int32" />
           <Property Name="ChallengerScore" Nullable="false" Type="Int32" />
           <Property Name="DefenderScore" Nullable="false" Type="Int32" />
-          <NavigationProperty Name="Match" Relationship="VictoriousDatabaseModel.FK_Games_Matches" FromRole="GameModel" ToRole="MatchModel" />
+          <NavigationProperty Name="Match" Relationship="VictoriousDatabaseModel.FK_Games_Matches" FromRole="GameModel" ToRole="Match" />
         </EntityType>
-        <Association Name="FK_Games_Matches">
-          <End Type="VictoriousDatabaseModel.MatchModel" Multiplicity="0..1" Role="MatchModel" />
-          <End Type="VictoriousDatabaseModel.GameModel" Multiplicity="*" Role="GameModel" />
-          <ReferentialConstraint>
-            <Principal Role="MatchModel">
-              <PropertyRef Name="MatchID" />
-            </Principal>
-            <Dependent Role="GameModel">
-              <PropertyRef Name="MatchID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Brackets_BracketTypes">
           <End Type="VictoriousDatabaseModel.BracketTypeModel" Role="BracketType" Multiplicity="1" />
           <End Type="VictoriousDatabaseModel.BracketModel" Role="BracketModel" Multiplicity="*" />
@@ -758,6 +707,57 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="MatchModel">
+          <Key>
+            <PropertyRef Name="MatchID" />
+          </Key>
+          <Property Name="MatchID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ChallengerID" Type="Int32" Nullable="false" />
+          <Property Name="DefenderID" Type="Int32" Nullable="false" />
+          <Property Name="WinnerID" Type="Int32" />
+          <Property Name="ChallengerScore" Type="Int32" />
+          <Property Name="DefenderScore" Type="Int32" />
+          <Property Name="RoundIndex" Type="Int32" />
+          <Property Name="MatchNumber" Type="Int32" Nullable="false" />
+          <Property Name="StartDateTime" Type="DateTime" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Precision="3" />
+          <Property Name="MatchDuration" Type="Time" Precision="7" />
+          <Property Name="MatchIndex" Type="Int32" />
+          <Property Name="NextMatchNumber" Type="Int32" />
+          <Property Name="PrevMatchIndex" Type="Int32" />
+          <Property Name="NextLoserMatchNumber" Type="Int32" />
+          <Property Name="PrevDefenderMatchNumber" Type="Int32" />
+          <Property Name="PrevChallengerMatchNumber" Type="Int32" />
+          <Property Name="MaxGames" Type="Int32" />
+          <Property Name="BracketID" Type="Int32" />
+          <Property Name="IsManualWin" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Bracket" Relationship="VictoriousDatabaseModel.FK_Matches_Brackets" FromRole="Match" ToRole="BracketModel" />
+          <NavigationProperty Name="Games" Relationship="VictoriousDatabaseModel.FK_Games_Matches" FromRole="Match" ToRole="GameModel" />
+        </EntityType>
+        <Association Name="FK_Matches_Brackets">
+          <End Type="VictoriousDatabaseModel.BracketModel" Role="BracketModel" Multiplicity="0..1" />
+          <End Type="VictoriousDatabaseModel.MatchModel" Role="Match" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BracketModel">
+              <PropertyRef Name="BracketID" />
+            </Principal>
+            <Dependent Role="Match">
+              <PropertyRef Name="BracketID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Games_Matches">
+          <End Type="VictoriousDatabaseModel.MatchModel" Role="Match" Multiplicity="0..1" />
+          <End Type="VictoriousDatabaseModel.GameModel" Role="GameModel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Match">
+              <PropertyRef Name="MatchID" />
+            </Principal>
+            <Dependent Role="GameModel">
+              <PropertyRef Name="MatchID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -790,32 +790,6 @@
                 <ScalarProperty Name="BracketTypeID" ColumnName="BracketTypeID" />
                 <ScalarProperty Name="TypeName" ColumnName="TypeName" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="MatchModels">
-            <EntityTypeMapping TypeName="VictoriousDatabaseModel.MatchModel">
-              <MappingFragment StoreEntitySet="Matches">
-                <ScalarProperty Name="IsManualWin" ColumnName="IsManualWin" />
-                <ScalarProperty Name="MatchID" ColumnName="MatchID" />
-                <ScalarProperty Name="ChallengerID" ColumnName="ChallengerID" />
-                <ScalarProperty Name="DefenderID" ColumnName="DefenderID" />
-                <ScalarProperty Name="WinnerID" ColumnName="WinnerID" />
-                <ScalarProperty Name="ChallengerScore" ColumnName="ChallengerScore" />
-                <ScalarProperty Name="DefenderScore" ColumnName="DefenderScore" />
-                <ScalarProperty Name="RoundIndex" ColumnName="RoundIndex" />
-                <ScalarProperty Name="MatchNumber" ColumnName="MatchNumber" />
-                <ScalarProperty Name="StartDateTime" ColumnName="StartDateTime" />
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="MatchDuration" ColumnName="MatchDuration" />
-                <ScalarProperty Name="MatchIndex" ColumnName="MatchIndex" />
-                <ScalarProperty Name="NextMatchNumber" ColumnName="NextMatchNumber" />
-                <ScalarProperty Name="PrevMatchIndex" ColumnName="PrevMatchIndex" />
-                <ScalarProperty Name="NextLoserMatchNumber" ColumnName="NextLoserMatchNumber" />
-                <ScalarProperty Name="PrevDefenderMatchNumber" ColumnName="PrevDefenderMatchNumber" />
-                <ScalarProperty Name="PrevChallengerMatchNumber" ColumnName="PrevChallengerMatchNumber" />
-                <ScalarProperty Name="MaxGames" ColumnName="MaxGames" />
-                <ScalarProperty Name="BracketID" ColumnName="BracketID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -941,6 +915,32 @@
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="GameTypeID" ColumnName="GameTypeID" />
                 <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MatchModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.MatchModel">
+              <MappingFragment StoreEntitySet="Matches">
+                <ScalarProperty Name="IsManualWin" ColumnName="IsManualWin" />
+                <ScalarProperty Name="BracketID" ColumnName="BracketID" />
+                <ScalarProperty Name="MaxGames" ColumnName="MaxGames" />
+                <ScalarProperty Name="PrevChallengerMatchNumber" ColumnName="PrevChallengerMatchNumber" />
+                <ScalarProperty Name="PrevDefenderMatchNumber" ColumnName="PrevDefenderMatchNumber" />
+                <ScalarProperty Name="NextLoserMatchNumber" ColumnName="NextLoserMatchNumber" />
+                <ScalarProperty Name="PrevMatchIndex" ColumnName="PrevMatchIndex" />
+                <ScalarProperty Name="NextMatchNumber" ColumnName="NextMatchNumber" />
+                <ScalarProperty Name="MatchIndex" ColumnName="MatchIndex" />
+                <ScalarProperty Name="MatchDuration" ColumnName="MatchDuration" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="StartDateTime" ColumnName="StartDateTime" />
+                <ScalarProperty Name="MatchNumber" ColumnName="MatchNumber" />
+                <ScalarProperty Name="RoundIndex" ColumnName="RoundIndex" />
+                <ScalarProperty Name="DefenderScore" ColumnName="DefenderScore" />
+                <ScalarProperty Name="ChallengerScore" ColumnName="ChallengerScore" />
+                <ScalarProperty Name="WinnerID" ColumnName="WinnerID" />
+                <ScalarProperty Name="DefenderID" ColumnName="DefenderID" />
+                <ScalarProperty Name="ChallengerID" ColumnName="ChallengerID" />
+                <ScalarProperty Name="MatchID" ColumnName="MatchID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

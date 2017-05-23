@@ -46,7 +46,8 @@ namespace WebApplication.Controllers
                     game = tourny.GameType.Title,
                     platform = tourny.Platform != null ? tourny.Platform.PlatformName : "None",
                     startDate = tourny.TournamentStartDate.ToShortDateString(),
-                    isPublic = tourny.IsPublic,
+                    publicRegistration = tourny.PublicRegistration,
+                    publicViewing = tourny.PublicViewing,
                     link = Url.Action("Tournament", "Tournament", new { guid = tourny.TournamentID })
                 });
             }
@@ -113,15 +114,17 @@ namespace WebApplication.Controllers
             LoadAccount(Session);
             int tournamentId = ConvertToInt(guid);
             TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-            bool isAdmin = viewModel.IsAdministrator(account.AccountId);
-
+            
             if (viewModel.Model != null)
             {
+                bool isAdmin = viewModel.IsAdministrator(account.AccountId);
+                bool isParticipant = viewModel.IsParticipant(account.AccountId);
+
                 // Should we check for registrations or view the tournament?
                 if (!viewModel.Model.InProgress && !isAdmin)
                 {
                     // Verify if the user has an invite code or the invite code is valid
-                    if (viewModel.Model.IsPublic || viewModel.Model.InviteCode == inviteCode)
+                    if (viewModel.PublicRegistration || viewModel.Model.InviteCode == inviteCode)
                     {
                         // Allow the tournament registration to be shown
                         ViewBag.Tournament = viewModel.Model;
@@ -143,9 +146,8 @@ namespace WebApplication.Controllers
                 else
                 {
                     // Verify if the user is allowed to view the tournament
-                    if (viewModel.Model.IsPublic || viewModel.Model.InviteCode == inviteCode || isAdmin)
+                    if (viewModel.Model.PublicViewing || viewModel.Model.InviteCode == inviteCode || isAdmin || isParticipant)
                     {
-                        viewModel.ProcessTournament();
                         return View("Tournament", viewModel);
                     }
                     else
@@ -189,7 +191,7 @@ namespace WebApplication.Controllers
                         Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
                     }
                     //TODO: This should redirect to the tournament
-                    return RedirectToAction("Index", "Account");
+                    return RedirectToAction("Tournament", "Tournament", new { guid = viewModel.Model.TournamentID });
                 }
                 else
                 {
@@ -284,7 +286,6 @@ namespace WebApplication.Controllers
         public ActionResult Deregister(TournamentRegistrationFields userData)
         {
             LoadAccount(Session);
-
             if (userData.AccountID == account.AccountId)
             {
                 TournamentViewModel viewModel = new TournamentViewModel(userData.TournamentID);
@@ -307,51 +308,6 @@ namespace WebApplication.Controllers
             }
 
             return RedirectToAction("Tournament", "Tournament", new { guid = userData.TournamentID });
-        }
-
-        [HttpPost]
-        [Route("Ajax/Tournament/Register")]
-        public JsonResult NoAccountRegister(TournamentRegistrationFields userData)
-        //public JsonResult NoAccountRegister(String Name, int TournamentID)
-        {
-            LoadAccount(Session);
-            TournamentViewModel viewModel = new TournamentViewModel(userData.TournamentID);
-            bool status = false;
-            object data = new { };
-            String message = "No action taken";
-
-            // Is an Administrator registering a user?
-            if (viewModel.IsAdministrator(account.AccountId))
-            {
-                status = viewModel.AddUser(userData.Name);
-                message = "User was " + (status ? "" : "not") + " added successfully";
-
-                TournamentUserModel user = viewModel.Model.TournamentUsers.First(x => x.Name == userData.Name);
-                data = new
-                {
-                    TournamentUserID = user.TournamentUserID,
-                    AccountID = user.AccountID,
-                    Name = user.Name,
-                    PermissionLevel = user.PermissionLevel,
-                    actions = new
-                    {
-                        Promote = false,
-                        Demote = false,
-                        Remove = true
-                    }
-                };
-            }
-            else
-            {
-                message = "Could not add user to tournament";
-            }
-
-            return Json(JsonConvert.SerializeObject(new
-            {
-                status = status,
-                message = message,
-                data = data
-            }));
         }
 
         [HttpPost]
@@ -380,6 +336,57 @@ namespace WebApplication.Controllers
                 status = status,
                 message = message,
                 data = data
+            }));
+        }
+
+        [HttpPost]
+        [Route("Ajax/Tournament/CheckIn")]
+        public JsonResult CheckIn(int tournamentId, int tournamentUserId = -1)
+        {
+            LoadAccount(Session);
+            bool status = false;
+            bool isCheckedIn = false;
+            String message = "No action taken";
+
+
+            if (tournamentUserId != -1)
+            {
+                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+                if (viewModel.UserCheckIn(tournamentUserId))
+                {
+                    status = true;
+                    message = "User is checkedin";
+                }
+                else
+                {
+                    message = "User was not checked in";
+                }
+
+                isCheckedIn = viewModel.isUserCheckedIn(tournamentUserId);
+            }
+            else if (account != null)
+            {
+                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+                if (viewModel.AccountCheckIn(account.AccountId))
+                {
+                    status = true;
+                    message = "User is checkedin";
+                }
+                else
+                {
+                    message = "User was not checked in";
+                }
+            }
+            else
+            {
+                message = "Account not logged in";
+            }
+
+            return Json(JsonConvert.SerializeObject(new
+            {
+                status = status,
+                message = message,
+                isCheckedIn = isCheckedIn
             }));
         }
 

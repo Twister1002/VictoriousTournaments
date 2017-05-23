@@ -1,6 +1,6 @@
 ﻿@model WebApplication.Models.BracketViewModel
 
-@{ 
+@{
     int columns = 3;
 }
 
@@ -16,23 +16,25 @@
                 <li class="column name">Name</li>
                 @if (Model.UsePoints())
                 {
-                    <li class="column score">Score</li>
+                    <li class="column score">W - L - T</li>
                 }
             </ul>
         </li>
         <li class="list-table-body">
-            @foreach (var data in Model.Bracket.Rankings)
+            @if (Model.Bracket.Rankings != null)
             {
-                <ul class="position" data-columns="@columns">
-                    <li class="column rank">@data.Rank</li>
-                    <li class="column name">@data.Name</li>
-                    @if (Model.UsePoints())
-                    {
-                        <li class="column score">@data.MatchScore</li>
-                    }
-                </ul>
-            }  
+                foreach (var data in Model.Bracket.Rankings)
+                {
+                    <ul class="position" data-columns="@columns">
+                        <li class="column rank">@data.Rank</li>
+                        <li class="column name">@data.Name</li>
+                        @if (Model.UsePoints())
+                        {
+                            <li class="column score">@data.Wins - @data.Losses - @data.Ties</li>
+                        }
+                    </ul>
+                }
+            }
         </li>
     </ul>
 </li>
-

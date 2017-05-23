@@ -35,9 +35,16 @@
                     @Html.ValidationMessageFor(t => t.PlatformType)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.IsPublic)
-                    @Html.CheckBoxFor(t => t.IsPublic)
-                    @Html.ValidationMessageFor(t => t.IsPublic)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.PublicViewing)
+                    @Html.CheckBoxFor(t => t.PublicViewing)
+                    @Html.ValidationMessageFor(t => t.PublicViewing)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.PublicRegistration)
+                    @Html.CheckBoxFor(t => t.PublicRegistration)
+                    @Html.ValidationMessageFor(t => t.PublicRegistration)
                 </li>
             </ul>
         </div>
@@ -48,31 +55,43 @@
                     @Html.LabelFor(t => t.RegistrationStartDate)
                     @Html.TextBoxFor(t => t.RegistrationStartDate, DateTime.Now.ToShortDateString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.RegistrationStartDate)
+
+                    @Html.TextBoxFor(t => t.RegistrationStartTime, "{0:hh:mm tt}", new { @class = "timepicker" })
                 </li>
                 <li>
                     @Html.LabelFor(t => t.RegistrationEndDate)
                     @Html.TextBoxFor(t => t.RegistrationEndDate, DateTime.Now.AddDays(1).ToShortDateString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.RegistrationEndDate)
+
+                    @Html.TextBoxFor(t => t.RegistrationEndTime, "{0:hh:mm tt}", new { @class = "timepicker" })
                 </li>
                 <li>
                     @Html.LabelFor(t => t.TournamentStartDate)
                     @Html.TextBoxFor(t => t.TournamentStartDate, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.TournamentStartDate)
+
+                    @Html.TextBoxFor(t => t.TournamentStartTime, "{0:hh:mm tt}", new { @class = "timepicker" })
                 </li>
                 <li>
                     @Html.LabelFor(t => t.TournamentEndDate)
-                    @Html.TextBoxFor(t => t.TournamentEndDate, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
+                    @Html.TextBoxFor(t => t.TournamentEndDate, DateTime.Now.AddDays(3).ToShortDateString(), new { @class = "datepicker" })
                     @Html.ValidationMessageFor(t => t.TournamentEndDate)
+
+                    @Html.TextBoxFor(t => t.TournamentEndTime, "{0:hh:mm tt}", new { @class = "timepicker" })
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.CheckinStart)
-                    @Html.TextBoxFor(t => t.CheckinStart, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
-                    @Html.ValidationMessageFor(t => t.CheckinStart)
+                    @Html.LabelFor(t => t.CheckinStartDate)
+                    @Html.TextBoxFor(t => t.CheckinStartDate, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.CheckinStartDate)
+
+                    @Html.TextBoxFor(t => t.CheckinStartTime, "{0:hh:mm tt}", new { @class = "timepicker" })
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.CheckinEnd)
-                    @Html.TextBoxFor(t => t.CheckinEnd, DateTime.Now.AddDays(2).ToShortDateString(), new { @class = "datepicker" })
-                    @Html.ValidationMessageFor(t => t.CheckinEnd)
+                    @Html.LabelFor(t => t.CheckinEndDate)
+                    @Html.TextBoxFor(t => t.CheckinEndDate, DateTime.Now.AddDays(3).ToShortDateString(), new { @class = "datepicker" })
+                    @Html.ValidationMessageFor(t => t.CheckinEndDate)
+
+                    @Html.TextBoxFor(t => t.CheckinEndTime, "{0:hh:mm tt}", new { @class = "timepicker" })
                 </li>
             </ul>
         </div>

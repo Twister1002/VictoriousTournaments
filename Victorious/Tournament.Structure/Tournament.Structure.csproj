@@ -78,9 +78,10 @@
     <Compile Include="Classes\Match.cs" />
     <Compile Include="Classes\BracketTypes\SingleElimBracket.cs" />
     <Compile Include="Classes\BracketTypes\DoubleElimBracket.cs" />
-    <Compile Include="Classes\Exceptions.cs" />
+    <Compile Include="Exceptions.cs" />
     <Compile Include="Classes\Game.cs" />
     <Compile Include="Classes\BracketTypes\GroupStage.cs" />
+    <Compile Include="CustomEventArgs.cs" />
     <Compile Include="Interfaces\IGroupStage.cs" />
     <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Interfaces\IBracket.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Classes\BracketTypes\RoundRobinGroups.cs" />
     <Compile Include="Classes\BracketTypes\SwissBracket.cs" />
     <Compile Include="Classes\SeedComparer.cs" />
+    <Compile Include="StructsAndEnums.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DatabaseLib\DatabaseLib.csproj">

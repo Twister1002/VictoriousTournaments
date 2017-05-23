@@ -31,18 +31,11 @@ namespace WebApplication.Controllers
                 BracketViewModel viewModel = new BracketViewModel(bracketId);
                 if (viewModel.IsCreator((int)Session["User.UserId"]))
                 {
-                    if (viewModel.ResetBracket())
-                    {
-                        status = true;
-                        message = "Bracket was reset";
-                        redirect = Url.Action("Tournament", "Tournament", new { guid = viewModel.Model.Tournament.TournamentID });
-                    }
-                    else
-                    {
-                        status = false;
-                        message = "Could not reset the bracket due to an error";
-                        redirect = Url.Action("Tournament", "Tournament", new { guid = viewModel.Model.Tournament.TournamentID });
-                    }
+                    viewModel.Bracket.ResetMatches();
+
+                    status = true;
+                    message = "Bracket was reset";
+                    redirect = Url.Action("Tournament", "Tournament", new { guid = viewModel.Model.Tournament.TournamentID });
                 }
                 else
                 {
@@ -74,44 +67,30 @@ namespace WebApplication.Controllers
         [Route("Ajax/Bracket/MatchReset")]
         public JsonResult Reset(int bracketId, int matchNum)
         {
+            LoadAccount(Session);
             bool status = false;
             String message = "No action taken.";
             object data = new { };
 
-            if (Session["User.UserId"] != null)
+            if (account != null)
             {
                 BracketViewModel viewModel = new BracketViewModel(bracketId);
-                MatchViewModel matchViewModel = new MatchViewModel(viewModel.Bracket.GetMatchModel(matchNum));
 
-                if (viewModel.IsAdministrator((int)Session["User.UserId"]))
+                if (viewModel.IsAdministrator(account.AccountId))
                 {
                     List<int> matchesAffected = viewModel.MatchesAffectedList(matchNum);
                     List<object> matchResponse = new List<object>();
-
+                    
                     viewModel.Bracket.ResetMatchScore(matchNum);
 
                     foreach (int match in matchesAffected)
                     {
-                        // Remove the games associated with this match.
-                        MatchViewModel matchModel = new MatchViewModel(viewModel.Bracket.GetMatch(match).Id);
-                        matchModel.RemoveGames();
-
-                        // Reset the model
-                        matchModel = new MatchViewModel(viewModel.Bracket.GetMatchModel(match));
-
-                        // Update this match in the database according to the reset from the bracket
-                        if (!matchModel.Update())
-                        {
-                            return Json("Unable to update match");
-                        }
-
-                        matchResponse.Add(JsonMatchResponse(matchModel.Match, true));
+                        matchResponse.Add(JsonMatchResponse(viewModel.Bracket.GetMatch(match), true));
                     }
 
                     status = true;
                     message = "Matches are reset";
                     data = matchResponse;
-
                 }
                 else
                 {
@@ -139,7 +118,6 @@ namespace WebApplication.Controllers
         {
             Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
             TournamentViewModel viewModel = new TournamentViewModel(json["tournamentId"]);
-            viewModel.ProcessTournament();
             IBracket bracket = viewModel.Tourny.Brackets[json["bracketNum"]];
 
             return Json(JsonConvert.SerializeObject(

@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplication.Models;
 using DatabaseLib;
+using Moq;
 
 namespace WebApplication.Tests.Models
 {
@@ -14,6 +15,9 @@ namespace WebApplication.Tests.Models
         public void Account_Fields_ApplyFields_SetsFieldsToModel()
         {
             // Arrange
+            Mock<DatabaseRepository> db = new Mock<DatabaseRepository>();
+            db.Setup(x => x.AddAccount(GenerateModel()));
+
             AccountViewModel viewModel = new AccountViewModel();
             AccountModel model = new AccountModel()
             {
@@ -35,6 +39,24 @@ namespace WebApplication.Tests.Models
 
             // Assert
             Assert.AreEqual<AccountModel>(model, viewModel.Account);
+        }
+
+
+
+        private AccountModel GenerateModel()
+        {
+            AccountModel model = new AccountModel()
+            {
+                CreatedOn = DateTime.Now,
+                Email = "UnitTesting@email.com",
+                FirstName = "Site",
+                LastName = "Admin",
+                Password = "123",
+                PermissionLevel = (int)Permission.SITE_ADMINISTRATOR,
+                Username = "SiteAdmin"
+            };
+
+            return model;
         }
     }
 }

@@ -377,11 +377,11 @@
                     standings.empty();
 
                     $.each(json.data.ranks, function (i, e) {
-                        html = "<ul class='position' data-columns='3'>";
-                        html += "<li class='column rank'>" + e.Rank + "</li>";
-                        html += "<li class='column name'>" + e.Name + "</li>";
-                        if (e.Score != -1) html += "<li class='column score'>" + (e.MatchScore > -1 ? e.MatchScore : "") + "</li>";
-                        html += "</ul>";
+                        html = "<ul class='position' data-columns='3'> ";
+                        html += "<li class='column rank'>" + e.Rank + "</li> ";
+                        html += "<li class='column name'>" + e.Name + "</li> ";
+                        if (e.Score != -1) html += "<li class='column score'>" + (e.MatchScore > -1 ? e.Wins + " - " + e.Losses + " - " + e.Ties : "") + "</li> ";
+                        html += "</ul> ";
 
                         standings.append(html);
                     });

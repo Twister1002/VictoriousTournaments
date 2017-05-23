@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Data.Entity;
+using System.Data.Sql;
 
 namespace DatabaseLib
 {
@@ -43,13 +44,13 @@ namespace DatabaseLib
         VictoriousEntities context;
 
         public Exception interfaceException;
-
+        private string connectionStringName;
         public DatabaseRepository(string name)
         {
             context = new VictoriousEntities(name);
             context.Configuration.LazyLoadingEnabled = false;
             context.Configuration.ProxyCreationEnabled = false;
-
+            connectionStringName = name;
             context.TournamentModels
                .Include(x => x.Brackets)
                .Load();
@@ -77,36 +78,36 @@ namespace DatabaseLib
 
             context.Configuration.ProxyCreationEnabled = false;
 
-            if (context.BracketTypeModels.Find(1) == null)
-            {
-                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 1, Type = BracketType.SINGLE, TypeName = "Single Elimination" });
-                context.SaveChanges();
-            }
-            if (context.BracketTypeModels.Find(2) == null)
-            {
-                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 2, Type = BracketType.DOUBLE, TypeName = "Double Elimination" });
-                context.SaveChanges();
-            }
-            if (context.BracketTypeModels.Find(3) == null)
-            {
-                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 3, Type = BracketType.ROUNDROBIN, TypeName = "Round Robin" });
-                context.SaveChanges();
-            }
-            if (context.BracketTypeModels.Find(4) == null)
-            {
-                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 4, Type = BracketType.RRGROUP, TypeName = "RR Group" });
-                context.SaveChanges();
-            }
-            if (context.BracketTypeModels.Find(5) == null)
-            {
-                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 5, Type = BracketType.GSLGROUP, TypeName = "GSL Group" });
-                context.SaveChanges();
-            }
-            if (context.BracketTypeModels.Find(6) == null)
-            {
-                context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 6, Type = BracketType.SWISS, TypeName = "Swiss" });
-                context.SaveChanges();
-            }
+            //if (context.BracketTypeModels.Find(1) == null)
+            //{
+            //    context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 1, Type = BracketType.SINGLE, TypeName = "Single Elimination" });
+            //    context.SaveChanges();
+            //}
+            //if (context.BracketTypeModels.Find(2) == null)
+            //{
+            //    context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 2, Type = BracketType.DOUBLE, TypeName = "Double Elimination" });
+            //    context.SaveChanges();
+            //}
+            //if (context.BracketTypeModels.Find(3) == null)
+            //{
+            //    context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 3, Type = BracketType.ROUNDROBIN, TypeName = "Round Robin" });
+            //    context.SaveChanges();
+            //}
+            //if (context.BracketTypeModels.Find(4) == null)
+            //{
+            //    context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 4, Type = BracketType.RRGROUP, TypeName = "RR Group" });
+            //    context.SaveChanges();
+            //}
+            //if (context.BracketTypeModels.Find(5) == null)
+            //{
+            //    context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 5, Type = BracketType.GSLGROUP, TypeName = "GSL Group" });
+            //    context.SaveChanges();
+            //}
+            //if (context.BracketTypeModels.Find(6) == null)
+            //{
+            //    context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 6, Type = BracketType.SWISS, TypeName = "Swiss" });
+            //    context.SaveChanges();
+            //}
 
 
         }
@@ -419,35 +420,34 @@ namespace DatabaseLib
 
         public DbError UpdateTournament(TournamentModel tournament, bool cascade = false)
         {
-            using (var db = new VictoriousEntities())
+
+            try
             {
-                try
+                //db.Configuration.ProxyCreationEnabled = false;
+
+                TournamentModel _tournament = context.TournamentModels.Find(tournament.TournamentID);
+
+                context.Entry(_tournament).CurrentValues.SetValues(tournament);
+
+                foreach (var bracket in _tournament.Brackets)
                 {
-                    //db.Configuration.ProxyCreationEnabled = false;
-
-                    TournamentModel _tournament = db.TournamentModels.Find(tournament.TournamentID);
-
-                    db.Entry(_tournament).CurrentValues.SetValues(tournament);
-
-                    foreach (var bracket in _tournament.Brackets)
+                    foreach (var match in bracket.Matches)
                     {
-                        foreach (var match in bracket.Matches)
-                        {
-                            match.Challenger = db.TournamentUserModels.Find(match.ChallengerID);
-                            match.Defender = db.TournamentUserModels.Find(match.DefenderID);
-                        }
+                        match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
+                        match.Defender = context.TournamentUserModels.Find(match.DefenderID);
                     }
+                }
 
-                    db.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    interfaceException = ex;
-                    WriteException(ex);
-                    return DbError.FAILED_TO_UPDATE;
-                }
-                return DbError.SUCCESS;
+                context.SaveChanges();
             }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+
         }
 
         public DbError DeleteTournament(int id)
@@ -514,6 +514,11 @@ namespace DatabaseLib
                         sqlparams.Add(new SqlParameter("@" + data.Key, val));
 
                     }
+                    else if (data.Key == "Title")
+                    {
+                        query += data.Key + " LIKE @" + data.Key;
+                        sqlparams.Add(new SqlParameter("@" + data.Key, "%" + val + "%"));
+                    }
                     else
                     {
                         query += data.Key + " = @" + data.Key;
@@ -532,7 +537,7 @@ namespace DatabaseLib
                 //    tournaments = context.TournamentModels.SqlQuery(query).ToList();
                 //}
 
-
+                
             }
             catch (Exception ex)
             {
@@ -838,7 +843,7 @@ namespace DatabaseLib
             try
             {
                 context.TournamentInviteModels.Add(tournamentInvite);
-                //AssignTournamentInviteCode(tournamentInvite);
+                AssignNewTournamentInviteCode(tournamentInvite);
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -850,7 +855,7 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
-        private bool AssignTournamentInviteCode(TournamentInviteModel tournamentInvite)
+        private bool AssignNewTournamentInviteCode(TournamentInviteModel tournamentInvite)
         {
             try
             {
@@ -860,6 +865,8 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
+                //interfaceException = ex;
+                WriteException(ex);
                 return false;
             }
             return true;

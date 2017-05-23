@@ -64,49 +64,40 @@ namespace WebApplication.Controllers
 
                     if (tournamentModel.IsAdministrator(account.AccountId))
                     {
-                        tournamentModel.ProcessTournament();
-                        IBracket bracket = tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]);
-                        IMatch match = bracket.GetMatch(json["matchNum"]);
-                        BracketViewModel bracketModel = new BracketViewModel(bracket);
+                        BracketViewModel bracketModel = new BracketViewModel(tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]));
+                        MatchViewModel matchModel = new MatchViewModel(bracketModel.Bracket.GetMatch(json["matchNum"]));
                         Dictionary<int, bool> processed = new Dictionary<int, bool>();
 
                         // Verify these matches exists
                         foreach (GameViewModel gameModel in games)
                         {
                             // Tie game check
-                            if (match.IsFinished || gameModel.ChallengerScore == gameModel.DefenderScore)
+                            if (matchModel.Match.IsFinished || gameModel.ChallengerScore == gameModel.DefenderScore)
                             {
                                 processed.Add(gameModel.GameNumber, false);
                                 continue;
                             }
 
-                            if (!match.Games.Any(x => x.GameNumber == gameModel.GameNumber))
+                            if (!matchModel.Match.Games.Any(x => x.GameNumber == gameModel.GameNumber))
                             {
                                 // We need to add this game.
                                 PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
-                                GameModel addedGameModel = bracket.AddGame(match.MatchNumber, gameModel.DefenderScore, gameModel.ChallengerScore, winner);
+                                GameModel addedGameModel = bracketModel.Bracket.AddGame(matchModel.Match.MatchNumber, gameModel.DefenderScore, gameModel.ChallengerScore, winner);
                             }
                             else
                             {
                                 processed.Add(gameModel.GameNumber, false);
                             }
                         }
-
+                        
                         //  Load the Models
-                        MatchViewModel matchModel = new MatchViewModel(bracket.GetMatchModel(match.MatchNumber));
-                        MatchViewModel winnerMatchModel = matchModel.Match.NextMatchNumber != -1 ? new MatchViewModel(bracket.GetMatchModel(matchModel.Match.NextMatchNumber)) : null;
-                        MatchViewModel loserMatchModel = matchModel.Match.NextLoserMatchNumber != -1 ? new MatchViewModel(bracket.GetMatchModel(matchModel.Match.NextLoserMatchNumber)) : null;
-
-                        // Update the bracket in the database
-                        //DbError bracketUpdate = db.UpdateBracket(bracketModel.Model);
+                        matchModel.ReloadModel(bracketModel.Bracket.GetMatchModel(matchModel.Match.MatchNumber));
 
                         // Update the matches in the database
                         object currentMatchData = null;
                         object winnerMatchData = null;
                         object loserMatchData = null;
                         bool currentMatchUpdate = matchModel.Update();
-                        bool winnerMatchUpdate = winnerMatchModel != null ? winnerMatchModel.Update() : false;
-                        bool loserMatchUpdate = loserMatchModel != null ? loserMatchModel.Update() : false;
 
                         if (currentMatchUpdate)
                         {
@@ -114,14 +105,10 @@ namespace WebApplication.Controllers
                             message = "Current match was updated";
 
                             currentMatchData = JsonMatchResponse(matchModel.Match, false);
-                        }
-                        if (winnerMatchUpdate)
-                        {
-                            winnerMatchData = JsonMatchResponse(winnerMatchModel.Match, false);
-                        }
-                        if (loserMatchUpdate)
-                        {
-                            loserMatchData = JsonMatchResponse(loserMatchModel.Match, false);
+                            if (matchModel.Match.NextMatchNumber != -1)
+                                winnerMatchData = JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextMatchNumber), false);
+                            if (matchModel.Match.NextLoserMatchNumber != -1) 
+                                loserMatchData = JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextLoserMatchNumber), false);
                         }
 
                         // Prepare data

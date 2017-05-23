@@ -16,5 +16,10 @@ namespace WebApplication.Models
         {
             return new PlatformTypeViewModel();
         }
+
+        public BracketTypeViewModel LoadBracketTypes()
+        {
+            return new BracketTypeViewModel();
+        }
     }
 }

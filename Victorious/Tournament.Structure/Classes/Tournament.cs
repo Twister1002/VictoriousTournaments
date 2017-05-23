@@ -13,15 +13,11 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		public string Title
 		{ get; set; }
-		public string Description
-		{ get; set; }
 		public List<IPlayer> Players
 		{ get; private set; }
 		public List<IBracket> Brackets
 		{ get; private set; }
 		public float PrizePool
-		{ get; set; }
-		public bool IsPublic
 		{ get; set; }
 		#endregion
 
@@ -29,11 +25,9 @@ namespace Tournament.Structure
 		public Tournament()
 		{
 			Title = "";
-			Description = "";
 			Players = new List<IPlayer>();
 			Brackets = new List<IBracket>();
 			PrizePool = 0.0f;
-			IsPublic = false;
 		}
 		public Tournament(TournamentModel _model)
 		{
@@ -43,7 +37,6 @@ namespace Tournament.Structure
 			}
 
 			this.Title = _model.Title;
-			this.Description = _model.Description;
 
 			this.Players = new List<IPlayer>();
 			foreach (TournamentUserModel model in _model.TournamentUsers)
@@ -58,11 +51,11 @@ namespace Tournament.Structure
 			}
 
 			this.PrizePool = (float)(_model.PrizePurse);
-			this.IsPublic = _model.IsPublic;
 		}
 		#endregion
 
 		#region Public Methods
+		#region Player Methods
 		public int NumberOfPlayers()
 		{
 			if (null == Players)
@@ -215,7 +208,9 @@ namespace Tournament.Structure
 				bracket.ResetPlayers();
 			}
 		}
+		#endregion
 
+		#region Bracket Methods
 		public int NumberOfBrackets()
 		{
 			if (null == Brackets)
@@ -298,6 +293,7 @@ namespace Tournament.Structure
 			}
 			Brackets.Clear();
 		}
+		#endregion
 
 		#region Bracket Creation Methods
 		public void AddSingleElimBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1)

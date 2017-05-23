@@ -3,6 +3,10 @@
         &.form-section {
             li {
                 padding: .5em 0em;
+
+                .datepicker, .timepicker {
+                    width: 7em;
+                }
             }
 
             .input-validation-error {
@@ -20,32 +24,11 @@
 
         &.user-section {
             /*background-color: red;*/
-
-            .list-table-body {
-                > ul {
-                    padding: .25em 0em;
-
-                    li {
-                        vertical-align: middle;
-                    }
-                }
-
-                &.addUserRow {
-                    &.show {
-                        display: block;
-                    }
-
-                    display: none;
-                }
-            }
             .user {
-                position: relative;
-                padding: .5em 0em;
-                
-                &:hover {
-                    .user-options {
-                        display: block;
-                    }
+                padding: .25em 0em;
+
+                > li {
+                    vertical-align: middle;
                 }
             }
         }

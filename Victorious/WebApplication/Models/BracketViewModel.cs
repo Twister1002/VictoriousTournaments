@@ -35,18 +35,29 @@ namespace WebApplication.Models
         {
             Model = model;
             LoadBracket();
+            LoadEvents();
         }
 
         public BracketViewModel(IBracket bracket)
         {
             Bracket = bracket;
             Model = null;
+            LoadEvents();
         }
 
         public BracketViewModel(int id)
         {
             Model = db.GetBracket(id);
             LoadBracket();
+            LoadEvents();
+        }
+
+        private void LoadEvents()
+        {
+            Bracket.MatchesModified += OnMatchesUpdated;
+            Bracket.RoundAdded += OnRoundAdd;
+            Bracket.RoundDeleted += OnRoundDelete;
+            Bracket.GamesDeleted += OnGamesDeleted;
         }
 
         private void LoadBracket()
@@ -112,44 +123,6 @@ namespace WebApplication.Models
         {
             //Model = model;
             return db.UpdateBracket(model) == DbError.SUCCESS;
-        }
-
-        public bool ResetBracket()
-        {
-            DbError result = DbError.SUCCESS;
-
-            // Delete the games first
-            for (int i = 1; i <= Bracket.NumberOfMatches; i++)
-            {
-                IMatch match = Bracket.GetMatch(i);
-
-                // Delete every game associated with this bracket
-                foreach (IGame game in match.Games)
-                {
-                    if (result == DbError.SUCCESS)
-                    {
-                        result = db.DeleteGame(game.Id);
-                    }
-                }
-            }
-
-            // Reset the bracket
-            Bracket.ResetMatches();
-
-            // Update every match with this bracket
-            for (int i = 1; i <= Bracket.NumberOfMatches; i++)
-            {
-                if (result == DbError.SUCCESS)
-                {
-                    result = db.UpdateMatch(Bracket.GetMatchModel(i));
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return result == DbError.SUCCESS;
         }
 
         public int TotalRounds()
@@ -273,61 +246,63 @@ namespace WebApplication.Models
             bool isPowerRule = IsPowerOfTwo(Bracket.Players.Count);
             int roundNum = 1;
 
-            if (Bracket.BracketType != BracketType.DOUBLE)
+            if (Bracket.NumberOfRounds > 1)
             {
-                for (int i = 0; i < Bracket.NumberOfRounds; i++) showMatches.Add(true);
-                return showMatches;
-            }
-
-            if (section == BracketSection.UPPER)
-            {
-                for (int i = 1; Bracket.GetRound(roundNum).Count != 0; i++)
+                if (Bracket.BracketType != BracketType.DOUBLE)
                 {
-                    bool show = false;
+                    for (int i = 0; i < Bracket.NumberOfRounds; i++) showMatches.Add(true);
+                    return showMatches;
+                }
 
-                    if (Bracket.Players.Count >= 8)
+                if (section == BracketSection.UPPER)
+                {
+                    for (int i = 1; Bracket.GetRound(roundNum).Count != 0; i++)
                     {
-                        if (isPowerRule)
+                        bool show = false;
+
+                        if (Bracket.Players.Count >= 8)
                         {
-                            if (i <= 2 || i % 2 == 0) show = true;
-                            else show = false;
+                            if (isPowerRule)
+                            {
+                                if (i <= 2 || i % 2 == 0) show = true;
+                                else show = false;
+                            }
+                            else
+                            {
+                                if (i <= 2 || i % 2 == 1) show = true;
+                                else show = false;
+                            }
                         }
                         else
                         {
-                            if (i <= 2 || i % 2 == 1) show = true;
-                            else show = false;
+                            show = true;
                         }
-                    }
-                    else
-                    {
-                        show = true;
-                    }
 
-                    showMatches.Add(show);
-                    if (show) roundNum++;
+                        showMatches.Add(show);
+                        if (show) roundNum++;
+                    }
                 }
-            }
-            else if (section == BracketSection.LOWER)
-            {
-                for (int i = 1; Bracket.GetLowerRound(roundNum).Count != 0; i++)
+                else if (section == BracketSection.LOWER)
                 {
-                    bool show = false;
-
-                    if (isPowerRule)
+                    for (int i = 1; Bracket.GetLowerRound(roundNum).Count != 0; i++)
                     {
-                        show = true;
-                    }
-                    else
-                    {
-                        if (i == 1) show = false;
-                        else show = true;
-                    }
+                        bool show = false;
 
-                    showMatches.Add(show);
-                    if (show) roundNum++;
+                        if (isPowerRule)
+                        {
+                            show = true;
+                        }
+                        else
+                        {
+                            if (i == 1) show = false;
+                            else show = true;
+                        }
+
+                        showMatches.Add(show);
+                        if (show) roundNum++;
+                    }
                 }
             }
-
             return showMatches;
         }
 
@@ -386,10 +361,49 @@ namespace WebApplication.Models
         }
         #endregion
 
-        #region events
-        delegate void RoundNumberChangedEvent(IBracket bracket) {
+        #region Events
+        public void OnMatchesUpdated(object sender, BracketEventArgs args)
+        {
+            foreach (MatchModel match in args.UpdatedMatches)
+            {
+                db.UpdateMatch(match);
+            }
 
+            foreach (int games in args.DeletedGameIDs)
+            {
+                db.DeleteGame(games);
+            }
         }
+
+        public void OnRoundAdd(object sender, BracketEventArgs args)
+        {
+            foreach (MatchModel match in args.UpdatedMatches)
+            {
+                db.AddMatch(match);
+            }
+        }
+        
+        public void OnRoundDelete(object sender, BracketEventArgs args)
+        {
+            foreach (int games in args.DeletedGameIDs)
+            {
+                db.DeleteGame(games);
+            }
+
+            foreach (MatchModel match in args.UpdatedMatches)
+            {
+                db.DeleteMatch(match.MatchID);
+            }
+        }
+
+        public void OnGamesDeleted(object sender, BracketEventArgs args)
+        {
+            foreach (int gameId in args.DeletedGameIDs)
+            {
+                db.DeleteGame(gameId);
+            }
+        }
+
         #endregion
     }
 }

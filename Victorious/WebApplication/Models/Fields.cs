@@ -82,15 +82,40 @@ namespace WebApplication.Models
 
         [DataType(DataType.DateTime)]
         [Display(Name = "CheckIn Start")]
-        public DateTime CheckinStart { get; set; }
+        public DateTime CheckinStartDate { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Name = "CheckIn Ends")]
-        public DateTime CheckinEnd { get; set; }
-        
+        public DateTime CheckinEndDate { get; set; }
+
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
+        public DateTime RegistrationStartTime { get; set; }
+
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
+        public DateTime RegistrationEndTime { get; set; }
+
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
+        public DateTime TournamentStartTime { get; set; }
+
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
+        public DateTime TournamentEndTime { get; set; }
+
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
+        public DateTime CheckinStartTime { get; set; }
+
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
+        public DateTime CheckinEndTime { get; set; }
+
         public List<BracketTypeModel> BracketTypes { get; protected set; }
         public List<GameTypeModel> GameTypes { get; protected set; }
         public List<PlatformModel> PlatformTypes { get; protected set; }
+        public List<TournamentUserModel> Users { get; set; }
 
         [Display(Name = "Bracket Type")]
         [Required(ErrorMessage ="Select a bracket type")]
@@ -104,8 +129,10 @@ namespace WebApplication.Models
         [Required(ErrorMessage = "Choose a platform")]
         public int PlatformType { get; set; } 
 
-        [Display(Name = "Public")]
-        public bool IsPublic { get; set; }
+        [Display(Name = "Public Viewing")]
+        public bool PublicViewing { get; set; }
+        [Display(Name = "Public Registation")]
+        public bool PublicRegistration { get; set; }
 
         public abstract void ApplyChanges();
         public abstract void SetFields();

@@ -216,6 +216,24 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(b.NumberOfMatches, b.GrandFinal.MatchNumber);
 		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("DEB CreateBracket")]
+		public void DEBCreateBracket_GeneratesFor20Players()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 20; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 3);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			var v = b.GetRound(2);
+			List<IMatch> roundOne = b.GetRound(1);
+			Assert.AreEqual(4, roundOne.Count);
+		}
 #endregion
 
 		[TestMethod]
@@ -252,8 +270,28 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(2, b.GetLowerRound(1).Count);
 		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("Bracket Accessors")]
+		[ExpectedException(typeof(InvalidIndexException))]
+		public void DEBGetLowerRound_ThrowsIndexException_WithNegativeInput()
+		{ 
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+			//b.CreateBracket();
 
-#region Bracket Progression
+			b.GetLowerRound(-1);
+			Assert.AreEqual(1, 2);
+		}
+
+
+		#region Bracket Progression
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB AddGame")]
@@ -940,6 +978,46 @@ namespace Tournament.Structure.Tests
 			int round = 2;
 			b.SetMaxGamesForWholeLowerRound(round, 5);
 			Assert.AreEqual(1, b.GetRound(round)[0].MaxGames);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("SetMaxGamesForWholeRound")]
+		[ExpectedException(typeof(ScoreException))]
+		public void DEBSMGFWLR_ThrowsScoreException_WithNegativeInput()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 16; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+
+			b.SetMaxGamesForWholeLowerRound(1, -1);
+			Assert.AreEqual(1, 2);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("SetMaxGamesForWholeRound")]
+		[ExpectedException(typeof(InactiveMatchException))]
+		public void DEBSMGFWLR_ThrowsInactiveMatch_WhenMatchIsFinished()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+			for (int n = 1; n < b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			b.SetMaxGamesForWholeLowerRound(1, 3);
+			Assert.AreEqual(1, 2);
 		}
 	}
 }

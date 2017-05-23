@@ -31,54 +31,48 @@ namespace Tournament.Structure
 		{
 			BracketType = BracketType.DOUBLE;
 		}
-#if false
-		public DoubleElimBracket(int _numPlayers)
-			: base(_numPlayers)
-		{
-			BracketType = BracketTypeModel.BracketType.DOUBLE;
-		}
-#endif
 		public DoubleElimBracket()
 			: this(new List<IPlayer>())
 		{ }
 		public DoubleElimBracket(BracketModel _model)
 			: base(_model)
 		{
-			this.IsFinished = false;
-			this.BracketType = BracketType.DOUBLE;
-
 			if (CalculateTotalLowerBracketMatches(Players.Count) > 0)
 			{
-				int numOfGrandFinal = _model.Matches.Count - 1;
-				int i = 0;
+				int numOfGrandFinal = _model.Matches.Count;
 
-				this.LowerMatches = new Dictionary<int, IMatch>();
+				//this.LowerMatches = new Dictionary<int, IMatch>();
 				foreach (MatchModel mm in _model.Matches)
 				{
-					if (i >= Matches.Count
-						&& i < numOfGrandFinal)
+					if (Matches.ContainsKey(mm.MatchNumber))
 					{
-						IMatch match = new Match(mm);
-						if (match.RoundIndex > NumberOfLowerRounds)
-						{
-							this.NumberOfLowerRounds = match.RoundIndex;
-						}
-						LowerMatches.Add(match.MatchNumber, match);
-						++NumberOfMatches;
+						// Case 1: match is upper bracket:
+						continue;
 					}
-					else if (i == numOfGrandFinal)
+					if (mm.MatchNumber == numOfGrandFinal)
 					{
+						// Case 2: match is grand final:
 						this.GrandFinal = new Match(mm);
-						++NumberOfMatches;
 					}
-
-					++i;
+					else
+					{
+						// Case 3: match is lower bracket:
+						IMatch match = new Match(mm);
+						LowerMatches.Add(match.MatchNumber, match);
+						this.NumberOfLowerRounds = Math.Max(NumberOfLowerRounds, match.RoundIndex);
+					}
+				}
+				this.NumberOfMatches = Matches.Count + LowerMatches.Count;
+				if (null != GrandFinal)
+				{
+					++NumberOfMatches;
 				}
 			}
 
 			UpdateRankings();
-			if (GrandFinal.IsFinished)
+			if (null != GrandFinal && GrandFinal.IsFinished)
 			{
+				// Add GrandFinal results to Rankings:
 				IPlayer winningPlayer = GrandFinal.Players[(int)GrandFinal.WinnerSlot];
 				Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
 				IPlayer losingPlayer = GrandFinal.Players[
@@ -96,11 +90,12 @@ namespace Tournament.Structure
 		#region Public Methods
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
-			base.CreateBracket(_gamesPerMatch);
-			if (0 == NumberOfMatches)
+			if (Players.Count < 4)
 			{
 				return;
 			}
+
+			base.CreateBracket(_gamesPerMatch);
 
 			List<List<IMatch>> roundList = new List<List<IMatch>>();
 			int totalMatches = CalculateTotalLowerBracketMatches(Players.Count);
@@ -234,49 +229,6 @@ namespace Tournament.Structure
 			}
 		}
 
-#if false
-		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
-		{
-			GameModel gameModel = base.AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
-			return gameModel;
-		}
-#endif
-#if false
-		public override void RemoveLastGame(int _matchNumber)
-		{
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
-			if (match.IsFinished)
-			{
-				PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
-					? PlayerSlot.Challenger
-					: PlayerSlot.Defender;
-				RemovePlayerFromFutureMatches
-					(nextLoserNumber, ref match.Players[(int)loserSlot]);
-			}
-
-			base.RemoveLastGame(_matchNumber);
-		}
-		public override void ResetMatchScore(int _matchNumber)
-		{
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
-			if (match.IsFinished)
-			{
-				PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
-					? PlayerSlot.Challenger
-					: PlayerSlot.Defender;
-				RemovePlayerFromFutureMatches
-					(match.NextLoserMatchNumber, ref match.Players[(int)loserSlot]);
-			}
-
-			base.ResetMatchScore(_matchNumber);
-		}
-#endif
 		public override void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch)
 		{
 			if (0 == _maxGamesPerMatch)
@@ -308,16 +260,6 @@ namespace Tournament.Structure
 					{
 						rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
 					}
-#if false
-					else if (null != Matches && Matches.ContainsKey(_matchNumber))
-					{
-						rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
-					}
-					else if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
-					{
-						rank = 2;
-					}
-#endif
 
 					Rankings.Add(new PlayerScore
 						(match.Players[(int)loserSlot].Id,
@@ -338,8 +280,9 @@ namespace Tournament.Structure
 				UpdateRankings();
 			}
 		}
-		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
+			List<MatchModel> alteredMatches = new List<MatchModel>();
 
 			int nextWinnerNumber;
 			int nextLoserNumber;
@@ -347,7 +290,7 @@ namespace Tournament.Structure
 
 			if (match.IsFinished)
 			{
-				base.ApplyWinEffects(_matchNumber, _slot);
+				alteredMatches.AddRange(base.ApplyWinEffects(_matchNumber, _slot));
 
 				if (nextLoserNumber > 0)
 				{
@@ -362,28 +305,35 @@ namespace Tournament.Structure
 						if (_matchNumber == nextMatch.PreviousMatchNumbers[i])
 						{
 							GetMatch(nextLoserNumber).AddPlayer(match.Players[(int)loserSlot], (PlayerSlot)i);
+							alteredMatches.Add(GetMatchModel(nextLoserNumber));
 							break;
 						}
 					}
 				}
 			}
+
+			return alteredMatches;
 		}
-		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
+		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
+			List<MatchModel> alteredMatches = new List<MatchModel>();
+
 			int nextWinnerNumber;
 			int nextLoserNumber;
 			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
 			if (match.WinnerSlot != _formerMatchWinnerSlot)
 			{
-				base.ApplyGameRemovalEffects(_matchNumber, _games, _formerMatchWinnerSlot);
+				alteredMatches.AddRange(base.ApplyGameRemovalEffects(_matchNumber, _games, _formerMatchWinnerSlot));
 
 				PlayerSlot loserSlot = (_formerMatchWinnerSlot == PlayerSlot.Defender)
 					? PlayerSlot.Challenger
 					: PlayerSlot.Defender;
-				RemovePlayerFromFutureMatches
-					(nextLoserNumber, match.Players[(int)loserSlot].Id);
+				alteredMatches.AddRange(RemovePlayerFromFutureMatches
+					(nextLoserNumber, match.Players[(int)loserSlot].Id));
 			}
+
+			return alteredMatches;
 		}
 
 		private int CalculateTotalLowerBracketMatches(int _numPlayers)
@@ -409,11 +359,13 @@ namespace Tournament.Structure
 			return (normalizedPlayers - 2);
 		}
 
-		protected override void RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
+		protected override List<MatchModel> RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 		{
+			List<MatchModel> alteredMatches = new List<MatchModel>();
+
 			if (_matchNumber < 1 || _playerId == -1)
 			{
-				return;
+				return alteredMatches;
 			}
 
 			int nextWinnerNumber;
@@ -430,14 +382,18 @@ namespace Tournament.Structure
 						? PlayerSlot.Challenger
 						: PlayerSlot.Defender;
 
-					RemovePlayerFromFutureMatches
-						(nextWinnerNumber, match.Players[(int)(match.WinnerSlot)].Id);
-					RemovePlayerFromFutureMatches
-						(nextLoserNumber, match.Players[(int)loserSlot].Id);
+					alteredMatches.AddRange(RemovePlayerFromFutureMatches
+						(nextWinnerNumber, match.Players[(int)(match.WinnerSlot)].Id));
+					alteredMatches.AddRange(RemovePlayerFromFutureMatches
+						(nextLoserNumber, match.Players[(int)loserSlot].Id));
 				}
 
+				OnGamesDeleted(match.Games);
 				GetMatch(_matchNumber).RemovePlayer(_playerId);
 			}
+			alteredMatches.Add(GetMatchModel(match.MatchNumber));
+
+			return (alteredMatches.OrderBy(m => m.MatchNumber).ToList());
 		}
 
 		protected override void UpdateRankings()
