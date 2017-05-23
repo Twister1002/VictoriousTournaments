@@ -41,7 +41,7 @@ namespace DatabaseLib.Tests
         {
             var db = new DatabaseRepository("VictoriousEntities");
 
-            TournamentInviteModel invite = db.GetTournamentInvite("10003");
+            TournamentInviteModel invite = db.GetTournamentInvite("10005");
             invite.IsExpired = true;
             var result = db.UpdateTournamentInvite(invite);
 

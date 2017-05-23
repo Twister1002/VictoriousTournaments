@@ -37,9 +37,11 @@ namespace DatabaseLib.Tests
         {
             var db = new DatabaseRepository("VictoriousEntities");
 
-            var tournament = NewTournament();
+            //var tournament = NewTournament();
+            var tournament = db.GetAllTournaments()[0];
             db.AddTournament(tournament);
             tournament.Description = "Test Me";
+            tournament.InviteCode = "10007";
             db.UpdateTournament(tournament);
             var t = db.GetTournament(tournament.TournamentID);
 
