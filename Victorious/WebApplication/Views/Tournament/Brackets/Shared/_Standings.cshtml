@@ -12,7 +12,7 @@
             var bracket = Model.Model.Brackets.ElementAt(i);
             Tournament.Structure.IBracket tourny = new Tournament.Structure.SingleElimBracket();
             if (i < Model.Tourny.Brackets.Count) { tourny = Model.Tourny.Brackets.ElementAt(i); }
-            
+
             <div class="bracketData" data-bracket="@i">
                 <ul class="list-table">
                     <li class="list-table-header">
@@ -30,20 +30,28 @@
                             @if (ViewBag.isAdministrator)
                             {
                                 <li class="column">Present</li>
-                                    <li class="column">Actions</li>
+                                <li class="column">Actions</li>
                             }
                         </ul>
                         @{
                             var people = Model.Model.TournamentUsers.OrderBy(x => x.PermissionLevel);
                             foreach (var person in people)
                             {
-                                <ul class="data" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 4 : 2)">
+                                <ul class="data" data-userid="@person.TournamentUserID" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 4 : 2)">
                                     <li class="column">@person.Name</li>
                                     <li class="column">@person.PermissionLevel</li>
                                     @if (ViewBag.isAdministrator)
                                     {
-                                        <li class="column"><span class="icon icon-checkmark @(Model.isUserCheckedIn(person.TournamentUserID) ? "green" : "red")"></span></li>
-                                            <li class="column">Actions</li>
+                                        String colorCode = Model.isUserCheckedIn(person.TournamentUserID) ? "green" : "red";
+                                        if (Model.IsUserAdministrator(person.TournamentUserID))
+                                        {
+                                            colorCode = "";
+                                        }
+
+                                        <li class="column">
+                                            <span class="icon icon-checkmark @colorCode checkIn"></span>
+                                        </li>
+                                        <li class="column">Actions</li>
                                     }
                                 </ul>
                             }

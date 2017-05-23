@@ -526,6 +526,36 @@ namespace WebApplication.Models
             return TournamentPermission(accountId) == Permission.TOURNAMENT_CREATOR;
         }
 
+        public Permission UserPermission(int tournamentUserId)
+        {
+            TournamentUserModel model =
+                Model.TournamentUsers.FirstOrDefault(x =>
+                x.TournamentUserID == tournamentUserId);
+
+            if (model != null)
+            {
+                return (Permission)model.PermissionLevel;
+            }
+            else
+            {
+                return Permission.NONE;
+            }
+        }
+
+        public bool IsUserAdministrator(int tournamentUserId)
+        {
+            Permission permission = UserPermission(tournamentUserId);
+            if (permission == Permission.TOURNAMENT_ADMINISTRATOR ||
+                permission == Permission.TOURNAMENT_CREATOR)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public object ChangePermission(AccountModel account, int tournamentUserId, String action)
         {
             bool status = false;

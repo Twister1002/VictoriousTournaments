@@ -108,59 +108,6 @@
                 </li>
             </ul>
         </div>
-        <div class="section user-section">
-            <h2>
-                User Information
-                @if (!Model.Model.InProgress)
-                {
-                    <span class="icon icon-plus addUser"></span>
-                }
-            </h2>
-            <ul class="list-table">
-                <li class="list-table-header">
-                    <ul class="border" data-columns="4">
-                        <li class="column">Name/Email</li>
-                        <li class="column">Involvement</li>
-                        <li class="column">Checked In</li>
-                        <li class="column">Actions</li>
-                    </ul>
-                </li>
-                <li class="list-table-body users">
-                    @foreach (var user in Model.Administrators) // Display the Admins first
-                {
-                        <ul class="user border" data-user="@user.TournamentUserID" data-columns="4">
-                            <li class="column name">@user.Name</li>
-                            <li class="column permission">Admin</li>
-                            <li class="column"><span class='icon icon-checkmark'></span></li>
-                            <li class="column actions">
-                                @if ((Model.IsCreator(userId) && user.AccountID != userId) && Model.CanEdit())
-                                {
-                                    <button class="demote">Demote</button>
-                                }
-                            </li>
-                        </ul>
-                    }
-                    @foreach (var user in Model.Participants) // Display the Participats Second
-                {
-                        <ul class="user border" data-user="@user.TournamentUserID" data-columns="4">
-                            <li class="column name">@user.Name</li>
-                            <li class="column permission">Participant</li>
-                            <li class="column"><span class='icon icon-checkmark checkedIn @(Model.isUserCheckedIn(user.TournamentUserID) ? "green" : "red")'></span></li>
-                            <li class="column actions">
-                                @if (Model.IsCreator(userId) && user.AccountID != null && Model.CanEdit())
-                                {
-                                    <button class="promote">Promote</button>
-                                }
-                                @if (Model.IsAdministrator(userId) && Model.CanEdit())
-                                {
-                                    <button class="demote">Remove</button>
-                                }
-                            </li>
-                        </ul>
-                    }
-                </li>
-            </ul>
-        </div>
         <div class="section">
             @if (!Model.Model.InProgress)
             {

@@ -118,6 +118,7 @@
     $(".TournamentInfo .bracketNum").on("click", BracketNumberSelected);
     // Tournament Infomation
     $(".TournamentInfo .selection.info").on("click", InfoSelected);
+    $(".TournamentInfo .playerInfo .checkIn").on("click", CheckUserIn);
 
     function BracketNumberSelected() {
         var bracketId = $(this).data("bracket");
@@ -133,5 +134,36 @@
 
         $(this).addClass("show").siblings().removeClass("show");
         bracket.find("." + info).addClass("show").siblings().removeClass("show");
+    }
+
+    function CheckUserIn() {
+        var $this = $(this);
+
+        $.ajax({
+            "url": "/Ajax/Tournament/CheckIn",
+            "type": "post",
+            "data": { "tournamentId": $("#Tournament").data("id"), "tournamentUserId": $(this).closest(".data").data("userid") },
+            "dataType": "json",
+            "beforeSend": function () {
+                $this.off("click");
+            },
+            "success": function (json) {
+                json = JSON.parse(json);
+
+                if (json.status) {
+                    $this.removeClass("green");
+                    $this.removeClass("red");
+                    $this.addClass(json.isCheckedIn ? "green" : "red");
+                }
+
+                console.log(json.message);
+            },
+            "error": function (json) {
+                console.log(json);
+            },
+            "complete": function () {
+                $this.on("click", CheckUserIn)
+            }
+        });
     }
 });
