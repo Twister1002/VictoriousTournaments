@@ -44,6 +44,7 @@
         var nextGameNumber = $(gameList.find(".games ul")[gamesListed - 1]).data("gamenum") + 1;
 
         jsonData = {
+            "id": -1,
             "gameNum": (isNaN(nextGameNumber) ? 1 : nextGameNumber),
             "challenger": { "score": "" },
             "defender": { "score": "" }
@@ -82,10 +83,6 @@
                     console.log(json);
                     $games = matchElem.find(".TournamentGames");
 
-                    // Add the currently fetched games
-                    $.each(json.data.games, function (i, e) {
-                        AddGameToDetails(e, matchElem.find(".TournamentGames"));
-                    });
                     MatchUpdate(json.data, matchElem);
                     MatchOptionsUpdate(json.data, $games);
                 }
@@ -248,6 +245,11 @@
         // Update the Game data 
         games.find(".defender.name").text(json.defender.name);
         games.find(".challenger.name").text(json.challenger.name);
+
+        games.find(".games").empty();
+        $.each(json.games, function (i, e) {
+            AddGameToDetails(e, games);
+        });
 
         // Verify if the match is ready
         if (json.ready) {

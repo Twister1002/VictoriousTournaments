@@ -56,6 +56,7 @@ namespace WebApplication.Models
         public void ReloadModel(MatchModel model)
         {
             Model = model;
+            Match = new Match(model);
         }
 
         // Acquires data from the database if the objects are null
