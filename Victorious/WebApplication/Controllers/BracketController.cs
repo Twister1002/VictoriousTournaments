@@ -80,8 +80,17 @@ namespace WebApplication.Controllers
                 {
                     List<int> matchesAffected = viewModel.MatchesAffectedList(matchNum);
                     List<object> matchResponse = new List<object>();
-                    
-                    viewModel.Bracket.ResetMatchScore(matchNum);
+
+                    GameViewModel gameModel;
+                    List<GameModel> games = viewModel.Bracket.ResetMatchScore(matchNum);
+
+                    // Remove the games from the current match.
+                    foreach (GameModel game in games)
+                    {
+                        // Delete the games
+                        gameModel = new GameViewModel(game);
+                        gameModel.Delete();
+                    }
 
                     foreach (int match in matchesAffected)
                     {
