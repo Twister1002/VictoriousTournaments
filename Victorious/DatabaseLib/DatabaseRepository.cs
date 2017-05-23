@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Data.Entity;
+using System.Data.Sql;
 
 namespace DatabaseLib
 {
@@ -419,35 +420,34 @@ namespace DatabaseLib
 
         public DbError UpdateTournament(TournamentModel tournament, bool cascade = false)
         {
-            using (var dbTemp = new VictoriousEntities(connectionStringName))
+
+            try
             {
-                try
+                //db.Configuration.ProxyCreationEnabled = false;
+
+                TournamentModel _tournament = context.TournamentModels.Find(tournament.TournamentID);
+
+                context.Entry(_tournament).CurrentValues.SetValues(tournament);
+
+                foreach (var bracket in _tournament.Brackets)
                 {
-                    //db.Configuration.ProxyCreationEnabled = false;
-
-                    TournamentModel _tournament = dbTemp.TournamentModels.Find(tournament.TournamentID);
-
-                    dbTemp.Entry(_tournament).CurrentValues.SetValues(tournament);
-
-                    foreach (var bracket in _tournament.Brackets)
+                    foreach (var match in bracket.Matches)
                     {
-                        foreach (var match in bracket.Matches)
-                        {
-                            match.Challenger = dbTemp.TournamentUserModels.Find(match.ChallengerID);
-                            match.Defender = dbTemp.TournamentUserModels.Find(match.DefenderID);
-                        }
+                        match.Challenger = context.TournamentUserModels.Find(match.ChallengerID);
+                        match.Defender = context.TournamentUserModels.Find(match.DefenderID);
                     }
+                }
 
-                    dbTemp.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    interfaceException = ex;
-                    WriteException(ex);
-                    return DbError.FAILED_TO_UPDATE;
-                }
-                return DbError.SUCCESS;
+                context.SaveChanges();
             }
+            catch (Exception ex)
+            {
+                interfaceException = ex;
+                WriteException(ex);
+                return DbError.FAILED_TO_UPDATE;
+            }
+            return DbError.SUCCESS;
+
         }
 
         public DbError DeleteTournament(int id)
@@ -514,6 +514,11 @@ namespace DatabaseLib
                         sqlparams.Add(new SqlParameter("@" + data.Key, val));
 
                     }
+                    else if (data.Key == "Title")
+                    {
+                        query += data.Key + " LIKE @" + data.Key;
+                        sqlparams.Add(new SqlParameter("@" + data.Key, "%" + val + "%"));
+                    }
                     else
                     {
                         query += data.Key + " = @" + data.Key;
@@ -532,7 +537,7 @@ namespace DatabaseLib
                 //    tournaments = context.TournamentModels.SqlQuery(query).ToList();
                 //}
 
-
+                
             }
             catch (Exception ex)
             {
@@ -838,7 +843,7 @@ namespace DatabaseLib
             try
             {
                 context.TournamentInviteModels.Add(tournamentInvite);
-                //AssignTournamentInviteCode(tournamentInvite);
+                AssignNewTournamentInviteCode(tournamentInvite);
                 context.SaveChanges();
             }
             catch (Exception ex)
@@ -850,7 +855,7 @@ namespace DatabaseLib
             return DbError.SUCCESS;
         }
 
-        private bool AssignTournamentInviteCode(TournamentInviteModel tournamentInvite)
+        private bool AssignNewTournamentInviteCode(TournamentInviteModel tournamentInvite)
         {
             try
             {

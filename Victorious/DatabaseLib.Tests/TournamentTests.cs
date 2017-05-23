@@ -151,6 +151,22 @@ namespace DatabaseLib.Tests
             Assert.AreEqual(count, result);
         }
 
+        [TestMethod]
+        public void Search_Tournaments_Fuzzy_Search()
+        {
+            var db = new DatabaseRepository("VictoriousEntities");
+
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            //dict.Add("TournamentStartDate", DateTime.Today.ToString());
+            dict.Add("Title", "Test");
+            tournaments = db.FindTournaments(dict);
+            var result = tournaments.Count;
+
+            Assert.AreEqual(5, result);
+            
+        }
+
         //[TestMethod]
         //public void Add_Invite_Code_GUID()
         //{
