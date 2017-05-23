@@ -54,7 +54,7 @@ namespace Tournament.Structure
 			this.Id = _id;
 			this.Name = _name;
 			this.Rank = _rank;
-			//MatchRecord = new PlayerRecord();
+			MatchRecord = new PlayerRecord();
 			OpponentsScore = GameScore = PointsScore = -1;
 		}
 		/// <summary>
