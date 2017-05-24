@@ -1,5 +1,11 @@
 ﻿jQuery(document).ready(function () {
     var $ = jQuery;
+    var permissionDictionary = {
+        100: "Creator",
+        101: "Admin",
+        102: "Participant",
+        0: "None"
+    };
 
     // Redirect to update
     $(".tournament-update").on("click", function () {
@@ -119,6 +125,8 @@
     // Tournament Infomation
     $(".TournamentInfo .selection.info").on("click", InfoSelected);
     $(".TournamentInfo .playerInfo .checkIn").on("click", CheckUserIn);
+    // Permission Buttions
+    $(".TournamentInfo .playerInfo .user .promote, .TournamentInfo .playerInfo .user .demote").on("click", PermissionAction);
 
     function BracketNumberSelected() {
         var bracketId = $(this).data("bracket");
@@ -142,7 +150,7 @@
         $.ajax({
             "url": "/Ajax/Tournament/CheckIn",
             "type": "post",
-            "data": { "tournamentId": $("#Tournament").data("id"), "tournamentUserId": $(this).closest(".data").data("userid") },
+            "data": { "tournamentId": $("#Tournament").data("id"), "tournamentUserId": $(this).closest(".data").data("user") },
             "dataType": "json",
             "beforeSend": function () {
                 $this.off("click");
@@ -166,4 +174,78 @@
             }
         });
     }
+
+    function PermissionAction(e, action) {
+        userElement = $(this).closest(".user");
+        jsonData = {
+            "TournamentId": $("#Tournament").data("id"),
+            "targetUser": userElement.data("user"),
+            "action": action ? action : $(this).attr("class")
+        }
+
+        if (jsonData.targetUser == -1) {
+            userElement.remove();
+        }
+        else {
+            $.ajax({
+                "url": "/Ajax/Tournament/PermissionChange",
+                "type": "POST",
+                "data": jsonData,
+                "dataType": "json",
+                "beforeSend": function () {
+                    // Prevent buttons from being clicked again
+                    userElement.find(".actions").find("button").attr("disabled", true);
+                    userElement.find(".promote").off("click");
+                    userElement.find(".demote").off("click");
+                },
+                "success": function (json) {
+                    json = JSON.parse(json);
+                    if (json.status) {
+                        if (json.data.Permission == 0) {
+                            userElement.remove();
+                        }
+                        else {
+                            var actions = userElement.find(".actions");
+                            actions.html(PermissionButtons(json.data.permissions));
+
+                            userElement.find(".permission").text(permissionDictionary[json.data.permissions.Permission]);
+                            userElement.find(".checkedIn").removeClass("red green").addClass(json.data.isCheckedIn ? "green" : "red");
+                        }
+                    }
+
+                    console.log(json);
+                },
+                "error": function (json) {
+                    alert(json.message);
+                },
+                "complete": function () {
+                    userElement.find(".promote, .demote").on("click", PermissionAction);
+                    userElement.find(".actions").find("button").attr("disabled", false);
+                }
+            });
+        }
+    }
+
+    function PermissionButtons(actions) {
+        html = "";
+        demoteButton = " <button class='demote'>Demote</button> ";
+        promoteButton = " <button class='promote'>Promote</button> ";
+        removeButton = " <button class='remove'>Remove</button> ";
+
+        if (actions.Promote) html += promoteButton;
+        if (actions.Demote) html += demoteButton;
+        if (actions.Remove) html += removeButton;
+
+        return html;
+    }
+
+    (function ($) {
+        if ($(".TournamentInfo").length == 1) {
+            // Load everyone's permission level
+            var permission = $(".TournamentInfo .playerInfo .user .permission");
+            $.each(permission, function (i, e) {
+                $(e).text(permissionDictionary[$(e).text()]);
+            });
+        }
+    })($);
 });

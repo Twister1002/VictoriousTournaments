@@ -25,4 +25,18 @@
     $("#TournamentStartDate").on("change", function () {
         $("#TournamentEndDate").datepicker("option", "minDate", new Date($(this).val()));
     });
+
+
+    function Ajax(path, data, beforeSend, success, error, complete) {
+        $.ajax({
+            "url": path,
+            "type": "POST",
+            "data": data,
+            "dataType": "json",
+            "beforeSend": beforeSend,
+            "success": success,
+            "error": error,
+            "complete": complete
+        });
+    }
 });

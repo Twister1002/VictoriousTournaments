@@ -495,22 +495,42 @@ namespace WebApplication.Controllers
         public JsonResult PermissionChange(int TournamentId, int targetUser, String action)
         {
             LoadAccount(Session);
+            bool status = false;
+            String message = "No action taken";
+            object data = new { };
+
             if (account != null)
             {
                 TournamentViewModel viewModel = new TournamentViewModel(TournamentId);
 
-                object permissionChange = viewModel.ChangePermission(account.Account, targetUser, action);
-
-                return Json(JsonConvert.SerializeObject(permissionChange));
+                Dictionary<String, int> permissionChange = viewModel.PermissionAction(account.AccountId, targetUser, action);
+                if (permissionChange == null)
+                {
+                    status = false;
+                    message = "An unexpected error occured";
+                }
+                else
+                {
+                    data = new
+                    {
+                        permissions = permissionChange,
+                        isCheckedIn = viewModel.isUserCheckedIn(targetUser)
+                    };
+                    message = "Permissions are updated";
+                    status = true;
+                }
             }
             else
             {
-                return Json(JsonConvert.SerializeObject(new
-                {
-                    status = false,
-                    message = "You must be logged in to do this action"
-                }));
+                message = "You must be logged in to do this action";
             }
+
+            return Json(JsonConvert.SerializeObject(new
+            {
+                status = status,
+                message = message,
+                data = data
+            }));
         }
     }
 }

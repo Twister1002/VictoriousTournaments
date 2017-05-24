@@ -2,16 +2,14 @@
 
 <div class="TournamentInfo">
     <span class="icon icon-cross close"></span>
-    <div class="details" data-columns="@Model.Model.Brackets.Count">
-        @for (int i = 0; i < Model.Model.Brackets.Count; i++)
+    <div class="details" data-columns="@Model.Tourny.Brackets.Count">
+        @for (int i = 0; i < Model.Tourny.Brackets.Count; i++)
         {
             <div class="bracketNum column" data-bracket="@i">@i</div>
         }
-        @for (int i = 0; i < Model.Model.Brackets.Count; i++)
+        @for (int i = 0; i < Model.Tourny.Brackets.Count; i++)
         {
-            var bracket = Model.Model.Brackets.ElementAt(i);
-            Tournament.Structure.IBracket tourny = new Tournament.Structure.SingleElimBracket();
-            if (i < Model.Tourny.Brackets.Count) { tourny = Model.Tourny.Brackets.ElementAt(i); }
+            var bracket = Model.Tourny.Brackets.ElementAt(i);
 
             <div class="bracketData" data-bracket="@i">
                 <ul class="list-table">
@@ -37,13 +35,15 @@
                             var people = Model.Model.TournamentUsers.OrderBy(x => x.PermissionLevel);
                             foreach (var person in people)
                             {
-                                <ul class="data" data-userid="@person.TournamentUserID" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 4 : 2)">
-                                    <li class="column">@person.Name</li>
-                                    <li class="column">@person.PermissionLevel</li>
+                                Dictionary<String, int> data = Model.PermissionAction(ViewBag.UserId, person.TournamentUserID, "default");
+
+                                <ul class="data user" data-user="@person.TournamentUserID" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 4 : 2)">
+                                    <li class="column name">@person.Name</li>
+                                    <li class="column permission">@person.PermissionLevel</li>
                                     @if (ViewBag.isAdministrator)
                                     {
                                         String colorCode = Model.isUserCheckedIn(person.TournamentUserID) ? "green" : "red";
-                                        if (Model.IsUserAdministrator(person.TournamentUserID))
+                                        if (Model.IsUserCreator(person.TournamentUserID))
                                         {
                                             colorCode = "";
                                         }
@@ -51,7 +51,20 @@
                                         <li class="column">
                                             <span class="icon icon-checkmark @colorCode checkIn"></span>
                                         </li>
-                                        <li class="column">Actions</li>
+                                        <li class="column actions">
+                                            @if (data["Promote"] == 1)
+                                            {
+                                                <button class="promote">Promote</button>
+                                            }
+                                            @if (data["Demote"] == 1)
+                                            {
+                                                <button class="demote">Demote</button>
+                                            }
+                                            @if (data["Remove"] == 1)
+                                            {
+                                                <button class="demote">Remove</button>
+                                            }
+                                        </li>
                                     }
                                 </ul>
                             }
@@ -64,7 +77,7 @@
                             <li class="column">Name</li>
                             <li class="column">Score</li>
                         </ul>
-                        @foreach (var rank in tourny.Rankings)
+                        @foreach (var rank in bracket.Rankings)
                         {
                             <ul class="data" data-columns="3">
                                 <li class="column">@rank.Rank</li>
@@ -75,7 +88,8 @@
                     </li>
 
                     <li class="list-table-body infoSection resetInfo">
-                        Are you sure you want to reset this bracket?
+                        Are you sure you want to reset this bracket? This can not be reverted.
+                        <button type="button" class="reset-bracket">Reset</button>
                     </li>
                 </ul>
             </div>
