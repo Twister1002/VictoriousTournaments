@@ -127,6 +127,12 @@
     $(".TournamentInfo .playerInfo .checkIn").on("click", CheckUserIn);
     // Permission Buttions
     $(".TournamentInfo .playerInfo .user .promote, .TournamentInfo .playerInfo .user .demote").on("click", PermissionAction);
+    $(".TournamentInfo .playerInfo .userAddData .addUserButton").on("click", AddUserToTournament);
+    $(".TournamentInfo .playerInfo .userAddData .name").on("keydown", function (e) {
+        if (e.keyCode == 13) {
+            AddUserToTournament(this);
+        }
+    });
 
     function BracketNumberSelected() {
         var bracketId = $(this).data("bracket");
@@ -201,7 +207,7 @@
                 "success": function (json) {
                     json = JSON.parse(json);
                     if (json.status) {
-                        if (json.data.Permission == 0) {
+                        if (json.data.permissions.Permission == 0) {
                             userElement.remove();
                         }
                         else {
@@ -237,6 +243,44 @@
         if (actions.Remove) html += removeButton;
 
         return html;
+    }
+
+    function AddUserToTournament(e) {
+        $this = e ? $(e) : $(this);
+        var row = $this.closest(".userAddData");
+
+        $.ajax({
+            "url": "/Ajax/Tournament/Register",
+            "type": "post",
+            "data": { "tournamentId": $("#Tournament").data("id"), "name": row.find(".name input").val() },
+            "dataType": "json",
+            "beforeSend": function () {
+                row.find(".addUserButton").attr("disabled", true);
+            },
+            "success": function (json) {
+                json = JSON.parse(json);
+
+                if (json.status) {
+                    html = "<ul class='data user' data-user='" + json.data.user.TournamentUserId + "' data-columns='4'> ";
+                    html += "<li class='column name'>" + json.data.user.Name + "</li> ";
+                    html += "<li class='column permission'>" + permissionDictionary[json.data.user.Permission] + "</li> ";
+                    html += "<li class='column'><span class='icon icon-checkmark red'></span></li> ";
+                    html += "<li class='column actions'>"+PermissionButtons(json.data.actions)+"</li> ";
+                    html += "</ul> ";
+
+                    row.after(html);
+                    row.find(".name input").val('')
+                }
+
+                console.log(json.message);
+            },
+            "error": function (json) {
+                console.log(json);
+            },
+            "complete": function () {
+                row.find(".addUserButton").attr("disabled", false);
+            }
+        });
     }
 
     (function ($) {

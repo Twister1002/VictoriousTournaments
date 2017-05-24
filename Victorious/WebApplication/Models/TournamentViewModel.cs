@@ -201,6 +201,27 @@ namespace WebApplication.Models
             return createResult == DbError.SUCCESS;
         }
 
+        public TournamentUserModel AddUser(String name)
+        {
+            bool isEmail = false;
+            DbError result = DbError.NONE;
+            TournamentUserModel userModel = null;
+
+            if (!isEmail)
+            {
+                userModel = new TournamentUserModel()
+                {
+                    Name = name,
+                    PermissionLevel = (int)Permission.TOURNAMENT_STANDARD,
+                    TournamentID = Model.TournamentID
+                };
+
+                result = db.AddTournamentUser(userModel);
+            }
+
+            return userModel;
+        }
+
         public bool AddUser(int accountId, Permission permission)
         {
             // Verify this user doesn't exist in the tournament
@@ -446,8 +467,13 @@ namespace WebApplication.Models
 
         public bool isUserCheckedIn(int tournamentUserId)
         {
+            bool checkedIn = false;
             TournamentUserModel userModel = Model.TournamentUsers.FirstOrDefault(x => x.TournamentUserID == tournamentUserId);
-            bool checkedIn = userModel.IsCheckedIn != null ? (bool)userModel.IsCheckedIn : false;
+
+            if (userModel != null)
+            {
+                checkedIn = userModel.IsCheckedIn != null ? (bool)userModel.IsCheckedIn : false;
+            }
             return checkedIn;
         }
 
@@ -621,6 +647,7 @@ namespace WebApplication.Models
                         case Permission.TOURNAMENT_STANDARD:
                             if (accountIsAdmin)
                             {
+                                targetAccount.PermissionLevel = (int)Permission.NONE;
                                 dbResult = db.DeleteTournamentUser(targetAccount.TournamentUserID);
                             }
                             break;
@@ -641,16 +668,25 @@ namespace WebApplication.Models
                     switch ((Permission)targetAccount.PermissionLevel)
                     {
                         case Permission.TOURNAMENT_STANDARD:
-                            if (accountIsCreator)
+                            if (targetAccount.AccountID != null)
                             {
-                                permissionActions["Remove"] = 1;
-                                permissionActions["Promote"] = 1;
+                                if (accountIsCreator)
+                                {
+                                    permissionActions["Remove"] = 1;
+                                    permissionActions["Promote"] = 1;
+                                }
+                                else if (accountIsAdmin)
+                                {
+                                    permissionActions["Remove"] = 1;
+                                }
                             }
-                            else if (accountIsAdmin)
+                            else
                             {
-                                permissionActions["Remove"] = 1;
+                                if (accountIsAdmin || accountIsCreator)
+                                {
+                                    permissionActions["Remove"] = 1;
+                                }
                             }
-
                             break;
                         case Permission.TOURNAMENT_ADMINISTRATOR:
                             if (accountIsCreator)

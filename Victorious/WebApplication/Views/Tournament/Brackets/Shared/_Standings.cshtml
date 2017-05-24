@@ -52,22 +52,38 @@
                                             <span class="icon icon-checkmark @colorCode checkIn"></span>
                                         </li>
                                         <li class="column actions">
-                                            @if (data["Promote"] == 1)
+                                            @if (!Model.Model.InProgress)
                                             {
-                                                <button class="promote">Promote</button>
-                                            }
-                                            @if (data["Demote"] == 1)
-                                            {
-                                                <button class="demote">Demote</button>
-                                            }
-                                            @if (data["Remove"] == 1)
-                                            {
-                                                <button class="demote">Remove</button>
+                                                if (data["Promote"] == 1)
+                                                {
+                                                    <button class="promote">Promote</button>
+                                                }
+                                                if (data["Demote"] == 1)
+                                                {
+                                                    <button class="demote">Demote</button>
+                                                }
+                                                if (data["Remove"] == 1)
+                                                {
+                                                    <button class="demote">Remove</button>
+                                                }
                                             }
                                         </li>
                                     }
                                 </ul>
                             }
+
+
+                            //if (!Model.Model.InProgress)
+                            //{
+                                <div class="userAddData">
+                                    <ul class="form" data-columns="4">
+                                        <li class="column name"><input type="text" name="name" maxlength="50" placeholder="Name/Email"/></li>
+                                        <li class="column">Not Saved</li>
+                                        <li class="column"><span class="icon icon-checkmark"></span></li>
+                                        <li class="column"><button class="addUserButton">Add User</button></li>
+                                    </ul>
+                                </div>
+                            // }
                         }
                     </li>
 
@@ -84,8 +100,10 @@
                                 <li class="column score">Score</li>
                             }
                         </ul>
-                        @foreach (var rank in bracket.Rankings)
+                        @if (bracket.Rankings != null)
                         {
+                            foreach (var rank in bracket.Rankings)
+                            {
                             <ul class="data" data-columns="3">
                                 <li class="column rank">@rank.Rank</li>
                                 <li class="column name">@rank.Name</li>
@@ -98,6 +116,7 @@
                                     <li class="column score">@rank.Wins - @rank.Losses - @rank.Ties</li>
                                 }
                             </ul>
+                            }
                         }
                     </li>
 

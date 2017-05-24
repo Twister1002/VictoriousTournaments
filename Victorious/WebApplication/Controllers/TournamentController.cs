@@ -314,11 +314,11 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("Ajax/Tournament/Deregister")]
-        public JsonResult NoAccountDeRegister(TournamentRegistrationFields userData)
+        [Route("Ajax/Tournament/Register")]
+        public JsonResult NoAccountRegister(int tournamentId, String name)
         {
             LoadAccount(Session);
-            TournamentViewModel viewModel = new TournamentViewModel(userData.TournamentID);
+            TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
             bool status = false;
             object data = new { };
             String message = "No action taken";
@@ -326,12 +326,23 @@ namespace WebApplication.Controllers
             // Is an Administrator registering a user?
             if (viewModel.IsAdministrator(account.AccountId))
             {
-                status = viewModel.RemoveUser(userData.Name);
+                TournamentUserModel model = viewModel.AddUser(name);
+                data = new
+                {
+                    user = new
+                    {
+                        Name = model.Name,
+                        Permission = model.PermissionLevel,
+                        TournamentUserId = model.TournamentUserID
+                    },
+                    actions = viewModel.PermissionAction(account.AccountId, model.TournamentUserID, "default")
+                };
+                if (data != null) status = true;
                 message = "User was " + (status ? "" : "not") + " removed successfully";
             }
             else
             {
-                message = "Could not add user to tournament";
+                message = "You are not allowed to register a user.";
             }
 
             return Json(JsonConvert.SerializeObject(new
