@@ -176,7 +176,6 @@
     <Content Include="Scripts\jquery.timepicker.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\scripts.js" />
-    <Content Include="Scripts\Tournament\Bracket.js" />
     <Content Include="Scripts\Tournament\Match.js" />
     <Content Include="Scripts\Tournament\Search.js" />
     <Content Include="Scripts\Tournament\Tournaments.js" />

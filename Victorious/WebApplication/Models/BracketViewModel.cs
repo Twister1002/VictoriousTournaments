@@ -246,7 +246,7 @@ namespace WebApplication.Models
             bool isPowerRule = IsPowerOfTwo(Bracket.Players.Count);
             int roundNum = 1;
 
-            if (Bracket.NumberOfRounds > 1)
+            if (Bracket.NumberOfRounds > 0)
             {
                 if (Bracket.BracketType != BracketType.DOUBLE)
                 {
