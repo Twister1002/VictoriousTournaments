@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public class PlatformRepository : IPlatformRepository
+    public class PlatformRepository : IPlatformRepository, IDisposable
     {
         private VictoriousEntities context;
         public Exception interfaceException;
@@ -15,6 +15,11 @@ namespace DatabaseLib
         public PlatformRepository()
         {
             context = new VictoriousEntities();
+        }
+
+        public PlatformRepository(VictoriousEntities context)
+        {
+            this.context = context;
         }
 
         public DbError AddPlatform(PlatformModel platform)

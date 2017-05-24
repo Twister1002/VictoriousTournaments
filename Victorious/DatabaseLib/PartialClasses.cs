@@ -31,8 +31,6 @@ namespace DatabaseLib
         public VictoriousEntities(string name) :
            base(name)
         {
-            
-
 
         }
 

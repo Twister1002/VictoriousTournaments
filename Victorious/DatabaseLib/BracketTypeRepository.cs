@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public class BracketTypeRepository : IBracketTypeRepository
+    public class BracketTypeRepository : IBracketTypeRepository, IDisposable
     {
         private VictoriousEntities context;
         public Exception interfaceException;
@@ -15,6 +15,11 @@ namespace DatabaseLib
         public BracketTypeRepository()
         {
             context = new VictoriousEntities();
+        }
+
+        public BracketTypeRepository(VictoriousEntities context)
+        {
+            this.context = context;
         }
 
         public IList<BracketTypeModel> GetAllBracketTypes(bool returnOnlyActive)

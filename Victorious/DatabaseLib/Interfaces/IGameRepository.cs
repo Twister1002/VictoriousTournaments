@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    interface IGameRepository : IDisposable
+    public interface IGameRepository
     {
         DbError AddGame(GameModel game);
         GameModel GetGame(int gameId);

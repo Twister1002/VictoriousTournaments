@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public class BracketRepository : IBracketRepository
+    public class BracketRepository : IBracketRepository, IDisposable
     {
         private VictoriousEntities context;
         public Exception interfaceException;
@@ -17,6 +17,10 @@ namespace DatabaseLib
             context = new VictoriousEntities();
         }
 
+        public BracketRepository(VictoriousEntities context)
+        {
+            this.context = context;
+        }
 
         public DbError AddBracket(BracketModel bracket)
         {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public class MatchRepository : IMatchRepository
+    public class MatchRepository : IMatchRepository, IDisposable
     {
         private VictoriousEntities context;
         public Exception interfaceException;
@@ -15,6 +15,11 @@ namespace DatabaseLib
         public MatchRepository()
         {
             context = new VictoriousEntities();
+        }
+
+        public MatchRepository(VictoriousEntities context)
+        {
+            this.context = context;
         }
 
         public DbError AddMatch(MatchModel match)

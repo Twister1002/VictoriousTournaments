@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public class GameTypeRepository : IGameTypeRepository
+    public class GameTypeRepository : IGameTypeRepository, IDisposable
     {
         private VictoriousEntities context;
         public Exception interfaceException;
@@ -15,6 +15,11 @@ namespace DatabaseLib
         public GameTypeRepository()
         {
             context = new VictoriousEntities();
+        }
+
+        public GameTypeRepository(VictoriousEntities context)
+        {
+            this.context = context;
         }
 
         public DbError AddGameType(GameTypeModel gameType)

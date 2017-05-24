@@ -80,15 +80,15 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="GameTypeRepository.cs" />
-    <Compile Include="IAccountRepository.cs" />
-    <Compile Include="IBracketRepository.cs" />
-    <Compile Include="IBracketTypeRepository.cs" />
-    <Compile Include="IGameRepository.cs" />
-    <Compile Include="IGameTypeRepository.cs" />
-    <Compile Include="IMatchRepository.cs" />
-    <Compile Include="IPlatformRepository.cs" />
-    <Compile Include="ITournamentRepository.cs" />
-    <Compile Include="IUnitOfWork.cs" />
+    <Compile Include="Interfaces\IAccountRepository.cs" />
+    <Compile Include="Interfaces\IBracketRepository.cs" />
+    <Compile Include="Interfaces\IBracketTypeRepository.cs" />
+    <Compile Include="Interfaces\IGameRepository.cs" />
+    <Compile Include="Interfaces\IGameTypeRepository.cs" />
+    <Compile Include="Interfaces\IMatchRepository.cs" />
+    <Compile Include="Interfaces\IPlatformRepository.cs" />
+    <Compile Include="Interfaces\ITournamentRepository.cs" />
+    <Compile Include="Interfaces\IUnitOfWork.cs" />
     <Compile Include="MatchModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -128,6 +128,7 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="UnitOfWork.cs" />
+    <Compile Include="VictoriousContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="Model.edmx">

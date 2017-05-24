@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public interface IUnitOfWork : IDisposable
+    class VictoriousContext
     {
-        ITournamentRepository TournamentRepository { get; }
-
-        void Dispose();
     }
 }

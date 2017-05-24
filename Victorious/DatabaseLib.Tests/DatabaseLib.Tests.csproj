@@ -53,6 +53,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Transactions" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -69,18 +70,19 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AccountInviteTests.cs" />
-    <Compile Include="AccountTests.cs" />
-    <Compile Include="BracketTests.cs" />
-    <Compile Include="BracketTypeTests.cs" />
-    <Compile Include="GameTests.cs" />
-    <Compile Include="GameTypeTests.cs" />
-    <Compile Include="MatchTests.cs" />
-    <Compile Include="PlatformTests.cs" />
+    <Compile Include="Non-Repo Tests\AccountInviteTests.cs" />
+    <Compile Include="Non-Repo Tests\AccountTests.cs" />
+    <Compile Include="Non-Repo Tests\BracketTests.cs" />
+    <Compile Include="Non-Repo Tests\BracketTypeTests.cs" />
+    <Compile Include="Non-Repo Tests\GameTests.cs" />
+    <Compile Include="Non-Repo Tests\GameTypeTests.cs" />
+    <Compile Include="Non-Repo Tests\MatchTests.cs" />
+    <Compile Include="Non-Repo Tests\PlatformTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TournamentInviteTests.cs" />
-    <Compile Include="TournamentTests.cs" />
-    <Compile Include="TournamentUserTests.cs" />
+    <Compile Include="Non-Repo Tests\TournamentInviteTests.cs" />
+    <Compile Include="Non-Repo Tests\TournamentTests.cs" />
+    <Compile Include="Non-Repo Tests\TournamentUserTests.cs" />
+    <Compile Include="TournamentRepoTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DatabaseLib\DatabaseLib.csproj">

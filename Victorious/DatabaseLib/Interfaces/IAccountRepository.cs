@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public interface IAccountRepository : IDisposable
+    public interface IAccountRepository 
     {
         IList<AccountModel> GetAllAccounts();
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    interface IBracketTypeRepository : IDisposable
+    public interface IBracketTypeRepository 
     {
         IList<BracketTypeModel> GetAllBracketTypes(bool returnOnlyActive);
         DbError UpdateBracketType(BracketTypeModel bracketType);

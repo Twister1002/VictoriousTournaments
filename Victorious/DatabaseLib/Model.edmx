@@ -403,19 +403,10 @@
           <NavigationProperty Name="Brackets" Relationship="VictoriousDatabaseModel.FK_Brackets_BracketTypes" FromRole="BracketType" ToRole="BracketModel" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" DefaultValue="True" />
         </EntityType>
-        <EntityType Name="GameTypeModel">
-          <Key>
-            <PropertyRef Name="GameTypeID" />
-          </Key>
-          <Property Name="GameTypeID" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
-          <Property Name="Title" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
-          <NavigationProperty Name="Tournaments" Relationship="VictoriousDatabaseModel.FK_Tournaments_GameTypes" FromRole="GameTypeModel" ToRole="Tournament" />
-        </EntityType>
         <EntityContainer Name="VictoriousEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="C__RefactorLog" EntityType="Self.C__RefactorLog" />
           <EntitySet Name="BracketModels" EntityType="VictoriousDatabaseModel.BracketModel" />
           <EntitySet Name="BracketTypeModels" EntityType="VictoriousDatabaseModel.BracketTypeModel" />
-          <EntitySet Name="GameTypeModels" EntityType="VictoriousDatabaseModel.GameTypeModel" />
           <EntitySet Name="TournamentUserModels" EntityType="VictoriousDatabaseModel.TournamentUserModel" />
           <EntitySet Name="TournamentUsersBracketModels" EntityType="VictoriousDatabaseModel.TournamentUsersBracketModel" />
           <AssociationSet Name="FK_UsersBrackets_Tournaments" Association="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments">
@@ -444,10 +435,6 @@
             <End Role="Tournament" EntitySet="TournamentModels" />
             <End Role="BracketModel" EntitySet="BracketModels" />
           </AssociationSet>
-          <AssociationSet Name="FK_Tournaments_GameTypes" Association="VictoriousDatabaseModel.FK_Tournaments_GameTypes">
-            <End Role="GameTypeModel" EntitySet="GameTypeModels" />
-            <End Role="Tournament" EntitySet="TournamentModels" />
-          </AssociationSet>
           <AssociationSet Name="FK_Tournaments_Platforms" Association="VictoriousDatabaseModel.FK_Tournaments_Platforms">
             <End Role="PlatformModel" EntitySet="PlatformModels" />
             <End Role="Tournament" EntitySet="TournamentModels" />
@@ -468,6 +455,11 @@
           <AssociationSet Name="FK_Games_Matches" Association="VictoriousDatabaseModel.FK_Games_Matches">
             <End Role="Match" EntitySet="MatchModels" />
             <End Role="GameModel" EntitySet="GameModels" />
+          </AssociationSet>
+          <EntitySet Name="GameTypeModels" EntityType="VictoriousDatabaseModel.GameTypeModel" />
+          <AssociationSet Name="FK_Tournaments_GameTypes" Association="VictoriousDatabaseModel.FK_Tournaments_GameTypes">
+            <End Role="GameType" EntitySet="GameTypeModels" />
+            <End Role="TournamentModel" EntitySet="TournamentModels" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="TournamentUserModel">
@@ -642,10 +634,10 @@
           <Property Name="PublicRegistration" Type="Boolean" Nullable="false" />
           <Property Name="PublicViewing" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Brackets" Relationship="VictoriousDatabaseModel.FK_Brackets_Tournaments" FromRole="Tournament" ToRole="BracketModel" />
-          <NavigationProperty Name="GameType" Relationship="VictoriousDatabaseModel.FK_Tournaments_GameTypes" FromRole="Tournament" ToRole="GameTypeModel" />
           <NavigationProperty Name="Platform" Relationship="VictoriousDatabaseModel.FK_Tournaments_Platforms" FromRole="Tournament" ToRole="PlatformModel" />
           <NavigationProperty Name="TournamentInvite" Relationship="VictoriousDatabaseModel.FK_Tournaments_TournamentInvites" FromRole="Tournament" ToRole="TournamentInvite" />
           <NavigationProperty Name="TournamentUsers" Relationship="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" FromRole="Tournament" ToRole="TournamentUserModel" />
+          <NavigationProperty Name="GameType" Relationship="VictoriousDatabaseModel.FK_Tournaments_GameTypes" FromRole="TournamentModel" ToRole="GameType" />
         </EntityType>
         <Association Name="FK_Brackets_Tournaments">
           <End Type="VictoriousDatabaseModel.TournamentModel" Role="Tournament" Multiplicity="0..1" />
@@ -656,18 +648,6 @@
             </Principal>
             <Dependent Role="BracketModel">
               <PropertyRef Name="TournamentID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Tournaments_GameTypes">
-          <End Type="VictoriousDatabaseModel.GameTypeModel" Role="GameTypeModel" Multiplicity="0..1" />
-          <End Type="VictoriousDatabaseModel.TournamentModel" Role="Tournament" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="GameTypeModel">
-              <PropertyRef Name="GameTypeID" />
-            </Principal>
-            <Dependent Role="Tournament">
-              <PropertyRef Name="GameTypeID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -758,6 +738,26 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="GameTypeModel">
+          <Key>
+            <PropertyRef Name="GameTypeID" />
+          </Key>
+          <Property Name="GameTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Tournaments" Relationship="VictoriousDatabaseModel.FK_Tournaments_GameTypes" FromRole="GameType" ToRole="TournamentModel" />
+        </EntityType>
+        <Association Name="FK_Tournaments_GameTypes">
+          <End Type="VictoriousDatabaseModel.GameTypeModel" Role="GameType" Multiplicity="0..1" />
+          <End Type="VictoriousDatabaseModel.TournamentModel" Role="TournamentModel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GameType">
+              <PropertyRef Name="GameTypeID" />
+            </Principal>
+            <Dependent Role="TournamentModel">
+              <PropertyRef Name="GameTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -790,14 +790,6 @@
                 <ScalarProperty Name="BracketTypeID" ColumnName="BracketTypeID" />
                 <ScalarProperty Name="TypeName" ColumnName="TypeName" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="GameTypeModels">
-            <EntityTypeMapping TypeName="VictoriousDatabaseModel.GameTypeModel">
-              <MappingFragment StoreEntitySet="GameTypes">
-                <ScalarProperty Name="GameTypeID" ColumnName="GameTypeID" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -941,6 +933,14 @@
                 <ScalarProperty Name="DefenderID" ColumnName="DefenderID" />
                 <ScalarProperty Name="ChallengerID" ColumnName="ChallengerID" />
                 <ScalarProperty Name="MatchID" ColumnName="MatchID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GameTypeModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.GameTypeModel">
+              <MappingFragment StoreEntitySet="GameTypes">
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="GameTypeID" ColumnName="GameTypeID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

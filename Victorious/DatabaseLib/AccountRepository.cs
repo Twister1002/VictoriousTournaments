@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public class AccountRepository : IAccountRepository
+    public class AccountRepository : IAccountRepository, IDisposable
     {
         private VictoriousEntities context;
         public Exception exception;

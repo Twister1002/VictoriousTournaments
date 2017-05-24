@@ -7,7 +7,6 @@
       <Diagram DiagramId="140c09bfe994490da52abb1b6f930a88" Name="Diagram1" ZoomLevel="88" DisplayType="true" ShowGrid="false">
         <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketModel" PointX="5.25" PointY="4.625" Width="2" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketTypeModel" PointX="7.875" PointY="5.75" Width="1.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.GameTypeModel" PointX="0.5" PointY="8.125" Width="2" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUserModel" PointX="5.375" PointY="0.5" Width="2" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUsersBracketModel" PointX="7.875" PointY="3.125" Width="1.875" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments" ></AssociationConnector>
@@ -22,13 +21,14 @@
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentInviteModel" Width="1.5" PointX="3.25" PointY="2.375" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentModel" Width="1.75" PointX="0.75" PointY="0.5" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Brackets_Tournaments" />
-        <AssociationConnector Association="VictoriousDatabaseModel.FK_Tournaments_GameTypes" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Tournaments_Platforms" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Tournaments_TournamentInvites" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.MatchModel" Width="2" PointX="5.5" PointY="8.625" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Matches_Brackets" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Games_Matches" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.GameTypeModel" Width="1.5" PointX="0.75" PointY="7.75" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_Tournaments_GameTypes" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

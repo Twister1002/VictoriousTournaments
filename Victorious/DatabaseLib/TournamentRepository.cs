@@ -110,16 +110,14 @@ namespace DatabaseLib
                     TournamentModel _tournament = db.TournamentModels.Find(tournament.TournamentID);
                     db.Entry(_tournament).CurrentValues.SetValues(tournament);
 
-                    foreach (var bracket in _tournament.Brackets)
-                    {
-                        foreach (var match in bracket.Matches)
-                        {
-                            match.Challenger = db.TournamentUserModels.Find(match.ChallengerID);
-                            match.Defender = db.TournamentUserModels.Find(match.DefenderID);
-                        }
-                    }
-                   
-                    //db.SaveChanges();
+                    //foreach (var bracket in _tournament.Brackets)
+                    //{
+                    //    foreach (var match in bracket.Matches)
+                    //    {
+                    //        match.Challenger = db.TournamentUserModels.Find(match.ChallengerID);
+                    //        match.Defender = db.TournamentUserModels.Find(match.DefenderID);
+                    //    }
+                    //}
                 }
                 catch (Exception ex)
                 {
@@ -129,6 +127,11 @@ namespace DatabaseLib
                 }
                 return DbError.SUCCESS;
             }
+        }
+
+        public void Save()
+        {
+            context.SaveChanges();
         }
 
         #region IDisposable Support

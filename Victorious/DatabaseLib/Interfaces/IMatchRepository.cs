@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    interface IMatchRepository : IDisposable
+    public interface IMatchRepository 
     {
         IList<MatchModel> GetAllMatchesInBracket(int bracketId);
         DbError AddMatch(MatchModel match);

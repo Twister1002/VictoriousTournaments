@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public interface ITournamentRepository : IDisposable
+    public interface ITournamentRepository
     {
         IList<TournamentModel> GetAllTournaments();
         TournamentModel GetTournament(int tournamentId);
@@ -14,6 +14,6 @@ namespace DatabaseLib
         DbError UpdateTournament(TournamentModel tournament);
         DbError DeleteTournament(int tournamentId);
         IList<TournamentUserModel> GetAllUsersInTournament(int tournamentId);
-   
+        void Save();
     }
 }

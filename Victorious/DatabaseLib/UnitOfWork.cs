@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private VictoriousEntities context = new VictoriousEntities();
         private ITournamentRepository tournamentRepository;
@@ -26,9 +26,17 @@ namespace DatabaseLib
             }
         }
 
-        public void Save()
+        public bool Save()
         {
-            context.SaveChanges();
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
         }
 
         public ITournamentRepository TournamentRepository
@@ -54,6 +62,79 @@ namespace DatabaseLib
                 return accountRepository;
             }
         }
+
+        public IBracketRepository BracketRepository
+        {
+            get
+            {
+                if (this.bracketRepository == null)
+                {
+                    this.bracketRepository = new BracketRepository(context);
+                }
+                return bracketRepository;
+            }
+        }
+
+        public IBracketTypeRepository BracketTypeRepository
+        {
+            get
+            {
+                if (this.bracketTypeRepository == null)
+                {
+                    this.bracketTypeRepository = new BracketTypeRepository(context);
+                }
+                return bracketTypeRepository;
+            }
+        }
+
+        public IGameRepository GameRepository
+        {
+            get
+            {
+                if (this.gameRepository == null)
+                {
+                    this.gameRepository = new GameRepository(context);
+                }
+                return gameRepository;
+            }
+        }
+
+        public IGameTypeRepository GameTypeRepository
+        {
+            get
+            {
+                if (this.gameTypeRepository == null)
+                {
+                    this.gameTypeRepository = new GameTypeRepository(context);
+                }
+                return gameTypeRepository;
+            }
+        }
+
+        public IMatchRepository MatchRepository
+        {
+            get
+            {
+                if (this.matchRepository == null)
+                {
+                    this.matchRepository = new MatchRepository(context);
+                }
+                return matchRepository;
+            }
+        }
+
+        public IPlatformRepository PlatformRepository
+        {
+            get
+            {
+                if (this.platformRepository == null)
+                {
+                    this.platformRepository = new PlatformRepository(context);
+                }
+                return platformRepository;
+            }
+        }
+
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls

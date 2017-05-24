@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    interface IPlatformRepository : IDisposable
+    public interface IPlatformRepository
     {
         DbError AddPlatform(PlatformModel platform);
         PlatformModel GetPlatform(int platformID);

@@ -216,17 +216,17 @@ namespace DatabaseLib.Tests
                 PrizePurse = 0,
                 GameTypeID = 1
             };
-            
-            VictoriousEntities context = new VictoriousEntities();
-            var tournamentRepo = new Mock<ITournamentRepository>();
-            tournamentRepo.Setup(x => x.GetTournament(tournament.TournamentID)).Returns(tournament).Verifiable();
-            var unitOfWork = new Mock<IUnitOfWork>();
-            unitOfWork.Setup(x => x.TournamentRepository).Returns(tournamentRepo.Object).Verifiable();
+            var repo = new Mock<ITournamentRepository>();
+            repo.Setup(x => x.GetTournament(tournament.TournamentID)).Returns(tournament);
+            var context = new VictoriousEntities();
+            var uow = new UnitOfWork(context);
 
-            ITournamentRepository repo = new TournamentRepository(context);
-            var actual = repo.GetTournament(tournament.TournamentID);
+            var result = uow.TournamentRepository.GetTournament(tournament.TournamentID);
 
-            tournamentRepo.VerifyAll();
+            Assert.AreEqual(tournament, result);
+          
+
+         
             //Assert.IsNotNull(actual);
             //Assert.AreEqual(tournament, actual);
             
@@ -239,14 +239,7 @@ namespace DatabaseLib.Tests
 
         }
 
-        [TestMethod]
-        public void Get_Tournament_Via_Repo()
-        {
-            var repo = new TournamentRepository();
-
-            var tournament = repo.GetTournament(1);
-        }
-
+      
        
 
         private TournamentUserModel NewTournamentUser()
@@ -287,34 +280,34 @@ namespace DatabaseLib.Tests
     }
 
 
-    [TestClass]
-    public class TournamentRepoTests
-    {
-        [TestMethod]
-        public void Add_Tournament_Via_Repo()
-        {
-            var uow = new UnitOfWork();
-            TournamentModel tournament = new TournamentModel()
-            {
-                Title = "Tournament From Repo",
-                Description = "Test",
-                RegistrationStartDate = DateTime.Now,
-                RegistrationEndDate = DateTime.Now,
-                TournamentStartDate = DateTime.Now,
-                TournamentEndDate = DateTime.Now,
-                CheckInBegins = DateTime.Now,
-                CheckInEnds = DateTime.Now,
-                LastEditedByID = 1,
-                CreatedByID = 1,
-                PlatformID = 3,
-                EntryFee = 0,
-                PrizePurse = 0,
-                GameTypeID = 1
-            };
-            var result = uow.TournamentRepository.AddTournament(tournament);
-            //var result = repo.AddTournament(tournament);
-            uow.Save();
-            Assert.AreEqual(DbError.SUCCESS, result);
-        }
-    }
+    //[TestClass]
+    //public class TournamentRepoTests
+    //{
+    //    [TestMethod]
+    //    public void Add_Tournament_Via_Repo()
+    //    {
+    //        var uow = new UnitOfWork();
+    //        TournamentModel tournament = new TournamentModel()
+    //        {
+    //            Title = "Tournament From Repo",
+    //            Description = "Test",
+    //            RegistrationStartDate = DateTime.Now,
+    //            RegistrationEndDate = DateTime.Now,
+    //            TournamentStartDate = DateTime.Now,
+    //            TournamentEndDate = DateTime.Now,
+    //            CheckInBegins = DateTime.Now,
+    //            CheckInEnds = DateTime.Now,
+    //            LastEditedByID = 1,
+    //            CreatedByID = 1,
+    //            PlatformID = 3,
+    //            EntryFee = 0,
+    //            PrizePurse = 0,
+    //            GameTypeID = 1
+    //        };
+    //        var result = uow.TournamentRepository.AddTournament(tournament);
+    //        //var result = repo.AddTournament(tournament);
+    //        uow.Save();
+    //        Assert.AreEqual(DbError.SUCCESS, result);
+    //    }
+    //}
 }

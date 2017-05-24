@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public interface IBracketRepository : IDisposable
+    public interface IBracketRepository 
     {
         DbError AddBracket(BracketModel bracket);
 
