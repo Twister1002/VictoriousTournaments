@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Moq;
 using System.Linq;
 
+using DatabaseLib;
+
 namespace Tournament.Structure.Tests
 {
 	[TestClass]
@@ -437,6 +439,190 @@ namespace Tournament.Structure.Tests
 				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
 			Assert.AreEqual(1, 1);
+		}
+		#endregion
+
+		#region Events
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("AddGame")]
+		[TestCategory("RoundAdded")]
+		public void SwissAddGame_FiresRoundAddedEvent_OncePerRound()
+		{
+			int roundsAdded = 0;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 9; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList);
+			b.RoundAdded += delegate (object sender, BracketEventArgs e)
+			{
+				++roundsAdded;
+			};
+
+			int matchesPerRound = b.NumberOfMatches;
+			for (int i = 0; i < 2; ++i)
+			{
+				for (int n = 1; n <= matchesPerRound; ++n)
+				{
+					b.SetMatchWinner(n + (matchesPerRound * i), PlayerSlot.Challenger);
+				}
+			}
+			Assert.AreEqual(2, roundsAdded);
+		}
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("AddGame")]
+		[TestCategory("RoundAdded")]
+		public void SwissAddGame_FiresRoundAddedEvent_WithAddedMatchModels()
+		{
+			int matchesAdded = 0;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 9; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList);
+			b.RoundAdded += delegate (object sender, BracketEventArgs e)
+			{
+				matchesAdded += e.UpdatedMatches.Count;
+			};
+
+			int matchesPerRound = b.NumberOfMatches;
+			for (int n = 1; n <= matchesPerRound; ++n)
+			{
+				b.SetMatchWinner(n, PlayerSlot.Challenger);
+			}
+			Assert.AreEqual(matchesPerRound, matchesAdded);
+		}
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("AddGame")]
+		[TestCategory("MatchesModified")]
+		public void SwissAddGame_FiresMatchesModifiedEvents_OnlyForAffectedMatches()
+		{
+			int matchesAffected = 0;
+			int eventsFired = 0;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 9; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList);
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				matchesAffected += e.UpdatedMatches.Count;
+				++eventsFired;
+			};
+
+			int matchesPerRound = b.NumberOfMatches;
+			for (int n = 1; n <= matchesPerRound; ++n)
+			{
+				b.SetMatchWinner(n, PlayerSlot.Challenger);
+			}
+			Assert.AreEqual(matchesAffected, eventsFired);
+		}
+
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("ResetMatchScore")]
+		[TestCategory("RoundDeleted")]
+		public void SwissResetMatchScore_FiresRoundDeletedEvent_WithRemovedMatchModels()
+		{
+			int matchesDeleted = 0;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 9; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList);
+			b.RoundDeleted += delegate (object sender, BracketEventArgs e)
+			{
+				matchesDeleted += e.UpdatedMatches.Count;
+			};
+
+			int matchesPerRound = b.NumberOfMatches;
+			for (int n = 1; n <= matchesPerRound; ++n)
+			{
+				b.SetMatchWinner(n, PlayerSlot.Challenger);
+			}
+			b.ResetMatchScore(1);
+			Assert.AreEqual(matchesPerRound, matchesDeleted);
+		}
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("ResetMatchScore")]
+		[TestCategory("RoundDeleted")]
+		public void SwissResetMatchScore_FiresMatchesModifiedEvent_WithOnlyOneMatchModel()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 9; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList);
+			int matchesPerRound = b.NumberOfMatches;
+			for (int n = 1; n < (2 * matchesPerRound); ++n)
+			{
+				b.SetMatchWinner(n, PlayerSlot.Challenger);
+			}
+
+			int matchesModified = 0;
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				matchesModified += e.UpdatedMatches.Count;
+			};
+			b.ResetMatchScore(1);
+			Assert.AreEqual(1, matchesModified);
+		}
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("ResetMatchScore")]
+		[TestCategory("RoundDeleted")]
+		public void SwissResetMatchScore_FiresGamesDeletedEvents_WithAllGamesInDeletedRound()
+		{
+			int deletedGames = 0;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 9; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList);
+			b.GamesDeleted += delegate (object sender, BracketEventArgs e)
+			{
+				deletedGames += e.DeletedGameIDs.Count;
+			};
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				deletedGames += e.DeletedGameIDs.Count;
+			};
+			int matchesPerRound = b.NumberOfMatches;
+			for (int n = 1; n <= (2 + matchesPerRound); ++n)
+			{
+				b.AddGame(n, 2, 1, PlayerSlot.Defender);
+			}
+
+			b.ResetMatchScore(1);
+			// Delete games: 1 from first match, 2 from second round (removed)
+			Assert.AreEqual(1 + 2, deletedGames);
 		}
 		#endregion
 	}

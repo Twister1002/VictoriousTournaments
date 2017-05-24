@@ -555,14 +555,18 @@ namespace Tournament.Structure
 			bool winnerChange = (_winnerSlot != match.WinnerSlot);
 			List<GameModel> modelList = new List<GameModel>();
 
-			// Reset the match, and save the games:
-			if (winnerChange)
+			if (PlayerSlot.unspecified != match.WinnerSlot ||
+				match.Games.Count > 0)
 			{
-				modelList = ResetMatchScore(_matchNumber);
-			}
-			else
-			{
-				modelList = match.ResetScore();
+				// Reset the match, and save the games:
+				if (winnerChange)
+				{
+					modelList = ResetMatchScore(_matchNumber);
+				}
+				else
+				{
+					modelList = match.ResetScore();
+				}
 			}
 
 			// Set the match winner, THEN re-add the games:
