@@ -1259,6 +1259,7 @@ namespace Tournament.Structure.Tests
 			Assert.AreEqual(matchNum, model.MatchNumber);
 		}
 		[TestMethod]
+		[TestCategory("SingleElimBracket")]
 		[TestCategory("AddGame")]
 		[TestCategory("MatchesModified")]
 		public void SEBAddGame_ThrowsMatchesModifiedEvent_HoldingAdvancedMatch()
@@ -1285,6 +1286,7 @@ namespace Tournament.Structure.Tests
 			Assert.IsTrue(modifiedMatchNums.Contains(nextMatchNum));
 		}
 		[TestMethod]
+		[TestCategory("SingleElimBracket")]
 		[TestCategory("AddGame")]
 		[TestCategory("MatchesModified")]
 		public void SEBAddGame_ThrowsMatchesModifiedEvent_WithOnlyAffectedMatches()
@@ -1309,6 +1311,7 @@ namespace Tournament.Structure.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("SingleElimBracket")]
 		[TestCategory("RemoveLastGame")]
 		[TestCategory("MatchesModified")]
 		public void SEBRemoveGame_FiresMatchesModifiedEvent_WithCurrentMatch()
@@ -1334,6 +1337,7 @@ namespace Tournament.Structure.Tests
 			Assert.AreEqual(matchNum, model.MatchNumber);
 		}
 		[TestMethod]
+		[TestCategory("SingleElimBracket")]
 		[TestCategory("RemoveLastGame")]
 		[TestCategory("MatchesModified")]
 		public void SEBRemoveGame_FiresMatchesModifiedEvent_WithRemovedGameID()
@@ -1359,6 +1363,7 @@ namespace Tournament.Structure.Tests
 		}
 
 		[TestMethod]
+		[TestCategory("SingleElimBracket")]
 		[TestCategory("ResetMatchScore")]
 		[TestCategory("MatchesModified")]
 		public void SEBResetMatchScore_FiresMatchesModifiedEvent_WithAllAffectedMatches()
@@ -1395,6 +1400,7 @@ namespace Tournament.Structure.Tests
 			Assert.AreEqual(chainLength, matchesAffected);
 		}
 		[TestMethod]
+		[TestCategory("SingleElimBracket")]
 		[TestCategory("ResetMatchScore")]
 		[TestCategory("GamesDeleted")]
 		[TestCategory("MatchesModified")]
@@ -1438,7 +1444,8 @@ namespace Tournament.Structure.Tests
 		}
 
 		[TestMethod]
-		[TestCategory("ResetMatchScore")]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("ResetMatches")]
 		[TestCategory("MatchesModified")]
 		public void SEBResetMatches_FiresMatchesModifiedEvent_WithAllAffectedMatches()
 		{
@@ -1465,6 +1472,7 @@ namespace Tournament.Structure.Tests
 			Assert.AreEqual(b.NumberOfMatches, matchesAffected);
 		}
 		[TestMethod]
+		[TestCategory("SingleElimBracket")]
 		[TestCategory("ResetMatchScore")]
 		[TestCategory("MatchesModified")]
 		[TestCategory("GamesDeleted")]

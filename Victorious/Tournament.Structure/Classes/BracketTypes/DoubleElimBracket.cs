@@ -394,10 +394,6 @@ namespace Tournament.Structure
 					List<MatchModel> secondList = RemovePlayerFromFutureMatches
 						(nextLoserNumber, match.Players[(int)loserSlot].Id);
 					alteredMatches.RemoveAll(firstM => secondList.Select(secM => secM.MatchNumber).Contains(firstM.MatchNumber));
-					//foreach (int mNum in secondList.Select(m => m.MatchNumber))
-					//{
-					//	alteredMatches.RemoveAll(m => m.MatchNumber == mNum);
-					//}
 					alteredMatches.AddRange(secondList);
 				}
 
