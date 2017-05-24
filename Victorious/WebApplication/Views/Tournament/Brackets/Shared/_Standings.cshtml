@@ -73,7 +73,7 @@
                             }
 
 
-                            if (!Model.Model.InProgress)
+                            if (!Model.Model.InProgress && Model.IsAdministrator(ViewBag.UserId))
                             {
                                 <div class="userAddData">
                                     <ul class="form" data-columns="4">
