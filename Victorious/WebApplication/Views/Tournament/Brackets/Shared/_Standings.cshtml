@@ -75,14 +75,28 @@
                         <ul class="header" data-columns="3">
                             <li class="column">Rank</li>
                             <li class="column">Name</li>
-                            <li class="column">Score</li>
+                            @if (bracket.BracketType == DatabaseLib.BracketType.DOUBLE || bracket.BracketType == DatabaseLib.BracketType.SINGLE)
+                            {
+                                <li class="column score"></li>
+                            }
+                            else
+                            {
+                                <li class="column score">Score</li>
+                            }
                         </ul>
                         @foreach (var rank in bracket.Rankings)
                         {
                             <ul class="data" data-columns="3">
-                                <li class="column">@rank.Rank</li>
-                                <li class="column">@rank.Name</li>
-                                <li class="column">Score</li>
+                                <li class="column rank">@rank.Rank</li>
+                                <li class="column name">@rank.Name</li>
+                                @if (bracket.BracketType == DatabaseLib.BracketType.DOUBLE || bracket.BracketType == DatabaseLib.BracketType.SINGLE)
+                                {
+                                    <li class="column score"></li>
+                                }
+                                else
+                                {
+                                    <li class="column score">@rank.Wins - @rank.Losses - @rank.Ties</li>
+                                }
                             </ul>
                         }
                     </li>

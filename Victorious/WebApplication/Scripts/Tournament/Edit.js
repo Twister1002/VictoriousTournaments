@@ -2,17 +2,6 @@
     var $ = jQuery;
     var addedUserIndex = 0;
 
-    $("#TournamentEdit .list-table-body .user .actions .demote").on("click", permissionDemote);
-    $("#TournamentEdit .list-table-body .user .actions .promote").on("click", permissionPromote);
-
-    function permissionDemote() {
-        PermissionAction("demote", $(this).closest(".user"));
-    }
-
-    function permissionPromote() {
-        PermissionAction("promote", $(this).closest(".user"));
-    }
-
     $("#TournamentEdit .user-section .addUser").on("click", function () {
         html = "<ul class='user border form' data-user='-1' data-columns='4'> ";
         html += "<li class='column name'><input type='text' name='Users[" + addedUserIndex + "].Name' id='Users[" + addedUserIndex + "].Name' maxlength='50' placeholder='Email or Username'/></li> ";

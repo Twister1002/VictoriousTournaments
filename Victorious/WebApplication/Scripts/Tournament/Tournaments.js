@@ -249,3 +249,43 @@
         }
     })($);
 });
+
+function UpdateStandings(tournyId, bracketNum) {
+    tournyId = parseInt(tournyId, 10)
+    bracketNum = parseInt(bracketNum, 10);
+
+    if (isNaN(tournyId) || isNaN(bracketNum)) return false;
+
+    $.ajax({
+        "url": "/Ajax/Bracket/Standings",
+        "type": "POST",
+        "data": { "tournamentId": tournyId, "bracketNum": bracketNum },
+        "dataType": "json",
+        "success": function (json) {
+            json = JSON.parse(json);
+            if (json.status) {
+                var standings = $(".TournamentInfo .bracketData[data-bracket='" + bracketNum + "'] .standingInfo");
+                standings.find(".data").remove();
+
+                $.each(json.data.ranks, function (i, e) {
+                    html = "<ul class='data' data-columns='3'> ";
+                    html += "<li class='column rank'>" + e.Rank + "</li> ";
+                    html += "<li class='column name'>" + e.Name + "</li> ";
+                    if (e.usePoints) {
+                        html += "<li class='column score'>" + e.Wins + " - " + e.Losses + " - " + e.Ties + "</li> ";
+                    }
+                    else {
+                        html += "<li class='column score'></li> "
+                    }
+                    html += "</ul> ";
+
+                    standings.append(html);
+                });
+            }
+            console.log(json.message);
+        },
+        "error": function (json) {
+            console.log(json);
+        },
+    });
+}

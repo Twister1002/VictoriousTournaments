@@ -219,6 +219,7 @@
                     });
                     
                     match.find(".TournamentGames .games").empty();
+                    UpdateStandings($("#Tournament").data("id"), $(this).closest(".bracket").data("id"));
                 }
 
                 console.log(json.message);
@@ -347,51 +348,6 @@
                 }
                 else {
                     console.log(json.message);
-                }
-            },
-            "error": function (json) {
-                console.log(json);
-            },
-            "complete": function () {
-
-            }
-        });
-    }
-
-    function UpdateStandings(tournyId, bracket) {
-        jsonData = {
-            "tournamentId": tournyId,
-            "bracketNum": bracket
-        };
-
-        $.ajax({
-            "url": "/Ajax/Bracket/Standings",
-            "type": "POST",
-            "data": { "jsonData": JSON.stringify(jsonData) },
-            "dataType": "json",
-            "beforeSend": function () {
-
-            },
-            "success": function (json) {
-                json = JSON.parse(json);
-                var standings = $(".TournamentStandings .standings .list-table-body");
-                if (json.status) {
-                    standings.empty();
-
-                    $.each(json.data.ranks, function (i, e) {
-                        html = "<ul class='position' data-columns='3'> ";
-                        html += "<li class='column rank'>" + e.Rank + "</li> ";
-                        html += "<li class='column name'>" + e.Name + "</li> ";
-                        if (e.usePoints) {
-                            html += "<li class='column score'>" + e.Wins + " - " + e.Losses + " - " + e.Ties + "</li> ";
-                        }
-                        else {
-                            html += "<li class='column score'></li> "
-                        }
-                        html += "</ul> ";
-
-                        standings.append(html);
-                    });
                 }
             },
             "error": function (json) {
