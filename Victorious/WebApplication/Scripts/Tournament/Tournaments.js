@@ -124,15 +124,19 @@
     $(".TournamentInfo .bracketNum").on("click", BracketNumberSelected);
     // Tournament Infomation
     $(".TournamentInfo .selection.info").on("click", InfoSelected);
+    // Check a user in
     $(".TournamentInfo .playerInfo .checkIn").on("click", CheckUserIn);
     // Permission Buttions
     $(".TournamentInfo .playerInfo .user .promote, .TournamentInfo .playerInfo .user .demote").on("click", PermissionAction);
+    // Add a player to the tournament by button or hitting enter.
     $(".TournamentInfo .playerInfo .userAddData .addUserButton").on("click", AddUserToTournament);
     $(".TournamentInfo .playerInfo .userAddData .name").on("keydown", function (e) {
         if (e.keyCode == 13) {
             AddUserToTournament(this);
         }
     });
+    // Reset the brackets
+    $(".TournamentInfo .resetInfo").on("click", ResetBracket);
 
     function BracketNumberSelected() {
         var bracketId = $(this).data("bracket");
@@ -279,6 +283,29 @@
             },
             "complete": function () {
                 row.find(".addUserButton").attr("disabled", false);
+            }
+        });
+    }
+
+    function ResetBracket() {
+        var bracketId = $(this).closest(".bracketData").data("id");
+
+        $.ajax({
+            "url": "/Ajax/Bracket/Reset",
+            "type": "POST",
+            "data": { "bracketId": bracketId },
+            "dataType": "json",
+            "success": function (json) {
+                json = JSON.parse(json);
+                if (json.status) {
+                    window.location.replace(json.redirect);
+                }
+                else {
+                    alert(json.message);
+                }
+            },
+            "error": function (json) {
+                console.log("Error");
             }
         });
     }
