@@ -24,6 +24,12 @@ namespace Tournament.Structure
 		Tie,
 		Win
 	};
+	public enum PairingMethod
+	{
+		Fold,
+		Slide,
+		Adjacent
+	};
 
 	public class PlayerRecord
 	{

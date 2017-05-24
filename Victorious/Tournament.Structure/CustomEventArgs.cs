@@ -10,8 +10,15 @@ namespace Tournament.Structure
 {
 	public class BracketEventArgs : EventArgs
 	{
+		/// <summary>
+		/// New Models of all changed Matches.
+		/// </summary>
 		public List<MatchModel> UpdatedMatches
 		{ get; private set; }
+
+		/// <summary>
+		/// ID's of any Games to delete from database.
+		/// </summary>
 		public List<int> DeletedGameIDs
 		{ get; private set; }
 

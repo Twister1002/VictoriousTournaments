@@ -341,9 +341,9 @@ namespace Tournament.Structure
 			AddRoundRobinBracket(pList, _numRounds);
 		}
 #endif
-		public void AddSwissBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1, int _numRounds = 0)
+		public void AddSwissBracket(List<IPlayer> _playerList, PairingMethod _pairingMethod = PairingMethod.Slide, int _maxGamesPerMatch = 1, int _numRounds = 0)
 		{
-			Brackets.Add(new SwissBracket(_playerList, _maxGamesPerMatch, _numRounds));
+			Brackets.Add(new SwissBracket(_playerList, _pairingMethod, _maxGamesPerMatch, _numRounds));
 		}
 		public void AddRRGroupStage(List<IPlayer> _playerList, int _numGroups = 2, int _maxGamesPerMatch = 1, int _maxRounds = 0)
 		{

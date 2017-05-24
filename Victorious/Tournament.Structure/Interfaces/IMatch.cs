@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using DatabaseLib;
 
 namespace Tournament.Structure
-{	
+{
 	public interface IMatch
 	{
 		#region Variables & Properties
@@ -134,6 +134,7 @@ namespace Tournament.Structure
 #if false
 		/// <summary>
 		/// Replace an existing Game with new data.
+		/// Only functions when game winner does NOT change.
 		/// </summary>
 		/// <param name="_gameNumber">Number of Game to replace</param>
 		/// <param name="_defenderScore">Score for first Player</param>
@@ -215,6 +216,6 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_number">Number of match to set</param>
 		void SetNextLoserMatchNumber(int _number);
-#endregion
+		#endregion
 	}
 }

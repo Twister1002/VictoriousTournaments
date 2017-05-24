@@ -391,17 +391,20 @@ namespace Tournament.Structure
 
 					alteredMatches.AddRange(RemovePlayerFromFutureMatches
 						(nextWinnerNumber, match.Players[(int)(match.WinnerSlot)].Id));
-					alteredMatches.AddRange(RemovePlayerFromFutureMatches
-						(nextLoserNumber, match.Players[(int)loserSlot].Id));
+					List<MatchModel> secondList = RemovePlayerFromFutureMatches
+						(nextLoserNumber, match.Players[(int)loserSlot].Id);
+					alteredMatches.RemoveAll(firstM => secondList.Select(secM => secM.MatchNumber).Contains(firstM.MatchNumber));
+					alteredMatches.AddRange(secondList);
 				}
 
 				OnGamesDeleted(match.Games);
 				match.RemovePlayer(_playerId);
 			}
+
+			alteredMatches.RemoveAll(m => m.MatchNumber == _matchNumber);
 			alteredMatches.Add(GetMatchModel(match));
 
 			return alteredMatches;
-			//return (alteredMatches.OrderBy(m => m.MatchNumber).ToList());
 		}
 
 		protected override void UpdateRankings()

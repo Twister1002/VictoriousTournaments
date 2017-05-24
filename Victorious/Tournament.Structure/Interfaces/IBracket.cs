@@ -65,9 +65,26 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Events
+		/// <summary>
+		/// Fired on creation of a new round of Matches. (Swiss)
+		/// Contains Models of Matches to add.
+		/// </summary>
 		event EventHandler<BracketEventArgs> RoundAdded;
+
+		/// <summary>
+		/// Fired on deletion of one or more rounds. (Swiss)
+		/// Contains Models of Matches to delete.
+		/// </summary>
 		event EventHandler<BracketEventArgs> RoundDeleted;
+
+		/// <summary>
+		/// Modifications were made. Update any contained Matches and Games.
+		/// </summary>
 		event EventHandler<BracketEventArgs> MatchesModified;
+
+		/// <summary>
+		/// Games were deleted. Use these ID's to update the database.
+		/// </summary>
 		event EventHandler<BracketEventArgs> GamesDeleted;
 		#endregion
 
@@ -206,6 +223,13 @@ namespace Tournament.Structure
 		List<GameModel> ResetMatchScore(int _matchNumber);
 
 		/// <summary>
+		/// Get a Model of current Bracket.
+		/// </summary>
+		/// <param name="_tournamentID">ID of this Bracket's Tournament</param>
+		/// <returns>BracketModel</returns>
+		BracketModel GetModel(int _tournamentID = 0);
+
+		/// <summary>
 		/// Get all Matches in specified round.
 		/// (_index=1 returns FIRST round)
 		/// </summary>
@@ -255,6 +279,6 @@ namespace Tournament.Structure
 		/// Resets EVERY Match to a pre-play state (no games played).
 		/// </summary>
 		void ResetMatches();
-#endregion
+		#endregion
 	}
 }

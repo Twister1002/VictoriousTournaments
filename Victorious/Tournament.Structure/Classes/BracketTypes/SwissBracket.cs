@@ -57,10 +57,12 @@ namespace Tournament.Structure
 		{ get; set; }
 		private List<int> PlayerByes
 		{ get; set; }
+		private PairingMethod PairingMethod
+		{ get; set; }
 		#endregion
 
 		#region Ctors
-		public SwissBracket(List<IPlayer> _players, int _maxGamesPerMatch = 1, int _numberOfRounds = 0)
+		public SwissBracket(List<IPlayer> _players, PairingMethod _pairing = PairingMethod.Slide, int _maxGamesPerMatch = 1, int _numberOfRounds = 0)
 		{
 			if (null == _players)
 			{
@@ -89,6 +91,7 @@ namespace Tournament.Structure
 
 			Id = 0;
 			BracketType = BracketType.SWISS;
+			PairingMethod = _pairing;
 			MaxRounds = _numberOfRounds;
 			if (Players.Count > 8 && MaxRounds > (Players.Count / 2))
 			{
@@ -138,6 +141,31 @@ namespace Tournament.Structure
 					}
 				}
 			}
+
+			// Determine the Pairing Method from examining Rnd 1:
+			//int firstPlayerIndex = (0 == PlayerByes.Count)
+			//	? 0 : 1;
+			//IMatch firstPlayerMatch = GetRound(1)
+			//	.Where(m => m.Players.Select(p => p.Id).Contains(this.Players[firstPlayerIndex].Id))
+			//	.First();
+			//int secondPlayerId = firstPlayerMatch.Players
+			//	.Select(p => p.Id)
+			//	.Where(i => i != this.Players[firstPlayerIndex].Id)
+			//	.First();
+			//if (Players[1 + firstPlayerIndex].Id == secondPlayerId)
+			//{
+			//	// Top two seeds are matched up:
+			//	PairingMethod = PairingMethod.Adjacent;
+			//}
+			//else if (Players.Last().Id == secondPlayerId)
+			//{
+			//	// Top seed is paired against bottom seed:
+			//	PairingMethod = PairingMethod.Fold;
+			//}
+			//else
+			//{
+			//	PairingMethod = PairingMethod.Slide;
+			//}
 
 			if (PlayerByes.Count > 0)
 			{
@@ -594,6 +622,7 @@ namespace Tournament.Structure
 					// SLIDE pairing:
 					groupYmatchups.Add(new Matchup(i, i + divisionPoint, -1));
 				}
+				//List<Matchup> groupYmatchups = CreatePairingsList(_groups[groupNumberY].Count);
 				int matchupYindex = groupYmatchups.FindIndex(m => m.ContainsInt(playerYindex));
 
 				for (int x = 0; x < numCompetitors; ++x)
@@ -639,6 +668,7 @@ namespace Tournament.Structure
 							// SLIDE pairing:
 							groupXmatchups.Add(new Matchup(i, i + divisionPoint, -1));
 						}
+						//List<Matchup> groupXmatchups = CreatePairingsList(_groups[groupNumberX].Count);
 
 						int matchupXindex, idealMatchup;
 						if (groupNumberY > groupNumberX)
@@ -705,6 +735,35 @@ namespace Tournament.Structure
 			}
 
 			return heuristicGraph;
+		}
+
+		private List<Matchup> CreatePairingsList(int _numPlayers)
+		{
+			List<Matchup> matchups = new List<Matchup>();
+			int divisionPoint = Convert.ToInt32(_numPlayers * 0.5);
+			switch (PairingMethod)
+			{
+				case PairingMethod.Adjacent:
+					for (int i = 0; i < _numPlayers; i += 2)
+					{
+						matchups.Add(new Matchup(i, i + 1, -1));
+					}
+					break;
+				case PairingMethod.Fold:
+					for (int i = 0; i < divisionPoint; ++i)
+					{
+						matchups.Add(new Matchup(i, _numPlayers - i, -1));
+					}
+					break;
+				case PairingMethod.Slide:
+					for (int i = 0; i < divisionPoint; ++i)
+					{
+						matchups.Add(new Matchup(i, divisionPoint + i, -1));
+					}
+					break;
+			}
+
+			return matchups;
 		}
 
 		private List<MatchModel> RemoveFutureRounds(int _currentRoundIndex)
