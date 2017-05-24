@@ -135,6 +135,15 @@ namespace Tournament.Structure
 			return modelList;
 		}
 
+		public override BracketModel GetModel(int _tournamentID = 0)
+		{
+			throw new NotImplementedException();
+#if false
+			BracketModel model = base.GetModel(_tournamentID);
+			model.NumberOfGroups = this.NumberOfGroups;
+			return model;
+#endif
+		}
 		public IBracket GetGroup(int _groupNumber)
 		{
 			if (null == Groups)

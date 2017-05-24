@@ -1507,6 +1507,66 @@ namespace Tournament.Structure.Tests
 		}
 		#endregion
 
+		#region Models
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("BracketModel")]
+		public void SEBGetModel_ReturnsABracketModel()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 5; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			BracketModel bModel = b.GetModel();
+			Assert.IsInstanceOfType(bModel, typeof(BracketModel));
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("BracketModel")]
+		public void SEBGetModel_HasModelsOfAllPlayers()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 5; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				moq.Setup(p => p.GetTournamentUsersBracketModel(0, i))
+					.Returns(new TournamentUsersBracketModel());
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			BracketModel bModel = b.GetModel();
+			Assert.AreEqual(b.Players.Count, bModel.TournamentUsersBrackets.Count);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("BracketModel")]
+		public void SEBGetModel_HasModelsOfAllMatches()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 5; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				moq.Setup(p => p.GetTournamentUsersBracketModel(0, i))
+					.Returns(new TournamentUsersBracketModel());
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SingleElimBracket(pList);
+
+			BracketModel bModel = b.GetModel();
+			Assert.AreEqual(b.NumberOfMatches, bModel.Matches.Count);
+		}
+
+		#endregion
+
+		#region Accessors & Mutators
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("Bracket Accessors")]
@@ -1575,5 +1635,6 @@ namespace Tournament.Structure.Tests
 			b.SetMaxGamesForWholeLowerRound(1, 3);
 			Assert.AreEqual(1, b.GetRound(1)[0].MaxGames);
 		}
+		#endregion
 	}
 }

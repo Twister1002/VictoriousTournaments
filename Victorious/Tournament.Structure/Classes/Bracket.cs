@@ -609,6 +609,37 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Accessors
+		public virtual BracketModel GetModel(int _tournamentID = 0)
+		{
+			BracketModel model = new BracketModel();
+			model.TournamentID = _tournamentID;
+			model.BracketID = this.Id;
+			model.BracketTypeID = Convert.ToInt32(this.BracketType);
+			model.Finalized = this.IsFinalized;
+			//model.NumberOfGroups = 0;
+			model.MaxRounds = this.MaxRounds;
+
+			model.BracketType = new BracketTypeModel();
+			model.BracketType.BracketTypeID = model.BracketTypeID;
+			model.BracketType.Type = this.BracketType;
+			model.BracketType.TypeName = this.BracketType.ToString("f");
+
+			//model.TournamentUsersBrackets = new List<TournamentUsersBracketModel>();
+			foreach (IPlayer player in Players)
+			{
+				TournamentUsersBracketModel m = player.GetTournamentUsersBracketModel(this.Id, GetPlayerSeed(player.Id));
+				model.TournamentUsersBrackets.Add(m);
+			}
+
+			//model.Matches = new List<MatchModel>();
+			for (int n = 1; n <= NumberOfMatches; ++n)
+			{
+				model.Matches.Add(GetMatchModel(n));
+			}
+
+			return model;
+		}
+
 		public virtual List<IMatch> GetRound(int _round)
 		{
 			if (null == Matches)

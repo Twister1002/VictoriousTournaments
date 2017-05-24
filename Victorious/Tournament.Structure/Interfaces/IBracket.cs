@@ -223,6 +223,13 @@ namespace Tournament.Structure
 		List<GameModel> ResetMatchScore(int _matchNumber);
 
 		/// <summary>
+		/// Get a Model of current Bracket.
+		/// </summary>
+		/// <param name="_tournamentID">ID of this Bracket's Tournament</param>
+		/// <returns>BracketModel</returns>
+		BracketModel GetModel(int _tournamentID = 0);
+
+		/// <summary>
 		/// Get all Matches in specified round.
 		/// (_index=1 returns FIRST round)
 		/// </summary>
