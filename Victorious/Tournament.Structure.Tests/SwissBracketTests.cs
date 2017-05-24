@@ -36,7 +36,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void SwissCtor_ThrowsNull_WithNullParameter()
 		{
-			IBracket b = new SwissBracket(null, 1);
+			IBracket b = new SwissBracket(null, PairingMethod.Slide, 1);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -47,7 +47,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(BracketException))]
 		public void SwissCreateBracket_ThrowsException_WithNegativeGPM()
 		{
-			IBracket b = new SwissBracket(new List<IPlayer>(), -1);
+			IBracket b = new SwissBracket(new List<IPlayer>(), PairingMethod.Slide, -1);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -277,7 +277,7 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i + 1);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new SwissBracket(pList, 3);
+			IBracket b = new SwissBracket(pList, PairingMethod.Slide, 3);
 			int matchesPerRound = b.NumberOfMatches;
 			for (int i = 0; i < 3; ++i)
 			{
@@ -304,7 +304,7 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i + 1);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new SwissBracket(pList, 3);
+			IBracket b = new SwissBracket(pList, PairingMethod.Slide, 3);
 			int matchesPerRound = b.NumberOfMatches;
 			for (int i = 0; i < 3; ++i)
 			{
@@ -330,7 +330,7 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i + 1);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new SwissBracket(pList, 3);
+			IBracket b = new SwissBracket(pList, PairingMethod.Slide, 3);
 			int matchesPerRound = b.NumberOfMatches;
 			for (int n = 1; n <= matchesPerRound; ++n)
 			{
@@ -353,7 +353,7 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i + 1);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new SwissBracket(pList, 3);
+			IBracket b = new SwissBracket(pList, PairingMethod.Slide, 3);
 			int matchesPerRound = b.NumberOfMatches;
 			for (int n = 1; n <= matchesPerRound; ++n)
 			{
