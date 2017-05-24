@@ -136,7 +136,7 @@
         }
     });
     // Reset the brackets
-    $(".TournamentInfo .resetInfo").on("click", ResetBracket);
+    $(".TournamentInfo .resetInfo .reset-bracket").on("click", ResetBracket);
 
     function BracketNumberSelected() {
         var bracketId = $(this).data("bracket");

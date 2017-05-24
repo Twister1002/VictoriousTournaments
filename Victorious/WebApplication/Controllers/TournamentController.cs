@@ -73,7 +73,7 @@ namespace WebApplication.Controllers
 
         // GET: Tournament/Edit/5
         [HttpGet]
-        [Route("Tournament/Update")]
+        [Route("Tournament/Update/{tournamentId}")]
         public ActionResult Update(int tournamentId)
         {
             LoadAccount(Session);
