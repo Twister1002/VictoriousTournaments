@@ -13,8 +13,6 @@ namespace WebApplication.Models
 
         public ITournament Tourny { get; private set; }
         public TournamentModel Model { get; private set; }
-        public List<TournamentUserModel> Administrators { get; private set; }
-        public List<TournamentUserModel> Participants { get; private set; }
         public List<TournamentModel> SearchedTournaments { get; private set; }
 
         public TournamentViewModel()
@@ -34,7 +32,6 @@ namespace WebApplication.Models
             if (Model != null)
             {
                 SetFields();
-                GetUserPermissions();
             }
             else
             {
@@ -52,8 +49,7 @@ namespace WebApplication.Models
                 Model = model;
                 SetFields();
             }
-
-            GetUserPermissions();
+            
             ProcessTournament();
         }
 
@@ -63,8 +59,6 @@ namespace WebApplication.Models
             this.GameTypes = db.GetAllGameTypes();
             this.PlatformTypes = db.GetAllPlatforms();
             this.PublicViewing = true;
-            Administrators = new List<TournamentUserModel>();
-            Participants = new List<TournamentUserModel>();
             SearchedTournaments = new List<TournamentModel>();
         }
 
@@ -156,20 +150,6 @@ namespace WebApplication.Models
 
             DbError updateTournament = db.UpdateTournament(Model);
             DbError updateBracket = db.UpdateBracket(bracket);
-
-            if (updateTournament == DbError.SUCCESS && this.Users != null)
-            {
-                // Lets update the new users that were created.
-                foreach (TournamentUserModel user in Users)
-                {
-                    user.TournamentID = Model.TournamentID;
-                    user.IsCheckedIn = false;
-                    user.PermissionLevel = (int)Permission.TOURNAMENT_STANDARD;
-
-                    db.AddTournamentUser(user);
-                }
-
-            }
 
             return updateTournament == DbError.SUCCESS;
         }
@@ -279,23 +259,6 @@ namespace WebApplication.Models
             List<String> safeParamList = new List<String>() { "Title", "GameTypeID", "PlatformID", "TournamentStartDate", "PublicViewing", "PublicRegistration" };
             searchData = searchData.Where(k => safeParamList.Contains(k.Key) && k.Value != String.Empty).ToDictionary(k => k.Key, k => k.Value);
             SearchedTournaments = db.FindTournaments(searchData);
-        }
-
-        private void GetUserPermissions()
-        {
-            foreach (TournamentUserModel user in Model.TournamentUsers)
-            {
-                switch ((Permission)user.PermissionLevel)
-                {
-                    case Permission.TOURNAMENT_STANDARD:
-                        Participants.Add(user);
-                        break;
-                    case Permission.TOURNAMENT_ADMINISTRATOR:
-                    case Permission.TOURNAMENT_CREATOR:
-                        Administrators.Add(user);
-                        break;
-                }
-            }
         }
 
         public bool FinalizeTournament(Dictionary<String, Dictionary<String, int>> roundData)
@@ -434,7 +397,7 @@ namespace WebApplication.Models
             IBracket bracket = null;
             List<IPlayer> players = new List<IPlayer>();
 
-            foreach (TournamentUserModel userModel in Participants)
+            foreach (TournamentUserModel userModel in GetParticipants())
             {
                 players.Add(new User(userModel));
             }
@@ -457,7 +420,8 @@ namespace WebApplication.Models
 
             return bracket;
         }
-
+        
+        #region CheckIn
         public bool isAccountCheckedIn(int accountId)
         {
             TournamentUserModel userModel = Model.TournamentUsers.FirstOrDefault(x => x.AccountID == accountId);
@@ -490,17 +454,7 @@ namespace WebApplication.Models
 
             return db.CheckUserIn(userModel.TournamentUserID) == DbError.SUCCESS;
         }
-
-        public bool isRegistered(int accountId)
-        {
-            return Model.TournamentUsers.Any(x => x.AccountID == accountId);
-        }
-
-        public bool CanEdit()
-        {
-            return !Model.InProgress ? true : false;
-        }
-
+        #endregion
         #region Permissions 
         public Permission TournamentPermission(int accountId)
         {
@@ -724,6 +678,21 @@ namespace WebApplication.Models
             {
                 return false;
             }
+        }
+
+        public bool isRegistered(int accountId)
+        {
+            return Model.TournamentUsers.Any(x => x.AccountID == accountId);
+        }
+
+        public bool CanEdit()
+        {
+            return !Model.InProgress ? true : false;
+        }
+
+        public List<TournamentUserModel> GetParticipants()
+        {
+            return Model.TournamentUsers.Where(x => x.PermissionLevel == (int)Permission.TOURNAMENT_STANDARD).ToList();
         }
         #endregion
     }

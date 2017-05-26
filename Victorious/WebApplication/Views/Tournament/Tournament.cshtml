@@ -30,22 +30,27 @@
     {
         var Bracket = new WebApplication.Models.BracketViewModel(Model.Tourny.Brackets[i]);
         String bracketName = "";
+        String bracketFileName = "";
 
         <div class="bracket" data-id="@Bracket.Bracket.Id" data-bracketnum="@i">
             <div class="bracket-info">
                 @switch (Bracket.Bracket.BracketType)
                 {
                     case DatabaseLib.BracketType.SINGLE:
-                        bracketName = "Single";
+                        bracketFileName = "Single";
+                        bracketName = bracketFileName + " Elimination Bracket";
                         break;
                     case DatabaseLib.BracketType.DOUBLE:
-                        bracketName = "Double";
+                        bracketFileName = "Double";
+                        bracketName = bracketFileName + " Elimination Bracket";
                         break;
                     case DatabaseLib.BracketType.ROUNDROBIN:
-                        bracketName = "RoundRobin";
+                        bracketFileName = "RoundRobin";
+                        bracketName = bracketFileName + " Bracket";
                         break;
                     case DatabaseLib.BracketType.SWISS:
-                        bracketName = "Swiss";
+                        bracketFileName = "Swiss";
+                        bracketName = bracketFileName + " Bracket";
                         break;
                     default:
                         bracketName = null;
@@ -65,12 +70,12 @@
             </div>
             <ul class="list-table bracket-data">
                 @{
-                    if (!Bracket.Bracket.IsFinalized && ViewBag.isCreator)
+                    if (!Bracket.Bracket.IsFinalized && ViewBag.isCreator && Model.GetParticipants().Count >= 4)
                     {
                         Html.RenderPartial("Administrator/_Finalize");
                     }
 
-                    Html.RenderPartial("Brackets/" + bracketName, Bracket, new ViewDataDictionary(ViewData));
+                    Html.RenderPartial("Brackets/" + bracketFileName, Bracket, new ViewDataDictionary(ViewData));
                 }
             </ul>
         </div>
