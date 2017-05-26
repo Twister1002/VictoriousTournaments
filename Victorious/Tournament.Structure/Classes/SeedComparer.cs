@@ -10,10 +10,12 @@ namespace Tournament.Structure
 	{
 		public int Compare(int? first, int? second)
 		{
+			// NULL values sort to the back:
 			if (!first.HasValue)
 			{
 				if (!second.HasValue)
 				{
+					// Dual null values randomize:
 					return RandCompare();
 				}
 
@@ -26,6 +28,7 @@ namespace Tournament.Structure
 		
 			// Default: Both ints have value:
 			int compare = (first.Value).CompareTo(second.Value);
+			// Duplicate values randomize:
 			return (0 == compare)
 				? RandCompare() : compare;
 		}
