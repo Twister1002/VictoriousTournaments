@@ -143,29 +143,29 @@ namespace Tournament.Structure
 			}
 
 			// Determine the Pairing Method from examining Rnd 1:
-			//int firstPlayerIndex = (0 == PlayerByes.Count)
-			//	? 0 : 1;
-			//IMatch firstPlayerMatch = GetRound(1)
-			//	.Where(m => m.Players.Select(p => p.Id).Contains(this.Players[firstPlayerIndex].Id))
-			//	.First();
-			//int secondPlayerId = firstPlayerMatch.Players
-			//	.Select(p => p.Id)
-			//	.Where(i => i != this.Players[firstPlayerIndex].Id)
-			//	.First();
-			//if (Players[1 + firstPlayerIndex].Id == secondPlayerId)
-			//{
-			//	// Top two seeds are matched up:
-			//	PairingMethod = PairingMethod.Adjacent;
-			//}
-			//else if (Players.Last().Id == secondPlayerId)
-			//{
-			//	// Top seed is paired against bottom seed:
-			//	PairingMethod = PairingMethod.Fold;
-			//}
-			//else
-			//{
-			//	PairingMethod = PairingMethod.Slide;
-			//}
+			int firstPlayerIndex = (0 == PlayerByes.Count)
+				? 0 : 1;
+			IMatch firstPlayerMatch = GetRound(1)
+				.Where(m => m.Players.Select(p => p.Id).Contains(this.Players[firstPlayerIndex].Id))
+				.First();
+			int secondPlayerId = firstPlayerMatch.Players
+				.Select(p => p.Id)
+				.Where(i => i != this.Players[firstPlayerIndex].Id)
+				.First();
+			if (Players[1 + firstPlayerIndex].Id == secondPlayerId)
+			{
+				// Top two seeds are matched up:
+				PairingMethod = PairingMethod.Adjacent;
+			}
+			else if (Players.Last().Id == secondPlayerId)
+			{
+				// Top seed is paired against bottom seed:
+				PairingMethod = PairingMethod.Fold;
+			}
+			else
+			{
+				PairingMethod = PairingMethod.Slide;
+			}
 
 			if (PlayerByes.Count > 0)
 			{
@@ -614,15 +614,15 @@ namespace Tournament.Structure
 					}
 				}
 
-				List<Matchup> groupYmatchups = new List<Matchup>();
-				int divisionPoint = Convert.ToInt32(_groups[groupNumberY].Count * 0.5);
-				for (int i = 0; i < divisionPoint; ++i)
-				{
-					// Make fake "preferred" matchups for the players in this group, for use later:
-					// SLIDE pairing:
-					groupYmatchups.Add(new Matchup(i, i + divisionPoint, -1));
-				}
-				//List<Matchup> groupYmatchups = CreatePairingsList(_groups[groupNumberY].Count);
+				//List<Matchup> groupYmatchups = new List<Matchup>();
+				//int divisionPoint = Convert.ToInt32(_groups[groupNumberY].Count * 0.5);
+				//for (int i = 0; i < divisionPoint; ++i)
+				//{
+				//	// Make fake "preferred" matchups for the players in this group, for use later:
+				//	// SLIDE pairing:
+				//	groupYmatchups.Add(new Matchup(i, i + divisionPoint, -1));
+				//}
+				List<Matchup> groupYmatchups = CreatePairingsList(_groups[groupNumberY].Count);
 				int matchupYindex = groupYmatchups.FindIndex(m => m.ContainsInt(playerYindex));
 
 				for (int x = 0; x < numCompetitors; ++x)
@@ -660,15 +660,15 @@ namespace Tournament.Structure
 					}
 					else
 					{
-						List<Matchup> groupXmatchups = new List<Matchup>();
-						divisionPoint = Convert.ToInt32(_groups[groupNumberX].Count * 0.5);
-						for (int i = 0; i < divisionPoint; ++i)
-						{
-							// Make fake "preferred" matchups for the players in this group:
-							// SLIDE pairing:
-							groupXmatchups.Add(new Matchup(i, i + divisionPoint, -1));
-						}
-						//List<Matchup> groupXmatchups = CreatePairingsList(_groups[groupNumberX].Count);
+						//List<Matchup> groupXmatchups = new List<Matchup>();
+						//divisionPoint = Convert.ToInt32(_groups[groupNumberX].Count * 0.5);
+						//for (int i = 0; i < divisionPoint; ++i)
+						//{
+						//	// Make fake "preferred" matchups for the players in this group:
+						//	// SLIDE pairing:
+						//	groupXmatchups.Add(new Matchup(i, i + divisionPoint, -1));
+						//}
+						List<Matchup> groupXmatchups = CreatePairingsList(_groups[groupNumberX].Count);
 
 						int matchupXindex, idealMatchup;
 						if (groupNumberY > groupNumberX)
