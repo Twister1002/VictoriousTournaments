@@ -72,6 +72,7 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="DatabaseRepository.cs" />
+    <Compile Include="DatabaseService.cs" />
     <Compile Include="GameModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -89,6 +90,7 @@
     <Compile Include="Interfaces\IPlatformRepository.cs" />
     <Compile Include="Interfaces\ITournamentRepository.cs" />
     <Compile Include="Interfaces\IUnitOfWork.cs" />
+    <Compile Include="IRepository.cs" />
     <Compile Include="MatchModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -114,6 +116,9 @@
     </Compile>
     <Compile Include="PlatformRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository.cs" />
+    <Compile Include="Services\AccountService.cs" />
+    <Compile Include="Services\TournamentService.cs" />
     <Compile Include="TournamentInviteModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>

@@ -21,15 +21,26 @@ namespace DatabaseLib.Tests
 
         [TestMethod]
         [TestCategory("Unit Of Work")]
-        public void Add_Tournament_To_Repo()
+        public void Add_Tournament()
         {
+            tournament.InviteCode = "555";
             unitOfWork.TournamentRepository.AddTournament(tournament);
             var result = unitOfWork.Save();
 
             Assert.AreEqual(true, result);
         }
 
-       
+        [TestMethod]
+        [TestCategory("Unit Of Work")]
+        public void Get_Tournament()
+        {
+            unitOfWork.TournamentRepository.AddTournament(tournament);
+        }
+
+        public void Update_Tournament()
+        {
+
+        }
 
 
         private TournamentModel NewTournament()

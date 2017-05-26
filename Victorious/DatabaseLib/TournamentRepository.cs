@@ -14,7 +14,7 @@ namespace DatabaseLib
 
         public TournamentRepository()
         {
-            context = new VictoriousEntities();
+            //context = new VictoriousEntities();
         }
 
         public TournamentRepository(VictoriousEntities context)
@@ -24,14 +24,25 @@ namespace DatabaseLib
 
         public DbError AddTournament(TournamentModel tournament)
         {
-            TournamentModel _tournament = new TournamentModel();
+            //TournamentModel _tournament = new TournamentModel();
             try
             {
-                _tournament = tournament;
-                _tournament.CreatedOn = DateTime.Now;
-                _tournament.LastEditedOn = DateTime.Now;
-                context.SaveChanges();
-                context.TournamentModels.Add(_tournament);
+                TournamentInviteModel invite = new TournamentInviteModel()
+                {
+                    DateCreated = DateTime.Now,
+                    IsExpired = false,
+                    NumberOfUses = 0,
+                    TournamentID = tournament.TournamentID,
+                    TournamentInviteCode = tournament.InviteCode
+                };
+                
+                
+                //_tournament = tournament;
+                //_tournament.CreatedOn = DateTime.Now;
+                //_tournament.LastEditedOn = DateTime.Now;
+                ////context.SaveChanges();
+                //context.TournamentModels.Add(_tournament);
+                context.TournamentModels.Add(tournament);
             }
             catch (Exception ex)
             {

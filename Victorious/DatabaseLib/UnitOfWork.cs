@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatabaseLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,14 +10,18 @@ namespace DatabaseLib
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private VictoriousEntities context = new VictoriousEntities();
-        private ITournamentRepository tournamentRepository;
-        private IAccountRepository accountRepository;
-        private IBracketRepository bracketRepository;
-        private IBracketTypeRepository bracketTypeRepository;
-        private IGameRepository gameRepository;
-        private IGameTypeRepository gameTypeRepository;
-        private IMatchRepository matchRepository;
-        private IPlatformRepository platformRepository;
+        IRepository<AccountInviteModel> accountInviteRepo;
+        IRepository<AccountModel> accountRepo;
+        IRepository<BracketModel> bracketRepo;
+        IRepository<BracketTypeModel> bracketTypeRepo;
+        IRepository<GameModel> gameRepo;
+        IRepository<GameTypeModel> gameTypeRepo;
+        IRepository<MatchModel> matchRepo;
+        IRepository<PlatformModel> platformRepo;
+        IRepository<TournamentModel> tournamentRepo;
+        IRepository<TournamentUserModel> tournamentUserRepo;
+        IRepository<TournamentInviteModel> tournamentInviteRepo;
+        IRepository<TournamentUsersBracketModel> tournamentUsersBracketRepo;
 
         public UnitOfWork(VictoriousEntities context = null)
         {
@@ -39,99 +44,148 @@ namespace DatabaseLib
             return true;
         }
 
-        public ITournamentRepository TournamentRepository
+      
+        public IRepository<AccountModel> AccountRepo
         {
             get
             {
-                if (this.tournamentRepository == null)
+                if (this.accountRepo == null)
                 {
-                    this.tournamentRepository = new TournamentRepository(context);
+                    this.accountRepo = new Repository<AccountModel>(context);
                 }
-                return tournamentRepository;
+                return accountRepo;
             }
         }
 
-        public IAccountRepository AccountRepository
+        public IRepository<AccountInviteModel> AccountInviteRepo
         {
             get
             {
-                if (this.accountRepository == null)
+                if (this.accountInviteRepo == null)
                 {
-                    this.accountRepository = new AccountRepository(context);
+                    this.accountInviteRepo = new Repository<AccountInviteModel>(context);
                 }
-                return accountRepository;
+                return accountInviteRepo;
             }
         }
 
-        public IBracketRepository BracketRepository
+        public IRepository<BracketModel> BracketRepo
         {
             get
             {
-                if (this.bracketRepository == null)
+                if (this.bracketRepo == null)
                 {
-                    this.bracketRepository = new BracketRepository(context);
+                    this.bracketRepo = new Repository<BracketModel>(context);
                 }
-                return bracketRepository;
+                return bracketRepo;
             }
         }
 
-        public IBracketTypeRepository BracketTypeRepository
+        public IRepository<BracketTypeModel> BracketTypeRepo
         {
             get
             {
-                if (this.bracketTypeRepository == null)
+                if (this.bracketTypeRepo == null)
                 {
-                    this.bracketTypeRepository = new BracketTypeRepository(context);
+                    this.bracketTypeRepo = new Repository<BracketTypeModel>(context);
                 }
-                return bracketTypeRepository;
+                return bracketTypeRepo;
             }
         }
 
-        public IGameRepository GameRepository
+        public IRepository<GameModel> GameRepo
         {
             get
             {
-                if (this.gameRepository == null)
+                if (this.gameRepo == null)
                 {
-                    this.gameRepository = new GameRepository(context);
+                    this.gameRepo = new Repository<GameModel>(context);
                 }
-                return gameRepository;
+                return gameRepo;
             }
         }
 
-        public IGameTypeRepository GameTypeRepository
+        public IRepository<GameTypeModel> GameTypeRepo
         {
             get
             {
-                if (this.gameTypeRepository == null)
+                if (this.gameTypeRepo == null)
                 {
-                    this.gameTypeRepository = new GameTypeRepository(context);
+                    this.gameTypeRepo = new Repository<GameTypeModel>(context);
                 }
-                return gameTypeRepository;
+                return gameTypeRepo;
             }
         }
 
-        public IMatchRepository MatchRepository
+        public IRepository<MatchModel> MatchRepo
         {
             get
             {
-                if (this.matchRepository == null)
+                if (this.matchRepo == null)
                 {
-                    this.matchRepository = new MatchRepository(context);
+                    this.matchRepo = new Repository<MatchModel>(context);
                 }
-                return matchRepository;
+                return matchRepo;
             }
         }
 
-        public IPlatformRepository PlatformRepository
+        public IRepository<PlatformModel> PlatformRepo
         {
             get
             {
-                if (this.platformRepository == null)
+                if (this.platformRepo == null)
                 {
-                    this.platformRepository = new PlatformRepository(context);
+                    this.platformRepo = new Repository<PlatformModel>(context);
                 }
-                return platformRepository;
+                return platformRepo;
+            }
+        }
+
+        public IRepository<TournamentUserModel> TournamentUserRepo
+        {
+            get
+            {
+                if (this.tournamentUserRepo == null)
+                {
+                    this.tournamentUserRepo = new Repository<TournamentUserModel>(context);
+                }
+                return tournamentUserRepo;
+            }
+        }
+
+        public IRepository<TournamentInviteModel> TournamentInviteRepo
+        {
+            get
+            {
+                if (this.tournamentInviteRepo == null)
+                {
+                    this.tournamentInviteRepo = new Repository<TournamentInviteModel>(context);
+                }
+                return tournamentInviteRepo;
+            }
+        }
+
+        public IRepository<TournamentUsersBracketModel> TournamentUsersBracketRepo
+        {
+            get
+            {
+                if (this.TournamentUsersBracketRepo == null)
+                {
+                    this.tournamentUsersBracketRepo = new Repository<TournamentUsersBracketModel>(context);
+                }
+                return tournamentUsersBracketRepo;
+            }
+        }
+
+        public IRepository<TournamentModel> TournamentRepository
+        {
+            get
+            {
+                if (this.tournamentRepo == null)
+                {
+                    this.tournamentRepo = new Repository<TournamentModel>(context);
+                }
+                return tournamentRepo;
             }
         }
 
