@@ -10,7 +10,7 @@
 
     // Redirect to update
     $(".tournament-update").on("click", function () {
-        window.location.replace("/Tournament/Update/" + $(this).closest("#Tournament").data("id"));
+        window.location  = "/Tournament/Update/" + $(this).closest("#Tournament").data("id");
     });
 
     // Tournament Deletion
