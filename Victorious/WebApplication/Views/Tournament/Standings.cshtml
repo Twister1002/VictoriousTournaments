@@ -22,11 +22,12 @@
                     </li>
 
                     <li class="list-table-body infoSection playerInfo">
-                        <ul class="header" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 4 : 2)">
+                        <ul class="header" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 5 : 2)">
                             <li class="column">Name</li>
                             <li class="column">Status</li>
                             @if (ViewBag.isAdministrator)
                             {
+                                <li class="column">Seed</li>
                                 <li class="column">Present</li>
                                 <li class="column">Actions</li>
                             }
@@ -37,7 +38,7 @@
                             {
                                 Dictionary<String, int> data = Model.PermissionAction(ViewBag.UserId, person.TournamentUserID, "default");
 
-                                <ul class="data user" data-user="@person.TournamentUserID" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 4 : 2)">
+                                <ul class="data user form" data-user="@person.TournamentUserID" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 5 : 2)">
                                     <li class="column name">@person.Name</li>
                                     <li class="column permission">@person.PermissionLevel</li>
                                     @if (ViewBag.isAdministrator)
@@ -47,7 +48,9 @@
                                         {
                                             colorCode = "";
                                         }
-
+                                        <li class="column">
+                                            <input type="text" name="seedVal" maxlength="2" />
+                                        </li>
                                         <li class="column">
                                             <span class="icon icon-checkmark @colorCode checkIn"></span>
                                         </li>
