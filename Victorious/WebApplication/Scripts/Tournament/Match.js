@@ -44,6 +44,7 @@
         var nextGameNumber = $(gameList.find(".games ul")[gamesListed - 1]).data("gamenum") + 1;
 
         jsonData = {
+            "id": -1,
             "gameNum": (isNaN(nextGameNumber) ? 1 : nextGameNumber),
             "challenger": { "score": "" },
             "defender": { "score": "" }
@@ -72,7 +73,8 @@
             "data": { "jsonData": JSON.stringify(jsonData) },
             "dataType": "json",
             "beforeSend": function () {
-                matchElem.find(".TournamentGames").addClass("open");
+                $(".TournamentInfo, .TournamentGames").removeClass("open");
+                matchElem.find(".TournamentGames").addClass("open")
                 matchElem.find(".TournamentGames .list-table-body").empty();
             },
             "success": function (json) {
@@ -82,10 +84,6 @@
                     console.log(json);
                     $games = matchElem.find(".TournamentGames");
 
-                    // Add the currently fetched games
-                    $.each(json.data.games, function (i, e) {
-                        AddGameToDetails(e, matchElem.find(".TournamentGames"));
-                    });
                     MatchUpdate(json.data, matchElem);
                     MatchOptionsUpdate(json.data, $games);
                 }
@@ -222,6 +220,7 @@
                     });
                     
                     match.find(".TournamentGames .games").empty();
+                    UpdateStandings($("#Tournament").data("id"), match.closest(".bracket").data("id"));
                 }
 
                 console.log(json.message);
@@ -249,6 +248,11 @@
         games.find(".defender.name").text(json.defender.name);
         games.find(".challenger.name").text(json.challenger.name);
 
+        games.find(".games").empty();
+        $.each(json.games, function (i, e) {
+            AddGameToDetails(e, games);
+        });
+
         // Verify if the match is ready
         if (json.ready) {
             // Show the details button
@@ -261,11 +265,11 @@
 
     // Helper method to add games to details
     function AddGameToDetails(data, $games) {
-        html = "<ul data-columns='4' data-gameid='"+data.id+"' data-gamenum='"+data.gameNum+"'> ";
-        html += "<li class='column game-number'>Game " + data.gameNum + "</li> ";
+        html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + data.id + "' data-gamenum='" + data.gameNum + "'> ";
+        html += "<li class='column game-number'>" + data.gameNum + "</li> ";
         html += "<li class='column defender score' data-id='"+data.defender.id+"'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li> ";
         html += "<li class='column challenger score' data-id='" + data.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li> ";
-        html += "<li class='column'><span class='icon icon-cross removeGame'></span></li> ";
+        html += "<li class='column'><span class='icon icon-bin removeGame'></span></li> ";
         html += "</ul> ";
 
         $games.find(".games").append(html);
@@ -345,51 +349,6 @@
                 }
                 else {
                     console.log(json.message);
-                }
-            },
-            "error": function (json) {
-                console.log(json);
-            },
-            "complete": function () {
-
-            }
-        });
-    }
-
-    function UpdateStandings(tournyId, bracket) {
-        jsonData = {
-            "tournamentId": tournyId,
-            "bracketNum": bracket
-        };
-
-        $.ajax({
-            "url": "/Ajax/Bracket/Standings",
-            "type": "POST",
-            "data": { "jsonData": JSON.stringify(jsonData) },
-            "dataType": "json",
-            "beforeSend": function () {
-
-            },
-            "success": function (json) {
-                json = JSON.parse(json);
-                var standings = $(".TournamentStandings .standings .list-table-body");
-                if (json.status) {
-                    standings.empty();
-
-                    $.each(json.data.ranks, function (i, e) {
-                        html = "<ul class='position' data-columns='3'> ";
-                        html += "<li class='column rank'>" + e.Rank + "</li> ";
-                        html += "<li class='column name'>" + e.Name + "</li> ";
-                        if (e.usePoints) {
-                            html += "<li class='column score'>" + e.Wins + " - " + e.Losses + " - " + e.Ties + "</li> ";
-                        }
-                        else {
-                            html += "<li class='column score'></li> "
-                        }
-                        html += "</ul> ";
-
-                        standings.append(html);
-                    });
                 }
             },
             "error": function (json) {

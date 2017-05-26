@@ -19,7 +19,7 @@
                         width: 90%;
 
                         &.datepicker, &.timepicker {
-                             width: 48%;
+                            width: 48%;
                         }
                     }
                 }
@@ -35,7 +35,7 @@
         }
     }
 
-    #TournamentStandings {
+    .TournamentInfo {
         width: 75%;
     }
 }
@@ -49,17 +49,35 @@
                         width: 80%;
 
                         &.datepicker, &.timepicker {
-                             width: 30%;
+                            width: 30%;
                         }
                     }
                 }
             }
         }
     }
+
+    #Tournament {
+        .options {
+            > span {
+                padding: 0em .25em;
+            }
+        }
+
+        .TournamentInfo {
+            width: 60%;
+        }
+    }
 }
 
 @media screen and (min-width: @@b3) {
+    .TournamentInfo {
+        width: 40%;
+    }
 }
 
 @media screen and (min-width: @@b4) {
+    .TournamentInfo {
+        width: 33%;
+    }
 }

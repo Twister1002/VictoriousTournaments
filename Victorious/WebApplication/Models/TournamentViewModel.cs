@@ -52,7 +52,7 @@ namespace WebApplication.Models
                 Model = model;
                 SetFields();
             }
-            
+
             GetUserPermissions();
             ProcessTournament();
         }
@@ -79,12 +79,12 @@ namespace WebApplication.Models
             Model.PublicRegistration = this.PublicRegistration;
 
             // Adding Dates and Times
-            Model.RegistrationStartDate = this.RegistrationStartDate +  this.RegistrationStartTime.TimeOfDay;
-            Model.RegistrationEndDate = this.RegistrationEndDate +      this.RegistrationEndTime.TimeOfDay;
-            Model.TournamentStartDate = this.TournamentStartDate +      this.TournamentStartTime.TimeOfDay;
-            Model.TournamentEndDate = this.TournamentEndDate +          this.TournamentEndTime.TimeOfDay;
-            Model.CheckInBegins = this.CheckinStartDate +               this.CheckinStartTime.TimeOfDay;
-            Model.CheckInEnds = this.CheckinEndDate +                   this.CheckinEndTime.TimeOfDay;
+            Model.RegistrationStartDate = this.RegistrationStartDate + this.RegistrationStartTime.TimeOfDay;
+            Model.RegistrationEndDate = this.RegistrationEndDate + this.RegistrationEndTime.TimeOfDay;
+            Model.TournamentStartDate = this.TournamentStartDate + this.TournamentStartTime.TimeOfDay;
+            Model.TournamentEndDate = this.TournamentEndDate + this.TournamentEndTime.TimeOfDay;
+            Model.CheckInBegins = this.CheckinStartDate + this.CheckinStartTime.TimeOfDay;
+            Model.CheckInEnds = this.CheckinEndDate + this.CheckinEndTime.TimeOfDay;
         }
 
         public override void SetFields()
@@ -199,6 +199,27 @@ namespace WebApplication.Models
             while (createResult == DbError.INVITE_CODE_EXISTS);
 
             return createResult == DbError.SUCCESS;
+        }
+
+        public TournamentUserModel AddUser(String name)
+        {
+            bool isEmail = false;
+            DbError result = DbError.NONE;
+            TournamentUserModel userModel = null;
+
+            if (!isEmail)
+            {
+                userModel = new TournamentUserModel()
+                {
+                    Name = name,
+                    PermissionLevel = (int)Permission.TOURNAMENT_STANDARD,
+                    TournamentID = Model.TournamentID
+                };
+
+                result = db.AddTournamentUser(userModel);
+            }
+
+            return userModel;
         }
 
         public bool AddUser(int accountId, Permission permission)
@@ -446,8 +467,13 @@ namespace WebApplication.Models
 
         public bool isUserCheckedIn(int tournamentUserId)
         {
+            bool checkedIn = false;
             TournamentUserModel userModel = Model.TournamentUsers.FirstOrDefault(x => x.TournamentUserID == tournamentUserId);
-            bool checkedIn = userModel.IsCheckedIn != null ? (bool)userModel.IsCheckedIn : false;
+
+            if (userModel != null)
+            {
+                checkedIn = userModel.IsCheckedIn != null ? (bool)userModel.IsCheckedIn : false;
+            }
             return checkedIn;
         }
 
@@ -526,98 +552,164 @@ namespace WebApplication.Models
             return TournamentPermission(accountId) == Permission.TOURNAMENT_CREATOR;
         }
 
-        public object ChangePermission(AccountModel account, int tournamentUserId, String action)
+        public Permission UserPermission(int tournamentUserId)
         {
-            bool status = false;
-            String message = "No action taken";
-            object data = new { };
+            TournamentUserModel model =
+                Model.TournamentUsers.FirstOrDefault(x =>
+                x.TournamentUserID == tournamentUserId);
 
+            if (model != null)
+            {
+                return (Permission)model.PermissionLevel;
+            }
+            else
+            {
+                return Permission.NONE;
+            }
+        }
+
+        public bool IsUserParticipant(int tournamentUserId)
+        {
+            Permission permission = UserPermission(tournamentUserId);
+            if (permission == Permission.TOURNAMENT_STANDARD ||
+                permission == Permission.TOURNAMENT_ADMINISTRATOR ||
+                permission == Permission.TOURNAMENT_CREATOR)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsUserAdministrator(int tournamentUserId)
+        {
+            Permission permission = UserPermission(tournamentUserId);
+            if (permission == Permission.TOURNAMENT_ADMINISTRATOR ||
+                permission == Permission.TOURNAMENT_CREATOR)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsUserCreator(int tournamentUserId)
+        {
+            Permission permission = UserPermission(tournamentUserId);
+            if (permission == Permission.TOURNAMENT_CREATOR)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public Dictionary<String, int> PermissionAction(int accountId, int tournamentUserId, String action)
+        {
             TournamentUserModel targetAccount = Model.TournamentUsers.First(x => x.TournamentUserID == tournamentUserId);
-            Dictionary<String, bool> permissionActions = new Dictionary<string, bool>();
-            permissionActions.Add("Demote", false);
-            permissionActions.Add("Promote", false);
-            permissionActions.Add("Remove", false);
-
-            bool accountIsAdmin = IsAdministrator(account.AccountID);
-            bool accountIsCreator = IsCreator(account.AccountID);
-
-            Permission permission = Permission.NONE;
+            bool accountIsAdmin = IsAdministrator(accountId);
+            bool accountIsCreator = IsCreator(accountId);
             DbError dbResult = DbError.NONE;
+            Dictionary<String, int> permissionActions = new Dictionary<string, int>();
+            permissionActions.Add("Demote", 0);
+            permissionActions.Add("Promote", 0);
+            permissionActions.Add("Remove", 0);
+            permissionActions.Add("Permission", -1);
 
-            if (accountIsCreator)
+            switch (action)
             {
-                switch (action)
-                {
-                    case "promote":
-                        if ((Permission)targetAccount.PermissionLevel == Permission.TOURNAMENT_STANDARD)
-                        {
-                            permission = Permission.TOURNAMENT_ADMINISTRATOR;
-                            targetAccount.PermissionLevel = (int)permission;
-                            permissionActions["Demote"] = true;
-
-                            dbResult = db.UpdateTournamentUser(targetAccount);
-
-                        }
-                        break;
-                    case "demote":
-                        if ((Permission)targetAccount.PermissionLevel == Permission.TOURNAMENT_STANDARD)
-                        {
-                            // Remove this user
-                            dbResult = db.DeleteTournamentUser(targetAccount.TournamentUserID);
-                        }
-                        else if ((Permission)targetAccount.PermissionLevel == Permission.TOURNAMENT_ADMINISTRATOR)
-                        {
-                            permission = Permission.TOURNAMENT_STANDARD;
-                            targetAccount.PermissionLevel = (int)permission;
-                            permissionActions["Demote"] = true;
-                            permissionActions["Promote"] = true;
-
-                            dbResult = db.UpdateTournamentUser(targetAccount);
-                        }
-                        break;
-                }
-            }
-            else if (accountIsAdmin)
-            {
-                switch (action)
-                {
-                    case "promote":
-                        break;
-                    case "demote":
-                        if ((Permission)targetAccount.PermissionLevel == Permission.TOURNAMENT_STANDARD)
-                        {
-                            // Remove this user
-                            dbResult = db.DeleteTournamentUser(targetAccount.TournamentUserID);
-                        }
-                        break;
-                }
-            }
-
-            switch (dbResult)
-            {
-                case DbError.SUCCESS:
-                    status = true;
-                    message = "The action to " + action + " was successful";
-                    data = new
+                case "promote":
+                    switch ((Permission)targetAccount.PermissionLevel)
                     {
-                        permissionChange = permission,
-                        actions = permissionActions
-                    };
+                        case Permission.TOURNAMENT_STANDARD:
+                            if (accountIsCreator)
+                            {
+                                targetAccount.PermissionLevel = (int)Permission.TOURNAMENT_ADMINISTRATOR;
+                                dbResult = db.UpdateTournamentUser(targetAccount);
+                                permissionActions["Demote"] = 1;
+                            }
+                            break;
+                        case Permission.TOURNAMENT_ADMINISTRATOR:
+                            break;
+                        case Permission.TOURNAMENT_CREATOR:
+                            break;
+                    }
                     break;
-                case DbError.NONE:
-                    message = "No action was taken.";
+                case "demote":
+                    switch ((Permission)targetAccount.PermissionLevel)
+                    {
+                        case Permission.TOURNAMENT_STANDARD:
+                            if (accountIsAdmin)
+                            {
+                                targetAccount.PermissionLevel = (int)Permission.NONE;
+                                dbResult = db.DeleteTournamentUser(targetAccount.TournamentUserID);
+                            }
+                            break;
+                        case Permission.TOURNAMENT_ADMINISTRATOR:
+                            if (accountIsCreator)
+                            {
+                                targetAccount.PermissionLevel = (int)Permission.TOURNAMENT_STANDARD;
+                                dbResult = db.UpdateTournamentUser(targetAccount);
+                                permissionActions["Remove"] = 1;
+                                permissionActions["Promote"] = 1;
+                            }
+                            break;
+                        case Permission.TOURNAMENT_CREATOR:
+                            break;
+                    }
                     break;
                 default:
-                    message = "Failed to " + action + " the selected user.";
+                    switch ((Permission)targetAccount.PermissionLevel)
+                    {
+                        case Permission.TOURNAMENT_STANDARD:
+                            if (targetAccount.AccountID != null)
+                            {
+                                if (accountIsCreator)
+                                {
+                                    permissionActions["Remove"] = 1;
+                                    permissionActions["Promote"] = 1;
+                                }
+                                else if (accountIsAdmin)
+                                {
+                                    permissionActions["Remove"] = 1;
+                                }
+                            }
+                            else
+                            {
+                                if (accountIsAdmin || accountIsCreator)
+                                {
+                                    permissionActions["Remove"] = 1;
+                                }
+                            }
+                            break;
+                        case Permission.TOURNAMENT_ADMINISTRATOR:
+                            if (accountIsCreator)
+                            {
+                                permissionActions["Demote"] = 1;
+                            }
+                            break;
+                        case Permission.TOURNAMENT_CREATOR:
+                            break;
+                    }
                     break;
             }
 
-            return new
+            permissionActions["Permission"] = targetAccount.PermissionLevel != null ? (int)targetAccount.PermissionLevel : -1;
+
+            if (dbResult == DbError.SUCCESS || dbResult == DbError.NONE)
             {
-                status = status,
-                message = message,
-                data = data
-            };
+                return permissionActions;
+            }
+            else
+            {
+                return null;
+            }
         }
         #endregion
         #region Helpers

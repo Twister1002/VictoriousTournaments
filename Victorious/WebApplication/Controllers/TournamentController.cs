@@ -73,7 +73,7 @@ namespace WebApplication.Controllers
 
         // GET: Tournament/Edit/5
         [HttpGet]
-        [Route("Tournament/Update")]
+        [Route("Tournament/Update/{tournamentId}")]
         public ActionResult Update(int tournamentId)
         {
             LoadAccount(Session);
@@ -314,11 +314,11 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("Ajax/Tournament/Deregister")]
-        public JsonResult NoAccountDeRegister(TournamentRegistrationFields userData)
+        [Route("Ajax/Tournament/Register")]
+        public JsonResult NoAccountRegister(int tournamentId, String name)
         {
             LoadAccount(Session);
-            TournamentViewModel viewModel = new TournamentViewModel(userData.TournamentID);
+            TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
             bool status = false;
             object data = new { };
             String message = "No action taken";
@@ -326,12 +326,23 @@ namespace WebApplication.Controllers
             // Is an Administrator registering a user?
             if (viewModel.IsAdministrator(account.AccountId))
             {
-                status = viewModel.RemoveUser(userData.Name);
+                TournamentUserModel model = viewModel.AddUser(name);
+                data = new
+                {
+                    user = new
+                    {
+                        Name = model.Name,
+                        Permission = model.PermissionLevel,
+                        TournamentUserId = model.TournamentUserID
+                    },
+                    actions = viewModel.PermissionAction(account.AccountId, model.TournamentUserID, "default")
+                };
+                if (data != null) status = true;
                 message = "User was " + (status ? "" : "not") + " removed successfully";
             }
             else
             {
-                message = "Could not add user to tournament";
+                message = "You are not allowed to register a user.";
             }
 
             return Json(JsonConvert.SerializeObject(new
@@ -495,22 +506,42 @@ namespace WebApplication.Controllers
         public JsonResult PermissionChange(int TournamentId, int targetUser, String action)
         {
             LoadAccount(Session);
+            bool status = false;
+            String message = "No action taken";
+            object data = new { };
+
             if (account != null)
             {
                 TournamentViewModel viewModel = new TournamentViewModel(TournamentId);
 
-                object permissionChange = viewModel.ChangePermission(account.Account, targetUser, action);
-
-                return Json(JsonConvert.SerializeObject(permissionChange));
+                Dictionary<String, int> permissionChange = viewModel.PermissionAction(account.AccountId, targetUser, action);
+                if (permissionChange == null)
+                {
+                    status = false;
+                    message = "An unexpected error occured";
+                }
+                else
+                {
+                    data = new
+                    {
+                        permissions = permissionChange,
+                        isCheckedIn = viewModel.isUserCheckedIn(targetUser)
+                    };
+                    message = "Permissions are updated";
+                    status = true;
+                }
             }
             else
             {
-                return Json(JsonConvert.SerializeObject(new
-                {
-                    status = false,
-                    message = "You must be logged in to do this action"
-                }));
+                message = "You must be logged in to do this action";
             }
+
+            return Json(JsonConvert.SerializeObject(new
+            {
+                status = status,
+                message = message,
+                data = data
+            }));
         }
     }
 }

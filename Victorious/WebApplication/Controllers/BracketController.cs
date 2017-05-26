@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using WebApplication.Models;
 using Tournament.Structure;
 using DatabaseLib;
+using System.Linq;
 
 namespace WebApplication.Controllers
 {
@@ -123,21 +124,34 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Ajax/Bracket/Standings")]
-        public JsonResult Standings(String jsonData)
+        public JsonResult Standings(int tournamentId, int bracketNum)
         {
-            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
-            TournamentViewModel viewModel = new TournamentViewModel(json["tournamentId"]);
-            IBracket bracket = viewModel.Tourny.Brackets[json["bracketNum"]];
+            bool status = true;
+            bool usePoints = false;
+            String message = "Standings are acquired.";
+            object data = new { };
+
+            TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+            IBracket bracket = viewModel.Tourny.Brackets.ElementAtOrDefault(bracketNum);
+
+            if (bracket == null)
+            {
+                status = false;
+                message = "Invalid data";
+
+            }
+            else
+            {
+                usePoints = (bracket.BracketType == BracketType.DOUBLE || bracket.BracketType == BracketType.SINGLE ? false : true);
+                data = new { ranks = bracket.Rankings, usePoints = usePoints };
+            }
 
             return Json(JsonConvert.SerializeObject(
                 new
                 {
-                    status = true,
-                    usePoints = (bracket.BracketType == BracketType.DOUBLE || bracket.BracketType == BracketType.SINGLE ? false : true),
-                    data = new
-                    {
-                        ranks = bracket.Rankings
-                    }
+                    status = status,
+                    message = message,
+                    data = data
                 }
             ));
         }

@@ -56,6 +56,7 @@ namespace WebApplication.Models
         public void ReloadModel(MatchModel model)
         {
             Model = model;
+            //Match = new Match(model);
         }
 
         // Acquires data from the database if the objects are null
@@ -110,6 +111,7 @@ namespace WebApplication.Models
 
             bool matchResult = matchUpdate == DbError.SUCCESS;
             bool gameResult = gameUpdate == DbError.SUCCESS || gameUpdate == DbError.NONE;
+            Match = new Match(Model);
 
             return matchResult && gameResult;
         }

@@ -4,8 +4,8 @@
     background-color: black;
     z-index: 1;
     min-width: 14em;
-    padding: .5em .1em;
-    width: 100%;
+    padding: .5em .2em;
+    width: 99%;
     display: none;
 
     &.open {
@@ -13,12 +13,16 @@
     }
 
     h2 {
-        display: inline-block;
+        margin: 0em;
+        padding: .25em .5em;
     }
 
     .options {
-        display: inline-block;
-        
+        display: block;
+        position: absolute;
+        right: 1em;
+        top: 1em;
+
         .add-game {
             &.hide {
                 display: none;
@@ -34,7 +38,13 @@
                     text-align: center;
                     text-overflow: clip;
                     overflow: hidden;
-                    white-space:nowrap;
+                    white-space: nowrap;
+                }
+
+                &.form {
+                    input {
+                        padding: .25em .5em;
+                    }
                 }
 
                 .grid(4);
@@ -45,6 +55,8 @@
     .score {
         input {
             width: 2.5em;
+            text-align: center;
+
             &.invalid {
                 background-color: @alert-red;
                 color: @white;
