@@ -73,7 +73,8 @@
             "data": { "jsonData": JSON.stringify(jsonData) },
             "dataType": "json",
             "beforeSend": function () {
-                matchElem.find(".TournamentGames").addClass("open");
+                $(".TournamentInfo, .TournamentGames").removeClass("open");
+                matchElem.find(".TournamentGames").addClass("open")
                 matchElem.find(".TournamentGames .list-table-body").empty();
             },
             "success": function (json) {
@@ -219,7 +220,7 @@
                     });
                     
                     match.find(".TournamentGames .games").empty();
-                    UpdateStandings($("#Tournament").data("id"), $(this).closest(".bracket").data("id"));
+                    UpdateStandings($("#Tournament").data("id"), match.closest(".bracket").data("id"));
                 }
 
                 console.log(json.message);
@@ -264,11 +265,11 @@
 
     // Helper method to add games to details
     function AddGameToDetails(data, $games) {
-        html = "<ul data-columns='4' data-gameid='"+data.id+"' data-gamenum='"+data.gameNum+"'> ";
-        html += "<li class='column game-number'>Game " + data.gameNum + "</li> ";
+        html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + data.id + "' data-gamenum='" + data.gameNum + "'> ";
+        html += "<li class='column game-number'>" + data.gameNum + "</li> ";
         html += "<li class='column defender score' data-id='"+data.defender.id+"'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li> ";
         html += "<li class='column challenger score' data-id='" + data.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li> ";
-        html += "<li class='column'><span class='icon icon-cross removeGame'></span></li> ";
+        html += "<li class='column'><span class='icon icon-bin removeGame'></span></li> ";
         html += "</ul> ";
 
         $games.find(".games").append(html);

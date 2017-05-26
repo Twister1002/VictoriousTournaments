@@ -143,14 +143,13 @@ namespace WebApplication.Controllers
             else
             {
                 usePoints = (bracket.BracketType == BracketType.DOUBLE || bracket.BracketType == BracketType.SINGLE ? false : true);
-                data = new { ranks = bracket.Rankings };
+                data = new { ranks = bracket.Rankings, usePoints = usePoints };
             }
 
             return Json(JsonConvert.SerializeObject(
                 new
                 {
                     status = status,
-                    usePoints = usePoints,
                     message = message,
                     data = data
                 }

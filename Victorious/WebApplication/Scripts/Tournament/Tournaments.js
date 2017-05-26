@@ -1,5 +1,6 @@
 ﻿jQuery(document).ready(function () {
     var $ = jQuery;
+    var tournamentChanged = false;
     var permissionDictionary = {
         100: "Creator",
         101: "Admin",
@@ -104,6 +105,7 @@
 
     // Show the standings
     $("#Tournament  .tournamentData").on("click", function () {
+        $(".TournamentGames").removeClass("open");
         var elem = $(".TournamentInfo");
 
         if (elem.hasClass("open")) {
@@ -118,6 +120,8 @@
 
     $(".TournamentInfo .close").on("click", function () {
         $(this).closest(".TournamentInfo").removeClass("open");
+
+        if (tournamentChanged) location.reload();
     });
 
     // Torunament Bracket Information
@@ -276,6 +280,7 @@
                     row.find(".name input").val('')
                 }
 
+                tournamentChanged = true;
                 console.log(json.message);
             },
             "error": function (json) {
@@ -317,6 +322,10 @@
             $.each(permission, function (i, e) {
                 $(e).text(permissionDictionary[$(e).text()]);
             });
+
+            if ($(".TournamentInfo .bracketNum").length == 1) {
+                $(".TournamentInfo .bracketNum")[0].click();
+            }
         }
     })($);
 });
@@ -333,7 +342,7 @@ function UpdateStandings(tournyId, bracketNum) {
         "data": { "tournamentId": tournyId, "bracketNum": bracketNum },
         "dataType": "json",
         "success": function (json) {
-            json = JSON.parse(json);
+            var json = JSON.parse(json);
             if (json.status) {
                 var standings = $(".TournamentInfo .bracketData[data-bracket='" + bracketNum + "'] .standingInfo");
                 standings.find(".data").remove();
@@ -342,7 +351,7 @@ function UpdateStandings(tournyId, bracketNum) {
                     html = "<ul class='data' data-columns='3'> ";
                     html += "<li class='column rank'>" + e.Rank + "</li> ";
                     html += "<li class='column name'>" + e.Name + "</li> ";
-                    if (e.usePoints) {
+                    if (json.data.usePoints) {
                         html += "<li class='column score'>" + e.Wins + " - " + e.Losses + " - " + e.Ties + "</li> ";
                     }
                     else {
