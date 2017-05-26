@@ -14,8 +14,7 @@ namespace Tournament.Structure
 			{
 				if (!second.HasValue)
 				{
-					Random rng = new Random();
-					return Compare(rng.Next(), rng.Next());
+					return RandCompare();
 				}
 
 				return 1;
@@ -26,7 +25,17 @@ namespace Tournament.Structure
 			}
 		
 			// Default: Both ints have value:
-			return ((first.Value).CompareTo(second.Value));
+			int compare = (first.Value).CompareTo(second.Value);
+			return (0 == compare)
+				? RandCompare() : compare;
+		}
+
+		private int RandCompare()
+		{
+			Random rng = new Random();
+			int compare = rng.Next().CompareTo(rng.Next());
+			return (0 == compare)
+				? RandCompare() : compare;
 		}
 	}
 }

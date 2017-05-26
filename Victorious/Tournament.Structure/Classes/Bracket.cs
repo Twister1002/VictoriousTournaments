@@ -221,6 +221,19 @@ namespace Tournament.Structure
 			}
 			DeleteBracketData();
 		}
+		public void SetNewPlayerlist(ICollection<TournamentUsersBracketModel> _players)
+		{
+			List<TournamentUserModel> userModels = _players
+				.OrderBy(p => p.Seed, new SeedComparer())
+				.Select(p => p.TournamentUser)
+				.ToList();
+			List<IPlayer> playerList = new List<IPlayer>();
+			foreach (TournamentUserModel model in userModels)
+			{
+				playerList.Add(new User(model));
+			}
+			SetNewPlayerlist(playerList);
+		}
 		public void AddPlayer(IPlayer _player)
 		{
 			if (null == _player)

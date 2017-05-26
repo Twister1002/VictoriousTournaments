@@ -124,6 +124,9 @@ namespace Tournament.Structure
 		/// <param name="_players">List of Player-type objects to store</param>
 		void SetNewPlayerlist(List<IPlayer> _players);
 
+
+		void SetNewPlayerlist(ICollection<TournamentUsersBracketModel> _players);
+
 		/// <summary>
 		/// Add a Player to the Bracket.
 		/// (Deletes all Matches)
