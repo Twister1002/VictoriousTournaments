@@ -499,6 +499,7 @@ namespace Tournament.Structure
 				PlayerSlot formerWinnerSlot = match.WinnerSlot;
 				List<GameModel> gameModels = new List<GameModel>();
 				gameModels.Add(match.Games[gameIndex].GetModel());
+				gameModels[0].MatchID = match.Id;
 
 				GameModel updatedGame = match.UpdateGame(_gameNumber, _defenderScore, _challengerScore, _winnerSlot);
 				List<MatchModel> clearedMatches = ApplyGameRemovalEffects(_matchNumber, gameModels, formerWinnerSlot);

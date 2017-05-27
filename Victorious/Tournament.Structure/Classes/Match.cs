@@ -211,9 +211,7 @@ namespace Tournament.Structure
 			model.Games = new List<GameModel>();
 			foreach (IGame game in this.Games)
 			{
-				GameModel gm = game.GetModel();
-				gm.MatchID = this.Id;
-				model.Games.Add(gm);
+				model.Games.Add(GetGameModel(game));
 			}
 
 			return model;
@@ -369,7 +367,7 @@ namespace Tournament.Structure
 
 			Games.Add(game);
 			Games.Sort((first, second) => first.GameNumber.CompareTo(second.GameNumber));
-			return game.GetModel();
+			return GetGameModel(game);
 		}
 
 		public GameModel UpdateGame(int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
@@ -408,7 +406,7 @@ namespace Tournament.Structure
 				}
 			}
 
-			return Games[gameIndex].GetModel();
+			return GetGameModel(Games[gameIndex]);
 #if false
 			for (int g = 0; g < Games.Count; ++g)
 			{
@@ -457,7 +455,7 @@ namespace Tournament.Structure
 			{
 				if (Games[index].GameNumber == _gameNumber)
 				{
-					GameModel removedGame = Games[index].GetModel();
+					GameModel removedGame = GetGameModel(Games[index]);
 					if (!IsManualWin)
 					{
 						SubtractWin(Games[index].WinnerSlot);
@@ -517,7 +515,7 @@ namespace Tournament.Structure
 			List<GameModel> modelList = new List<GameModel>();
 			foreach (IGame game in Games)
 			{
-				modelList.Add(game.GetModel());
+				modelList.Add(GetGameModel(game));
 			}
 			Games.Clear();
 			return modelList;
@@ -643,6 +641,12 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		private GameModel GetGameModel(IGame _game)
+		{
+			GameModel gameModel = _game.GetModel();
+			gameModel.MatchID = this.Id;
+			return gameModel;
+		}
 		private void AddGame(IGame _game)
 		{
 			if (null == _game)
