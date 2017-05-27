@@ -56,7 +56,12 @@ namespace Tournament.Structure
 		/// <param name="_gameScore">Game score change</param>
 		/// <param name="_pointsScore">Point score change</param>
 		/// <param name="_isAddition">Add or subtract these values</param>
+		[System.Obsolete("use AddMatchOutcome(Outcome, bool) instead", false)]
 		void AddMatchOutcome(Outcome _outcome, int _gameScore, int _pointsScore, bool _isAddition);
+
+		void AddMatchOutcome(Outcome _outcome, bool _isAddition);
+
+		void UpdateScores(int _gamesChange, int _pointsChange, bool _isAddition);
 
 		/// <summary>
 		/// Get a score representative of this player's W/L record.

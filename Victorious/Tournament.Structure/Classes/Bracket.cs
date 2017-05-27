@@ -472,20 +472,23 @@ namespace Tournament.Structure
 			if (match.Games[gameIndex].WinnerSlot == _winnerSlot)
 			{
 				// Case 2: Game winner won't change.
-				// Just modify the game's score:
+				// Subtract old scores from rankings:
+				List<GameModel> gModels = new List<GameModel>();
+				gModels.Add(match.Games[gameIndex].GetModel());
+				UpdateScore(_matchNumber, gModels, false, _winnerSlot);
+				// Update the match score:
 				match.Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;
 				match.Games[gameIndex].Score[(int)PlayerSlot.Challenger] = _challengerScore;
-
-				////////////////////////////////
-				// NOTE : DOES NOT UPDATE RANKINGS!
-				////////////////////////////////
+				// Add new scores to rankings:
+				gModels.Clear();
+				gModels.Add(match.Games[gameIndex].GetModel());
+				UpdateScore(_matchNumber, gModels, true, _winnerSlot);
 
 				// Fire Event with the changed Match data:
 				OnMatchesModified(new List<MatchModel> { GetMatchModel(match) });
 				// Return a Model of the altered Game:
-				GameModel gameModel = match.Games[gameIndex].GetModel();
-				gameModel.MatchID = match.Id;
-				return gameModel;
+				gModels[0].MatchID = match.Id;
+				return gModels[0];
 			}
 			else
 			{

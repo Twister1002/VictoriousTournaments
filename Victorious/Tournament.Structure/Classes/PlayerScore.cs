@@ -99,6 +99,16 @@ namespace Tournament.Structure
 			GameScore += (_gameScore * add);
 			PointsScore += (_pointsScore * add);
 		}
+		public void AddMatchOutcome(Outcome _outcome, bool _isAddition)
+		{
+			MatchRecord.AddOutcome(_outcome, _isAddition);
+		}
+		public void UpdateScores(int _gamesChange, int _pointsChange, bool _isAddition)
+		{
+			int add = (_isAddition) ? 1 : -1;
+			GameScore += (_gamesChange * add);
+			PointsScore += (_pointsChange * add);
+		}
 
 		public int CalculateScore(int _matchWinValue, int _matchTieValue, int _matchLossValue)
 		{
