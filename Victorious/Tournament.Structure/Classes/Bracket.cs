@@ -93,6 +93,7 @@ namespace Tournament.Structure
 		protected abstract void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false);
 		protected abstract List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
 		protected abstract List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot);
+		protected abstract void RecalculateRankings();
 		protected abstract void UpdateRankings();
 		#endregion
 
@@ -469,9 +470,11 @@ namespace Tournament.Structure
 				throw new GameNotFoundException
 					("Game not found; Game Number may be invalid!");
 			}
+
 			if (match.Games[gameIndex].WinnerSlot == _winnerSlot)
 			{
 				// Case 2: Game winner won't change.
+
 				// Subtract old scores from rankings:
 				List<GameModel> gModels = new List<GameModel>();
 				gModels.Add(match.Games[gameIndex].GetModel());
@@ -493,8 +496,27 @@ namespace Tournament.Structure
 			else
 			{
 				// Case 3: Game winner changes:
-				throw new NotImplementedException
-					("Can't update this Game with new values! Try removing and adding instead.");
+				PlayerSlot formerWinnerSlot = match.WinnerSlot;
+				List<GameModel> gameModels = new List<GameModel>();
+				gameModels.Add(match.Games[gameIndex].GetModel());
+
+				GameModel updatedGame = match.UpdateGame(_gameNumber, _defenderScore, _challengerScore, _winnerSlot);
+				List<MatchModel> clearedMatches = ApplyGameRemovalEffects(_matchNumber, gameModels, formerWinnerSlot);
+				List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
+				RecalculateRankings();
+
+				foreach (MatchModel model in clearedMatches)
+				{
+					if (!alteredMatches.Any(m => m.MatchID == model.MatchID))
+					{
+						alteredMatches.Add(model);
+					}
+				}
+				// Fire Event with any changed Matches:
+				alteredMatches.Add(GetMatchModel(match));
+				OnMatchesModified(alteredMatches);
+				// Return a Model of the updated Game:
+				return updatedGame;
 			}
 #if false
 			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;

@@ -804,58 +804,18 @@ namespace Tournament.Structure
 			return removedMatches;
 		}
 
-		private void RecalculateRankings()
+		protected override void RecalculateRankings()
 		{
-			foreach (IPlayerScore player in Rankings)
-			{
-				player.ResetScore();
-			}
+			base.RecalculateRankings();
 
-			foreach (int playerId in PlayerByes)
+			if (PlayerByes.Count > 0)
 			{
-				Rankings.Find(r => r.Id == playerId)
-					.AddMatchOutcome(Outcome.Win, true);
-			}
-			foreach (IMatch match in Matches.Values)
-			{
-				if (match.IsFinished)
+				foreach (int playerId in PlayerByes)
 				{
-					// Add match outcomes to both players:
-					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
-						? PlayerSlot.Challenger : PlayerSlot.Defender;
-
-					Rankings.Find(r => r.Id == match.Players[(int)match.WinnerSlot].Id)
+					Rankings.Find(r => r.Id == playerId)
 						.AddMatchOutcome(Outcome.Win, true);
-					Rankings.Find(r => r.Id == match.Players[(int)loserSlot].Id)
-						.AddMatchOutcome(Outcome.Loss, true);
 				}
-
-				if (match.Games.Count > 0)
-				{
-					// Total each player's game-wins and points:
-					int defGameScore = 0, defPointsScore = 0;
-					int chalGameScore = 0, chalPointsScore = 0;
-					foreach (IGame game in match.Games)
-					{
-						defPointsScore += game.Score[(int)PlayerSlot.Defender];
-						chalPointsScore += game.Score[(int)PlayerSlot.Challenger];
-						switch (game.WinnerSlot)
-						{
-							case (PlayerSlot.Defender):
-								++defGameScore;
-								break;
-							case (PlayerSlot.Challenger):
-								++chalGameScore;
-								break;
-						}
-					}
-
-					// Add each player's totals to their scores:
-					Rankings.Find(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id)
-						.UpdateScores(defGameScore, defPointsScore, true);
-					Rankings.Find(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id)
-						.UpdateScores(chalGameScore, chalPointsScore, true);
-				}
+				UpdateRankings();
 			}
 		}
 		#endregion

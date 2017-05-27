@@ -109,16 +109,7 @@ namespace Tournament.Structure
 
 			if (BracketType.SINGLE == BracketType)
 			{
-				UpdateRankings();
-				if (Matches[NumberOfMatches].IsFinished)
-				{
-					// Add Finals winner to Rankings:
-					IPlayer winningPlayer = Matches[NumberOfMatches]
-						.Players[(int)Matches[NumberOfMatches].WinnerSlot];
-					Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
-					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
-					this.IsFinished = true;
-				}
+				RecalculateRankings();
 			}
 		}
 		#endregion
@@ -348,7 +339,7 @@ namespace Tournament.Structure
 			}
 			else if (match.WinnerSlot != _formerMatchWinnerSlot)
 			{
-				UpdateRankings();
+				RecalculateRankings();
 			}
 		}
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
@@ -469,8 +460,12 @@ namespace Tournament.Structure
 			//return (alteredMatches.OrderBy(m => m.MatchNumber).ToList());
 		}
 
-		protected override void UpdateRankings()
+		protected override void RecalculateRankings()
 		{
+			if (null == Rankings)
+			{
+				Rankings = new List<IPlayerScore>();
+			}
 			Rankings.Clear();
 
 			foreach (IMatch match in Matches.Values)
@@ -486,8 +481,21 @@ namespace Tournament.Structure
 					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
 				}
 			}
+			if (Matches[NumberOfMatches].IsFinished)
+			{
+				// Add Finals winner to Rankings:
+				IPlayer winningPlayer = Matches[NumberOfMatches]
+					.Players[(int)Matches[NumberOfMatches].WinnerSlot];
+				Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
+				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+				this.IsFinished = true;
+			}
 
 			Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+		}
+		protected override void UpdateRankings()
+		{
+			RecalculateRankings();
 		}
 
 		protected IMatch GetMatchData(int _matchNumber, out int _nextMatchNumber, out int _nextLoserMatchNumber)

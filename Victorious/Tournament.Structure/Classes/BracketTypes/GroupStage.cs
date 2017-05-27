@@ -265,6 +265,11 @@ namespace Tournament.Structure
 			throw new MatchNotFoundException
 				("Match not found; match number may be invalid.");
 		}
+
+		protected override void RecalculateRankings()
+		{
+			UpdateRankings();
+		}
 		#endregion
 	}
 }
