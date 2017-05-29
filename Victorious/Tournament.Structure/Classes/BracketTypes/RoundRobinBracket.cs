@@ -104,13 +104,9 @@ namespace Tournament.Structure
 			RecalculateRankings();
 
 			this.IsFinished = true;
-			foreach (IMatch match in Matches.Values)
+			if (Matches.Values.Any(m => !m.IsFinished))
 			{
-				if (!match.IsFinished)
-				{
-					this.IsFinished = false;
-					break;
-				}
+				this.IsFinished = false;
 			}
 		}
 		#endregion

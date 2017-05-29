@@ -481,7 +481,7 @@ namespace Tournament.Structure
 					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
 				}
 			}
-			if (Matches[NumberOfMatches].IsFinished)
+			if (NumberOfMatches > 0 && Matches[NumberOfMatches].IsFinished)
 			{
 				// Add Finals winner to Rankings:
 				IPlayer winningPlayer = Matches[NumberOfMatches]

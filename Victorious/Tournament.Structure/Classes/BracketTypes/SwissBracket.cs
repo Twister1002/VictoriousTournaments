@@ -143,34 +143,34 @@ namespace Tournament.Structure
 			}
 
 			// Determine the Pairing Method from examining Rnd 1:
-			int firstPlayerIndex = (0 == PlayerByes.Count)
-				? 0 : 1;
-			IMatch firstPlayerMatch = GetRound(1)
-				.Where(m => m.Players.Select(p => p.Id).Contains(this.Players[firstPlayerIndex].Id))
-				.First();
-			int secondPlayerId = firstPlayerMatch.Players
-				.Select(p => p.Id)
-				.Where(i => i != this.Players[firstPlayerIndex].Id)
-				.First();
-			if (Players[1 + firstPlayerIndex].Id == secondPlayerId)
+			this.PairingMethod = PairingMethod.Slide;
+			if (NumberOfMatches > 0)
 			{
-				// Top two seeds are matched up:
-				PairingMethod = PairingMethod.Adjacent;
-			}
-			else if (Players.Last().Id == secondPlayerId)
-			{
-				// Top seed is paired against bottom seed:
-				PairingMethod = PairingMethod.Fold;
-			}
-			else
-			{
-				PairingMethod = PairingMethod.Slide;
-			}
+				int firstPlayerIndex = (0 == PlayerByes.Count)
+					? 0 : 1;
+				IMatch firstPlayerMatch = GetRound(1)
+					.Where(m => m.Players.Select(p => p.Id).Contains(this.Players[firstPlayerIndex].Id))
+					.First();
+				int secondPlayerId = firstPlayerMatch.Players
+					.Select(p => p.Id)
+					.Where(i => i != this.Players[firstPlayerIndex].Id)
+					.First();
+				if (Players[1 + firstPlayerIndex].Id == secondPlayerId)
+				{
+					// Top two seeds are matched up:
+					PairingMethod = PairingMethod.Adjacent;
+				}
+				else if (Players.Last().Id == secondPlayerId)
+				{
+					// Top seed is paired against bottom seed:
+					PairingMethod = PairingMethod.Fold;
+				}
 
-			if (PlayerByes.Count > 0)
-			{
-				// If we added points for byes, we need to update rankings:
-				UpdateRankings();
+				if (PlayerByes.Count > 0)
+				{
+					// If we added points for byes, we need to update rankings:
+					UpdateRankings();
+				}
 			}
 		}
 		#endregion
