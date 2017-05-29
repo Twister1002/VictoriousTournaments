@@ -135,7 +135,7 @@ namespace Tournament.Structure
 						{
 							PlayerByes.Add(Players[i].Id);
 							int rIndex = Rankings.FindIndex(p => p.Id == Players[i].Id);
-							Rankings[rIndex].AddMatchOutcome(Outcome.Win, 0, 0, true);
+							Rankings[rIndex].AddMatchOutcome(Outcome.Win, true);
 							break;
 						}
 					}
@@ -143,29 +143,29 @@ namespace Tournament.Structure
 			}
 
 			// Determine the Pairing Method from examining Rnd 1:
-			//int firstPlayerIndex = (0 == PlayerByes.Count)
-			//	? 0 : 1;
-			//IMatch firstPlayerMatch = GetRound(1)
-			//	.Where(m => m.Players.Select(p => p.Id).Contains(this.Players[firstPlayerIndex].Id))
-			//	.First();
-			//int secondPlayerId = firstPlayerMatch.Players
-			//	.Select(p => p.Id)
-			//	.Where(i => i != this.Players[firstPlayerIndex].Id)
-			//	.First();
-			//if (Players[1 + firstPlayerIndex].Id == secondPlayerId)
-			//{
-			//	// Top two seeds are matched up:
-			//	PairingMethod = PairingMethod.Adjacent;
-			//}
-			//else if (Players.Last().Id == secondPlayerId)
-			//{
-			//	// Top seed is paired against bottom seed:
-			//	PairingMethod = PairingMethod.Fold;
-			//}
-			//else
-			//{
-			//	PairingMethod = PairingMethod.Slide;
-			//}
+			int firstPlayerIndex = (0 == PlayerByes.Count)
+				? 0 : 1;
+			IMatch firstPlayerMatch = GetRound(1)
+				.Where(m => m.Players.Select(p => p.Id).Contains(this.Players[firstPlayerIndex].Id))
+				.First();
+			int secondPlayerId = firstPlayerMatch.Players
+				.Select(p => p.Id)
+				.Where(i => i != this.Players[firstPlayerIndex].Id)
+				.First();
+			if (Players[1 + firstPlayerIndex].Id == secondPlayerId)
+			{
+				// Top two seeds are matched up:
+				PairingMethod = PairingMethod.Adjacent;
+			}
+			else if (Players.Last().Id == secondPlayerId)
+			{
+				// Top seed is paired against bottom seed:
+				PairingMethod = PairingMethod.Fold;
+			}
+			else
+			{
+				PairingMethod = PairingMethod.Slide;
+			}
 
 			if (PlayerByes.Count > 0)
 			{
@@ -268,29 +268,49 @@ namespace Tournament.Structure
 
 		public override void ResetMatches()
 		{
-			base.ResetMatches();
 			Matchups.Clear();
 			PlayerByes.Clear();
-
-			for (int n = 1; n <= NumberOfMatches; ++n)
+			foreach (IPlayerScore ps in Rankings)
 			{
-				// Create Matchups for all first-round Matches:
-				if (Matches[n].RoundIndex == 1)
+				ps.Rank = 1;
+				ps.ResetScore();
+			}
+
+			List<MatchModel> alteredMatches = new List<MatchModel>();
+			List<MatchModel> deletedMatches = new List<MatchModel>();
+			List<int> deletedGameIds = new List<int>();
+
+			foreach (IMatch match in Matches.Values.ToList())
+			{
+				// Add all Games to the deletion List:
+				foreach (IGame game in match.Games)
 				{
+					deletedGameIds.Add(game.Id);
+				}
+
+				if (1 == match.RoundIndex)
+				{
+					if (match.Games.Count > 0 || match.IsManualWin)
+					{
+						// Reset any first-round Matches that have progressed:
+						alteredMatches.Add(GetMatchModel(match));
+						match.ResetScore();
+					}
+
+					// Re-create Matchups for all first-round Matches:
 					int defIndex = Players.FindIndex
-						(p => p.Id == Matches[n].Players[(int)PlayerSlot.Defender].Id);
+						(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id);
 					int chalIndex = Players.FindIndex
-						(p => p.Id == Matches[n].Players[(int)PlayerSlot.Challenger].Id);
+						(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id);
 					Matchups.Add(new Matchup(defIndex, chalIndex, 1));
 				}
-				// Delete any Matches after first round:
 				else
 				{
-					Matches.Remove(n);
+					// Delete all Matches post-first-round:
+					deletedMatches.Add(GetMatchModel(match));
+					Matches.Remove(match.MatchNumber);
 				}
 			}
-			NumberOfMatches = Matches.Count;
-			NumberOfRounds = 1;
 
 			if (NumberOfPlayers() % 2 > 0)
 			{
@@ -311,13 +331,24 @@ namespace Tournament.Structure
 					{
 						// Add player to the Byes list and update his score:
 						PlayerByes.Add(Players[p].Id);
-						int rIndex = Rankings.FindIndex(r => r.Id == Players[p].Id);
-						Rankings[rIndex].AddMatchOutcome(Outcome.Win, 0, 0, true);
+						Rankings.Find(r => r.Id == Players[p].Id)
+							.AddMatchOutcome(Outcome.Win, true);
 						UpdateRankings();
 						break;
 					}
 				}
 			}
+
+			// Update Bracket data:
+			NumberOfMatches = Matches.Count;
+			NumberOfRounds = 1;
+			IsFinalized = false;
+			IsFinished = false;
+
+			// Fire Events with any data we altered:
+			OnGamesDeleted(deletedGameIds);
+			OnRoundDeleted(deletedMatches);
+			OnMatchesModified(alteredMatches);
 		}
 		#endregion
 
@@ -500,7 +531,7 @@ namespace Tournament.Structure
 			if (PlayerByes.Count > 0)
 			{
 				int rIndex = Rankings.FindIndex(r => r.Id == PlayerByes[PlayerByes.Count - 1]);
-				Rankings[rIndex].AddMatchOutcome(Outcome.Win, 0, 0, true);
+				Rankings[rIndex].AddMatchOutcome(Outcome.Win, true);
 				UpdateRankings();
 			}
 
@@ -614,15 +645,15 @@ namespace Tournament.Structure
 					}
 				}
 
-				List<Matchup> groupYmatchups = new List<Matchup>();
-				int divisionPoint = Convert.ToInt32(_groups[groupNumberY].Count * 0.5);
-				for (int i = 0; i < divisionPoint; ++i)
-				{
-					// Make fake "preferred" matchups for the players in this group, for use later:
-					// SLIDE pairing:
-					groupYmatchups.Add(new Matchup(i, i + divisionPoint, -1));
-				}
-				//List<Matchup> groupYmatchups = CreatePairingsList(_groups[groupNumberY].Count);
+				//List<Matchup> groupYmatchups = new List<Matchup>();
+				//int divisionPoint = Convert.ToInt32(_groups[groupNumberY].Count * 0.5);
+				//for (int i = 0; i < divisionPoint; ++i)
+				//{
+				//	// Make fake "preferred" matchups for the players in this group, for use later:
+				//	// SLIDE pairing:
+				//	groupYmatchups.Add(new Matchup(i, i + divisionPoint, -1));
+				//}
+				List<Matchup> groupYmatchups = CreatePairingsList(_groups[groupNumberY].Count);
 				int matchupYindex = groupYmatchups.FindIndex(m => m.ContainsInt(playerYindex));
 
 				for (int x = 0; x < numCompetitors; ++x)
@@ -660,15 +691,15 @@ namespace Tournament.Structure
 					}
 					else
 					{
-						List<Matchup> groupXmatchups = new List<Matchup>();
-						divisionPoint = Convert.ToInt32(_groups[groupNumberX].Count * 0.5);
-						for (int i = 0; i < divisionPoint; ++i)
-						{
-							// Make fake "preferred" matchups for the players in this group:
-							// SLIDE pairing:
-							groupXmatchups.Add(new Matchup(i, i + divisionPoint, -1));
-						}
-						//List<Matchup> groupXmatchups = CreatePairingsList(_groups[groupNumberX].Count);
+						//List<Matchup> groupXmatchups = new List<Matchup>();
+						//divisionPoint = Convert.ToInt32(_groups[groupNumberX].Count * 0.5);
+						//for (int i = 0; i < divisionPoint; ++i)
+						//{
+						//	// Make fake "preferred" matchups for the players in this group:
+						//	// SLIDE pairing:
+						//	groupXmatchups.Add(new Matchup(i, i + divisionPoint, -1));
+						//}
+						List<Matchup> groupXmatchups = CreatePairingsList(_groups[groupNumberX].Count);
 
 						int matchupXindex, idealMatchup;
 						if (groupNumberY > groupNumberX)
@@ -804,74 +835,18 @@ namespace Tournament.Structure
 			return removedMatches;
 		}
 
-		private void RecalculateRankings()
+		protected override void RecalculateRankings()
 		{
-			foreach (IPlayerScore player in Rankings)
-			{
-				player.ResetScore();
-			}
+			base.RecalculateRankings();
 
-			foreach (int playerId in PlayerByes)
+			if (PlayerByes.Count > 0)
 			{
-				Rankings.Find(r => r.Id == playerId)
-					.AddMatchOutcome(Outcome.Win, 0, 0, true);
-			}
-			foreach (IMatch match in Matches.Values)
-			{
-				// Case 1: ManualWin:
-				if (match.IsManualWin)
+				foreach (int playerId in PlayerByes)
 				{
-					// Just add a MatchWin to winning player:
-					Rankings.Find(r => r.Id == match.Players[(int)match.WinnerSlot].Id)
-						.AddMatchOutcome(Outcome.Win, 0, 0, true);
+					Rankings.Find(r => r.Id == playerId)
+						.AddMatchOutcome(Outcome.Win, true);
 				}
-				// Case 2: Match has at least 1 completed Game:
-				else if (match.Games.Count > 0)
-				{
-					// Get the Match's outcome:
-					Outcome defOutcome = Outcome.Tie;
-					Outcome chalOutcome = Outcome.Tie;
-					switch (match.WinnerSlot)
-					{
-						case PlayerSlot.Defender:
-							defOutcome = Outcome.Win;
-							chalOutcome = Outcome.Loss;
-							break;
-						case PlayerSlot.Challenger:
-							defOutcome = Outcome.Loss;
-							chalOutcome = Outcome.Win;
-							break;
-					}
-
-					// Total each player's game-wins and points:
-					int defGameScore = 0, defPointsScore = 0;
-					int chalGameScore = 0, chalPointsScore = 0;
-					foreach (IGame game in match.Games)
-					{
-						defPointsScore += game.Score[(int)PlayerSlot.Defender];
-						chalPointsScore += game.Score[(int)PlayerSlot.Challenger];
-						switch (game.WinnerSlot)
-						{
-							case (PlayerSlot.Defender):
-								++defGameScore;
-								break;
-							case (PlayerSlot.Challenger):
-								++chalGameScore;
-								break;
-						}
-					}
-
-					// Add each player's totals to their scores:
-					Rankings.Find(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id)
-						.AddMatchOutcome(defOutcome, defGameScore, defPointsScore, true);
-					Rankings.Find(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id)
-						.AddMatchOutcome(chalOutcome, chalGameScore, chalPointsScore, true);
-				}
-				// Case 3: Match has no Games played:
-				else
-				{
-					// Do nothing! Take a break!
-				}
+				UpdateRankings();
 			}
 		}
 		#endregion

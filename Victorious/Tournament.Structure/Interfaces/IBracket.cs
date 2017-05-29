@@ -125,6 +125,14 @@ namespace Tournament.Structure
 		void SetNewPlayerlist(List<IPlayer> _players);
 
 		/// <summary>
+		/// Replace this bracket's Players (if any)
+		/// with the passed-in list.
+		/// (Deletes all Matches)
+		/// </summary>
+		/// <param name="_players">Seeded list of Player Models</param>
+		void SetNewPlayerlist(ICollection<TournamentUsersBracketModel> _players);
+
+		/// <summary>
 		/// Add a Player to the Bracket.
 		/// (Deletes all Matches)
 		/// </summary>

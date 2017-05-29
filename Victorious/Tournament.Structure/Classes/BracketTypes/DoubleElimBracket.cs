@@ -72,19 +72,9 @@ namespace Tournament.Structure
 				}
 			}
 
-			UpdateRankings();
+			RecalculateRankings();
 			if (null != GrandFinal && GrandFinal.IsFinished)
 			{
-				// Add GrandFinal results to Rankings:
-				IPlayer winningPlayer = GrandFinal.Players[(int)GrandFinal.WinnerSlot];
-				Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
-				IPlayer losingPlayer = GrandFinal.Players[
-					(PlayerSlot.Defender == GrandFinal.WinnerSlot)
-					? (int)PlayerSlot.Challenger
-					: (int)PlayerSlot.Defender];
-				Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, 2));
-
-				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				this.IsFinished = true;
 			}
 		}
@@ -284,7 +274,7 @@ namespace Tournament.Structure
 			}
 			else if (match.WinnerSlot != _formerMatchWinnerSlot)
 			{
-				UpdateRankings();
+				RecalculateRankings();
 			}
 		}
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
@@ -407,8 +397,12 @@ namespace Tournament.Structure
 			return alteredMatches;
 		}
 
-		protected override void UpdateRankings()
+		protected override void RecalculateRankings()
 		{
+			if (null == Rankings)
+			{
+				Rankings = new List<IPlayerScore>();
+			}
 			Rankings.Clear();
 
 			for (int r = 1; r <= NumberOfLowerRounds; ++r)
@@ -448,7 +442,23 @@ namespace Tournament.Structure
 				}
 			}
 
+			if (null != GrandFinal && GrandFinal.IsFinished)
+			{
+				// Add GrandFinal results to Rankings:
+				IPlayer winningPlayer = GrandFinal.Players[(int)GrandFinal.WinnerSlot];
+				Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
+				IPlayer losingPlayer = GrandFinal.Players[
+					(PlayerSlot.Defender == GrandFinal.WinnerSlot)
+					? (int)PlayerSlot.Challenger
+					: (int)PlayerSlot.Defender];
+				Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, 2));
+			}
+
 			Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+		}
+		protected override void UpdateRankings()
+		{
+			RecalculateRankings();
 		}
 		#endregion
 	}

@@ -95,6 +95,7 @@ namespace Tournament.Structure.Tests
 			b.SetNewPlayerlist(pList.Where(p => p.Id > 8).ToList());
 			Assert.AreEqual(4, b.Players.Count);
 		}
+#if false
 		[TestMethod]
 		[TestCategory("Bracket")]
 		[TestCategory("Bracket SetNewPlayerlist")]
@@ -113,6 +114,7 @@ namespace Tournament.Structure.Tests
 			b.SetNewPlayerlist(null);
 			Assert.AreEqual(1, 2);
 		}
+#endif
 
 		[TestMethod]
 		[TestCategory("Bracket")]
