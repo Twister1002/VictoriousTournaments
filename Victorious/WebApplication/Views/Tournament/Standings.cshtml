@@ -14,10 +14,13 @@
             <div class="bracketData" data-bracket="@i" data-id="@bracket.Id">
                 <ul class="list-table">
                     <li class="list-table-header">
-                        <ul data-columns="3">
+                        <ul data-columns="@(ViewBag.isCreator ? 3 : 2)">
                             <li class="column selection info" data-show="playerInfo">Players</li>
                             <li class="column selection info" data-show="standingInfo">Standings</li>
+                            @if (ViewBag.isCreator)
+                            {
                             <li class="column selection info" data-show="resetInfo">Reset</li>
+                            }
                         </ul>
                     </li>
 
@@ -123,11 +126,14 @@
                         }
                     </li>
 
+                    @if (ViewBag.isCreator)
+                    {
                     <li class="list-table-body infoSection resetInfo">
                         Are you sure you want to reset this bracket? This can not be reverted.
                         <br/>
                         <button type="button" class="reset-bracket">Reset</button>
                     </li>
+                    }
                 </ul>
             </div>
         }
