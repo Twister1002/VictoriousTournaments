@@ -264,7 +264,11 @@
         $.ajax({
             "url": "/Ajax/Tournament/Register",
             "type": "post",
-            "data": { "tournamentId": $("#Tournament").data("id"), "name": row.find(".name input").val() },
+            "data": {
+                "tournamentId": $("#Tournament").data("id"),
+                "name": row.find(".name input").val(),
+                "bracketId": row.closest(".bracketData").data("id")
+            },
             "dataType": "json",
             "beforeSend": function () {
                 row.find(".addUserButton").attr("disabled", true);
@@ -277,7 +281,7 @@
                     html = "<ul class='data user form' data-user='" + json.data.user.TournamentUserId + "' data-columns='5'> ";
                     html += "<li class='column name'>" + json.data.user.Name + "</li> ";
                     html += "<li class='column permission'>" + permissionDictionary[json.data.user.Permission] + "</li> ";
-                    html += "<li class='column seed'><input type='text' name='seedVal' maxlength='2' value='-1'/></li>";
+                    html += "<li class='column seed'><input type='text' name='seedVal' maxlength='2' value=''/></li>";
                     html += "<li class='column'><span class='icon icon-checkmark red'></span></li> ";
                     html += "<li class='column actions'>"+PermissionButtons(json.data.actions)+"</li> ";
                     html += "</ul> ";

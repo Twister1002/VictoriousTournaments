@@ -41,7 +41,7 @@
                             {
                                 Dictionary<String, int> data = Model.PermissionAction(ViewBag.UserId, person.TournamentUserID, "default");
 
-                                <ul class="data user form" data-user="@person.TournamentUserID" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 5 : 2)">
+                                <ul class="data user form" data-user="@person.TournamentUserID" data-columns="@(ViewBag.isAdministrator ? 5 : 2)">
                                     <li class="column name">@person.Name</li>
                                     <li class="column permission">@person.PermissionLevel</li>
                                     @if (ViewBag.isAdministrator)
@@ -52,7 +52,10 @@
                                             colorCode = "";
                                         }
                                         <li class="column">
-                                            <input type="text" name="seedVal" maxlength="2" />
+                                            @if (!Model.IsUserAdministrator(person.TournamentUserID))
+                                            {
+                                                <input type="text" name="seedVal" maxlength="2" />
+                                            }
                                         </li>
                                         <li class="column">
                                             <span class="icon icon-checkmark @colorCode checkIn"></span>
@@ -79,14 +82,12 @@
                             }
 
 
-                            if (!Model.Model.InProgress && Model.IsAdministrator(ViewBag.UserId))
+                            if (!Model.Model.InProgress && ViewBag.isAdministrator)
                             {
                                 <div class="userAddData">
                                     <ul class="form" data-columns="3">
                                         <li class="column name"><input type="text" name="name" maxlength="50" placeholder="Name/Email"/></li>
                                         <li class="column">Not Saved</li>
-                                        @*<li class="column"><input type="text" name="seedVal" maxlength="2" /></li>*@
-                                        @*<li class="column"><span class="icon icon-checkmark"></span></li>*@
                                         <li class="column"><button class="addUserButton">Add User</button></li>
                                     </ul>
                                 </div>

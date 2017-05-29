@@ -187,7 +187,7 @@ namespace WebApplication.Controllers
             {
                 if (viewModel.Create((int)Session["User.UserId"]))
                 {
-                    if (viewModel.AddUser((int)Session["User.UserId"], Permission.TOURNAMENT_CREATOR))
+                    if (viewModel.AddUser(account, Permission.TOURNAMENT_CREATOR))
                     {
                         // Show a success message.
                         Session["Message"] = "Your tournament was successfully created.";
@@ -263,7 +263,7 @@ namespace WebApplication.Controllers
             {
                 TournamentViewModel viewModel = new TournamentViewModel(userData.TournamentID);
 
-                if (viewModel.AddUser(account.AccountId, Permission.TOURNAMENT_STANDARD))
+                if (viewModel.AddUser(account, Permission.TOURNAMENT_STANDARD))
                 {
                     Session["Message"] = "You have been registered to this tournament";
                     Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
@@ -315,7 +315,7 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Ajax/Tournament/Register")]
-        public JsonResult NoAccountRegister(int tournamentId, String name)
+        public JsonResult NoAccountRegister(int tournamentId, String name, int bracketId)
         {
             LoadAccount(Session);
             TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
@@ -333,7 +333,8 @@ namespace WebApplication.Controllers
                     {
                         Name = model.Name,
                         Permission = model.PermissionLevel,
-                        TournamentUserId = model.TournamentUserID
+                        TournamentUserId = model.TournamentUserID,
+                        Seed = viewModel.UserSeed(model.TournamentUserID, bracketId)
                     },
                     actions = viewModel.PermissionAction(account.AccountId, model.TournamentUserID, "default")
                 };
