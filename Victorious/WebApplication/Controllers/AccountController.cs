@@ -17,6 +17,11 @@ namespace WebApplication.Controllers
         [Route("Account/Index")]
         public ActionResult Index()
         {
+#if DEBUG
+            // Since this is debug, save me the time and just log me in
+            Session["User.UserId"] = 1;
+            Session["User.Name"] = "Root";
+#endif
             if (Session["User.UserId"] != null)
             {
                 AccountViewModel model = new AccountViewModel((int)Session["User.UserId"]);

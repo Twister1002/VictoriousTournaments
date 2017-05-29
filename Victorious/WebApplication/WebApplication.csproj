@@ -112,6 +112,8 @@
     <Content Include="App_Data\Tournaments.sql" />
     <Content Include="App_Data\TournamentUsers.sql" />
     <Content Include="Content\fonts\icomoon.svg" />
+    <Content Include="Scripts\Tournament\Create.js" />
+    <Content Include="Scripts\Tournament\Update.js" />
     <Content Include="Styles\css\jquery.timepicker.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\themes\base\accordion.css" />

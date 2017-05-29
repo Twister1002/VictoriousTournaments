@@ -9,8 +9,6 @@ namespace WebApplication.Models
 {
     public class TournamentViewModel : TournamentFields
     {
-        private bool matchPlayerFix = false;
-
         public ITournament Tourny { get; private set; }
         public TournamentModel Model { get; private set; }
         public List<TournamentModel> SearchedTournaments { get; private set; }
@@ -112,23 +110,6 @@ namespace WebApplication.Models
             }
         }
 
-        private void MatchPlayerFix()
-        {
-            foreach (var bracket in Model.Brackets)
-            {
-                foreach (var match in bracket.Matches)
-                {
-                    Model.Brackets.First(x => x.BracketID == bracket.BracketID)
-                        .Matches.First(x => x.MatchID == match.MatchID)
-                        .Challenger = db.GetTournamentUser(match.ChallengerID);
-
-                    Model.Brackets.First(x => x.BracketID == bracket.BracketID)
-                        .Matches.First(x => x.MatchID == match.MatchID)
-                        .Defender = db.GetTournamentUser(match.DefenderID);
-                }
-            }
-        }
-
         public void LoadData(int id)
         {
             Model = db.GetTournament(id);
@@ -147,11 +128,12 @@ namespace WebApplication.Models
 
             BracketModel bracket = Model.Brackets.ElementAt(0);
             bracket.BracketTypeID = this.BracketType;
+            bracket.MaxRounds = this.NumberOfRounds;
 
-            DbError updateTournament = db.UpdateTournament(Model);
-            DbError updateBracket = db.UpdateBracket(bracket);
+            bool updateTournament = db.UpdateTournament(Model) == DbError.SUCCESS;
+            bool updateBracket = db.UpdateBracket(bracket) == DbError.SUCCESS;
 
-            return updateTournament == DbError.SUCCESS;
+            return updateTournament && updateBracket;
         }
 
         public bool Create(int sessionId)
@@ -162,7 +144,8 @@ namespace WebApplication.Models
             BracketModel bracketModel = new BracketModel()
             {
                 BracketTypeID = this.BracketType,
-                Tournament = Model
+                Tournament = Model,
+                MaxRounds = this.NumberOfRounds
             };
 
             Model.Brackets.Add(bracketModel);
@@ -350,8 +333,6 @@ namespace WebApplication.Models
             {
                 return;
             }
-
-            if (matchPlayerFix) MatchPlayerFix();
 
             int bracketNum = 0;
             BracketModel bracket = Model.Brackets.ElementAt(bracketNum);

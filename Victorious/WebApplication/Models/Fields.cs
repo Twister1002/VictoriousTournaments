@@ -133,6 +133,9 @@ namespace WebApplication.Models
         [Display(Name = "Public Registation")]
         public bool PublicRegistration { get; set; }
 
+        [Display(Name = "Max Rounds")]
+        public int NumberOfRounds { get; set; }
+
         public abstract void ApplyChanges();
         public abstract void SetFields();
     }
