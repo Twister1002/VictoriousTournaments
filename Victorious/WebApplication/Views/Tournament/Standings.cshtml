@@ -82,10 +82,11 @@
                             if (!Model.Model.InProgress && Model.IsAdministrator(ViewBag.UserId))
                             {
                                 <div class="userAddData">
-                                    <ul class="form" data-columns="4">
+                                    <ul class="form" data-columns="3">
                                         <li class="column name"><input type="text" name="name" maxlength="50" placeholder="Name/Email"/></li>
                                         <li class="column">Not Saved</li>
-                                        <li class="column"><span class="icon icon-checkmark"></span></li>
+                                        @*<li class="column"><input type="text" name="seedVal" maxlength="2" /></li>*@
+                                        @*<li class="column"><span class="icon icon-checkmark"></span></li>*@
                                         <li class="column"><button class="addUserButton">Add User</button></li>
                                     </ul>
                                 </div>

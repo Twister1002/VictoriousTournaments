@@ -576,6 +576,7 @@ namespace WebApplication.Models
                             break;
                     }
                     break;
+                case "remove":
                 case "demote":
                     switch ((Permission)targetAccount.PermissionLevel)
                     {

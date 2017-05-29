@@ -133,7 +133,7 @@
     // Permission Buttions
     $(".TournamentInfo .playerInfo .user .promote, .TournamentInfo .playerInfo .user .demote").on("click", PermissionAction);
     // Add a player to the tournament by button or hitting enter.
-    $(".TournamentInfo .playerInfo .userAddData .addUserButton").on("click", AddUserToTournament);
+    $(".TournamentInfo .playerInfo .userAddData .addUserButton").on("click", function () { AddUserToTournament(this); });
     $(".TournamentInfo .playerInfo .userAddData .name").on("keydown", function (e) {
         if (e.keyCode == 13) {
             AddUserToTournament(this);
@@ -257,6 +257,10 @@
         $this = e ? $(e) : $(this);
         var row = $this.closest(".userAddData");
 
+        if (row.find(".name input").val().length < 1) {
+            return false;
+        }
+
         $.ajax({
             "url": "/Ajax/Tournament/Register",
             "type": "post",
@@ -264,20 +268,24 @@
             "dataType": "json",
             "beforeSend": function () {
                 row.find(".addUserButton").attr("disabled", true);
+                row.find(".name input").attr("disabled", true);
             },
             "success": function (json) {
                 json = JSON.parse(json);
 
                 if (json.status) {
-                    html = "<ul class='data user' data-user='" + json.data.user.TournamentUserId + "' data-columns='4'> ";
+                    html = "<ul class='data user form' data-user='" + json.data.user.TournamentUserId + "' data-columns='5'> ";
                     html += "<li class='column name'>" + json.data.user.Name + "</li> ";
                     html += "<li class='column permission'>" + permissionDictionary[json.data.user.Permission] + "</li> ";
+                    html += "<li class='column seed'><input type='text' name='seedVal' maxlength='2' value='-1'/></li>";
                     html += "<li class='column'><span class='icon icon-checkmark red'></span></li> ";
                     html += "<li class='column actions'>"+PermissionButtons(json.data.actions)+"</li> ";
                     html += "</ul> ";
 
                     row.after(html);
-                    row.find(".name input").val('')
+                    row.find(".name input").val('');
+                    $(".TournamentInfo .user .actions .remove").off("click");
+                    $(".TournamentInfo .user .actions .remove").on("click", PermissionAction);
                 }
 
                 tournamentChanged = true;
@@ -288,6 +296,7 @@
             },
             "complete": function () {
                 row.find(".addUserButton").attr("disabled", false);
+                row.find(".name input").attr("disabled", false);
             }
         });
     }
