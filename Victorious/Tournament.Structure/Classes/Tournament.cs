@@ -266,6 +266,10 @@ namespace Tournament.Structure
 				default:
 					throw new NotImplementedException();
 			}
+			if (0 == ret.NumberOfMatches)
+			{
+				ret.CreateBracket();
+			}
 			return ret;
 		}
 		public void RemoveBracket(IBracket _bracket)
