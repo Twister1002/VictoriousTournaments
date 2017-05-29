@@ -48,7 +48,7 @@ namespace Tournament.Structure
 			#endregion
 
 			#region Private Methods
-			protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false)
+			protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 			{
 				if (!_isAddition)
 				{
@@ -63,7 +63,7 @@ namespace Tournament.Structure
 				if (match.NextMatchNumber <= NumberOfMatches)
 				{
 					// Case 1: Not a final/endpoint match. Treat like a DEB:
-					base.UpdateScore(_matchNumber, _games, _isAddition, _formerMatchWinnerSlot, _resetManualWin);
+					base.UpdateScore(_matchNumber, _games, _isAddition, _oldMatch);
 					return;
 				}
 

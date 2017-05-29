@@ -143,34 +143,34 @@ namespace Tournament.Structure
 			}
 
 			// Determine the Pairing Method from examining Rnd 1:
-			int firstPlayerIndex = (0 == PlayerByes.Count)
-				? 0 : 1;
-			IMatch firstPlayerMatch = GetRound(1)
-				.Where(m => m.Players.Select(p => p.Id).Contains(this.Players[firstPlayerIndex].Id))
-				.First();
-			int secondPlayerId = firstPlayerMatch.Players
-				.Select(p => p.Id)
-				.Where(i => i != this.Players[firstPlayerIndex].Id)
-				.First();
-			if (Players[1 + firstPlayerIndex].Id == secondPlayerId)
+			this.PairingMethod = PairingMethod.Slide;
+			if (NumberOfMatches > 0)
 			{
-				// Top two seeds are matched up:
-				PairingMethod = PairingMethod.Adjacent;
-			}
-			else if (Players.Last().Id == secondPlayerId)
-			{
-				// Top seed is paired against bottom seed:
-				PairingMethod = PairingMethod.Fold;
-			}
-			else
-			{
-				PairingMethod = PairingMethod.Slide;
-			}
+				int firstPlayerIndex = (0 == PlayerByes.Count)
+					? 0 : 1;
+				IMatch firstPlayerMatch = GetRound(1)
+					.Where(m => m.Players.Select(p => p.Id).Contains(this.Players[firstPlayerIndex].Id))
+					.First();
+				int secondPlayerId = firstPlayerMatch.Players
+					.Select(p => p.Id)
+					.Where(i => i != this.Players[firstPlayerIndex].Id)
+					.First();
+				if (Players[1 + firstPlayerIndex].Id == secondPlayerId)
+				{
+					// Top two seeds are matched up:
+					PairingMethod = PairingMethod.Adjacent;
+				}
+				else if (Players.Last().Id == secondPlayerId)
+				{
+					// Top seed is paired against bottom seed:
+					PairingMethod = PairingMethod.Fold;
+				}
 
-			if (PlayerByes.Count > 0)
-			{
-				// If we added points for byes, we need to update rankings:
-				UpdateRankings();
+				if (PlayerByes.Count > 0)
+				{
+					// If we added points for byes, we need to update rankings:
+					UpdateRankings();
+				}
 			}
 		}
 		#endregion
@@ -369,21 +369,35 @@ namespace Tournament.Structure
 			PlayerByes.Clear();
 		}
 
-		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false)
+		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 		{
 			IMatch match = GetMatch(_matchNumber);
-			if (!(match.IsFinished) &&
-				((PlayerSlot.unspecified != _formerMatchWinnerSlot) ||
-				(_games.Count + match.Score[0] + match.Score[1] >= match.MaxGames)))
+			if (!(match.IsFinished))
 			{
-				// We just invalidated future match results.
-				// Instead of regular updating, we need to reset/recalculate:
-				RecalculateRankings();
-				UpdateRankings();
+				bool oldMatchFinished = _oldMatch.IsManualWin;
+				if (!oldMatchFinished)
+				{
+					if (_oldMatch.WinnerID.HasValue && _oldMatch.WinnerID > -1)
+					{
+						oldMatchFinished = true;
+					}
+					else if (_oldMatch.DefenderScore + _oldMatch.ChallengerScore >= match.MaxGames)
+					{
+						oldMatchFinished = true;
+					}
+				}
+
+				if (oldMatchFinished)
+				{
+					// We just invalidated future match results.
+					// Instead of regular updating, we need to reset/recalculate:
+					RecalculateRankings();
+					UpdateRankings();
+				}
 			}
 			else
 			{
-				base.UpdateScore(_matchNumber, _games, _isAddition, _formerMatchWinnerSlot, _resetManualWin);
+				base.UpdateScore(_matchNumber, _games, _isAddition, _oldMatch);
 			}
 		}
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)

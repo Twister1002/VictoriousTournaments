@@ -97,7 +97,7 @@ namespace Tournament.Structure
 
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
-		protected abstract void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false);
+		protected abstract void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch);
 		protected abstract List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
 		protected abstract List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot);
 		protected abstract void RecalculateRankings();
@@ -453,12 +453,12 @@ namespace Tournament.Structure
 		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			IMatch match = GetMatch(_matchNumber);
-			PlayerSlot oldWinnerSlot = match.WinnerSlot;
+			MatchModel oldModel = GetMatchModel(match);
 
 			// Add the new Game and update Bracket & Rankings:
 			GameModel gameModel = match
 				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
-			UpdateScore(_matchNumber, new List<GameModel>() { gameModel }, true, oldWinnerSlot);
+			UpdateScore(_matchNumber, new List<GameModel>() { gameModel }, true, oldModel);
 			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
 
 			// Fire Event with any Matches that changed:
@@ -481,18 +481,20 @@ namespace Tournament.Structure
 			if (match.Games[gameIndex].WinnerSlot == _winnerSlot)
 			{
 				// Case 2: Game winner won't change.
+				MatchModel oldMatchModel = GetMatchModel(match);
 				List<GameModel> gModels = new List<GameModel>();
 				gModels.Add(match.Games[gameIndex].GetModel());
 
 				// Subtract old scores from rankings:
-				UpdateScore(_matchNumber, gModels, false, _winnerSlot);
-				// Update the match score:
+				UpdateScore(_matchNumber, gModels, false, oldMatchModel);
+
+				// Update the Game (and Match):
 				match.Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;
 				match.Games[gameIndex].Score[(int)PlayerSlot.Challenger] = _challengerScore;
-				// Add new scores to rankings:
 				gModels.Clear();
 				gModels.Add(match.Games[gameIndex].GetModel());
-				UpdateScore(_matchNumber, gModels, true, _winnerSlot);
+				// Add new scores to rankings:
+				UpdateScore(_matchNumber, gModels, true, oldMatchModel);
 
 				// Fire Event with the changed Match data:
 				OnMatchesModified(new List<MatchModel> { GetMatchModel(match) });
@@ -508,9 +510,12 @@ namespace Tournament.Structure
 				gameModels.Add(match.Games[gameIndex].GetModel());
 				gameModels[0].MatchID = match.Id;
 
+				// Change/update the actual Game's data:
 				GameModel updatedGame = match.UpdateGame(_gameNumber, _defenderScore, _challengerScore, _winnerSlot);
+				// Effectively, we're removing & adding a new Game, so call the methods:
 				List<MatchModel> clearedMatches = ApplyGameRemovalEffects(_matchNumber, gameModels, formerWinnerSlot);
 				List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
+				// Too much has changed to update the scores, so just recalculate:
 				RecalculateRankings();
 
 				foreach (MatchModel model in clearedMatches)
@@ -579,13 +584,14 @@ namespace Tournament.Structure
 		public virtual GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
 		{
 			IMatch match = GetMatch(_matchNumber);
+			MatchModel oldMatchModel = GetMatchModel(match);
 			PlayerSlot winnerSlot = match.WinnerSlot;
 			List<GameModel> modelList = new List<GameModel>();
 
 			// Remove the Game and update the Bracket & Rankings:
 			modelList.Add(match.RemoveGameNumber(_gameNumber));
 			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
-			UpdateScore(_matchNumber, modelList, false, winnerSlot);
+			UpdateScore(_matchNumber, modelList, false, oldMatchModel);
 
 			// Fire Event with any Matches that changed:
 			alteredMatches.Add(GetMatchModel(match));
@@ -598,24 +604,30 @@ namespace Tournament.Structure
 		public virtual void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
 		{
 			IMatch match = GetMatch(_matchNumber);
+			MatchModel oldMatchModel = GetMatchModel(match);
 			bool winnerChange = (_winnerSlot != match.WinnerSlot);
 			List<GameModel> modelList = new List<GameModel>();
 
 			if (PlayerSlot.unspecified != match.WinnerSlot ||
 				match.Games.Count > 0)
 			{
-				// Reset the match, and save the games:
+				// Save the games:
 				if (winnerChange)
 				{
+					// Reset the Match AND other affected Matches:
 					modelList = ResetMatchScore(_matchNumber);
+					//RecalculateRankings();
 				}
 				else
 				{
+					// Reset just the one Match:
 					modelList = match.ResetScore();
+					UpdateScore(_matchNumber, modelList, false, oldMatchModel);
 				}
 			}
 
 			// Set the match winner, THEN re-add the games:
+			oldMatchModel = GetMatchModel(match);
 			match.SetWinner(_winnerSlot);
 			foreach (GameModel model in modelList)
 			{
@@ -627,7 +639,7 @@ namespace Tournament.Structure
 				match.AddGame(model.DefenderScore, model.ChallengerScore, winSlot);
 			}
 			// Update the Bracket & Rankings:
-			UpdateScore(_matchNumber, null, true, PlayerSlot.unspecified);
+			UpdateScore(_matchNumber, null, true, oldMatchModel);
 			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
 
 			// Fire Event with any Matches that changed:
@@ -638,12 +650,12 @@ namespace Tournament.Structure
 		{
 			IMatch match = GetMatch(_matchNumber);
 			PlayerSlot winnerSlot = match.WinnerSlot;
-			bool wasManualWin = match.IsManualWin;
+			MatchModel oldMatchModel = GetMatchModel(match);
 
 			// Reset the Match's score, remove any Games, update Bracket & Rankings:
 			List<GameModel> modelList = match.ResetScore();
 			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, winnerSlot);
-			UpdateScore(_matchNumber, modelList, false, winnerSlot, wasManualWin);
+			UpdateScore(_matchNumber, modelList, false, oldMatchModel);
 
 			// Fire Event with any Matches that changed:
 			alteredMatches.Add(GetMatchModel(match));

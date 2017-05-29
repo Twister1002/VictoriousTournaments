@@ -104,13 +104,9 @@ namespace Tournament.Structure
 			RecalculateRankings();
 
 			this.IsFinished = true;
-			foreach (IMatch match in Matches.Values)
+			if (Matches.Values.Any(m => !m.IsFinished))
 			{
-				if (!match.IsFinished)
-				{
-					this.IsFinished = false;
-					break;
-				}
+				this.IsFinished = false;
 			}
 		}
 		#endregion
@@ -190,7 +186,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false)
+		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 		{
 			IMatch match = GetMatch(_matchNumber);
 
@@ -206,58 +202,75 @@ namespace Tournament.Structure
 				Rankings[winnerIndex].AddMatchOutcome(Outcome.Win, true);
 				Rankings[loserIndex].AddMatchOutcome(Outcome.Loss, true);
 			}
-			else if (_resetManualWin)
+			else if (_oldMatch.IsManualWin && !(match.IsManualWin))
 			{
 				// Case 2: Match had a manual winner: being removed.
 				// Update rankings accordingly, ignoring individual game scores:
-				int winnerIndex = Rankings.FindIndex
-					(r => r.Id == match.Players[(int)_formerMatchWinnerSlot].Id);
-				PlayerSlot loserSlot = (PlayerSlot.Defender == _formerMatchWinnerSlot)
-					? PlayerSlot.Challenger : PlayerSlot.Defender;
-				int loserIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)loserSlot].Id);
+				int loserId = (_oldMatch.WinnerID == _oldMatch.DefenderID)
+					? _oldMatch.ChallengerID : _oldMatch.DefenderID;
 
-				Rankings[winnerIndex].AddMatchOutcome(Outcome.Win, false);
-				Rankings[loserIndex].AddMatchOutcome(Outcome.Loss, false);
+				Rankings.Find(r => r.Id == _oldMatch.WinnerID)
+					.AddMatchOutcome(Outcome.Win, false);
+				Rankings.Find(r => r.Id == loserId)
+					.AddMatchOutcome(Outcome.Loss, false);
 			}
 			else
 			{
 				// Standard case: Update score for new game(s):
-				Outcome defOutcome = Outcome.Tie;
-				Outcome chalOutcome = Outcome.Tie;
-				int defenderGameScore = 0, defenderPointScore = 0;
-				int challengerGameScore = 0, challengerPointScore = 0;
-
-				// Calculate players' MatchScore updates:
-				bool applyOutcome = true;
-				if ((PlayerSlot.Defender == _formerMatchWinnerSlot) ^ (PlayerSlot.Defender == match.WinnerSlot))
-				{
-					defOutcome = Outcome.Win;
-					chalOutcome = Outcome.Loss;
-				}
-				else if ((PlayerSlot.Challenger == _formerMatchWinnerSlot) ^ (PlayerSlot.Challenger == match.WinnerSlot))
-				{
-					defOutcome = Outcome.Loss;
-					chalOutcome = Outcome.Win;
-				}
-				else if (!match.IsFinished)
-				{
-					applyOutcome = false;
-				}
-
 				int defIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id);
 				int chalIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id);
 
-				if (applyOutcome)
+				// First, find out if the Match's Outcome is changing:
+				bool oldMatchFinished = _oldMatch.IsManualWin;
+				if (!oldMatchFinished)
 				{
-					// Record the match outcome:
-					Rankings[defIndex].AddMatchOutcome(defOutcome, _isAddition);
-					Rankings[chalIndex].AddMatchOutcome(chalOutcome, _isAddition);
+					if (_oldMatch.WinnerID.HasValue && _oldMatch.WinnerID > -1)
+					{
+						oldMatchFinished = true;
+					}
+					else if (_oldMatch.DefenderScore + _oldMatch.ChallengerScore >= match.MaxGames)
+					{
+						oldMatchFinished = true;
+					}
 				}
-				if (_games.Count > 0)
+				if (match.IsFinished != oldMatchFinished)
 				{
-					// Calculate players' GameScore & PointScore updates:
+					// Match Outcome has changed.
+					PlayerSlot oldWinnerSlot = (_oldMatch.WinnerID == _oldMatch.DefenderID)
+						? PlayerSlot.Defender : PlayerSlot.unspecified;
+					oldWinnerSlot = (_oldMatch.WinnerID == _oldMatch.ChallengerID)
+						? PlayerSlot.Challenger : oldWinnerSlot;
+
+					// Find the Outcome type to update:
+					Outcome defenderOutcome = Outcome.Tie;
+					Outcome challengerOutcome = Outcome.Tie;
+					if (PlayerSlot.Defender == match.WinnerSlot ||
+						PlayerSlot.Defender == oldWinnerSlot)
+					{
+						defenderOutcome = Outcome.Win;
+						challengerOutcome = Outcome.Loss;
+					}
+					else if (PlayerSlot.Challenger == match.WinnerSlot ||
+						PlayerSlot.Challenger == oldWinnerSlot)
+					{
+						defenderOutcome = Outcome.Loss;
+						challengerOutcome = Outcome.Win;
+					}
+
+					// Add/subtract the Match Outcome:
+					Rankings[defIndex].AddMatchOutcome(defenderOutcome, _isAddition);
+					Rankings[chalIndex].AddMatchOutcome(challengerOutcome, _isAddition);
+				}
+
+				// Now, calculate the Score updates:
+				if (_games.Count > 0 && !(match.IsManualWin))
+				{
+					int defenderGameScore = 0, defenderPointScore = 0;
+					int challengerGameScore = 0, challengerPointScore = 0;
+
 					foreach (GameModel model in _games)
 					{
+						// GameScore +1 for wins, -1 for losses
 						if (model.WinnerID == model.DefenderID)
 						{
 							++defenderGameScore;
@@ -268,10 +281,12 @@ namespace Tournament.Structure
 							--defenderGameScore;
 							++challengerGameScore;
 						}
+						// PointScore adjusts for "points" in each Game
 						defenderPointScore += model.DefenderScore;
 						challengerPointScore += model.ChallengerScore;
 					}
-					// Update scores:
+
+					// Apply the Score updates:
 					Rankings[defIndex].UpdateScores
 						(defenderGameScore, defenderPointScore, _isAddition);
 					Rankings[chalIndex].UpdateScores

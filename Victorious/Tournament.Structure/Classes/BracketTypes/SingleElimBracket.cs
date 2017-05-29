@@ -305,7 +305,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false)
+		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 		{
 			int nextWinnerNumber;
 			int nextLoserNumber;
@@ -337,7 +337,7 @@ namespace Tournament.Structure
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
 			}
-			else if (match.WinnerSlot != _formerMatchWinnerSlot)
+			else if (_oldMatch.WinnerID.HasValue && _oldMatch.WinnerID > -1)
 			{
 				RecalculateRankings();
 			}
@@ -481,7 +481,7 @@ namespace Tournament.Structure
 					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
 				}
 			}
-			if (Matches[NumberOfMatches].IsFinished)
+			if (NumberOfMatches > 0 && Matches[NumberOfMatches].IsFinished)
 			{
 				// Add Finals winner to Rankings:
 				IPlayer winningPlayer = Matches[NumberOfMatches]
