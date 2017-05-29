@@ -332,7 +332,8 @@ namespace WebApplication.Models
         {
             foreach (IBracket bracket in Tourny.Brackets)
             {
-                bracket.SetNewPlayerlist()
+                bracket.SetNewPlayerlist(Model.Brackets.Where(x => x.BracketID == bracket.Id).Single().TournamentUsersBrackets);
+
             }
         }
 
