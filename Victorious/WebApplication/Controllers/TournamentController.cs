@@ -175,8 +175,10 @@ namespace WebApplication.Controllers
         [Route("Tournament/Create")]
         public ActionResult Create(TournamentViewModel viewModel)
         {
+            LoadAccount(Session);
+
             // Verify the user is logged in first
-            if (Session["User.UserId"] == null)
+            if (account == null)
             {
                 Session["Message"] = "You must login to create a tournament.";
                 Session["Message.Class"] = ViewModel.ViewError.WARNING;
@@ -185,7 +187,7 @@ namespace WebApplication.Controllers
 
             if (ModelState.IsValid)
             {
-                if (viewModel.Create((int)Session["User.UserId"]))
+                if (viewModel.Create(account.AccountId))
                 {
                     if (viewModel.AddUser(account, Permission.TOURNAMENT_CREATOR))
                     {

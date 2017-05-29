@@ -261,14 +261,16 @@
             return false;
         }
 
+        var jsonData = {
+            "tournamentId": $("#Tournament").data("id"),
+            "name": row.find(".name input").val(),
+            "bracketId": row.closest(".bracketData").data("id")
+        };
+
         $.ajax({
             "url": "/Ajax/Tournament/Register",
             "type": "post",
-            "data": {
-                "tournamentId": $("#Tournament").data("id"),
-                "name": row.find(".name input").val(),
-                "bracketId": row.closest(".bracketData").data("id")
-            },
+            "data": jsonData,
             "dataType": "json",
             "beforeSend": function () {
                 row.find(".addUserButton").attr("disabled", true);

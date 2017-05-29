@@ -54,7 +54,7 @@
                                         <li class="column">
                                             @if (!Model.IsUserAdministrator(person.TournamentUserID))
                                             {
-                                                <input type="text" name="seedVal" maxlength="2" />
+                                                <input type="text" name="seedVal" maxlength="2" value="@Model.UserSeed(person.TournamentUserID, bracket.Id)"/>
                                             }
                                         </li>
                                         <li class="column">

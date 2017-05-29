@@ -207,19 +207,22 @@ namespace WebApplication.Models
             // Add the user to the tournament
             bool userAddResult = db.AddTournamentUser(model) == DbError.SUCCESS;
 
-            // Now add the user with a seed.
-            int? seedData = Model.Brackets.ElementAt(0).TournamentUsersBrackets.Max(x => x.Seed);
-            int seed = seedData != null ? seedData.Value + 1 : 1;
-
-            TournamentUsersBracketModel bracketUser = new TournamentUsersBracketModel()
+            if (userAddResult && model.PermissionLevel == (int)Permission.TOURNAMENT_STANDARD)
             {
-                TournamentID = Model.TournamentID,
-                TournamentUserID = model.TournamentUserID,
-                Seed = seed,
-                BracketID = Model.Brackets.ElementAt(0).BracketID
-            };
+                // Now add the user with a seed.
+                int? seedData = Model.Brackets.ElementAt(0).TournamentUsersBrackets.Max(x => x.Seed);
+                int seed = seedData != null ? seedData.Value + 1 : 1;
 
-            bool seededUser = db.AddTournamentUsersBracket(bracketUser) == DbError.SUCCESS;
+                TournamentUsersBracketModel bracketUser = new TournamentUsersBracketModel()
+                {
+                    TournamentID = Model.TournamentID,
+                    TournamentUserID = model.TournamentUserID,
+                    Seed = seed,
+                    BracketID = Model.Brackets.ElementAt(0).BracketID
+                };
+
+                bool seededUser = db.AddTournamentUsersBracket(bracketUser) == DbError.SUCCESS;
+            }
 
             return userAddResult;
         }
@@ -256,13 +259,6 @@ namespace WebApplication.Models
             List<String> safeParamList = new List<String>() { "Title", "GameTypeID", "PlatformID", "TournamentStartDate", "PublicViewing", "PublicRegistration" };
             searchData = searchData.Where(k => safeParamList.Contains(k.Key) && k.Value != String.Empty).ToDictionary(k => k.Key, k => k.Value);
             SearchedTournaments = db.FindTournaments(searchData);
-        }
-
-        public bool SeedParticipants(int bracketNum)
-        {
-            //SaveSeedParticipants(bracket, tourny);
-
-            return false;
         }
 
         public bool FinalizeTournament(Dictionary<String, Dictionary<String, int>> roundData)
@@ -328,15 +324,6 @@ namespace WebApplication.Models
             }
         }
 
-        private void SaveSeedParticipants()
-        {
-            foreach (IBracket bracket in Tourny.Brackets)
-            {
-                bracket.SetNewPlayerlist(Model.Brackets.Where(x => x.BracketID == bracket.Id).Single().TournamentUsersBrackets);
-
-            }
-        }
-
         private void ProcessTournament()
         {
             if (Model == null)
@@ -345,49 +332,10 @@ namespace WebApplication.Models
             }
 
             int bracketNum = 0;
-            BracketModel bracket = Model.Brackets.ElementAt(bracketNum);
-
-            Tourny = new Tournament.Structure.Tournament();
-            Tourny.Title = Model.Title;
-
-            if (bracket.Finalized)
-            {
-                Tourny.AddBracket(BracketTournament(bracket));
-            }
-            else
-            {
-                Tourny.AddBracket(PlayerTournament(bracket));
-            }
-        }
-
-        private IBracket BracketTournament(BracketModel bracketModel)
-        {
-            IBracket bracket = null;
-
-            switch ((BracketType)bracketModel.BracketTypeID)
-            {
-                case DatabaseLib.BracketType.SINGLE:
-                    bracket = new SingleElimBracket(bracketModel);
-                    break;
-                case DatabaseLib.BracketType.DOUBLE:
-                    bracket = new DoubleElimBracket(bracketModel);
-                    break;
-                case DatabaseLib.BracketType.ROUNDROBIN:
-                    bracket = new RoundRobinBracket(bracketModel);
-                    break;
-                case DatabaseLib.BracketType.SWISS:
-                    bracket = new SwissBracket(bracketModel);
-                    break;
-            }
-
-            return bracket;
-        }
-
-        private IBracket PlayerTournament(BracketModel bracketModel)
-        {
             IBracket bracket = null;
             List<IPlayer> players = new List<IPlayer>();
-
+            BracketModel bracketModel = Model.Brackets.ElementAt(bracketNum);
+            
             foreach (TournamentUserModel userModel in GetParticipants())
             {
                 players.Add(new User(userModel));
@@ -396,20 +344,26 @@ namespace WebApplication.Models
             switch ((BracketType)bracketModel.BracketTypeID)
             {
                 case DatabaseLib.BracketType.SINGLE:
-                    bracket = new SingleElimBracket(players);
+                    //bracket = Model.InProgress ? new SingleElimBracket(bracketModel) : new SingleElimBracket(players);
+                    bracket = new SingleElimBracket(bracketModel);
                     break;
                 case DatabaseLib.BracketType.DOUBLE:
-                    bracket = new DoubleElimBracket(players);
+                    //bracket = Model.InProgress ? new DoubleElimBracket(bracketModel) : new DoubleElimBracket(players);
+                    bracket = new DoubleElimBracket(bracketModel);
                     break;
                 case DatabaseLib.BracketType.ROUNDROBIN:
-                    bracket = new RoundRobinBracket(players);
+                    //bracket = Model.InProgress ? new RoundRobinBracket(bracketModel) : new RoundRobinBracket(players);
+                    bracket = new RoundRobinBracket(bracketModel);
                     break;
                 case DatabaseLib.BracketType.SWISS:
-                    bracket = new SwissBracket(players);
+                    //bracket = Model.InProgress ? new SwissBracket(bracketModel) : new SwissBracket(players);
+                    bracket = new SwissBracket(bracketModel);
                     break;
             }
 
-            return bracket;
+            Tourny = new Tournament.Structure.Tournament();
+            Tourny.Title = Model.Title;
+            Tourny.AddBracket(bracket);
         }
         
         #region CheckIn
@@ -689,7 +643,10 @@ namespace WebApplication.Models
 
         public int UserSeed(int tournamentUserId, int bracketId)
         {
-            return db.GetTournamentUserSeed(tournamentUserId, bracketId);
+            int seedNum = db.GetTournamentUserSeed(tournamentUserId, bracketId);
+
+            //return Model.Brackets.Where(x => x.BracketID == bracketId).Single().TournamentUsersBrackets.Where(x => x.TournamentUserID == tournamentUserId).Single().Seed;
+            return seedNum;
         }
         #endregion
     }
