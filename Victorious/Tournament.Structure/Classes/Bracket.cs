@@ -56,6 +56,13 @@ namespace Tournament.Structure
 		{
 			RoundDeleted?.Invoke(this, _e);
 		}
+		protected void OnRoundDeleted(List<MatchModel> _modelList)
+		{
+			if (null != _modelList && _modelList.Count > 0)
+			{
+				OnRoundDeleted(new BracketEventArgs(_modelList));
+			}
+		}
 		protected void OnMatchesModified(BracketEventArgs _e)
 		{
 			MatchesModified?.Invoke(this, _e);
@@ -64,8 +71,7 @@ namespace Tournament.Structure
 		{
 			if (null != _modelList && _modelList.Count > 0)
 			{
-				OnMatchesModified(new BracketEventArgs(_modelList
-					.OrderBy(m => m.MatchNumber).ToList()));
+				OnMatchesModified(new BracketEventArgs(_modelList));
 			}
 		}
 		protected void OnGamesDeleted(BracketEventArgs _e)
@@ -76,7 +82,8 @@ namespace Tournament.Structure
 		{
 			if (null != _games && _games.Count > 0)
 			{
-				OnGamesDeleted(new BracketEventArgs(_games.Select(g => g.Id).ToList()));
+				OnGamesDeleted(new BracketEventArgs(_games
+					.Select(g => g.Id).ToList()));
 			}
 		}
 		protected void OnGamesDeleted(List<int> _gameIDs)
@@ -474,10 +481,10 @@ namespace Tournament.Structure
 			if (match.Games[gameIndex].WinnerSlot == _winnerSlot)
 			{
 				// Case 2: Game winner won't change.
-
-				// Subtract old scores from rankings:
 				List<GameModel> gModels = new List<GameModel>();
 				gModels.Add(match.Games[gameIndex].GetModel());
+
+				// Subtract old scores from rankings:
 				UpdateScore(_matchNumber, gModels, false, _winnerSlot);
 				// Update the match score:
 				match.Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;

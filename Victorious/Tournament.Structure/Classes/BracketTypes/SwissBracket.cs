@@ -268,29 +268,49 @@ namespace Tournament.Structure
 
 		public override void ResetMatches()
 		{
-			base.ResetMatches();
 			Matchups.Clear();
 			PlayerByes.Clear();
-
-			for (int n = 1; n <= NumberOfMatches; ++n)
+			foreach (IPlayerScore ps in Rankings)
 			{
-				// Create Matchups for all first-round Matches:
-				if (Matches[n].RoundIndex == 1)
+				ps.Rank = 1;
+				ps.ResetScore();
+			}
+
+			List<MatchModel> alteredMatches = new List<MatchModel>();
+			List<MatchModel> deletedMatches = new List<MatchModel>();
+			List<int> deletedGameIds = new List<int>();
+
+			foreach (IMatch match in Matches.Values.ToList())
+			{
+				// Add all Games to the deletion List:
+				foreach (IGame game in match.Games)
 				{
+					deletedGameIds.Add(game.Id);
+				}
+
+				if (1 == match.RoundIndex)
+				{
+					if (match.Games.Count > 0 || match.IsManualWin)
+					{
+						// Reset any first-round Matches that have progressed:
+						alteredMatches.Add(GetMatchModel(match));
+						match.ResetScore();
+					}
+
+					// Re-create Matchups for all first-round Matches:
 					int defIndex = Players.FindIndex
-						(p => p.Id == Matches[n].Players[(int)PlayerSlot.Defender].Id);
+						(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id);
 					int chalIndex = Players.FindIndex
-						(p => p.Id == Matches[n].Players[(int)PlayerSlot.Challenger].Id);
+						(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id);
 					Matchups.Add(new Matchup(defIndex, chalIndex, 1));
 				}
-				// Delete any Matches after first round:
 				else
 				{
-					Matches.Remove(n);
+					// Delete all Matches post-first-round:
+					deletedMatches.Add(GetMatchModel(match));
+					Matches.Remove(match.MatchNumber);
 				}
 			}
-			NumberOfMatches = Matches.Count;
-			NumberOfRounds = 1;
 
 			if (NumberOfPlayers() % 2 > 0)
 			{
@@ -311,13 +331,24 @@ namespace Tournament.Structure
 					{
 						// Add player to the Byes list and update his score:
 						PlayerByes.Add(Players[p].Id);
-						int rIndex = Rankings.FindIndex(r => r.Id == Players[p].Id);
-						Rankings[rIndex].AddMatchOutcome(Outcome.Win, true);
+						Rankings.Find(r => r.Id == Players[p].Id)
+							.AddMatchOutcome(Outcome.Win, true);
 						UpdateRankings();
 						break;
 					}
 				}
 			}
+
+			// Update Bracket data:
+			NumberOfMatches = Matches.Count;
+			NumberOfRounds = 1;
+			IsFinalized = false;
+			IsFinished = false;
+
+			// Fire Events with any data we altered:
+			OnGamesDeleted(deletedGameIds);
+			OnRoundDeleted(deletedMatches);
+			OnMatchesModified(alteredMatches);
 		}
 		#endregion
 
