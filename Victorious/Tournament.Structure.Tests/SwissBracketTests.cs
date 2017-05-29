@@ -365,9 +365,8 @@ namespace Tournament.Structure.Tests
 				b.AddGame(n + matchesPerRound, 25, 15, PlayerSlot.Defender);
 			}
 
-			int highScore = b.Rankings[0].GameScore;
 			b.ResetMatchScore(matchesPerRound + 1);
-			Assert.IsTrue(b.Rankings[0].GameScore < highScore);
+			Assert.AreEqual(2, b.Rankings[0].Wins);
 		}
 
 		[TestMethod]

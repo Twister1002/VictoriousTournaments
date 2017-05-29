@@ -369,21 +369,35 @@ namespace Tournament.Structure
 			PlayerByes.Clear();
 		}
 
-		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false)
+		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 		{
 			IMatch match = GetMatch(_matchNumber);
-			if (!(match.IsFinished) &&
-				((PlayerSlot.unspecified != _formerMatchWinnerSlot) ||
-				(_games.Count + match.Score[0] + match.Score[1] >= match.MaxGames)))
+			if (!(match.IsFinished))
 			{
-				// We just invalidated future match results.
-				// Instead of regular updating, we need to reset/recalculate:
-				RecalculateRankings();
-				UpdateRankings();
+				bool oldMatchFinished = _oldMatch.IsManualWin;
+				if (!oldMatchFinished)
+				{
+					if (_oldMatch.WinnerID.HasValue && _oldMatch.WinnerID > -1)
+					{
+						oldMatchFinished = true;
+					}
+					else if (_oldMatch.DefenderScore + _oldMatch.ChallengerScore >= match.MaxGames)
+					{
+						oldMatchFinished = true;
+					}
+				}
+
+				if (oldMatchFinished)
+				{
+					// We just invalidated future match results.
+					// Instead of regular updating, we need to reset/recalculate:
+					RecalculateRankings();
+					UpdateRankings();
+				}
 			}
 			else
 			{
-				base.UpdateScore(_matchNumber, _games, _isAddition, _formerMatchWinnerSlot, _resetManualWin);
+				base.UpdateScore(_matchNumber, _games, _isAddition, _oldMatch);
 			}
 		}
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)

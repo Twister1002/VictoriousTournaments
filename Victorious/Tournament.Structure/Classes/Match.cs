@@ -146,12 +146,16 @@ namespace Tournament.Structure
 			{
 				AddGame(new Game(model));
 			}
-			int winsNeeded = MaxGames / 2 + 1;
+
+			int winsNeeded = Convert.ToInt32(MaxGames * 0.5);
+			winsNeeded = (0 == MaxGames % 2)
+				? winsNeeded : winsNeeded + 1;
 			if (Score[0] > winsNeeded || Score[1] > winsNeeded)
 			{
 				throw new ScoreException
 					("Score cannot be higher than the match allows!");
 			}
+
 			if (!this.IsManualWin)
 			{
 				this.WinnerSlot = PlayerSlot.unspecified;
@@ -163,8 +167,13 @@ namespace Tournament.Structure
 				{
 					this.WinnerSlot = PlayerSlot.Challenger;
 				}
-				this.IsFinished = (PlayerSlot.unspecified == WinnerSlot)
-					? false : true;
+
+				this.IsFinished = false;
+				if ((PlayerSlot.unspecified != WinnerSlot) ||
+					(Score[0] + Score[1] >= MaxGames))
+				{
+					this.IsFinished = true;
+				}
 			}
 
 			this.RoundIndex = (int)(_model.RoundIndex);
