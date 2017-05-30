@@ -478,43 +478,44 @@ namespace Tournament.Structure
 					("Game not found; Game Number may be invalid!");
 			}
 
+			List<MatchModel> alteredMatches = new List<MatchModel>();
+			List<GameModel> alteredGames = new List<GameModel>();
+			alteredGames.Add(match.Games[gameIndex].GetModel());
+			alteredGames[0].MatchID = match.Id;
+
 			if (match.Games[gameIndex].WinnerSlot == _winnerSlot)
 			{
 				// Case 2: Game winner won't change.
 				MatchModel oldMatchModel = GetMatchModel(match);
-				List<GameModel> gModels = new List<GameModel>();
-				gModels.Add(match.Games[gameIndex].GetModel());
 
 				// Subtract old scores from rankings:
-				UpdateScore(_matchNumber, gModels, false, oldMatchModel);
+				UpdateScore(_matchNumber, alteredGames, false, oldMatchModel);
 
 				// Update the Game (and Match):
 				match.Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;
 				match.Games[gameIndex].Score[(int)PlayerSlot.Challenger] = _challengerScore;
-				gModels.Clear();
-				gModels.Add(match.Games[gameIndex].GetModel());
+				alteredGames.Clear();
+				alteredGames.Add(match.Games[gameIndex].GetModel());
 				// Add new scores to rankings:
-				UpdateScore(_matchNumber, gModels, true, oldMatchModel);
+				UpdateScore(_matchNumber, alteredGames, true, oldMatchModel);
 
-				// Fire Event with the changed Match data:
-				OnMatchesModified(new List<MatchModel> { GetMatchModel(match) });
-				// Return a Model of the altered Game:
-				gModels[0].MatchID = match.Id;
-				return gModels[0];
+				alteredMatches.Add(GetMatchModel(match));
+				alteredGames[0].MatchID = match.Id;
 			}
 			else
 			{
 				// Case 3: Game winner changes:
-				PlayerSlot formerWinnerSlot = match.WinnerSlot;
-				List<GameModel> gameModels = new List<GameModel>();
-				gameModels.Add(match.Games[gameIndex].GetModel());
-				gameModels[0].MatchID = match.Id;
+
+				// Effectively, we're removing & adding a new Game:
+				List<MatchModel> clearedMatches = ApplyGameRemovalEffects(_matchNumber, alteredGames, match.WinnerSlot);
 
 				// Change/update the actual Game's data:
-				GameModel updatedGame = match.UpdateGame(_gameNumber, _defenderScore, _challengerScore, _winnerSlot);
-				// Effectively, we're removing & adding a new Game, so call the methods:
-				List<MatchModel> clearedMatches = ApplyGameRemovalEffects(_matchNumber, gameModels, formerWinnerSlot);
-				List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
+				alteredGames.Clear();
+				alteredGames.Add(match.UpdateGame(_gameNumber, _defenderScore, _challengerScore, _winnerSlot));
+
+				// "Add" the updated Game's effects:
+				alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
+
 				// Too much has changed to update the scores, so just recalculate:
 				RecalculateRankings();
 
@@ -525,12 +526,13 @@ namespace Tournament.Structure
 						alteredMatches.Add(model);
 					}
 				}
-				// Fire Event with any changed Matches:
 				alteredMatches.Add(GetMatchModel(match));
-				OnMatchesModified(alteredMatches);
-				// Return a Model of the updated Game:
-				return updatedGame;
 			}
+
+			// Fire Event with any changed Matches:
+			OnMatchesModified(alteredMatches);
+			// Return a Model of the updated Game:
+			return alteredGames[0];
 #if false
 			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
 			List<GameModel> modelList = new List<GameModel>();
