@@ -59,15 +59,15 @@
     <Compile Include="AccountModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="AccountRepository.cs" />
+    <Compile Include="Repositories\AccountRepository.cs" />
     <Compile Include="BracketModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="BracketRepository.cs" />
+    <Compile Include="Repositories\BracketRepository.cs" />
     <Compile Include="BracketTypeModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="BracketTypeRepository.cs" />
+    <Compile Include="Repositories\BracketTypeRepository.cs" />
     <Compile Include="C__RefactorLog.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -76,11 +76,11 @@
     <Compile Include="GameModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="GameRepository.cs" />
+    <Compile Include="Repositories\GameRepository.cs" />
     <Compile Include="GameTypeModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="GameTypeRepository.cs" />
+    <Compile Include="Repositories\GameTypeRepository.cs" />
     <Compile Include="Interfaces\IAccountRepository.cs" />
     <Compile Include="Interfaces\IBracketRepository.cs" />
     <Compile Include="Interfaces\IBracketTypeRepository.cs" />
@@ -94,7 +94,7 @@
     <Compile Include="MatchModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="MatchRepository.cs" />
+    <Compile Include="Repositories\MatchRepository.cs" />
     <Compile Include="Model.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -114,7 +114,7 @@
     <Compile Include="PlatformModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="PlatformRepository.cs" />
+    <Compile Include="Repositories\PlatformRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Services\AccountService.cs" />
@@ -125,7 +125,7 @@
     <Compile Include="TournamentModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="TournamentRepository.cs" />
+    <Compile Include="Repositories\TournamentRepository.cs" />
     <Compile Include="TournamentUserModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>

@@ -24,7 +24,7 @@ namespace DatabaseLib.Tests
         public void Add_Tournament()
         {
             tournament.InviteCode = "555";
-            unitOfWork.TournamentRepository.AddTournament(tournament);
+            unitOfWork.TournamentRepo.Add(tournament);
             var result = unitOfWork.Save();
 
             Assert.AreEqual(true, result);
@@ -34,7 +34,7 @@ namespace DatabaseLib.Tests
         [TestCategory("Unit Of Work")]
         public void Get_Tournament()
         {
-            unitOfWork.TournamentRepository.AddTournament(tournament);
+            unitOfWork.TournamentRepo.Add(tournament);
         }
 
         public void Update_Tournament()

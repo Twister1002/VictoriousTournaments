@@ -13,8 +13,9 @@
         </EntityType>
         <EntityType Name="AccountInvites">
           <Key>
-            <PropertyRef Name="AccountInviteCode" />
+            <PropertyRef Name="AccountInviteID" />
           </Key>
+          <Property Name="AccountInviteID" Type="int" Nullable="false" />
           <Property Name="AccountInviteCode" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="SentToEmail" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="SentByID" Type="int" Nullable="false" />
@@ -423,12 +424,7 @@
             <End Role="BracketModel" EntitySet="BracketModels" />
           </AssociationSet>
           <EntitySet Name="PlatformModels" EntityType="VictoriousDatabaseModel.PlatformModel" />
-          <EntitySet Name="AccountInviteModels" EntityType="VictoriousDatabaseModel.AccountInviteModel" />
           <EntitySet Name="AccountModels" EntityType="VictoriousDatabaseModel.AccountModel" />
-          <AssociationSet Name="FK_UserInvites_Accounts_SentBy" Association="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy">
-            <End Role="Account" EntitySet="AccountModels" />
-            <End Role="AccountInviteModel" EntitySet="AccountInviteModels" />
-          </AssociationSet>
           <EntitySet Name="TournamentInviteModels" EntityType="VictoriousDatabaseModel.TournamentInviteModel" />
           <EntitySet Name="TournamentModels" EntityType="VictoriousDatabaseModel.TournamentModel" />
           <AssociationSet Name="FK_Brackets_Tournaments" Association="VictoriousDatabaseModel.FK_Brackets_Tournaments">
@@ -460,6 +456,11 @@
           <AssociationSet Name="FK_Tournaments_GameTypes" Association="VictoriousDatabaseModel.FK_Tournaments_GameTypes">
             <End Role="GameType" EntitySet="GameTypeModels" />
             <End Role="TournamentModel" EntitySet="TournamentModels" />
+          </AssociationSet>
+          <EntitySet Name="AccountInviteModels" EntityType="VictoriousDatabaseModel.AccountInviteModel" />
+          <AssociationSet Name="FK_UserInvites_Accounts_SentBy" Association="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy">
+            <End Role="AccountModel" EntitySet="AccountModels" />
+            <End Role="AccountInvite" EntitySet="AccountInviteModels" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="TournamentUserModel">
@@ -553,18 +554,6 @@
           <Property Name="PlatformName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Tournaments" Relationship="VictoriousDatabaseModel.FK_Tournaments_Platforms" FromRole="PlatformModel" ToRole="Tournament" />
         </EntityType>
-        <EntityType Name="AccountInviteModel">
-          <Key>
-            <PropertyRef Name="AccountInviteCode" />
-          </Key>
-          <Property Name="AccountInviteCode" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="SentToEmail" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="SentByID" Type="Int32" Nullable="false" />
-          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="DateExpires" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="IsExpired" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="SentBy" Relationship="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy" FromRole="AccountInviteModel" ToRole="Account" />
-        </EntityType>
         <EntityType Name="AccountModel">
           <Key>
             <PropertyRef Name="AccountID" />
@@ -581,20 +570,8 @@
           <Property Name="PermissionLevel" Type="Int32" Nullable="false" />
           <Property Name="InviteCode" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="InvitedByID" Type="Int32" />
-          <NavigationProperty Name="AccountInvites" Relationship="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy" FromRole="Account" ToRole="AccountInviteModel" />
+          <NavigationProperty Name="AccountInvites" Relationship="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy" FromRole="AccountModel" ToRole="AccountInvite" />
         </EntityType>
-        <Association Name="FK_UserInvites_Accounts_SentBy">
-          <End Type="VictoriousDatabaseModel.AccountModel" Role="Account" Multiplicity="1" />
-          <End Type="VictoriousDatabaseModel.AccountInviteModel" Role="AccountInviteModel" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Account">
-              <PropertyRef Name="AccountID" />
-            </Principal>
-            <Dependent Role="AccountInviteModel">
-              <PropertyRef Name="SentByID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="TournamentInviteModel">
           <Key>
             <PropertyRef Name="TournamentInviteCode" />
@@ -758,6 +735,31 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="AccountInviteModel">
+          <Key>
+            <PropertyRef Name="AccountInviteID" />
+          </Key>
+          <Property Name="AccountInviteID" Type="Int32" Nullable="false" />
+          <Property Name="AccountInviteCode" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="SentToEmail" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SentByID" Type="Int32" Nullable="false" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="DateExpires" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="IsExpired" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Account" Relationship="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy" FromRole="AccountInvite" ToRole="AccountModel" />
+        </EntityType>
+        <Association Name="FK_UserInvites_Accounts_SentBy">
+          <End Type="VictoriousDatabaseModel.AccountModel" Role="AccountModel" Multiplicity="1" />
+          <End Type="VictoriousDatabaseModel.AccountInviteModel" Role="AccountInvite" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AccountModel">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="AccountInvite">
+              <PropertyRef Name="SentByID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -837,18 +839,6 @@
               <MappingFragment StoreEntitySet="Platforms">
                 <ScalarProperty Name="PlatformName" ColumnName="PlatformName" />
                 <ScalarProperty Name="PlatformID" ColumnName="PlatformID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="AccountInviteModels">
-            <EntityTypeMapping TypeName="VictoriousDatabaseModel.AccountInviteModel">
-              <MappingFragment StoreEntitySet="AccountInvites">
-                <ScalarProperty Name="IsExpired" ColumnName="IsExpired" />
-                <ScalarProperty Name="DateExpires" ColumnName="DateExpires" />
-                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
-                <ScalarProperty Name="SentByID" ColumnName="SentByID" />
-                <ScalarProperty Name="SentToEmail" ColumnName="SentToEmail" />
-                <ScalarProperty Name="AccountInviteCode" ColumnName="AccountInviteCode" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -941,6 +931,19 @@
               <MappingFragment StoreEntitySet="GameTypes">
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="GameTypeID" ColumnName="GameTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AccountInviteModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.AccountInviteModel">
+              <MappingFragment StoreEntitySet="AccountInvites">
+                <ScalarProperty Name="IsExpired" ColumnName="IsExpired" />
+                <ScalarProperty Name="DateExpires" ColumnName="DateExpires" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="SentByID" ColumnName="SentByID" />
+                <ScalarProperty Name="SentToEmail" ColumnName="SentToEmail" />
+                <ScalarProperty Name="AccountInviteCode" ColumnName="AccountInviteCode" />
+                <ScalarProperty Name="AccountInviteID" ColumnName="AccountInviteID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

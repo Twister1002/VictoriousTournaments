@@ -177,7 +177,7 @@ namespace DatabaseLib
             }
         }
 
-        public IRepository<TournamentModel> TournamentRepository
+        public IRepository<TournamentModel> TournamentRepo
         {
             get
             {

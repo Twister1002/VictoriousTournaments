@@ -32,11 +32,11 @@ namespace DatabaseLib
         public virtual DbSet<TournamentUsersBracketModel> TournamentUsersBracketModels { get; set; }
         public virtual DbSet<GameModel> GameModels { get; set; }
         public virtual DbSet<PlatformModel> PlatformModels { get; set; }
-        public virtual DbSet<AccountInviteModel> AccountInviteModels { get; set; }
         public virtual DbSet<AccountModel> AccountModels { get; set; }
         public virtual DbSet<TournamentInviteModel> TournamentInviteModels { get; set; }
         public virtual DbSet<TournamentModel> TournamentModels { get; set; }
         public virtual DbSet<MatchModel> MatchModels { get; set; }
         public virtual DbSet<GameTypeModel> GameTypeModels { get; set; }
+        public virtual DbSet<AccountInviteModel> AccountInviteModels { get; set; }
     }
 }

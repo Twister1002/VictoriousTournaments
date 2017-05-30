@@ -11,35 +11,55 @@ namespace DatabaseLib.Services
         IUnitOfWork unitOfWork;
        
 
-        public AccountService(IRepository<AccountModel> accountRepo, IUnitOfWork unitOfWork)
+        public AccountService(IUnitOfWork unitOfWork)
         {
-            this.accountRepo = accountRepo;
+            //this.accountRepo = accountRepo;
             this.unitOfWork = unitOfWork;
         }
 
         public void AddAccount(AccountModel account)
         {
-            accountRepo.Add(account);
+            unitOfWork.AccountRepo.Add(account);
         }
 
         public AccountModel GetAccount(int accountId)
         {
-            return accountRepo.Get(accountId);
+            return unitOfWork.AccountRepo.Get(accountId);
         }
 
         public void DeleteAccount(int accountId)
         {
-            accountRepo.Delete(accountId);
+            unitOfWork.AccountRepo.Delete(accountId);
         }
 
         public void UpdateAccount(AccountModel account)
         {
-            accountRepo.Update(account);
+            unitOfWork.AccountRepo.Update(account);
         }
 
-        
 
 
+        public void AddAccountInvite(AccountInviteModel accountInvite)
+        {
+            unitOfWork.AccountInviteRepo.Add(accountInvite);
+          
+        }
+
+        public AccountInviteModel GetAcountInvite(string inviteCode)
+        {
+            return unitOfWork.AccountInviteRepo.GetAll().Single(x => x.AccountInviteCode == inviteCode);
+        }
+
+        public void UpdateAccountInvite(AccountInviteModel accountInvite)
+        {
+            unitOfWork.AccountInviteRepo.Update(accountInvite);
+        }
+
+        public void DeleteAccountInvite(string inviteCode)
+        {
+            AccountInviteModel inviteToDelete = unitOfWork.AccountInviteRepo.GetAll().Single(x => x.AccountInviteCode == inviteCode);
+            unitOfWork.AccountInviteRepo.Delete(inviteToDelete.AccountInviteID);
+        }
 
 
     }
