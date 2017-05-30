@@ -95,11 +95,12 @@ namespace Tournament.Structure
 			foreach (MatchModel mm in _model.Matches)
 			{
 				// Create the Match:
-				IMatch match = new Match(mm);
-				Matches.Add(match.MatchNumber, match);
-				this.NumberOfRounds = Math.Max(NumberOfRounds, match.RoundIndex);
+				Matches.Add(mm.MatchNumber, new Match(mm));
 			}
-			NumberOfMatches = Matches.Count;
+			this.NumberOfRounds = Matches.Values
+				.Select(m => m.RoundIndex)
+				.Last();
+			this.NumberOfMatches = Matches.Count;
 
 			RecalculateRankings();
 
@@ -298,15 +299,7 @@ namespace Tournament.Structure
 		}
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
-			IsFinished = true;
-			foreach (IMatch match in Matches.Values)
-			{
-				if (!match.IsFinished)
-				{
-					IsFinished = false;
-					break;
-				}
-			}
+			this.IsFinished = !(Matches.Values.Any(m => !m.IsFinished));
 
 			return (new List<MatchModel>());
 		}
@@ -325,7 +318,7 @@ namespace Tournament.Structure
 				ps.ResetScore();
 			}
 
-			foreach (IMatch match in Matches.Values)
+			foreach (IMatch match in Matches.Values.Where(m => !(m.Players.Contains(null))))
 			{
 				int defIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id);
 				int chalIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id);

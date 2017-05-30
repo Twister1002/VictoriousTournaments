@@ -59,6 +59,8 @@ namespace Tournament.Structure
 		{ get; set; }
 		private PairingMethod PairingMethod
 		{ get; set; }
+		private int ActiveRound
+		{ get; set; }
 		#endregion
 
 		#region Ctors
@@ -92,8 +94,9 @@ namespace Tournament.Structure
 			Id = 0;
 			BracketType = BracketType.SWISS;
 			PairingMethod = _pairing;
+			ActiveRound = 0;
 			MaxRounds = _numberOfRounds;
-			if (Players.Count > 8 && MaxRounds > (Players.Count / 2))
+			if (Players.Count > 8 && MaxRounds > (int)(Players.Count * 0.5))
 			{
 				MaxRounds = Players.Count / 2;
 			}
@@ -115,9 +118,16 @@ namespace Tournament.Structure
 				List<IMatch> round = GetRound(r);
 				List<int> playersInRound = new List<int>();
 
+				if (round.Any(m => m.Players.Contains(null)))
+				{
+					// This round isn't populated yet. Break out:
+					ActiveRound = r - 1;
+					break;
+				}
+
 				foreach (IMatch match in round)
 				{
-					// For each Match, add a Matchup to the private list:
+					// For each populated Match, add a Matchup to the private list:
 					int defIndex = Players.FindIndex(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id);
 					int chalIndex = Players.FindIndex(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id);
 
@@ -144,7 +154,7 @@ namespace Tournament.Structure
 
 			// Determine the Pairing Method from examining Rnd 1:
 			this.PairingMethod = PairingMethod.Slide;
-			if (NumberOfMatches > 0)
+			if (NumberOfMatches > 0 && ActiveRound > 0)
 			{
 				int firstPlayerIndex = (0 == PlayerByes.Count)
 					? 0 : 1;
@@ -194,7 +204,32 @@ namespace Tournament.Structure
 				Rankings.Add(new PlayerScore(player.Id, player.Name));
 			}
 
-			// Create first-round matches:
+			// Calculate round count:
+			NumberOfRounds = MaxRounds;
+			if (0 == NumberOfRounds)
+			{
+				while (Math.Pow(2, NumberOfRounds) < Players.Count)
+				{
+					++NumberOfRounds;
+				}
+			}
+			// Create empty matches:
+			int matchesPerRound = (int)(Players.Count * 0.5);
+			for (int r = 1; r <= NumberOfRounds; ++r)
+			{
+				for (int m = 1; m <= matchesPerRound; ++m)
+				{
+					IMatch match = new Match();
+					match.SetMatchNumber(++NumberOfMatches);
+					match.SetRoundIndex(r);
+					match.SetMatchIndex(m);
+					match.SetMaxGames(_gamesPerMatch);
+
+					Matches.Add(match.MatchNumber, match);
+				}
+			}
+
+			// Populate first-round matches:
 			AddSwissRound(_gamesPerMatch);
 #if false
 			int divisionPoint = Players.Count / 2;
@@ -229,17 +264,17 @@ namespace Tournament.Structure
 			}
 		}
 
-		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
-		{
-			return (base.UpdateGame(_matchNumber, _gameNumber, _defenderScore, _challengerScore, _winnerSlot));
+		//public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		//{
+		//	return (base.UpdateGame(_matchNumber, _gameNumber, _defenderScore, _challengerScore, _winnerSlot));
 
-			///////////////////////////////////////////
-			// This may need modifications later...
-			///////////////////////////////////////////
-		}
+		//	///////////////////////////////////////////
+		//	// This may need modifications later...
+		//	///////////////////////////////////////////
+		//}
 		public override GameModel RemoveLastGame(int _matchNumber)
 		{
-			if (GetMatch(_matchNumber).RoundIndex < (NumberOfRounds - 1))
+			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
 			{
 				throw new BracketException
 					("Cannot affect matches too far back in Swiss brackets!");
@@ -248,7 +283,7 @@ namespace Tournament.Structure
 		}
 		public override GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
 		{
-			if (GetMatch(_matchNumber).RoundIndex < (NumberOfRounds - 1))
+			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
 			{
 				throw new BracketException
 					("Cannot affect matches too far back in Swiss brackets!");
@@ -258,7 +293,7 @@ namespace Tournament.Structure
 
 		public override List<GameModel> ResetMatchScore(int _matchNumber)
 		{
-			if (GetMatch(_matchNumber).RoundIndex < (NumberOfRounds - 1))
+			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
 			{
 				throw new BracketException
 					("Cannot affect matches too far back in Swiss brackets!");
@@ -268,6 +303,11 @@ namespace Tournament.Structure
 
 		public override void ResetMatches()
 		{
+			List<MatchModel> clearedMatches = RemoveFutureRounds(0);
+			ActiveRound = 1;
+			RecalculateRankings();
+			OnMatchesModified(clearedMatches);
+#if false
 			Matchups.Clear();
 			PlayerByes.Clear();
 			foreach (IPlayerScore ps in Rankings)
@@ -349,6 +389,7 @@ namespace Tournament.Structure
 			OnGamesDeleted(deletedGameIds);
 			OnRoundDeleted(deletedMatches);
 			OnMatchesModified(alteredMatches);
+#endif
 		}
 		#endregion
 
@@ -402,69 +443,72 @@ namespace Tournament.Structure
 		}
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
-			base.ApplyWinEffects(_matchNumber, _slot);
-			if (this.IsFinished)
+			bool makeNewRound = !(GetRound(ActiveRound).Any(m => !m.IsFinished));
+			List<MatchModel> modelList = new List<MatchModel>();
+
+			if (makeNewRound)
 			{
-				// If all matches are finished, try to generate a new round.
-				// If successful, reset IsFinished:
+				// If active round is finished, try to generate a new round.
 				if (AddSwissRound(GetMatch(_matchNumber).MaxGames))
 				{
-					IsFinished = false;
-
-					List<MatchModel> modelList = new List<MatchModel>();
-					List<IMatch> addedRound = GetRound(NumberOfRounds);
+					List<IMatch> addedRound = GetRound(ActiveRound);
 					foreach (IMatch match in addedRound)
 					{
-						modelList.Add(GetMatchModel(match.MatchNumber));
+						modelList.Add(GetMatchModel(match));
 					}
-					OnRoundAdded(new BracketEventArgs(modelList));
+				}
+				else
+				{
+					// Failed to generate new round.
+					// Clean up all the excess stuff:
+					List<MatchModel> deletedMatches = new List<MatchModel>();
+
+					List<IMatch> extraMatches = Matches.Values
+						.Where(m => m.RoundIndex > ActiveRound)
+						.ToList();
+					foreach (IMatch match in extraMatches)
+					{
+						deletedMatches.Add(GetMatchModel(match));
+						Matches.Remove(match.MatchNumber);
+					}
+
+					NumberOfRounds = ActiveRound;
+					NumberOfMatches = Matches.Count;
+					IsFinished = true;
+
+					OnRoundDeleted(deletedMatches);
 				}
 			}
 
-			return (new List<MatchModel>());
+			return modelList;
 		}
 		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
 			IMatch match = GetMatch(_matchNumber);
+			List<MatchModel> alteredMatches = new List<MatchModel>();
+
 			if (!(match.IsFinished) &&
 				((PlayerSlot.unspecified != _formerMatchWinnerSlot) ||
 				(_games.Count + match.Score[0] + match.Score[1] >= match.MaxGames)))
 			{
 				// This removal invalidates future matches. Delete them:
-				List<MatchModel> removedMatches = RemoveFutureRounds(match.RoundIndex);
+				alteredMatches = RemoveFutureRounds(match.RoundIndex);
 				this.IsFinished = false;
-				OnRoundDeleted(new BracketEventArgs(removedMatches));
 			}
 			else
 			{
 				base.ApplyGameRemovalEffects(_matchNumber, _games, _formerMatchWinnerSlot);
 			}
 
-			return (new List<MatchModel>());
+			return alteredMatches;
 		}
 
 		private bool AddSwissRound(int _gamesPerMatch)
 		{
-			// Check against user-input MaxRounds:
-			if (MaxRounds > 0)
+			// Don't try to populate nonexistent rounds:
+			if (ActiveRound >= NumberOfRounds)
 			{
-				if (NumberOfRounds >= MaxRounds)
-				{
-					return false;
-				}
-			}
-			// No user input: Check against default max rounds:
-			else
-			{
-				int totalRounds = 0;
-				while (Math.Pow(2, totalRounds) < Players.Count)
-				{
-					++totalRounds;
-				}
-				if (NumberOfRounds >= totalRounds)
-				{
-					return false;
-				}
+				return false;
 			}
 
 			// Get possible matchups and heuristics:
@@ -496,7 +540,7 @@ namespace Tournament.Structure
 					continue;
 				}
 
-				Matchup newMatchup = new Matchup(i, player2index, (1 + NumberOfRounds));
+				Matchup newMatchup = new Matchup(i, player2index, (1 + ActiveRound));
 				foreach (Matchup m in Matchups)
 				{
 					if (m.HasMatchingPlayers(newMatchup))
@@ -523,22 +567,16 @@ namespace Tournament.Structure
 				return false;
 			}
 
-			// Add the new round, and create Match objects:
-			++NumberOfRounds;
-			int mIndex = 1;
-			foreach (Matchup matchup in newRoundMatchups)
+			// Populate the new round of Matches:
+			for (int i = 0; i < newRoundMatchups.Count; ++i)
 			{
-				IMatch match = new Match();
-				match.SetMatchNumber(++NumberOfMatches);
-				match.SetRoundIndex(NumberOfRounds);
-				match.SetMatchIndex(mIndex++);
-				match.SetMaxGames(_gamesPerMatch);
-				match.AddPlayer(Players[matchup.DefenderIndex]);
-				match.AddPlayer(Players[matchup.ChallengerIndex]);
+				int matchNum = (i + 1 + (newRoundMatchups.Count * ActiveRound));
 
-				Matches.Add(match.MatchNumber, match);
+				Matches[matchNum].AddPlayer(Players[newRoundMatchups[i].DefenderIndex]);
+				Matches[matchNum].AddPlayer(Players[newRoundMatchups[i].ChallengerIndex]);
 			}
 			Matchups.AddRange(newRoundMatchups);
+			++ActiveRound;
 
 			// Now that we have a new legal round...
 			// Award points to the player with a bye, if there is one:
@@ -660,7 +698,7 @@ namespace Tournament.Structure
 				}
 
 				//List<Matchup> groupYmatchups = new List<Matchup>();
-				//int divisionPoint = Convert.ToInt32(_groups[groupNumberY].Count * 0.5);
+				//int divisionPoint = (int)(_groups[groupNumberY].Count * 0.5);
 				//for (int i = 0; i < divisionPoint; ++i)
 				//{
 				//	// Make fake "preferred" matchups for the players in this group, for use later:
@@ -706,7 +744,7 @@ namespace Tournament.Structure
 					else
 					{
 						//List<Matchup> groupXmatchups = new List<Matchup>();
-						//divisionPoint = Convert.ToInt32(_groups[groupNumberX].Count * 0.5);
+						//divisionPoint = (int)(_groups[groupNumberX].Count * 0.5);
 						//for (int i = 0; i < divisionPoint; ++i)
 						//{
 						//	// Make fake "preferred" matchups for the players in this group:
@@ -785,7 +823,7 @@ namespace Tournament.Structure
 		private List<Matchup> CreatePairingsList(int _numPlayers)
 		{
 			List<Matchup> matchups = new List<Matchup>();
-			int divisionPoint = Convert.ToInt32(_numPlayers * 0.5);
+			int divisionPoint = (int)(_numPlayers * 0.5);
 			switch (PairingMethod)
 			{
 				case PairingMethod.Adjacent:
@@ -813,40 +851,58 @@ namespace Tournament.Structure
 
 		private List<MatchModel> RemoveFutureRounds(int _currentRoundIndex)
 		{
-			List<MatchModel> removedMatches = new List<MatchModel>();
+			List<MatchModel> clearedMatches = new List<MatchModel>();
 			List<int> deletedGameIDs = new List<int>();
 
 			// Recursive call on all rounds after this one:
 			int nextRoundIndex = 1 + _currentRoundIndex;
 			if (nextRoundIndex > NumberOfRounds)
 			{
-				return removedMatches;
+				return clearedMatches;
 			}
-			removedMatches.AddRange(RemoveFutureRounds(nextRoundIndex));
+			clearedMatches.AddRange(RemoveFutureRounds(nextRoundIndex));
 
-			// Get & delete all Matches in this round:
-			List<int> nextRoundMatchNumbers = GetRound(nextRoundIndex)
-				.Select(m => m.MatchNumber)
-				.ToList();
-			foreach (int n in nextRoundMatchNumbers)
+			if (_currentRoundIndex >= 0)
 			{
-				removedMatches.Add(GetMatchModel(n));
-				deletedGameIDs.AddRange(GetMatch(n).Games.Select(g => g.Id));
-				Matches.Remove(n);
-			}
-			// Also delete associated Matchups and Bye:
-			Matchups.RemoveAll(m => m.RoundNumber == nextRoundIndex);
-			if (PlayerByes.Count > 0)
-			{
-				PlayerByes.RemoveAt(PlayerByes.Count - 1);
+				// Reset all Matches in this round:
+				List<IMatch> nextRound = GetRound(nextRoundIndex);
+				foreach (IMatch match in nextRound)
+				{
+					if (!(match.Players.Contains(null)) ||
+						match.Games.Count > 0 ||
+						match.IsManualWin)
+					{
+						clearedMatches.Add(GetMatchModel(match));
+						deletedGameIDs.AddRange(match.Games.Select(g => g.Id));
+						if (nextRoundIndex > 1)
+						{
+							match.ResetPlayers(); // This also resets score.
+						}
+						else
+						{
+							// Keep Players if Round = 1:
+							match.ResetScore();
+						}
+					}
+				}
+				if (nextRoundIndex > 1)
+				{
+					// Also delete associated Matchups and Bye:
+					Matchups.RemoveAll(m => m.RoundNumber == nextRoundIndex);
+					if (PlayerByes.Count == nextRoundIndex)
+					{
+						// Remove the last Bye in the list:
+						PlayerByes.RemoveAt(PlayerByes.Count - 1);
+					}
+
+					// Update bracket Properties:
+					ActiveRound = _currentRoundIndex;
+				}
+
+				OnGamesDeleted(deletedGameIDs);
 			}
 
-			// Update bracket Properties:
-			NumberOfMatches = Matches.Count;
-			NumberOfRounds = _currentRoundIndex;
-
-			OnGamesDeleted(deletedGameIDs);
-			return removedMatches;
+			return clearedMatches;
 		}
 
 		protected override void RecalculateRankings()

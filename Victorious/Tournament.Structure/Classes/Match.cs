@@ -147,7 +147,7 @@ namespace Tournament.Structure
 				AddGame(new Game(model));
 			}
 
-			int winsNeeded = Convert.ToInt32(MaxGames * 0.5);
+			int winsNeeded = (int)(MaxGames * 0.5);
 			winsNeeded = (0 == MaxGames % 2)
 				? winsNeeded : winsNeeded + 1;
 			if (Score[0] > winsNeeded || Score[1] > winsNeeded)
