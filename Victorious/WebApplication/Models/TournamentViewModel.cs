@@ -65,8 +65,8 @@ namespace WebApplication.Models
             // Tournament Stuff
             Model.Title = this.Title;
             Model.Description = this.Description;
-            Model.GameTypeID = this.GameType;
-            Model.PlatformID = this.PlatformType;
+            Model.GameTypeID = this.GameTypeID;
+            Model.PlatformID = this.PlatformTypeID;
             Model.PublicViewing = this.PublicViewing;
             Model.PublicRegistration = this.PublicRegistration;
 
@@ -83,8 +83,8 @@ namespace WebApplication.Models
         {
             this.Title = Model.Title;
             this.Description = Model.Description;
-            this.GameType = Model.GameTypeID;
-            this.PlatformType = Model.PlatformID;
+            this.GameTypeID = Model.GameTypeID;
+            this.PlatformTypeID = Model.PlatformID;
             this.PublicViewing = Model.PublicViewing;
             this.PublicRegistration = Model.PublicRegistration;
 
@@ -256,7 +256,34 @@ namespace WebApplication.Models
             }
 
             searchData.Add("PublicViewing", "true");
-            List<String> safeParamList = new List<String>() { "Title", "GameTypeID", "PlatformID", "TournamentStartDate", "PublicViewing", "PublicRegistration" };
+            if (searchData.Keys.Contains("startDate"))
+            {
+                searchData.Add("TournamentStartDate", "true");
+                searchData.Add("RegistrationStartDate", "true");
+
+                if (searchData.Keys.Contains("endDate"))
+                {
+                    searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
+                    searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
+                }
+                else
+                {
+                    searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
+                    searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
+                }
+            }
+            
+            List<String> safeParamList = new List<String>() {
+                "Title",
+                "GameTypeID",
+                "PlatformTypeID",
+                "PublicViewing",
+                "PublicRegistration",
+                "TournamentStartDate",
+                "TournamentEndDate",
+                "RegistrationStartDate",
+                "RegistrationEndDate"
+            };
             searchData = searchData.Where(k => safeParamList.Contains(k.Key) && k.Value != String.Empty).ToDictionary(k => k.Key, k => k.Value);
             SearchedTournaments = db.FindTournaments(searchData);
         }

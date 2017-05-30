@@ -122,11 +122,11 @@ namespace WebApplication.Models
 
         [Display(Name ="Game")]
         [Required(ErrorMessage ="Select a game")]
-        public int? GameType { get; set; }
+        public int? GameTypeID { get; set; }
 
         [Display(Name = "Platform")]
         [Required(ErrorMessage = "Choose a platform")]
-        public int PlatformType { get; set; } 
+        public int PlatformTypeID { get; set; } 
 
         [Display(Name = "Public Viewing")]
         public bool PublicViewing { get; set; }
