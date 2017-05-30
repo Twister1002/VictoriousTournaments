@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using DatabaseLib.Services;
 
 
 namespace DatabaseLib.Tests
@@ -11,11 +12,13 @@ namespace DatabaseLib.Tests
 
         IUnitOfWork unitOfWork;
         TournamentModel tournament;
+        TournamentService service;
 
         [TestInitialize]
         public void Initialize()
         {
             unitOfWork = new UnitOfWork();
+            service = new TournamentService(unitOfWork);
             tournament = NewTournament();
         }
 
@@ -23,8 +26,8 @@ namespace DatabaseLib.Tests
         [TestCategory("Unit Of Work")]
         public void Add_Tournament()
         {
-            tournament.InviteCode = "555";
-            unitOfWork.TournamentRepo.Add(tournament);
+            tournament.InviteCode = "512";
+            service.AddTournament(tournament);
             var result = unitOfWork.Save();
 
             Assert.AreEqual(true, result);

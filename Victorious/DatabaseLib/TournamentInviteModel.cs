@@ -21,6 +21,7 @@ namespace DatabaseLib
     		OnInit();
         }
     
+        public int TournamentInviteID { get; set; }
         public string TournamentInviteCode { get; set; }
         public int TournamentID { get; set; }
         public Nullable<System.DateTime> DateExpires { get; set; }

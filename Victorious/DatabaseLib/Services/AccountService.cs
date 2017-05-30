@@ -37,6 +37,10 @@ namespace DatabaseLib.Services
             unitOfWork.AccountRepo.Update(account);
         }
 
+        public List<AccountModel> GetAllAccounts()
+        {
+            return unitOfWork.AccountRepo.GetAll().ToList();
+        }
 
 
         public void AddAccountInvite(AccountInviteModel accountInvite)
@@ -61,6 +65,10 @@ namespace DatabaseLib.Services
             unitOfWork.AccountInviteRepo.Delete(inviteToDelete.AccountInviteID);
         }
 
+        public List<AccountInviteModel> GetAllAccountInvites()
+        {
+            return unitOfWork.AccountInviteRepo.GetAll().ToList();
+        }
 
     }
 }
