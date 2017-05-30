@@ -6,48 +6,56 @@ Click here to learn more. http://go.microsoft.com/fwlink/?LinkId=518007
 
 var gulp = require("gulp"),
     less = require("gulp-less"),
+    cssmin = require("gulp-cssmin"),
     uglify = require("gulp-uglify"),
-    del = require("del"),
     concat = require("gulp-concat"),
+    del = require("del"),
     config = {
         "js": [
             "Scripts/**/*.js",
+            "lib/jquery-timepicker/jquery.ui.timepicker.js",
             "!Scripts/**/*.min.js"
         ],
-        "less": ["Styles/less/style.less"]
+        "less": [
+            "Styles/less/style.less"
+        ],
+        "css": [
+            "Styles/css/styles.min.css",
+            "lib/jquery-timepicker/jquery.ui.timepicker.css"
+        ]
     };
 
 gulp.task("js-clean", function() {
-    return del(["Scripts/scripts.js", "Styles/less/style.less"]);
+    return del(["Scripts/scripts.min.js"]);
 });
 
 gulp.task("less-clean", function () {
-    return del(["Scripts/scripts.js", "Styles/less/style.less"]);
+    return del(["Styles/css/styles.min.less"]);
 });
 
 gulp.task("js", ["js-clean"], function () {
     return gulp.src(config.js)
     .pipe(uglify())
-    //.pipe(concat("scripts.min.js"))
-    .pipe(gulp.dest("Scripts/scripts.min.js"));
+    .pipe(concat("scripts.min.js"))
+    .pipe(gulp.dest("Scripts/"));
 });
 
-gulp.task('less', ["less-clean"], function () {
+gulp.task("less", ["less-clean"], function () {
     return gulp.src(config.less)
-    .pipe(less())
-    //.pipe(concat("styles.min.less"))
-    .pipe(gulp.dest("/Styles/css/style.min.css"));
+        .pipe(concat("styles.min.css"))
+        .pipe(less())
+        .pipe(gulp.dest("Styles/css/"));
+});
 
-    //gulp.src("Styles/less/style*.less")
-    //.pipe(less())
-    //.pipe(gulp.dest("Styles/css/"));
+gulp.task("bundle:css", ["less"], function () {
+    return gulp.src(config.css)
+    .pipe(cssmin())
+    .pipe(concat("style.test.min.css"))
+    .pipe(gulp.dest("Styles/css/"))
 });
 
 gulp.task('watch-less', function () {
     return gulp.watch(config.less, ["less"]);
-    //.on('change', function (event) {
-    //    console.log("File " + event.path + " was " + event.type + ", running task...");
-    //});
 });
 
 gulp.task('watch-js', function () {

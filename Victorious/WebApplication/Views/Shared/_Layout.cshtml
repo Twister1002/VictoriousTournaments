@@ -11,9 +11,9 @@
     <meta charset="utf-8" />
     <meta http-equiv="content-language" content="en" />
     <title>Tournament Platform</title>
-    <script type="text/javascript" src="~/Scripts/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/jquery.timepicker.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-timepicker/jquery.ui.timepicker.js"></script>
     @if (HttpContext.Current.IsDebuggingEnabled)
     {
         <script type="text/javascript" src="~/Scripts/scripts.js"></script>
@@ -27,11 +27,15 @@
         <script type="text/javascript" src="~/Scripts/Administrator/Platforms.js"></script>
         <script type="text/javascript" src="~/Scripts/Administrator/Brackets.js"></script>
     }
+    else
+    {
+        <script type="text/javascript" src="~/Scripts/scripts.min.js"></script>
+    }
 
     <link href="https://fonts.googleapis.com/css?family=Arimo|Francois+One|Kanit|Quattrocento|Signika" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery-ui.min.css" />
-    <link rel="stylesheet" type="text/css" href="~/Styles/css/jquery.timepicker.css" />
-    <link rel="stylesheet" type="text/css" href="~/Styles/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/jquery-ui/themes/base/jquery-ui.min.css" />
+    @*<link rel="stylesheet" type="text/css" href="~/Styles/css/jquery.timepicker.css" />*@
+    <link rel="stylesheet" type="text/css" href="~/Styles/css/style.min.css" />
 </head>
 <body>
     @if (HttpContext.Current.IsDebuggingEnabled)
