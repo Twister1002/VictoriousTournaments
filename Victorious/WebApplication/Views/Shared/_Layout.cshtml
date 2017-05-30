@@ -14,17 +14,19 @@
     <script type="text/javascript" src="~/Scripts/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script type="text/javascript" src="~/Scripts/jquery.timepicker.min.js"></script>
-    
-    <script type="text/javascript" src="~/Scripts/scripts.js"></script>
-    <script type="text/javascript" src="~/Scripts/Tournament/Tournaments.js"></script>
-    <script type="text/javascript" src="~/Scripts/Tournament/Search.js"></script>
-    <script type="text/javascript" src="~/Scripts/Tournament/Match.js"></script>
-    <script type="text/javascript" src="~/Scripts/Tournament/Create.js"></script>
-    <script type="text/javascript" src="~/Scripts/Tournament/Update.js"></script>
+    @if (HttpContext.Current.IsDebuggingEnabled)
+    {
+        <script type="text/javascript" src="~/Scripts/scripts.js"></script>
+        <script type="text/javascript" src="~/Scripts/Tournament/Tournaments.js"></script>
+        <script type="text/javascript" src="~/Scripts/Tournament/Search.js"></script>
+        <script type="text/javascript" src="~/Scripts/Tournament/Match.js"></script>
+        <script type="text/javascript" src="~/Scripts/Tournament/Create.js"></script>
+        <script type="text/javascript" src="~/Scripts/Tournament/Update.js"></script>
 
-    <script type="text/javascript" src="~/Scripts/Administrator/Games.js"></script>
-    <script type="text/javascript" src="~/Scripts/Administrator/Platforms.js"></script>
-    <script type="text/javascript" src="~/Scripts/Administrator/Brackets.js"></script>
+        <script type="text/javascript" src="~/Scripts/Administrator/Games.js"></script>
+        <script type="text/javascript" src="~/Scripts/Administrator/Platforms.js"></script>
+        <script type="text/javascript" src="~/Scripts/Administrator/Brackets.js"></script>
+    }
 
     <link href="https://fonts.googleapis.com/css?family=Arimo|Francois+One|Kanit|Quattrocento|Signika" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery-ui.min.css" />
@@ -32,7 +34,10 @@
     <link rel="stylesheet" type="text/css" href="~/Styles/css/style.css" />
 </head>
 <body>
-    <div class="dev-bp"></div>
+    @if (HttpContext.Current.IsDebuggingEnabled)
+    {
+        <div class="dev-bp"></div>
+    }
     @Html.Partial("_Nav", new ViewDataDictionary(ViewData))
 
     @if (Session["Message"] != null)
@@ -61,14 +66,7 @@
         </div>
     }
 
-    <div id="content">
-        @RenderBody()
-    </div>
-    <footer>
-        <p>
-            Copyright &copy; Full Sail Software Development
-        </p>
-        <div class="message warning">ALPHA BUILD @WebApplication.Utility.Codes.GetVersion()</div>
-    </footer>
+    <div id="content">@RenderBody()</div>
+    @{ Html.RenderPartial("_Footer"); }
 </body>
 </html>
