@@ -293,8 +293,7 @@
 
                     row.closest(".infoSection").find(".user:last").after(html);
                     row.find(".name input").val('');
-                    row.find(".name input").focus();
-
+                    
                     $(".TournamentInfo .user .actions .remove").off("click");
                     $(".TournamentInfo .user .actions .remove").on("click", PermissionAction);
                 }
@@ -308,6 +307,7 @@
             "complete": function () {
                 row.find(".addUserButton").attr("disabled", false);
                 row.find(".name input").attr("disabled", false);
+                row.find(".name input").focus();
             }
         });
     }

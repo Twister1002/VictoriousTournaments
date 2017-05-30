@@ -6,7 +6,7 @@
 }
 
 <li class="list-table-header bracket-header">
-    <ul class="header-rounds form" data-columns="@Model.TotalDispalyRounds()">
+    <ul class="header-rounds form" data-columns="@ViewBag.DisplayRounds">
         @foreach (bool display in ViewBag.RoundShowing)
         {
             <li class="column" data-type="@ViewBag.Class">

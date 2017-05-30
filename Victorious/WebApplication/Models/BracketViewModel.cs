@@ -228,12 +228,12 @@ namespace WebApplication.Models
             }
         }
 
-        public int TotalDispalyRounds()
+        public int TotalDispalyRounds(List<bool> upper, List<bool> lower)
         {
-            int upper = RoundShowing(BracketSection.UPPER).Count;
-            int lower = RoundShowing(BracketSection.LOWER).Count;
+            //int upper = RoundShowing(BracketSection.UPPER).Count;
+            //int lower = RoundShowing(BracketSection.LOWER).Count;
 
-            int maxDisplay = Math.Max(upper, lower);
+            int maxDisplay = Math.Max(upper.Count, lower.Count);
 
             if (Bracket.GrandFinal != null) maxDisplay++;
 

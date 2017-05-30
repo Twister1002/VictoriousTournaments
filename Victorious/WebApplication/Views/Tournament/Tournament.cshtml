@@ -12,6 +12,7 @@
     ViewBag.UserId = Session["User.UserId"] != null ? Session["User.UserId"] : -1;
     ViewBag.isAdministrator = Model.IsAdministrator(ViewBag.UserId);
     ViewBag.isCreator = Model.IsCreator(ViewBag.UserId);
+    ViewBag.inProgress = Model.Model.InProgress;
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
