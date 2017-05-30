@@ -51,6 +51,16 @@ namespace DatabaseLib
             context.Entry(entity).State = EntityState.Modified;
         }
 
+        public IQueryable<TEntity> GetWhere(Expression<Func<TEntity, bool>> predicate)
+        {
+            return DbSet.Where(predicate);
+        }
+
+        public TEntity GetSingle(Expression<Func<TEntity, bool>> predicate)
+        {
+            return dbSet.Single(predicate);
+        }
+
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
@@ -84,6 +94,7 @@ namespace DatabaseLib
             // TODO: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
         }
+
         #endregion
 
     }

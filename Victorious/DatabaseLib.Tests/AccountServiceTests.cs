@@ -39,16 +39,120 @@ namespace DatabaseLib.Tests
         }
 
         [TestMethod]
-        public void Account_UsernameExists_Exists()
+        [TestCategory("Account Service")]
+        public void AccountUsernameExists_Exists()
         {
+            var result = service.AccountUsernameExists("keltonr01");
+            Assert.AreEqual(DbError.EXISTS, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Account Service")]
+        public void AccountUsernameExists_Does_Not_Exists()
+        {
+            var result = service.AccountUsernameExists("keltonr02");
+            Assert.AreEqual(DbError.DOES_NOT_EXIST, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Account Service")]
+        public void AccountEmailExists_Exists()
+        {
+            var result = service.AccountEmailExists("keltonr01@gmail.com");
+            Assert.AreEqual(DbError.EXISTS, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Account Service")]
+        public void AccountEmailExists_DoesNotExists()
+        {
+            var result = service.AccountEmailExists("keltonr02@gmail.com");
+            Assert.AreEqual(DbError.DOES_NOT_EXIST, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Account Service")]
+        public void GetAccount_By_Id()
+        {
+            var account = service.GetAccount(2);
+            var result = account.Email;
+            Assert.AreEqual("keltonr01@gmail.com", result);
+        }
+
+        [TestMethod]
+        public void GetAccount_By_Usernament()
+        {
+            var account = service.GetAccount("keltonr01");
+            var result = account.Email;
+            Assert.AreEqual("keltonr01@gmail.com", result);
+        }
+
+        [TestMethod]
+        [TestCategory("Account Service")]
+        public void UpdateAccount_Save()
+        {
+            var account = service.GetAccount("keltonr01");
+            account.FirstName = "Billy";
+            service.UpdateAccount(account);
+            unitOfWork.Save();
+            account = service.GetAccount("keltonr01");
+            var result = account.FirstName;
+
+            Assert.AreEqual("Billy", result);
 
         }
 
         [TestMethod]
         [TestCategory("Account Service")]
-        public void Get_Account()
+        public void AddAccountInvite()
         {
+            AccountInviteModel invite = new AccountInviteModel()
+            {
+                DateCreated = DateTime.Today,
+                DateExpires = DateTime.Today.AddDays(1),
+                AccountInviteCode = "1234",
+                IsExpired = false,
+                SentByID = 2,
+                SentToEmail = "keltonr01@gmail.com"
+            };
+            service.AddAccountInvite(invite);
+            var result = unitOfWork.Save();
 
+            Assert.AreEqual(true, result);
         }
+
+        [TestMethod]
+        [TestCategory("Account Service")]
+        public void GetAccountInvite_Returns_Invite()
+        {
+            var invite = service.GetAccountInvite("1234");
+
+            Assert.AreEqual(DateTime.Today, invite.DateCreated);
+        }
+
+        [TestMethod]
+        [TestCategory("Account Service")]
+        public void AccountInvite_Returns_Null()
+        {
+            var invite = service.GetAccountInvite("1235");
+
+            Assert.IsNull(invite);
+        }
+
+        [TestMethod]
+        [TestCategory("Account Service")]
+        public void UpdateAccountInvite()
+        {
+            var invite = service.GetAccountInvite("1234");
+            invite.IsExpired = true;
+            service.UpdateAccountInvite(invite);
+            var result = unitOfWork.Save();
+            // is not properly saving
+            Assert.AreEqual(true, result);
+             
+        }
+
+
     }
+
 }

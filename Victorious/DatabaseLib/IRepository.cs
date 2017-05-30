@@ -10,6 +10,8 @@ namespace DatabaseLib
     public interface IRepository <TEntity> : IDisposable where TEntity : class
     {
         IQueryable<TEntity> GetAll();
+        IQueryable<TEntity> GetWhere(Expression<Func<TEntity, bool>> predicate);
+        TEntity GetSingle(Expression<Func<TEntity, bool>> predicate);
         TEntity Get(int id);
         void Add(TEntity entity);
         void Delete(int id);

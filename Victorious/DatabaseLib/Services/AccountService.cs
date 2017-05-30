@@ -29,6 +29,11 @@ namespace DatabaseLib.Services
             return unitOfWork.AccountRepo.Get(accountId);
         }
 
+        public AccountModel GetAccount(string username)
+        {
+            return unitOfWork.AccountRepo.GetSingle(u => u.Username == username);
+        }
+
         public List<AccountModel> GetAllAccounts()
         {
             return unitOfWork.AccountRepo.GetAll().ToList();
@@ -57,6 +62,18 @@ namespace DatabaseLib.Services
             return DbError.EXISTS;
         }
 
+        public DbError AccountEmailExists(string email)
+        {
+            try
+            {
+                AccountModel account = unitOfWork.AccountRepo.GetSingle(e => e.Email == email);
+            }
+            catch (Exception ex)
+            {
+                return DbError.DOES_NOT_EXIST;
+            }
+            return DbError.EXISTS;
+        }
 
 
         #endregion
@@ -70,9 +87,16 @@ namespace DatabaseLib.Services
           
         }
 
-        public AccountInviteModel GetAcountInvite(string inviteCode)
+        public AccountInviteModel GetAccountInvite(string inviteCode)
         {
-            return unitOfWork.AccountInviteRepo.GetAll().Single(x => x.AccountInviteCode == inviteCode);
+            try
+            {
+                return unitOfWork.AccountInviteRepo.GetSingle(x => x.AccountInviteCode == inviteCode);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public void UpdateAccountInvite(AccountInviteModel accountInvite)
