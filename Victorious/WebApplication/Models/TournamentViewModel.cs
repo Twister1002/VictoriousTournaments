@@ -331,39 +331,37 @@ namespace WebApplication.Models
                 return;
             }
 
-            int bracketNum = 0;
-            IBracket bracket = null;
-            List<IPlayer> players = new List<IPlayer>();
-            BracketModel bracketModel = Model.Brackets.ElementAt(bracketNum);
-            
-            foreach (TournamentUserModel userModel in GetParticipants())
-            {
-                players.Add(new User(userModel));
-            }
-
-            switch ((BracketType)bracketModel.BracketTypeID)
-            {
-                case DatabaseLib.BracketType.SINGLE:
-                    //bracket = Model.InProgress ? new SingleElimBracket(bracketModel) : new SingleElimBracket(players);
-                    bracket = new SingleElimBracket(bracketModel);
-                    break;
-                case DatabaseLib.BracketType.DOUBLE:
-                    //bracket = Model.InProgress ? new DoubleElimBracket(bracketModel) : new DoubleElimBracket(players);
-                    bracket = new DoubleElimBracket(bracketModel);
-                    break;
-                case DatabaseLib.BracketType.ROUNDROBIN:
-                    //bracket = Model.InProgress ? new RoundRobinBracket(bracketModel) : new RoundRobinBracket(players);
-                    bracket = new RoundRobinBracket(bracketModel);
-                    break;
-                case DatabaseLib.BracketType.SWISS:
-                    //bracket = Model.InProgress ? new SwissBracket(bracketModel) : new SwissBracket(players);
-                    bracket = new SwissBracket(bracketModel);
-                    break;
-            }
+            BracketModel bracketModel = Model.Brackets.ElementAt(0);
 
             Tourny = new Tournament.Structure.Tournament();
             Tourny.Title = Model.Title;
-            Tourny.AddBracket(bracket);
+            Tourny.AddBracket(Tourny.RestoreBracket(bracketModel));
+        }
+
+        public void UpdateSeeds(Dictionary<String, int> players, int bracketId)
+        {
+            foreach (KeyValuePair<String, int> player in players)
+            {
+                TournamentUsersBracketModel user = Model.Brackets.Where(x => x.BracketID == bracketId).Single()
+                    .TournamentUsersBrackets.Where(z => z.TournamentUserID == int.Parse(player.Key)).SingleOrDefault();
+                if (user != null)
+                {
+                    user.Seed = player.Value;
+                    db.UpdateTournamentUsersBracket(user);
+                }
+                else
+                {
+                    user = new TournamentUsersBracketModel()
+                    {
+                        Seed = player.Value,
+                        TournamentUserID = int.Parse(player.Key),
+                        TournamentID = Model.TournamentID,
+                        BracketID = bracketId
+                    };
+
+                    db.AddTournamentUsersBracket(user);
+                }
+            }
         }
         
         #region CheckIn

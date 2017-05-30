@@ -141,6 +141,9 @@
     });
     // Reset the brackets
     $(".TournamentInfo .resetInfo .reset-bracket").on("click", ResetBracket);
+    //Seeds
+    $(".TournamentInfo .playerInfo .adminSettings .randomSeeds").on("click", RandomizeSeeds);
+    $(".TournamentInfo .playerInfo .adminSettings .updateSeeds").on("click", SaveSeeds);
 
     function BracketNumberSelected() {
         var bracketId = $(this).data("bracket");
@@ -283,13 +286,15 @@
                     html = "<ul class='data user form' data-user='" + json.data.user.TournamentUserId + "' data-columns='5'> ";
                     html += "<li class='column name'>" + json.data.user.Name + "</li> ";
                     html += "<li class='column permission'>" + permissionDictionary[json.data.user.Permission] + "</li> ";
-                    html += "<li class='column seed'><input type='text' name='seedVal' maxlength='2' value=''/></li>";
+                    html += "<li class='column seed'><input type='text' name='seedVal' maxlength='2' value='"+json.data.user.Seed+"'/></li>";
                     html += "<li class='column'><span class='icon icon-checkmark red'></span></li> ";
                     html += "<li class='column actions'>"+PermissionButtons(json.data.actions)+"</li> ";
                     html += "</ul> ";
 
-                    row.after(html);
+                    row.closest(".infoSection").find(".user:last").after(html);
                     row.find(".name input").val('');
+                    row.find(".name input").focus();
+
                     $(".TournamentInfo .user .actions .remove").off("click");
                     $(".TournamentInfo .user .actions .remove").on("click", PermissionAction);
                 }
@@ -303,6 +308,53 @@
             "complete": function () {
                 row.find(".addUserButton").attr("disabled", false);
                 row.find(".name input").attr("disabled", false);
+            }
+        });
+    }
+
+    function RandomizeSeeds() {
+        var users = $(".TournamentInfo .playerInfo .user input").toArray();
+        var random = [];
+
+        while (users.length != 0) {
+            var randomIndex = Math.floor(Math.random() * users.length);
+            random.push(users[randomIndex]);
+            users.splice(randomIndex, 1);
+        }
+
+        $.each(random, function (i, e) {
+            $(e).val(i + 1);
+        });
+    }
+
+    function SaveSeeds() {
+        var jsonData = {
+            "tournamentId": $("#Tournament").data("id"),
+            "bracketId": $(this).closest(".bracketData").data("id"),
+            "players": {}
+        };
+
+        // Load all the players into an object
+        $(this).closest(".playerInfo").find(".user").each(function (i, e) {
+            if ($(e).find(".seed input").length == 1) {
+                jsonData.players[$(e).data("user")] = $(e).find(".seed input").val();
+            }
+        });
+
+        $.ajax({
+            "url": "/Ajax/Tournament/SeedChange",
+            "type": "POST",
+            "data": jsonData,
+            "dataType": "json",
+            "success": function (json) {
+                json = JSON.parse(json);
+                if (json.status) {
+                    tournamentChanged = true;
+                }
+                console.log(json.message);
+            },
+            "error": function (json) {
+                console.log("Error");
             }
         });
     }

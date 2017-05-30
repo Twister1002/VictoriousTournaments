@@ -51,7 +51,7 @@
                                         {
                                             colorCode = "";
                                         }
-                                        <li class="column">
+                                        <li class="column seed">
                                             @if (!Model.IsUserAdministrator(person.TournamentUserID))
                                             {
                                                 <input type="text" name="seedVal" maxlength="2" value="@Model.UserSeed(person.TournamentUserID, bracket.Id)"/>
@@ -80,16 +80,20 @@
                                     }
                                 </ul>
                             }
-
-
                             if (!Model.Model.InProgress && ViewBag.isAdministrator)
                             {
-                                <div class="userAddData">
-                                    <ul class="form" data-columns="3">
-                                        <li class="column name"><input type="text" name="name" maxlength="50" placeholder="Name/Email"/></li>
-                                        <li class="column">Not Saved</li>
-                                        <li class="column"><button class="addUserButton">Add User</button></li>
-                                    </ul>
+                                <div class="adminSettings">
+                                    <div class="options">
+                                        <button class="randomSeeds">Randomize Seeds</button>
+                                        <button class="updateSeeds">Update Seeds</button>
+                                    </div>
+                                    <div class="userAddData">
+                                        <ul class="form" data-columns="3">
+                                            <li class="column name"><input type="text" name="name" maxlength="50" placeholder="Name/Email"/></li>
+                                            <li class="column">Not Saved</li>
+                                            <li class="column"><button class="addUserButton">Add User</button></li>
+                                        </ul>
+                                    </div>
                                 </div>
                             }
                         }

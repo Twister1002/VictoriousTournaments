@@ -546,5 +546,32 @@ namespace WebApplication.Controllers
                 data = data
             }));
         }
+
+        [HttpPost]
+        [Route("Ajax/Tournament/SeedChange")]
+        public JsonResult SeedChange(int tournamentId, int bracketId, Dictionary<String, int> players)
+        {
+            LoadAccount(Session);
+            bool status = false;
+            String message = "No action taken";
+
+            if (account != null)
+            {
+                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+
+                if (viewModel.IsAdministrator(account.AccountId))
+                {
+                    viewModel.UpdateSeeds(players, bracketId);
+                    status = true;
+                    message = "Seeds are updated";
+                }
+            }
+
+            return Json(JsonConvert.SerializeObject(new
+            {
+                status = status,
+                message = message
+            }));
+        }
     }
 }
