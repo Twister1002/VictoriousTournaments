@@ -9,13 +9,15 @@ namespace DatabaseLib.Services
     public class AccountService
     {
         IUnitOfWork unitOfWork;
-       
+
 
         public AccountService(IUnitOfWork unitOfWork)
         {
             //this.accountRepo = accountRepo;
             this.unitOfWork = unitOfWork;
         }
+
+        #region Accounts
 
         public void AddAccount(AccountModel account)
         {
@@ -25,6 +27,11 @@ namespace DatabaseLib.Services
         public AccountModel GetAccount(int accountId)
         {
             return unitOfWork.AccountRepo.Get(accountId);
+        }
+
+        public List<AccountModel> GetAllAccounts()
+        {
+            return unitOfWork.AccountRepo.GetAll().ToList();
         }
 
         public void DeleteAccount(int accountId)
@@ -37,11 +44,25 @@ namespace DatabaseLib.Services
             unitOfWork.AccountRepo.Update(account);
         }
 
-        public List<AccountModel> GetAllAccounts()
+        public DbError AccountUsernameExists(string username)
         {
-            return unitOfWork.AccountRepo.GetAll().ToList();
+            try
+            {
+                AccountModel account = unitOfWork.AccountRepo.GetAll().Single(u => u.Username == username);
+            }
+            catch (Exception ex)
+            {
+                return DbError.DOES_NOT_EXIST;
+            }
+            return DbError.EXISTS;
         }
 
+
+
+        #endregion
+
+
+        #region AccountInvites 
 
         public void AddAccountInvite(AccountInviteModel accountInvite)
         {
@@ -70,5 +91,6 @@ namespace DatabaseLib.Services
             return unitOfWork.AccountInviteRepo.GetAll().ToList();
         }
 
+        #endregion
     }
 }

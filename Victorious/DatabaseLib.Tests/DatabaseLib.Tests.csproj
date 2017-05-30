@@ -70,6 +70,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AccountServiceTests.cs" />
     <Compile Include="Non-Repo Tests\AccountInviteTests.cs" />
     <Compile Include="Non-Repo Tests\AccountTests.cs" />
     <Compile Include="Non-Repo Tests\BracketTests.cs" />

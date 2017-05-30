@@ -119,6 +119,7 @@
     <Compile Include="Repository.cs" />
     <Compile Include="Services\AccountService.cs" />
     <Compile Include="Services\TournamentService.cs" />
+    <Compile Include="Services\TypeService.cs" />
     <Compile Include="TournamentInviteModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
