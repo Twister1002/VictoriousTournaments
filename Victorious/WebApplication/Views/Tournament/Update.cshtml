@@ -33,9 +33,9 @@
                     @Html.ValidationMessageFor(t => t.Description)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.GameType)
-                    @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---", attributes)
-                    @Html.ValidationMessageFor(t => t.GameType)
+                    @Html.LabelFor(t => t.GameTypeID)
+                    @Html.DropDownListFor(t => t.GameTypeID, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---", attributes)
+                    @Html.ValidationMessageFor(t => t.GameTypeID)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.BracketType)
@@ -43,9 +43,9 @@
                     @Html.ValidationMessageFor(t => t.BracketType)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.PlatformType)
-                    @Html.DropDownListFor(t => t.PlatformType, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---", attributes)
-                    @Html.ValidationMessageFor(t => t.PlatformType)
+                    @Html.LabelFor(t => t.PlatformTypeID)
+                    @Html.DropDownListFor(t => t.PlatformTypeID, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---", attributes)
+                    @Html.ValidationMessageFor(t => t.PlatformTypeID)
                 </li>
                 <li>
                 </li>

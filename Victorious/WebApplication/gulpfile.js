@@ -1,4 +1,4 @@
-﻿/// <binding BeforeBuild='less, js' Clean='js-clean, less-clean' ProjectOpened='watch-less, watch-js' />
+﻿/// <binding BeforeBuild='less, js' Clean='js-clean, less-clean' ProjectOpened='watch-js, watch-less' />
 /*
 This file in the main entry point for defining Gulp tasks and using Gulp plugins.
 Click here to learn more. http://go.microsoft.com/fwlink/?LinkId=518007
@@ -20,8 +20,9 @@ var gulp = require("gulp"),
             "Styles/less/style.less"
         ],
         "css": [
-            "Styles/css/styles.min.css",
-            "lib/jquery-timepicker/jquery.ui.timepicker.css"
+            "lib/jquery-ui/themes/base/jquery-ui.min.css",
+            "lib/jquery-timepicker/jquery.ui.timepicker.css",
+            "Styles/css/main.min.css"
         ]
     };
 
@@ -42,7 +43,7 @@ gulp.task("js", ["js-clean"], function () {
 
 gulp.task("less", ["less-clean"], function () {
     return gulp.src(config.less)
-        .pipe(concat("styles.min.css"))
+        .pipe(concat("main.min.css"))
         .pipe(less())
         .pipe(gulp.dest("Styles/css/"));
 });
@@ -50,14 +51,14 @@ gulp.task("less", ["less-clean"], function () {
 gulp.task("bundle:css", ["less"], function () {
     return gulp.src(config.css)
     .pipe(cssmin())
-    .pipe(concat("style.test.min.css"))
+    .pipe(concat("style.min.css"))
     .pipe(gulp.dest("Styles/css/"))
 });
 
 gulp.task('watch-less', function () {
-    return gulp.watch(config.less, ["less"]);
+    return gulp.watch("Styles/less/**/*.less", ["bundle:css"]);
 });
 
 gulp.task('watch-js', function () {
-    return gulp.watch(config.js, ["scripts"]);
+    return gulp.watch(config.js, ["js"]);
 });
