@@ -61,12 +61,12 @@
                 </li>
             </ul>
         </div>
-        <div class="section form-section bracketInfo swiss hide">
+        <div class="section form-section bracketInfo swiss rr hide">
             <h2>Swiss Details</h2>
             <ul>
                 <li>
                     @Html.LabelFor(t => t.NumberOfRounds)
-                    @Html.DropDownListFor(t => t.NumberOfRounds, Enumerable.Range(1, 20).Select(n => new SelectListItem() { Text = n.ToString(), Value = n.ToString() }), attributes)
+                    @Html.DropDownListFor(t => t.NumberOfRounds, Enumerable.Range(0, 100).Select(n => new SelectListItem() { Text = n.ToString(), Value = n.ToString() }), "---Select Rounds---", attributes)
                 </li>
             </ul>
         </div>

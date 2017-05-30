@@ -159,6 +159,12 @@
                     console.log(json.message);
                     var matchElement = null;
 
+                    // Check if there is a refresh
+                    if (json.data.refresh) {
+                        window.location.reload();
+                        return;
+                    }
+
                     // Close the match details if the match is finished.
                     if (json.data.currentMatch.finished) {
                         match.find(".TournamentGames").removeClass("open");

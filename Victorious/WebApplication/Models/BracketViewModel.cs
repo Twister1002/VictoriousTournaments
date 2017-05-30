@@ -22,6 +22,7 @@ namespace WebApplication.Models
 
     public class BracketViewModel : BracketFields
     {
+        public bool roundsModified { get; private set; }
         public IBracket Bracket { get; private set; }
         public BracketModel Model { get; private set; }
 
@@ -377,6 +378,7 @@ namespace WebApplication.Models
 
         public void OnRoundAdd(object sender, BracketEventArgs args)
         {
+            this.roundsModified = true;
             foreach (MatchModel match in args.UpdatedMatches)
             {
                 db.AddMatch(match);
@@ -385,6 +387,7 @@ namespace WebApplication.Models
         
         public void OnRoundDelete(object sender, BracketEventArgs args)
         {
+            this.roundsModified = true;
             foreach (int games in args.DeletedGameIDs)
             {
                 db.DeleteGame(games);

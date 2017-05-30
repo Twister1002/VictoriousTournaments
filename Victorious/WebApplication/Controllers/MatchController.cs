@@ -114,7 +114,8 @@ namespace WebApplication.Controllers
                             processed = processed,
                             currentMatch = currentMatchData,
                             winnerMatch = winnerMatchData,
-                            loserMatch = loserMatchData
+                            loserMatch = loserMatchData,
+                            refresh = bracketModel.roundsModified
                         };
                     }
                     else
