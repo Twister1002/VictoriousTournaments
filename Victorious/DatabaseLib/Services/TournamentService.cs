@@ -207,14 +207,15 @@ namespace DatabaseLib.Services
 
         #region TournamentUsersBrackets
 
-        public void AddTournamentUsersBracket(TournamentUsersBracketModel model)
+        public void AddTournamentUsersBracket(TournamentUsersBracketModel tournamentUserBracketToAdd)
         {
-            unitOfWork.TournamentUsersBracketRepo.Add(model);
+            unitOfWork.TournamentUsersBracketRepo.Add(tournamentUserBracketToAdd);
         }
 
-        public TournamentUsersBracketModel GetTournamentUsersBracket(int tournamentUsersBracketId)
+        public TournamentUsersBracketModel GetTournamentUsersBracket(int tournamentUserId, int bracketId)
         {
-            return unitOfWork.TournamentUsersBracketRepo.Get(tournamentUsersBracketId);
+            return unitOfWork.TournamentUsersBracketRepo.GetSingle(x => x.TournamentUserID == tournamentUserId && x.BracketID == bracketId);
+            //return unitOfWork.TournamentUsersBracketRepo.Get(tournamentUsersBracketId);
         }
 
         public void UpdateTournamentUserBracket(TournamentUsersBracketModel tournamentUserBracketToUpdate)
@@ -222,9 +223,10 @@ namespace DatabaseLib.Services
             unitOfWork.TournamentUsersBracketRepo.Update(tournamentUserBracketToUpdate);
         }
 
-        public void DeleteTournamentUserBracket(int tournamentUsersBracketId)
+        public void DeleteTournamentUserBracket(int tournamentUserId, int bracketId)
         {
-            unitOfWork.TournamentUsersBracketRepo.Delete(tournamentUsersBracketId);
+            TournamentUsersBracketModel t = GetTournamentUsersBracket(tournamentUserId, bracketId);
+            unitOfWork.TournamentUsersBracketRepo.DeleteEntity(t);
         }
 
 

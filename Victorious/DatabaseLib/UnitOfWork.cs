@@ -169,7 +169,7 @@ namespace DatabaseLib
         {
             get
             {
-                if (this.TournamentUsersBracketRepo == null)
+                if (this.tournamentInviteRepo == null)
                 {
                     this.tournamentUsersBracketRepo = new Repository<TournamentUsersBracketModel>(context);
                 }

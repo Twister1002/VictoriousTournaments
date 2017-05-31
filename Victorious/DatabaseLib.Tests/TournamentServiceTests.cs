@@ -273,8 +273,9 @@ namespace DatabaseLib.Tests
         {
             TournamentUsersBracketModel t = new TournamentUsersBracketModel()
             {
-                TournamentUserID = 1,
-                BracketID = 1,
+                TournamentUserID = service.GetAllTournamentUsers()[0].TournamentUserID,
+                BracketID = service.GetAllBrackets()[0].BracketID,
+                TournamentID = service.GetAllTournaments()[0].TournamentID,
                 Seed = 1
             };
             service.AddTournamentUsersBracket(t);
@@ -283,10 +284,40 @@ namespace DatabaseLib.Tests
             Assert.AreEqual(true, result);
         }
 
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void GetTournamentUserBracket()
+        {
+            var t = service.GetTournamentUsersBracket(2,2);
 
+            Assert.AreEqual(3, t.Seed);
+        }
 
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void UpdateTournamentUserBracket()
+        {
+            var t = service.GetTournamentUsersBracket(2, 2);
+            t.Seed = 5;
+            service.UpdateTournamentUserBracket(t);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void DeleteTournamentUserBracket()
+        {
+            service.DeleteTournamentUserBracket(2, 2);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
 
         #endregion
+
+
 
     }
 
