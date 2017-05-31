@@ -118,15 +118,13 @@ namespace Tournament.Structure
 			for (int r = 1; r <= NumberOfRounds; ++r)
 			{
 				List<IMatch> round = GetRound(r);
-				List<int> playersInRound = new List<int>();
-
 				if (round.Any(m => m.Players.Contains(null)))
 				{
 					// This round isn't populated yet. Break out:
-					ActiveRound = r - 1;
 					break;
 				}
 
+				List<int> playersInRound = new List<int>();
 				foreach (IMatch match in round)
 				{
 					// For each populated Match, add a Matchup to the private list:
@@ -152,6 +150,8 @@ namespace Tournament.Structure
 						}
 					}
 				}
+
+				ActiveRound = r;
 			}
 
 			// Determine the Pairing Method from examining Rnd 1:
