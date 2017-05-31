@@ -35,6 +35,12 @@ namespace DatabaseLib
             dbSet.Remove(entityToDelete);
         }
 
+        public void DeleteEntity(TEntity entity)
+        {
+            dbSet.Attach(entity);
+            dbSet.Remove(entity);
+        }
+
         public IQueryable<TEntity> GetAll()
         {
             return dbSet;

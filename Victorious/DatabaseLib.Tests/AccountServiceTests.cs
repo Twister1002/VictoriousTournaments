@@ -19,7 +19,7 @@ namespace DatabaseLib.Tests
 
         [TestMethod]
         [TestCategory("Account Service")]
-        public void Add_User_Account()
+        public void AddUserAccount()
         {
             var user = new AccountModel()
             {
@@ -80,6 +80,7 @@ namespace DatabaseLib.Tests
         }
 
         [TestMethod]
+        [TestCategory("Account Service")]
         public void GetAccount_By_Usernament()
         {
             var account = service.GetAccount("keltonr01");
@@ -144,12 +145,27 @@ namespace DatabaseLib.Tests
         public void UpdateAccountInvite()
         {
             var invite = service.GetAccountInvite("1234");
-            invite.IsExpired = true;
+            var expected = true;
+            invite.IsExpired = expected;
             service.UpdateAccountInvite(invite);
-            var result = unitOfWork.Save();
-            // is not properly saving
-            Assert.AreEqual(true, result);
+            unitOfWork.Save();
+            invite = service.GetAccountInvite("1234");
+            var result = invite.IsExpired;
+
+            Assert.AreEqual(expected, result);
              
+        }
+
+        [TestMethod]
+        [TestCategory("Account Service")]
+        public void DeleteAccountInvite_Save()
+        {
+            service.DeleteAccountInvite("1234");
+            unitOfWork.Save();
+            var result = service.GetAccountInvite("1234");
+
+            Assert.IsNull(result);
+
         }
 
 

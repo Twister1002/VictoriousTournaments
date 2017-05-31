@@ -106,8 +106,8 @@ namespace DatabaseLib.Services
 
         public void DeleteAccountInvite(string inviteCode)
         {
-            AccountInviteModel inviteToDelete = unitOfWork.AccountInviteRepo.GetAll().Single(x => x.AccountInviteCode == inviteCode);
-            unitOfWork.AccountInviteRepo.Delete(inviteToDelete.AccountInviteID);
+            AccountInviteModel inviteToDelete = unitOfWork.AccountInviteRepo.GetSingle(x => x.AccountInviteCode == inviteCode);
+            unitOfWork.AccountInviteRepo.DeleteEntity(inviteToDelete);
         }
 
         public List<AccountInviteModel> GetAllAccountInvites()

@@ -19,16 +19,19 @@ namespace DatabaseLib.Services
 
         public void AddTournament(TournamentModel tournamentToAdd)
         {
-            TournamentInviteModel invite = new TournamentInviteModel()
-            {
-                TournamentID = tournamentToAdd.TournamentID,
-                TournamentInviteCode = tournamentToAdd.InviteCode,
-                DateCreated = DateTime.Today,
-                IsExpired = false,
-                DateExpires = tournamentToAdd.RegistrationEndDate
-            };
-            AddTournamentInvite(invite);
+            //TournamentInviteModel invite = new TournamentInviteModel()
+            //{
+            //    TournamentID = tournamentToAdd.TournamentID,
+            //    TournamentInviteCode = tournamentToAdd.InviteCode,
+            //    DateCreated = DateTime.Today,
+            //    IsExpired = false,
+            //    DateExpires = tournamentToAdd.RegistrationEndDate
+            //};
+            //AddTournamentInvite(invite, true);
             unitOfWork.TournamentRepo.Add(tournamentToAdd);
+            //invite.TournamentID = tournamentToAdd.TournamentID;
+            //UpdateTournamentInvite(invite);
+
         }
 
         public TournamentModel GetTournament(int tournamentId)
@@ -86,9 +89,11 @@ namespace DatabaseLib.Services
 
         #region TournamentInvites
 
-        public void AddTournamentInvite(TournamentInviteModel tournamentInviteToAdd)
+        public void AddTournamentInvite(TournamentInviteModel tournamentInviteToAdd, bool save = false)
         {
             unitOfWork.TournamentInviteRepo.Add(tournamentInviteToAdd);
+            if (save)
+                unitOfWork.Save();
         }
 
         public TournamentInviteModel GetTournamentInvite(string tournamentInviteCode)
