@@ -92,29 +92,37 @@ namespace WebApplication.Controllers
                         // Update the matches in the database
                         MatchViewModel matchModel = new MatchViewModel(bracketModel.Bracket.GetMatchModel(json["matchNum"]));
                         bool currentMatchUpdate = matchModel.Update();
-                        object currentMatchData = null;
-                        object winnerMatchData = null;
-                        object loserMatchData = null;
+                        List<object> matchUpdates = new List<object>();
 
                         if (currentMatchUpdate)
                         {
                             status = true;
                             message = "Current match was updated";
 
-                            currentMatchData = JsonMatchResponse(matchModel.Match, true);
+                            matchUpdates.Add(JsonMatchResponse(matchModel.Match, true));
                             if (matchModel.Match.NextMatchNumber != -1)
-                                winnerMatchData = JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextMatchNumber), false);
-                            if (matchModel.Match.NextLoserMatchNumber != -1) 
-                                loserMatchData = JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextLoserMatchNumber), false);
+                                matchUpdates.Add(JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextMatchNumber), false));
+                            if (matchModel.Match.NextLoserMatchNumber != -1)
+                                matchUpdates.Add(JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextLoserMatchNumber), false));
+                            if (bracketModel.Bracket.BracketType == BracketType.SWISS)
+                            {
+                                List<IMatch> roundMatches = bracketModel.Bracket.GetRound(matchModel.Match.RoundIndex);
+                                // We need to verify and check if this round is finished
+                                if (!roundMatches.Any(x=>x.IsFinished == false))
+                                {
+                                    foreach (IMatch match in bracketModel.Bracket.GetRound(matchModel.Match.RoundIndex + 1))
+                                    {
+                                        matchUpdates.Add(JsonMatchResponse(match, false));
+                                    }
+                                }
+                            }
                         }
 
                         // Prepare data
                         data = new
                         {
                             processed = processed,
-                            currentMatch = currentMatchData,
-                            winnerMatch = winnerMatchData,
-                            loserMatch = loserMatchData,
+                            matchUpdates = matchUpdates,
                             refresh = bracketModel.roundsModified
                         };
                     }
