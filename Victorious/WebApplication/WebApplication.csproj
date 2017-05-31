@@ -220,6 +220,10 @@
     <Content Include="Views\Shared\_Footer.cshtml" />
     <Content Include="Styles\less\style.less" />
     <Content Include="Styles\less\_footer.less" />
+    <Content Include="Views\Home\FAQ.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Rules.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
