@@ -339,7 +339,10 @@ namespace Tournament.Structure
 			// Add Game's data (players and score):
 			for (int i = 0; i < 2; ++i)
 			{
-				game.PlayerIDs[i] = this.Players[i].Id;
+				if (null != this.Players[i])
+				{
+					game.PlayerIDs[i] = this.Players[i].Id;
+				}
 			}
 			game.Score[(int)PlayerSlot.Defender] = _defenderScore;
 			game.Score[(int)PlayerSlot.Challenger] = _challengerScore;
