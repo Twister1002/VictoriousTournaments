@@ -218,12 +218,12 @@ namespace DatabaseLib.Services
             //return unitOfWork.TournamentUsersBracketRepo.Get(tournamentUsersBracketId);
         }
 
-        public void UpdateTournamentUserBracket(TournamentUsersBracketModel tournamentUserBracketToUpdate)
+        public void UpdateTournamentUsersBracket(TournamentUsersBracketModel tournamentUserBracketToUpdate)
         {
             unitOfWork.TournamentUsersBracketRepo.Update(tournamentUserBracketToUpdate);
         }
 
-        public void DeleteTournamentUserBracket(int tournamentUserId, int bracketId)
+        public void DeleteTournamentUsersBracket(int tournamentUserId, int bracketId)
         {
             TournamentUsersBracketModel t = GetTournamentUsersBracket(tournamentUserId, bracketId);
             unitOfWork.TournamentUsersBracketRepo.DeleteEntity(t);

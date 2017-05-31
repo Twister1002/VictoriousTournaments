@@ -299,7 +299,7 @@ namespace DatabaseLib.Tests
         {
             var t = service.GetTournamentUsersBracket(2, 2);
             t.Seed = 5;
-            service.UpdateTournamentUserBracket(t);
+            service.UpdateTournamentUsersBracket(t);
             var result = unitOfWork.Save();
 
             Assert.AreEqual(true, result);
@@ -309,7 +309,7 @@ namespace DatabaseLib.Tests
         [TestCategory("Tournament Service")]
         public void DeleteTournamentUserBracket()
         {
-            service.DeleteTournamentUserBracket(2, 2);
+            service.DeleteTournamentUsersBracket(2, 2);
             var result = unitOfWork.Save();
 
             Assert.AreEqual(true, result);
