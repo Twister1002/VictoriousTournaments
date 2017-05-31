@@ -873,7 +873,6 @@ namespace Tournament.Structure
 						match.Games.Count > 0 ||
 						match.IsManualWin)
 					{
-						clearedMatches.Add(GetMatchModel(match));
 						deletedGameIDs.AddRange(match.Games.Select(g => g.Id));
 						if (nextRoundIndex > 1)
 						{
@@ -884,6 +883,7 @@ namespace Tournament.Structure
 							// Keep Players if Round = 1:
 							match.ResetScore();
 						}
+						clearedMatches.Add(GetMatchModel(match));
 					}
 				}
 				if (nextRoundIndex > 1)
