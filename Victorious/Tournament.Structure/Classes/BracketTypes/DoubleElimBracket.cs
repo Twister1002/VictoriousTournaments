@@ -40,13 +40,13 @@ namespace Tournament.Structure
 		public DoubleElimBracket(BracketModel _model)
 			: base(_model)
 		{
-			if (CalculateTotalLowerBracketMatches(Players.Count) > 0)
+			this.NumberOfLowerRounds = 0;
+			if (_model.Matches.Count > 0)
 			{
-				int numOfGrandFinal = _model.Matches.Count;
-
-				this.NumberOfLowerRounds = 0;
-				if (_model.Matches.Count > 0)
+				if (CalculateTotalLowerBracketMatches(Players.Count) > 0)
 				{
+					int numOfGrandFinal = _model.Matches.Count;
+
 					foreach (MatchModel mm in _model.Matches.OrderBy(m => m.MatchNumber))
 					{
 						if (Matches.ContainsKey(mm.MatchNumber))
@@ -428,7 +428,7 @@ namespace Tournament.Structure
 			}
 
 			// Special case check: DEB has a play-in round
-			if (Matches[1].NextLoserMatchNumber < 1)
+			if (NumberOfMatches > 0 && Matches[1].NextLoserMatchNumber < 1)
 			{
 				int rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
 
