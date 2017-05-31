@@ -132,6 +132,9 @@ namespace Tournament.Structure
 		/// <returns>Model of the new Game</returns>
 		GameModel AddGame(int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot);
 
+
+		GameModel AddGame(GameModel _gameModel);
+
 		/// <summary>
 		/// Replace an existing Game with new data.
 		/// Only functions when game winner does NOT change.

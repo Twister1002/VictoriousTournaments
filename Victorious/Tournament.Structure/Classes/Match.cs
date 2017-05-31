@@ -144,7 +144,7 @@ namespace Tournament.Structure
 
 			foreach (GameModel model in _model.Games.OrderBy(m => m.GameNumber))
 			{
-				AddGame(new Game(model));
+				AddGame(model);
 			}
 
 			int winsNeeded = (int)(MaxGames * 0.5);
@@ -327,27 +327,6 @@ namespace Tournament.Structure
 		#region Game & Score Methods
 		public GameModel AddGame(int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			if (!IsReady)
-			{
-				throw new InactiveMatchException
-					("Cannot add games to an inactive match!");
-			}
-			if (IsFinished && !IsManualWin)
-			{
-				throw new InactiveMatchException
-					("Cannot add games to a finished match!");
-			}
-			if (PlayerSlot.unspecified == _winnerSlot)
-			{
-				throw new NotImplementedException
-					("No ties allowed / enter a winner slot!");
-			}
-			if (_defenderScore < 0 || _challengerScore < 0)
-			{
-				throw new ScoreException
-					("Score cannot be negative!");
-			}
-
 			List<int> gameNumbers = Games.Select(g => g.GameNumber).ToList();
 			int gameNum = 1;
 			// Find the lowest (positive) Game Number we can add:
@@ -355,6 +334,7 @@ namespace Tournament.Structure
 			{
 				++gameNum;
 			}
+
 			IGame game = new Game(this.Id, gameNum);
 			// Add Game's data (players and score):
 			for (int i = 0; i < 2; ++i)
@@ -365,18 +345,16 @@ namespace Tournament.Structure
 			game.Score[(int)PlayerSlot.Challenger] = _challengerScore;
 			game.WinnerSlot = _winnerSlot;
 
-			if (!IsFinished)
+			return AddGame(game);
+		}
+		public GameModel AddGame(GameModel _gameModel)
+		{
+			if (null == _gameModel)
 			{
-				if (PlayerSlot.Defender == _winnerSlot ||
-					PlayerSlot.Challenger == _winnerSlot)
-				{
-					AddWin(game.WinnerSlot);
-				}
+				throw new ArgumentNullException("_gameModel");
 			}
 
-			Games.Add(game);
-			Games.Sort((first, second) => first.GameNumber.CompareTo(second.GameNumber));
-			return GetGameModel(game);
+			return AddGame(new Game(_gameModel));
 		}
 
 		public GameModel UpdateGame(int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
@@ -656,16 +634,50 @@ namespace Tournament.Structure
 			gameModel.MatchID = this.Id;
 			return gameModel;
 		}
-		private void AddGame(IGame _game)
+
+		private GameModel AddGame(IGame _game)
 		{
-			if (null == _game)
+			if (!IsReady)
 			{
-				throw new ArgumentNullException("_game");
+				throw new InactiveMatchException
+					("Cannot add games to an inactive match!");
+			}
+			if (IsFinished && !IsManualWin)
+			{
+				throw new InactiveMatchException
+					("Cannot add games to a finished match!");
+			}
+			if (PlayerSlot.unspecified == _game.WinnerSlot)
+			{
+				throw new NotImplementedException
+					("No tie games allowed / enter a winner slot!");
+			}
+			if (_game.Score[0] < 0 || _game.Score[1] < 0)
+			{
+				throw new ScoreException
+					("Score cannot be negative!");
+			}
+			if (/* Games.Select(g => g.Id).Contains(_game.Id) || */
+				Games.Select(g => g.GameNumber).Contains(_game.GameNumber))
+			{
+				throw new DuplicateObjectException
+					("Match already contains duplicate game data!");
 			}
 
-			AddWin(_game.WinnerSlot);
+			if (!IsFinished)
+			{
+				if (PlayerSlot.Defender == _game.WinnerSlot ||
+					PlayerSlot.Challenger == _game.WinnerSlot)
+				{
+					AddWin(_game.WinnerSlot);
+				}
+			}
+
 			Games.Add(_game);
+			Games.Sort((first, second) => first.GameNumber.CompareTo(second.GameNumber));
+			return GetGameModel(_game);
 		}
+
 		private void AddWin(PlayerSlot _slot)
 		{
 			if (IsFinished)

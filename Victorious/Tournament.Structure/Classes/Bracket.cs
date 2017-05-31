@@ -633,12 +633,15 @@ namespace Tournament.Structure
 			match.SetWinner(_winnerSlot);
 			foreach (GameModel model in modelList)
 			{
+				match.AddGame(model);
+#if false
 				PlayerSlot winSlot = (model.DefenderID == model.WinnerID)
 					? PlayerSlot.Defender : PlayerSlot.unspecified;
 				winSlot = (model.ChallengerID == model.WinnerID)
 					? PlayerSlot.Challenger : winSlot;
 
 				match.AddGame(model.DefenderScore, model.ChallengerScore, winSlot);
+#endif
 			}
 			// Update the Bracket & Rankings:
 			UpdateScore(_matchNumber, null, true, oldMatchModel);
