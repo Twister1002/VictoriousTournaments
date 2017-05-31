@@ -439,8 +439,7 @@ namespace Tournament.Structure.Tests
 			b.AddGame((b.NumberOfMatches + 1), 2, 1, PlayerSlot.Defender);
 			Assert.AreEqual(1, 2);
 		}
-
-#if false
+		
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB UpdateGame")]
@@ -501,7 +500,6 @@ namespace Tournament.Structure.Tests
 			b.UpdateGame(b.NumberOfMatches, 1, 1, 2, PlayerSlot.Challenger);
 			Assert.AreNotEqual(oldWinnerId, b.Rankings[0].Id);
 		}
-#endif
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB UpdateGame")]
