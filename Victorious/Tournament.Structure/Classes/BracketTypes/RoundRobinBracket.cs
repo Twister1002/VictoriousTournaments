@@ -97,18 +97,25 @@ namespace Tournament.Structure
 				// Create the Match:
 				Matches.Add(mm.MatchNumber, new Match(mm));
 			}
-			this.NumberOfRounds = Matches.Values
-				.Select(m => m.RoundIndex)
-				.Last();
 			this.NumberOfMatches = Matches.Count;
-
-			RecalculateRankings();
-
+			this.NumberOfRounds = 0;
 			this.IsFinished = true;
-			if (Matches.Values.Any(m => !m.IsFinished))
+			if (0 == NumberOfMatches)
 			{
 				this.IsFinished = false;
 			}
+			else
+			{
+				this.NumberOfRounds = Matches.Values
+					.Select(m => m.RoundIndex)
+					.Last();
+				if (Matches.Values.Any(m => !m.IsFinished))
+				{
+					this.IsFinished = false;
+				}
+			}
+
+			RecalculateRankings();
 		}
 		#endregion
 

@@ -44,25 +44,28 @@ namespace Tournament.Structure
 			{
 				int numOfGrandFinal = _model.Matches.Count;
 
-				//this.LowerMatches = new Dictionary<int, IMatch>();
-				foreach (MatchModel mm in _model.Matches)
+				this.NumberOfLowerRounds = 0;
+				if (_model.Matches.Count > 0)
 				{
-					if (Matches.ContainsKey(mm.MatchNumber))
+					foreach (MatchModel mm in _model.Matches.OrderBy(m => m.MatchNumber))
 					{
-						// Case 1: match is upper bracket:
-						continue;
-					}
-					if (mm.MatchNumber == numOfGrandFinal)
-					{
-						// Case 2: match is grand final:
-						this.GrandFinal = new Match(mm);
-					}
-					else
-					{
-						// Case 3: match is lower bracket:
-						IMatch match = new Match(mm);
-						LowerMatches.Add(match.MatchNumber, match);
-						this.NumberOfLowerRounds = Math.Max(NumberOfLowerRounds, match.RoundIndex);
+						if (Matches.ContainsKey(mm.MatchNumber))
+						{
+							// Case 1: match is upper bracket:
+							continue;
+						}
+						if (mm.MatchNumber == numOfGrandFinal)
+						{
+							// Case 2: match is grand final:
+							this.GrandFinal = new Match(mm);
+						}
+						else
+						{
+							// Case 3: match is lower bracket:
+							IMatch match = new Match(mm);
+							LowerMatches.Add(match.MatchNumber, match);
+							this.NumberOfLowerRounds = Math.Max(NumberOfLowerRounds, match.RoundIndex);
+						}
 					}
 				}
 				this.NumberOfMatches = Matches.Count + LowerMatches.Count;

@@ -91,18 +91,22 @@ namespace Tournament.Structure
 			ResetBracketData();
 			int totalUBMatches = Players.Count - 1;
 
-			foreach (MatchModel mm in _model.Matches.OrderBy(m => m.MatchNumber))
+			this.NumberOfRounds = 0;
+			if (_model.Matches.Count > 0)
 			{
-				if (mm.MatchNumber <= totalUBMatches)
+				foreach (MatchModel mm in _model.Matches.OrderBy(m => m.MatchNumber))
 				{
-					IMatch match = new Match(mm);
-					Matches.Add(match.MatchNumber, match);
-					this.NumberOfRounds = Math.Max(NumberOfRounds, match.RoundIndex);
-				}
-				else
-				{
-					// Match doesn't belong in upper bracket, so break out:
-					break;
+					if (mm.MatchNumber <= totalUBMatches)
+					{
+						IMatch match = new Match(mm);
+						Matches.Add(match.MatchNumber, match);
+						this.NumberOfRounds = Math.Max(NumberOfRounds, match.RoundIndex);
+					}
+					else
+					{
+						// Match doesn't belong in upper bracket, so break out:
+						break;
+					}
 				}
 			}
 			this.NumberOfMatches = Matches.Count;
