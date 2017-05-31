@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define CHOOSE_PAIRING
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -156,6 +158,7 @@ namespace Tournament.Structure
 			this.PairingMethod = PairingMethod.Slide;
 			if (NumberOfMatches > 0 && ActiveRound > 0)
 			{
+#if CHOOSE_PAIRING
 				int firstPlayerIndex = (0 == PlayerByes.Count)
 					? 0 : 1;
 				IMatch firstPlayerMatch = GetRound(1)
@@ -175,7 +178,7 @@ namespace Tournament.Structure
 					// Top seed is paired against bottom seed:
 					PairingMethod = PairingMethod.Fold;
 				}
-
+#endif
 				if (PlayerByes.Count > 0)
 				{
 					// If we added points for byes, we need to update rankings:
@@ -308,89 +311,6 @@ namespace Tournament.Structure
 			ActiveRound = 1;
 			RecalculateRankings();
 			OnMatchesModified(clearedMatches);
-#if false
-			Matchups.Clear();
-			PlayerByes.Clear();
-			foreach (IPlayerScore ps in Rankings)
-			{
-				ps.Rank = 1;
-				ps.ResetScore();
-			}
-
-			List<MatchModel> alteredMatches = new List<MatchModel>();
-			List<MatchModel> deletedMatches = new List<MatchModel>();
-			List<int> deletedGameIds = new List<int>();
-
-			foreach (IMatch match in Matches.Values.ToList())
-			{
-				// Add all Games to the deletion List:
-				foreach (IGame game in match.Games)
-				{
-					deletedGameIds.Add(game.Id);
-				}
-
-				if (1 == match.RoundIndex)
-				{
-					if (match.Games.Count > 0 || match.IsManualWin)
-					{
-						// Reset any first-round Matches that have progressed:
-						alteredMatches.Add(GetMatchModel(match));
-						match.ResetScore();
-					}
-
-					// Re-create Matchups for all first-round Matches:
-					int defIndex = Players.FindIndex
-						(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id);
-					int chalIndex = Players.FindIndex
-						(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id);
-					Matchups.Add(new Matchup(defIndex, chalIndex, 1));
-				}
-				else
-				{
-					// Delete all Matches post-first-round:
-					deletedMatches.Add(GetMatchModel(match));
-					Matches.Remove(match.MatchNumber);
-				}
-			}
-
-			if (NumberOfPlayers() % 2 > 0)
-			{
-				// If Playercount is odd, find the player with a bye:
-				for (int p = 0; p < NumberOfPlayers(); ++p)
-				{
-					bool isByeIndex = true;
-					foreach (Matchup matchup in Matchups)
-					{
-						if (matchup.ContainsInt(p))
-						{
-							isByeIndex = false;
-							break;
-						}
-					}
-
-					if (isByeIndex)
-					{
-						// Add player to the Byes list and update his score:
-						PlayerByes.Add(Players[p].Id);
-						Rankings.Find(r => r.Id == Players[p].Id)
-							.AddMatchOutcome(Outcome.Win, true);
-						UpdateRankings();
-						break;
-					}
-				}
-			}
-
-			// Update Bracket data:
-			NumberOfMatches = Matches.Count;
-			NumberOfRounds = 1;
-			IsFinalized = false;
-			IsFinished = false;
-
-			// Fire Events with any data we altered:
-			OnGamesDeleted(deletedGameIds);
-			OnRoundDeleted(deletedMatches);
-			OnMatchesModified(alteredMatches);
-#endif
 		}
 		#endregion
 
@@ -697,16 +617,18 @@ namespace Tournament.Structure
 						break;
 					}
 				}
-
-				//List<Matchup> groupYmatchups = new List<Matchup>();
-				//int divisionPoint = (int)(_groups[groupNumberY].Count * 0.5);
-				//for (int i = 0; i < divisionPoint; ++i)
-				//{
-				//	// Make fake "preferred" matchups for the players in this group, for use later:
-				//	// SLIDE pairing:
-				//	groupYmatchups.Add(new Matchup(i, i + divisionPoint, -1));
-				//}
+#if CHOOSE_PAIRING
 				List<Matchup> groupYmatchups = CreatePairingsList(_groups[groupNumberY].Count);
+#else
+				List<Matchup> groupYmatchups = new List<Matchup>();
+				int divisionPoint = (int)(_groups[groupNumberY].Count * 0.5);
+				for (int i = 0; i < divisionPoint; ++i)
+				{
+					// Make fake "preferred" matchups for the players in this group, for use later:
+					// SLIDE pairing:
+					groupYmatchups.Add(new Matchup(i, i + divisionPoint, -1));
+				}
+#endif
 				int matchupYindex = groupYmatchups.FindIndex(m => m.ContainsInt(playerYindex));
 
 				for (int x = 0; x < numCompetitors; ++x)
@@ -744,16 +666,18 @@ namespace Tournament.Structure
 					}
 					else
 					{
-						//List<Matchup> groupXmatchups = new List<Matchup>();
-						//divisionPoint = (int)(_groups[groupNumberX].Count * 0.5);
-						//for (int i = 0; i < divisionPoint; ++i)
-						//{
-						//	// Make fake "preferred" matchups for the players in this group:
-						//	// SLIDE pairing:
-						//	groupXmatchups.Add(new Matchup(i, i + divisionPoint, -1));
-						//}
+#if CHOOSE_PAIRING
 						List<Matchup> groupXmatchups = CreatePairingsList(_groups[groupNumberX].Count);
-
+#else
+						List<Matchup> groupXmatchups = new List<Matchup>();
+						divisionPoint = (int)(_groups[groupNumberX].Count * 0.5);
+						for (int i = 0; i < divisionPoint; ++i)
+						{
+							// Make fake "preferred" matchups for the players in this group:
+							// SLIDE pairing:
+							groupXmatchups.Add(new Matchup(i, i + divisionPoint, -1));
+						}
+#endif
 						int matchupXindex, idealMatchup;
 						if (groupNumberY > groupNumberX)
 						{
