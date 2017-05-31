@@ -439,8 +439,7 @@ namespace Tournament.Structure.Tests
 			b.AddGame((b.NumberOfMatches + 1), 2, 1, PlayerSlot.Defender);
 			Assert.AreEqual(1, 2);
 		}
-
-#if false
+		
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB UpdateGame")]
@@ -501,7 +500,6 @@ namespace Tournament.Structure.Tests
 			b.UpdateGame(b.NumberOfMatches, 1, 1, 2, PlayerSlot.Challenger);
 			Assert.AreNotEqual(oldWinnerId, b.Rankings[0].Id);
 		}
-#endif
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB UpdateGame")]
@@ -542,21 +540,23 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB UpdateGame")]
-		[ExpectedException(typeof(NotImplementedException))]
-		public void SEBUpdateGame_NotImplemented_WhenChangingGameWinner()
+		public void SEBUpdateGame_CascadesToOtherMatchesWhenReversingAWin()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 4; ++i)
+			for (int i = 0; i < 8; ++i)
 			{
 				Mock<IPlayer> moq = new Mock<IPlayer>();
 				moq.Setup(p => p.Id).Returns(i);
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SingleElimBracket(pList);
-			b.AddGame(1, 1, 0, PlayerSlot.Defender);
+			for (int n = 1; n < b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
 
 			b.UpdateGame(1, 1, 0, 1, PlayerSlot.Challenger);
-			Assert.AreEqual(1, 2);
+			Assert.IsFalse(b.GetMatch(b.GetMatch(1).NextMatchNumber).IsFinished);
 		}
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]

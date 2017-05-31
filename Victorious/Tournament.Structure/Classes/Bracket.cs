@@ -505,7 +505,25 @@ namespace Tournament.Structure
 			else
 			{
 				// Case 3: Game winner changes:
+				alteredGames.Clear();
+				MatchModel oldMatchModel = GetMatchModel(match);
 
+				GameModel removedGame = RemoveGameNumber(_matchNumber, _gameNumber);
+				UpdateScore(_matchNumber, new List<GameModel> { removedGame }, false, oldMatchModel);
+
+				removedGame.DefenderScore = _defenderScore;
+				removedGame.ChallengerScore = _challengerScore;
+				removedGame.WinnerID = (PlayerSlot.Defender == _winnerSlot)
+					? removedGame.DefenderID : -1;
+				removedGame.WinnerID = (PlayerSlot.Challenger == _winnerSlot)
+					? removedGame.ChallengerID : removedGame.WinnerID;
+
+				oldMatchModel = GetMatchModel(match);
+				alteredGames.Add(match.AddGame(removedGame));
+				UpdateScore(_matchNumber, alteredGames, true, oldMatchModel);
+				alteredMatches.AddRange(ApplyWinEffects(_matchNumber, _winnerSlot));
+				alteredMatches.Add(GetMatchModel(match));
+#if false
 				// Effectively, we're removing & adding a new Game:
 				List<MatchModel> clearedMatches = ApplyGameRemovalEffects(_matchNumber, alteredGames, match.WinnerSlot);
 
@@ -527,6 +545,7 @@ namespace Tournament.Structure
 					}
 				}
 				alteredMatches.Add(GetMatchModel(match));
+#endif
 			}
 
 			// Fire Event with any changed Matches:
@@ -633,12 +652,15 @@ namespace Tournament.Structure
 			match.SetWinner(_winnerSlot);
 			foreach (GameModel model in modelList)
 			{
+				match.AddGame(model);
+#if false
 				PlayerSlot winSlot = (model.DefenderID == model.WinnerID)
 					? PlayerSlot.Defender : PlayerSlot.unspecified;
 				winSlot = (model.ChallengerID == model.WinnerID)
 					? PlayerSlot.Challenger : winSlot;
 
 				match.AddGame(model.DefenderScore, model.ChallengerScore, winSlot);
+#endif
 			}
 			// Update the Bracket & Rankings:
 			UpdateScore(_matchNumber, null, true, oldMatchModel);

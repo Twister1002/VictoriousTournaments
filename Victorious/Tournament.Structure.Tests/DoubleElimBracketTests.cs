@@ -538,6 +538,70 @@ namespace Tournament.Structure.Tests
 
 		[TestMethod]
 		[TestCategory("DoubleElimBracket")]
+		[TestCategory("DEB UpdateGame")]
+		public void DEBUpdateGame_CascadesToLowerBracket()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+			for (int n = 1; n < b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 20, 5, PlayerSlot.Defender);
+			}
+
+			b.UpdateGame(1, 1, 0, 10, PlayerSlot.Challenger);
+			Assert.IsFalse(b.GetMatch(b.GetMatch(1).NextLoserMatchNumber).IsFinished);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("DEB UpdateGame")]
+		public void DEBUpdateGame_RecalculatesRankings()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+			for (int n = 1; n < b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 20, 5, PlayerSlot.Defender);
+			}
+
+			b.UpdateGame(1, 1, 0, 10, PlayerSlot.Challenger);
+			Assert.AreEqual(0, b.Rankings.Count);
+		}
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
+		[TestCategory("DEB UpdateGame")]
+		public void DEBUpdateGame_DoesNotCascadeMatches_IfWinnerDoesNotChange()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new DoubleElimBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 20, 5, PlayerSlot.Defender);
+			}
+
+			b.UpdateGame(1, 1, 10, 0, PlayerSlot.Defender);
+			Assert.IsTrue(b.GrandFinal.IsFinished);
+		}
+
+		[TestMethod]
+		[TestCategory("DoubleElimBracket")]
 		[TestCategory("DEB RemoveLastGame")]
 		public void DEBRemoveLastGame_RemovesFromLowerBracket()
 		{
