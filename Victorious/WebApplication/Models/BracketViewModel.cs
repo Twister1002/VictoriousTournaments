@@ -138,34 +138,53 @@ namespace WebApplication.Models
         {
             List<int> matchesAffected = new List<int>();
             IMatch head = Bracket.GetMatch(matchNum);
-            matchesAffected.Add(matchNum);
 
-            if (head.NextMatchNumber != -1)
+            if (Bracket.BracketType == BracketType.SWISS)
             {
-                List<int> matches = MatchesAffectedList(head.NextMatchNumber);
+                List<IMatch> matches = Bracket.GetRound(head.RoundIndex);
 
-                foreach (int match in matches)
+                if (!matches.Any(x => x.IsFinished == false))
                 {
-                    if (!matchesAffected.Exists((i) => i == match))
+                    matches = Bracket.GetRound(head.RoundIndex + 1);
+                    foreach (IMatch match in matches)
                     {
-                        matchesAffected.Add(match);
+                        matchesAffected.Add(match.MatchNumber);
+                    }
+                }
+
+                matchesAffected.Add(head.MatchNumber);
+            }
+            else
+            {
+                
+                matchesAffected.Add(matchNum);
+
+                if (head.NextMatchNumber != -1)
+                {
+                    List<int> matches = MatchesAffectedList(head.NextMatchNumber);
+
+                    foreach (int match in matches)
+                    {
+                        if (!matchesAffected.Exists((i) => i == match))
+                        {
+                            matchesAffected.Add(match);
+                        }
+                    }
+                }
+
+                if (head.NextLoserMatchNumber != -1)
+                {
+                    List<int> matches = MatchesAffectedList(head.NextLoserMatchNumber);
+
+                    foreach (int match in matches)
+                    {
+                        if (!matchesAffected.Exists((i) => i == match))
+                        {
+                            matchesAffected.Add(match);
+                        }
                     }
                 }
             }
-
-            if (head.NextLoserMatchNumber != -1)
-            {
-                List<int> matches = MatchesAffectedList(head.NextLoserMatchNumber);
-
-                foreach (int match in matches)
-                {
-                    if (!matchesAffected.Exists((i) => i == match))
-                    {
-                        matchesAffected.Add(match);
-                    }
-                }
-            }
-
             return matchesAffected;
         }
 

@@ -161,30 +161,26 @@ namespace WebApplication.Controllers
             BracketViewModel bracketViewModel = new BracketViewModel(json["bracketId"]);
             List<int> matchesAffected = bracketViewModel.MatchesAffectedList(json["matchNum"]);
             List<object> matchDataAffected = new List<object>();
+            bracketViewModel.Bracket.RemoveGameNumber(json["matchNum"], json["gameNum"]);
 
-            GameModel gameRemoved = bracketViewModel.Bracket.RemoveGameNumber(json["matchNum"], json["gameNum"]);
-            GameViewModel removeGameViewModel = new GameViewModel(gameRemoved);
-            if (removeGameViewModel.Delete())
+            status = true;
+            message = "Matches are affected.";
+
+            foreach (int matchNum in matchesAffected)
             {
-                status = true;
-                message = "Matches are affected.";
+                // Load the original and load one from the bracket
+                MatchViewModel modified = new MatchViewModel(bracketViewModel.Bracket.GetMatchModel(matchNum));
+                MatchViewModel original = new MatchViewModel(modified.Match.Id);
 
-                foreach (int matchNum in matchesAffected)
+                List<IGame> games = original.Match.Games.Where(x => !modified.Match.Games.Any(y => y.Id == x.Id)).ToList();
+                foreach (IGame game in games)
                 {
-                    // Load the original and load one from the bracket
-                    MatchViewModel modified = new MatchViewModel(bracketViewModel.Bracket.GetMatchModel(matchNum));
-                    MatchViewModel original = new MatchViewModel(modified.Match.Id);
-
-                    List<IGame> games = original.Match.Games.Where(x => !modified.Match.Games.Any(y => y.Id == x.Id)).ToList();
-                    foreach (IGame game in games)
-                    {
-                        GameViewModel gameViewModel = new GameViewModel(game);
-                        gameViewModel.Delete();
-                    }
-
-                    modified.Update();
-                    matchDataAffected.Add(JsonMatchResponse(modified.Match, true));
+                    GameViewModel gameViewModel = new GameViewModel(game);
+                    gameViewModel.Delete();
                 }
+
+                modified.Update();
+                matchDataAffected.Add(JsonMatchResponse(modified.Match, true));
             }
 
             return Json(JsonConvert.SerializeObject(new
