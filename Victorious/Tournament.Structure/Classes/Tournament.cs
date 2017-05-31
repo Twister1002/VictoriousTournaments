@@ -257,6 +257,9 @@ namespace Tournament.Structure
 				case (BracketType.ROUNDROBIN):
 					ret = new RoundRobinBracket(_model);
 					break;
+				case (BracketType.SWISS):
+					ret = new SwissBracket(_model);
+					break;
 				case (BracketType.RRGROUP):
 					ret = new RoundRobinGroups(_model);
 					break;

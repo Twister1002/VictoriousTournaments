@@ -70,7 +70,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SwissBracket")]
 		[TestCategory("Swiss CreateBracket")]
-		public void SwissCreateBracket_GeneratesOnlyOneRound()
+		public void SwissCreateBracket_GeneratesDefaultNumberOfRounds()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 8; ++i)
@@ -81,7 +81,32 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SwissBracket(pList);
 
-			Assert.AreEqual(1, b.NumberOfRounds);
+			Assert.AreEqual(3, b.NumberOfRounds);
+		}
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("Swiss CreateBracket")]
+		public void SwissCreateBracket_AddsPlayersOnlyToFirstRound()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList);
+
+			List<int> roundsWithPlayers = new List<int>();
+			for (int r = 1; r < b.NumberOfRounds; ++r)
+			{
+				if (b.GetRound(r).Any(m => m.Players.Contains(null)))
+				{
+					break;
+				}
+				roundsWithPlayers.Add(r);
+			}
+			Assert.AreEqual(1, roundsWithPlayers.Count);
 		}
 		[TestMethod]
 		[TestCategory("SwissBracket")]
@@ -144,7 +169,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SwissBracket")]
 		[TestCategory("AddSwissRound")]
-		public void AddSwissRound_CreatesSecondRoundWhenFirstFinishes()
+		public void AddSwissRound_PopulatesSecondRoundWhenFirstFinishes()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 8; ++i)
@@ -154,13 +179,13 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SwissBracket(pList);
-			int firstRoundMatches = b.NumberOfMatches;
-			for (int n = 1; n <= firstRoundMatches; ++n)
-			{
-				b.AddGame(n, 1, 0, PlayerSlot.Defender);
-			}
+			List<IMatch> round1 = b.GetRound(1);
 
-			Assert.AreEqual(2 * firstRoundMatches, b.NumberOfMatches);
+			foreach (IMatch match in round1)
+			{
+				b.SetMatchWinner(match.MatchNumber, PlayerSlot.Defender);
+			}
+			Assert.IsFalse(b.GetRound(2).Select(m => m.Players).Contains(null));
 		}
 		[TestMethod]
 		[TestCategory("SwissBracket")]
@@ -226,12 +251,12 @@ namespace Tournament.Structure.Tests
 			b.ReplacePlayer(player.Object, 0);
 			// 0-index had a first-round bye.
 
-			int firstRdMatches = b.NumberOfMatches;
-			for (int n = 1; n <= firstRdMatches; ++n)
+			List<IMatch> round1 = b.GetRound(1);
+			foreach (IMatch match in round1)
 			{
-				b.SetMatchWinner(n, PlayerSlot.Defender);
+				b.SetMatchWinner(match.MatchNumber, PlayerSlot.Defender);
 			}
-			// Second round is now generated.
+			// Second round is now populated.
 			// If new player was correctly added to the Byes list...
 			// He will be in exactly 1 second-round match:
 			List<IMatch> round2 = b.GetRound(2);
@@ -252,7 +277,7 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SwissBracket(pList);
-			int matchesPerRound = b.NumberOfMatches;
+			int matchesPerRound = b.GetRound(1).Count;
 			for (int i = 0; i < 3; ++i)
 			{
 				for (int n = 1; n <= matchesPerRound; ++n)
@@ -278,7 +303,7 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SwissBracket(pList, PairingMethod.Slide, 3);
-			int matchesPerRound = b.NumberOfMatches;
+			int matchesPerRound = b.GetRound(1).Count;
 			for (int i = 0; i < 3; ++i)
 			{
 				for (int n = 1; n <= matchesPerRound; ++n)
@@ -305,7 +330,7 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SwissBracket(pList, PairingMethod.Slide, 3);
-			int matchesPerRound = b.NumberOfMatches;
+			int matchesPerRound = b.GetRound(1).Count;
 			for (int i = 0; i < 3; ++i)
 			{
 				for (int n = 1; n <= matchesPerRound; ++n)
@@ -354,12 +379,12 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SwissBracket(pList, PairingMethod.Slide, 3);
-			int matchesPerRound = b.NumberOfMatches;
+			int matchesPerRound = b.GetRound(1).Count;
 			for (int n = 1; n <= matchesPerRound; ++n)
 			{
 				b.SetMatchWinner(n, PlayerSlot.Challenger);
 			}
-			for (int n = 1; n < (matchesPerRound * 2); ++n)
+			for (int n = 1; n < matchesPerRound; ++n)
 			{
 				b.AddGame(n + matchesPerRound, 25, 15, PlayerSlot.Defender);
 				b.AddGame(n + matchesPerRound, 25, 15, PlayerSlot.Defender);
@@ -372,7 +397,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SwissBracket")]
 		[TestCategory("ResetMatches")]
-		public void SwissResetMatches_DeletesAllMatchesAfterFirstRound()
+		public void SwissResetMatches_RemovesPlayersFromAllMatchesAfterFirstRound()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 32; ++i)
@@ -382,7 +407,7 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SwissBracket(pList);
-			int matchesPerRound = b.NumberOfMatches;
+			int matchesPerRound = b.GetRound(1).Count;
 			for (int i = 0; i < 3; ++i)
 			{
 				for (int n = 1; n <= matchesPerRound; ++n)
@@ -392,7 +417,15 @@ namespace Tournament.Structure.Tests
 			}
 
 			b.ResetMatches();
-			Assert.AreEqual(matchesPerRound, b.NumberOfMatches);
+			int matchesWithPlayers = 0;
+			for (int n = 1; n < b.NumberOfMatches; ++n)
+			{
+				if (!(b.GetMatch(n).Players.Contains(null)))
+				{
+					++matchesWithPlayers;
+				}
+			}
+			Assert.AreEqual(matchesPerRound, matchesWithPlayers);
 		}
 		[TestMethod]
 		[TestCategory("SwissBracket")]
@@ -407,7 +440,7 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SwissBracket(pList);
-			int matchesPerRound = b.NumberOfMatches;
+			int matchesPerRound = b.GetRound(1).Count;
 			for (int i = 0; i < 2; ++i)
 			{
 				for (int n = 1; n <= matchesPerRound; ++n)
@@ -445,70 +478,10 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SwissBracket")]
 		[TestCategory("AddGame")]
-		[TestCategory("RoundAdded")]
-		public void SwissAddGame_FiresRoundAddedEvent_OncePerRound()
-		{
-			int roundsAdded = 0;
-
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 9; ++i)
-			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i + 1);
-				pList.Add(moq.Object);
-			}
-			IBracket b = new SwissBracket(pList);
-			b.RoundAdded += delegate (object sender, BracketEventArgs e)
-			{
-				++roundsAdded;
-			};
-
-			int matchesPerRound = b.NumberOfMatches;
-			for (int i = 0; i < 2; ++i)
-			{
-				for (int n = 1; n <= matchesPerRound; ++n)
-				{
-					b.SetMatchWinner(n + (matchesPerRound * i), PlayerSlot.Challenger);
-				}
-			}
-			Assert.AreEqual(2, roundsAdded);
-		}
-		[TestMethod]
-		[TestCategory("SwissBracket")]
-		[TestCategory("AddGame")]
-		[TestCategory("RoundAdded")]
-		public void SwissAddGame_FiresRoundAddedEvent_WithAddedMatchModels()
-		{
-			int matchesAdded = 0;
-
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 9; ++i)
-			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i + 1);
-				pList.Add(moq.Object);
-			}
-			IBracket b = new SwissBracket(pList);
-			b.RoundAdded += delegate (object sender, BracketEventArgs e)
-			{
-				matchesAdded += e.UpdatedMatches.Count;
-			};
-
-			int matchesPerRound = b.NumberOfMatches;
-			for (int n = 1; n <= matchesPerRound; ++n)
-			{
-				b.SetMatchWinner(n, PlayerSlot.Challenger);
-			}
-			Assert.AreEqual(matchesPerRound, matchesAdded);
-		}
-		[TestMethod]
-		[TestCategory("SwissBracket")]
-		[TestCategory("AddGame")]
 		[TestCategory("MatchesModified")]
-		public void SwissAddGame_FiresMatchesModifiedEvents_OnlyForAffectedMatches()
+		public void SwissAddGame_FiresMatchesModifiedEvent_WithAllMatchesAffectedAndNextRound()
 		{
-			int matchesAffected = 0;
-			int eventsFired = 0;
+			int matchesModified = 0;
 
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 9; ++i)
@@ -520,25 +493,27 @@ namespace Tournament.Structure.Tests
 			IBracket b = new SwissBracket(pList);
 			b.MatchesModified += delegate (object sender, BracketEventArgs e)
 			{
-				matchesAffected += e.UpdatedMatches.Count;
-				++eventsFired;
+				matchesModified += e.UpdatedMatches.Count;
 			};
 
-			int matchesPerRound = b.NumberOfMatches;
-			for (int n = 1; n <= matchesPerRound; ++n)
+			int matchesPerRound = b.GetRound(1).Count;
+			for (int i = 0; i < 2; ++i)
 			{
-				b.SetMatchWinner(n, PlayerSlot.Challenger);
+				for (int n = 1; n <= matchesPerRound; ++n)
+				{
+					b.SetMatchWinner(n + (matchesPerRound * i), PlayerSlot.Challenger);
+				}
 			}
-			Assert.AreEqual(matchesAffected, eventsFired);
+			Assert.AreEqual(2 * 2 * matchesPerRound, matchesModified);
 		}
 
 		[TestMethod]
 		[TestCategory("SwissBracket")]
 		[TestCategory("ResetMatchScore")]
-		[TestCategory("RoundDeleted")]
-		public void SwissResetMatchScore_FiresRoundDeletedEvent_WithRemovedMatchModels()
+		[TestCategory("MatchesModified")]
+		public void SwissResetMatchScore_FiresMatchesModifiedEvent_WithResetRoundModels()
 		{
-			int matchesDeleted = 0;
+			int matchesReset = 0;
 
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 9; ++i)
@@ -548,18 +523,19 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SwissBracket(pList);
-			b.RoundDeleted += delegate (object sender, BracketEventArgs e)
-			{
-				matchesDeleted += e.UpdatedMatches.Count;
-			};
 
-			int matchesPerRound = b.NumberOfMatches;
+			int matchesPerRound = b.GetRound(1).Count;
 			for (int n = 1; n <= matchesPerRound; ++n)
 			{
 				b.SetMatchWinner(n, PlayerSlot.Challenger);
 			}
+
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				matchesReset += e.UpdatedMatches.Count;
+			};
 			b.ResetMatchScore(1);
-			Assert.AreEqual(matchesPerRound, matchesDeleted);
+			Assert.AreEqual(matchesPerRound + 1, matchesReset);
 		}
 		[TestMethod]
 		[TestCategory("SwissBracket")]
@@ -575,8 +551,8 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SwissBracket(pList);
-			int matchesPerRound = b.NumberOfMatches;
-			for (int n = 1; n < (2 * matchesPerRound); ++n)
+			int matchesPerRound = b.GetRound(1).Count;
+			for (int n = 1; n < matchesPerRound; ++n)
 			{
 				b.SetMatchWinner(n, PlayerSlot.Challenger);
 			}
@@ -592,8 +568,8 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SwissBracket")]
 		[TestCategory("ResetMatchScore")]
-		[TestCategory("RoundDeleted")]
-		public void SwissResetMatchScore_FiresGamesDeletedEvents_WithAllGamesInDeletedRound()
+		[TestCategory("GamesDeleted")]
+		public void SwissResetMatchScore_FiresGamesDeletedEvents_WithAllGamesInClearedRound()
 		{
 			int deletedGames = 0;
 
@@ -613,7 +589,7 @@ namespace Tournament.Structure.Tests
 			{
 				deletedGames += e.DeletedGameIDs.Count;
 			};
-			int matchesPerRound = b.NumberOfMatches;
+			int matchesPerRound = b.GetRound(1).Count;
 			for (int n = 1; n <= (2 + matchesPerRound); ++n)
 			{
 				b.AddGame(n, 2, 1, PlayerSlot.Defender);
