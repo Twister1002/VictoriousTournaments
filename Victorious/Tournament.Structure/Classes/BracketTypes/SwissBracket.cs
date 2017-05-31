@@ -264,14 +264,15 @@ namespace Tournament.Structure
 			}
 		}
 
-		//public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
-		//{
-		//	return (base.UpdateGame(_matchNumber, _gameNumber, _defenderScore, _challengerScore, _winnerSlot));
-
-		//	///////////////////////////////////////////
-		//	// This may need modifications later...
-		//	///////////////////////////////////////////
-		//}
+		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		{
+			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
+			{
+				throw new BracketException
+					("Cannot affect matches too far back in Swiss brackets!");
+			}
+			return (base.UpdateGame(_matchNumber, _gameNumber, _defenderScore, _challengerScore, _winnerSlot));
+		}
 		public override GameModel RemoveLastGame(int _matchNumber)
 		{
 			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))

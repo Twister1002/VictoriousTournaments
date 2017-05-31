@@ -147,9 +147,9 @@ namespace Tournament.Structure.Tests
 		}
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
-		[TestCategory("RRB AddWin")]
+		[TestCategory("RRB AddGame")]
 		[ExpectedException(typeof(InvalidIndexException))]
-		public void RRBAddWin_ThrowsInvalidIndex_WithBadMatchNumber()
+		public void RRBAddGame_ThrowsInvalidIndex_WithBadMatchNumber()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -165,9 +165,9 @@ namespace Tournament.Structure.Tests
 		}
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
-		[TestCategory("RRB AddWin")]
+		[TestCategory("RRB AddGame")]
 		[ExpectedException(typeof(MatchNotFoundException))]
-		public void RRBAddWin_ThrowsNotFound_WithBadMatchNumber()
+		public void RRBAddGame_ThrowsNotFound_WithBadMatchNumber()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -180,6 +180,47 @@ namespace Tournament.Structure.Tests
 
 			b.AddGame(b.NumberOfMatches + 1, 0, 1, PlayerSlot.Challenger);
 			Assert.AreEqual(1, 2);
+		}
+
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("RRB UpdateGame")]
+		[TestCategory("Rankings")]
+		public void RRBUpdateGame_UpdatesPointsScore_InRankings()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			b.AddGame(1, 15, 10, PlayerSlot.Defender);
+
+			int oldPoints = b.Rankings[0].PointsScore;
+			b.UpdateGame(1, 1, 25, 10, PlayerSlot.Defender);
+			Assert.AreNotEqual(oldPoints, b.Rankings[0].PointsScore);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("RRB UpdateGame")]
+		[TestCategory("Rankings")]
+		public void RRBUpdateGame_NewMatchWinnerUpdatesInRankings()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			b.AddGame(1, 15, 10, PlayerSlot.Defender);
+
+			int oldRankingsLeader = b.Rankings[0].Id;
+			b.UpdateGame(1, 1, 10, 25, PlayerSlot.Challenger);
+			Assert.AreNotEqual(oldRankingsLeader, b.Rankings[0].Id);
 		}
 
 		[TestMethod]
