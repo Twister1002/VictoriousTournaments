@@ -97,9 +97,10 @@ namespace Tournament.Structure
 
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
-		protected abstract void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch);
+
 		protected abstract List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
 		protected abstract List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot);
+		protected abstract void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch);
 		protected abstract void RecalculateRankings();
 		protected abstract void UpdateRankings();
 		#endregion
@@ -119,6 +120,47 @@ namespace Tournament.Structure
 
 			IMatch match = GetMatch(_matchNumber);
 			match = new Match(_model);
+		}
+
+		public virtual void ResetMatches()
+		{
+			List<MatchModel> alteredMatches = new List<MatchModel>();
+			List<int> deletedGameIDs = new List<int>();
+
+			for (int n = 1; n <= NumberOfMatches; ++n)
+			{
+				IMatch match = GetMatch(n);
+				bool affected = false;
+
+				if (match.IsManualWin || match.Games.Count > 0)
+				{
+					// Populate the list for GamesDeleted event:
+					affected = true;
+					deletedGameIDs.AddRange(match.Games.Select(g => g.Id));
+				}
+				for (int i = 0; i < 2; ++i)
+				{
+					// Remove Players (but only if they advanced into this match):
+					if (match.PreviousMatchNumbers[i] > -1 &&
+						null != match.Players[i])
+					{
+						affected = true;
+						match.RemovePlayer(match.Players[i].Id);
+					}
+				}
+
+				match.ResetScore();
+				if (affected)
+				{
+					// Populate the list for MatchesModified event:
+					alteredMatches.Add(GetMatchModel(match));
+				}
+			}
+			IsFinished = false;
+			IsFinalized = false;
+
+			OnGamesDeleted(deletedGameIDs);
+			OnMatchesModified(alteredMatches);
 		}
 
 		#region Player Methods
@@ -149,6 +191,7 @@ namespace Tournament.Structure
 			throw new PlayerNotFoundException
 				("Player not found in this Bracket!");
 		}
+
 		public void RandomizeSeeds()
 		{
 			if (null == Players || Players.Count < 2)
@@ -200,6 +243,7 @@ namespace Tournament.Structure
 			Players = pList;
 			DeleteBracketData();
 		}
+
 		public void SetNewPlayerlist(List<IPlayer> _players)
 		{
 			if (null == _players)
@@ -242,6 +286,7 @@ namespace Tournament.Structure
 			}
 			SetNewPlayerlist(playerList);
 		}
+
 		public void AddPlayer(IPlayer _player)
 		{
 			if (null == _player)
@@ -315,6 +360,27 @@ namespace Tournament.Structure
 			Players[_index] = _player;
 			OnMatchesModified(alteredMatches);
 		}
+		public void RemovePlayer(int _playerId)
+		{
+			if (null == Players)
+			{
+				throw new NullReferenceException
+					("Playerlist is null. This shouldn't happen...");
+			}
+
+			for (int i = 0; i < Players.Count; ++i)
+			{
+				if (Players[i].Id == _playerId)
+				{
+					Players.RemoveAt(i);
+					DeleteBracketData();
+					return;
+				}
+			}
+			throw new PlayerNotFoundException
+				("Player not found in this Bracket!");
+		}
+
 		public void SwapPlayers(int _index1, int _index2)
 		{
 			if (_index1 < 0 || _index1 >= Players.Count
@@ -417,26 +483,7 @@ namespace Tournament.Structure
 
 			DeleteBracketData();
 		}
-		public void RemovePlayer(int _playerId)
-		{
-			if (null == Players)
-			{
-				throw new NullReferenceException
-					("Playerlist is null. This shouldn't happen...");
-			}
 
-			for (int i = 0; i < Players.Count; ++i)
-			{
-				if (Players[i].Id == _playerId)
-				{
-					Players.RemoveAt(i);
-					DeleteBracketData();
-					return;
-				}
-			}
-			throw new PlayerNotFoundException
-				("Player not found in this Bracket!");
-		}
 		public void ResetPlayers()
 		{
 			if (null == Players)
@@ -529,6 +576,7 @@ namespace Tournament.Structure
 			// Return a Model of the updated Game:
 			return alteredGames[0];
 		}
+
 		public virtual GameModel RemoveLastGame(int _matchNumber)
 		{
 			IGame lastGame = GetMatch(_matchNumber).Games.LastOrDefault();
@@ -599,6 +647,7 @@ namespace Tournament.Structure
 			alteredMatches.Add(GetMatchModel(match));
 			OnMatchesModified(alteredMatches);
 		}
+
 		public virtual List<GameModel> ResetMatchScore(int _matchNumber)
 		{
 			IMatch match = GetMatch(_matchNumber);
@@ -765,47 +814,6 @@ namespace Tournament.Structure
 			}
 		}
 		#endregion
-
-		public virtual void ResetMatches()
-		{
-			List<MatchModel> alteredMatches = new List<MatchModel>();
-			List<int> deletedGameIDs = new List<int>();
-
-			for (int n = 1; n <= NumberOfMatches; ++n)
-			{
-				IMatch match = GetMatch(n);
-				bool affected = false;
-
-				if (match.IsManualWin || match.Games.Count > 0)
-				{
-					// Populate the list for GamesDeleted event:
-					affected = true;
-					deletedGameIDs.AddRange(match.Games.Select(g => g.Id));
-				}
-				for (int i = 0; i < 2; ++i)
-				{
-					// Remove Players (but only if they advanced into this match):
-					if (match.PreviousMatchNumbers[i] > -1 &&
-						null != match.Players[i])
-					{
-						affected = true;
-						match.RemovePlayer(match.Players[i].Id);
-					}
-				}
-
-				match.ResetScore();
-				if (affected)
-				{
-					// Populate the list for MatchesModified event:
-					alteredMatches.Add(GetMatchModel(match));
-				}
-			}
-			IsFinished = false;
-			IsFinalized = false;
-
-			OnGamesDeleted(deletedGameIDs);
-			OnMatchesModified(alteredMatches);
-		}
 		#endregion
 
 		#region Private Methods

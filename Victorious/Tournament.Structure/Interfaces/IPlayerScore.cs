@@ -53,14 +53,15 @@ namespace Tournament.Structure
 		/// Add/subtract outcome of one Match to this PlayerScore.
 		/// </summary>
 		/// <param name="_outcome">Win, Loss, or Tie</param>
-		/// <param name="_gameScore">Game score change</param>
-		/// <param name="_pointsScore">Point score change</param>
 		/// <param name="_isAddition">Add or subtract these values</param>
-		[System.Obsolete("use AddMatchOutcome(Outcome, bool) instead", false)]
-		void AddMatchOutcome(Outcome _outcome, int _gameScore, int _pointsScore, bool _isAddition);
-
 		void AddMatchOutcome(Outcome _outcome, bool _isAddition);
 
+		/// <summary>
+		/// Add/subtract to the Score values of this PlayerScore.
+		/// </summary>
+		/// <param name="_gamesChange">Game wins/losses</param>
+		/// <param name="_pointsChange">Points scored</param>
+		/// <param name="_isAddition">Add or subtract these values</param>
 		void UpdateScores(int _gamesChange, int _pointsChange, bool _isAddition);
 
 		/// <summary>
@@ -69,7 +70,7 @@ namespace Tournament.Structure
 		/// <param name="_matchWinValue">Value of each Win (def: 2)</param>
 		/// <param name="_matchTieValue">Value of each Tie (def: 1)</param>
 		/// <param name="_matchLossValue">Value of each Loss (def: 0)</param>
-		/// <returns></returns>
+		/// <returns>Score</returns>
 		int CalculateScore(int _matchWinValue, int _matchTieValue, int _matchLossValue);
 
 		/// <summary>
@@ -77,6 +78,8 @@ namespace Tournament.Structure
 		/// </summary>
 		void ResetScore();
 
+		[System.Obsolete("use AddMatchOutcome(Outcome, bool) instead", true)]
+		void AddMatchOutcome(Outcome _outcome, int _gameScore, int _pointsScore, bool _isAddition);
 		[System.Obsolete("use AddMatchOutcome instead", true)]
 		void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _isAddition);
 		#endregion

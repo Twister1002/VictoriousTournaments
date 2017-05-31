@@ -194,6 +194,18 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		{
+			this.IsFinished = !(Matches.Values.Any(m => !m.IsFinished));
+
+			return (new List<MatchModel>());
+		}
+		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
+		{
+			this.IsFinished = (IsFinished && GetMatch(_matchNumber).IsFinished);
+
+			return (new List<MatchModel>());
+		}
 		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 		{
 			IMatch match = GetMatch(_matchNumber);
@@ -303,18 +315,6 @@ namespace Tournament.Structure
 			}
 
 			UpdateRankings();
-		}
-		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
-		{
-			this.IsFinished = !(Matches.Values.Any(m => !m.IsFinished));
-
-			return (new List<MatchModel>());
-		}
-		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
-		{
-			this.IsFinished = (IsFinished && GetMatch(_matchNumber).IsFinished);
-
-			return (new List<MatchModel>());
 		}
 
 		protected override void RecalculateRankings()

@@ -98,6 +98,12 @@ namespace Tournament.Structure
 		void RestoreMatch(int _matchNumber, MatchModel _model);
 
 		/// <summary>
+		/// Resets EVERY Match to a pre-play state (no games played).
+		/// </summary>
+		void ResetMatches();
+
+		#region Player Methods
+		/// <summary>
 		/// Gets the number of Players in the Bracket.
 		/// </summary>
 		/// <returns>Count of Players</returns>
@@ -149,6 +155,13 @@ namespace Tournament.Structure
 		void ReplacePlayer(IPlayer _player, int _index);
 
 		/// <summary>
+		/// Remove a Player from the bracket.
+		/// (Deletes all Matches)
+		/// </summary>
+		/// <param name="_playerId">ID of Player to remove</param>
+		void RemovePlayer(int _playerId);
+
+		/// <summary>
 		/// Swaps two Players' seeds/positions.
 		/// (Deletes all Matches)
 		/// </summary>
@@ -166,18 +179,13 @@ namespace Tournament.Structure
 		void ReinsertPlayer(int _oldIndex, int _newIndex);
 
 		/// <summary>
-		/// Remove a Player from the bracket.
-		/// (Deletes all Matches)
-		/// </summary>
-		/// <param name="_playerId">ID of Player to remove</param>
-		void RemovePlayer(int _playerId);
-
-		/// <summary>
 		/// Clears the bracket's player list.
 		/// (Deletes all Matches)
 		/// </summary>
 		void ResetPlayers();
+		#endregion
 
+		#region Match & Game Methods
 		/// <summary>
 		/// Add/record a finished Game.
 		/// </summary>
@@ -229,7 +237,9 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Number of specified match</param>
 		/// <returns>List of Models of removed Games</returns>
 		List<GameModel> ResetMatchScore(int _matchNumber);
+		#endregion
 
+		#region Accessors & Mutators
 		/// <summary>
 		/// Get a Model of current Bracket.
 		/// </summary>
@@ -282,11 +292,7 @@ namespace Tournament.Structure
 		/// <param name="_roundIndex">Round (lower bracket) of Matches to modify</param>
 		/// <param name="_maxGamesPerMatch">How many Games each Match may last</param>
 		void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch);
-
-		/// <summary>
-		/// Resets EVERY Match to a pre-play state (no games played).
-		/// </summary>
-		void ResetMatches();
+		#endregion
 		#endregion
 	}
 }

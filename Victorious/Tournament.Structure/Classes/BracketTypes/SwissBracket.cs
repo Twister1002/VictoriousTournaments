@@ -252,6 +252,14 @@ namespace Tournament.Structure
 #endif
 		}
 
+		public override void ResetMatches()
+		{
+			List<MatchModel> clearedMatches = RemoveFutureRounds(0);
+			ActiveRound = 1;
+			RecalculateRankings();
+			OnMatchesModified(clearedMatches);
+		}
+
 		public override void ReplacePlayer(IPlayer _player, int _index)
 		{
 			int oldId = Players[_index].Id;
@@ -294,7 +302,6 @@ namespace Tournament.Structure
 			}
 			return base.RemoveGameNumber(_matchNumber, _gameNumber);
 		}
-
 		public override List<GameModel> ResetMatchScore(int _matchNumber)
 		{
 			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
@@ -303,14 +310,6 @@ namespace Tournament.Structure
 					("Cannot affect matches too far back in Swiss brackets!");
 			}
 			return base.ResetMatchScore(_matchNumber);
-		}
-
-		public override void ResetMatches()
-		{
-			List<MatchModel> clearedMatches = RemoveFutureRounds(0);
-			ActiveRound = 1;
-			RecalculateRankings();
-			OnMatchesModified(clearedMatches);
 		}
 		#endregion
 
@@ -331,37 +330,6 @@ namespace Tournament.Structure
 			PlayerByes.Clear();
 		}
 
-		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
-		{
-			IMatch match = GetMatch(_matchNumber);
-			if (!(match.IsFinished))
-			{
-				bool oldMatchFinished = _oldMatch.IsManualWin;
-				if (!oldMatchFinished)
-				{
-					if (_oldMatch.WinnerID.HasValue && _oldMatch.WinnerID > -1)
-					{
-						oldMatchFinished = true;
-					}
-					else if (_oldMatch.DefenderScore + _oldMatch.ChallengerScore >= match.MaxGames)
-					{
-						oldMatchFinished = true;
-					}
-				}
-
-				if (oldMatchFinished)
-				{
-					// We just invalidated future match results.
-					// Instead of regular updating, we need to reset/recalculate:
-					RecalculateRankings();
-					UpdateRankings();
-				}
-			}
-			else
-			{
-				base.UpdateScore(_matchNumber, _games, _isAddition, _oldMatch);
-			}
-		}
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			bool makeNewRound = !(GetRound(ActiveRound).Any(m => !m.IsFinished));
@@ -422,6 +390,52 @@ namespace Tournament.Structure
 			}
 
 			return alteredMatches;
+		}
+		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
+		{
+			IMatch match = GetMatch(_matchNumber);
+			if (!(match.IsFinished))
+			{
+				bool oldMatchFinished = _oldMatch.IsManualWin;
+				if (!oldMatchFinished)
+				{
+					if (_oldMatch.WinnerID.HasValue && _oldMatch.WinnerID > -1)
+					{
+						oldMatchFinished = true;
+					}
+					else if (_oldMatch.DefenderScore + _oldMatch.ChallengerScore >= match.MaxGames)
+					{
+						oldMatchFinished = true;
+					}
+				}
+
+				if (oldMatchFinished)
+				{
+					// We just invalidated future match results.
+					// Instead of regular updating, we need to reset/recalculate:
+					RecalculateRankings();
+					UpdateRankings();
+				}
+			}
+			else
+			{
+				base.UpdateScore(_matchNumber, _games, _isAddition, _oldMatch);
+			}
+		}
+
+		protected override void RecalculateRankings()
+		{
+			base.RecalculateRankings();
+
+			if (PlayerByes.Count > 0)
+			{
+				foreach (int playerId in PlayerByes)
+				{
+					Rankings.Find(r => r.Id == playerId)
+						.AddMatchOutcome(Outcome.Win, true);
+				}
+				UpdateRankings();
+			}
 		}
 
 		private bool AddSwissRound(int _gamesPerMatch)
@@ -828,21 +842,6 @@ namespace Tournament.Structure
 			}
 
 			return clearedMatches;
-		}
-
-		protected override void RecalculateRankings()
-		{
-			base.RecalculateRankings();
-
-			if (PlayerByes.Count > 0)
-			{
-				foreach (int playerId in PlayerByes)
-				{
-					Rankings.Find(r => r.Id == playerId)
-						.AddMatchOutcome(Outcome.Win, true);
-				}
-				UpdateRankings();
-			}
 		}
 		#endregion
 	}

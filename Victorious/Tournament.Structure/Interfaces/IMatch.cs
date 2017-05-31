@@ -93,6 +93,7 @@ namespace Tournament.Structure
 		/// <returns>MatchModel-type object</returns>
 		MatchModel GetModel();
 
+		#region Player Methods
 		/// <summary>
 		/// Assigns a Player to this Match.
 		/// If slot is unspecified, player will be
@@ -121,7 +122,9 @@ namespace Tournament.Structure
 		/// (Resets Match's score)
 		/// </summary>
 		void ResetPlayers();
+		#endregion
 
+		#region Game & Score Methods
 		/// <summary>
 		/// Add a Game to the Match.
 		/// Score and match state will also update.
@@ -176,7 +179,9 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <returns>List of Models of removed Games</returns>
 		List<GameModel> ResetScore();
+		#endregion
 
+		#region Mutators
 		/// <summary>
 		/// Set the max number of Games to play this Match.
 		/// </summary>
@@ -224,6 +229,7 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_number">Number of match to set</param>
 		void SetNextLoserMatchNumber(int _number);
+		#endregion
 		#endregion
 	}
 }

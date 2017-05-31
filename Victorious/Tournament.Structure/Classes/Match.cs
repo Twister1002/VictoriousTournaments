@@ -400,6 +400,7 @@ namespace Tournament.Structure
 			return GetGameModel(Games[gameIndex]);
 		}
 #endif
+
 		public GameModel RemoveLastGame()
 		{
 			int index = Games.Count - 1;
@@ -430,6 +431,7 @@ namespace Tournament.Structure
 			throw new GameNotFoundException
 				("Game not found; Game Number may be invalid!");
 		}
+
 		public void SetWinner(PlayerSlot _winnerSlot)
 		{
 			if (!IsReady)
