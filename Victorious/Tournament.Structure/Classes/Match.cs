@@ -360,6 +360,7 @@ namespace Tournament.Structure
 			return AddGame(new Game(_gameModel));
 		}
 
+#if false
 		public GameModel UpdateGame(int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			if (PlayerSlot.unspecified == _winnerSlot)
@@ -397,37 +398,8 @@ namespace Tournament.Structure
 			}
 
 			return GetGameModel(Games[gameIndex]);
-#if false
-			for (int g = 0; g < Games.Count; ++g)
-			{
-				if (Games[g].GameNumber == _gameNumber)
-				{
-					RemoveGameNumber(g);
-
-					IGame game = new Game(this.Id, _gameNumber);
-					for (int i = 0; i < 2; ++i)
-					{
-						game.PlayerIDs[i] = this.Players[i].Id;
-					}
-					game.Score[(int)PlayerSlot.Defender] = _defenderScore;
-					game.Score[(int)PlayerSlot.Challenger] = _challengerScore;
-					game.WinnerSlot = _winnerSlot;
-
-					if (PlayerSlot.Defender == _winnerSlot ||
-						PlayerSlot.Challenger == _winnerSlot)
-					{
-						AddWin(game.WinnerSlot);
-					}
-					Games.Add(game);
-					Games.Sort((first, second) => first.GameNumber.CompareTo(second.GameNumber));
-					return (game.GetModel());
-				}
-			}
-
-			throw new GameNotFoundException
-				("Game not found; Game Number may be invalid!");
-#endif
 		}
+#endif
 		public GameModel RemoveLastGame()
 		{
 			int index = Games.Count - 1;

@@ -478,39 +478,37 @@ namespace Tournament.Structure
 					("Game not found; Game Number may be invalid!");
 			}
 
+			MatchModel oldMatchModel = GetMatchModel(match);
 			List<MatchModel> alteredMatches = new List<MatchModel>();
 			List<GameModel> alteredGames = new List<GameModel>();
-			alteredGames.Add(match.Games[gameIndex].GetModel());
-			alteredGames[0].MatchID = match.Id;
 
 			if (match.Games[gameIndex].WinnerSlot == _winnerSlot)
 			{
 				// Case 2: Game winner won't change.
-				MatchModel oldMatchModel = GetMatchModel(match);
 
 				// Subtract old scores from rankings:
-				UpdateScore(_matchNumber, alteredGames, false, oldMatchModel);
+				GameModel oldGame = match.Games[gameIndex].GetModel();
+				UpdateScore(_matchNumber, new List<GameModel> { oldGame }, false, oldMatchModel);
 
 				// Update the Game (and Match):
 				match.Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;
 				match.Games[gameIndex].Score[(int)PlayerSlot.Challenger] = _challengerScore;
-				alteredGames.Clear();
 				alteredGames.Add(match.Games[gameIndex].GetModel());
+				alteredGames[0].MatchID = match.Id;
+
 				// Add new scores to rankings:
 				UpdateScore(_matchNumber, alteredGames, true, oldMatchModel);
-
-				alteredMatches.Add(GetMatchModel(match));
-				alteredGames[0].MatchID = match.Id;
 			}
 			else
 			{
-				// Case 3: Game winner changes:
-				alteredGames.Clear();
-				MatchModel oldMatchModel = GetMatchModel(match);
+				// Case 3: Game winner changes.
 
+				// Remove (and save) the current Game:
 				GameModel removedGame = RemoveGameNumber(_matchNumber, _gameNumber);
 				UpdateScore(_matchNumber, new List<GameModel> { removedGame }, false, oldMatchModel);
+				oldMatchModel = GetMatchModel(match);
 
+				// Update the Game's values:
 				removedGame.DefenderScore = _defenderScore;
 				removedGame.ChallengerScore = _challengerScore;
 				removedGame.WinnerID = (PlayerSlot.Defender == _winnerSlot)
@@ -518,63 +516,18 @@ namespace Tournament.Structure
 				removedGame.WinnerID = (PlayerSlot.Challenger == _winnerSlot)
 					? removedGame.ChallengerID : removedGame.WinnerID;
 
-				oldMatchModel = GetMatchModel(match);
+				// Add the updated Game back to the Match:
 				alteredGames.Add(match.AddGame(removedGame));
+				// Update the Bracket (Scores and progression):
 				UpdateScore(_matchNumber, alteredGames, true, oldMatchModel);
 				alteredMatches.AddRange(ApplyWinEffects(_matchNumber, _winnerSlot));
-				alteredMatches.Add(GetMatchModel(match));
-#if false
-				// Effectively, we're removing & adding a new Game:
-				List<MatchModel> clearedMatches = ApplyGameRemovalEffects(_matchNumber, alteredGames, match.WinnerSlot);
-
-				// Change/update the actual Game's data:
-				alteredGames.Clear();
-				alteredGames.Add(match.UpdateGame(_gameNumber, _defenderScore, _challengerScore, _winnerSlot));
-
-				// "Add" the updated Game's effects:
-				alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
-
-				// Too much has changed to update the scores, so just recalculate:
-				RecalculateRankings();
-
-				foreach (MatchModel model in clearedMatches)
-				{
-					if (!alteredMatches.Any(m => m.MatchID == model.MatchID))
-					{
-						alteredMatches.Add(model);
-					}
-				}
-				alteredMatches.Add(GetMatchModel(match));
-#endif
 			}
 
 			// Fire Event with any changed Matches:
+			alteredMatches.Add(GetMatchModel(match));
 			OnMatchesModified(alteredMatches);
 			// Return a Model of the updated Game:
 			return alteredGames[0];
-#if false
-			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
-			List<GameModel> modelList = new List<GameModel>();
-
-			modelList.Add(GetMatch(_matchNumber).RemoveGameNumber(_gameNumber));
-			List<MatchModel> clearedMatches = ApplyGameRemovalEffects(_matchNumber, modelList, matchWinnerSlot);
-			UpdateScore(_matchNumber, modelList, false, matchWinnerSlot);
-
-			GameModel addedGame = GetMatch(_matchNumber)
-				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
-			UpdateScore(_matchNumber, new List<GameModel>() { addedGame }, true, _winnerSlot);
-			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
-
-			foreach (MatchModel model in clearedMatches)
-			{
-				if (!alteredMatches.Any(m => m.MatchID == model.MatchID))
-				{
-					alteredMatches.Add(model);
-				}
-			}
-			OnMatchesModified(alteredMatches);
-			return addedGame;
-#endif
 		}
 		public virtual GameModel RemoveLastGame(int _matchNumber)
 		{
@@ -585,22 +538,6 @@ namespace Tournament.Structure
 					("No Games to remove!");
 			}
 			return (RemoveGameNumber(_matchNumber, lastGame.GameNumber));
-#if false
-			IMatch match = GetMatch(_matchNumber);
-			PlayerSlot oldWinnerSlot = match.WinnerSlot;
-			List<GameModel> modelList = new List<GameModel>();
-
-			// Remove the Game and update the Bracket & Rankings:
-			modelList.Add(match.RemoveLastGame());
-			List<MatchModel> alteredMatches = ApplyGameRemovalEffects(_matchNumber, modelList, oldWinnerSlot);
-			UpdateScore(_matchNumber, modelList, false, oldWinnerSlot);
-
-			// Fire Event with any Matches that changed:
-			alteredMatches.Add(GetMatchModel(match));
-			OnMatchesModified(alteredMatches);
-			// Return a Model of the removed Game:
-			return modelList[0];
-#endif
 		}
 		public virtual GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
 		{
@@ -653,14 +590,6 @@ namespace Tournament.Structure
 			foreach (GameModel model in modelList)
 			{
 				match.AddGame(model);
-#if false
-				PlayerSlot winSlot = (model.DefenderID == model.WinnerID)
-					? PlayerSlot.Defender : PlayerSlot.unspecified;
-				winSlot = (model.ChallengerID == model.WinnerID)
-					? PlayerSlot.Challenger : winSlot;
-
-				match.AddGame(model.DefenderScore, model.ChallengerScore, winSlot);
-#endif
 			}
 			// Update the Bracket & Rankings:
 			UpdateScore(_matchNumber, null, true, oldMatchModel);
@@ -809,16 +738,6 @@ namespace Tournament.Structure
 				throw new InactiveMatchException
 					("One or more matches in this round is already finished!");
 			}
-#if false
-			foreach (IMatch match in round)
-			{
-				if (match.IsFinished)
-				{
-					throw new InactiveMatchException
-						("One or more matches in this round is already finished!");
-				}
-			}
-#endif
 
 			foreach (IMatch match in round)
 			{
@@ -839,16 +758,6 @@ namespace Tournament.Structure
 				throw new InactiveMatchException
 					("One or more matches in this round is already finished!");
 			}
-#if false
-			foreach (IMatch match in round)
-			{
-				if (match.IsFinished)
-				{
-					throw new InactiveMatchException
-						("One or more matches in this round is already finished!");
-				}
-			}
-#endif
 
 			foreach (IMatch match in round)
 			{
