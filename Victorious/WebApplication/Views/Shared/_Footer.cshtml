@@ -1,19 +1,27 @@
-﻿<footer>
-    <ul class="list-table">
-        <li class="list-table-header">
-            <ul data-columns="3">
-                <li>Placeholder1</li>
-                <li>Placeholder2</li>
-                <li>Placeholder3</li>
-            </ul>
-        </li>
-        <li class="list-table-body">
-            <ul data-columns="3">
-                <li class="column"></li>
-                <li class="column"></li>
-                <li class="column"></li>
-            </ul>
-        </li>
-    </ul>
+﻿<div id="footer">
+    <div class="footer_social">
+        <span class="icon icon-facebook"></span>
+        <span class="icon icon-twitter"></span>
+    </div>
+    <div class="footer_information">
+        <ul>
+            <li>FAQ</li>
+            <li>Blog</li>
+            <li>About</li>
+            <li>Contact</li>
+            <li>Tournaments</li>
+            <li>Tournament Rules</li>
+        </ul>
+    </div>
+    <div class="footer_subscribe">
+        <label>Subscribe to Victorious and receive updates to our platform</label>
+        @using (Html.BeginForm("Home", "Home", FormMethod.Post))
+        {
+            <input type="text" name="email" placeholder="Email" />
+        }
+    </div>
+    <div class="footer_copy">
+        &copy; 2017 Victorious. All Rights reserved
+    </div>
     <div class="message warning">ALPHA BUILD @WebApplication.Utility.Codes.GetVersion()</div>
-</footer>
+</div>
