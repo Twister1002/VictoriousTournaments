@@ -26,7 +26,7 @@ namespace DatabaseLib.Tests
         {
             TournamentModel tournament = NewTournament();
             tournament.Description = Guid.NewGuid().ToString();
-            tournament.InviteCode = Guid.NewGuid().ToString();
+            tournament.InviteCode = "1234";
             service.AddTournament(tournament);
             var result = unitOfWork.Save();
 
@@ -40,7 +40,7 @@ namespace DatabaseLib.Tests
         {
             var result = service.GetTournament(3);
 
-            Assert.AreEqual(2, result.GameTypeID);           
+            Assert.AreEqual(2, result.GameTypeID);
         }
 
         [TestMethod]
@@ -84,7 +84,7 @@ namespace DatabaseLib.Tests
                 EntryFee = 0,
                 PrizePurse = 0,
                 GameTypeID = 1
-               
+
             };
 
             return tournament;
@@ -92,10 +92,201 @@ namespace DatabaseLib.Tests
 
         #endregion
 
-        
+
+        #region TournamentInvites
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void AddTournamentInvite_Save()
+        {
+            TournamentInviteModel invite = new TournamentInviteModel()
+            {
+                DateCreated = DateTime.Today,
+                DateExpires = DateTime.Today.AddDays(1),
+                IsExpired = false,
+                TournamentInviteCode = "1234",
+                NumberOfUses = 0,
+                TournamentID = 2
+            };
+            service.AddTournamentInvite(invite);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void GetTournamentInvite()
+        {
+            var invite = service.GetTournamentInvite("1234");
+            var tournament = service.GetTournament(2);
+
+            Assert.AreEqual(tournament, invite.Tournament);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void UpdateTournamentInvite_Save()
+        {
+            var expected = false;
+            var invite = service.GetTournamentInvite("1234");
+            invite.IsExpired = expected;
+            service.UpdateTournamentInvite(invite);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void DeleteTournamentInvite_Save()
+        {
+            service.DeleteTournamentInvite("1234");
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        #endregion
+
+
+        #region TournamentUsers
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void AddTournamentUser()
+        {
+            TournamentUserModel tournamentUser = NewTournamentUser();
+            tournamentUser.TournamentID = service.GetAllTournaments()[0].TournamentID;
+            service.AddTournamentUser(tournamentUser);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        private TournamentUserModel NewTournamentUser()
+        {
+            TournamentUserModel user = new TournamentUserModel()
+            {
+
+                Name = "Kelton",
+                //Username = Guid.NewGuid().ToString(),
+                UniformNumber = 1
+            };
+            return user;
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void GetTournamentUser()
+        {
+            var tournamentUser = service.GetTournamentUser(1);
+            var result = tournamentUser.TournamentID;
+
+            Assert.AreEqual(1, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void UpdateTournamentUser_Save()
+        {
+            var tournamentUser = service.GetTournamentUser(1);
+            tournamentUser.Name = "New Name";
+            service.UpdateTournamentUser(tournamentUser);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void DeleteTournamentUser_Save()
+        {
+            service.DeleteTournamentUser(1);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        #endregion
+
+
+        #region Brackets
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void AddBracket_Save()
+        {
+            var bracket = new BracketModel()
+            {
+                //BracketTitle = "Bracket",
+                BracketTypeID = 2,
+                Finalized = true,
+                TournamentID = service.GetAllTournaments()[0].TournamentID,
+                NumberOfGroups = 2
+            };
+            service.AddBracket(bracket);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void GetBracket()
+        {
+            var bracket = service.GetBracket(1);
+
+            Assert.AreEqual(1, bracket.BracketID);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void UpdateBracket_Save()
+        {
+            var bracket = service.GetBracket(1);
+            bracket.Finalized = false;
+            service.UpdateBracket(bracket);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void DeleteBracket()
+        {
+            service.DeleteBracket(1);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        #endregion
+
+
+        #region TournamentUsersBrackets
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void AddTournamentUserBracket_Save()
+        {
+            TournamentUsersBracketModel t = new TournamentUsersBracketModel()
+            {
+                TournamentUserID = 1,
+                BracketID = 1,
+                Seed = 1
+            };
+            service.AddTournamentUsersBracket(t);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
 
 
 
+
+        #endregion
 
     }
 

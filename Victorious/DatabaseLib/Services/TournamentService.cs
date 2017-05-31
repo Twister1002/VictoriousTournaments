@@ -114,7 +114,7 @@ namespace DatabaseLib.Services
         public void DeleteTournamentInvite(string tournamentInviteCode)
         {
             TournamentInviteModel tournamentInviteToDelete = GetTournamentInvite(tournamentInviteCode);
-            unitOfWork.TournamentInviteRepo.Delete(tournamentInviteToDelete.TournamentInviteID);
+            unitOfWork.TournamentInviteRepo.DeleteEntity(tournamentInviteToDelete);
         }
 
         #endregion
@@ -201,6 +201,33 @@ namespace DatabaseLib.Services
         {
             unitOfWork.GameRepo.Delete(gameId);
         }
+
+        #endregion
+
+
+        #region TournamentUsersBrackets
+
+        public void AddTournamentUsersBracket(TournamentUsersBracketModel model)
+        {
+            unitOfWork.TournamentUsersBracketRepo.Add(model);
+        }
+
+        public TournamentUsersBracketModel GetTournamentUsersBracket(int tournamentUsersBracketId)
+        {
+            return unitOfWork.TournamentUsersBracketRepo.Get(tournamentUsersBracketId);
+        }
+
+        public void UpdateTournamentUserBracket(TournamentUsersBracketModel tournamentUserBracketToUpdate)
+        {
+            unitOfWork.TournamentUsersBracketRepo.Update(tournamentUserBracketToUpdate);
+        }
+
+        public void DeleteTournamentUserBracket(int tournamentUsersBracketId)
+        {
+            unitOfWork.TournamentUsersBracketRepo.Delete(tournamentUsersBracketId);
+        }
+
+
 
         #endregion
 
