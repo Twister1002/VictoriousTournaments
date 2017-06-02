@@ -20,7 +20,7 @@ namespace Tournament.Structure
 		//public int MaxRounds = 0
 		//protected Dictionary<int, Match> Matches
 		//public int NumberOfRounds
-		//protected Dictionary<int, Match> LowerMatches = null
+		//protected Dictionary<int, Match> LowerMatches = empty
 		//public int NumberOfLowerRounds = 0
 		//protected Match grandFinal = null
 		//public IMatch GrandFinal = null
