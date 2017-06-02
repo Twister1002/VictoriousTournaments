@@ -37,7 +37,7 @@ namespace DatabaseLib
             {
                 context.SaveChanges();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
