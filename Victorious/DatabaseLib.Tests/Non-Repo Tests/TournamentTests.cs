@@ -198,7 +198,7 @@ namespace DatabaseLib.Tests
         [TestMethod]
         public void Get_Tournament_Moq()
         {
-            var saveChangeCalled = false;
+            //var saveChangeCalled = false;
             TournamentModel tournament = new TournamentModel()
             {
                 Title = "Test Tournament One",

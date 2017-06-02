@@ -106,7 +106,7 @@ namespace DatabaseLib.Services
 
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     //interfaceException = ex;
                     //WriteException(ex);

@@ -72,7 +72,6 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="DatabaseRepository.cs" />
-    <Compile Include="DatabaseService.cs" />
     <Compile Include="GameModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>

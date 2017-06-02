@@ -55,7 +55,7 @@ namespace DatabaseLib.Services
             {
                 AccountModel account = unitOfWork.AccountRepo.GetAll().Single(u => u.Username == username);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return DbError.DOES_NOT_EXIST;
             }
@@ -68,7 +68,7 @@ namespace DatabaseLib.Services
             {
                 AccountModel account = unitOfWork.AccountRepo.GetSingle(e => e.Email == email);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return DbError.DOES_NOT_EXIST;
             }
@@ -105,7 +105,7 @@ namespace DatabaseLib.Services
             {
                 return unitOfWork.AccountInviteRepo.GetSingle(x => x.AccountInviteCode == inviteCode);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
