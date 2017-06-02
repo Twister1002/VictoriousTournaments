@@ -159,24 +159,23 @@
                     console.log(json.message);
                     var matchElement = null;
 
-                    // Close the match details if the match is finished.
-                    if (json.data.currentMatch.finished) {
-                        match.find(".TournamentGames").removeClass("open");
+                    // Check if there is a refresh
+                    if (json.data.refresh) {
+                        window.location.reload();
+                        return;
                     }
 
-                    if (json.data.currentMatch) {
-                        matchElement = $(".TournamentMatch[data-id='" + json.data.currentMatch.matchId + "']");
-                        MatchUpdate(json.data.currentMatch, matchElement);
-                        MatchOptionsUpdate(json.data.currentMatch, matchElement.find(".TournamentGames"));
-                    }
-                    if (json.data.winnerMatch) {
-                        matchElement = $(".TournamentMatch[data-id='" + json.data.winnerMatch.matchId + "']");
-                        MatchUpdate(json.data.winnerMatch, matchElement);
-                    }
-                    if (json.data.loserMatch) {
-                        matchElement = $(".TournamentMatch[data-id='" + json.data.loserMatch.matchId + "']");
-                        MatchUpdate(json.data.loserMatch, matchElement);
-                    }
+                    $.each(json.data.matchUpdates, function (i, e) {
+                        if (match.data("id") == e.matchId) {
+                            if (e.finished) {
+                                match.find(".TournamentGames").removeClass("open");
+                            }
+                        }
+
+                        matchElement = $(".TournamentMatch[data-id='" + e.matchId + "']");
+                        MatchUpdate(e, matchElement);
+                        MatchOptionsUpdate(e, matchElement.find(".TournamentGames"));
+                    });
 
                     UpdateStandings(jsonData.tournamentId, jsonData.bracketNum);
                 }

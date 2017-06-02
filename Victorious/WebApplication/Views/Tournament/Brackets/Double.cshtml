@@ -1,20 +1,22 @@
 ﻿@model WebApplication.Models.BracketViewModel
 
 @{
+    List<bool> upperRounds = Model.RoundShowing(WebApplication.Models.BracketSection.UPPER);
+    List<bool> lowerRounds = Model.RoundShowing(WebApplication.Models.BracketSection.LOWER);
     int roundNum;
-    int totalDisplayRounds = Model.TotalDispalyRounds();
 
+    ViewBag.DisplayRounds = Model.TotalDispalyRounds(upperRounds, lowerRounds);
     ViewBag.Section = WebApplication.Models.BracketSection.UPPER;
-    ViewBag.RoundShowing = Model.RoundShowing(WebApplication.Models.BracketSection.UPPER);
+    ViewBag.RoundShowing = upperRounds;
     ViewBag.Class = "upper";
     ViewBag.GrandFinalShow = true;
 
     Html.RenderPartial("Brackets/Shared/_Header", Model, new ViewDataDictionary(ViewData));
 }
 <li class="list-table-body">
-    <ul class="round border" data-columns="@totalDisplayRounds">
+    <ul class="round border" data-columns="@ViewBag.DisplayRounds">
         @{ roundNum = 1; }
-        @foreach (bool display in ViewBag.RoundShowing)
+        @foreach (bool display in upperRounds)
         {
             <li class="column">
                 @if (display)
@@ -31,17 +33,17 @@
 </li>
 
 @{
+    ViewBag.RoundShowing = lowerRounds;
     ViewBag.Section = WebApplication.Models.BracketSection.LOWER;
-    ViewBag.RoundShowing = Model.RoundShowing(WebApplication.Models.BracketSection.LOWER);
     ViewBag.Class = "lower";
     ViewBag.GrandFinalShow = false;
 
     Html.RenderPartial("Brackets/Shared/_Header", Model, new ViewDataDictionary(ViewData));
 }
 <li class="list-table-body">
-    <ul class="round" data-columns="@totalDisplayRounds">
+    <ul class="round" data-columns="@ViewBag.DisplayRounds">
         @{ roundNum = 1; }
-        @foreach (bool display in ViewBag.RoundShowing)
+        @foreach (bool display in lowerRounds)
         {
             <li class="column">
                 @if (display)
@@ -57,11 +59,11 @@
     </ul>
 </li>
 <li class="list-table-body">
-    <ul class="round" data-columns="@totalDisplayRounds">
-        @for (int i = 1; i <= totalDisplayRounds; i++)
+    <ul class="round" data-columns="@ViewBag.DisplayRounds">
+        @for (int i = 1; i <= ViewBag.DisplayRounds; i++)
         {
             <li class="column">
-                @if (i == totalDisplayRounds)
+                @if (i == ViewBag.DisplayRounds)
                 {
                     ViewBag.isGrandFinal = true;
                     Html.RenderPartial("Brackets/Shared/_Match", new WebApplication.Models.MatchViewModel(Model.Bracket.GrandFinal), new ViewDataDictionary(ViewData));

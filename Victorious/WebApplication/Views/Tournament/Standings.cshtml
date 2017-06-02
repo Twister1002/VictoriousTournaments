@@ -14,19 +14,23 @@
             <div class="bracketData" data-bracket="@i" data-id="@bracket.Id">
                 <ul class="list-table">
                     <li class="list-table-header">
-                        <ul data-columns="3">
+                        <ul data-columns="@(ViewBag.isCreator ? 3 : 2)">
                             <li class="column selection info" data-show="playerInfo">Players</li>
                             <li class="column selection info" data-show="standingInfo">Standings</li>
+                            @if (ViewBag.isCreator)
+                            {
                             <li class="column selection info" data-show="resetInfo">Reset</li>
+                            }
                         </ul>
                     </li>
 
                     <li class="list-table-body infoSection playerInfo">
-                        <ul class="header" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 4 : 2)">
+                        <ul class="header" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 5 : 2)">
                             <li class="column">Name</li>
                             <li class="column">Status</li>
                             @if (ViewBag.isAdministrator)
                             {
+                                <li class="column">Seed</li>
                                 <li class="column">Present</li>
                                 <li class="column">Actions</li>
                             }
@@ -37,7 +41,7 @@
                             {
                                 Dictionary<String, int> data = Model.PermissionAction(ViewBag.UserId, person.TournamentUserID, "default");
 
-                                <ul class="data user" data-user="@person.TournamentUserID" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 4 : 2)">
+                                <ul class="data user form" data-user="@person.TournamentUserID" data-columns="@(ViewBag.isAdministrator ? 5 : 2)">
                                     <li class="column name">@person.Name</li>
                                     <li class="column permission">@person.PermissionLevel</li>
                                     @if (ViewBag.isAdministrator)
@@ -47,7 +51,12 @@
                                         {
                                             colorCode = "";
                                         }
-
+                                        <li class="column seed">
+                                            @if (!Model.IsUserAdministrator(person.TournamentUserID))
+                                            {
+                                                <input type="text" name="seedVal" maxlength="2" value="@Model.UserSeed(person.TournamentUserID, bracket.Id)"/>
+                                            }
+                                        </li>
                                         <li class="column">
                                             <span class="icon icon-checkmark @colorCode checkIn"></span>
                                         </li>
@@ -71,17 +80,20 @@
                                     }
                                 </ul>
                             }
-
-
-                            if (!Model.Model.InProgress && Model.IsAdministrator(ViewBag.UserId))
+                            if (!Model.Model.InProgress && ViewBag.isAdministrator)
                             {
-                                <div class="userAddData">
-                                    <ul class="form" data-columns="4">
-                                        <li class="column name"><input type="text" name="name" maxlength="50" placeholder="Name/Email"/></li>
-                                        <li class="column">Not Saved</li>
-                                        <li class="column"><span class="icon icon-checkmark"></span></li>
-                                        <li class="column"><button class="addUserButton">Add User</button></li>
-                                    </ul>
+                                <div class="adminSettings">
+                                    <div class="options">
+                                        <button class="randomSeeds">Randomize Seeds</button>
+                                        <button class="updateSeeds">Update Seeds</button>
+                                    </div>
+                                    <div class="userAddData">
+                                        <ul class="form" data-columns="3">
+                                            <li class="column name"><input type="text" name="name" maxlength="50" placeholder="Name/Email"/></li>
+                                            <li class="column">Not Saved</li>
+                                            <li class="column"><button class="addUserButton">Add User</button></li>
+                                        </ul>
+                                    </div>
                                 </div>
                             }
                         }
@@ -120,11 +132,14 @@
                         }
                     </li>
 
+                    @if (ViewBag.isCreator)
+                    {
                     <li class="list-table-body infoSection resetInfo">
                         Are you sure you want to reset this bracket? This can not be reverted.
                         <br/>
                         <button type="button" class="reset-bracket">Reset</button>
                     </li>
+                    }
                 </ul>
             </div>
         }

@@ -175,8 +175,10 @@ namespace WebApplication.Controllers
         [Route("Tournament/Create")]
         public ActionResult Create(TournamentViewModel viewModel)
         {
+            LoadAccount(Session);
+
             // Verify the user is logged in first
-            if (Session["User.UserId"] == null)
+            if (account == null)
             {
                 Session["Message"] = "You must login to create a tournament.";
                 Session["Message.Class"] = ViewModel.ViewError.WARNING;
@@ -185,9 +187,9 @@ namespace WebApplication.Controllers
 
             if (ModelState.IsValid)
             {
-                if (viewModel.Create((int)Session["User.UserId"]))
+                if (viewModel.Create(account.AccountId))
                 {
-                    if (viewModel.AddUser((int)Session["User.UserId"], Permission.TOURNAMENT_CREATOR))
+                    if (viewModel.AddUser(account, Permission.TOURNAMENT_CREATOR))
                     {
                         // Show a success message.
                         Session["Message"] = "Your tournament was successfully created.";
@@ -263,7 +265,7 @@ namespace WebApplication.Controllers
             {
                 TournamentViewModel viewModel = new TournamentViewModel(userData.TournamentID);
 
-                if (viewModel.AddUser(account.AccountId, Permission.TOURNAMENT_STANDARD))
+                if (viewModel.AddUser(account, Permission.TOURNAMENT_STANDARD))
                 {
                     Session["Message"] = "You have been registered to this tournament";
                     Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
@@ -315,7 +317,7 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Ajax/Tournament/Register")]
-        public JsonResult NoAccountRegister(int tournamentId, String name)
+        public JsonResult NoAccountRegister(int tournamentId, String name, int bracketId)
         {
             LoadAccount(Session);
             TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
@@ -333,7 +335,8 @@ namespace WebApplication.Controllers
                     {
                         Name = model.Name,
                         Permission = model.PermissionLevel,
-                        TournamentUserId = model.TournamentUserID
+                        TournamentUserId = model.TournamentUserID,
+                        Seed = viewModel.UserSeed(model.TournamentUserID, bracketId)
                     },
                     actions = viewModel.PermissionAction(account.AccountId, model.TournamentUserID, "default")
                 };
@@ -541,6 +544,33 @@ namespace WebApplication.Controllers
                 status = status,
                 message = message,
                 data = data
+            }));
+        }
+
+        [HttpPost]
+        [Route("Ajax/Tournament/SeedChange")]
+        public JsonResult SeedChange(int tournamentId, int bracketId, Dictionary<String, int> players)
+        {
+            LoadAccount(Session);
+            bool status = false;
+            String message = "No action taken";
+
+            if (account != null)
+            {
+                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+
+                if (viewModel.IsAdministrator(account.AccountId))
+                {
+                    viewModel.UpdateSeeds(players, bracketId);
+                    status = true;
+                    message = "Seeds are updated";
+                }
+            }
+
+            return Json(JsonConvert.SerializeObject(new
+            {
+                status = status,
+                message = message
             }));
         }
     }

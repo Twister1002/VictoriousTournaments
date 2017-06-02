@@ -22,6 +22,7 @@ namespace WebApplication.Models
 
     public class BracketViewModel : BracketFields
     {
+        public bool roundsModified { get; private set; }
         public IBracket Bracket { get; private set; }
         public BracketModel Model { get; private set; }
 
@@ -137,34 +138,53 @@ namespace WebApplication.Models
         {
             List<int> matchesAffected = new List<int>();
             IMatch head = Bracket.GetMatch(matchNum);
-            matchesAffected.Add(matchNum);
 
-            if (head.NextMatchNumber != -1)
+            if (Bracket.BracketType == BracketType.SWISS)
             {
-                List<int> matches = MatchesAffectedList(head.NextMatchNumber);
+                List<IMatch> matches = Bracket.GetRound(head.RoundIndex);
 
-                foreach (int match in matches)
+                if (!matches.Any(x => x.IsFinished == false))
                 {
-                    if (!matchesAffected.Exists((i) => i == match))
+                    matches = Bracket.GetRound(head.RoundIndex + 1);
+                    foreach (IMatch match in matches)
                     {
-                        matchesAffected.Add(match);
+                        matchesAffected.Add(match.MatchNumber);
+                    }
+                }
+
+                matchesAffected.Add(head.MatchNumber);
+            }
+            else
+            {
+                
+                matchesAffected.Add(matchNum);
+
+                if (head.NextMatchNumber != -1)
+                {
+                    List<int> matches = MatchesAffectedList(head.NextMatchNumber);
+
+                    foreach (int match in matches)
+                    {
+                        if (!matchesAffected.Exists((i) => i == match))
+                        {
+                            matchesAffected.Add(match);
+                        }
+                    }
+                }
+
+                if (head.NextLoserMatchNumber != -1)
+                {
+                    List<int> matches = MatchesAffectedList(head.NextLoserMatchNumber);
+
+                    foreach (int match in matches)
+                    {
+                        if (!matchesAffected.Exists((i) => i == match))
+                        {
+                            matchesAffected.Add(match);
+                        }
                     }
                 }
             }
-
-            if (head.NextLoserMatchNumber != -1)
-            {
-                List<int> matches = MatchesAffectedList(head.NextLoserMatchNumber);
-
-                foreach (int match in matches)
-                {
-                    if (!matchesAffected.Exists((i) => i == match))
-                    {
-                        matchesAffected.Add(match);
-                    }
-                }
-            }
-
             return matchesAffected;
         }
 
@@ -228,12 +248,12 @@ namespace WebApplication.Models
             }
         }
 
-        public int TotalDispalyRounds()
+        public int TotalDispalyRounds(List<bool> upper, List<bool> lower)
         {
-            int upper = RoundShowing(BracketSection.UPPER).Count;
-            int lower = RoundShowing(BracketSection.LOWER).Count;
+            //int upper = RoundShowing(BracketSection.UPPER).Count;
+            //int lower = RoundShowing(BracketSection.LOWER).Count;
 
-            int maxDisplay = Math.Max(upper, lower);
+            int maxDisplay = Math.Max(upper.Count, lower.Count);
 
             if (Bracket.GrandFinal != null) maxDisplay++;
 
@@ -377,6 +397,7 @@ namespace WebApplication.Models
 
         public void OnRoundAdd(object sender, BracketEventArgs args)
         {
+            this.roundsModified = true;
             foreach (MatchModel match in args.UpdatedMatches)
             {
                 db.AddMatch(match);
@@ -385,6 +406,7 @@ namespace WebApplication.Models
         
         public void OnRoundDelete(object sender, BracketEventArgs args)
         {
+            this.roundsModified = true;
             foreach (int games in args.DeletedGameIDs)
             {
                 db.DeleteGame(games);

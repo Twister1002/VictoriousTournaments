@@ -115,7 +115,6 @@ namespace WebApplication.Models
         public List<BracketTypeModel> BracketTypes { get; protected set; }
         public List<GameTypeModel> GameTypes { get; protected set; }
         public List<PlatformModel> PlatformTypes { get; protected set; }
-        public List<TournamentUserModel> Users { get; set; }
 
         [Display(Name = "Bracket Type")]
         [Required(ErrorMessage ="Select a bracket type")]
@@ -123,16 +122,19 @@ namespace WebApplication.Models
 
         [Display(Name ="Game")]
         [Required(ErrorMessage ="Select a game")]
-        public int? GameType { get; set; }
+        public int? GameTypeID { get; set; }
 
         [Display(Name = "Platform")]
         [Required(ErrorMessage = "Choose a platform")]
-        public int PlatformType { get; set; } 
+        public int PlatformTypeID { get; set; } 
 
         [Display(Name = "Public Viewing")]
         public bool PublicViewing { get; set; }
         [Display(Name = "Public Registation")]
         public bool PublicRegistration { get; set; }
+
+        [Display(Name = "Number of Rounds")]
+        public int NumberOfRounds { get; set; }
 
         public abstract void ApplyChanges();
         public abstract void SetFields();

@@ -1,12 +1,12 @@
 ﻿.TournamentInfo {
     position: absolute;
     display: none;
-    background-color: black;
     opacity: .95;
     top: 0em;
     width: 100%;
     height: 100%;
     min-height: 20em;
+    z-index: 1;
 
     &.open {
         display: block;
@@ -14,18 +14,19 @@
 
     .close {
         position: absolute;
-        right: .25em;
+        right: 1em;
         top: .25em;
         z-index: 1;
     }
 
     .details {
-        position:relative;
-        height: 100%;
-        .grid(2);
+        background-color: black;
+        position: relative;
+        height: 98%;
         padding: .5em;
         text-align: center;
-        overflow-x:auto;
+        overflow-y: auto;
+        .grid(2);
 
         .bracketNum {
             &:hover {
@@ -40,7 +41,7 @@
 
         .bracketData {
             display: none;
-
+            height: 93%;
             &.show {
                 display: block;
             }
@@ -62,12 +63,12 @@
 
     .infoSection {
         display: none;
-        position:relative;
+        position: relative;
         height: 100%;
-
         &.show {
             display: block;
         }
+
         .column {
             vertical-align: middle;
         }
@@ -76,6 +77,8 @@
     .playerInfo {
         position: relative;
         padding-top: .5em;
+        height: 100%;
+        /*background-color: orange;*/
 
         ul {
             border: 1px solid @white;
@@ -87,6 +90,26 @@
 
         .data {
             padding: .25em .25em;
+
+            .column {
+                overflow: hidden;
+
+                input {
+                    &:disabled {
+                        border: none;
+                    }
+
+                    padding: .25em 0em;
+                    text-align: center;
+                }
+            }
+        }
+
+        .adminSettings {
+            position: relative;
+            width:100%;
+            bottom: 0;
+            /*background-color: red;*/
         }
     }
 
@@ -108,13 +131,5 @@
 
     .resetInfo {
         padding-top: .5em;
-    }
-
-    .userAddData {
-        position: absolute;
-        bottom:0em;
-        width: 100%;
-        height: 0em;
-        background-color:black;
     }
 }

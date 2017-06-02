@@ -9,12 +9,8 @@ namespace WebApplication.Models
 {
     public class TournamentViewModel : TournamentFields
     {
-        private bool matchPlayerFix = false;
-
         public ITournament Tourny { get; private set; }
         public TournamentModel Model { get; private set; }
-        public List<TournamentUserModel> Administrators { get; private set; }
-        public List<TournamentUserModel> Participants { get; private set; }
         public List<TournamentModel> SearchedTournaments { get; private set; }
 
         public TournamentViewModel()
@@ -34,7 +30,6 @@ namespace WebApplication.Models
             if (Model != null)
             {
                 SetFields();
-                GetUserPermissions();
             }
             else
             {
@@ -52,8 +47,7 @@ namespace WebApplication.Models
                 Model = model;
                 SetFields();
             }
-
-            GetUserPermissions();
+            
             ProcessTournament();
         }
 
@@ -63,8 +57,6 @@ namespace WebApplication.Models
             this.GameTypes = db.GetAllGameTypes();
             this.PlatformTypes = db.GetAllPlatforms();
             this.PublicViewing = true;
-            Administrators = new List<TournamentUserModel>();
-            Participants = new List<TournamentUserModel>();
             SearchedTournaments = new List<TournamentModel>();
         }
 
@@ -73,8 +65,8 @@ namespace WebApplication.Models
             // Tournament Stuff
             Model.Title = this.Title;
             Model.Description = this.Description;
-            Model.GameTypeID = this.GameType;
-            Model.PlatformID = this.PlatformType;
+            Model.GameTypeID = this.GameTypeID;
+            Model.PlatformID = this.PlatformTypeID;
             Model.PublicViewing = this.PublicViewing;
             Model.PublicRegistration = this.PublicRegistration;
 
@@ -91,8 +83,8 @@ namespace WebApplication.Models
         {
             this.Title = Model.Title;
             this.Description = Model.Description;
-            this.GameType = Model.GameTypeID;
-            this.PlatformType = Model.PlatformID;
+            this.GameTypeID = Model.GameTypeID;
+            this.PlatformTypeID = Model.PlatformID;
             this.PublicViewing = Model.PublicViewing;
             this.PublicRegistration = Model.PublicRegistration;
 
@@ -118,23 +110,6 @@ namespace WebApplication.Models
             }
         }
 
-        private void MatchPlayerFix()
-        {
-            foreach (var bracket in Model.Brackets)
-            {
-                foreach (var match in bracket.Matches)
-                {
-                    Model.Brackets.First(x => x.BracketID == bracket.BracketID)
-                        .Matches.First(x => x.MatchID == match.MatchID)
-                        .Challenger = db.GetTournamentUser(match.ChallengerID);
-
-                    Model.Brackets.First(x => x.BracketID == bracket.BracketID)
-                        .Matches.First(x => x.MatchID == match.MatchID)
-                        .Defender = db.GetTournamentUser(match.DefenderID);
-                }
-            }
-        }
-
         public void LoadData(int id)
         {
             Model = db.GetTournament(id);
@@ -153,25 +128,12 @@ namespace WebApplication.Models
 
             BracketModel bracket = Model.Brackets.ElementAt(0);
             bracket.BracketTypeID = this.BracketType;
+            bracket.MaxRounds = this.NumberOfRounds;
 
-            DbError updateTournament = db.UpdateTournament(Model);
-            DbError updateBracket = db.UpdateBracket(bracket);
+            bool updateTournament = db.UpdateTournament(Model) == DbError.SUCCESS;
+            bool updateBracket = db.UpdateBracket(bracket) == DbError.SUCCESS;
 
-            if (updateTournament == DbError.SUCCESS && this.Users != null)
-            {
-                // Lets update the new users that were created.
-                foreach (TournamentUserModel user in Users)
-                {
-                    user.TournamentID = Model.TournamentID;
-                    user.IsCheckedIn = false;
-                    user.PermissionLevel = (int)Permission.TOURNAMENT_STANDARD;
-
-                    db.AddTournamentUser(user);
-                }
-
-            }
-
-            return updateTournament == DbError.SUCCESS;
+            return updateTournament && updateBracket;
         }
 
         public bool Create(int sessionId)
@@ -182,7 +144,8 @@ namespace WebApplication.Models
             BracketModel bracketModel = new BracketModel()
             {
                 BracketTypeID = this.BracketType,
-                Tournament = Model
+                Tournament = Model,
+                MaxRounds = this.NumberOfRounds
             };
 
             Model.Brackets.Add(bracketModel);
@@ -204,7 +167,6 @@ namespace WebApplication.Models
         public TournamentUserModel AddUser(String name)
         {
             bool isEmail = false;
-            DbError result = DbError.NONE;
             TournamentUserModel userModel = null;
 
             if (!isEmail)
@@ -215,36 +177,54 @@ namespace WebApplication.Models
                     PermissionLevel = (int)Permission.TOURNAMENT_STANDARD,
                     TournamentID = Model.TournamentID
                 };
-
-                result = db.AddTournamentUser(userModel);
             }
 
-            return userModel;
+            return AddUserToTournament(userModel) ? userModel : null;
         }
 
-        public bool AddUser(int accountId, Permission permission)
+        public bool AddUser(AccountViewModel account, Permission permission)
         {
             // Verify this user doesn't exist in the tournament
-            if (Model.TournamentUsers.Any(x => x.AccountID == accountId))
-            {
-                return false;
+            if (!Model.TournamentUsers.Any(x => x.AccountID == account.AccountId)) { 
+                TournamentUserModel tournamentUserModel = new TournamentUserModel()
+                {
+                    AccountID = account.AccountId,
+                    Name = account.Username,
+                    PermissionLevel = (int)permission,
+                    TournamentID = Model.TournamentID
+                };
+
+                return AddUserToTournament(tournamentUserModel);
             }
             else
             {
-                AccountModel account = db.GetAccount(accountId);
-                TournamentUserModel tournamentUserModel = new TournamentUserModel()
+                return false;
+            }
+        }
+
+        private bool AddUserToTournament(TournamentUserModel model)
+        {
+            // Add the user to the tournament
+            bool userAddResult = db.AddTournamentUser(model) == DbError.SUCCESS;
+
+            if (userAddResult && model.PermissionLevel == (int)Permission.TOURNAMENT_STANDARD)
+            {
+                // Now add the user with a seed.
+                int? seedData = Model.Brackets.ElementAt(0).TournamentUsersBrackets.Max(x => x.Seed);
+                int seed = seedData != null ? seedData.Value + 1 : 1;
+
+                TournamentUsersBracketModel bracketUser = new TournamentUsersBracketModel()
                 {
-                    AccountID = account.AccountID,
-                    Name = account.Username,
-                    PermissionLevel = (int)permission,
                     TournamentID = Model.TournamentID,
-                    Tournament = Model
+                    TournamentUserID = model.TournamentUserID,
+                    Seed = seed,
+                    BracketID = Model.Brackets.ElementAt(0).BracketID
                 };
 
-                DbError addResult = db.AddTournamentUser(tournamentUserModel);
-
-                return addResult == DbError.SUCCESS;
+                bool seededUser = db.AddTournamentUsersBracket(bracketUser) == DbError.SUCCESS;
             }
+
+            return userAddResult;
         }
 
         public bool RemoveUser(int accountId)
@@ -276,26 +256,36 @@ namespace WebApplication.Models
             }
 
             searchData.Add("PublicViewing", "true");
-            List<String> safeParamList = new List<String>() { "Title", "GameTypeID", "PlatformID", "TournamentStartDate", "PublicViewing", "PublicRegistration" };
-            searchData = searchData.Where(k => safeParamList.Contains(k.Key) && k.Value != String.Empty).ToDictionary(k => k.Key, k => k.Value);
-            SearchedTournaments = db.FindTournaments(searchData);
-        }
-
-        private void GetUserPermissions()
-        {
-            foreach (TournamentUserModel user in Model.TournamentUsers)
+            if (searchData.Keys.Contains("startDate"))
             {
-                switch ((Permission)user.PermissionLevel)
+                searchData.Add("TournamentStartDate", "true");
+                searchData.Add("RegistrationStartDate", "true");
+
+                if (searchData.Keys.Contains("endDate"))
                 {
-                    case Permission.TOURNAMENT_STANDARD:
-                        Participants.Add(user);
-                        break;
-                    case Permission.TOURNAMENT_ADMINISTRATOR:
-                    case Permission.TOURNAMENT_CREATOR:
-                        Administrators.Add(user);
-                        break;
+                    searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
+                    searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
+                }
+                else
+                {
+                    searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
+                    searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
                 }
             }
+            
+            List<String> safeParamList = new List<String>() {
+                "Title",
+                "GameTypeID",
+                "PlatformTypeID",
+                "PublicViewing",
+                "PublicRegistration",
+                "TournamentStartDate",
+                "TournamentEndDate",
+                "RegistrationStartDate",
+                "RegistrationEndDate"
+            };
+            searchData = searchData.Where(k => safeParamList.Contains(k.Key) && k.Value != String.Empty).ToDictionary(k => k.Key, k => k.Value);
+            SearchedTournaments = db.FindTournaments(searchData);
         }
 
         public bool FinalizeTournament(Dictionary<String, Dictionary<String, int>> roundData)
@@ -328,7 +318,6 @@ namespace WebApplication.Models
             // Process
             try
             {
-                SaveSeedParticipants(bracket, tourny);
                 CreateMatches(bracket, tourny);
 
                 // Recall the bracket
@@ -362,25 +351,6 @@ namespace WebApplication.Models
             }
         }
 
-        private void SaveSeedParticipants(BracketModel bracket, IBracket tourny)
-        {
-            List<IPlayer> players = Tourny.Brackets[0].Players;
-
-            for (int i = 0; i < players.Count; i++)
-            {
-                TournamentUserModel userModel = Model.TournamentUsers.First(x => x.Name == players[i].Name);
-
-                TournamentUsersBracketModel userSeed = new TournamentUsersBracketModel()
-                {
-                    TournamentUserID = userModel.TournamentUserID,
-                    BracketID = bracket.BracketID,
-                    Seed = tourny.GetPlayerSeed(players[i].Id)
-                };
-
-                db.AddTournamentUsersBracket(userSeed);
-            }
-        }
-
         private void ProcessTournament()
         {
             if (Model == null)
@@ -388,76 +358,40 @@ namespace WebApplication.Models
                 return;
             }
 
-            if (matchPlayerFix) MatchPlayerFix();
-
-            int bracketNum = 0;
-            BracketModel bracket = Model.Brackets.ElementAt(bracketNum);
+            BracketModel bracketModel = Model.Brackets.ElementAt(0);
 
             Tourny = new Tournament.Structure.Tournament();
             Tourny.Title = Model.Title;
-
-            if (bracket.Finalized)
-            {
-                Tourny.AddBracket(BracketTournament(bracket));
-            }
-            else
-            {
-                Tourny.AddBracket(PlayerTournament(bracket));
-            }
+            Tourny.AddBracket(Tourny.RestoreBracket(bracketModel));
         }
 
-        private IBracket BracketTournament(BracketModel bracketModel)
+        public void UpdateSeeds(Dictionary<String, int> players, int bracketId)
         {
-            IBracket bracket = null;
-
-            switch ((BracketType)bracketModel.BracketTypeID)
+            foreach (KeyValuePair<String, int> player in players)
             {
-                case DatabaseLib.BracketType.SINGLE:
-                    bracket = new SingleElimBracket(bracketModel);
-                    break;
-                case DatabaseLib.BracketType.DOUBLE:
-                    bracket = new DoubleElimBracket(bracketModel);
-                    break;
-                case DatabaseLib.BracketType.ROUNDROBIN:
-                    bracket = new RoundRobinBracket(bracketModel);
-                    break;
-                case DatabaseLib.BracketType.SWISS:
-                    bracket = new SwissBracket(bracketModel);
-                    break;
-            }
+                TournamentUsersBracketModel user = Model.Brackets.Where(x => x.BracketID == bracketId).Single()
+                    .TournamentUsersBrackets.Where(z => z.TournamentUserID == int.Parse(player.Key)).SingleOrDefault();
+                if (user != null)
+                {
+                    user.Seed = player.Value;
+                    db.UpdateTournamentUsersBracket(user);
+                }
+                else
+                {
+                    user = new TournamentUsersBracketModel()
+                    {
+                        Seed = player.Value,
+                        TournamentUserID = int.Parse(player.Key),
+                        TournamentID = Model.TournamentID,
+                        BracketID = bracketId
+                    };
 
-            return bracket;
+                    db.AddTournamentUsersBracket(user);
+                }
+            }
         }
-
-        private IBracket PlayerTournament(BracketModel bracketModel)
-        {
-            IBracket bracket = null;
-            List<IPlayer> players = new List<IPlayer>();
-
-            foreach (TournamentUserModel userModel in Participants)
-            {
-                players.Add(new User(userModel));
-            }
-
-            switch ((BracketType)bracketModel.BracketTypeID)
-            {
-                case DatabaseLib.BracketType.SINGLE:
-                    bracket = new SingleElimBracket(players);
-                    break;
-                case DatabaseLib.BracketType.DOUBLE:
-                    bracket = new DoubleElimBracket(players);
-                    break;
-                case DatabaseLib.BracketType.ROUNDROBIN:
-                    bracket = new RoundRobinBracket(players);
-                    break;
-                case DatabaseLib.BracketType.SWISS:
-                    bracket = new SwissBracket(players);
-                    break;
-            }
-
-            return bracket;
-        }
-
+        
+        #region CheckIn
         public bool isAccountCheckedIn(int accountId)
         {
             TournamentUserModel userModel = Model.TournamentUsers.FirstOrDefault(x => x.AccountID == accountId);
@@ -490,17 +424,7 @@ namespace WebApplication.Models
 
             return db.CheckUserIn(userModel.TournamentUserID) == DbError.SUCCESS;
         }
-
-        public bool isRegistered(int accountId)
-        {
-            return Model.TournamentUsers.Any(x => x.AccountID == accountId);
-        }
-
-        public bool CanEdit()
-        {
-            return !Model.InProgress ? true : false;
-        }
-
+        #endregion
         #region Permissions 
         public Permission TournamentPermission(int accountId)
         {
@@ -641,6 +565,7 @@ namespace WebApplication.Models
                             break;
                     }
                     break;
+                case "remove":
                 case "demote":
                     switch ((Permission)targetAccount.PermissionLevel)
                     {
@@ -724,6 +649,29 @@ namespace WebApplication.Models
             {
                 return false;
             }
+        }
+
+        public bool isRegistered(int accountId)
+        {
+            return Model.TournamentUsers.Any(x => x.AccountID == accountId);
+        }
+
+        public bool CanEdit()
+        {
+            return !Model.InProgress ? true : false;
+        }
+
+        public List<TournamentUserModel> GetParticipants()
+        {
+            return Model.TournamentUsers.Where(x => x.PermissionLevel == (int)Permission.TOURNAMENT_STANDARD).ToList();
+        }
+
+        public int UserSeed(int tournamentUserId, int bracketId)
+        {
+            int seedNum = db.GetTournamentUserSeed(tournamentUserId, bracketId);
+
+            //return Model.Brackets.Where(x => x.BracketID == bracketId).Single().TournamentUsersBrackets.Where(x => x.TournamentUserID == tournamentUserId).Single().Seed;
+            return seedNum;
         }
         #endregion
     }

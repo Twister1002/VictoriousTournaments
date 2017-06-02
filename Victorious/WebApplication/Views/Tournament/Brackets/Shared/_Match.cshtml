@@ -38,12 +38,12 @@
     <div class="TournamentGames">
         <h2>Details</h2>
         <div class="options">
-            <span class="icon icon-cross close"></span>
-            @if (ViewBag.isAdministrator)
+            @if (ViewBag.isAdministrator && ViewBag.inProgress)
             {
-                <span class="icon icon-loop2 reset-match"></span>
                 <span class="icon icon-plus add-game hide"></span>
+                <span class="icon icon-loop2 reset-match"></span>
             }
+            <span class="icon icon-cross close"></span>
         </div>
         <ul class="list-table">
             <li class="list-table-header">
@@ -61,7 +61,9 @@
 
         @if (ViewBag.isAdministrator)
         {
-            <button type="button" class="update-games hide">Update Games</button>
+            <div class="updates">
+                <button type="button" class="update-games hide">Update Games</button>
+            </div>
         }
     </div>
 </div>

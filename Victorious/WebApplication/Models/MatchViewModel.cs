@@ -2,6 +2,7 @@
 using System.Linq;
 using Tournament.Structure;
 using DatabaseLib;
+using System;
 
 namespace WebApplication.Models
 {
@@ -77,18 +78,20 @@ namespace WebApplication.Models
             Challenger = Match.Players[(int)PlayerSlot.Challenger];
             if (Challenger == null)
             {
+                String Name = Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger] == -1 ? "" : "Match " + Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger];
                 Challenger = new User()
                 {
-                    Name = "Match " + Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger]
+                    Name = Name
                 };
             }
 
             Defender = Match.Players[(int)PlayerSlot.Defender];
             if (Defender == null)
             {
+                String Name = Match.PreviousMatchNumbers[(int)PlayerSlot.Defender] == -1 ? "" : "Match " + Match.PreviousMatchNumbers[(int)PlayerSlot.Defender];
                 Defender = new User()
                 {
-                    Name = "Match " + Match.PreviousMatchNumbers[(int)PlayerSlot.Defender]
+                    Name = Name
                 };
             }
         }
