@@ -5,4 +5,9 @@
         $("#Account" + $(this).data("type")).addClass("active").siblings().removeClass("active");
     });
 
+    (function () {
+        if ($(".accountMenu").length == 1) {
+            $(".accountMenu .active").click();
+        }
+    })();
 });
