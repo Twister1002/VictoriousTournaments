@@ -163,6 +163,24 @@ namespace Tournament.Structure.Tests
 
 			Assert.IsTrue(b.Rankings[0].Wins > 0);
 		}
+		[TestMethod]
+		[TestCategory("SwissBracket")]
+		[TestCategory("Swiss CreateBracket")]
+		public void SwissCreateBracket_LimitsMaxRounds()
+		{
+			int maxRounds = 15;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 7; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new SwissBracket(pList, PairingMethod.Slide, 1, maxRounds);
+
+			Assert.IsTrue(b.MaxRounds < maxRounds);
+		}
 		#endregion
 
 		#region Bracket Progression
