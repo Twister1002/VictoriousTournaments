@@ -112,6 +112,7 @@
     <Content Include="App_Data\Tournaments.sql" />
     <Content Include="App_Data\TournamentUsers.sql" />
     <Content Include="Content\fonts\icomoon.svg" />
+    <Content Include="Scripts\Account\index.js" />
     <Content Include="Scripts\scripts.min.js" />
     <Content Include="Scripts\Tournament\Create.js" />
     <Content Include="Scripts\Tournament\Update.js" />
@@ -234,9 +235,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scripts\Account\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\DatabaseLib\DatabaseLib.csproj">
       <Project>{977c6746-ca5d-49c7-b996-357507bc45cb}</Project>
