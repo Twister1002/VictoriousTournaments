@@ -185,10 +185,6 @@ namespace Tournament.Structure
 			GetMatchData(ref _matchNumber, out groupIndex);
 			return Groups[groupIndex].GetMatch(_matchNumber);
 		}
-		protected override Match GetInternalMatch(int _matchNumber)
-		{
-			return (GetMatch(_matchNumber) as Match);
-		}
 		public override void ResetMatches()
 		{
 			foreach (IBracket group in Groups)
@@ -199,10 +195,6 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
-		{
-			UpdateRankings();
-		}
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			UpdateFinishStatus();
@@ -220,6 +212,11 @@ namespace Tournament.Structure
 			}
 			return (new List<MatchModel>());
 		}
+		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
+		{
+			UpdateRankings();
+		}
+
 		protected void UpdateFinishStatus()
 		{
 			this.IsFinished = true;
@@ -232,6 +229,7 @@ namespace Tournament.Structure
 				}
 			}
 		}
+
 		protected override void ResetBracketData()
 		{
 			base.ResetBracketData();
@@ -241,6 +239,11 @@ namespace Tournament.Structure
 				Groups = new List<IBracket>();
 			}
 			Groups.Clear();
+		}
+
+		protected override Match GetInternalMatch(int _matchNumber)
+		{
+			return (GetMatch(_matchNumber) as Match);
 		}
 		protected void GetMatchData(ref int _matchNumber, out int _groupIndex)
 		{

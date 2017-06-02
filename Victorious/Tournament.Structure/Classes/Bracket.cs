@@ -746,33 +746,6 @@ namespace Tournament.Structure
 		{
 			return (GetInternalMatch(_matchNumber) as IMatch);
 		}
-		protected virtual Match GetInternalMatch(int _matchNumber)
-		{
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
-
-			if (null != grandFinal &&
-				grandFinal.MatchNumber == _matchNumber)
-			{
-				return grandFinal;
-			}
-			if (null != Matches &&
-				Matches.ContainsKey(_matchNumber))
-			{
-				return Matches[_matchNumber];
-			}
-			if (null != LowerMatches &&
-				LowerMatches.ContainsKey(_matchNumber))
-			{
-				return LowerMatches[_matchNumber];
-			}
-
-			throw new MatchNotFoundException
-				("Match not found; match number may be invalid.");
-		}
 		public MatchModel GetMatchModel(int _matchNumber)
 		{
 			MatchModel model = GetInternalMatch(_matchNumber).GetModel();
@@ -877,6 +850,33 @@ namespace Tournament.Structure
 			OnMatchesModified(alteredMatches);
 		}
 
+		protected virtual Match GetInternalMatch(int _matchNumber)
+		{
+			if (_matchNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
+			}
+
+			if (null != grandFinal &&
+				grandFinal.MatchNumber == _matchNumber)
+			{
+				return grandFinal;
+			}
+			if (null != Matches &&
+				Matches.ContainsKey(_matchNumber))
+			{
+				return Matches[_matchNumber];
+			}
+			if (null != LowerMatches &&
+				LowerMatches.ContainsKey(_matchNumber))
+			{
+				return LowerMatches[_matchNumber];
+			}
+
+			throw new MatchNotFoundException
+				("Match not found; match number may be invalid.");
+		}
 		protected MatchModel GetMatchModel(IMatch _match)
 		{
 			MatchModel model = (_match as Match).GetModel();
