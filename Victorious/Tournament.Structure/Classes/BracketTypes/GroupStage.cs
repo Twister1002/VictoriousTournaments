@@ -185,6 +185,10 @@ namespace Tournament.Structure
 			GetMatchData(ref _matchNumber, out groupIndex);
 			return Groups[groupIndex].GetMatch(_matchNumber);
 		}
+		protected override Match GetInternalMatch(int _matchNumber)
+		{
+			return (GetMatch(_matchNumber) as Match);
+		}
 		public override void ResetMatches()
 		{
 			foreach (IBracket group in Groups)

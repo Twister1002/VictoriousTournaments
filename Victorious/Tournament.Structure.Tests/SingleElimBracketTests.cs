@@ -593,9 +593,8 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList, 3);
 
-			b.GetMatch(1).SetMaxGames(3);
 			b.AddGame(1, 1, 0, PlayerSlot.Defender);
 			b.RemoveLastGame(1);
 			Assert.AreEqual(0, b.GetMatch(1).Score[(int)PlayerSlot.Defender]);
@@ -612,9 +611,8 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList, 3);
 
-			b.GetMatch(1).SetMaxGames(3);
 			b.AddGame(1, 1, 0, PlayerSlot.Defender);
 			b.RemoveLastGame(1);
 			Assert.AreEqual(0, b.GetMatch(1).Games.Count);
@@ -875,9 +873,8 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList, 3);
 
-			b.GetMatch(1).SetMaxGames(3);
 			b.AddGame(1, 1, 0, PlayerSlot.Defender);
 			b.AddGame(1, 0, 1, PlayerSlot.Challenger);
 			b.ResetMatchScore(1);
@@ -895,9 +892,8 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new SingleElimBracket(pList);
+			IBracket b = new SingleElimBracket(pList, 3);
 
-			b.GetMatch(1).SetMaxGames(3);
 			b.AddGame(1, 1, 0, PlayerSlot.Defender);
 			b.AddGame(1, 0, 1, PlayerSlot.Challenger);
 			b.ResetMatchScore(1);
@@ -994,10 +990,10 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new SingleElimBracket(pList);
+			b.SetMaxGamesForWholeRound(2, 5);
 
 			b.AddGame(1, 1, 0, PlayerSlot.Defender);
 			b.AddGame(2, 1, 0, PlayerSlot.Defender);
-			b.GetMatch(3).SetMaxGames(5);
 			b.AddGame(3, 1, 0, PlayerSlot.Defender);
 			b.AddGame(3, 1, 0, PlayerSlot.Defender);
 			b.AddGame(3, 0, 1, PlayerSlot.Challenger);

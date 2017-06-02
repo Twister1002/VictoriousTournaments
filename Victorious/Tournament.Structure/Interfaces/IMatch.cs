@@ -93,6 +93,9 @@ namespace Tournament.Structure
 		/// <returns>MatchModel-type object</returns>
 		MatchModel GetModel();
 
+		[System.Obsolete("Set Max Games on (NumRounds+1) instead", false)]
+		void SetMaxGames(int _numberOfGames);
+#if false
 		#region Player Methods
 		/// <summary>
 		/// Assigns a Player to this Match.
@@ -230,6 +233,7 @@ namespace Tournament.Structure
 		/// <param name="_number">Number of match to set</param>
 		void SetNextLoserMatchNumber(int _number);
 		#endregion
+#endif
 		#endregion
 	}
 }

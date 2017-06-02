@@ -11,21 +11,7 @@ namespace Tournament.Structure
 	public class DoubleElimBracket : SingleElimBracket
 	{
 		#region Variables & Properties
-		// int Id
-		// BracketType BracketType
-		// bool IsFinalized
-		// bool IsFinished
-		// List<IPlayer> Players
-		// List<IPlayerScore> Rankings
-		// int MaxRounds -- unused
-		// Dictionary<int, IMatch> Matches
-		// int NumberOfRounds
-		// Dictionary<int, IMatch> LowerMatches
-		// int NumberOfLowerRounds
-		// IMatch GrandFinal
-		// int NumberOfMatches
-		// int MatchWinValue -- unused
-		// int MatchTieValue -- unused
+
 		#endregion
 
 		#region Ctors
@@ -57,26 +43,26 @@ namespace Tournament.Structure
 						if (mm.MatchNumber == numOfGrandFinal)
 						{
 							// Case 2: match is grand final:
-							this.GrandFinal = new Match(mm);
+							this.grandFinal = new Match(mm);
 						}
 						else
 						{
 							// Case 3: match is lower bracket:
-							IMatch match = new Match(mm);
+							Match match = new Match(mm);
 							LowerMatches.Add(match.MatchNumber, match);
 							this.NumberOfLowerRounds = Math.Max(NumberOfLowerRounds, match.RoundIndex);
 						}
 					}
 				}
 				this.NumberOfMatches = Matches.Count + LowerMatches.Count;
-				if (null != GrandFinal)
+				if (null != grandFinal)
 				{
 					++NumberOfMatches;
 				}
 			}
 
 			RecalculateRankings();
-			if (null != GrandFinal && GrandFinal.IsFinished)
+			if (null != grandFinal && grandFinal.IsFinished)
 			{
 				this.IsFinished = true;
 			}
@@ -93,7 +79,7 @@ namespace Tournament.Structure
 
 			base.CreateBracket(_gamesPerMatch);
 
-			List<List<IMatch>> roundList = new List<List<IMatch>>();
+			List<List<Match>> roundList = new List<List<Match>>();
 			int totalMatches = CalculateTotalLowerBracketMatches(Players.Count);
 			int numMatches = 0;
 			int r = 0;
@@ -101,14 +87,14 @@ namespace Tournament.Structure
 			// Create the Matches
 			while (numMatches < totalMatches)
 			{
-				roundList.Add(new List<IMatch>());
+				roundList.Add(new List<Match>());
 				for (int i = 0;
 					i < Math.Pow(2, r / 2) && numMatches < totalMatches;
 					++i, ++numMatches)
 				{
 					// Add new matchups per round
 					// (rounds[0] is the final match)
-					IMatch m = new Match();
+					Match m = new Match();
 					m.SetMaxGames(_gamesPerMatch);
 					roundList[r].Add(m);
 				}
@@ -119,7 +105,7 @@ namespace Tournament.Structure
 			int matchNum = 1 + Matches.Count;
 			for (r = roundList.Count - 1; r >= 0; --r)
 			{
-				foreach (IMatch match in roundList[r])
+				foreach (Match match in roundList[r])
 				{
 					match.SetMatchNumber(matchNum++);
 				}
@@ -203,16 +189,16 @@ namespace Tournament.Structure
 				}
 
 				// Create a Grand Final
-				GrandFinal = new Match();
-				GrandFinal.SetMatchNumber(matchNum);
-				GrandFinal.SetMaxGames(_gamesPerMatch);
-				GrandFinal.SetRoundIndex(1);
-				GrandFinal.SetMatchIndex(1);
-				GrandFinal.AddPreviousMatchNumber(Matches.Count);
-				GrandFinal.AddPreviousMatchNumber(roundList[0][0].MatchNumber);
+				grandFinal = new Match();
+				grandFinal.SetMatchNumber(matchNum);
+				grandFinal.SetMaxGames(_gamesPerMatch);
+				grandFinal.SetRoundIndex(1);
+				grandFinal.SetMatchIndex(1);
+				grandFinal.AddPreviousMatchNumber(Matches.Count);
+				grandFinal.AddPreviousMatchNumber(roundList[0][0].MatchNumber);
 				// Connect Final matches to Grand Final
-				roundList[0][0].SetNextMatchNumber(GrandFinal.MatchNumber);
-				Matches[Matches.Count].SetNextMatchNumber(GrandFinal.MatchNumber);
+				roundList[0][0].SetNextMatchNumber(grandFinal.MatchNumber);
+				Matches[Matches.Count].SetNextMatchNumber(grandFinal.MatchNumber);
 
 				// Move new bracket data to member variables (LowerMatches dictionary)
 				NumberOfLowerRounds = roundList.Count;
@@ -247,7 +233,7 @@ namespace Tournament.Structure
 
 			int nextWinnerNumber;
 			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+			Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
 			if (match.IsFinished)
 			{
@@ -259,7 +245,7 @@ namespace Tournament.Structure
 					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
 						? PlayerSlot.Challenger
 						: PlayerSlot.Defender;
-					IMatch nextMatch = GetMatch(nextLoserNumber);
+					Match nextMatch = GetInternalMatch(nextLoserNumber);
 
 					for (int i = 0; i < nextMatch.PreviousMatchNumbers.Length; ++i)
 					{
@@ -281,7 +267,7 @@ namespace Tournament.Structure
 
 			int nextWinnerNumber;
 			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+			Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
 			if (match.WinnerSlot != _formerMatchWinnerSlot)
 			{
@@ -300,7 +286,7 @@ namespace Tournament.Structure
 		{
 			int nextWinnerNumber;
 			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+			Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
 			if (_isAddition)
 			{
@@ -310,7 +296,7 @@ namespace Tournament.Structure
 					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
 						? PlayerSlot.Challenger
 						: PlayerSlot.Defender;
-					int rank = 2; // 2 = GrandFinal loser
+					int rank = 2; // 2 = grand final loser
 					if (null != LowerMatches && LowerMatches.ContainsKey(_matchNumber))
 					{
 						rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
@@ -320,7 +306,7 @@ namespace Tournament.Structure
 						(match.Players[(int)loserSlot].Id,
 						match.Players[(int)loserSlot].Name,
 						rank));
-					if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
+					if (null != grandFinal && grandFinal.MatchNumber == _matchNumber)
 					{
 						Rankings.Add(new PlayerScore
 							(match.Players[(int)(match.WinnerSlot)].Id,
@@ -381,13 +367,13 @@ namespace Tournament.Structure
 				}
 			}
 
-			if (null != GrandFinal && GrandFinal.IsFinished)
+			if (null != grandFinal && grandFinal.IsFinished)
 			{
-				// Add GrandFinal results to Rankings:
-				IPlayer winningPlayer = GrandFinal.Players[(int)GrandFinal.WinnerSlot];
+				// Add grand final results to Rankings:
+				IPlayer winningPlayer = grandFinal.Players[(int)grandFinal.WinnerSlot];
 				Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
-				IPlayer losingPlayer = GrandFinal.Players[
-					(PlayerSlot.Defender == GrandFinal.WinnerSlot)
+				IPlayer losingPlayer = grandFinal.Players[
+					(PlayerSlot.Defender == grandFinal.WinnerSlot)
 					? (int)PlayerSlot.Challenger
 					: (int)PlayerSlot.Defender];
 				Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, 2));
@@ -411,7 +397,7 @@ namespace Tournament.Structure
 
 			int nextWinnerNumber;
 			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+			Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
 			if (match.Players
 				.Where(p => p != null)

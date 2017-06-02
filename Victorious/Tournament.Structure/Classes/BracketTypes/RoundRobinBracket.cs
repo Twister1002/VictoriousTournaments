@@ -11,21 +11,7 @@ namespace Tournament.Structure
 	public class RoundRobinBracket : Bracket
 	{
 		#region Variables & Properties
-		// int Id
-		// BracketType BracketType
-		// bool IsFinalized
-		// bool IsFinished
-		// List<IPlayer> Players
-		// List<IPlayerScore> Rankings
-		// int MaxRounds
-		// Dictionary<int, IMatch> Matches
-		// int NumberOfRounds
-		// Dictionary<int, IMatch> LowerMatches -- unused
-		// int NumberOfLowerRounds -- unused
-		// IMatch GrandFinal -- unused
-		// int NumberOfMatches
-		// int MatchWinValue
-		// int MatchTieValue
+
 		#endregion
 
 		#region Ctors
@@ -169,7 +155,7 @@ namespace Tournament.Structure
 
 				for (int m = 0; m < matchesPerRound; ++m, ++NumberOfMatches)
 				{
-					IMatch match = new Match();
+					Match match = new Match();
 					match.SetMatchNumber(NumberOfMatches + 1);
 					match.SetRoundIndex(NumberOfRounds);
 					match.SetMatchIndex(m + 1);

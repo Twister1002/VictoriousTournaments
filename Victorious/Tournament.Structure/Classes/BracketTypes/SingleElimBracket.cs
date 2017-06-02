@@ -11,21 +11,7 @@ namespace Tournament.Structure
 	public class SingleElimBracket : Bracket
 	{
 		#region Variables & Properties
-		// int Id
-		// BracketType BracketType
-		// bool IsFinalized
-		// bool IsFinished
-		// List<IPlayer> Players
-		// List<IPlayerScore> Rankings
-		// int MaxRounds -- unused
-		// Dictionary<int, IMatch> Matches
-		// int NumberOfRounds
-		// Dictionary<int, IMatch> LowerMatches -- unused
-		// int NumberOfLowerRounds -- unused
-		// IMatch GrandFinal -- unused
-		// int NumberOfMatches
-		// int MatchWinValue -- unused
-		// int MatchTieValue -- unused
+
 		#endregion
 
 		#region Ctors
@@ -98,7 +84,7 @@ namespace Tournament.Structure
 				{
 					if (mm.MatchNumber <= totalUBMatches)
 					{
-						IMatch match = new Match(mm);
+						Match match = new Match(mm);
 						Matches.Add(match.MatchNumber, match);
 						this.NumberOfRounds = Math.Max(NumberOfRounds, match.RoundIndex);
 					}
@@ -140,19 +126,19 @@ namespace Tournament.Structure
 			#region Create the Bracket
 			int totalMatches = Players.Count - 1;
 			int numMatches = 0;
-			List<List<IMatch>> roundList = new List<List<IMatch>>();
+			List<List<Match>> roundList = new List<List<Match>>();
 
 			// Create the Matches
 			for (int r = 0; numMatches < totalMatches; ++r)
 			{
-				roundList.Add(new List<IMatch>());
+				roundList.Add(new List<Match>());
 				for (int i = 0;
 					i < Math.Pow(2, r) && numMatches < totalMatches;
 					++i, ++numMatches)
 				{
 					// Add new matchups per round
 					// (rounds[0] is the final match)
-					IMatch m = new Match();
+					Match m = new Match();
 					m.SetMaxGames(_gamesPerMatch);
 					roundList[r].Add(m);
 				}
@@ -162,7 +148,7 @@ namespace Tournament.Structure
 			int matchNum = 1;
 			for (int r = roundList.Count - 1; r >= 0; --r)
 			{
-				foreach (IMatch match in roundList[r])
+				foreach (Match match in roundList[r])
 				{
 					match.SetMatchNumber(matchNum++);
 				}
@@ -315,14 +301,14 @@ namespace Tournament.Structure
 
 			int nextWinnerNumber;
 			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+			Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
 			if (match.IsFinished)
 			{
 				if (nextWinnerNumber > 0)
 				{
 					// Advance the winning player:
-					IMatch nextMatch = GetMatch(nextWinnerNumber);
+					Match nextMatch = GetInternalMatch(nextWinnerNumber);
 					for (int i = 0; i < nextMatch.PreviousMatchNumbers.Length; ++i)
 					{
 						if (_matchNumber == nextMatch.PreviousMatchNumbers[i])
@@ -344,7 +330,7 @@ namespace Tournament.Structure
 
 			int nextWinnerNumber;
 			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+			Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
 			if (match.WinnerSlot != _formerMatchWinnerSlot)
 			{
@@ -360,7 +346,7 @@ namespace Tournament.Structure
 		{
 			int nextWinnerNumber;
 			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+			Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
 			if (_isAddition)
 			{
@@ -402,7 +388,7 @@ namespace Tournament.Structure
 			}
 			Rankings.Clear();
 
-			foreach (IMatch match in Matches.Values)
+			foreach (Match match in Matches.Values)
 			{
 				if (match.IsFinished)
 				{
@@ -446,7 +432,7 @@ namespace Tournament.Structure
 					("Invalid match number called by recursive method!");
 			}
 
-			IMatch match = GetMatch(_matchNumber);
+			Match match = GetInternalMatch(_matchNumber);
 			if (match.Players
 				.Where(p => p != null)
 				.Any(p => p.Id == _playerId))
@@ -467,16 +453,16 @@ namespace Tournament.Structure
 			//return (alteredMatches.OrderBy(m => m.MatchNumber).ToList());
 		}
 
-		protected IMatch GetMatchData(int _matchNumber, out int _nextMatchNumber, out int _nextLoserMatchNumber)
+		protected Match GetMatchData(int _matchNumber, out int _nextMatchNumber, out int _nextLoserMatchNumber)
 		{
-			IMatch m = GetMatch(_matchNumber);
+			Match m = GetInternalMatch(_matchNumber);
 			_nextMatchNumber = m.NextMatchNumber;
 			_nextLoserMatchNumber = m.NextLoserMatchNumber;
 
 			return m;
 		}
 
-		private void ReassignPlayers(IMatch _currMatch, List<IMatch> _prevRound)
+		private void ReassignPlayers(Match _currMatch, List<Match> _prevRound)
 		{
 			if (null == _currMatch ||
 				null == _prevRound || 0 == _prevRound.Count)
@@ -493,7 +479,7 @@ namespace Tournament.Structure
 					--playersToMove;
 				}
 			}
-			foreach (IMatch match in _prevRound)
+			foreach (Match match in _prevRound)
 			{
 				for (int i = 0; i < _currMatch.PreviousMatchNumbers.Length; ++i)
 				{

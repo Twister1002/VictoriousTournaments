@@ -42,7 +42,7 @@ namespace Tournament.Structure
 				}
 
 				base.CreateBracket(_gamesPerMatch);
-				GrandFinal = null;
+				grandFinal = null;
 				--NumberOfMatches;
 			}
 			#endregion
@@ -121,7 +121,7 @@ namespace Tournament.Structure
 						PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
 							? PlayerSlot.Challenger
 							: PlayerSlot.Defender;
-						GetMatch(nextLoserNumber).AddPlayer
+						GetInternalMatch(nextLoserNumber).AddPlayer
 							(match.Players[(int)loserSlot], PlayerSlot.Defender);
 						alteredMatches.Add(GetMatchModel(nextLoserNumber));
 						// Check lower bracket completion:
