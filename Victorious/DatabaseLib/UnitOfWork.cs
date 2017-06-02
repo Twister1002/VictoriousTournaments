@@ -9,7 +9,7 @@ namespace DatabaseLib
 {
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
-        private VictoriousEntities context = new VictoriousEntities();
+        private VictoriousEntities context;
         IRepository<AccountInviteModel> accountInviteRepo;
         IRepository<AccountModel> accountRepo;
         IRepository<BracketModel> bracketRepo;
@@ -44,6 +44,17 @@ namespace DatabaseLib
             return true;
         }
 
+        public VictoriousEntities Context
+        {
+            get
+            {
+                if (context == null)
+                {
+                    context = new VictoriousEntities();
+                }
+                return context;
+            }
+        }
       
         public IRepository<AccountModel> AccountRepo
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace DatabaseLib.Services
         public TournamentService(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
+            
         }
 
         #region Tournaments
@@ -56,13 +58,66 @@ namespace DatabaseLib.Services
 
         public List<TournamentModel> FindTournaments(Dictionary<string, string> searchParams, int returnCount = 25)
         {
-            List<TournamentModel> tournaments = new List<TournamentModel>();
+           
+
+            using (VictoriousEntities context = new VictoriousEntities())
+            {
+                List<TournamentModel> tournaments = new List<TournamentModel>();
+                try
+                {
+                    List<SqlParameter> sqlparams = new List<SqlParameter>();
+                    string query = string.Empty;
+                    query = "SELECT TOP(" + returnCount + ")* FROM Tournaments WHERE PublicViewing = 1 ";
+                    foreach (KeyValuePair<String, String> data in searchParams)
+                    {
+                        if (query != String.Empty) query += " AND ";
+                        string val = data.Value;
+                        if (data.Key == "TournamentStartDate" || data.Key == "TournamentEndDate" || data.Key == "RegistrationStartDate" ||
+                            data.Key == "RegistrationEndDate" || data.Key == "CreatedOn")
+                        {
+                            val = DateTime.Parse(val).ToShortDateString();
+                            query += "datediff(day," + data.Key + ", " + "@" + data.Key + ") = 0 ";
+
+                            sqlparams.Add(new SqlParameter("@" + data.Key, val));
+
+                        }
+                        else if (data.Key == "Title")
+                        {
+                            query += data.Key + " LIKE @" + data.Key;
+                            sqlparams.Add(new SqlParameter("@" + data.Key, "%" + val + "%"));
+                        }
+                        else
+                        {
+                            query += data.Key + " = @" + data.Key;
+                            sqlparams.Add(new SqlParameter("@" + data.Key, val));
+
+                        }
+                    }
+                    query += " ORDER BY TournamentStartDate ASC";
+
+                    tournaments = context.TournamentModels.SqlQuery(query, sqlparams.ToArray()).ToList();
+                    query = string.Empty;
+
+                    //if (tournaments.Count == 0)
+                    //{
+                    //    query = "SELECT TOP(25)* FROM Tournaments WHERE IsPublic = 1 ORDER BY TournamentStartDate ASC";
+                    //    tournaments = context.TournamentModels.SqlQuery(query).ToList();
+                    //}
 
 
-
-
-            return tournaments;
+                }
+                catch (Exception ex)
+                {
+                    //interfaceException = ex;
+                    //WriteException(ex);
+                    tournaments.Clear();
+                }
+                return tournaments;
+            }
+          
         }
+
+
         #endregion
 
 
