@@ -72,9 +72,9 @@ namespace DatabaseLib.Tests
            
             List<TournamentModel> tournaments = new List<TournamentModel>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            //dict.Add("TournamentStartDate", DateTime.Today.ToString());
-            //dict.Add("Title", "Test Tournament One");
-            //dict.Add("GameTypeID", "1");
+            dict.Add("TournamentStartDate", DateTime.Today.ToString());
+            dict.Add("Title", "Test Tournament One");
+            dict.Add("GameTypeID", "1");
             dict.Add("InProgress", "False");
             var count = 1;
             tournaments = service.FindTournaments(dict, count);

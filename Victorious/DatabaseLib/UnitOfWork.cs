@@ -44,17 +44,7 @@ namespace DatabaseLib
             return true;
         }
 
-        public VictoriousEntities Context
-        {
-            get
-            {
-                if (context == null)
-                {
-                    context = new VictoriousEntities();
-                }
-                return context;
-            }
-        }
+      
       
         public IRepository<AccountModel> AccountRepo
         {

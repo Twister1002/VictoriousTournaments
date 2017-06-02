@@ -21,8 +21,6 @@ namespace DatabaseLib
         IRepository<TournamentInviteModel> TournamentInviteRepo { get; }
         IRepository<TournamentUsersBracketModel> TournamentUsersBracketRepo { get; }
 
-        VictoriousEntities Context { get; }
-
         bool Save();
     }
 }
