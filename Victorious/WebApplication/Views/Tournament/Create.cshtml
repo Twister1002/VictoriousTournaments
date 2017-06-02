@@ -25,16 +25,9 @@
                     @Html.ValidationMessageFor(t => t.GameTypeID)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.BracketType)
-                    @Html.DropDownListFor(t => t.BracketType, new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---")
-                    @Html.ValidationMessageFor(t => t.BracketType)
-                </li>
-                <li>
                     @Html.LabelFor(t => t.PlatformTypeID)
                     @Html.DropDownListFor(t => t.PlatformTypeID, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---")
                     @Html.ValidationMessageFor(t => t.PlatformTypeID)
-                </li>
-                <li>
                 </li>
                 <li>
                     @Html.LabelFor(t => t.PublicViewing)
@@ -48,12 +41,18 @@
                 </li>
             </ul>
         </div>
-        <div class="section form-section bracketInfo swiss rr hide">
-            <h2>Swiss Details</h2>
-            <ul>
-                <li>
+        <div class="section form-section">
+            <h2>Brackets <span class="icon icon-plus"></span></h2>
+            <ul class="brackets"></ul>
+            <ul class="hide bracketOrig">
+                <li class="rounds">
+                    @Html.LabelFor(t => t.BracketTypes)
+                    @Html.DropDownList("BracketData[%n%].BracketType", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---")
+                    @Html.ValidationMessageFor(t => t.BracketTypes)
+                </li>
+                <li class="swiss rr hide">
                     @Html.LabelFor(t => t.NumberOfRounds)
-                    @Html.DropDownListFor(t => t.NumberOfRounds, Enumerable.Range(0, 100).Select(n => new SelectListItem() { Text = n.ToString(), Value = n.ToString() }))
+                    @Html.DropDownList("BracketData[%n%].NumberOfRounds", Enumerable.Range(0, 100).Select(n => new SelectListItem() { Text = n.ToString(), Value = n.ToString() }))
                 </li>
             </ul>
         </div>

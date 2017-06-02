@@ -57,7 +57,9 @@ namespace WebApplication.Models
             this.GameTypes = db.GetAllGameTypes();
             this.PlatformTypes = db.GetAllPlatforms();
             this.PublicViewing = true;
-            SearchedTournaments = new List<TournamentModel>();
+            this.SearchedTournaments = new List<TournamentModel>();
+            this.BracketData = new List<BracketInfo>();
+            this.NumberOfRounds = Enumerable.Range(0, 100).ToList();
         }
 
         public override void ApplyChanges()
@@ -104,10 +106,7 @@ namespace WebApplication.Models
             this.CheckinStartTime = Model.CheckInBegins;
             this.CheckinEndTime = Model.CheckInEnds;
 
-            if (Model.Brackets.Count > 0 && this.BracketType != Model.Brackets.ElementAt(0).BracketTypeID)
-            {
-                this.BracketType = Model.Brackets.ElementAt(0).BracketTypeID;
-            }
+            // Bracket data
         }
 
         public void LoadData(int id)
@@ -126,14 +125,16 @@ namespace WebApplication.Models
             Model.LastEditedByID = sessionId;
             Model.LastEditedOn = DateTime.Now;
 
-            BracketModel bracket = Model.Brackets.ElementAt(0);
-            bracket.BracketTypeID = this.BracketType;
-            bracket.MaxRounds = this.NumberOfRounds;
+            //BracketModel bracket = Model.Brackets.ElementAt(0);
+            //bracket.BracketTypeID = this.BracketType;
+            //bracket.MaxRounds = this.NumberOfRounds;
 
             bool updateTournament = db.UpdateTournament(Model) == DbError.SUCCESS;
-            bool updateBracket = db.UpdateBracket(bracket) == DbError.SUCCESS;
+            //bool updateBracket = db.UpdateBracket(bracket) == DbError.SUCCESS;
 
-            return updateTournament && updateBracket;
+            //return updateTournament && updateBracket;
+
+            return updateTournament;
         }
 
         public bool Create(int sessionId)
@@ -141,14 +142,14 @@ namespace WebApplication.Models
             ApplyChanges();
 
             // Create the bracket
-            BracketModel bracketModel = new BracketModel()
-            {
-                BracketTypeID = this.BracketType,
-                Tournament = Model,
-                MaxRounds = this.NumberOfRounds
-            };
+            //BracketModel bracketModel = new BracketModel()
+            //{
+            //    BracketTypeID = this.BracketType,
+            //    Tournament = Model,
+            //    MaxRounds = this.NumberOfRounds
+            //};
 
-            Model.Brackets.Add(bracketModel);
+            //Model.Brackets.Add(bracketModel);
 
             Model.CreatedOn = DateTime.Now;
             Model.CreatedByID = sessionId;
