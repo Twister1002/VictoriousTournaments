@@ -25,16 +25,18 @@ namespace Tournament.Structure
 		{ get; protected set; }
 		public int MaxRounds
 		{ get; set; }
-		protected Dictionary<int, IMatch> Matches
+		protected Dictionary<int, Match> Matches
 		{ get; set; }
 		public int NumberOfRounds
 		{ get; protected set; }
-		protected Dictionary<int, IMatch> LowerMatches
+		protected Dictionary<int, Match> LowerMatches
 		{ get; set; }
 		public int NumberOfLowerRounds
 		{ get; protected set; }
+		protected Match grandFinal
+		{ get; set; }
 		public IMatch GrandFinal
-		{ get; protected set; }
+		{ get { return (grandFinal as IMatch); } }
 		public int NumberOfMatches
 		{ get; protected set; }
 		protected int MatchWinValue
@@ -118,7 +120,7 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_model");
 			}
 
-			IMatch match = GetMatch(_matchNumber);
+			Match match = GetInternalMatch(_matchNumber);
 			match = new Match(_model);
 		}
 
@@ -129,7 +131,7 @@ namespace Tournament.Structure
 
 			for (int n = 1; n <= NumberOfMatches; ++n)
 			{
-				IMatch match = GetMatch(n);
+				Match match = GetInternalMatch(n);
 				bool affected = false;
 
 				if (match.IsManualWin || match.Games.Count > 0)
@@ -205,7 +207,7 @@ namespace Tournament.Structure
 			}
 
 			List<IPlayer> pList = new List<IPlayer>();
-			
+
 			// Get random rolls for each player
 			// (match rolls -> player-index)
 			Random rng = new Random();
@@ -339,7 +341,7 @@ namespace Tournament.Structure
 				{
 					try
 					{
-						IMatch match = GetMatch(n);
+						Match match = GetInternalMatch(n);
 						match.ReplacePlayer(_player, Players[_index].Id);
 						alteredMatches.Add(GetMatchModel(match));
 					}
@@ -499,7 +501,7 @@ namespace Tournament.Structure
 		#region Match & Game Methods
 		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			IMatch match = GetMatch(_matchNumber);
+			Match match = GetInternalMatch(_matchNumber);
 			MatchModel oldModel = GetMatchModel(match);
 
 			// Add the new Game and update Bracket & Rankings:
@@ -516,7 +518,7 @@ namespace Tournament.Structure
 		}
 		public virtual GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			IMatch match = GetMatch(_matchNumber);
+			Match match = GetInternalMatch(_matchNumber);
 			int gameIndex = match.Games.FindIndex(g => g.GameNumber == _gameNumber);
 			if (gameIndex < 0)
 			{
@@ -579,7 +581,7 @@ namespace Tournament.Structure
 
 		public virtual GameModel RemoveLastGame(int _matchNumber)
 		{
-			IGame lastGame = GetMatch(_matchNumber).Games.LastOrDefault();
+			IGame lastGame = GetInternalMatch(_matchNumber).Games.LastOrDefault();
 			if (null == lastGame)
 			{
 				throw new GameNotFoundException
@@ -589,7 +591,7 @@ namespace Tournament.Structure
 		}
 		public virtual GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
 		{
-			IMatch match = GetMatch(_matchNumber);
+			Match match = GetInternalMatch(_matchNumber);
 			MatchModel oldMatchModel = GetMatchModel(match);
 			PlayerSlot winnerSlot = match.WinnerSlot;
 			List<GameModel> modelList = new List<GameModel>();
@@ -609,7 +611,7 @@ namespace Tournament.Structure
 
 		public virtual void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
 		{
-			IMatch match = GetMatch(_matchNumber);
+			Match match = GetInternalMatch(_matchNumber);
 			MatchModel oldMatchModel = GetMatchModel(match);
 			bool winnerChange = (_winnerSlot != match.WinnerSlot);
 			List<GameModel> modelList = new List<GameModel>();
@@ -650,7 +652,7 @@ namespace Tournament.Structure
 
 		public virtual List<GameModel> ResetMatchScore(int _matchNumber)
 		{
-			IMatch match = GetMatch(_matchNumber);
+			Match match = GetInternalMatch(_matchNumber);
 			PlayerSlot winnerSlot = match.WinnerSlot;
 			MatchModel oldMatchModel = GetMatchModel(match);
 
@@ -716,6 +718,7 @@ namespace Tournament.Structure
 			List<IMatch> ret = Matches.Values
 				.Where(m => m.RoundIndex == _round)
 				.OrderBy(m => m.MatchIndex)
+				.Cast<IMatch>()
 				.ToList();
 			return ret;
 		}
@@ -735,39 +738,17 @@ namespace Tournament.Structure
 			List<IMatch> ret = LowerMatches.Values
 				.Where(m => m.RoundIndex == _round)
 				.OrderBy(m => m.MatchIndex)
+				.Cast<IMatch>()
 				.ToList();
 			return ret;
 		}
 		public virtual IMatch GetMatch(int _matchNumber)
 		{
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
-			
-			if (null != GrandFinal &&
-				GrandFinal.MatchNumber == _matchNumber)
-			{
-				return GrandFinal;
-			}
-			if (null != Matches &&
-				Matches.ContainsKey(_matchNumber))
-			{
-				return Matches[_matchNumber];
-			}
-			if (null != LowerMatches &&
-				LowerMatches.ContainsKey(_matchNumber))
-			{
-				return LowerMatches[_matchNumber];
-			}
-
-			throw new MatchNotFoundException
-				("Match not found; match number may be invalid.");
+			return (GetInternalMatch(_matchNumber) as IMatch);
 		}
 		public MatchModel GetMatchModel(int _matchNumber)
 		{
-			MatchModel model = GetMatch(_matchNumber).GetModel();
+			MatchModel model = GetInternalMatch(_matchNumber).GetModel();
 			model.BracketID = this.Id;
 			return model;
 		}
@@ -781,16 +762,25 @@ namespace Tournament.Structure
 					("Games per match cannot be less than 1!");
 			}
 
-			List<IMatch> round = GetRound(_round);
+			List<IMatch> round = null;
+			if (null != grandFinal && _round == 1 + NumberOfRounds)
+			{
+				round = new List<IMatch>() { grandFinal };
+			}
+			else
+			{
+				round = GetRound(_round);
+			}
+
 			if (round.Any(m => m.IsFinished))
 			{
 				throw new InactiveMatchException
 					("One or more matches in this round is already finished!");
 			}
 
-			foreach (IMatch match in round)
+			foreach (Match match in round)
 			{
-				GetMatch(match.MatchNumber).SetMaxGames(_maxGamesPerMatch);
+				match.SetMaxGames(_maxGamesPerMatch);
 			}
 		}
 		public virtual void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch)
@@ -808,9 +798,9 @@ namespace Tournament.Structure
 					("One or more matches in this round is already finished!");
 			}
 
-			foreach (IMatch match in round)
+			foreach (Match match in round)
 			{
-				GetMatch(match.MatchNumber).SetMaxGames(_maxGamesPerMatch);
+				match.SetMaxGames(_maxGamesPerMatch);
 			}
 		}
 		#endregion
@@ -821,11 +811,11 @@ namespace Tournament.Structure
 		{
 			if (null == Matches)
 			{
-				Matches = new Dictionary<int, IMatch>();
+				Matches = new Dictionary<int, Match>();
 			}
 			if (null == LowerMatches)
 			{
-				LowerMatches = new Dictionary<int, IMatch>();
+				LowerMatches = new Dictionary<int, Match>();
 			}
 			if (null == Rankings)
 			{
@@ -835,7 +825,7 @@ namespace Tournament.Structure
 			IsFinished = false;
 			Matches.Clear();
 			LowerMatches.Clear();
-			GrandFinal = null;
+			grandFinal = null;
 			NumberOfRounds = NumberOfLowerRounds = 0;
 			NumberOfMatches = 0;
 			Rankings.Clear();
@@ -860,9 +850,36 @@ namespace Tournament.Structure
 			OnMatchesModified(alteredMatches);
 		}
 
+		protected virtual Match GetInternalMatch(int _matchNumber)
+		{
+			if (_matchNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Match number cannot be less than 1!");
+			}
+
+			if (null != grandFinal &&
+				grandFinal.MatchNumber == _matchNumber)
+			{
+				return grandFinal;
+			}
+			if (null != Matches &&
+				Matches.ContainsKey(_matchNumber))
+			{
+				return Matches[_matchNumber];
+			}
+			if (null != LowerMatches &&
+				LowerMatches.ContainsKey(_matchNumber))
+			{
+				return LowerMatches[_matchNumber];
+			}
+
+			throw new MatchNotFoundException
+				("Match not found; match number may be invalid.");
+		}
 		protected MatchModel GetMatchModel(IMatch _match)
 		{
-			MatchModel model = _match.GetModel();
+			MatchModel model = (_match as Match).GetModel();
 			model.BracketID = this.Id;
 			return model;
 		}

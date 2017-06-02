@@ -40,21 +40,7 @@ namespace Tournament.Structure
 	public class SwissBracket : RoundRobinBracket
 	{
 		#region Variables & Properties
-		// int Id
-		// BracketType BracketType
-		// bool IsFinalized
-		// bool IsFinished
-		// List<IPlayer> Players
-		// List<IPlayerScore> Rankings
-		// int MaxRounds
-		// Dictionary<int, IMatch> Matches
-		// int NumberOfRounds
-		// Dictionary<int, IMatch> LowerMatches -- unused
-		// int NumberOfLowerRounds -- unused
-		// IMatch GrandFinal -- unused
-		// int NumberOfMatches
-		// int MatchWinValue
-		// int MatchTieValue
+
 		private List<Matchup> Matchups
 		{ get; set; }
 		private List<int> PlayerByes
@@ -222,7 +208,7 @@ namespace Tournament.Structure
 			{
 				for (int m = 1; m <= matchesPerRound; ++m)
 				{
-					IMatch match = new Match();
+					Match match = new Match();
 					match.SetMatchNumber(++NumberOfMatches);
 					match.SetRoundIndex(r);
 					match.SetMatchIndex(m);
@@ -239,7 +225,7 @@ namespace Tournament.Structure
 			NumberOfRounds = 1;
 			for (int m = 0; m < divisionPoint; ++m, ++NumberOfMatches)
 			{
-				IMatch match = new Match();
+				Match match = new Match();
 				match.SetMatchNumber(NumberOfMatches + 1);
 				match.SetRoundIndex(NumberOfRounds);
 				match.SetMatchIndex(m + 1);
@@ -352,10 +338,10 @@ namespace Tournament.Structure
 					// Clean up all the excess stuff:
 					List<MatchModel> deletedMatches = new List<MatchModel>();
 
-					List<IMatch> extraMatches = Matches.Values
+					List<Match> extraMatches = Matches.Values
 						.Where(m => m.RoundIndex > ActiveRound)
 						.ToList();
-					foreach (IMatch match in extraMatches)
+					foreach (Match match in extraMatches)
 					{
 						deletedMatches.Add(GetMatchModel(match));
 						Matches.Remove(match.MatchNumber);
@@ -805,7 +791,7 @@ namespace Tournament.Structure
 			{
 				// Reset all Matches in this round:
 				List<IMatch> nextRound = GetRound(nextRoundIndex);
-				foreach (IMatch match in nextRound)
+				foreach (Match match in nextRound)
 				{
 					if (!(match.Players.Contains(null)) ||
 						match.Games.Count > 0 ||

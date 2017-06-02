@@ -616,8 +616,8 @@ namespace Tournament.Structure.Tests
 			
 			b.AddGame(1, 1, 0, PlayerSlot.Defender);
 			b.AddGame(2, 1, 0, PlayerSlot.Defender);
+			b.SetMaxGamesForWholeLowerRound(1, 3);
 			int mNum = b.GetLowerRound(1)[0].MatchNumber;
-			b.GetMatch(mNum).SetMaxGames(3);
 			b.AddGame(mNum, 1, 0, PlayerSlot.Defender);
 
 			b.RemoveLastGame(mNum);
@@ -741,9 +741,7 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new DoubleElimBracket(pList);
-
-			b.GetMatch(1).SetMaxGames(3);
+			IBracket b = new DoubleElimBracket(pList, 3);
 			b.AddGame(1, 1, 0, PlayerSlot.Defender);
 			b.AddGame(1, 0, 1, PlayerSlot.Challenger);
 
@@ -762,11 +760,10 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new DoubleElimBracket(pList);
+			IBracket b = new DoubleElimBracket(pList, 3);
 
 			for (int n = 1; n < b.NumberOfMatches; ++n)
 			{
-				b.GetMatch(n).SetMaxGames(3);
 				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 				b.AddGame(n, 0, 1, PlayerSlot.Challenger);
 				b.AddGame(n, 1, 0, PlayerSlot.Defender);
@@ -787,11 +784,10 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new DoubleElimBracket(pList);
+			IBracket b = new DoubleElimBracket(pList, 3);
 
 			for (int n = 1; n < b.NumberOfMatches; ++n)
 			{
-				b.GetMatch(n).SetMaxGames(3);
 				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 				b.AddGame(n, 0, 1, PlayerSlot.Challenger);
 				b.AddGame(n, 1, 0, PlayerSlot.Defender);
@@ -812,11 +808,10 @@ namespace Tournament.Structure.Tests
 				moq.Setup(p => p.Id).Returns(i);
 				pList.Add(moq.Object);
 			}
-			IBracket b = new DoubleElimBracket(pList);
+			IBracket b = new DoubleElimBracket(pList, 3);
 
 			for (int n = 1; n <= b.NumberOfMatches; ++n)
 			{
-				b.GetMatch(n).SetMaxGames(3);
 				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 				b.AddGame(n, 0, 1, PlayerSlot.Challenger);
 				b.AddGame(n, 1, 0, PlayerSlot.Defender);
