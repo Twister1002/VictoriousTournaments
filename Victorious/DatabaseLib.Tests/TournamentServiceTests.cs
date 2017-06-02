@@ -176,6 +176,13 @@ namespace DatabaseLib.Tests
             
         }
 
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void GetAllTournamentInvites()
+        {
+
+        }
+
         #endregion
 
 

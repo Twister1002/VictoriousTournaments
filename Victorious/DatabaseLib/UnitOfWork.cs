@@ -44,7 +44,11 @@ namespace DatabaseLib
             return true;
         }
 
-   
+        public void Refresh()
+        {
+            context.Dispose();
+            context = new VictoriousEntities();
+        }
       
         public IRepository<AccountModel> AccountRepo
         {
