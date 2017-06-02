@@ -55,7 +55,7 @@
         Session.Remove("Message");
     }
 
-    @*@if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
+    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
     {
         <div class="message @Model.errorClassNames[(int)Model.error]">
             @Html.Raw(Model.message)
@@ -68,7 +68,7 @@
                 @Model.dbException.InnerException <br />
             }
         </div>
-    }*@
+    }
 
     <div id="content">@RenderBody()</div>
     <footer>@{ Html.RenderPartial("_Footer"); }</footer>
