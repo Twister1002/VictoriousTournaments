@@ -68,7 +68,6 @@ namespace WebApplication.Controllers
         [Route("Ajax/Bracket/MatchReset")]
         public JsonResult Reset(int bracketId, int matchNum)
         {
-            LoadAccount(Session);
             bool status = false;
             String message = "No action taken.";
             object data = new { };

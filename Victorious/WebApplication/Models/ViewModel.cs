@@ -24,10 +24,12 @@ namespace WebApplication.Models
         
         public ViewError error = ViewError.NONE;
 #if DEBUG
+        protected IUnitOfWork work = new UnitOfWork();
         protected DatabaseRepository db = new DatabaseRepository("Debug");
 #elif !DEBUG
         protected DatabaseRepository db = new DatabaseRepository("Production");
 #endif
+        protected abstract void Init();
         public String message { get; set; }
         public Exception dbException { get; set; }
     }

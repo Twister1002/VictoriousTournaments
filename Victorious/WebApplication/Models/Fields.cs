@@ -160,7 +160,7 @@ namespace WebApplication.Models
         public int DefenderScore { get; set; }
     }
 
-    public class TournamentRegistrationFields : ViewModel
+    public class TournamentRegistrationFields
     {
         public String Name { get; set; }
         public int TournamentID { get; set; }

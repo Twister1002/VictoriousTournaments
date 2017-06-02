@@ -17,6 +17,10 @@ namespace WebApplication.Models.Administrator
             GameType = new GameTypeModel();
         }
 
+        protected override void Init()
+        {
+        }
+
         public void ApplyFields()
         {
             GameType.Title = Title;

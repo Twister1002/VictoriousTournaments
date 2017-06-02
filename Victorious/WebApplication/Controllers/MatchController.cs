@@ -11,7 +11,6 @@ namespace WebApplication.Controllers
 {
     public class MatchController : VictoriousController
     {
-
         [Route("Match")]
         public ActionResult Index()
         {
@@ -55,8 +54,6 @@ namespace WebApplication.Controllers
 
             if (games != null)
             {
-
-                LoadAccount(Session);
                 if (account != null)
                 {
                     Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonIds);

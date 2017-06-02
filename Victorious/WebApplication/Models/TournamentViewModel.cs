@@ -4,11 +4,13 @@ using System.Linq;
 using Tournament.Structure;
 using DatabaseLib;
 using WebApplication.Utility;
+using DatabaseLib.Services;
 
 namespace WebApplication.Models
 {
     public class TournamentViewModel : TournamentFields
     {
+        TournamentService service;
         public ITournament Tourny { get; private set; }
         public TournamentModel Model { get; private set; }
         public List<TournamentModel> SearchedTournaments { get; private set; }
@@ -51,8 +53,10 @@ namespace WebApplication.Models
             ProcessTournament();
         }
 
-        public void Init()
+        protected override void Init()
         {
+            service = new TournamentService(work);
+
             this.BracketTypes = db.GetAllBracketTypes();
             this.GameTypes = db.GetAllGameTypes();
             this.PlatformTypes = db.GetAllPlatforms();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Tournament.Structure;
 using WebApplication.Models;
 
@@ -12,13 +13,18 @@ namespace WebApplication.Controllers
         protected AccountViewModel account;
         Dictionary<String, object> jsonResponse;
 
+        protected override void Initialize(RequestContext requestContext)
+        {
+            base.Initialize(requestContext);
+            LoadAccount(requestContext.HttpContext.Session);
+        }
+
         public VictoriousController()
         {
             jsonResponse = new Dictionary<String, object>();
-            account = new AccountViewModel();
         }
 
-        public void LoadAccount(HttpSessionStateBase session)
+        public void LoadAccount(HttpSessionStateBase Session)
         {
             if (Session != null)
             {
@@ -26,6 +32,26 @@ namespace WebApplication.Controllers
                 {
                     account = new AccountViewModel((int)Session["User.UserId"]);
                 }
+                else
+                {
+                    account = new AccountViewModel();
+                }
+            }
+            else
+            {
+                account = null;
+            }
+        }
+
+        public bool IsLoggedIn()
+        {
+            if (account != null && account.AccountId > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
