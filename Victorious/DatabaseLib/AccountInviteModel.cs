@@ -14,6 +14,7 @@ namespace DatabaseLib
     
     public partial class AccountInviteModel
     {
+        public int AccountInviteID { get; set; }
         public string AccountInviteCode { get; set; }
         public string SentToEmail { get; set; }
         public int SentByID { get; set; }
@@ -23,6 +24,6 @@ namespace DatabaseLib
     	
     	partial void OnInit();
     
-        public virtual AccountModel SentBy { get; set; }
+        public virtual AccountModel Account { get; set; }
     }
 }

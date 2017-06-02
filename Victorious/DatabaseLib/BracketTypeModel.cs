@@ -17,6 +17,7 @@ namespace DatabaseLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public BracketTypeModel()
         {
+            this.IsActive = true;
             this.Brackets = new HashSet<BracketModel>();
     		OnInit();
         }
