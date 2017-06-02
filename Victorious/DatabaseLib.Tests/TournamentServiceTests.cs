@@ -265,6 +265,116 @@ namespace DatabaseLib.Tests
         #endregion
 
 
+        #region Matches
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void AddMatch_Save()
+        {
+            int tournamentId = service.GetAllTournaments()[0].TournamentID;
+            MatchModel match = new MatchModel()
+            {
+                BracketID = service.GetAllBracketsInTournament(tournamentId)[0].BracketID,
+                ChallengerID = service.GetAllUsersInTournament(tournamentId)[0].TournamentUserID,
+                DefenderID = service.GetAllUsersInTournament(tournamentId)[1].TournamentUserID,
+                MatchNumber = 1
+            };
+            service.AddMatch(match);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void GetMatch()
+        {
+            MatchModel match = service.GetMatch(1);
+            MatchModel match2 = service.GetAllMatches()[0];
+
+            Assert.AreEqual(match, match2);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void UpdateMatch_Save()
+        {
+            MatchModel match = service.GetAllMatches()[0];
+            match.ChallengerScore = 10;
+            service.UpdateMatch(match);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void DeleteMatch_Save()
+        {
+            service.DeleteMatch(1);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        #endregion
+
+
+        #region Games
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void AddGame_Save()
+        {
+            GameModel game = new GameModel()
+            {
+                MatchID = service.GetAllMatches()[0].MatchID,
+                ChallengerID = service.GetAllMatches()[0].ChallengerID,
+                DefenderID = service.GetAllMatches()[0].DefenderID,
+                GameNumber = 3
+            };
+            service.AddGame(game);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void GetGame()
+        {
+            GameModel game = service.GetGame(1);
+            GameModel game2 = service.GetAllGames()[0];
+
+            Assert.AreEqual(game, game2);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void UpdateGame_Save()
+        {
+            GameModel game = service.GetAllGames()[0];
+            game.ChallengerScore = 10;
+            service.UpdateGame(game);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void DeleteGame_Save()
+        {
+            service.DeleteGame(service.GetAllGames()[0].GameID);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+    
+
+        #endregion
+
+
         #region TournamentUsersBrackets
 
         [TestMethod]
@@ -318,6 +428,7 @@ namespace DatabaseLib.Tests
         #endregion
 
 
+       
 
     }
 

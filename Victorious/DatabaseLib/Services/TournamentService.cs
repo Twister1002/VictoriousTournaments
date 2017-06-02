@@ -74,6 +74,11 @@ namespace DatabaseLib.Services
             return unitOfWork.TournamentUserRepo.GetAll().ToList();
         }
 
+        public List<TournamentUserModel> GetAllUsersInTournament(int tournamentId)
+        {
+            return unitOfWork.TournamentRepo.Get(tournamentId).TournamentUsers.ToList();
+        }
+
         public void UpdateTournamentUser(TournamentUserModel tournamentUserToUpdate)
         {
             unitOfWork.TournamentUserRepo.Update(tournamentUserToUpdate);
@@ -137,6 +142,11 @@ namespace DatabaseLib.Services
             return unitOfWork.BracketRepo.GetAll().ToList();
         }
 
+        public List<BracketModel> GetAllBracketsInTournament(int tournamnetId)
+        {
+            return unitOfWork.TournamentRepo.Get(tournamnetId).Brackets.ToList();
+        }
+
         public void UpdateBracket(BracketModel bracketToUpdate)
         {
             unitOfWork.BracketRepo.Update(bracketToUpdate);
@@ -195,6 +205,11 @@ namespace DatabaseLib.Services
         public List<GameModel> GetAllGames()
         {
             return unitOfWork.GameRepo.GetAll().ToList();
+        }
+
+        public void UpdateGame(GameModel gameToUpdate)
+        {
+            unitOfWork.GameRepo.Update(gameToUpdate);
         }
 
         public void DeleteGame(int gameId)
