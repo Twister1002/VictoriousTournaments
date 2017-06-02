@@ -6,16 +6,22 @@
 
 <div id="Account">
     <div class="accountMenu">
-        <ul>
-            <li>Settings</li>
-            <li>History</li>
-            <li>Tournaments</li>
-            <li>Create Tournament</li>
-            @if (Model.IsAdministrator())
-            {
-                <li>Administration</li>
-            }
-            <li>Logout</li>
-        </ul>
+        <div class="menu" data-type="History">History</div>
+        <div class="menu" data-type="Update">Settings</div>
+        <div  class="menu"data-type="Tournaments">Tournaments</div>
+        <a class="menu" data-type="Loading" href="@Url.Action("Create", "Tournament")">Create Tournament</a>
+        @if (Model.IsAdministrator())
+        {
+            <a class="menu" data-type="Loading" href="@Url.Action("Index", "Administrator")">Administration</a>
+        }
+        
+        <a class="menu" data-type="Loading" href="@Url.Action("Logout", "Account")">Logout</a>
+    </div>
+    <div class="sections">
+        @{ Html.RenderPartial("Sections/Settings", Model); }
+        @{ Html.RenderPartial("Sections/History", Model); }
+        @{ Html.RenderPartial("Sections/Tournaments", Model); }
+        @{ Html.RenderPartial("Sections/Update", Model); }
+        <div id="AccountLoading">Please wait while we redirect you...</div>
     </div>
 </div>

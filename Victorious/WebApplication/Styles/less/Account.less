@@ -1,60 +1,76 @@
 ﻿#Account {
-    .tournaments {
+    position: relative;
+    margin-top: 1em;
+
+    .accountMenu {
         position: relative;
-        vertical-align: top;
+        background-color: @color-primary-1;
 
-        > div {
-            padding: .5em 1em 1em 1em;
-        }
+        > * {
+            text-align: center;
+            display: block;
+            padding: .5em;
 
-        .list-table {
-            .list-table-columns {
-                border-bottom: 1px solid @white;
+            &.active {
+                background-color: @color-secondary-2-0;
+                /*background-color: @color-primary-2;*/
             }
 
-            .list-table-body {
-                ul {
-                    border-bottom: 1px solid @white;
-                    padding: 1em 0em;
+            &:hover:not(.active) {
+                .hover;
+            }
+        }
+    }
+
+    .sections {
+        > div {
+            display: none;
+
+            &.active {
+                display: block;
+            }
+
+            h2 {
+                margin-top: 0em;
+                padding-top: 0em;
+            }
+
+            &#AccountTournaments {
+                ul.list-table {
+                    padding-bottom: 2em;
+                    li.list-table-body {
+                        ul {
+                            padding: .5em 0em;
+                        }
+                    }
                 }
             }
-        }
 
-        .active {
-        }
+            &#AccountHistory {
+            }
 
-        .upcoming {
-        }
+            &#AccountUpdate {
+                .section {
+                    ul {
+                        li {
+                            padding: .5em 0em;
 
-        .create {
-        }
-    }
+                            input {
+                                .placeholder(@white);
+                            }
+                        }
+                    }
+                }
+            }
 
-    .settings {
-        position: relative;
-
-        > div {
-            padding: .5em 1em 1em 1em;
+            &#AccountSettings {
+            }
         }
     }
 }
 
-#AccountLogin {
-
-}
 
 #AccountRegister {
-    .section {
-        ul {
-            li {
-                padding: .5em 0em;
-
-                input {
-                    .placeholder(@white);
-                }
-            }
-        }
-    }
 }
 
 
@@ -75,14 +91,21 @@
 
 @media screen and (min-width: @@b2) {
     #Account {
-        .tournaments {
+        position: relative;
+
+        .accountMenu {
+            position: relative;
             display: inline-block;
-            width: 60%;
+            width: 20%;
+            height: 100%;
+            vertical-align: top;
         }
 
-        .settings {
-            width: 35%;
+        .sections {
+            position: relative;
             display: inline-block;
+            width: 79%;
+            vertical-align: top;
         }
     }
 }
