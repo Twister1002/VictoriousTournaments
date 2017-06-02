@@ -219,14 +219,13 @@ namespace Tournament.Structure
 
 		protected void UpdateFinishStatus()
 		{
-			this.IsFinished = true;
-			foreach (IBracket group in Groups)
+			if (Groups.Any(g => !g.IsFinished))
 			{
-				if (!group.IsFinished)
-				{
-					this.IsFinished = false;
-					return;
-				}
+				this.IsFinished = false;
+			}
+			else
+			{
+				this.IsFinished = true;
 			}
 		}
 

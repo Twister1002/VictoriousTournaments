@@ -40,7 +40,22 @@ namespace Tournament.Structure
 	public class SwissBracket : RoundRobinBracket
 	{
 		#region Variables & Properties
-
+		//public int Id
+		//public BracketType BracketType
+		//public bool IsFinalized
+		//public bool IsFinished
+		//public List<IPlayer> Players
+		//public List<IPlayerScore> Rankings
+		//public int MaxRounds
+		//protected Dictionary<int, Match> Matches
+		//public int NumberOfRounds
+		//protected Dictionary<int, Match> LowerMatches = null
+		//public int NumberOfLowerRounds = 0
+		//protected Match grandFinal = null
+		//public IMatch GrandFinal = null
+		//public int NumberOfMatches
+		//protected int MatchWinValue
+		//protected int MatchTieValue
 		private List<Matchup> Matchups
 		{ get; set; }
 		private List<int> PlayerByes
@@ -260,7 +275,7 @@ namespace Tournament.Structure
 				}
 			}
 		}
-
+#if false
 		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
@@ -297,6 +312,7 @@ namespace Tournament.Structure
 			}
 			return base.ResetMatchScore(_matchNumber);
 		}
+#endif
 		#endregion
 
 		#region Private Methods
