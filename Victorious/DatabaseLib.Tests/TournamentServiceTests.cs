@@ -325,7 +325,7 @@ namespace DatabaseLib.Tests
             {
                 BracketID = service.GetAllBracketsInTournament(tournamentId)[0].BracketID,
                 ChallengerID = service.GetAllUsersInTournament(tournamentId)[0].TournamentUserID,
-                DefenderID = service.GetAllUsersInTournament(tournamentId)[1].TournamentUserID,
+                DefenderID = service.GetAllUsersInTournament(tournamentId)[0].TournamentUserID,
                 MatchNumber = 1
             };
             service.AddMatch(match);
@@ -364,6 +364,15 @@ namespace DatabaseLib.Tests
             var result = unitOfWork.Save();
 
             Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void GetAllMatchesInBracket()
+        {
+            var result = service.GetAllMatchesInBracket(1).Count;
+
+            Assert.AreEqual(1, result);
         }
 
         #endregion

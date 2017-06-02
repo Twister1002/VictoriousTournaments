@@ -14,7 +14,7 @@ namespace DatabaseLib.Services
         public TournamentService(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
-            
+
         }
 
         #region Tournaments
@@ -58,7 +58,7 @@ namespace DatabaseLib.Services
 
         public List<TournamentModel> FindTournaments(Dictionary<string, string> searchParams, int returnCount = 25)
         {
-           
+
 
             using (VictoriousEntities context = new VictoriousEntities())
             {
@@ -114,7 +114,7 @@ namespace DatabaseLib.Services
                 }
                 return tournaments;
             }
-          
+
         }
 
 
@@ -258,6 +258,11 @@ namespace DatabaseLib.Services
         public void DeleteMatch(int matchId)
         {
             unitOfWork.MatchRepo.Delete(matchId);
+        }
+
+        public List<MatchModel> GetAllMatchesInBracket(int bracketId)
+        {
+            return unitOfWork.MatchRepo.GetAll().Where(x => x.BracketID == bracketId).ToList();
         }
 
         #endregion
