@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DatabaseLib.Services;
+using System.Collections.Generic;
 
 namespace DatabaseLib.Tests
 {
@@ -32,7 +33,6 @@ namespace DatabaseLib.Tests
 
             Assert.AreEqual(true, result);
         }
-
 
         [TestMethod]
         [TestCategory("Tournament Service")]
@@ -147,6 +147,13 @@ namespace DatabaseLib.Tests
             Assert.AreEqual(true, result);
         }
 
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void TournamentInviteExists()
+        {
+            
+        }
+
         #endregion
 
 
@@ -154,10 +161,10 @@ namespace DatabaseLib.Tests
 
         [TestMethod]
         [TestCategory("Tournament Service")]
-        public void AddTournamentUser()
+        public void AddTournamentUser_Save()
         {
             TournamentUserModel tournamentUser = NewTournamentUser();
-            tournamentUser.TournamentID = service.GetAllTournaments()[0].TournamentID;
+            tournamentUser.TournamentID = service.GetAllTournaments()[service.GetAllTournaments().Count-1].TournamentID;
             service.AddTournamentUser(tournamentUser);
             var result = unitOfWork.Save();
 
@@ -168,7 +175,7 @@ namespace DatabaseLib.Tests
         {
             TournamentUserModel user = new TournamentUserModel()
             {
-
+                AccountID = 1,
                 Name = "Kelton",
                 //Username = Guid.NewGuid().ToString(),
                 UniformNumber = 1
@@ -203,6 +210,16 @@ namespace DatabaseLib.Tests
         public void DeleteTournamentUser_Save()
         {
             service.DeleteTournamentUser(1);
+            var result = unitOfWork.Save();
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void CheckUserIn_Save()
+        {
+            service.CheckUserIn(1);
             var result = unitOfWork.Save();
 
             Assert.AreEqual(true, result);
@@ -260,6 +277,16 @@ namespace DatabaseLib.Tests
             var result = unitOfWork.Save();
 
             Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void GetAllBracketsInTournament()
+        {
+            List<BracketModel> brackets = new List<BracketModel>();
+            brackets = service.GetAllBracketsInTournament(1);
+
+            Assert.AreEqual(1, brackets.Count);
         }
 
         #endregion

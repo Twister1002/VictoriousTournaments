@@ -75,6 +75,18 @@ namespace DatabaseLib.Services
             return DbError.EXISTS;
         }
 
+        public List<TournamentModel> GetTournamentsForAccount(int accountId)
+        {
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+            List<TournamentUserModel> users = new List<TournamentUserModel>();
+            users = unitOfWork.TournamentUserRepo.GetAll().Where(x => x.AccountID == accountId).ToList();
+            foreach (var user in users)
+            {
+                tournaments.Add(user.Tournament);
+            }
+            return tournaments;
+        }
+
 
         #endregion
 

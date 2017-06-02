@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DatabaseLib.Services;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace DatabaseLib.Tests
 {
@@ -16,6 +18,8 @@ namespace DatabaseLib.Tests
             unitOfWork = new UnitOfWork();
             service = new AccountService(unitOfWork);
         }
+
+        #region Accounts
 
         [TestMethod]
         [TestCategory("Account Service")]
@@ -104,6 +108,20 @@ namespace DatabaseLib.Tests
         }
 
         [TestMethod]
+        public void GetTournamentsForAccount()
+        {
+            List<TournamentModel> accountTournaments = service.GetTournamentsForAccount(1);
+            List<TournamentModel> tournaments = unitOfWork.TournamentRepo.GetAll().ToList();
+            var result = (!tournaments.Except(accountTournaments).Any() && !accountTournaments.Except(tournaments).Any());
+            Assert.AreEqual(true, result);
+        }
+
+        #endregion
+
+
+        #region AccountInvites
+
+        [TestMethod]
         [TestCategory("Account Service")]
         public void AddAccountInvite()
         {
@@ -168,6 +186,7 @@ namespace DatabaseLib.Tests
 
         }
 
+        #endregion
 
     }
 

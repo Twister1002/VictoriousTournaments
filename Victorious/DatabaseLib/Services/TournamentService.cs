@@ -54,6 +54,15 @@ namespace DatabaseLib.Services
             unitOfWork.TournamentRepo.Delete(tournamentId);
         }
 
+        public List<TournamentModel> FindTournaments(Dictionary<string, string> searchParams, int returnCount = 25)
+        {
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+
+
+
+
+            return tournaments;
+        }
         #endregion
 
 
@@ -87,6 +96,14 @@ namespace DatabaseLib.Services
         public void DeleteTournamentUser(int tournamentUserId)
         {
             unitOfWork.TournamentUserRepo.Delete(tournamentUserId);
+        }
+
+        public void CheckUserIn(int tournamentUserId)
+        {
+            TournamentUserModel tournamentUser = unitOfWork.TournamentUserRepo.Get(tournamentUserId);
+            tournamentUser.CheckInTime = DateTime.Now;
+            tournamentUser.IsCheckedIn = true;
+
         }
 
         #endregion
@@ -144,7 +161,8 @@ namespace DatabaseLib.Services
 
         public List<BracketModel> GetAllBracketsInTournament(int tournamnetId)
         {
-            return unitOfWork.TournamentRepo.Get(tournamnetId).Brackets.ToList();
+            TournamentModel tournament = unitOfWork.TournamentRepo.Get(tournamnetId);
+            return tournament.Brackets.ToList();
         }
 
         public void UpdateBracket(BracketModel bracketToUpdate)
@@ -243,7 +261,6 @@ namespace DatabaseLib.Services
             TournamentUsersBracketModel t = GetTournamentUsersBracket(tournamentUserId, bracketId);
             unitOfWork.TournamentUsersBracketRepo.DeleteEntity(t);
         }
-
 
 
         #endregion
