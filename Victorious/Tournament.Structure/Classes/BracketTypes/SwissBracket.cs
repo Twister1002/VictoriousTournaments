@@ -275,44 +275,6 @@ namespace Tournament.Structure
 				}
 			}
 		}
-#if false
-		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
-		{
-			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
-			{
-				throw new BracketException
-					("Cannot affect matches too far back in Swiss brackets!");
-			}
-			return (base.UpdateGame(_matchNumber, _gameNumber, _defenderScore, _challengerScore, _winnerSlot));
-		}
-		public override GameModel RemoveLastGame(int _matchNumber)
-		{
-			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
-			{
-				throw new BracketException
-					("Cannot affect matches too far back in Swiss brackets!");
-			}
-			return base.RemoveLastGame(_matchNumber);
-		}
-		public override GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
-		{
-			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
-			{
-				throw new BracketException
-					("Cannot affect matches too far back in Swiss brackets!");
-			}
-			return base.RemoveGameNumber(_matchNumber, _gameNumber);
-		}
-		public override List<GameModel> ResetMatchScore(int _matchNumber)
-		{
-			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
-			{
-				throw new BracketException
-					("Cannot affect matches too far back in Swiss brackets!");
-			}
-			return base.ResetMatchScore(_matchNumber);
-		}
-#endif
 		#endregion
 
 		#region Private Methods
