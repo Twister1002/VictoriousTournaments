@@ -309,7 +309,7 @@ namespace WebApplication.Models
                             tourny.SetMaxGamesForWholeLowerRound(int.Parse(data.Key), data.Value);
                             break;
                         case "final":
-                            tourny.GrandFinal.SetMaxGames(data.Value);
+                            tourny.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
                             break;
                     }
                 }
