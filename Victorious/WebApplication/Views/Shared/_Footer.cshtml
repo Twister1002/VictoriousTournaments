@@ -4,14 +4,12 @@
         <span class="icon icon-twitter"></span>
     </div>
     <div class="footer_information">
-        <ul>
-            <li>@Html.ActionLink("FAQ", "FAQ", "Home")</li>
-            <li>@Html.ActionLink("Blog", "Blog", "Home")</li>
-            <li>@Html.ActionLink("About", "About", "Home")</li>
-            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-            <li>@Html.ActionLink("Tournaments", "Index", "Tournament")</li>
-            <li>@Html.ActionLink("Tournament Rules", "Rules", "Home")</li>
-        </ul>
+        @Html.ActionLink("FAQ", "FAQ", "Home")
+        @Html.ActionLink("Blog", "Blog", "Home")
+        @Html.ActionLink("About", "About", "Home")
+        @Html.ActionLink("Contact", "Contact", "Home")
+        @Html.ActionLink("Tournaments", "Index", "Tournament")
+        @Html.ActionLink("Tournament Rules", "Rules", "Home")
     </div>
     <div class="footer_subscribe">
         <label>Subscribe to Victorious and receive updates to our platform</label>

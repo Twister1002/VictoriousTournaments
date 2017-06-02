@@ -1,5 +1,6 @@
 ﻿footer {
     padding-top: 1em;
+
     #footer {
         width: 100%;
         text-align: center;
@@ -24,18 +25,12 @@
         .footer_information {
             position: relative;
 
-            ul {
-                li {
-                    padding: .25em;
-                    cursor: pointer;
+            a {
+                display: block;
+                padding: .25em;
 
-                    &:hover {
-                        color: @white;
-                        background-color: @color-primary-4;
-                    }
-                    a {
-                        color: @white;
-                    }
+                &:hover {
+                    .hover;
                 }
             }
 
@@ -56,9 +51,9 @@
     }
 
     @media screen and (min-width: @@b1) {
-        .footer_information {
-            ul {
-                li {
+        #footer {
+            .footer_information {
+                a {
                     display: inline-block;
                 }
             }
