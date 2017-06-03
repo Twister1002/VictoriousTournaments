@@ -99,7 +99,7 @@ namespace Tournament.Structure
 			this.BracketType = _model.BracketType.Type;
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
-			this.MaxRounds = 0;
+			this.MaxRounds = _model.MaxRounds;
 			CreateBracket();
 
 			// Find & update every Match:
@@ -109,7 +109,7 @@ namespace Tournament.Structure
 			}
 
 			// Update the rankings:
-			UpdateRankings();
+			RecalculateRankings();
 			UpdateFinishStatus();
 		}
 		#endregion
@@ -124,9 +124,11 @@ namespace Tournament.Structure
 					("Games Per Match must be positive!");
 			}
 			if (Players.Count < 2 ||
-				NumberOfGroups > (Players.Count / 2) || NumberOfGroups < 2)
+				NumberOfGroups < 2 ||
+				NumberOfGroups > (int)(Players.Count * 0.5))
 			{
-				return;
+				throw new BracketException
+					("Not enough Players per Group!");
 			}
 
 			for (int b = 0; b < NumberOfGroups; ++b)
@@ -143,28 +145,19 @@ namespace Tournament.Structure
 			foreach (IBracket group in Groups)
 			{
 				NumberOfMatches += group.NumberOfMatches;
-				NumberOfRounds = (NumberOfRounds < group.NumberOfRounds)
+				NumberOfRounds = (this.NumberOfRounds < group.NumberOfRounds)
 					? group.NumberOfRounds
 					: this.NumberOfRounds;
 				Rankings.AddRange(group.Rankings);
 			}
-		}
-
-		public override void ResetMatches()
-		{
-			base.ResetMatches();
-			UpdateRankings();
+			Rankings.Sort(SortRankingScores);
 		}
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateRankings()
+		protected override void RecalculateRankings()
 		{
-			Rankings.Clear();
-			foreach (IBracket group in Groups)
-			{
-				Rankings.AddRange(group.Rankings);
-			}
+			base.RecalculateRankings();
 
 			Rankings.Sort(SortRankingScores);
 			for (int i = 0; i < Rankings.Count; ++i)

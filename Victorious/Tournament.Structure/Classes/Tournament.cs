@@ -264,8 +264,9 @@ namespace Tournament.Structure
 					ret = new RoundRobinGroups(_model);
 					break;
 				case (BracketType.GSLGROUP):
-					ret = new GSLGroups(_model);
-					break;
+					throw new NotImplementedException("GSL doesn't work yet!");
+					//ret = new GSLGroups(_model);
+					//break;
 				default:
 					throw new NotImplementedException();
 			}
