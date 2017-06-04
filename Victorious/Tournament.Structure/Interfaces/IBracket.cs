@@ -95,8 +95,6 @@ namespace Tournament.Structure
 		/// <param name="_gamesPerMatch">Max games played each match</param>
 		void CreateBracket(int _gamesPerMatch = 1);
 
-		void RestoreMatch(int _matchNumber, MatchModel _model);
-
 		/// <summary>
 		/// Resets EVERY Match to a pre-play state (no games played).
 		/// </summary>

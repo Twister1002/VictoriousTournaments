@@ -108,27 +108,6 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		public virtual void RestoreMatch(int _matchNumber, MatchModel _model)
-		{
-			//////////////////////////
-			// THIS WON'T WORK!!! FIX REFERENCES!
-			//////////////////////////
-
-
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
-			if (null == _model)
-			{
-				throw new ArgumentNullException("_model");
-			}
-
-			Match match = GetInternalMatch(_matchNumber);
-			match = new Match(_model);
-		}
-
 		public virtual void ResetMatches()
 		{
 			List<MatchModel> alteredMatches = new List<MatchModel>();

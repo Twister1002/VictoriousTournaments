@@ -85,9 +85,10 @@ namespace Tournament.Structure
 
 			CreateBracket();
 			// Find & update every Match:
-			foreach (MatchModel model in _model.Matches)
+			foreach (MatchModel matchModel in _model.Matches)
 			{
-				RestoreMatch(model.MatchNumber, model);
+				GetInternalMatch(matchModel.MatchNumber)
+					.SetFromModel(matchModel);
 			}
 
 			// Update the rankings:

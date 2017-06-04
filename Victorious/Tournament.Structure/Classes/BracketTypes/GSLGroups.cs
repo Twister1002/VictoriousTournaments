@@ -242,9 +242,10 @@ namespace Tournament.Structure
 			this.NumberOfGroups = _model.NumberOfGroups;
 			CreateBracket();
 
-			foreach (MatchModel model in _model.Matches)
+			foreach (MatchModel matchModel in _model.Matches)
 			{
-				RestoreMatch(model.MatchNumber, model);
+				GetInternalMatch(matchModel.MatchNumber)
+					.SetFromModel(matchModel);
 			}
 		}
 		#endregion
