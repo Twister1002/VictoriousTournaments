@@ -49,30 +49,12 @@ namespace Tournament.Structure
 					("_numberOfGroups", "Must have at least two players per group!");
 			}
 
-			Players = new List<IPlayer>();
-			if (_players.Count > 0 && _players[0] is User)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new User(p as User));
-				}
-			}
-			else if (_players.Count > 0 && _players[0] is Team)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new Team(p as Team));
-				}
-			}
-			else
-			{
-				Players = _players;
-			}
-
+			Players = _players;
 			Id = 0;
 			BracketType = BracketType.RRGROUP;
 			NumberOfGroups = _numberOfGroups;
 			MaxRounds = _numberOfRounds;
+
 			CreateBracket(_maxGamesPerMatch);
 		}
 		public RoundRobinGroups()
@@ -92,7 +74,7 @@ namespace Tournament.Structure
 			this.Players = new List<IPlayer>();
 			foreach (TournamentUserModel model in userModels)
 			{
-				Players.Add(new User(model));
+				Players.Add(new Player(model));
 			}
 
 			this.Id = _model.BracketID;
@@ -100,8 +82,8 @@ namespace Tournament.Structure
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
 			this.MaxRounds = _model.MaxRounds;
-			CreateBracket();
 
+			CreateBracket();
 			// Find & update every Match:
 			foreach (MatchModel model in _model.Matches)
 			{

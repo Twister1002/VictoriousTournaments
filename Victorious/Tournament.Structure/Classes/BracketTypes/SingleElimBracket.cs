@@ -37,31 +37,10 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_players");
 			}
 
-			Players = new List<IPlayer>();
-			if (_players.Count > 0)
-			{
-				if (_players[0] is User)
-				{
-					foreach (IPlayer p in _players)
-					{
-						Players.Add(new User(p as User));
-					}
-				}
-				else if (_players[0] is Team)
-				{
-					foreach (IPlayer p in _players)
-					{
-						Players.Add(new Team(p as Team));
-					}
-				}
-				else
-				{
-					Players = _players;
-				}
-			}
-
+			Players = _players;
 			Id = 0;
 			BracketType = BracketType.SINGLE;
+
 			CreateBracket(_maxGamesPerMatch);
 		}
 		public SingleElimBracket()
@@ -86,7 +65,7 @@ namespace Tournament.Structure
 			this.Players = new List<IPlayer>();
 			foreach (TournamentUserModel model in userModels)
 			{
-				Players.Add(new User(model));
+				Players.Add(new Player(model));
 			}
 
 			ResetBracketData();

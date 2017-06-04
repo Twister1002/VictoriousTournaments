@@ -16,6 +16,7 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		int Id { get; }
 		string Name { get; set; }
+		string Email { get; set; }
 		#endregion
 
 		#region Public Methods

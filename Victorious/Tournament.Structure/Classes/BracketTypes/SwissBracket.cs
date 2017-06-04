@@ -74,30 +74,11 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_players");
 			}
 
-			Players = new List<IPlayer>();
-			if (_players.Count > 0 && _players[0] is User)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new User(p as User));
-				}
-			}
-			else if (_players.Count > 0 && _players[0] is Team)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new Team(p as Team));
-				}
-			}
-			else
-			{
-				Players = _players;
-			}
-
+			Players = _players;
 			Id = 0;
 			BracketType = BracketType.SWISS;
 			PairingMethod = _pairing;
-			ActiveRound = 0;
+
 			MaxRounds = _numberOfRounds;
 			if (Players.Count > 8 && MaxRounds > (int)(Players.Count * 0.5))
 			{
@@ -282,6 +263,7 @@ namespace Tournament.Structure
 		{
 			base.ResetBracketData();
 
+			ActiveRound = 0;
 			if (null == Matchups)
 			{
 				Matchups = new List<Matchup>();

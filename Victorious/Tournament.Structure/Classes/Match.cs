@@ -126,9 +126,9 @@ namespace Tournament.Structure
 
 			this.Players = new IPlayer[2];
 			Players[(int)PlayerSlot.Defender] = (null == _model.Defender)
-				? null : new User(_model.Defender);
+				? null : new Player(_model.Defender);
 			Players[(int)PlayerSlot.Challenger] = (null == _model.Challenger)
-				? null : new User(_model.Challenger);
+				? null : new Player(_model.Challenger);
 			this.IsReady = (null == Players[0] || null == Players[1])
 				? false : true;
 
