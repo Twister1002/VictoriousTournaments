@@ -75,7 +75,6 @@ namespace Tournament.Structure
 				Players = new List<IPlayer>();
 			}
 
-			Players.Clear();
 			Players = _players;
 			foreach (IBracket bracket in Brackets)
 			{
@@ -104,6 +103,7 @@ namespace Tournament.Structure
 				? _numberOfPlayers
 				: Brackets[_initialBracketIndex].Rankings.Count;
 			List<IPlayer> pList = new List<IPlayer>();
+			pList.Capacity = maxPlayers;
 			foreach (IPlayerScore pScore in Brackets[_initialBracketIndex].Rankings)
 			{
 				pList.Add(Brackets[_initialBracketIndex].Players

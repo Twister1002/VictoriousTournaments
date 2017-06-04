@@ -70,7 +70,6 @@ namespace Tournament.Structure
 
 			ResetBracketData();
 			int totalUBMatches = Players.Count - 1;
-
 			this.NumberOfRounds = 0;
 			if (_model.Matches.Count > 0)
 			{

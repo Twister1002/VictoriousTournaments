@@ -110,6 +110,11 @@ namespace Tournament.Structure
 		#region Public Methods
 		public virtual void RestoreMatch(int _matchNumber, MatchModel _model)
 		{
+			//////////////////////////
+			// THIS WON'T WORK!!! FIX REFERENCES!
+			//////////////////////////
+
+
 			if (_matchNumber < 1)
 			{
 				throw new InvalidIndexException
@@ -397,7 +402,6 @@ namespace Tournament.Structure
 			{
 				Players = new List<IPlayer>();
 			}
-
 			Players.Clear();
 			DeleteBracketData();
 		}

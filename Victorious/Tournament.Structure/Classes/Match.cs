@@ -359,7 +359,6 @@ namespace Tournament.Structure
 
 			return AddGame(new Game(_gameModel));
 		}
-
 #if false
 		public GameModel UpdateGame(int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
@@ -400,7 +399,6 @@ namespace Tournament.Structure
 			return GetGameModel(Games[gameIndex]);
 		}
 #endif
-
 		public GameModel RemoveLastGame()
 		{
 			int index = Games.Count - 1;

@@ -82,6 +82,7 @@ namespace Tournament.Structure
 			}
 			this.NumberOfMatches = Matches.Count;
 			this.NumberOfRounds = 0;
+
 			this.IsFinished = true;
 			if (0 == NumberOfMatches)
 			{
