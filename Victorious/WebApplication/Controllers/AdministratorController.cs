@@ -55,7 +55,7 @@ namespace WebApplication.Controllers
                 {
                     status = result,
                     message = "Was able to " + json["function"] + " " + (result ? "successfully" : "unsuccessfully"),
-                    data = gameType.Select().Select(x => new { x.GameTypeID, x.Title }).ToList()
+                    data = gameType.GameTypes.Select(x => new { x.GameTypeID, x.Title }).ToList()
                 };
             }
 
@@ -90,7 +90,7 @@ namespace WebApplication.Controllers
             {
                 status = status,
                 message = message,
-                platforms = viewModel.Select().Select(x => new { x.PlatformID, x.PlatformName }).ToList()
+                platforms = viewModel.platforms.Select(x => new { x.PlatformID, x.PlatformName }).ToList()
             }));
         }
 

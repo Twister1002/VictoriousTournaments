@@ -24,62 +24,69 @@
                 <span class="icon icon-pencil tournament-update"></span>
                 <span class="icon icon-cross tournament-delete"></span>
             }
+            @if (Model.Model.InProgress)
+            {
+                if (Model.IsParticipant(ViewBag.UserId) && ViewBag.UserId != -1 && !Model.isAccountCheckedIn(ViewBag.UserId))
+                {
+                    <button class="checkIn">CheckIn</button>
+                }
+            }
         </div>
         <h3 class="gameTitle">@Model.Model.GameType.Title</h3>
     </div>
-    @for (int i = 0; i < Model.Tourny.Brackets.Count; i++)
-    {
-        var Bracket = new WebApplication.Models.BracketViewModel(Model.Tourny.Brackets[i]);
-        String bracketName = "";
-        String bracketFileName = "";
-
-        <div class="bracket" data-id="@Bracket.Bracket.Id" data-bracketnum="@i">
-            <div class="bracket-info">
-                @switch (Bracket.Bracket.BracketType)
-                {
-                    case DatabaseLib.BracketType.SINGLE:
-                        bracketFileName = "Single";
-                        bracketName = bracketFileName + " Elimination Bracket";
-                        break;
-                    case DatabaseLib.BracketType.DOUBLE:
-                        bracketFileName = "Double";
-                        bracketName = bracketFileName + " Elimination Bracket";
-                        break;
-                    case DatabaseLib.BracketType.ROUNDROBIN:
-                        bracketFileName = "RoundRobin";
-                        bracketName = bracketFileName + " Bracket";
-                        break;
-                    case DatabaseLib.BracketType.SWISS:
-                        bracketFileName = "Swiss";
-                        bracketName = bracketFileName + " Bracket";
-                        break;
-                    default:
-                        bracketName = null;
-                        break;
-                }
-
-                <h3 class="name">@bracketName</h3>
-                <div class="options">
-                    @if (Bracket.Bracket.IsFinalized)
+    <div class="bracketNames">
+        <ul class="list-table">
+            <li class="list-table-body">
+                <ul data-columns="@Model.Tourny.Brackets.Count">
+                    @foreach (var bracket in Model.Tourny.Brackets)
                     {
-                        if (Model.IsParticipant(ViewBag.UserId) && ViewBag.UserId != -1 && !Model.isAccountCheckedIn(ViewBag.UserId))
-                        {
-                            <button class="checkIn">CheckIn</button>
-                        }
+                        <li class="column bracketName" data-bracket="@bracket.Id">@bracket.Id</li>
                     }
-                </div>
-            </div>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    @foreach (var bracket in Model.Tourny.Brackets)
+    {
+        var bracketViewModel = new WebApplication.Models.BracketViewModel(bracket);
+
+        String bracketFileName = "";
+        String bracketName = "";
+        switch (bracket.BracketType)
+        {
+            case DatabaseLib.BracketType.SINGLE:
+                bracketFileName = "Single";
+                bracketName = bracketFileName + " Elimination";
+                break;
+            case DatabaseLib.BracketType.DOUBLE:
+                bracketFileName = "Double";
+                bracketName = bracketFileName + " Elimination";
+                break;
+            case DatabaseLib.BracketType.ROUNDROBIN:
+                bracketFileName = "RoundRobin";
+                bracketName = bracketFileName;
+                break;
+            case DatabaseLib.BracketType.SWISS:
+                bracketFileName = "Swiss";
+                bracketName = bracketFileName;
+                break;
+            default:
+                bracketName = null;
+                break;
+        }
+
+        <div class="bracket" data-id="@bracket.Id">
             <ul class="list-table bracket-data">
                 @{
-                    if (!Bracket.Bracket.IsFinalized && ViewBag.isCreator && Model.GetParticipants().Count >= 4)
+                    if (!bracket.IsFinalized && ViewBag.isCreator && Model.GetParticipants().Count >= 4)
                     {
                         Html.RenderPartial("Administrator/_Finalize");
                     }
 
-                    Html.RenderPartial("Brackets/" + bracketFileName, Bracket, new ViewDataDictionary(ViewData));
+                    Html.RenderPartial("Brackets/" + bracketFileName, bracketViewModel, new ViewDataDictionary(ViewData));
                 }
             </ul>
         </div>
-    }
+                    }
     @{ Html.RenderPartial("Standings", Model, new ViewDataDictionary(ViewData)); }
 </div>

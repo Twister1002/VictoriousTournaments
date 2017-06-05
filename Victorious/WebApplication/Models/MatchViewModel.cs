@@ -24,20 +24,20 @@ namespace WebApplication.Models
         {
             Match = match;
             Model = Match.GetModel();
-
-            Init();
+            LoadPlayers();
         }
 
         public MatchViewModel(MatchModel match)
         {
             Model = match;
-            LoadPlayerObjects();
+            //LoadPlayerObjects();
             Match = new Match(match);
+            LoadPlayers();
         }
 
         public MatchViewModel(int matchId)
         {
-            Model = db.GetMatch(matchId);
+            Model = tournamentService.GetMatch(matchId);
             if (Model != null)
             {
                 Match = new Match(Model);
@@ -46,18 +46,7 @@ namespace WebApplication.Models
             {
                 Match = new Match();
             }
-
-            Init();
-        }
-
-        /// <summary>
-        /// This will reload the model from one of two sources
-        /// </summary>
-        /// <param name="fromDatabase">true: Reloads from database; false: Reloads from IMatch</param>
-        public void ReloadModel(MatchModel model)
-        {
-            Model = model;
-            //Match = new Match(model);
+            LoadPlayers();
         }
 
         // Acquires data from the database if the objects are null
@@ -65,21 +54,28 @@ namespace WebApplication.Models
         {
             if (Model.Challenger == null)
             {
-                Model.Challenger = db.GetTournamentUser(Model.ChallengerID);
+                Model.Challenger = tournamentService.GetTournamentUser(Model.ChallengerID);
             }
             if (Model.Defender == null)
             {
-                Model.Defender = db.GetTournamentUser(Model.DefenderID);
+                Model.Defender = tournamentService.GetTournamentUser(Model.DefenderID);
             }
+
+            LoadPlayers();
         }
 
         protected override void Init()
+        {
+            
+        }
+        
+        private void LoadPlayers()
         {
             Challenger = Match.Players[(int)PlayerSlot.Challenger];
             if (Challenger == null)
             {
                 String Name = Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger] == -1 ? "" : "Match " + Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger];
-                Challenger = new User()
+                Challenger = new Player()
                 {
                     Name = Name
                 };
@@ -89,56 +85,36 @@ namespace WebApplication.Models
             if (Defender == null)
             {
                 String Name = Match.PreviousMatchNumbers[(int)PlayerSlot.Defender] == -1 ? "" : "Match " + Match.PreviousMatchNumbers[(int)PlayerSlot.Defender];
-                Defender = new User()
+                Defender = new Player()
                 {
                     Name = Name
                 };
             }
         }
-        
+
         public bool Update()
         {
-            DbError matchUpdate = db.UpdateMatch(Model);
-            DbError gameUpdate = DbError.NONE;
+            tournamentService.UpdateMatch(Model);
+
             foreach (GameModel game in Model.Games)
             {
                 if (game.GameID == -1)
                 {
-                    gameUpdate = db.AddGame(game);
+                    tournamentService.AddGame(game);
                 }
                 else
                 {
-                    gameUpdate = db.UpdateGame(game);
+                    tournamentService.UpdateGame(game);
                 }
             }
-
-            bool matchResult = matchUpdate == DbError.SUCCESS;
-            bool gameResult = gameUpdate == DbError.SUCCESS || gameUpdate == DbError.NONE;
-            Match = new Match(Model);
-
-            return matchResult && gameResult;
-        }
-
-        public bool DeleteGame(int gameId)
-        {
-            bool gameResult = db.DeleteGame(gameId) == DbError.SUCCESS;
-            bool matchUpdate = Update();
-
-            return matchUpdate && gameResult;
-        }
-
-        public bool CreateGame(GameModel game)
-        {
-            return db.AddGame(game) == DbError.SUCCESS;
-        }
-
-        public void RemoveGames()
-        {
-            List<GameModel> games = Model.Games.ToList();
-
-            foreach (GameModel game in games)
+            if (Save())
             {
-                DeleteGame(game.GameID);
+                Match = new Match(Model);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 

@@ -20,7 +20,7 @@ namespace WebApplication.Models.Administrator
 
         private void Select()
         {
-            Brackets = db.GetAllBracketTypes(false);
+            Brackets = typeService.GetAllBracketTypes();
         }
 
         public bool Update(int bracketTypeId)
@@ -28,10 +28,16 @@ namespace WebApplication.Models.Administrator
             BracketTypeModel model = Brackets.First(y => y.BracketTypeID == bracketTypeId);
             model.IsActive = model.IsActive ? false : true;
 
-            bool updated = db.UpdateBracketType(model) == DbError.SUCCESS;
-
-            Select();
-            return updated; 
+            typeService.UpdateBracketType(model);
+            if (Save())
+            {
+                Select();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

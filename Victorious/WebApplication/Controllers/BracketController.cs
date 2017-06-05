@@ -20,29 +20,29 @@ namespace WebApplication.Controllers
 
         [Route("Ajax/Bracket/Reset")]
         [HttpPost]
-        public JsonResult Reset(int bracketId)
+        public JsonResult Reset(int tournamentId, int bracketId)
         {
             bool status = false;
             String message = "No action taken";
             String redirect = Url.Action("Tournament", "Tournament");
 
-            object jsonResult = new { status = false, message = "No actiont taken" };
-            if (Session["User.UserId"] != null)
+            if (IsLoggedIn())
             {
-                BracketViewModel viewModel = new BracketViewModel(bracketId);
-                if (viewModel.IsCreator((int)Session["User.UserId"]))
+                TournamentViewModel tournamentModel = new TournamentViewModel(tournamentId);
+                //BracketViewModel viewModel = new BracketViewModel(bracketId);
+                if (tournamentModel.IsCreator(account.AccountId))
                 {
-                    viewModel.Bracket.ResetMatches();
+                    tournamentModel.Tourny.Brackets.Where(x => x.Id == bracketId).Single().ResetMatches();
 
                     status = true;
                     message = "Bracket was reset";
-                    redirect = Url.Action("Tournament", "Tournament", new { guid = viewModel.Model.Tournament.TournamentID });
+                    redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentModel.Model.TournamentID });
                 }
                 else
                 {
                     status = false;
                     message = "You do not have permission to do this";
-                    redirect = Url.Action("Tournament", "Tournament", new { guid = viewModel.Model.Tournament.TournamentID });
+                    redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentModel.Model.TournamentID });
                 }
             }
             else
@@ -66,7 +66,7 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Ajax/Bracket/MatchReset")]
-        public JsonResult Reset(int bracketId, int matchNum)
+        public JsonResult Reset(int tournamentId, int bracketId, int matchNum)
         {
             bool status = false;
             String message = "No action taken.";

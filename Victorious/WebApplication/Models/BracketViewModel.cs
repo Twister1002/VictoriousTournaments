@@ -32,32 +32,29 @@ namespace WebApplication.Models
         {
             Bracket = null;
             Model = null;
-            Init();
         }
 
         public BracketViewModel(BracketModel model)
         {
             Model = model;
-            Init();
+            Bracket = null;
         }
 
         public BracketViewModel(IBracket bracket)
         {
             Bracket = bracket;
             Model = null;
-            Init();
         }
 
         public BracketViewModel(int id)
         {
-            Model = db.GetBracket(id);
-            Init();
+            Model = tournamentService.GetBracket(id);
         }
 
         protected override void Init()
         {
             service = new TournamentService(work);
-            if (Model != null || Bracket == null)
+            if (Model != null && Bracket == null)
             {
                 Bracket = new Tournament.Structure.Tournament().RestoreBracket(Model);
             }
@@ -129,7 +126,8 @@ namespace WebApplication.Models
         {
             if (Model != null)
             {
-                return db.UpdateBracket(Model) == DbError.SUCCESS;
+                tournamentService.UpdateBracket(Model);
+                return Save();
             }
 
             return false;
@@ -137,8 +135,8 @@ namespace WebApplication.Models
 
         public bool Update(BracketModel model)
         {
-            //Model = model;
-            return db.UpdateBracket(model) == DbError.SUCCESS;
+            tournamentService.UpdateBracket(model);
+            return Save();
         }
 
         public int TotalRounds()
@@ -401,13 +399,15 @@ namespace WebApplication.Models
         {
             foreach (MatchModel match in args.UpdatedMatches)
             {
-                db.UpdateMatch(match);
+                tournamentService.UpdateMatch(match);
             }
 
             foreach (int games in args.DeletedGameIDs)
             {
-                db.DeleteGame(games);
+                tournamentService.DeleteGame(games);
             }
+
+            Save();
         }
 
         public void OnRoundAdd(object sender, BracketEventArgs args)
@@ -415,8 +415,10 @@ namespace WebApplication.Models
             this.roundsModified = true;
             foreach (MatchModel match in args.UpdatedMatches)
             {
-                db.AddMatch(match);
+                tournamentService.AddMatch(match);
             }
+
+            Save();
         }
         
         public void OnRoundDelete(object sender, BracketEventArgs args)
@@ -424,21 +426,25 @@ namespace WebApplication.Models
             this.roundsModified = true;
             foreach (int games in args.DeletedGameIDs)
             {
-                db.DeleteGame(games);
+                tournamentService.DeleteGame(games);
             }
 
             foreach (MatchModel match in args.UpdatedMatches)
             {
-                db.DeleteMatch(match.MatchID);
+                tournamentService.DeleteMatch(match.MatchID);
             }
+
+            Save();
         }
 
         public void OnGamesDeleted(object sender, BracketEventArgs args)
         {
             foreach (int gameId in args.DeletedGameIDs)
             {
-                db.DeleteGame(gameId);
+                tournamentService.DeleteGame(gameId);
             }
+
+            Save();
         }
 
         #endregion

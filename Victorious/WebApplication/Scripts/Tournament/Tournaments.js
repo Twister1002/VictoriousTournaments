@@ -41,13 +41,15 @@
 
     // Finalize Tournament 
     $(".tournamentFinalizeButton").on("click", function () {
-        var roundData = {};
+        var bracket = $(this).closest(".bracket");
+
         var jsonData = {
-            "tournyVal": $("#Tournament").data("id"),
-            "bracketVal": $(".bracket").data("bracketnum"),
+            "tournamentId": $("#Tournament").data("id"),
+            "bracketId": bracket.data("id"),
+            "roundData": {}
         };
 
-        $.each($(".header-rounds"), function (i, e) {
+        $.each(bracket.find(".header-rounds"), function (i, e) {
             var roundNum = 1;
             
             $.each($(e).find("li"), function (ii, ee) {
@@ -55,10 +57,10 @@
                 var element = $(ee).find(".bestOfMatches");
 
                 if (element.length) {
-                    if (!roundData.hasOwnProperty(type)) {
-                        roundData[type] = {};
+                    if (!jsonData.roundData.hasOwnProperty(type)) {
+                        jsonData.roundData[type] = {};
                     }
-                    roundData[type][roundNum] = element.val();
+                    jsonData.roundData[type][roundNum] = element.val();
                     roundNum++;
                 }
             });
@@ -67,7 +69,7 @@
         $.ajax({
             "url": "/Ajax/Tournament/Finalize",
             "type": "POST",
-            "data": { "jsonData": JSON.stringify(jsonData), "roundData": roundData },
+            "data": jsonData,
             "dataType": "json",
             "success": function (json) {
                 json = JSON.parse(json);
@@ -80,7 +82,7 @@
         });
     });
 
-    $("#Tournament .bracket .options .checkIn").on("click", function () {
+    $("#Tournament .tournament-buttons.options .checkIn").on("click", function () {
         $.ajax({
             "url": "/Ajax/Tournament/CheckIn",
             "type": "post",
@@ -90,7 +92,7 @@
                 json = JSON.parse(json);
 
                 if (json.status) {
-                    $("#Tournament .bracket .options .checkIn").remove();
+                    $("#Tournament .tournament-buttons.options .checkIn").remove();
                 }
 
                 console.log(json.message);
@@ -101,8 +103,18 @@
         });
     });
 
-    // Tournament Information Updating and functions
+    // Tournament Bracket Selections
+    $("#Tournament .bracketNames .bracketName").on("click", function () {
+        $(this).addClass("selected").siblings().removeClass("selected");
+        
+        ShowBracket($(this).data("bracket"));
+    });
 
+    function ShowBracket(bracketId) {
+        $("#Tournament .bracket[data-id='" + bracketId + "']").addClass("selected").siblings().removeClass("selected");
+    }
+
+    // Tournament Information Updating and functions
     // Show the standings
     $("#Tournament  .tournamentData").on("click", function () {
         $(".TournamentGames").removeClass("open");
@@ -313,7 +325,7 @@
     }
 
     function RandomizeSeeds() {
-        var users = $(".TournamentInfo .playerInfo .user input").toArray();
+        var users = $(this).closest(".playerInfo").find(".user input").toArray();
         var random = [];
 
         while (users.length != 0) {
@@ -360,12 +372,10 @@
     }
 
     function ResetBracket() {
-        var bracketId = $(this).closest(".bracketData").data("id");
-
         $.ajax({
             "url": "/Ajax/Bracket/Reset",
             "type": "POST",
-            "data": { "bracketId": bracketId },
+            "data": { "tournamentId": $("#Tournament").data("id"), "bracketId": $(this).closest(".bracketData").data("id") },
             "dataType": "json",
             "success": function (json) {
                 json = JSON.parse(json);
