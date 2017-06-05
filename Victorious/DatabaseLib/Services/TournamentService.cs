@@ -19,7 +19,7 @@ namespace DatabaseLib.Services
 
         #region Tournaments
 
-        public void AddTournament(TournamentModel tournamentToAdd)
+        public void AddTournament(TournamentModel tournament)
         {
             //TournamentInviteModel invite = new TournamentInviteModel()
             //{
@@ -30,7 +30,7 @@ namespace DatabaseLib.Services
             //    DateExpires = tournamentToAdd.RegistrationEndDate
             //};
             //AddTournamentInvite(invite, true);
-            unitOfWork.TournamentRepo.Add(tournamentToAdd);
+            unitOfWork.TournamentRepo.Add(tournament);
             //invite.TournamentID = tournamentToAdd.TournamentID;
             //UpdateTournamentInvite(invite);
 
@@ -60,9 +60,9 @@ namespace DatabaseLib.Services
             }
         }
 
-        public void UpdateTournament(TournamentModel tournamentToUpdate)
+        public void UpdateTournament(TournamentModel tournament)
         {
-            unitOfWork.TournamentRepo.Update(tournamentToUpdate);
+            unitOfWork.TournamentRepo.Update(tournament);
         }
 
         public void DeleteTournament(int tournamentId)
@@ -72,11 +72,11 @@ namespace DatabaseLib.Services
 
         public List<TournamentModel> FindTournaments(Dictionary<string, string> searchParams, int returnCount = 25)
         {
-
+            List<TournamentModel> tournaments = new List<TournamentModel>();
 
             using (VictoriousEntities context = new VictoriousEntities())
             {
-                List<TournamentModel> tournaments = new List<TournamentModel>();
+               
                 try
                 {
                     List<SqlParameter> sqlparams = new List<SqlParameter>();
@@ -126,8 +126,8 @@ namespace DatabaseLib.Services
                     //WriteException(ex);
                     tournaments.Clear();
                 }
-                return tournaments;
             }
+            return tournaments;
 
         }
 
@@ -178,9 +178,9 @@ namespace DatabaseLib.Services
             }
         }
 
-        public void UpdateTournamentUser(TournamentUserModel tournamentUserToUpdate)
+        public void UpdateTournamentUser(TournamentUserModel tournamentUser)
         {
-            unitOfWork.TournamentUserRepo.Update(tournamentUserToUpdate);
+            unitOfWork.TournamentUserRepo.Update(tournamentUser);
         }
 
         public void DeleteTournamentUser(int tournamentUserId)
@@ -209,9 +209,9 @@ namespace DatabaseLib.Services
                 unitOfWork.Save();
         }
 
-        public void AddTournamentInvite(TournamentInviteModel tournamentInviteToAdd)
+        public void AddTournamentInvite(TournamentInviteModel tournamentInvite)
         {
-            unitOfWork.TournamentInviteRepo.Add(tournamentInviteToAdd);
+            unitOfWork.TournamentInviteRepo.Add(tournamentInvite);
         }
 
         public TournamentInviteModel GetTournamentInvite(string tournamentInviteCode)
@@ -238,9 +238,9 @@ namespace DatabaseLib.Services
             }
         }
 
-        public void UpdateTournamentInvite(TournamentInviteModel tournamentInviteToUpdate)
+        public void UpdateTournamentInvite(TournamentInviteModel tournamentInvite)
         {
-            unitOfWork.TournamentInviteRepo.Update(tournamentInviteToUpdate);
+            unitOfWork.TournamentInviteRepo.Update(tournamentInvite);
         }
 
         public void DeleteTournamentInvite(string tournamentInviteCode)
@@ -254,9 +254,9 @@ namespace DatabaseLib.Services
 
         #region Brackets
 
-        public void AddBracket(BracketModel bracketToAdd)
+        public void AddBracket(BracketModel bracket)
         {
-            unitOfWork.BracketRepo.Add(bracketToAdd);
+            unitOfWork.BracketRepo.Add(bracket);
         }
 
         public BracketModel GetBracket(int bracketId)
@@ -296,9 +296,9 @@ namespace DatabaseLib.Services
             }
         }
 
-        public void UpdateBracket(BracketModel bracketToUpdate)
+        public void UpdateBracket(BracketModel bracket)
         {
-            unitOfWork.BracketRepo.Update(bracketToUpdate);
+            unitOfWork.BracketRepo.Update(bracket);
         }
 
         public void DeleteBracket(int bracketId)
@@ -311,9 +311,9 @@ namespace DatabaseLib.Services
 
         #region Matches
 
-        public void AddMatch(MatchModel matchToAdd)
+        public void AddMatch(MatchModel match)
         {
-            unitOfWork.MatchRepo.Add(matchToAdd);
+            unitOfWork.MatchRepo.Add(match);
         }
 
         public MatchModel GetMatch(int matchId)
@@ -340,9 +340,9 @@ namespace DatabaseLib.Services
             }
         }
 
-        public void UpdateMatch(MatchModel matchToUpdate)
+        public void UpdateMatch(MatchModel match)
         {
-            unitOfWork.MatchRepo.Update(matchToUpdate);
+            unitOfWork.MatchRepo.Update(match);
         }
 
         public void DeleteMatch(int matchId)
@@ -367,9 +367,9 @@ namespace DatabaseLib.Services
 
         #region Games
 
-        public void AddGame(GameModel gameToAdd)
+        public void AddGame(GameModel game)
         {
-            unitOfWork.GameRepo.Add(gameToAdd);
+            unitOfWork.GameRepo.Add(game);
         }
 
         public GameModel GetGame(int gameId)
@@ -396,9 +396,9 @@ namespace DatabaseLib.Services
             }
         }
 
-        public void UpdateGame(GameModel gameToUpdate)
+        public void UpdateGame(GameModel game)
         {
-            unitOfWork.GameRepo.Update(gameToUpdate);
+            unitOfWork.GameRepo.Update(game);
         }
 
         public void DeleteGame(int gameId)
@@ -411,9 +411,9 @@ namespace DatabaseLib.Services
 
         #region TournamentUsersBrackets
 
-        public void AddTournamentUsersBracket(TournamentUsersBracketModel tournamentUserBracketToAdd)
+        public void AddTournamentUsersBracket(TournamentUsersBracketModel tournamentUserBracket)
         {
-            unitOfWork.TournamentUsersBracketRepo.Add(tournamentUserBracketToAdd);
+            unitOfWork.TournamentUsersBracketRepo.Add(tournamentUserBracket);
         }
 
         public TournamentUsersBracketModel GetTournamentUsersBracket(int tournamentUserId, int bracketId)
@@ -429,10 +429,10 @@ namespace DatabaseLib.Services
             }
         }
 
-        public void UpdateTournamentUsersBracket(TournamentUsersBracketModel tournamentUserBracketToUpdate)
+        public void UpdateTournamentUsersBracket(TournamentUsersBracketModel tournamentUserBracket)
         {
 
-            unitOfWork.TournamentUsersBracketRepo.Update(tournamentUserBracketToUpdate);
+            unitOfWork.TournamentUsersBracketRepo.Update(tournamentUserBracket);
 
         }
 
