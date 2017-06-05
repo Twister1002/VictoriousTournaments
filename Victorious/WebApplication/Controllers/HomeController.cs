@@ -5,6 +5,7 @@ namespace WebApplication.Controllers
 {
     public class HomeController : VictoriousController
     {
+
         [Route("")]
         public ActionResult Index()
         {

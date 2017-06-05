@@ -21,5 +21,9 @@ namespace WebApplication.Models
         {
             return new BracketTypeViewModel();
         }
+
+        protected override void Init()
+        {
+        }
     }
 }

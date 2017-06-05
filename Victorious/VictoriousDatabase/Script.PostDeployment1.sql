@@ -75,10 +75,36 @@ INSERT Platforms SELECT 'Nintendo Switch'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.Platforms WHERE PlatformName = 'Nintendo Switch')
 SET @count = @count + 1
 
+-- BracketType Inserts
+SET @count = 1
+
+INSERT BracketTypes SELECT	@count, 'Single Elimination', 1, 1
+	WHERE NOT EXISTS (SELECT @count from BracketTypes WHERE TypeName = 'Single Elimination')
+SET @count = @count + 1
+
+INSERT BracketTypes SELECT	@count, 'Double Elimination', 2, 1
+	WHERE NOT EXISTS (SELECT @count from BracketTypes WHERE TypeName = 'Double Elimination')
+SET @count = @count + 1
+
+INSERT BracketTypes SELECT	@count, 'Round Robin', 3, 1
+	WHERE NOT EXISTS (SELECT @count from BracketTypes WHERE TypeName = 'Round Robin')
+SET @count = @count + 1
+
+INSERT BracketTypes SELECT	@count, 'RR Group', 4, 1
+	WHERE NOT EXISTS (SELECT @count from BracketTypes WHERE TypeName = 'RR Group')
+SET @count = @count + 1
+
+INSERT BracketTypes SELECT	@count, 'GSL Group', 5, 1
+	WHERE NOT EXISTS (SELECT @count from BracketTypes WHERE TypeName = 'GSL Group')
+SET @count = @count + 1
+
+INSERT BracketTypes SELECT	@count, 'Swiss', 6, 1
+	WHERE NOT EXISTS (SELECT @count from BracketTypes WHERE TypeName = 'Swiss')
+SET @count = @count + 1
 
 -- Game inserts
+SET @count = 1 
 
-SET @count = 1
 
 INSERT GameTypes SELECT 'League Of Legends'
 	WHERE NOT EXISTS (SELECT @count FROM dbo.GameTypes WHERE Title = 'League Of Legends')

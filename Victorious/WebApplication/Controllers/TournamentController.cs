@@ -10,6 +10,7 @@ namespace WebApplication.Controllers
 {
     public class TournamentController : VictoriousController
     {
+
         [HttpGet]
         [Route("Tournament")]
         public ActionResult Index()
@@ -76,7 +77,6 @@ namespace WebApplication.Controllers
         [Route("Tournament/Update/{tournamentId}")]
         public ActionResult Update(int tournamentId)
         {
-            LoadAccount(Session);
             if (account != null)
             {
                 TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
@@ -111,7 +111,6 @@ namespace WebApplication.Controllers
         [Route("Tournament/{guid}")]
         public ActionResult Tournament(String guid, String inviteCode)
         {
-            LoadAccount(Session);
             int tournamentId = ConvertToInt(guid);
             TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
 
@@ -175,8 +174,6 @@ namespace WebApplication.Controllers
         [Route("Tournament/Create")]
         public ActionResult Create(TournamentViewModel viewModel)
         {
-            LoadAccount(Session);
-
             // Verify the user is logged in first
             if (account == null)
             {
@@ -219,7 +216,6 @@ namespace WebApplication.Controllers
         [Route("Tournament/Update")]
         public ActionResult Update(TournamentViewModel viewModel, int tournamentId)
         {
-            LoadAccount(Session);
             if (account != null)
             {
                 viewModel.LoadData(tournamentId);
@@ -259,8 +255,6 @@ namespace WebApplication.Controllers
         [Route("Tournament/Register")]
         public ActionResult Register(TournamentRegistrationFields userData)
         {
-            LoadAccount(Session);
-
             if (userData.AccountID == account.AccountId)
             {
                 TournamentViewModel viewModel = new TournamentViewModel(userData.TournamentID);
@@ -290,7 +284,6 @@ namespace WebApplication.Controllers
         [Route("Tournament/Deregister")]
         public ActionResult Deregister(TournamentRegistrationFields userData)
         {
-            LoadAccount(Session);
             if (userData.AccountID == account.AccountId)
             {
                 TournamentViewModel viewModel = new TournamentViewModel(userData.TournamentID);
@@ -319,7 +312,6 @@ namespace WebApplication.Controllers
         [Route("Ajax/Tournament/Register")]
         public JsonResult NoAccountRegister(int tournamentId, String name, int bracketId)
         {
-            LoadAccount(Session);
             TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
             bool status = false;
             object data = new { };
@@ -360,7 +352,6 @@ namespace WebApplication.Controllers
         [Route("Ajax/Tournament/CheckIn")]
         public JsonResult CheckIn(int tournamentId, int tournamentUserId = -1)
         {
-            LoadAccount(Session);
             bool status = false;
             bool isCheckedIn = false;
             String message = "No action taken";
@@ -411,7 +402,6 @@ namespace WebApplication.Controllers
         [Route("Ajax/Tournament/Finalize")]
         public JsonResult Finalize(String jsonData, Dictionary<String, Dictionary<String, int>> roundData)
         {
-            LoadAccount(Session);
             Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
             bool status = false;
             String message = "No action was taken";
@@ -508,7 +498,6 @@ namespace WebApplication.Controllers
         [Route("Ajax/Tournament/PermissionChange")]
         public JsonResult PermissionChange(int TournamentId, int targetUser, String action)
         {
-            LoadAccount(Session);
             bool status = false;
             String message = "No action taken";
             object data = new { };
@@ -551,7 +540,6 @@ namespace WebApplication.Controllers
         [Route("Ajax/Tournament/SeedChange")]
         public JsonResult SeedChange(int tournamentId, int bracketId, Dictionary<String, int> players)
         {
-            LoadAccount(Session);
             bool status = false;
             String message = "No action taken";
 

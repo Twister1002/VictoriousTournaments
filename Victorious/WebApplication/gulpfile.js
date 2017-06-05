@@ -1,4 +1,4 @@
-/// <binding BeforeBuild='less, js' Clean='less-clean, js-clean' ProjectOpened='watch-js, watch-less' />
+/// <binding AfterBuild='js' Clean='less-clean, js-clean' ProjectOpened='watch-less' />
 /*
 This file in the main entry point for defining Gulp tasks and using Gulp plugins.
 Click here to learn more. http://go.microsoft.com/fwlink/?LinkId=518007
@@ -65,6 +65,6 @@ gulp.task('watch-less', function () {
     return gulp.watch("Styles/less/**/*.less", ["bundle:css"]);
 });
 
-gulp.task('watch-js', function () {
-    return gulp.watch(config.js, ["js"]);
-});
+//gulp.task('watch-js', function () {
+//    return gulp.watch(config.js, ["js"]);
+//});

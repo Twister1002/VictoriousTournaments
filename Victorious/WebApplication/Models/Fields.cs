@@ -5,6 +5,12 @@ using DatabaseLib;
 
 namespace WebApplication.Models
 {
+    public struct BracketInfo
+    {
+        public int BracketType { get; set; }
+        public int NumberOfRounds { get; set; }
+    }
+
     public abstract class AccountFields : ViewModel
     {
         public int AccountId { get; set; } 
@@ -113,12 +119,11 @@ namespace WebApplication.Models
         public DateTime CheckinEndTime { get; set; }
 
         public List<BracketTypeModel> BracketTypes { get; protected set; }
+        public List<int> NumberOfRounds { get; protected set; }
         public List<GameTypeModel> GameTypes { get; protected set; }
         public List<PlatformModel> PlatformTypes { get; protected set; }
-
-        [Display(Name = "Bracket Type")]
-        [Required(ErrorMessage ="Select a bracket type")]
-        public int BracketType { get; set; }
+        
+        public List<BracketInfo> BracketData { get; set; }
 
         [Display(Name ="Game")]
         [Required(ErrorMessage ="Select a game")]
@@ -133,9 +138,7 @@ namespace WebApplication.Models
         [Display(Name = "Public Registation")]
         public bool PublicRegistration { get; set; }
 
-        [Display(Name = "Number of Rounds")]
-        public int NumberOfRounds { get; set; }
-
+        
         public abstract void ApplyChanges();
         public abstract void SetFields();
     }
@@ -157,7 +160,7 @@ namespace WebApplication.Models
         public int DefenderScore { get; set; }
     }
 
-    public class TournamentRegistrationFields : ViewModel
+    public class TournamentRegistrationFields
     {
         public String Name { get; set; }
         public int TournamentID { get; set; }

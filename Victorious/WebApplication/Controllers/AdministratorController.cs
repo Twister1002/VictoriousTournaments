@@ -15,8 +15,6 @@ namespace WebApplication.Controllers
         [Route("Administrator")]
         public ActionResult Index()
         {
-            LoadAccount(Session);
-
             if (account.IsAdministrator())
             {
                 return View("Index", new AdministratorViewModel());
@@ -31,7 +29,6 @@ namespace WebApplication.Controllers
         [Route("Ajax/Administrator/Games")]
         public JsonResult Games(String jsonData)
         {
-            LoadAccount(Session);
             object jsonReturn = new {
                 status = false,
                 message = "No action was taken"

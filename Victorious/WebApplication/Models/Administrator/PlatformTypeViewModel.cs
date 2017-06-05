@@ -17,6 +17,10 @@ namespace WebApplication.Models.Administrator
             Reload();
         }
 
+        protected override void Init()
+        {
+        }
+
         public void ApplyFields()
         {
             Model.PlatformName = this.Platform;

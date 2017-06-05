@@ -34,8 +34,8 @@ namespace DatabaseLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
         public virtual BracketTypeModel BracketType { get; set; }
-        public virtual TournamentModel Tournament { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MatchModel> Matches { get; set; }
+        public virtual TournamentModel Tournament { get; set; }
     }
 }

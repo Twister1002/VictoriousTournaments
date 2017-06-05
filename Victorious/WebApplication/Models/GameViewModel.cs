@@ -1,15 +1,9 @@
 ﻿using Tournament.Structure;
 using DatabaseLib;
+using System;
 
 namespace WebApplication.Models
 {
-    public struct MatchGame
-    {
-        public int ChallengerScore;
-        public int DefenderScore;
-        public bool isProcessed;
-    }
-
     public class GameViewModel : GameFields
     {
         public GameModel Model { get; private set; }
@@ -31,6 +25,10 @@ namespace WebApplication.Models
         {
             Game = game;
             Model = Game.GetModel();
+        }
+
+        protected override void Init()
+        {
         }
 
         public bool Create()

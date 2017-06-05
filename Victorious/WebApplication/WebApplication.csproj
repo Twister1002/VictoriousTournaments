@@ -112,6 +112,7 @@
     <Content Include="App_Data\Tournaments.sql" />
     <Content Include="App_Data\TournamentUsers.sql" />
     <Content Include="Content\fonts\icomoon.svg" />
+    <Content Include="Scripts\Account\index.js" />
     <Content Include="Scripts\scripts.min.js" />
     <Content Include="Scripts\Tournament\Create.js" />
     <Content Include="Scripts\Tournament\Update.js" />
@@ -190,7 +191,6 @@
     <Content Include="Styles\less\_icons.less" />
     <Content Include="Views\Tournament\Update.cshtml" />
     <Content Include="Views\Tournament\Delete.cshtml" />
-    <Content Include="Views\Account\Update.cshtml" />
     <Content Include="Views\Tournament\Administrator\_Players.cshtml" />
     <Content Include="Styles\less\Tournament\_Tournament.less" />
     <Content Include="Styles\less\Tournament\_Create.less" />
@@ -224,6 +224,10 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Rules.cshtml" />
+    <Content Include="Views\Account\Sections\Update.cshtml" />
+    <Content Include="Views\Account\Sections\Settings.cshtml" />
+    <Content Include="Views\Account\Sections\Tournaments.cshtml" />
+    <Content Include="Views\Account\Sections\History.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -231,9 +235,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scripts\Account\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\DatabaseLib\DatabaseLib.csproj">
       <Project>{977c6746-ca5d-49c7-b996-357507bc45cb}</Project>

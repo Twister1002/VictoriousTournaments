@@ -73,7 +73,7 @@ namespace WebApplication.Models
             }
         }
 
-        private void Init()
+        protected override void Init()
         {
             Challenger = Match.Players[(int)PlayerSlot.Challenger];
             if (Challenger == null)

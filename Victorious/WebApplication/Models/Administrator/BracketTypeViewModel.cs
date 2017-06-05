@@ -14,6 +14,9 @@ namespace WebApplication.Models.Administrator
         {
             Select();
         }
+        protected override void Init()
+        {
+        }
 
         private void Select()
         {

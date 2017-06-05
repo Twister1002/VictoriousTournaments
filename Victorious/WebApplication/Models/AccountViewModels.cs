@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DatabaseLib;
+using DatabaseLib.Services;
 
 namespace WebApplication.Models
 {
@@ -15,28 +16,32 @@ namespace WebApplication.Models
 
     public class AccountViewModel : AccountFields
     {
+        private AccountService service;
         public AccountModel Account { get; private set; }
         public Dictionary<TournamentStatus, List<TournamentModel>> Tournaments { get; private set; }
 
         public AccountViewModel()
         {
+            service = new AccountService(work);
             Account = new AccountModel();
             Init();
         }
 
         public AccountViewModel(int id)
         {
-            Account = db.GetAccount(id);
+            service = new AccountService(work);
+            Account = service.GetAccount(id);
             Init();
         }
 
         public AccountViewModel(AccountModel model)
         {
+            service = new AccountService(work);
             Account = model;
             Init();
         }
 
-        private void Init()
+        protected override void Init()
         {
             SetFields();
 
@@ -46,9 +51,9 @@ namespace WebApplication.Models
             Tournaments[TournamentStatus.UPCOMING] = new List<TournamentModel>();
             Tournaments[TournamentStatus.PAST] = new List<TournamentModel>();
 
-            List<TournamentModel> tournaments = db.GetTournamentsForAccount(Account.AccountID);
+            List<TournamentModel> tournaments = service.GetTournamentsForAccount(Account.AccountID);
 
-            // Filter the list down of tournaments
+            // Sort the tournaments
             foreach (TournamentModel tournament in tournaments)
             {
                 Permission userPermission = (Permission)tournament.TournamentUsers.Single(x => x.AccountID == Account.AccountID).PermissionLevel;
@@ -102,14 +107,16 @@ namespace WebApplication.Models
             ApplyChanges();
             Account.CreatedOn = DateTime.Now;
 
-            bool usernameExists = db.AccountUsernameExists(Username) == DbError.EXISTS;
-            bool emailExists = db.AccountEmailExists(Email) == DbError.SUCCESS;
+            bool usernameExists = service.AccountUsernameExists(Username) == DbError.EXISTS;
+            bool emailExists = service.AccountEmailExists(Email) == DbError.SUCCESS;
             bool passwordsMatch = Password == PasswordVerify;
 
 
             if (!usernameExists && !emailExists && passwordsMatch)
             {
-                return db.AddAccount(Account) == DbError.SUCCESS;
+                service.AddAccount(Account);
+                work.Save();
+                return true;
             }
             else
             {
@@ -120,20 +127,30 @@ namespace WebApplication.Models
         public bool Update()
         {
             ApplyChanges();
+            service.UpdateAccount(Account);
+            work.Save();
 
-            return db.UpdateAccount(Account) == DbError.SUCCESS;
+            return true;
         }
 
         public bool Login()
         {
-            Account = db.GetAccount(Username);
-            if (Account != null && Account.Password == Password)
+            try
             {
-                Account.LastLogin = DateTime.Now;
-                db.UpdateAccount(Account);
-                return true;
+                Account = service.GetAccount(Username);
+                if (Account != null && Account.Password == Password)
+                {
+                    Account.LastLogin = DateTime.Now;
+                    service.UpdateAccount(Account);
+                    work.Save();
+                    return true;
+                }
             }
-
+            catch (Exception e)
+            {
+                this.dbException = e;
+                return false;
+            }
             return false;
         }
 

@@ -31,8 +31,6 @@ namespace DatabaseLib
         public VictoriousEntities(string name) :
            base(name)
         {
-            
-
 
         }
 
@@ -57,10 +55,10 @@ namespace DatabaseLib
 
     public partial class TournamentInviteModel
     {
-        partial void OnInit()
-        {
-            //Tournaments = new Collection<TournamentModel>();
-        }
+        //partial void OnInit()
+        //{
+        //    //Tournaments = new Collection<TournamentModel>();
+        //}
     }
 
     public partial class TournamentModel
