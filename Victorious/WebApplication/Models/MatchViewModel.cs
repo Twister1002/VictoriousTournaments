@@ -75,7 +75,7 @@ namespace WebApplication.Models
             if (Challenger == null)
             {
                 String Name = Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger] == -1 ? "" : "Match " + Match.PreviousMatchNumbers[(int)PlayerSlot.Challenger];
-                Challenger = new User()
+                Challenger = new Player()
                 {
                     Name = Name
                 };
@@ -85,7 +85,7 @@ namespace WebApplication.Models
             if (Defender == null)
             {
                 String Name = Match.PreviousMatchNumbers[(int)PlayerSlot.Defender] == -1 ? "" : "Match " + Match.PreviousMatchNumbers[(int)PlayerSlot.Defender];
-                Defender = new User()
+                Defender = new Player()
                 {
                     Name = Name
                 };
