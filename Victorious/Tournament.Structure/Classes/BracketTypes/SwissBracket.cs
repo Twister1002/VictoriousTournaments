@@ -40,7 +40,22 @@ namespace Tournament.Structure
 	public class SwissBracket : RoundRobinBracket
 	{
 		#region Variables & Properties
-
+		//public int Id
+		//public BracketType BracketType
+		//public bool IsFinalized
+		//public bool IsFinished
+		//public List<IPlayer> Players
+		//public List<IPlayerScore> Rankings
+		//public int MaxRounds
+		//protected Dictionary<int, Match> Matches
+		//public int NumberOfRounds
+		//protected Dictionary<int, Match> LowerMatches = empty
+		//public int NumberOfLowerRounds = 0
+		//protected Match grandFinal = null
+		//public IMatch GrandFinal = null
+		//public int NumberOfMatches
+		//protected int MatchWinValue
+		//protected int MatchTieValue
 		private List<Matchup> Matchups
 		{ get; set; }
 		private List<int> PlayerByes
@@ -59,30 +74,11 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_players");
 			}
 
-			Players = new List<IPlayer>();
-			if (_players.Count > 0 && _players[0] is User)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new User(p as User));
-				}
-			}
-			else if (_players.Count > 0 && _players[0] is Team)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new Team(p as Team));
-				}
-			}
-			else
-			{
-				Players = _players;
-			}
-
+			Players = _players;
 			Id = 0;
 			BracketType = BracketType.SWISS;
 			PairingMethod = _pairing;
-			ActiveRound = 0;
+
 			MaxRounds = _numberOfRounds;
 			if (Players.Count > 8 && MaxRounds > (int)(Players.Count * 0.5))
 			{
@@ -260,43 +256,6 @@ namespace Tournament.Structure
 				}
 			}
 		}
-
-		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
-		{
-			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
-			{
-				throw new BracketException
-					("Cannot affect matches too far back in Swiss brackets!");
-			}
-			return (base.UpdateGame(_matchNumber, _gameNumber, _defenderScore, _challengerScore, _winnerSlot));
-		}
-		public override GameModel RemoveLastGame(int _matchNumber)
-		{
-			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
-			{
-				throw new BracketException
-					("Cannot affect matches too far back in Swiss brackets!");
-			}
-			return base.RemoveLastGame(_matchNumber);
-		}
-		public override GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
-		{
-			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
-			{
-				throw new BracketException
-					("Cannot affect matches too far back in Swiss brackets!");
-			}
-			return base.RemoveGameNumber(_matchNumber, _gameNumber);
-		}
-		public override List<GameModel> ResetMatchScore(int _matchNumber)
-		{
-			if (GetMatch(_matchNumber).RoundIndex < (ActiveRound - 1))
-			{
-				throw new BracketException
-					("Cannot affect matches too far back in Swiss brackets!");
-			}
-			return base.ResetMatchScore(_matchNumber);
-		}
 		#endregion
 
 		#region Private Methods
@@ -304,6 +263,7 @@ namespace Tournament.Structure
 		{
 			base.ResetBracketData();
 
+			ActiveRound = 0;
 			if (null == Matchups)
 			{
 				Matchups = new List<Matchup>();

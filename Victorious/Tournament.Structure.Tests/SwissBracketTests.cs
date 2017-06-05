@@ -331,8 +331,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SwissBracket")]
 		[TestCategory("RemoveLastGame")]
-		[ExpectedException(typeof(BracketException))]
-		public void SwissRemoveLastGame_ThrowsBracketExcep_IfTooManyRoundsAreAfter()
+		public void SwissRemoveLastGame_ClearsAllFutureRounds()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 32; ++i)
@@ -352,13 +351,14 @@ namespace Tournament.Structure.Tests
 			}
 
 			b.RemoveLastGame(1);
-			Assert.AreEqual(1, 2);
+			bool roundTwoHasPlayers = b.GetRound(2)
+				.Any(m => !(m.Players.Contains(null)));
+			Assert.IsFalse(roundTwoHasPlayers);
 		}
 		[TestMethod]
 		[TestCategory("SwissBracket")]
 		[TestCategory("RemoveGameNumber")]
-		[ExpectedException(typeof(BracketException))]
-		public void SwissRemoveGameNumber_ThrowsBracketExcep_IfTooManyRoundsAreAfter()
+		public void SwissRemoveGameNumber_ClearsAllFutureRounds()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 32; ++i)
@@ -379,13 +379,14 @@ namespace Tournament.Structure.Tests
 			}
 
 			b.RemoveGameNumber(1, 1);
-			Assert.AreEqual(1, 2);
+			bool roundTwoHasPlayers = b.GetRound(2)
+				.Any(m => !(m.Players.Contains(null)));
+			Assert.IsFalse(roundTwoHasPlayers);
 		}
 		[TestMethod]
 		[TestCategory("SwissBracket")]
 		[TestCategory("ResetMatchScore")]
-		[ExpectedException(typeof(BracketException))]
-		public void SwissResetMatchScore_ThrowsBracketExcep_IfTooManyRoundsAreAfter()
+		public void SwissResetMatchScore_ClearsAllFutureRounds()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 32; ++i)
@@ -406,7 +407,9 @@ namespace Tournament.Structure.Tests
 			}
 
 			b.ResetMatchScore(1);
-			Assert.AreEqual(1, 2);
+			bool roundTwoHasPlayers = b.GetRound(2)
+				.Any(m => !(m.Players.Contains(null)));
+			Assert.IsFalse(roundTwoHasPlayers);
 		}
 		[TestMethod]
 		[TestCategory("SwissBracket")]

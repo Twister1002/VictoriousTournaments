@@ -11,7 +11,22 @@ namespace Tournament.Structure
 	public class SingleElimBracket : Bracket
 	{
 		#region Variables & Properties
-
+		//public int Id
+		//public BracketType BracketType
+		//public bool IsFinalized
+		//public bool IsFinished
+		//public List<IPlayer> Players
+		//public List<IPlayerScore> Rankings
+		//public int MaxRounds = 0
+		//protected Dictionary<int, Match> Matches
+		//public int NumberOfRounds
+		//protected Dictionary<int, Match> LowerMatches = empty
+		//public int NumberOfLowerRounds = 0
+		//protected Match grandFinal = null
+		//public IMatch GrandFinal = null
+		//public int NumberOfMatches
+		//protected int MatchWinValue = 0
+		//protected int MatchTieValue = 0
 		#endregion
 
 		#region Ctors
@@ -22,31 +37,10 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_players");
 			}
 
-			Players = new List<IPlayer>();
-			if (_players.Count > 0)
-			{
-				if (_players[0] is User)
-				{
-					foreach (IPlayer p in _players)
-					{
-						Players.Add(new User(p as User));
-					}
-				}
-				else if (_players[0] is Team)
-				{
-					foreach (IPlayer p in _players)
-					{
-						Players.Add(new Team(p as Team));
-					}
-				}
-				else
-				{
-					Players = _players;
-				}
-			}
-
+			Players = _players;
 			Id = 0;
 			BracketType = BracketType.SINGLE;
+
 			CreateBracket(_maxGamesPerMatch);
 		}
 		public SingleElimBracket()
@@ -71,12 +65,11 @@ namespace Tournament.Structure
 			this.Players = new List<IPlayer>();
 			foreach (TournamentUserModel model in userModels)
 			{
-				Players.Add(new User(model));
+				Players.Add(new Player(model));
 			}
 
 			ResetBracketData();
 			int totalUBMatches = Players.Count - 1;
-
 			this.NumberOfRounds = 0;
 			if (_model.Matches.Count > 0)
 			{

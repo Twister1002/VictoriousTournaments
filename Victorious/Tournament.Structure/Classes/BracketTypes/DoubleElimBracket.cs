@@ -11,7 +11,22 @@ namespace Tournament.Structure
 	public class DoubleElimBracket : SingleElimBracket
 	{
 		#region Variables & Properties
-
+		//public int Id
+		//public BracketType BracketType
+		//public bool IsFinalized
+		//public bool IsFinished
+		//public List<IPlayer> Players
+		//public List<IPlayerScore> Rankings
+		//public int MaxRounds = 0
+		//protected Dictionary<int, Match> Matches
+		//public int NumberOfRounds
+		//protected Dictionary<int, Match> LowerMatches
+		//public int NumberOfLowerRounds
+		//protected Match grandFinal
+		//public IMatch GrandFinal
+		//public int NumberOfMatches
+		//protected int MatchWinValue = 0
+		//protected int MatchTieValue = 0
 		#endregion
 
 		#region Ctors

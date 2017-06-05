@@ -41,7 +41,7 @@ namespace Tournament.Structure
 			this.Players = new List<IPlayer>();
 			foreach (TournamentUserModel model in _model.TournamentUsers)
 			{
-				Players.Add(new User(model));
+				Players.Add(new Player(model));
 			}
 
 			this.Brackets = new List<IBracket>();
@@ -75,7 +75,6 @@ namespace Tournament.Structure
 				Players = new List<IPlayer>();
 			}
 
-			Players.Clear();
 			Players = _players;
 			foreach (IBracket bracket in Brackets)
 			{
@@ -104,6 +103,7 @@ namespace Tournament.Structure
 				? _numberOfPlayers
 				: Brackets[_initialBracketIndex].Rankings.Count;
 			List<IPlayer> pList = new List<IPlayer>();
+			pList.Capacity = maxPlayers;
 			foreach (IPlayerScore pScore in Brackets[_initialBracketIndex].Rankings)
 			{
 				pList.Add(Brackets[_initialBracketIndex].Players
@@ -264,8 +264,9 @@ namespace Tournament.Structure
 					ret = new RoundRobinGroups(_model);
 					break;
 				case (BracketType.GSLGROUP):
-					ret = new GSLGroups(_model);
-					break;
+					throw new NotImplementedException("GSL doesn't work yet!");
+					//ret = new GSLGroups(_model);
+					//break;
 				default:
 					throw new NotImplementedException();
 			}

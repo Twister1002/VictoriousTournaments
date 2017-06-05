@@ -65,11 +65,9 @@ namespace Tournament.Structure
 			NextMatchNumber = -1;
 			NextLoserMatchNumber = -1;
 		}
+		[System.Obsolete("Copy Ctor is out-of-date: update before using.", true)]
 		public Match(IMatch _match)
 		{
-			throw new NotImplementedException
-				("Copy ctor hasn't been used, so isn't up-to-date.");
-#if false
 			if (null == _match)
 			{
 				throw new ArgumentNullException("_match");
@@ -92,15 +90,7 @@ namespace Tournament.Structure
 			this.PreviousMatchNumbers = new int[2];
 			for (int i = 0; i < 2; ++i)
 			{
-				if (_match.Players[i] is User)
-				{
-					this.Players[i] = new User(_match.Players[i] as User);
-				}
-				else if (_match.Players[i] is Team)
-				{
-					this.Players[i] = new Team(_match.Players[i] as Team);
-				}
-
+				this.Players[i] = _match.Players[i];
 				//this.Score[i] = _match.Score[i];
 				this.PreviousMatchNumbers[i] = _match.PreviousMatchNumbers[i];
 			}
@@ -111,84 +101,10 @@ namespace Tournament.Structure
 				//this.Games.Add(game);
 				this.AddGame(game);
 			}
-#endif
 		}
 		public Match(MatchModel _model)
 		{
-			if (null == _model)
-			{
-				throw new ArgumentNullException("_model");
-			}
-
-			this.Id = _model.MatchID;
-			this.MaxGames = (null == _model.MaxGames)
-				? 1 : (int)(_model.MaxGames);
-
-			this.Players = new IPlayer[2];
-			Players[(int)PlayerSlot.Defender] = (null == _model.Defender)
-				? null : new User(_model.Defender);
-			Players[(int)PlayerSlot.Challenger] = (null == _model.Challenger)
-				? null : new User(_model.Challenger);
-			this.IsReady = (null == Players[0] || null == Players[1])
-				? false : true;
-
-			this.Games = new List<IGame>();
-			this.Score = new int[2] { 0, 0 };
-			this.IsManualWin = false;
-			if (_model.IsManualWin)
-			{
-				PlayerSlot winnerSlot = (_model.WinnerID == _model.DefenderID)
-					? PlayerSlot.Defender : PlayerSlot.Challenger;
-				SetWinner(winnerSlot);
-			}
-
-			foreach (GameModel model in _model.Games.OrderBy(m => m.GameNumber))
-			{
-				AddGame(model);
-			}
-
-			int winsNeeded = (int)(MaxGames * 0.5);
-			winsNeeded = (0 == MaxGames % 2)
-				? winsNeeded : winsNeeded + 1;
-			if (Score[0] > winsNeeded || Score[1] > winsNeeded)
-			{
-				throw new ScoreException
-					("Score cannot be higher than the match allows!");
-			}
-
-			if (!this.IsManualWin)
-			{
-				this.WinnerSlot = PlayerSlot.unspecified;
-				if (Score[(int)PlayerSlot.Defender] == winsNeeded)
-				{
-					this.WinnerSlot = PlayerSlot.Defender;
-				}
-				else if (Score[(int)PlayerSlot.Challenger] == winsNeeded)
-				{
-					this.WinnerSlot = PlayerSlot.Challenger;
-				}
-
-				this.IsFinished = false;
-				if ((PlayerSlot.unspecified != WinnerSlot) ||
-					(Score[0] + Score[1] >= MaxGames))
-				{
-					this.IsFinished = true;
-				}
-			}
-
-			this.RoundIndex = (int)(_model.RoundIndex);
-			this.MatchIndex = (int)(_model.MatchIndex);
-			this.MatchNumber = _model.MatchNumber;
-			this.NextMatchNumber = (int)(_model.NextMatchNumber);
-			this.NextLoserMatchNumber = (int)(_model.NextLoserMatchNumber);
-
-			this.PreviousMatchNumbers = new int[2] { -1, -1 };
-			PreviousMatchNumbers[(int)PlayerSlot.Defender] =
-				(null == _model.PrevDefenderMatchNumber)
-				? -1 : (int)(_model.PrevDefenderMatchNumber);
-			PreviousMatchNumbers[(int)PlayerSlot.Challenger] =
-				(null == _model.PrevChallengerMatchNumber)
-				? -1 : (int)(_model.PrevChallengerMatchNumber);
+			this.SetFromModel(_model);
 		}
 		#endregion
 
@@ -224,6 +140,80 @@ namespace Tournament.Structure
 			}
 
 			return model;
+		}
+		public void SetFromModel(MatchModel _model)
+		{
+			if (null == _model)
+			{
+				throw new ArgumentNullException("_model");
+			}
+
+			this.Id = _model.MatchID;
+			this.MaxGames = _model.MaxGames.GetValueOrDefault();
+
+			this.Players = new IPlayer[2];
+			Players[(int)PlayerSlot.Defender] = (null == _model.Defender)
+				? null : new Player(_model.Defender);
+			Players[(int)PlayerSlot.Challenger] = (null == _model.Challenger)
+				? null : new Player(_model.Challenger);
+			this.IsReady = (null == Players[0] || null == Players[1])
+				? false : true;
+
+			this.Games = new List<IGame>();
+			this.Score = new int[2] { 0, 0 };
+			this.IsManualWin = false;
+			if (_model.IsManualWin)
+			{
+				PlayerSlot winnerSlot = (_model.WinnerID == _model.DefenderID)
+					? PlayerSlot.Defender : PlayerSlot.Challenger;
+				SetWinner(winnerSlot);
+			}
+
+			foreach (GameModel gameModel in _model.Games.OrderBy(m => m.GameNumber))
+			{
+				AddGame(gameModel);
+			}
+
+			int winsNeeded = (int)(MaxGames * 0.5);
+			winsNeeded = (0 == MaxGames % 2)
+				? winsNeeded : winsNeeded + 1;
+			if (Score[0] > winsNeeded || Score[1] > winsNeeded)
+			{
+				throw new ScoreException
+					("Score cannot be higher than the match allows!");
+			}
+
+			if (!this.IsManualWin)
+			{
+				this.WinnerSlot = PlayerSlot.unspecified;
+				if (Score[(int)PlayerSlot.Defender] == winsNeeded)
+				{
+					this.WinnerSlot = PlayerSlot.Defender;
+				}
+				else if (Score[(int)PlayerSlot.Challenger] == winsNeeded)
+				{
+					this.WinnerSlot = PlayerSlot.Challenger;
+				}
+
+				this.IsFinished = false;
+				if ((PlayerSlot.unspecified != WinnerSlot) ||
+					(Score[0] + Score[1] >= MaxGames))
+				{
+					this.IsFinished = true;
+				}
+			}
+
+			this.RoundIndex = _model.RoundIndex.GetValueOrDefault(-1);
+			this.MatchIndex = _model.MatchIndex.GetValueOrDefault(-1);
+			this.MatchNumber = _model.MatchNumber;
+			this.NextMatchNumber = _model.NextMatchNumber.GetValueOrDefault(-1);
+			this.NextLoserMatchNumber = _model.NextLoserMatchNumber.GetValueOrDefault(-1);
+
+			this.PreviousMatchNumbers = new int[2] { -1, -1 };
+			PreviousMatchNumbers[(int)PlayerSlot.Defender] =
+				_model.PrevDefenderMatchNumber.GetValueOrDefault(-1);
+			PreviousMatchNumbers[(int)PlayerSlot.Challenger] =
+				_model.PrevChallengerMatchNumber.GetValueOrDefault(-1);
 		}
 
 		#region Player Methods
@@ -359,7 +349,6 @@ namespace Tournament.Structure
 
 			return AddGame(new Game(_gameModel));
 		}
-
 #if false
 		public GameModel UpdateGame(int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
@@ -400,7 +389,6 @@ namespace Tournament.Structure
 			return GetGameModel(Games[gameIndex]);
 		}
 #endif
-
 		public GameModel RemoveLastGame()
 		{
 			int index = Games.Count - 1;

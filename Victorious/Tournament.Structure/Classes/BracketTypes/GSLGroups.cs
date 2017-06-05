@@ -209,29 +209,11 @@ namespace Tournament.Structure
 					("Must have 4 or 8 players per group!");
 			}
 
-			Players = new List<IPlayer>();
-			if (_players.Count > 0 && _players[0] is User)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new User(p as User));
-				}
-			}
-			else if (_players.Count > 0 && _players[0] is Team)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new Team(p as Team));
-				}
-			}
-			else
-			{
-				Players = _players;
-			}
-
+			Players = _players;
 			Id = 0;
 			BracketType = BracketType.GSLGROUP;
 			NumberOfGroups = _numberOfGroups;
+
 			CreateBracket(_maxGamesPerMatch);
 		}
 		public GSLGroups()
@@ -251,7 +233,7 @@ namespace Tournament.Structure
 			this.Players = new List<IPlayer>();
 			foreach (TournamentUserModel model in userModels)
 			{
-				Players.Add(new User(model));
+				Players.Add(new Player(model));
 			}
 
 			this.Id = _model.BracketID;
@@ -260,9 +242,10 @@ namespace Tournament.Structure
 			this.NumberOfGroups = _model.NumberOfGroups;
 			CreateBracket();
 
-			foreach (MatchModel model in _model.Matches)
+			foreach (MatchModel matchModel in _model.Matches)
 			{
-				RestoreMatch(model.MatchNumber, model);
+				GetInternalMatch(matchModel.MatchNumber)
+					.SetFromModel(matchModel);
 			}
 		}
 		#endregion

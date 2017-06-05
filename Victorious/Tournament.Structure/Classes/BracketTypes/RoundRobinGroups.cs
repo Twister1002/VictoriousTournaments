@@ -11,7 +11,24 @@ namespace Tournament.Structure
 	public class RoundRobinGroups : GroupStage
 	{
 		#region Variables & Properties
-
+		//public int Id
+		//public BracketType BracketType
+		//public bool IsFinalized
+		//public bool IsFinished
+		//public List<IPlayer> Players
+		//public List<IPlayerScore> Rankings
+		//public int MaxRounds
+		//protected Dictionary<int, Match> Matches = empty
+		//public int NumberOfRounds
+		//protected Dictionary<int, Match> LowerMatches = empty
+		//public int NumberOfLowerRounds
+		//protected Match grandFinal = null
+		//public IMatch GrandFinal = null
+		//public int NumberOfMatches
+		//protected int MatchWinValue
+		//protected int MatchTieValue
+		//protected List<IBracket> Groups
+		//public int NumberOfGroups
 		#endregion
 
 		#region Ctors
@@ -32,30 +49,12 @@ namespace Tournament.Structure
 					("_numberOfGroups", "Must have at least two players per group!");
 			}
 
-			Players = new List<IPlayer>();
-			if (_players.Count > 0 && _players[0] is User)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new User(p as User));
-				}
-			}
-			else if (_players.Count > 0 && _players[0] is Team)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new Team(p as Team));
-				}
-			}
-			else
-			{
-				Players = _players;
-			}
-
+			Players = _players;
 			Id = 0;
 			BracketType = BracketType.RRGROUP;
 			NumberOfGroups = _numberOfGroups;
 			MaxRounds = _numberOfRounds;
+
 			CreateBracket(_maxGamesPerMatch);
 		}
 		public RoundRobinGroups()
@@ -75,33 +74,26 @@ namespace Tournament.Structure
 			this.Players = new List<IPlayer>();
 			foreach (TournamentUserModel model in userModels)
 			{
-				Players.Add(new User(model));
+				Players.Add(new Player(model));
 			}
 
 			this.Id = _model.BracketID;
 			this.BracketType = _model.BracketType.Type;
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
-			this.MaxRounds = 0;
-			CreateBracket();
+			this.MaxRounds = _model.MaxRounds;
 
+			CreateBracket();
 			// Find & update every Match:
-			foreach (MatchModel model in _model.Matches)
+			foreach (MatchModel matchModel in _model.Matches)
 			{
-				RestoreMatch(model.MatchNumber, model);
+				GetInternalMatch(matchModel.MatchNumber)
+					.SetFromModel(matchModel);
 			}
 
 			// Update the rankings:
-			UpdateRankings();
-			this.IsFinished = true;
-			foreach (IBracket group in Groups)
-			{
-				if (!group.IsFinished)
-				{
-					this.IsFinished = false;
-					break;
-				}
-			}
+			RecalculateRankings();
+			UpdateFinishStatus();
 		}
 		#endregion
 
@@ -115,9 +107,11 @@ namespace Tournament.Structure
 					("Games Per Match must be positive!");
 			}
 			if (Players.Count < 2 ||
-				NumberOfGroups > (Players.Count / 2) || NumberOfGroups < 2)
+				NumberOfGroups < 2 ||
+				NumberOfGroups > (int)(Players.Count * 0.5))
 			{
-				return;
+				throw new BracketException
+					("Not enough Players per Group!");
 			}
 
 			for (int b = 0; b < NumberOfGroups; ++b)
@@ -134,28 +128,19 @@ namespace Tournament.Structure
 			foreach (IBracket group in Groups)
 			{
 				NumberOfMatches += group.NumberOfMatches;
-				NumberOfRounds = (NumberOfRounds < group.NumberOfRounds)
+				NumberOfRounds = (this.NumberOfRounds < group.NumberOfRounds)
 					? group.NumberOfRounds
 					: this.NumberOfRounds;
 				Rankings.AddRange(group.Rankings);
 			}
-		}
-
-		public override void ResetMatches()
-		{
-			base.ResetMatches();
-			UpdateRankings();
+			Rankings.Sort(SortRankingScores);
 		}
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateRankings()
+		protected override void RecalculateRankings()
 		{
-			Rankings.Clear();
-			foreach (IBracket group in Groups)
-			{
-				Rankings.AddRange(group.Rankings);
-			}
+			base.RecalculateRankings();
 
 			Rankings.Sort(SortRankingScores);
 			for (int i = 0; i < Rankings.Count; ++i)

@@ -11,7 +11,22 @@ namespace Tournament.Structure
 	public abstract class GroupStage : Bracket, IGroupStage
 	{
 		#region Variables & Properties
-
+		//public int Id
+		//public BracketType BracketType
+		//public bool IsFinalized
+		//public bool IsFinished
+		//public List<IPlayer> Players
+		//public List<IPlayerScore> Rankings
+		//public int MaxRounds
+		//protected Dictionary<int, Match> Matches = empty
+		//public int NumberOfRounds
+		//protected Dictionary<int, Match> LowerMatches = empty
+		//public int NumberOfLowerRounds
+		//protected Match grandFinal = null
+		//public IMatch GrandFinal = null
+		//public int NumberOfMatches
+		//protected int MatchWinValue
+		//protected int MatchTieValue
 		protected List<IBracket> Groups
 		{ get; set; }
 		public int NumberOfGroups
@@ -19,13 +34,18 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		public override void RestoreMatch(int _matchNumber, MatchModel _model)
+		public override void ResetMatches()
 		{
-			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			Groups[groupIndex].RestoreMatch(_matchNumber, _model);
+			foreach (IBracket group in Groups)
+			{
+				group.ResetMatches();
+			}
+			IsFinished = false;
+			IsFinalized = false;
+			RecalculateRankings();
 		}
 
+		#region Player Methods
 		public override void ReplacePlayer(IPlayer _player, int _index)
 		{
 			if (null == _player)
@@ -61,9 +81,11 @@ namespace Tournament.Structure
 			{
 				Rankings[rankIndex].ReplacePlayerData(_player.Id, _player.Name);
 			}
-			Players[_index] = _player;
+			this.Players[_index] = _player;
 		}
+		#endregion
 
+		#region Match & Game Methods
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			int groupIndex;
@@ -72,7 +94,7 @@ namespace Tournament.Structure
 
 			GameModel gameModel = Groups[groupIndex].AddGame(fixedMatchNumber, _defenderScore, _challengerScore, _winnerSlot);
 			//UpdateScore(_matchNumber, gameModel, true);
-			UpdateRankings();
+			RecalculateRankings();
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
@@ -83,10 +105,11 @@ namespace Tournament.Structure
 			GetMatchData(ref fixedMatchNumber, out groupIndex);
 
 			GameModel gameModel = Groups[groupIndex].UpdateGame(fixedMatchNumber, _gameNumber, _defenderScore, _challengerScore, _winnerSlot);
-			UpdateRankings();
+			RecalculateRankings();
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 			return gameModel;
 		}
+
 		public override GameModel RemoveLastGame(int _matchNumber)
 		{
 			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
@@ -97,7 +120,7 @@ namespace Tournament.Structure
 			GameModel gameModel = Groups[groupIndex].RemoveLastGame(fixedMatchNumber);
 			ApplyGameRemovalEffects(_matchNumber, new List<GameModel>() { gameModel }, matchWinnerSlot);
 			//UpdateScore(fixedMatchNumber, new List<GameModel>() { gameModel }, false, matchWinnerSlot);
-			UpdateRankings();
+			RecalculateRankings();
 			return gameModel;
 		}
 		public override GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
@@ -110,9 +133,10 @@ namespace Tournament.Structure
 			GameModel gameModel = Groups[groupIndex].RemoveGameNumber(fixedMatchNumber, _gameNumber);
 			ApplyGameRemovalEffects(_matchNumber, new List<GameModel>() { gameModel }, matchWinnerSlot);
 			//UpdateScore(fixedMatchNumber, new List<GameModel>() { gameModel }, false, matchWinnerSlot);
-			UpdateRankings();
+			RecalculateRankings();
 			return gameModel;
 		}
+
 		public override void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
 		{
 			int groupIndex;
@@ -120,9 +144,10 @@ namespace Tournament.Structure
 			GetMatchData(ref fixedMatchNumber, out groupIndex);
 
 			Groups[groupIndex].SetMatchWinner(fixedMatchNumber, _winnerSlot);
-			UpdateRankings();
+			RecalculateRankings();
 			ApplyWinEffects(_matchNumber, _winnerSlot);
 		}
+
 		public override List<GameModel> ResetMatchScore(int _matchNumber)
 		{
 			int groupIndex;
@@ -131,10 +156,12 @@ namespace Tournament.Structure
 
 			List<GameModel> modelList = Groups[groupIndex].ResetMatchScore(_matchNumber);
 			UpdateFinishStatus();
-			UpdateRankings();
+			RecalculateRankings();
 			return modelList;
 		}
+		#endregion
 
+		#region Accessors
 		public override BracketModel GetModel(int _tournamentID = 0)
 		{
 			throw new NotImplementedException();
@@ -144,6 +171,7 @@ namespace Tournament.Structure
 			return model;
 #endif
 		}
+
 		public IBracket GetGroup(int _groupNumber)
 		{
 			if (null == Groups)
@@ -151,12 +179,7 @@ namespace Tournament.Structure
 				throw new NullReferenceException
 					("No groups exist! Create a bracket first.");
 			}
-			if (_groupNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Group number must be greater than 0!");
-			}
-			if (_groupNumber > Groups.Count)
+			if (_groupNumber < 1 || _groupNumber > Groups.Count)
 			{
 				throw new BracketNotFoundException
 					("Group not found! Invalid group number.");
@@ -166,18 +189,22 @@ namespace Tournament.Structure
 		}
 		public override List<IMatch> GetRound(int _round)
 		{
+			List<IMatch> ret = new List<IMatch>();
+			for (int i = 0; i < Groups.Count; ++i)
+			{
+				ret.AddRange(GetRound(i + 1, _round));
+			}
+			return ret;
+		}
+		public List<IMatch> GetRound(int _groupNumber, int _round)
+		{
 			if (null == Groups)
 			{
 				throw new NullReferenceException
 					("No groups exist! Create a bracket first.");
 			}
 
-			List<IMatch> ret = new List<IMatch>();
-			foreach (IBracket group in Groups)
-			{
-				ret.AddRange(group.GetRound(_round));
-			}
-			return ret;
+			return (GetGroup(_groupNumber).GetRound(_round));
 		}
 		public override IMatch GetMatch(int _matchNumber)
 		{
@@ -185,13 +212,7 @@ namespace Tournament.Structure
 			GetMatchData(ref _matchNumber, out groupIndex);
 			return Groups[groupIndex].GetMatch(_matchNumber);
 		}
-		public override void ResetMatches()
-		{
-			foreach (IBracket group in Groups)
-			{
-				group.ResetMatches();
-			}
-		}
+		#endregion
 		#endregion
 
 		#region Private Methods
@@ -217,16 +238,28 @@ namespace Tournament.Structure
 			UpdateRankings();
 		}
 
-		protected void UpdateFinishStatus()
+		protected override void RecalculateRankings()
 		{
-			this.IsFinished = true;
+			Rankings.Clear();
 			foreach (IBracket group in Groups)
 			{
-				if (!group.IsFinished)
-				{
-					this.IsFinished = false;
-					return;
-				}
+				Rankings.AddRange(group.Rankings);
+			}
+		}
+		protected override void UpdateRankings()
+		{
+			RecalculateRankings();
+		}
+
+		protected void UpdateFinishStatus()
+		{
+			if (Groups.Any(g => !g.IsFinished))
+			{
+				this.IsFinished = false;
+			}
+			else
+			{
+				this.IsFinished = true;
 			}
 		}
 
@@ -271,11 +304,6 @@ namespace Tournament.Structure
 
 			throw new MatchNotFoundException
 				("Match not found; match number may be invalid.");
-		}
-
-		protected override void RecalculateRankings()
-		{
-			UpdateRankings();
 		}
 		#endregion
 	}

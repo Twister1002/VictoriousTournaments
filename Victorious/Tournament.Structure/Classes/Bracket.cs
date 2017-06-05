@@ -108,22 +108,6 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		public virtual void RestoreMatch(int _matchNumber, MatchModel _model)
-		{
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match number cannot be less than 1!");
-			}
-			if (null == _model)
-			{
-				throw new ArgumentNullException("_model");
-			}
-
-			Match match = GetInternalMatch(_matchNumber);
-			match = new Match(_model);
-		}
-
 		public virtual void ResetMatches()
 		{
 			List<MatchModel> alteredMatches = new List<MatchModel>();
@@ -228,18 +212,7 @@ namespace Tournament.Structure
 				.ToList();
 			foreach (int key in rollsList)
 			{
-				if ((Players[rolls[key]] is User))
-				{
-					pList.Add(new User(Players[rolls[key]] as User));
-				}
-				else if ((Players[rolls[key]] is Team))
-				{
-					pList.Add(new Team(Players[rolls[key]] as Team));
-				}
-				else
-				{
-					pList.Add(Players[rolls[key]]);
-				}
+				pList.Add(Players[rolls[key]]);
 			}
 
 			Players = pList;
@@ -252,27 +225,8 @@ namespace Tournament.Structure
 			{
 				throw new ArgumentNullException("_players");
 			}
-			if (null == Players)
-			{
-				Players = new List<IPlayer>();
-			}
 
-			Players.Clear();
-			foreach (IPlayer player in _players)
-			{
-				if (player is User)
-				{
-					Players.Add(new User(player as User));
-				}
-				else if (player is Team)
-				{
-					Players.Add(new Team(player as Team));
-				}
-				else
-				{
-					Players.Add(player);
-				}
-			}
+			Players = _players;
 			DeleteBracketData();
 		}
 		public void SetNewPlayerlist(ICollection<TournamentUsersBracketModel> _players)
@@ -281,10 +235,11 @@ namespace Tournament.Structure
 				.OrderBy(p => p.Seed, new SeedComparer())
 				.Select(p => p.TournamentUser)
 				.ToList();
+
 			List<IPlayer> playerList = new List<IPlayer>();
 			foreach (TournamentUserModel model in userModels)
 			{
-				playerList.Add(new User(model));
+				playerList.Add(new Player(model));
 			}
 			SetNewPlayerlist(playerList);
 		}
@@ -306,18 +261,7 @@ namespace Tournament.Structure
 					("Bracket already contains this Player!");
 			}
 
-			if (_player is User)
-			{
-				Players.Add(new User(_player as User));
-			}
-			else if (_player is Team)
-			{
-				Players.Add(new Team(_player as Team));
-			}
-			else
-			{
-				Players.Add(_player);
-			}
+			Players.Add(_player);
 			DeleteBracketData();
 		}
 		public virtual void ReplacePlayer(IPlayer _player, int _index)
@@ -392,24 +336,10 @@ namespace Tournament.Structure
 					("Invalid index; outside Playerlist bounds.");
 			}
 
-			if (Players[_index1] is User)
-			{
-				User tmp = new User(Players[_index1] as User);
-				Players[_index1] = new User(Players[_index2] as User);
-				Players[_index2] = tmp;
-			}
-			else if (Players[_index1] is Team)
-			{
-				Team tmp = new Team(Players[_index1] as Team);
-				Players[_index1] = new Team(Players[_index2] as Team);
-				Players[_index2] = tmp;
-			}
-			else
-			{
-				IPlayer tmp = Players[_index1];
-				Players[_index1] = Players[_index2];
-				Players[_index2] = tmp;
-			}
+			IPlayer tmp = Players[_index1];
+			Players[_index1] = Players[_index2];
+			Players[_index2] = tmp;
+
 			DeleteBracketData();
 		}
 		public void ReinsertPlayer(int _oldIndex, int _newIndex)
@@ -425,63 +355,22 @@ namespace Tournament.Structure
 				return;
 			}
 
-			if (Players[0] is User)
+			IPlayer tmp = Players[_oldIndex];
+			if (_oldIndex > _newIndex)
 			{
-				User tmp = new User(Players[_oldIndex] as User);
-				if (_oldIndex > _newIndex)
+				for (int i = _oldIndex; i > _newIndex; --i)
 				{
-					for (int i = _oldIndex; i > _newIndex; --i)
-					{
-						Players[i] = new User(Players[i - 1] as User);
-					}
+					Players[i] = Players[i - 1];
 				}
-				else // _oldIndex < _newIndex
-				{
-					for (int i = _oldIndex; i < _newIndex; ++i)
-					{
-						Players[i] = new User(Players[i + 1] as User);
-					}
-				}
-				Players[_newIndex] = tmp;
 			}
-			else if (Players[0] is Team)
+			else // _oldIndex < _newIndex
 			{
-				Team tmp = new Team(Players[_oldIndex] as Team);
-				if (_oldIndex > _newIndex)
+				for (int i = _oldIndex; i < _newIndex; ++i)
 				{
-					for (int i = _oldIndex; i > _newIndex; --i)
-					{
-						Players[i] = new Team(Players[i - 1] as Team);
-					}
+					Players[i] = Players[i + 1];
 				}
-				else // _oldIndex < _newIndex
-				{
-					for (int i = _oldIndex; i < _newIndex; ++i)
-					{
-						Players[i] = new Team(Players[i + 1] as Team);
-					}
-				}
-				Players[_newIndex] = tmp;
 			}
-			else
-			{
-				IPlayer tmp = Players[_oldIndex];
-				if (_oldIndex > _newIndex)
-				{
-					for (int i = _oldIndex; i > _newIndex; --i)
-					{
-						Players[i] = Players[i - 1];
-					}
-				}
-				else // _oldIndex < _newIndex
-				{
-					for (int i = _oldIndex; i < _newIndex; ++i)
-					{
-						Players[i] = Players[i + 1];
-					}
-				}
-				Players[_newIndex] = tmp;
-			}
+			Players[_newIndex] = tmp;
 
 			DeleteBracketData();
 		}
@@ -492,7 +381,6 @@ namespace Tournament.Structure
 			{
 				Players = new List<IPlayer>();
 			}
-
 			Players.Clear();
 			DeleteBracketData();
 		}
