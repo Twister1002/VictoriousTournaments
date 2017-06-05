@@ -6,7 +6,7 @@
 
 <div id="AccountUpdate">
     <h2>Update Account</h2>
-    @using (Html.BeginForm("Update", "Account", FormMethod.Post, new { @onsubmit = "return Validate(this)" }))
+    @using (Html.BeginForm("Update", "Account", FormMethod.Post))
     {
         <div class="section">
             @Html.TextBoxFor(m => m.Username, new { @hidden = "hidden", @required = "required", @readonly = "readonly" })

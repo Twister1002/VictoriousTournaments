@@ -74,17 +74,14 @@ namespace WebApplication.Controllers
         [Route("Account/Register")]
         public ActionResult Register()
         {
-            AccountViewModel model = new AccountViewModel();
-
             if (IsLoggedIn())
             {
                 return RedirectToAction("Index");
             }
             else
             {
-                return View(model);
+                return View("Register", account);
             }
-
         }
 
         [HttpPost]
@@ -136,12 +133,12 @@ namespace WebApplication.Controllers
         [Route("Account/Update")]
         public ActionResult Update(AccountViewModel viewModel)
         {
-            if (account != null)
+            if (IsLoggedIn())
             {
                 // Verify the user being updated is legitly the user logged in
                 if (viewModel.AccountId == account.AccountId)
                 {
-                    if (viewModel.Update())
+                    if (account.Update(viewModel))
                     {
                         viewModel.error = ViewModel.ViewError.SUCCESS;
                         viewModel.message = "Your account was successfully updated.";
@@ -154,7 +151,7 @@ namespace WebApplication.Controllers
                     {
                         // There was an error updating the account
                         viewModel.error = ViewModel.ViewError.CRITICAL;
-                        viewModel.message = "There was an error updating your account. Please try again later.";
+                        viewModel.message = "There was an error updating your account.";
                     }
                 }
                 else

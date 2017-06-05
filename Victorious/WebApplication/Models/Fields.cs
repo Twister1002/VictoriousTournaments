@@ -118,7 +118,9 @@ namespace WebApplication.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
         public DateTime CheckinEndTime { get; set; }
 
+        [Display(Name = "Bracket Type")]
         public List<BracketTypeModel> BracketTypes { get; protected set; }
+        [Display(Name ="Rounds")]
         public List<int> NumberOfRounds { get; protected set; }
         public List<GameTypeModel> GameTypes { get; protected set; }
         public List<PlatformModel> PlatformTypes { get; protected set; }
@@ -160,11 +162,13 @@ namespace WebApplication.Models
         public int DefenderScore { get; set; }
     }
 
-    public class TournamentRegistrationFields
+    public class TournamentRegistrationFields : ViewModel
     {
         public String Name { get; set; }
         public int TournamentID { get; set; }
         public int AccountID { get; set; }
+
+        protected override void Init() { }
     }
 
     public abstract class GameTypeFields : ViewModel

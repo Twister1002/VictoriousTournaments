@@ -41,18 +41,16 @@
                 </li>
             </ul>
         </div>
-        <div class="section form-section">
+        <div class="section form-section bracketSection">
             <h2>Brackets <span class="icon icon-plus"></span></h2>
-            <ul class="brackets"></ul>
             <ul class="hide bracketOrig">
                 <li class="rounds">
                     @Html.LabelFor(t => t.BracketTypes)
                     @Html.DropDownList("BracketData[%n%].BracketType", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---")
-                    @Html.ValidationMessageFor(t => t.BracketTypes)
                 </li>
                 <li class="swiss rr hide">
                     @Html.LabelFor(t => t.NumberOfRounds)
-                    @Html.DropDownList("BracketData[%n%].NumberOfRounds", Enumerable.Range(0, 100).Select(n => new SelectListItem() { Text = n.ToString(), Value = n.ToString() }))
+                    @Html.DropDownList("BracketData[%n%].NumberOfRounds", new SelectList(Model.NumberOfRounds, 0))
                 </li>
             </ul>
         </div>

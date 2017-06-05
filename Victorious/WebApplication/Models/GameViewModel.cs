@@ -38,7 +38,8 @@ namespace WebApplication.Models
 
         public bool Delete()
         {
-            return db.DeleteGame(Model.GameID) == DbError.SUCCESS;
+            tournamentService.DeleteGame(Model.GameID);
+            return Save();
         }
 
         public bool Update()

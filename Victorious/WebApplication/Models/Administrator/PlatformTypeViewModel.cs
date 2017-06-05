@@ -14,11 +14,11 @@ namespace WebApplication.Models.Administrator
         public PlatformTypeViewModel()
         {
             Model = new PlatformModel();
-            Reload();
         }
 
         protected override void Init()
         {
+            Select();
         }
 
         public void ApplyFields()
@@ -34,39 +34,41 @@ namespace WebApplication.Models.Administrator
         public bool Create()
         {
             ApplyFields();
-            DbError result = DbError.NONE;
+            typeService.AddPlatform(Model);
 
-            if (!String.IsNullOrEmpty(Model.PlatformName))
+            if (Save())
             {
-                result = db.AddPlatform(Model);
+                Select();
+                return true;
             }
-
-            Reload();
-            return result == DbError.SUCCESS;
+            else
+            {
+                return false;
+            }
         }
 
         public bool Update()
         {
-            Reload();
             return false;
         }
 
         public bool Delete(int platformId)
         {
-            DbError result = db.DeletePlatform(platformId);
-
-            Reload();
-            return result == DbError.SUCCESS;
+            typeService.DeletePlatform(platformId);
+            if (Save())
+            {
+                Select();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public List<PlatformModel> Select()
+        private void Select()
         {
-            return platforms;
-        }
-
-        private void Reload()
-        {
-            platforms = db.GetAllPlatforms();
+            platforms = typeService.GetAllPlatforms();
         }
     }
 }

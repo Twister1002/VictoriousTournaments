@@ -11,7 +11,7 @@
     $("#TournamentCreate #BracketType").on("change", BracketInfoChange);
     $("#TournamentCreate .icon-plus").on("click", function () {
         var newBracket = bracketInfo.replace(/%n%/g, bracketsCreated);
-        $("#TournamentCreate .brackets").append(newBracket);
+        $("#TournamentCreate .bracketSection").append("<ul class='brackets'>"+newBracket+"</ul>");
 
         bracketsCreated++;
     });

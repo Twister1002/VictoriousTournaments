@@ -204,7 +204,7 @@
         $.ajax({
             "url": "/Ajax/Bracket/MatchReset",
             "type": "post",
-            "data": { "bracketId": $(this).closest(".bracket").data("id"), "matchNum": match.data("matchnum") },
+            "data": { "tournamentId": $("#Tournament").data("id"), "bracketId": $(this).closest(".bracket").data("id"), "matchNum": match.data("matchnum") },
             "dataType": "json",
             "success": function (json) {
                 json = JSON.parse(json);

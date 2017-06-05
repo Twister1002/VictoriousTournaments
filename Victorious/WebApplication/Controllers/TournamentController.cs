@@ -184,6 +184,7 @@ namespace WebApplication.Controllers
 
             if (ModelState.IsValid)
             {
+                //TODO COmbine Create and AddUser()
                 if (viewModel.Create(account.AccountId))
                 {
                     if (viewModel.AddUser(account, Permission.TOURNAMENT_CREATOR))
@@ -213,7 +214,7 @@ namespace WebApplication.Controllers
 
         // POST: Tournament/Edit/5
         [HttpPost]
-        [Route("Tournament/Update")]
+        [Route("Tournament/Update/{tournamentId}")]
         public ActionResult Update(TournamentViewModel viewModel, int tournamentId)
         {
             if (account != null)
@@ -400,20 +401,19 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Ajax/Tournament/Finalize")]
-        public JsonResult Finalize(String jsonData, Dictionary<String, Dictionary<String, int>> roundData)
+        public JsonResult Finalize(int tournamentId, int bracketId, Dictionary<String, Dictionary<String, int>> roundData)
         {
-            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
             bool status = false;
             String message = "No action was taken";
-            String redirect = redirect = Url.Action("Tournament", "Tournament", new { guid = json["tournyVal"] });
+            String redirect = redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
 
             if (account != null)
             {
                 // Load the tournament
-                TournamentViewModel viewModel = new TournamentViewModel(json["tournyVal"]);
-                if (viewModel.IsAdministrator((int)Session["User.UserId"]))
+                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+                if (viewModel.IsAdministrator(account.AccountId))
                 {
-                    if (viewModel.FinalizeTournament(roundData))
+                    if (viewModel.FinalizeTournament(bracketId, roundData))
                     {
                         status = true;
                         message = "Your tournament has been finalized. No changes can be made.";
@@ -446,7 +446,13 @@ namespace WebApplication.Controllers
                 Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
             }
 
-            return Json(JsonConvert.SerializeObject(new { status = status, message = message, redirect = redirect }));
+            return Json(JsonConvert.SerializeObject(
+                new {
+                    status = status,
+                    message = message,
+                    redirect = redirect
+                }
+            ));
         }
 
         [HttpPost]
@@ -457,10 +463,10 @@ namespace WebApplication.Controllers
             String message = "No action taken";
             String redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
 
-            if (Session["User.UserId"] != null)
+            if (IsLoggedIn())
             {
                 TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-                if (viewModel.IsCreator((int)Session["User.UserId"]))
+                if (viewModel.IsCreator(account.AccountId))
                 {
                     if (viewModel.Delete())
                     {
