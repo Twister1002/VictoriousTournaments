@@ -12,33 +12,27 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class BracketModel
+    public partial class TournamentTeamModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public BracketModel()
+        public TournamentTeamModel()
         {
-            this.TournamentUsersBrackets = new HashSet<TournamentUsersBracketModel>();
-            this.Matches = new HashSet<MatchModel>();
             this.TournamentTeamBrackets = new HashSet<TournamentTeamBracketModel>();
+            this.TournamentTeamMembers = new HashSet<TournamentTeamMemberModel>();
     		OnInit();
         }
     
-        public int BracketID { get; set; }
-        public int BracketTypeID { get; set; }
-        public bool Finalized { get; set; }
-        public int NumberOfGroups { get; set; }
-        public Nullable<int> TournamentID { get; set; }
-        public int MaxRounds { get; set; }
+        public int TournamentTeamID { get; set; }
+        public int TournamentID { get; set; }
+        public int SiteTeamID { get; set; }
     	
     	partial void OnInit();
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
-        public virtual BracketTypeModel BracketType { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MatchModel> Matches { get; set; }
+        public virtual SiteTeamModel SiteTeam { get; set; }
         public virtual TournamentModel Tournament { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentTeamBracketModel> TournamentTeamBrackets { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TournamentTeamMemberModel> TournamentTeamMembers { get; set; }
     }
 }

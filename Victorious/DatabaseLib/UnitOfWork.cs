@@ -22,9 +22,18 @@ namespace DatabaseLib
         IRepository<TournamentUserModel> tournamentUserRepo;
         IRepository<TournamentInviteModel> tournamentInviteRepo;
         IRepository<TournamentUsersBracketModel> tournamentUsersBracketRepo;
+        IRepository<TournamentTeamModel> tournamentTeamRepo;
+        IRepository<TournamentTeamMemberModel> tournamentTeamMemberRepo;
+        IRepository<TournamentTeamBracketModel> tournamentTeamBracketRepo;
+        IRepository<SiteTeamModel> siteTeamRepo;
+        IRepository<SiteTeamMemberModel> siteTeamMemberRepo;
 
-        public UnitOfWork(VictoriousEntities context = null)
+        public UnitOfWork(string name = null, VictoriousEntities context = null)
         {
+            if (name != null)
+            {
+                context = new VictoriousEntities(name);
+            }
             if (context != null)
             {
                 this.context = context; 
@@ -191,6 +200,66 @@ namespace DatabaseLib
                     this.tournamentRepo = new Repository<TournamentModel>(context);
                 }
                 return tournamentRepo;
+            }
+        }
+
+        public IRepository<TournamentTeamModel> TournamentTeamRepo
+        {
+            get
+            {
+                if (this.tournamentTeamRepo == null)
+                {
+                    this.tournamentTeamRepo = new Repository<TournamentTeamModel>(context);
+                }
+                return tournamentTeamRepo;
+            }
+        }
+
+        public IRepository<TournamentTeamMemberModel> TournamentTeamMemberRepo
+        {
+            get
+            {
+                if (this.tournamentTeamMemberRepo == null)
+                {
+                    this.tournamentTeamMemberRepo = new Repository<TournamentTeamMemberModel>(context);
+                }
+                return tournamentTeamMemberRepo;
+            }
+        }
+
+        public IRepository<TournamentTeamBracketModel> TournamentTeamBracketRepo
+        {
+            get
+            {
+                if (this.tournamentTeamBracketRepo == null)
+                {
+                    this.tournamentTeamBracketRepo = new Repository<TournamentTeamBracketModel>(context);
+                }
+                return tournamentTeamBracketRepo;
+            }
+        }
+
+        public IRepository<SiteTeamModel> SiteTeamRepo
+        {
+            get
+            {
+                if (this.siteTeamRepo == null)
+                {
+                    this.siteTeamRepo = new Repository<SiteTeamModel>(context);
+                }
+                return siteTeamRepo;
+            }
+        }
+
+        public IRepository<SiteTeamMemberModel> SiteTeamMemberRepo
+        {
+            get
+            {
+                if (this.siteTeamMemberRepo == null)
+                {
+                    this.siteTeamMemberRepo = new Repository<SiteTeamMemberModel>(context);
+                }
+                return siteTeamMemberRepo;
             }
         }
 
