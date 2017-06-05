@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DatabaseLib.Services;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DatabaseLib.Tests
 {
@@ -193,7 +194,8 @@ namespace DatabaseLib.Tests
         public void AddTournamentUser_Save()
         {
             TournamentUserModel tournamentUser = NewTournamentUser();
-            tournamentUser.TournamentID = service.GetAllTournaments()[service.GetAllTournaments().Count-1].TournamentID;
+            tournamentUser.Name = unitOfWork.AccountRepo.GetAll().ToList()[1].Username;
+            tournamentUser.TournamentID = service.GetAllTournaments()[0].TournamentID;
             service.AddTournamentUser(tournamentUser);
             var result = unitOfWork.Save();
 
@@ -332,7 +334,7 @@ namespace DatabaseLib.Tests
             {
                 BracketID = service.GetAllBracketsInTournament(tournamentId)[0].BracketID,
                 ChallengerID = service.GetAllUsersInTournament(tournamentId)[0].TournamentUserID,
-                DefenderID = service.GetAllUsersInTournament(tournamentId)[0].TournamentUserID,
+                DefenderID = service.GetAllUsersInTournament(tournamentId)[1].TournamentUserID,
                 MatchNumber = 1
             };
             service.AddMatch(match);

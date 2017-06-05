@@ -20,7 +20,7 @@ namespace DatabaseLib.Services
 
         public void AddSiteTeam(SiteTeamModel siteTeam)
         {
-            unitOfWork.SiteTeamRepo.Add(siteTeamToAdd);
+            unitOfWork.SiteTeamRepo.Add(siteTeam);
         }
 
         public SiteTeamModel GetSiteTeam(int siteTeamId)

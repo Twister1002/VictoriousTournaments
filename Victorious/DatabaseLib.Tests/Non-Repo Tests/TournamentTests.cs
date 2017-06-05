@@ -219,7 +219,7 @@ namespace DatabaseLib.Tests
             var repo = new Mock<ITournamentRepository>();
             repo.Setup(x => x.GetTournament(tournament.TournamentID)).Returns(tournament);
             var context = new VictoriousEntities();
-            var uow = new UnitOfWork(context);
+            //var uow = new UnitOfWork(context);
 
             //var result = uow.TournamentRepository.GetTournament(tournament.TournamentID);
 

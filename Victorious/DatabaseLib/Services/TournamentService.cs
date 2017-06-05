@@ -4,6 +4,10 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
+using System.Data.Entity;
+using System.Data.Sql;
+
 
 namespace DatabaseLib.Services
 {
@@ -76,7 +80,12 @@ namespace DatabaseLib.Services
 
             using (VictoriousEntities context = new VictoriousEntities())
             {
-               
+                context.TournamentModels.Include(x => x.Brackets)
+                     .Include(x => x.GameType)
+                     .Include(x => x.Platform)
+                     .Include(x => x.TournamentUsers)
+                     .Include(x => x.TournamentInvites)
+                     .Load();
                 try
                 {
                     List<SqlParameter> sqlparams = new List<SqlParameter>();

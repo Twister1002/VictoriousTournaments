@@ -12,7 +12,7 @@
         <AssociationConnector Association="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments" ></AssociationConnector>
         <AssociationConnector Association="VictoriousDatabaseModel.FK_UserBrackets_TournamentUsers" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentRule" Width="1.5" PointX="3.25" PointY="20.875" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.GameModel" PointX="7.875" PointY="8.75" Width="1.875" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.GameModel" PointX="8.375" PointY="8.875" Width="1.875" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Brackets_BracketTypes" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.PlatformModel" Width="1.875" PointX="3" PointY="7.5" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountModel" Width="2" PointX="0.5" PointY="10.375" />
