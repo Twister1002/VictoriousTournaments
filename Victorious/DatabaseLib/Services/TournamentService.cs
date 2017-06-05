@@ -38,12 +38,26 @@ namespace DatabaseLib.Services
 
         public TournamentModel GetTournament(int tournamentId)
         {
-            return unitOfWork.TournamentRepo.Get(tournamentId);
+            try
+            {
+                return unitOfWork.TournamentRepo.Get(tournamentId);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public List<TournamentModel> GetAllTournaments()
         {
-            return unitOfWork.TournamentRepo.GetAll().ToList();
+            try
+            {
+                return unitOfWork.TournamentRepo.GetAll().ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public void UpdateTournament(TournamentModel tournamentToUpdate)
@@ -130,17 +144,38 @@ namespace DatabaseLib.Services
 
         public TournamentUserModel GetTournamentUser(int tournamentUserId)
         {
-            return unitOfWork.TournamentUserRepo.Get(tournamentUserId);
+            try
+            {
+                return unitOfWork.TournamentUserRepo.Get(tournamentUserId);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public List<TournamentUserModel> GetAllTournamentUsers()
         {
-            return unitOfWork.TournamentUserRepo.GetAll().ToList();
+            try
+            {
+                return unitOfWork.TournamentUserRepo.GetAll().ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public List<TournamentUserModel> GetAllUsersInTournament(int tournamentId)
         {
-            return unitOfWork.TournamentRepo.Get(tournamentId).TournamentUsers.ToList();
+            try
+            {
+                return unitOfWork.TournamentRepo.Get(tournamentId).TournamentUsers.ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public void UpdateTournamentUser(TournamentUserModel tournamentUserToUpdate)
@@ -166,6 +201,7 @@ namespace DatabaseLib.Services
 
         #region TournamentInvites
 
+        [Obsolete("Use AddTournamentInvite(TournamentInviteModel tournamentInviteToAdd)")]
         public void AddTournamentInvite(TournamentInviteModel tournamentInviteToAdd, bool save = false)
         {
             unitOfWork.TournamentInviteRepo.Add(tournamentInviteToAdd);
@@ -173,14 +209,33 @@ namespace DatabaseLib.Services
                 unitOfWork.Save();
         }
 
+        public void AddTournamentInvite(TournamentInviteModel tournamentInviteToAdd)
+        {
+            unitOfWork.TournamentInviteRepo.Add(tournamentInviteToAdd);
+        }
+
         public TournamentInviteModel GetTournamentInvite(string tournamentInviteCode)
         {
-            return unitOfWork.TournamentInviteRepo.GetAll().Single(x => x.TournamentInviteCode == tournamentInviteCode);
+            try
+            {
+                return unitOfWork.TournamentInviteRepo.GetAll().Single(x => x.TournamentInviteCode == tournamentInviteCode);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public List<TournamentInviteModel> GetAllTournamentInvites()
         {
-            return unitOfWork.TournamentInviteRepo.GetAll().ToList();
+            try
+            {
+                return unitOfWork.TournamentInviteRepo.GetAll().ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public void UpdateTournamentInvite(TournamentInviteModel tournamentInviteToUpdate)
@@ -206,18 +261,39 @@ namespace DatabaseLib.Services
 
         public BracketModel GetBracket(int bracketId)
         {
-            return unitOfWork.BracketRepo.Get(bracketId);
+            try
+            {
+                return unitOfWork.BracketRepo.Get(bracketId);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public List<BracketModel> GetAllBrackets()
         {
-            return unitOfWork.BracketRepo.GetAll().ToList();
+            try
+            {
+                return unitOfWork.BracketRepo.GetAll().ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public List<BracketModel> GetAllBracketsInTournament(int tournamnetId)
         {
-            TournamentModel tournament = unitOfWork.TournamentRepo.Get(tournamnetId);
-            return tournament.Brackets.ToList();
+            try
+            {
+                TournamentModel tournament = unitOfWork.TournamentRepo.Get(tournamnetId);
+                return tournament.Brackets.ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public void UpdateBracket(BracketModel bracketToUpdate)
@@ -242,12 +318,26 @@ namespace DatabaseLib.Services
 
         public MatchModel GetMatch(int matchId)
         {
-            return unitOfWork.MatchRepo.Get(matchId);
+            try
+            {
+                return unitOfWork.MatchRepo.Get(matchId);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public List<MatchModel> GetAllMatches()
         {
-            return unitOfWork.MatchRepo.GetAll().ToList();
+            try
+            {
+                return unitOfWork.MatchRepo.GetAll().ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public void UpdateMatch(MatchModel matchToUpdate)
@@ -262,7 +352,14 @@ namespace DatabaseLib.Services
 
         public List<MatchModel> GetAllMatchesInBracket(int bracketId)
         {
-            return unitOfWork.MatchRepo.GetAll().Where(x => x.BracketID == bracketId).ToList();
+            try
+            {
+                return unitOfWork.MatchRepo.GetAll().Where(x => x.BracketID == bracketId).ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         #endregion
@@ -277,12 +374,26 @@ namespace DatabaseLib.Services
 
         public GameModel GetGame(int gameId)
         {
-            return unitOfWork.GameRepo.Get(gameId);
+            try
+            {
+                return unitOfWork.GameRepo.Get(gameId);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public List<GameModel> GetAllGames()
         {
-            return unitOfWork.GameRepo.GetAll().ToList();
+            try
+            {
+                return unitOfWork.GameRepo.GetAll().ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public void UpdateGame(GameModel gameToUpdate)
@@ -307,13 +418,22 @@ namespace DatabaseLib.Services
 
         public TournamentUsersBracketModel GetTournamentUsersBracket(int tournamentUserId, int bracketId)
         {
-            return unitOfWork.TournamentUsersBracketRepo.GetSingle(x => x.TournamentUserID == tournamentUserId && x.BracketID == bracketId);
-            //return unitOfWork.TournamentUsersBracketRepo.Get(tournamentUsersBracketId);
+            try
+            {
+                return unitOfWork.TournamentUsersBracketRepo.GetSingle(x => x.TournamentUserID == tournamentUserId && x.BracketID == bracketId);
+                //return unitOfWork.TournamentUsersBracketRepo.Get(tournamentUsersBracketId);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public void UpdateTournamentUsersBracket(TournamentUsersBracketModel tournamentUserBracketToUpdate)
         {
+
             unitOfWork.TournamentUsersBracketRepo.Update(tournamentUserBracketToUpdate);
+
         }
 
         public void DeleteTournamentUsersBracket(int tournamentUserId, int bracketId)

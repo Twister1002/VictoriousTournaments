@@ -24,12 +24,28 @@ namespace DatabaseLib.Services
 
         public GameTypeModel GetGameType(int gameTypeId)
         {
-            return unitOfWork.GameTypeRepo.Get(gameTypeId);
+            try
+            {
+                return unitOfWork.GameTypeRepo.Get(gameTypeId);
+            }
+            catch (Exception ex)
+            {
+                return null;
+                throw;
+            }
         }
 
         public List<GameTypeModel> GetAllGameTypes()
         {
-            return unitOfWork.GameTypeRepo.GetAll().ToList();
+            try
+            {
+                return unitOfWork.GameTypeRepo.GetAll().ToList();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
         public void UpdateGameType(GameTypeModel gameTypeToUpdate)
@@ -54,12 +70,26 @@ namespace DatabaseLib.Services
 
         public BracketTypeModel GetBracketType(int bracketTypeId)
         {
-            return unitOfWork.BracketTypeRepo.Get(bracketTypeId);
+            try
+            {
+                return unitOfWork.BracketTypeRepo.Get(bracketTypeId);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public List<BracketTypeModel> GetAllBracketTypes()
         {
-            return unitOfWork.BracketTypeRepo.GetAll().ToList();
+            try
+            {
+                return unitOfWork.BracketTypeRepo.GetAll().ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public void UpdateBracketType(BracketTypeModel bracketTypeToUpdate)
@@ -85,12 +115,28 @@ namespace DatabaseLib.Services
 
         public PlatformModel GetPlatform(int platformId)
         {
-            return unitOfWork.PlatformRepo.Get(platformId);
+            try
+            {
+                return unitOfWork.PlatformRepo.Get(platformId);
+            }
+            catch (Exception ex)
+            {
+                return null;
+                throw;
+            }
         }
 
         public List<PlatformModel> GetAllPlatforms()
         {
-            return unitOfWork.PlatformRepo.GetAll().ToList();
+            try
+            {
+                return unitOfWork.PlatformRepo.GetAll().ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+                throw;
+            }
         }
 
         public void UpdatePlatform(PlatformModel platformToUpdate)

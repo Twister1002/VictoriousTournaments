@@ -26,17 +26,39 @@ namespace DatabaseLib.Services
 
         public AccountModel GetAccount(int accountId)
         {
-            return unitOfWork.AccountRepo.Get(accountId);
+            try
+            {
+                return unitOfWork.AccountRepo.Get(accountId);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public AccountModel GetAccount(string username)
         {
-            return unitOfWork.AccountRepo.GetSingle(u => u.Username == username);
+            try
+            {
+                return unitOfWork.AccountRepo.GetSingle(u => u.Username == username);
+            }
+            catch (Exception ex)
+            {
+                return null;
+                throw;
+            }
         }
 
         public List<AccountModel> GetAllAccounts()
         {
-            return unitOfWork.AccountRepo.GetAll().ToList();
+            try
+            {
+                return unitOfWork.AccountRepo.GetAll().ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public void DeleteAccount(int accountId)
@@ -79,11 +101,20 @@ namespace DatabaseLib.Services
         {
             List<TournamentModel> tournaments = new List<TournamentModel>();
             List<TournamentUserModel> users = new List<TournamentUserModel>();
-            users = unitOfWork.TournamentUserRepo.GetAll().Where(x => x.AccountID == accountId).ToList();
-            foreach (var user in users)
+            try
             {
-                tournaments.Add(user.Tournament);
+                users = unitOfWork.TournamentUserRepo.GetAll().Where(x => x.AccountID == accountId).ToList();
+                foreach (var user in users)
+                {
+                    tournaments.Add(user.Tournament);
+                }
             }
+            catch (Exception ex)
+            {
+                return null;
+                throw;
+            }
+            
             return tournaments;
         }
 
@@ -124,7 +155,15 @@ namespace DatabaseLib.Services
 
         public List<AccountInviteModel> GetAllAccountInvites()
         {
-            return unitOfWork.AccountInviteRepo.GetAll().ToList();
+            try
+            {
+                return unitOfWork.AccountInviteRepo.GetAll().ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+                throw;
+            }
         }
 
         #endregion
