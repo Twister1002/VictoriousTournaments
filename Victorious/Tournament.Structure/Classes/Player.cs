@@ -29,7 +29,7 @@ namespace Tournament.Structure
 		public Player()
 			: this(-1, "")
 		{ }
-		public Player(Player _other)
+		public Player(IPlayer _other)
 		{
 			if (null == _other)
 			{
