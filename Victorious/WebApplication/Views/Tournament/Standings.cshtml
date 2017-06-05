@@ -3,15 +3,13 @@
 <div class="TournamentInfo">
     <span class="icon icon-cross close"></span>
     <div class="details" data-columns="@Model.Tourny.Brackets.Count">
-        @for (int i = 0; i < Model.Tourny.Brackets.Count; i++)
+        @foreach (var bracket in Model.Tourny.Brackets)
         {
-            <div class="bracketNum column" data-bracket="@i">@i</div>
+            <div class="bracketNum column" data-bracket="@bracket.Id">@bracket.Id</div>
         }
-        @for (int i = 0; i < Model.Tourny.Brackets.Count; i++)
+        @foreach (var bracket in Model.Tourny.Brackets)
         {
-            var bracket = Model.Tourny.Brackets.ElementAt(i);
-
-            <div class="bracketData" data-bracket="@i" data-id="@bracket.Id">
+            <div class="bracketData" data-bracket="@bracket.Id" data-id="@bracket.Id">
                 <ul class="list-table">
                     <li class="list-table-header">
                         <ul data-columns="@(ViewBag.isCreator ? 3 : 2)">

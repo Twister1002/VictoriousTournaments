@@ -10,6 +10,7 @@ namespace WebApplication.Models
 {
     public class TournamentViewModel : TournamentFields
     {
+        private bool TempFixMatchObjects = true;
         public ITournament Tourny { get; private set; }
         public TournamentModel Model { get; private set; }
         public List<TournamentModel> SearchedTournaments { get; private set; }
@@ -43,7 +44,7 @@ namespace WebApplication.Models
                 Model = model;
                 SetFields();
             }
-
+            
             ProcessTournament();
         }
 
@@ -56,6 +57,24 @@ namespace WebApplication.Models
             this.SearchedTournaments = new List<TournamentModel>();
             this.BracketData = new List<BracketInfo>();
             this.NumberOfRounds = Enumerable.Range(0, 100).ToList();
+        }
+
+        private void MatchObjectFix()
+        {
+            foreach (BracketModel bracket in Model.Brackets)
+            {
+                foreach (MatchModel match in bracket.Matches)
+                {
+                    if (match.Defender == null)
+                    {
+                        match.Defender = tournamentService.GetTournamentUser(match.DefenderID);
+                    }
+                    if (match.Challenger == null)
+                    {
+                        match.Challenger = tournamentService.GetTournamentUser(match.ChallengerID);
+                    }
+                }
+            }
         }
 
         public override void ApplyChanges()
@@ -131,6 +150,12 @@ namespace WebApplication.Models
 
             tournamentService.UpdateTournament(Model);
             UpdateBrackets();
+            if (Save())
+            {
+                UpdatePlayers();
+                return Save();
+            }
+
             return Save();
         }
 
@@ -398,6 +423,7 @@ namespace WebApplication.Models
                 return;
             }
 
+            if (TempFixMatchObjects) MatchObjectFix();
             Tourny = new Tournament.Structure.Tournament();
             Tourny.Title = Model.Title;
             foreach (BracketModel bracket in Model.Brackets)
@@ -722,32 +748,38 @@ namespace WebApplication.Models
                         updatedBrackets.Add(bracketModel);
                         //tournamentService.AddBracket(bracketModel);
                     }
-                    
-                    // Update the Players
-                    if (bracketModel.TournamentUsersBrackets.Count != Model.TournamentUsers.Where(x => IsUserParticipant(x.TournamentUserID)).Count())
-                    {
-                        for (int j = 0; j < Model.TournamentUsers.Count; j++)
-                        {
-                            TournamentUserModel user = Model.TournamentUsers.ElementAt(j);
-                            TournamentUsersBracketModel model = new TournamentUsersBracketModel()
-                            {
-                                TournamentUserID = user.TournamentUserID,
-                                BracketID = bracketModel.BracketID,
-                                TournamentID = Model.TournamentID,
-                                Seed = j + 1
-                            };
-                            //bracketModel.TournamentUsersBrackets.Add(model);
-
-                            if (!IsUserAdministrator(user.TournamentUserID))
-                            {
-                                tournamentService.AddTournamentUsersBracket(model);
-                            }
-                        }
-                    }
                 }
             }
 
             Model.Brackets = updatedBrackets;
+        }
+
+        private void UpdatePlayers()
+        {
+            foreach (BracketModel bracketModel in Model.Brackets)
+            {
+                // Update the Players
+                if (bracketModel.TournamentUsersBrackets.Count != Model.TournamentUsers.Where(x => IsUserParticipant(x.TournamentUserID)).Count())
+                {
+                    for (int j = 0; j < Model.TournamentUsers.Count; j++)
+                    {
+                        TournamentUserModel user = Model.TournamentUsers.ElementAt(j);
+                        TournamentUsersBracketModel model = new TournamentUsersBracketModel()
+                        {
+                            TournamentUserID = user.TournamentUserID,
+                            BracketID = bracketModel.BracketID,
+                            TournamentID = Model.TournamentID,
+                            Seed = j + 1
+                        };
+                        //bracketModel.TournamentUsersBrackets.Add(model);
+
+                        if (!IsUserAdministrator(user.TournamentUserID))
+                        {
+                            tournamentService.AddTournamentUsersBracket(model);
+                        }
+                    }
+                }
+            }
         }
 
         public bool CanRegister()

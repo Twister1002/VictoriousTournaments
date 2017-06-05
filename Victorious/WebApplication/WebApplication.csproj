@@ -144,6 +144,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdministratorController.cs" />
+    <Compile Include="Controllers\AjaxController.cs" />
     <Compile Include="Controllers\BracketController.cs" />
     <Compile Include="Controllers\VictoriousController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -235,7 +236,9 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\Ajax\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DatabaseLib\DatabaseLib.csproj">
       <Project>{977c6746-ca5d-49c7-b996-357507bc45cb}</Project>

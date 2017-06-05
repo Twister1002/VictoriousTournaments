@@ -30,7 +30,6 @@ namespace WebApplication.Models
         public MatchViewModel(MatchModel match)
         {
             Model = match;
-            //LoadPlayerObjects();
             Match = new Match(match);
             LoadPlayers();
         }
@@ -67,6 +66,14 @@ namespace WebApplication.Models
         protected override void Init()
         {
             
+        }
+
+        public void ApplyChanges(MatchModel model)
+        {
+            model.Defender = Model.Defender;
+            model.Challenger = Model.Challenger;
+
+            Model = model;
         }
         
         private void LoadPlayers()

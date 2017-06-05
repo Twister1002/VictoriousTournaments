@@ -131,7 +131,7 @@
         var jsonData = {
             "matchId": match.data("id"),
             "matchNum": match.data("matchnum"),
-            "bracketNum": $(this).closest(".bracket").data("bracketnum"),
+            "bracketId": $(this).closest(".bracket").data("id"),
             "tournamentId": $("#Tournament").data("id"),
         }
 
@@ -177,7 +177,7 @@
                         MatchOptionsUpdate(e, matchElement.find(".TournamentGames"));
                     });
 
-                    UpdateStandings(jsonData.tournamentId, jsonData.bracketNum);
+                    UpdateStandings(jsonData.tournamentId, jsonData.bracketId);
                 }
                 else {
                     console.log("Error in updating");
@@ -331,7 +331,7 @@
                 console.log(json);
 
                 if (json.status) {
-                    UpdateStandings($("#Tournament").data("id"), $game.closest(".bracket").data("bracketnum"));
+                    UpdateStandings($("#Tournament").data("id"), $game.closest(".bracket").data("id"));
 
                     $.each(json.data, function (i, e) {
                         $match = $(".TournamentMatch[data-id='" + e.matchId + "']");
