@@ -194,7 +194,7 @@ namespace DatabaseLib.Tests
         public void AddTournamentUser_Save()
         {
             TournamentUserModel tournamentUser = NewTournamentUser();
-            tournamentUser.Name = unitOfWork.AccountRepo.GetAll().ToList()[1].Username;
+            tournamentUser.Name = unitOfWork.AccountRepo.GetAll().ToList()[0].Username;
             tournamentUser.TournamentID = service.GetAllTournaments()[0].TournamentID;
             service.AddTournamentUser(tournamentUser);
             var result = unitOfWork.Save();

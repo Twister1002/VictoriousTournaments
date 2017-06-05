@@ -47,6 +47,11 @@ namespace DatabaseLib.Services
             }
         }
 
+        public void UpdateSiteTeam(SiteTeamModel siteTeam)
+        {
+
+        }
+
         public void DeleteSiteTeam(int siteTeamId)
         {
             unitOfWork.SiteTeamRepo.Delete(siteTeamId);

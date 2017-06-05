@@ -329,7 +329,11 @@ namespace DatabaseLib.Services
         {
             try
             {
-                return unitOfWork.MatchRepo.Get(matchId);
+                MatchModel match = unitOfWork.MatchRepo.Get(matchId);
+                match.Challenger = unitOfWork.TournamentUserRepo.Get(match.ChallengerID);
+                match.Defender = unitOfWork.TournamentUserRepo.Get(match.DefenderID);
+                return match;
+
             }
             catch (Exception ex)
             {
