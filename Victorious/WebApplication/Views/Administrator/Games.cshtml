@@ -17,7 +17,7 @@
                 </ul>
             </li>
             <li class="list-table-body border">
-                @foreach (var game in Model.Select())
+                @foreach (var game in Model.GameTypes)
                 {
                     <ul class="game" data-columns="2" data-gameid="@game.GameTypeID">
                         <li class="column gameTitle">@game.Title</li>

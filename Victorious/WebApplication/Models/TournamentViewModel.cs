@@ -49,7 +49,7 @@ namespace WebApplication.Models
 
         protected override void Init()
         {
-            this.BracketTypes = typeService.GetAllBracketTypes();
+            this.BracketTypes = typeService.GetAllBracketTypes().Where(x=>x.IsActive == true).ToList();
             this.GameTypes = typeService.GetAllGameTypes();
             this.PlatformTypes = typeService.GetAllPlatforms();
             this.PublicViewing = true;
