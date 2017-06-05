@@ -23,8 +23,12 @@ namespace DatabaseLib
         IRepository<TournamentInviteModel> tournamentInviteRepo;
         IRepository<TournamentUsersBracketModel> tournamentUsersBracketRepo;
 
-        public UnitOfWork(VictoriousEntities context = null)
+        public UnitOfWork(string name = null, VictoriousEntities context = null)
         {
+            if (name != null)
+            {
+                context = new VictoriousEntities(name);
+            }
             if (context != null)
             {
                 this.context = context; 
