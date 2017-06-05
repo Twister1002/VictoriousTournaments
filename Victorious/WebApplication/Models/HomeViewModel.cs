@@ -7,5 +7,8 @@ namespace WebApplication.Models
 {
     public class HomeViewModel : ViewModel
     {
+        protected override void Init()
+        {
+        }
     }
 }

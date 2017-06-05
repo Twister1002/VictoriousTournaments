@@ -11,7 +11,6 @@ namespace WebApplication.Controllers
 {
     public class MatchController : VictoriousController
     {
-
         [Route("Match")]
         public ActionResult Index()
         {
@@ -55,8 +54,6 @@ namespace WebApplication.Controllers
 
             if (games != null)
             {
-
-                LoadAccount(Session);
                 if (account != null)
                 {
                     Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonIds);
@@ -65,59 +62,65 @@ namespace WebApplication.Controllers
                     if (tournamentModel.IsAdministrator(account.AccountId))
                     {
                         BracketViewModel bracketModel = new BracketViewModel(tournamentModel.Tourny.Brackets.ElementAt(json["bracketNum"]));
-                        MatchViewModel matchModel = new MatchViewModel(bracketModel.Bracket.GetMatch(json["matchNum"]));
                         Dictionary<int, bool> processed = new Dictionary<int, bool>();
 
                         // Verify these matches exists
                         foreach (GameViewModel gameModel in games)
                         {
                             // Tie game check
-                            if (matchModel.Match.IsFinished || gameModel.ChallengerScore == gameModel.DefenderScore)
+                            if (bracketModel.Bracket.GetMatch(json["matchNum"]).IsFinished || gameModel.ChallengerScore == gameModel.DefenderScore)
                             {
                                 processed.Add(gameModel.GameNumber, false);
                                 continue;
                             }
 
-                            if (!matchModel.Match.Games.Any(x => x.GameNumber == gameModel.GameNumber))
+                            if (!bracketModel.Bracket.GetMatch(json["matchNum"]).Games.Any(x => x.GameNumber == gameModel.GameNumber))
                             {
                                 // We need to add this game.
                                 PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
-                                GameModel addedGameModel = bracketModel.Bracket.AddGame(matchModel.Match.MatchNumber, gameModel.DefenderScore, gameModel.ChallengerScore, winner);
+                                bracketModel.Bracket.AddGame(json["matchNum"], gameModel.DefenderScore, gameModel.ChallengerScore, winner);
                             }
                             else
                             {
                                 processed.Add(gameModel.GameNumber, false);
                             }
                         }
-                        
-                        //  Load the Models
-                        matchModel.ReloadModel(bracketModel.Bracket.GetMatchModel(matchModel.Match.MatchNumber));
 
                         // Update the matches in the database
-                        object currentMatchData = null;
-                        object winnerMatchData = null;
-                        object loserMatchData = null;
+                        MatchViewModel matchModel = new MatchViewModel(bracketModel.Bracket.GetMatchModel(json["matchNum"]));
                         bool currentMatchUpdate = matchModel.Update();
+                        List<object> matchUpdates = new List<object>();
 
                         if (currentMatchUpdate)
                         {
                             status = true;
                             message = "Current match was updated";
 
-                            currentMatchData = JsonMatchResponse(matchModel.Match, false);
+                            matchUpdates.Add(JsonMatchResponse(matchModel.Match, true));
                             if (matchModel.Match.NextMatchNumber != -1)
-                                winnerMatchData = JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextMatchNumber), false);
-                            if (matchModel.Match.NextLoserMatchNumber != -1) 
-                                loserMatchData = JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextLoserMatchNumber), false);
+                                matchUpdates.Add(JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextMatchNumber), false));
+                            if (matchModel.Match.NextLoserMatchNumber != -1)
+                                matchUpdates.Add(JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextLoserMatchNumber), false));
+                            if (bracketModel.Bracket.BracketType == BracketType.SWISS)
+                            {
+                                List<IMatch> roundMatches = bracketModel.Bracket.GetRound(matchModel.Match.RoundIndex);
+                                // We need to verify and check if this round is finished
+                                if (!roundMatches.Any(x=>x.IsFinished == false))
+                                {
+                                    foreach (IMatch match in bracketModel.Bracket.GetRound(matchModel.Match.RoundIndex + 1))
+                                    {
+                                        matchUpdates.Add(JsonMatchResponse(match, false));
+                                    }
+                                }
+                            }
                         }
 
                         // Prepare data
                         data = new
                         {
                             processed = processed,
-                            currentMatch = currentMatchData,
-                            winnerMatch = winnerMatchData,
-                            loserMatch = loserMatchData
+                            matchUpdates = matchUpdates,
+                            refresh = bracketModel.roundsModified
                         };
                     }
                     else
@@ -155,30 +158,26 @@ namespace WebApplication.Controllers
             BracketViewModel bracketViewModel = new BracketViewModel(json["bracketId"]);
             List<int> matchesAffected = bracketViewModel.MatchesAffectedList(json["matchNum"]);
             List<object> matchDataAffected = new List<object>();
+            bracketViewModel.Bracket.RemoveGameNumber(json["matchNum"], json["gameNum"]);
 
-            GameModel gameRemoved = bracketViewModel.Bracket.RemoveGameNumber(json["matchNum"], json["gameNum"]);
-            GameViewModel removeGameViewModel = new GameViewModel(gameRemoved);
-            if (removeGameViewModel.Delete())
+            status = true;
+            message = "Matches are affected.";
+
+            foreach (int matchNum in matchesAffected)
             {
-                status = true;
-                message = "Matches are affected.";
+                // Load the original and load one from the bracket
+                MatchViewModel modified = new MatchViewModel(bracketViewModel.Bracket.GetMatchModel(matchNum));
+                MatchViewModel original = new MatchViewModel(modified.Match.Id);
 
-                foreach (int matchNum in matchesAffected)
+                List<IGame> games = original.Match.Games.Where(x => !modified.Match.Games.Any(y => y.Id == x.Id)).ToList();
+                foreach (IGame game in games)
                 {
-                    // Load the original and load one from the bracket
-                    MatchViewModel modified = new MatchViewModel(bracketViewModel.Bracket.GetMatchModel(matchNum));
-                    MatchViewModel original = new MatchViewModel(modified.Match.Id);
-
-                    List<IGame> games = original.Match.Games.Where(x => !modified.Match.Games.Any(y => y.Id == x.Id)).ToList();
-                    foreach (IGame game in games)
-                    {
-                        GameViewModel gameViewModel = new GameViewModel(game);
-                        gameViewModel.Delete();
-                    }
-
-                    modified.Update();
-                    matchDataAffected.Add(JsonMatchResponse(modified.Match, true));
+                    GameViewModel gameViewModel = new GameViewModel(game);
+                    gameViewModel.Delete();
                 }
+
+                modified.Update();
+                matchDataAffected.Add(JsonMatchResponse(modified.Match, true));
             }
 
             return Json(JsonConvert.SerializeObject(new

@@ -2,6 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using Moq;
+using System.Linq;
+
+using DatabaseLib;
 
 namespace Tournament.Structure.Tests
 {
@@ -144,9 +147,9 @@ namespace Tournament.Structure.Tests
 		}
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
-		[TestCategory("RRB AddWin")]
+		[TestCategory("RRB AddGame")]
 		[ExpectedException(typeof(InvalidIndexException))]
-		public void RRBAddWin_ThrowsInvalidIndex_WithBadMatchNumber()
+		public void RRBAddGame_ThrowsInvalidIndex_WithBadMatchNumber()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -162,9 +165,9 @@ namespace Tournament.Structure.Tests
 		}
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
-		[TestCategory("RRB AddWin")]
+		[TestCategory("RRB AddGame")]
 		[ExpectedException(typeof(MatchNotFoundException))]
-		public void RRBAddWin_ThrowsNotFound_WithBadMatchNumber()
+		public void RRBAddGame_ThrowsNotFound_WithBadMatchNumber()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 4; ++i)
@@ -177,6 +180,83 @@ namespace Tournament.Structure.Tests
 
 			b.AddGame(b.NumberOfMatches + 1, 0, 1, PlayerSlot.Challenger);
 			Assert.AreEqual(1, 2);
+		}
+
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("RRB UpdateGame")]
+		[TestCategory("Rankings")]
+		public void RRBUpdateGame_UpdatesPointsScore_InRankings()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			b.AddGame(1, 15, 10, PlayerSlot.Defender);
+
+			int oldPoints = b.Rankings[0].PointsScore;
+			b.UpdateGame(1, 1, 25, 10, PlayerSlot.Defender);
+			Assert.AreNotEqual(oldPoints, b.Rankings[0].PointsScore);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("RRB UpdateGame")]
+		[TestCategory("Rankings")]
+		public void RRBUpdateGame_NewMatchWinnerUpdatesInRankings()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			b.AddGame(1, 15, 10, PlayerSlot.Defender);
+
+			int oldRankingsLeader = b.Rankings[0].Id;
+			b.UpdateGame(1, 1, 10, 25, PlayerSlot.Challenger);
+			Assert.AreNotEqual(oldRankingsLeader, b.Rankings[0].Id);
+		}
+
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("SetMatchWinner")]
+		public void RRBSetMatchWinner_FinishesMatch()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 9; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList, 5);
+
+			b.SetMatchWinner(1, PlayerSlot.Challenger);
+			Assert.IsTrue(b.GetMatch(1).IsFinished);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("SetMatchWinner")]
+		public void RRBSetMatchWinner_AddsWinValueToRankings()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 9; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList, 5);
+
+			b.SetMatchWinner(1, PlayerSlot.Challenger);
+			int rIndex = b.Rankings.FindIndex(r => r.Id == b.GetMatch(1).Players[(int)PlayerSlot.Challenger].Id);
+			Assert.AreEqual(1, b.Rankings[rIndex].Wins);
 		}
 
 		[TestMethod]
@@ -252,6 +332,26 @@ namespace Tournament.Structure.Tests
 			b.ResetMatchScore(b.NumberOfMatches + 1);
 			Assert.AreEqual(1, 2);
 		}
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("ResetMatchScore")]
+		[TestCategory("SetMatchWinner")]
+		public void RRBResetScore_RemovesRankingsWin_FromManualMatchWinner()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 9; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList, 5);
+
+			b.AddGame(1, 1, 4, PlayerSlot.Challenger);
+			b.SetMatchWinner(1, PlayerSlot.Challenger);
+			b.ResetMatchScore(1);
+			Assert.AreEqual(0, b.Rankings[0].Wins);
+		}
 
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
@@ -281,6 +381,36 @@ namespace Tournament.Structure.Tests
 			}
 
 			Assert.AreEqual(1, 1);
+		}
+
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("ResetMatches")]
+		public void RRBResetMatches_ResetsRankings()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 9; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 3, PlayerSlot.Challenger);
+			}
+
+			b.ResetMatches();
+			bool rankingsReset = true;
+			foreach (IPlayerScore score in b.Rankings)
+			{
+				if (score.Rank != 1 || score.W != 0)
+				{
+					rankingsReset = false;
+				}
+			}
+			Assert.IsTrue(rankingsReset);
 		}
 
 		[TestMethod]
@@ -332,6 +462,94 @@ namespace Tournament.Structure.Tests
 			int rankIndex = b.Rankings.FindIndex(r => r.Id == b.Players[pIndex].Id);
 			b.ReplacePlayer(playerMoq.Object, pIndex);
 			Assert.AreEqual(playerMoq.Object.Id, b.Rankings[rankIndex].Id);
+		}
+		#endregion
+
+		#region Events
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("AddGame")]
+		[TestCategory("MatchesModified")]
+		public void RRBAddGame_ThrowsMatchesModifiedEvent_HoldingCurrentMatch()
+		{
+			MatchModel model = null;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 9; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				model = e.UpdatedMatches.FirstOrDefault();
+			};
+
+			int matchNum = 5;
+			b.AddGame(matchNum, 3, 2, PlayerSlot.Defender);
+			Assert.AreEqual(matchNum, model.MatchNumber);
+		}
+
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("ResetMatchScore")]
+		[TestCategory("MatchesModified")]
+		public void RRBResetMatchScore_FiresMatchesModifiedEvent_WithOnlyOneMatch()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			int affectedMatches = 0;
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				affectedMatches += e.UpdatedMatches.Count;
+			};
+
+			b.ResetMatchScore(1);
+			Assert.AreEqual(1, affectedMatches);
+		}
+
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("ResetMatches")]
+		[TestCategory("MatchesModified")]
+		public void RRBResetMatches_FiresMatchesModifiedEvent_WithAllAffectedMatches()
+		{
+			int matchesTouched = 5;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 7; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			for (int n = 1; n <= matchesTouched; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			int affectedMatches = 0;
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				affectedMatches += e.UpdatedMatches.Count;
+			};
+
+			b.ResetMatches();
+			Assert.AreEqual(matchesTouched, affectedMatches);
 		}
 		#endregion
 	}

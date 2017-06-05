@@ -13,18 +13,7 @@ namespace Tournament.Structure
 		private class GSLBracket : DoubleElimBracket
 		{
 			#region Variables & Properties
-			// inherits int Id
-			// inherits BracketType BracketType
-			// inherits bool IsFinalized
-			// inherits bool IsFinished
-			// inherits List<IPlayer> Players
-			// inherits List<IPlayerScore> Rankings
-			// inherits Dictionary<int, IMatch> Matches
-			// inherits int NumberOfRounds
-			// inherits Dictionary<int, IMatch> LowerMatches (null)
-			// inherits int NumberOfLowerRounds (0)
-			// inherits IMatch GrandFinal (null)
-			// inherits int NumberOfMatches
+
 			#endregion
 
 			#region Ctors
@@ -53,29 +42,13 @@ namespace Tournament.Structure
 				}
 
 				base.CreateBracket(_gamesPerMatch);
-				GrandFinal = null;
+				grandFinal = null;
 				--NumberOfMatches;
 			}
-#if false
-			public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
-			{
-				GameModel gameModel = null;
-				if (GetMatch(_matchNumber).NextMatchNumber <= NumberOfMatches)
-				{
-					gameModel = base.AddGame(_matchNumber, _defenderScore, _challengerScore, _winnerSlot);
-				}
-				else
-				{
-					gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
-					AddWinEffects(_matchNumber, _winnerSlot);
-				}
-				return gameModel;
-			}
-#endif
 			#endregion
 
 			#region Private Methods
-			protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false)
+			protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 			{
 				if (!_isAddition)
 				{
@@ -90,7 +63,7 @@ namespace Tournament.Structure
 				if (match.NextMatchNumber <= NumberOfMatches)
 				{
 					// Case 1: Not a final/endpoint match. Treat like a DEB:
-					base.UpdateScore(_matchNumber, _games, _isAddition, _formerMatchWinnerSlot, _resetManualWin);
+					base.UpdateScore(_matchNumber, _games, _isAddition, _oldMatch);
 					return;
 				}
 
@@ -148,7 +121,7 @@ namespace Tournament.Structure
 						PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
 							? PlayerSlot.Challenger
 							: PlayerSlot.Defender;
-						GetMatch(nextLoserNumber).AddPlayer
+						GetInternalMatch(nextLoserNumber).AddPlayer
 							(match.Players[(int)loserSlot], PlayerSlot.Defender);
 						alteredMatches.Add(GetMatchModel(nextLoserNumber));
 						// Check lower bracket completion:
@@ -214,20 +187,7 @@ namespace Tournament.Structure
 		}
 
 		#region Variables & Properties
-		// inherits int Id
-		// inherits BracketType BracketType
-		// inherits bool IsFinalized
-		// inherits bool IsFinished
-		// inherits List<IPlayer> Players
-		// inherits List<IPlayerScore> Rankings
-		// inherits Dictionary<int, IMatch> Matches (null)
-		// inherits int NumberOfRounds
-		// inherits Dictionary<int, IMatch> LowerMatches (null)
-		// inherits int NumberOfLowerRounds (0)
-		// inherits IMatch GrandFinal (null)
-		// inherits int NumberOfMatches
-		// inherits List<IBracket> Groups
-		// inherits int NumberOfGroups
+
 		#endregion
 
 		#region Ctors
@@ -249,29 +209,11 @@ namespace Tournament.Structure
 					("Must have 4 or 8 players per group!");
 			}
 
-			Players = new List<IPlayer>();
-			if (_players.Count > 0 && _players[0] is User)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new User(p as User));
-				}
-			}
-			else if (_players.Count > 0 && _players[0] is Team)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new Team(p as Team));
-				}
-			}
-			else
-			{
-				Players = _players;
-			}
-
+			Players = _players;
 			Id = 0;
 			BracketType = BracketType.GSLGROUP;
 			NumberOfGroups = _numberOfGroups;
+
 			CreateBracket(_maxGamesPerMatch);
 		}
 		public GSLGroups()
@@ -291,7 +233,7 @@ namespace Tournament.Structure
 			this.Players = new List<IPlayer>();
 			foreach (TournamentUserModel model in userModels)
 			{
-				Players.Add(new User(model));
+				Players.Add(new Player(model));
 			}
 
 			this.Id = _model.BracketID;
@@ -300,9 +242,10 @@ namespace Tournament.Structure
 			this.NumberOfGroups = _model.NumberOfGroups;
 			CreateBracket();
 
-			foreach (MatchModel model in _model.Matches)
+			foreach (MatchModel matchModel in _model.Matches)
 			{
-				RestoreMatch(model.MatchNumber, model);
+				GetInternalMatch(matchModel.MatchNumber)
+					.SetFromModel(matchModel);
 			}
 		}
 		#endregion

@@ -1,15 +1,9 @@
 ﻿using Tournament.Structure;
 using DatabaseLib;
+using System;
 
 namespace WebApplication.Models
 {
-    public struct MatchGame
-    {
-        public int ChallengerScore;
-        public int DefenderScore;
-        public bool isProcessed;
-    }
-
     public class GameViewModel : GameFields
     {
         public GameModel Model { get; private set; }
@@ -33,6 +27,10 @@ namespace WebApplication.Models
             Model = Game.GetModel();
         }
 
+        protected override void Init()
+        {
+        }
+
         public bool Create()
         {
             return false;
@@ -40,7 +38,8 @@ namespace WebApplication.Models
 
         public bool Delete()
         {
-            return db.DeleteGame(Model.GameID) == DbError.SUCCESS;
+            tournamentService.DeleteGame(Model.GameID);
+            return Save();
         }
 
         public bool Update()

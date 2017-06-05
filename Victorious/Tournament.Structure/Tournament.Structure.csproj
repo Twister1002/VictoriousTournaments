@@ -93,8 +93,6 @@
     <Compile Include="Classes\PlayerScore.cs" />
     <Compile Include="Interfaces\IPlayerScore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Classes\User.cs" />
-    <Compile Include="Classes\Team.cs" />
     <Compile Include="Classes\BracketTypes\RoundRobinBracket.cs" />
     <Compile Include="Classes\BracketTypes\RoundRobinGroups.cs" />
     <Compile Include="Classes\BracketTypes\SwissBracket.cs" />

@@ -13,8 +13,12 @@ namespace WebApplication.Models.Administrator
 
         public GameTypeViewModel()
         {
-            Reload();
             GameType = new GameTypeModel();
+        }
+
+        protected override void Init()
+        {
+            Select();
         }
 
         public void ApplyFields()
@@ -35,33 +39,37 @@ namespace WebApplication.Models.Administrator
         public bool Create()
         {
             ApplyFields();
-            DbError result = DbError.NONE;
+            typeService.AddGameType(GameType);
 
-            if (!String.IsNullOrEmpty(GameType.Title))
+            if (Save())
             {
-                result = db.AddGameType(GameType);
+                Select();
+                return true;
             }
-
-            Reload();
-            return result == DbError.SUCCESS;
+            else
+            {
+                return false;
+            }
         }
 
         public bool Delete(int gameTypeId)
         {
-            DbError result = db.DeleteGameType(gameTypeId);
+            typeService.DeleteGameType(gameTypeId);
 
-            Reload();
-            return result == DbError.SUCCESS;
+            if (Save())
+            {
+                Select();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public List<GameTypeModel> Select()
+        private void Select()
         {
-            return GameTypes;
-        }
-
-        private void Reload()
-        {
-            GameTypes = db.GetAllGameTypes();
+            GameTypes = typeService.GetAllGameTypes();
         }
     }
 }

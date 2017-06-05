@@ -1,19 +1,18 @@
 ﻿jQuery(document).ready(function () {
     $(".clearButton").on("click", function () {
-        $("#TournamentSearch .options .title").val('');
-        $("#TournamentSearch .options .gameType").val('');
-        $("#TournamentSearch .options .startDate").val('');
+        $("#TournamentSearch .options .field").each(function (i, e) {
+            $(e).val('');
+        });
 
         $("#TournamentSearch .options .searchButton").click();
     });
 
     $("#TournamentSearch .options .searchButton").on("click", function () {
-        var jsonData = {
-            "Title": $("#TournamentSearch .options .title").val(),
-            "GameTypeID": $("#TournamentSearch .options .gameType").val(),
-            "PlatformID": $("#TournamentSearch .options .platformType").val(),
-            "TournamentStartDate": $("#TournamentSearch .options .startDate").val(),
-        };
+        var jsonData = {};
+
+        $("#TournamentSearch .options .field").each(function (i, e) {
+            jsonData[$(e).attr("name")] = $(e).val();
+        });
 
         $.ajax({
             "url": "/Ajax/Tournament/Search",
@@ -36,7 +35,7 @@
                     html += "<li class='column'>" + e.game + "</li> ";
                     html += "<li class='column'>" + e.platform + "</li> ";
                     html += "<li class='column'>" + e.startDate + "</li> ";
-                    html += "<li class='column'>" + (e.isPublic ? "Public" : "Private") + "</li> ";
+                    html += "<li class='column'>" + (e.publicRegistration ? "Public" : "Private") + "</li> ";
                     html += "</ul> ";
                     html += "</a> ";
 

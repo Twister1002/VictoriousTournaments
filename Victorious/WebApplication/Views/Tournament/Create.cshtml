@@ -20,21 +20,14 @@
                     @Html.ValidationMessageFor(t => t.Description)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.GameType)
-                    @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---")
-                    @Html.ValidationMessageFor(t => t.GameType)
+                    @Html.LabelFor(t => t.GameTypeID)
+                    @Html.DropDownListFor(t => t.GameTypeID, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---")
+                    @Html.ValidationMessageFor(t => t.GameTypeID)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.BracketType)
-                    @Html.DropDownListFor(t => t.BracketType, new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---")
-                    @Html.ValidationMessageFor(t => t.BracketType)
-                </li>
-                <li>
-                    @Html.LabelFor(t => t.PlatformType)
-                    @Html.DropDownListFor(t => t.PlatformType, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---")
-                    @Html.ValidationMessageFor(t => t.PlatformType)
-                </li>
-                <li>
+                    @Html.LabelFor(t => t.PlatformTypeID)
+                    @Html.DropDownListFor(t => t.PlatformTypeID, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---")
+                    @Html.ValidationMessageFor(t => t.PlatformTypeID)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.PublicViewing)
@@ -45,6 +38,19 @@
                     @Html.LabelFor(t => t.PublicRegistration)
                     @Html.CheckBoxFor(t => t.PublicRegistration)
                     @Html.ValidationMessageFor(t => t.PublicRegistration)
+                </li>
+            </ul>
+        </div>
+        <div class="section form-section bracketSection">
+            <h2>Brackets <span class="icon icon-plus"></span></h2>
+            <ul class="hide bracketOrig">
+                <li class="rounds">
+                    @Html.LabelFor(t => t.BracketTypes)
+                    @Html.DropDownList("BracketData[%n%].BracketType", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---")
+                </li>
+                <li class="swiss rr hide">
+                    @Html.LabelFor(t => t.NumberOfRounds)
+                    @Html.DropDownList("BracketData[%n%].NumberOfRounds", new SelectList(Model.NumberOfRounds, 0))
                 </li>
             </ul>
         </div>

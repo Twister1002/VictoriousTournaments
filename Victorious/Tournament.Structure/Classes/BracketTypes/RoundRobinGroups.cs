@@ -11,20 +11,24 @@ namespace Tournament.Structure
 	public class RoundRobinGroups : GroupStage
 	{
 		#region Variables & Properties
-		// inherits int Id
-		// inherits BracketType BracketType
-		// inherits bool IsFinalized
-		// inherits bool IsFinished
-		// inherits List<IPlayer> Players
-		// inherits List<IPlayerScore> Rankings
-		// inherits Dictionary<int, IMatch> Matches (null)
-		// inherits int NumberOfRounds
-		// inherits Dictionary<int, IMatch> LowerMatches (null)
-		// inherits int NumberOfLowerRounds (0)
-		// inherits IMatch GrandFinal (null)
-		// inherits int NumberOfMatches
-		// inherits List<IBracket> Groups
-		// inherits int NumberOfGroups
+		//public int Id
+		//public BracketType BracketType
+		//public bool IsFinalized
+		//public bool IsFinished
+		//public List<IPlayer> Players
+		//public List<IPlayerScore> Rankings
+		//public int MaxRounds
+		//protected Dictionary<int, Match> Matches = empty
+		//public int NumberOfRounds
+		//protected Dictionary<int, Match> LowerMatches = empty
+		//public int NumberOfLowerRounds
+		//protected Match grandFinal = null
+		//public IMatch GrandFinal = null
+		//public int NumberOfMatches
+		//protected int MatchWinValue
+		//protected int MatchTieValue
+		//protected List<IBracket> Groups
+		//public int NumberOfGroups
 		#endregion
 
 		#region Ctors
@@ -45,63 +49,14 @@ namespace Tournament.Structure
 					("_numberOfGroups", "Must have at least two players per group!");
 			}
 
-			Players = new List<IPlayer>();
-			if (_players.Count > 0 && _players[0] is User)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new User(p as User));
-				}
-			}
-			else if (_players.Count > 0 && _players[0] is Team)
-			{
-				foreach (IPlayer p in _players)
-				{
-					Players.Add(new Team(p as Team));
-				}
-			}
-			else
-			{
-				Players = _players;
-			}
-
+			Players = _players;
 			Id = 0;
 			BracketType = BracketType.RRGROUP;
 			NumberOfGroups = _numberOfGroups;
 			MaxRounds = _numberOfRounds;
+
 			CreateBracket(_maxGamesPerMatch);
 		}
-#if false
-		public RoundRobinGroups(int _numberOfPlayers, int _numberOfGroups)
-		{
-			if (_numberOfPlayers < 0)
-			{
-				throw new ArgumentOutOfRangeException
-					("_numberOfPlayers", "Can't have negative players!");
-			}
-			if (_numberOfGroups < 2)
-			{
-				throw new ArgumentOutOfRangeException
-					("_numberOfGroups", "Must have more than 1 group!");
-			}
-			if (_numberOfGroups > (_numberOfPlayers / 2))
-			{
-				throw new ArgumentOutOfRangeException
-					("_numberOfGroups", "Must have at least two players per group!");
-			}
-
-			Players = new List<IPlayer>();
-			for (int i = 0; i < _numberOfPlayers; ++i)
-			{
-				Players.Add(new User());
-			}
-
-			//BracketType = BracketTypeModel.BracketType.RRGROUP;
-			NumberOfGroups = _numberOfGroups;
-			ResetBracket();
-			CreateBracket();
-		}
-#endif
 		public RoundRobinGroups()
 			: this(new List<IPlayer>(), 0, 0)
 		{ }
@@ -119,79 +74,26 @@ namespace Tournament.Structure
 			this.Players = new List<IPlayer>();
 			foreach (TournamentUserModel model in userModels)
 			{
-				Players.Add(new User(model));
+				Players.Add(new Player(model));
 			}
 
 			this.Id = _model.BracketID;
 			this.BracketType = _model.BracketType.Type;
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
-			this.MaxRounds = 0;
+			this.MaxRounds = _model.MaxRounds;
+
 			CreateBracket();
-
 			// Find & update every Match:
-			foreach (MatchModel model in _model.Matches)
+			foreach (MatchModel matchModel in _model.Matches)
 			{
-				RestoreMatch(model.MatchNumber, model);
-#if false
-				foreach (IBracket group in Groups)
-				{
-					if (group.Players.Select(p => p.Id).ToList()
-						.Contains((int)(model.DefenderID)))
-					{
-						// Update Match's score:
-						group.GetMatch(model.MatchNumber)
-							.SetMaxGames((ushort)(model.MaxGames));
-						//group.GetMatch(model.MatchNumber)
-						//	.SetWinsNeeded((ushort)(model.WinsNeeded));
-
-						List<GameModel> gModelList = model.Games
-							.OrderBy(g => g.GameNumber).ToList();
-						foreach (GameModel gmodel in gModelList)
-						{
-							group.AddGame(model.MatchNumber, new Game(gmodel));
-						}
-#if false
-						if (model.DefenderScore < model.ChallengerScore)
-						{
-							for (int i = 0; i < model.DefenderScore; ++i)
-							{
-								group.AddWin(model.MatchNumber, PlayerSlot.Defender);
-							}
-							for (int i = 0; i < model.ChallengerScore; ++i)
-							{
-								group.AddWin(model.MatchNumber, PlayerSlot.Challenger);
-							}
-						}
-						else
-						{
-							for (int i = 0; i < model.ChallengerScore; ++i)
-							{
-								group.AddWin(model.MatchNumber, PlayerSlot.Challenger);
-							}
-							for (int i = 0; i < model.DefenderScore; ++i)
-							{
-								group.AddWin(model.MatchNumber, PlayerSlot.Defender);
-							}
-						}
-#endif
-						break;
-					}
-				}
-#endif
+				GetInternalMatch(matchModel.MatchNumber)
+					.SetFromModel(matchModel);
 			}
 
 			// Update the rankings:
-			UpdateRankings();
-			this.IsFinished = true;
-			foreach (IBracket group in Groups)
-			{
-				if (!group.IsFinished)
-				{
-					this.IsFinished = false;
-					break;
-				}
-			}
+			RecalculateRankings();
+			UpdateFinishStatus();
 		}
 		#endregion
 
@@ -205,9 +107,11 @@ namespace Tournament.Structure
 					("Games Per Match must be positive!");
 			}
 			if (Players.Count < 2 ||
-				NumberOfGroups > (Players.Count / 2) || NumberOfGroups < 2)
+				NumberOfGroups < 2 ||
+				NumberOfGroups > (int)(Players.Count * 0.5))
 			{
-				return;
+				throw new BracketException
+					("Not enough Players per Group!");
 			}
 
 			for (int b = 0; b < NumberOfGroups; ++b)
@@ -224,28 +128,19 @@ namespace Tournament.Structure
 			foreach (IBracket group in Groups)
 			{
 				NumberOfMatches += group.NumberOfMatches;
-				NumberOfRounds = (NumberOfRounds < group.NumberOfRounds)
+				NumberOfRounds = (this.NumberOfRounds < group.NumberOfRounds)
 					? group.NumberOfRounds
 					: this.NumberOfRounds;
 				Rankings.AddRange(group.Rankings);
 			}
-		}
-
-		public override void ResetMatches()
-		{
-			base.ResetMatches();
-			UpdateRankings();
+			Rankings.Sort(SortRankingScores);
 		}
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateRankings()
+		protected override void RecalculateRankings()
 		{
-			Rankings.Clear();
-			foreach (IBracket group in Groups)
-			{
-				Rankings.AddRange(group.Rankings);
-			}
+			base.RecalculateRankings();
 
 			Rankings.Sort(SortRankingScores);
 			for (int i = 0; i < Rankings.Count; ++i)

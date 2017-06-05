@@ -65,9 +65,26 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Events
+		/// <summary>
+		/// Fired on creation of a new round of Matches. (Swiss)
+		/// Contains Models of Matches to add.
+		/// </summary>
 		event EventHandler<BracketEventArgs> RoundAdded;
+
+		/// <summary>
+		/// Fired on deletion of one or more rounds. (Swiss)
+		/// Contains Models of Matches to delete.
+		/// </summary>
 		event EventHandler<BracketEventArgs> RoundDeleted;
+
+		/// <summary>
+		/// Modifications were made. Update any contained Matches and Games.
+		/// </summary>
 		event EventHandler<BracketEventArgs> MatchesModified;
+
+		/// <summary>
+		/// Games were deleted. Use these ID's to update the database.
+		/// </summary>
 		event EventHandler<BracketEventArgs> GamesDeleted;
 		#endregion
 
@@ -78,8 +95,12 @@ namespace Tournament.Structure
 		/// <param name="_gamesPerMatch">Max games played each match</param>
 		void CreateBracket(int _gamesPerMatch = 1);
 
-		void RestoreMatch(int _matchNumber, MatchModel _model);
+		/// <summary>
+		/// Resets EVERY Match to a pre-play state (no games played).
+		/// </summary>
+		void ResetMatches();
 
+		#region Player Methods
 		/// <summary>
 		/// Gets the number of Players in the Bracket.
 		/// </summary>
@@ -108,6 +129,14 @@ namespace Tournament.Structure
 		void SetNewPlayerlist(List<IPlayer> _players);
 
 		/// <summary>
+		/// Replace this bracket's Players (if any)
+		/// with the passed-in list.
+		/// (Deletes all Matches)
+		/// </summary>
+		/// <param name="_players">Seeded list of Player Models</param>
+		void SetNewPlayerlist(ICollection<TournamentUsersBracketModel> _players);
+
+		/// <summary>
 		/// Add a Player to the Bracket.
 		/// (Deletes all Matches)
 		/// </summary>
@@ -122,6 +151,13 @@ namespace Tournament.Structure
 		/// <param name="_player">Player-type object to add</param>
 		/// <param name="_index">Slot in list to replace (0-indexed)</param>
 		void ReplacePlayer(IPlayer _player, int _index);
+
+		/// <summary>
+		/// Remove a Player from the bracket.
+		/// (Deletes all Matches)
+		/// </summary>
+		/// <param name="_playerId">ID of Player to remove</param>
+		void RemovePlayer(int _playerId);
 
 		/// <summary>
 		/// Swaps two Players' seeds/positions.
@@ -141,18 +177,13 @@ namespace Tournament.Structure
 		void ReinsertPlayer(int _oldIndex, int _newIndex);
 
 		/// <summary>
-		/// Remove a Player from the bracket.
-		/// (Deletes all Matches)
-		/// </summary>
-		/// <param name="_playerId">ID of Player to remove</param>
-		void RemovePlayer(int _playerId);
-
-		/// <summary>
 		/// Clears the bracket's player list.
 		/// (Deletes all Matches)
 		/// </summary>
 		void ResetPlayers();
+		#endregion
 
+		#region Match & Game Methods
 		/// <summary>
 		/// Add/record a finished Game.
 		/// </summary>
@@ -204,6 +235,15 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Number of specified match</param>
 		/// <returns>List of Models of removed Games</returns>
 		List<GameModel> ResetMatchScore(int _matchNumber);
+		#endregion
+
+		#region Accessors & Mutators
+		/// <summary>
+		/// Get a Model of current Bracket.
+		/// </summary>
+		/// <param name="_tournamentID">ID of this Bracket's Tournament</param>
+		/// <returns>BracketModel</returns>
+		BracketModel GetModel(int _tournamentID = 0);
 
 		/// <summary>
 		/// Get all Matches in specified round.
@@ -250,11 +290,7 @@ namespace Tournament.Structure
 		/// <param name="_roundIndex">Round (lower bracket) of Matches to modify</param>
 		/// <param name="_maxGamesPerMatch">How many Games each Match may last</param>
 		void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch);
-
-		/// <summary>
-		/// Resets EVERY Match to a pre-play state (no games played).
-		/// </summary>
-		void ResetMatches();
-#endregion
+		#endregion
+		#endregion
 	}
 }

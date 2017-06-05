@@ -15,7 +15,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match Ctor")]
 		public void MatchDefaultCtor_Constructs()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 
 			Assert.AreEqual(1, m.MaxGames);
 		}
@@ -27,7 +27,7 @@ namespace Tournament.Structure.Tests
 		public void MatchModelCtor_ThrowsExceptionOnNullParam()
 		{
 			MatchModel mod = null;
-			IMatch m = new Match(mod);
+			Match m = new Match(mod);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -38,7 +38,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("MatchModel")]
 		public void GetModel_AddsDefaultPlayerIDs_WhenMatchIsMissingPlayers()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			MatchModel model = m.GetModel();
 
 			Assert.AreEqual(-1, model.ChallengerID);
@@ -49,7 +49,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("MatchModel")]
 		public void GetModel_CorrectlyCopiesMatchData()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetMaxGames(3);
 			MatchModel model = m.GetModel();
 
@@ -63,7 +63,7 @@ namespace Tournament.Structure.Tests
 		public void AddPlayer_AddsAPlayer()
 		{
 			IPlayer p = new Mock<IPlayer>().Object;
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p);
 
 			Assert.AreEqual(p, m.Players[(int)PlayerSlot.Defender]);
@@ -73,7 +73,7 @@ namespace Tournament.Structure.Tests
 		[TestCategory("Match AddPlayer")]
 		public void AddPlayer_DoesNotSetMatchIsReady()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(new Mock<IPlayer>().Object);
 
 			Assert.AreEqual(false, m.IsReady);
@@ -88,7 +88,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
@@ -104,7 +104,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
@@ -117,7 +117,7 @@ namespace Tournament.Structure.Tests
 		{
 			var p2 = new Mock<IPlayer>();
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p2.Object, PlayerSlot.Challenger);
 
 			Assert.AreEqual(p2.Object, m.Players[(int)PlayerSlot.Challenger]);
@@ -128,7 +128,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(InvalidSlotException))]
 		public void AddPlayer_ThrowsInvalidSlot_WithBadSlotParam()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(new Mock<IPlayer>().Object, (PlayerSlot)4);
 
 			Assert.AreEqual(1, 2);
@@ -144,7 +144,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object, PlayerSlot.Defender);
 			m.AddPlayer(p2.Object, PlayerSlot.Defender);
 
@@ -159,7 +159,7 @@ namespace Tournament.Structure.Tests
 			var p1 = new Mock<IPlayer>();
 			p1.Setup(p => p.Id).Returns(1);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object, PlayerSlot.Challenger);
 			m.AddPlayer(p1.Object, PlayerSlot.Defender);
 
@@ -179,7 +179,7 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(pList[0]);
 			m.AddPlayer(pList[1]);
 			m.ReplacePlayer(pList[2], pList[(int)PlayerSlot.Challenger].Id);
@@ -192,7 +192,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void ReplacePlayer_ThrowsNullException_WithNullParam()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.ReplacePlayer(null, 1);
 
 			Assert.AreEqual(1, 2);
@@ -203,7 +203,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(PlayerNotFoundException))]
 		public void ReplacePlayer_ThrowsNotFound_IfIDIsNotInMatch()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.ReplacePlayer(new Mock<IPlayer>().Object, 10);
 
 			Assert.AreEqual(1, 2);
@@ -218,7 +218,7 @@ namespace Tournament.Structure.Tests
 			var p1 = new Mock<IPlayer>();
 			p1.Setup(p => p.Id).Returns(playerId);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object, PlayerSlot.Defender);
 			m.RemovePlayer(playerId);
 
@@ -235,7 +235,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 			m.RemovePlayer(playerId);
@@ -248,7 +248,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(PlayerNotFoundException))]
 		public void RemovePlayer_ThrowsNotFound_IfPlayerToRemoveDoesntExist()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.RemovePlayer(10);
 
 			Assert.AreEqual(1, 2);
@@ -264,7 +264,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 			m.ResetPlayers();
@@ -281,7 +281,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 			m.ResetPlayers();
@@ -298,7 +298,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 			m.ResetPlayers();
@@ -318,7 +318,7 @@ namespace Tournament.Structure.Tests
 			p1.Setup(p => p.Id).Returns(10);
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
@@ -335,7 +335,7 @@ namespace Tournament.Structure.Tests
 			p1.Setup(p => p.Id).Returns(10);
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
@@ -353,7 +353,7 @@ namespace Tournament.Structure.Tests
 			p1.Setup(p => p.Id).Returns(10);
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
@@ -370,7 +370,7 @@ namespace Tournament.Structure.Tests
 		public void AddGame_ThrowsInactiveIfTooFewPlayers()
 		{
 			var p1 = new Mock<IPlayer>();
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 
 			m.AddGame(1, 0, PlayerSlot.Defender);
@@ -387,7 +387,7 @@ namespace Tournament.Structure.Tests
 			p1.Setup(p => p.Id).Returns(10);
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 			m.SetMaxGames(3);
@@ -406,7 +406,7 @@ namespace Tournament.Structure.Tests
 			p1.Setup(p => p.Id).Returns(10);
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 			m.SetMaxGames(3);
@@ -425,7 +425,7 @@ namespace Tournament.Structure.Tests
 			p1.Setup(p => p.Id).Returns(10);
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 			m.SetMaxGames(3);
@@ -445,7 +445,7 @@ namespace Tournament.Structure.Tests
 			p1.Setup(p => p.Id).Returns(10);
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
@@ -461,7 +461,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(GameNotFoundException))]
 		public void RemoveLastGame_ThrowsNotFound_WhenMatchHasNoGames()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.RemoveLastGame();
 
 			Assert.AreEqual(1, 2);
@@ -476,7 +476,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p1.Setup(p => p.Id).Returns(10);
 			p2.Setup(p => p.Id).Returns(20);
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
@@ -494,7 +494,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p1.Setup(p => p.Id).Returns(10);
 			p2.Setup(p => p.Id).Returns(20);
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
@@ -512,7 +512,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p1.Setup(p => p.Id).Returns(10);
 			p2.Setup(p => p.Id).Returns(20);
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 
@@ -530,7 +530,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p1.Setup(p => p.Id).Returns(10);
 			p2.Setup(p => p.Id).Returns(20);
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 			m.SetMaxGames(3);
@@ -552,7 +552,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetMaxGames(3);
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
@@ -572,7 +572,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetMaxGames(3);
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
@@ -592,7 +592,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetMaxGames(3);
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
@@ -612,7 +612,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetMaxGames(3);
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
@@ -634,7 +634,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object, PlayerSlot.Defender);
 			m.AddPlayer(p2.Object, PlayerSlot.Challenger);
 			m.AddGame(1, 0, PlayerSlot.Defender);
@@ -654,7 +654,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object, PlayerSlot.Defender);
 			m.AddPlayer(p2.Object, PlayerSlot.Challenger);
 			m.AddGame(1, 0, PlayerSlot.Defender);
@@ -671,7 +671,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(ScoreException))]
 		public void SetMaxGames_ThrowsScoreException_WithZeroInput()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetMaxGames(0);
 
 			Assert.AreEqual(1, 2);
@@ -687,7 +687,7 @@ namespace Tournament.Structure.Tests
 			var p2 = new Mock<IPlayer>();
 			p2.Setup(p => p.Id).Returns(20);
 
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPlayer(p1.Object);
 			m.AddPlayer(p2.Object);
 			m.AddGame(1, 0, PlayerSlot.Defender);
@@ -701,7 +701,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(AlreadyAssignedException))]
 		public void SetRoundIndex_ThrowsAlreadyAssigned_WhenCalledTwice()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetRoundIndex(2);
 			m.SetRoundIndex(3);
 
@@ -713,7 +713,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(AlreadyAssignedException))]
 		public void SetMatchIndex_ThrowsAlreadyAssigned_WhenCalledTwice()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetMatchIndex(2);
 			m.SetMatchIndex(3);
 
@@ -726,7 +726,7 @@ namespace Tournament.Structure.Tests
 		public void SetMatchNumber_Sets()
 		{
 			int n = 5;
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetMatchNumber(n);
 
 			Assert.AreEqual(n, m.MatchNumber);
@@ -737,7 +737,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(AlreadyAssignedException))]
 		public void SetMatchNumber_ThrowsAlreadyAssigned_WhenCalledTwice()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetMatchNumber(1);
 			m.SetMatchNumber(2);
 
@@ -750,7 +750,7 @@ namespace Tournament.Structure.Tests
 		public void AddPreviousMatchNumber_Adds()
 		{
 			int i = 14;
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPreviousMatchNumber(i);
 			m.AddPreviousMatchNumber(2);
 
@@ -763,7 +763,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(AlreadyAssignedException))]
 		public void AddPreviousMatchNumber_ThrowsAlreadyAssigned_AfterMoreThanTwoCalls()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.AddPreviousMatchNumber(1);
 			m.AddPreviousMatchNumber(2);
 			m.AddPreviousMatchNumber(3);
@@ -777,7 +777,7 @@ namespace Tournament.Structure.Tests
 		public void SetNextMatchNumber_Sets()
 		{
 			int n = 5;
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetNextMatchNumber(n);
 
 			Assert.AreEqual(n, m.NextMatchNumber);
@@ -788,7 +788,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(AlreadyAssignedException))]
 		public void SetNextMatchNumber_ThrowsAlreadyAssigned_WhenCalledTwice()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetNextMatchNumber(1);
 			m.SetNextMatchNumber(2);
 
@@ -800,7 +800,7 @@ namespace Tournament.Structure.Tests
 		public void SetNextLoserMatchNumber_Sets()
 		{
 			int n = 7;
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetNextLoserMatchNumber(n);
 
 			Assert.AreEqual(n, m.NextLoserMatchNumber);
@@ -811,7 +811,7 @@ namespace Tournament.Structure.Tests
 		[ExpectedException(typeof(AlreadyAssignedException))]
 		public void SetNextLoserMatchNumber_ThrowsAlreadyAssigned_WhenCalledTwice()
 		{
-			IMatch m = new Match();
+			Match m = new Match();
 			m.SetNextLoserMatchNumber(1);
 			m.SetNextLoserMatchNumber(2);
 

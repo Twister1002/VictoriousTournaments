@@ -134,10 +134,11 @@ namespace Tournament.Structure
 		/// Adds a new Swiss bracket to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the stage</param>
+		/// <param name="_pairingMethod">Method of pairing players within each round</param>
 		/// <param name="_maxGamesPerMatch">Length of each Match</param>
 		/// <param name="_numRounds">Limit of rounds for the stage
 		/// 0 = no limit (default)</param>
-		void AddSwissBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1, int _numRounds = 0);
+		void AddSwissBracket(List<IPlayer> _playerList, PairingMethod _pairingMethod = PairingMethod.Slide, int _maxGamesPerMatch = 1, int _numRounds = 0);
 
 		/// <summary>
 		/// Adds a new Round Robin Group Stage to the tournament.

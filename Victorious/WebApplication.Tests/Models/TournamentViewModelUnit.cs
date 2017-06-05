@@ -91,23 +91,58 @@ namespace WebApplication.Tests.Models
             // Act
 
             // Assert
-            Assert.AreEqual(4, viewModel.Participants.Count);
+            Assert.AreEqual(4, viewModel.GetParticipants().Count);
         }
 
         [TestMethod]
         [TestCategory("TournamentModel")]
-        [TestCategory("Permissions")]
-        public void TournamentViewModel_Administrators_Returns_2()
+        public void TournamentViewModel_UpdateBrackets_AppliesNewBracketsFromForm()
         {
             // Arrange
-            TournamentModel model = CreateModel();
-            TournamentViewModel viewModel = new TournamentViewModel(model);
+            TournamentViewModel viewModel = new TournamentViewModel();
+            viewModel.BracketData = new System.Collections.Generic.List<BracketInfo>
+            {
+                new BracketInfo() { BracketType = 1, NumberOfRounds = 0 },
+                new BracketInfo() { BracketType = 2, NumberOfRounds = 0 },
+                new BracketInfo() { BracketType = 6, NumberOfRounds = 5 },
+                new BracketInfo() { BracketType = 5, NumberOfRounds = 2 }
+            };
 
             // Act
+            viewModel.UpdateBrackets();
 
             // Assert
-            Assert.AreEqual(2, viewModel.Administrators.Count);
+            Assert.AreEqual(4, viewModel.Model.Brackets.Count);
         }
+
+        //[TestMethod]
+        //[TestCategory("TournamentModel")]
+        //public void TournamentViewModel_UpdateBrackets_AppliesNewBrackets_And_UpdatesBrackets()
+        //{
+        //    // Arrange
+        //    TournamentViewModel viewModel = new TournamentViewModel();
+        //    viewModel.Model.Brackets.
+
+        //    // Act
+        //    viewModel.UpdateBrackets();
+
+        //    // Assert
+        //    Assert.AreEqual(3, viewModel.Model.Brackets.Count);
+        //}
+
+        //[TestMethod]
+        //[TestCategory("TournamentModel")]
+        //public void TournamentViewModel_UpdateBrackets_RemovesBrackets()
+        //{
+        //    // Arrange
+        //    TournamentViewModel viewModel = new TournamentViewModel();
+
+        //    // Act
+        //    viewModel.UpdateBrackets();
+
+        //    // Assert
+        //    Assert.AreEqual(3, viewModel.Model.Brackets.Count);
+        //}
 
         private TournamentModel CreateModel()
         {

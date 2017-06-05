@@ -5,6 +5,12 @@ using DatabaseLib;
 
 namespace WebApplication.Models
 {
+    public struct BracketInfo
+    {
+        public int BracketType { get; set; }
+        public int NumberOfRounds { get; set; }
+    }
+
     public abstract class AccountFields : ViewModel
     {
         public int AccountId { get; set; } 
@@ -112,28 +118,29 @@ namespace WebApplication.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
         public DateTime CheckinEndTime { get; set; }
 
+        [Display(Name = "Bracket Type")]
         public List<BracketTypeModel> BracketTypes { get; protected set; }
+        [Display(Name ="Rounds")]
+        public List<int> NumberOfRounds { get; protected set; }
         public List<GameTypeModel> GameTypes { get; protected set; }
         public List<PlatformModel> PlatformTypes { get; protected set; }
-        public List<TournamentUserModel> Users { get; set; }
-
-        [Display(Name = "Bracket Type")]
-        [Required(ErrorMessage ="Select a bracket type")]
-        public int BracketType { get; set; }
+        
+        public List<BracketInfo> BracketData { get; set; }
 
         [Display(Name ="Game")]
         [Required(ErrorMessage ="Select a game")]
-        public int? GameType { get; set; }
+        public int? GameTypeID { get; set; }
 
         [Display(Name = "Platform")]
         [Required(ErrorMessage = "Choose a platform")]
-        public int PlatformType { get; set; } 
+        public int PlatformTypeID { get; set; } 
 
         [Display(Name = "Public Viewing")]
         public bool PublicViewing { get; set; }
         [Display(Name = "Public Registation")]
         public bool PublicRegistration { get; set; }
 
+        
         public abstract void ApplyChanges();
         public abstract void SetFields();
     }
@@ -160,6 +167,8 @@ namespace WebApplication.Models
         public String Name { get; set; }
         public int TournamentID { get; set; }
         public int AccountID { get; set; }
+
+        protected override void Init() { }
     }
 
     public abstract class GameTypeFields : ViewModel

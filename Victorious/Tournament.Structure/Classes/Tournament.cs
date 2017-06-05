@@ -41,7 +41,7 @@ namespace Tournament.Structure
 			this.Players = new List<IPlayer>();
 			foreach (TournamentUserModel model in _model.TournamentUsers)
 			{
-				Players.Add(new User(model));
+				Players.Add(new Player(model));
 			}
 
 			this.Brackets = new List<IBracket>();
@@ -75,7 +75,6 @@ namespace Tournament.Structure
 				Players = new List<IPlayer>();
 			}
 
-			Players.Clear();
 			Players = _players;
 			foreach (IBracket bracket in Brackets)
 			{
@@ -104,6 +103,7 @@ namespace Tournament.Structure
 				? _numberOfPlayers
 				: Brackets[_initialBracketIndex].Rankings.Count;
 			List<IPlayer> pList = new List<IPlayer>();
+			pList.Capacity = maxPlayers;
 			foreach (IPlayerScore pScore in Brackets[_initialBracketIndex].Rankings)
 			{
 				pList.Add(Brackets[_initialBracketIndex].Players
@@ -257,14 +257,22 @@ namespace Tournament.Structure
 				case (BracketType.ROUNDROBIN):
 					ret = new RoundRobinBracket(_model);
 					break;
+				case (BracketType.SWISS):
+					ret = new SwissBracket(_model);
+					break;
 				case (BracketType.RRGROUP):
 					ret = new RoundRobinGroups(_model);
 					break;
 				case (BracketType.GSLGROUP):
-					ret = new GSLGroups(_model);
-					break;
+					throw new NotImplementedException("GSL doesn't work yet!");
+					//ret = new GSLGroups(_model);
+					//break;
 				default:
 					throw new NotImplementedException();
+			}
+			if (0 == ret.NumberOfMatches)
+			{
+				ret.CreateBracket();
 			}
 			return ret;
 		}
@@ -341,9 +349,9 @@ namespace Tournament.Structure
 			AddRoundRobinBracket(pList, _numRounds);
 		}
 #endif
-		public void AddSwissBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1, int _numRounds = 0)
+		public void AddSwissBracket(List<IPlayer> _playerList, PairingMethod _pairingMethod = PairingMethod.Slide, int _maxGamesPerMatch = 1, int _numRounds = 0)
 		{
-			Brackets.Add(new SwissBracket(_playerList, _maxGamesPerMatch, _numRounds));
+			Brackets.Add(new SwissBracket(_playerList, _pairingMethod, _maxGamesPerMatch, _numRounds));
 		}
 		public void AddRRGroupStage(List<IPlayer> _playerList, int _numGroups = 2, int _maxGamesPerMatch = 1, int _maxRounds = 0)
 		{

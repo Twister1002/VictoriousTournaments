@@ -305,7 +305,7 @@ namespace WebApplication.Tests.Models
 
             for (int i = 1; i <= playersAmt; i++)
             {
-                players.Add(new User(i, "Player "+i, "Player", i.ToString(), "Player"+i+"@email.com"));
+                players.Add(new Player(i, "Player "+i, "Player"+i+"@email.com"));
             }
 
             return players;

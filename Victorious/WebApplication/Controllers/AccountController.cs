@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using System.Web.SessionState;
 using WebApplication.Models;
 
 namespace WebApplication.Controllers
@@ -17,10 +18,13 @@ namespace WebApplication.Controllers
         [Route("Account/Index")]
         public ActionResult Index()
         {
-            if (Session["User.UserId"] != null)
+#if DEBUG
+            // Since this is debug, save me the time and just log me in
+            if (!IsLoggedIn()) Session["User.UserId"] = 1;
+#endif
+            if (IsLoggedIn())
             {
-                AccountViewModel model = new AccountViewModel((int)Session["User.UserId"]);
-                return View("Index", model);
+                return View("Index", account);
             }
             else
             {
@@ -31,15 +35,13 @@ namespace WebApplication.Controllers
         [Route("Account/Login")]
         public ActionResult Login()
         {
-            AccountViewModel model = new AccountViewModel();
-
             if (Session["User.UserId"] != null)
             {
                 return RedirectToAction("Index", "Account");
             }
             else
             {
-                return View("Login", model);
+                return View("Login", account);
             }
         }
 
@@ -72,17 +74,14 @@ namespace WebApplication.Controllers
         [Route("Account/Register")]
         public ActionResult Register()
         {
-            AccountViewModel model = new AccountViewModel();
-
-            if (Session["User.UserId"] != null)
+            if (IsLoggedIn())
             {
                 return RedirectToAction("Index");
             }
             else
             {
-                return View(model);
+                return View("Register", account);
             }
-
         }
 
         [HttpPost]
@@ -117,12 +116,10 @@ namespace WebApplication.Controllers
         [Route("Account/Update")]
         public ActionResult Update()
         {
-            if (Session["User.UserId"] != null)
+            if (account != null)
             {
-                AccountViewModel model = new AccountViewModel((int)Session["User.UserId"]);
-                model.SetFields();
-
-                return View("Update", model);
+                account.SetFields();
+                return View("Update", account);
             }
             else
             {
@@ -136,12 +133,12 @@ namespace WebApplication.Controllers
         [Route("Account/Update")]
         public ActionResult Update(AccountViewModel viewModel)
         {
-            if (Session["User.UserId"] != null)
+            if (IsLoggedIn())
             {
                 // Verify the user being updated is legitly the user logged in
-                if (viewModel.AccountId == (int)Session["User.UserId"])
+                if (viewModel.AccountId == account.AccountId)
                 {
-                    if (viewModel.Update())
+                    if (account.Update(viewModel))
                     {
                         viewModel.error = ViewModel.ViewError.SUCCESS;
                         viewModel.message = "Your account was successfully updated.";
@@ -154,7 +151,7 @@ namespace WebApplication.Controllers
                     {
                         // There was an error updating the account
                         viewModel.error = ViewModel.ViewError.CRITICAL;
-                        viewModel.message = "There was an error updating your account. Please try again later.";
+                        viewModel.message = "There was an error updating your account.";
                     }
                 }
                 else

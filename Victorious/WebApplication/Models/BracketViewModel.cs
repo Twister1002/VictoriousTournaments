@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tournament.Structure;
 using DatabaseLib;
+using DatabaseLib.Services;
 
 namespace WebApplication.Models
 {
@@ -22,6 +23,8 @@ namespace WebApplication.Models
 
     public class BracketViewModel : BracketFields
     {
+        private TournamentService service;
+        public bool roundsModified { get; private set; }
         public IBracket Bracket { get; private set; }
         public BracketModel Model { get; private set; }
 
@@ -34,22 +37,32 @@ namespace WebApplication.Models
         public BracketViewModel(BracketModel model)
         {
             Model = model;
-            LoadBracket();
-            LoadEvents();
+            Bracket = null;
         }
 
         public BracketViewModel(IBracket bracket)
         {
             Bracket = bracket;
             Model = null;
-            LoadEvents();
         }
 
         public BracketViewModel(int id)
         {
-            Model = db.GetBracket(id);
-            LoadBracket();
-            LoadEvents();
+            Model = tournamentService.GetBracket(id);
+        }
+
+        protected override void Init()
+        {
+            service = new TournamentService(work);
+            if (Model != null && Bracket == null)
+            {
+                Bracket = new Tournament.Structure.Tournament().RestoreBracket(Model);
+            }
+
+            if (Bracket != null)
+            {
+                LoadEvents();
+            }
         }
 
         private void LoadEvents()
@@ -60,60 +73,61 @@ namespace WebApplication.Models
             Bracket.GamesDeleted += OnGamesDeleted;
         }
 
-        private void LoadBracket()
-        {
-            if (Model != null)
-            {
-                if (Model.Finalized)
-                {
-                    switch (Model.BracketType.Type)
-                    {
-                        case BracketType.SINGLE:
-                            Bracket = new SingleElimBracket(Model);
-                            break;
-                        case BracketType.DOUBLE:
-                            Bracket = new DoubleElimBracket(Model);
-                            break;
-                        case BracketType.ROUNDROBIN:
-                            Bracket = new RoundRobinBracket(Model);
-                            break;
-                        case BracketType.SWISS:
-                            Bracket = new SwissBracket(Model);
-                            break;
-                    }
-                }
-                else
-                {
-                    List<IPlayer> players = new List<IPlayer>();
-                    foreach (TournamentUserModel user in Model.Tournament.TournamentUsers)
-                    {
-                        players.Add(new User(user));
-                    }
+        //private void LoadBracket()
+        //{
+        //    if (Model != null)
+        //    {
+        //        if (Model.Finalized)
+        //        {
+        //            switch (Model.BracketType.Type)
+        //            {
+        //                case BracketType.SINGLE:
+        //                    Bracket = new SingleElimBracket(Model);
+        //                    break;
+        //                case BracketType.DOUBLE:
+        //                    Bracket = new DoubleElimBracket(Model);
+        //                    break;
+        //                case BracketType.ROUNDROBIN:
+        //                    Bracket = new RoundRobinBracket(Model);
+        //                    break;
+        //                case BracketType.SWISS:
+        //                    Bracket = new SwissBracket(Model);
+        //                    break;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            List<IPlayer> players = new List<IPlayer>();
+        //            foreach (TournamentUserModel user in Model.Tournament.TournamentUsers)
+        //            {
+        //                players.Add(new User(user));
+        //            }
 
-                    switch (Model.BracketType.Type)
-                    {
-                        case BracketType.SINGLE:
-                            Bracket = new SingleElimBracket(players);
-                            break;
-                        case BracketType.DOUBLE:
-                            Bracket = new DoubleElimBracket(players);
-                            break;
-                        case BracketType.ROUNDROBIN:
-                            Bracket = new RoundRobinBracket(players);
-                            break;
-                        case BracketType.SWISS:
-                            Bracket = new SwissBracket(players);
-                            break;
-                    }
-                }
-            }
-        }
+        //            switch (Model.BracketType.Type)
+        //            {
+        //                case BracketType.SINGLE:
+        //                    Bracket = new SingleElimBracket(players);
+        //                    break;
+        //                case BracketType.DOUBLE:
+        //                    Bracket = new DoubleElimBracket(players);
+        //                    break;
+        //                case BracketType.ROUNDROBIN:
+        //                    Bracket = new RoundRobinBracket(players);
+        //                    break;
+        //                case BracketType.SWISS:
+        //                    Bracket = new SwissBracket(players);
+        //                    break;
+        //            }
+        //        }
+        //    }
+        //}
 
         public bool Update()
         {
             if (Model != null)
             {
-                return db.UpdateBracket(Model) == DbError.SUCCESS;
+                tournamentService.UpdateBracket(Model);
+                return Save();
             }
 
             return false;
@@ -121,8 +135,8 @@ namespace WebApplication.Models
 
         public bool Update(BracketModel model)
         {
-            //Model = model;
-            return db.UpdateBracket(model) == DbError.SUCCESS;
+            tournamentService.UpdateBracket(model);
+            return Save();
         }
 
         public int TotalRounds()
@@ -137,34 +151,53 @@ namespace WebApplication.Models
         {
             List<int> matchesAffected = new List<int>();
             IMatch head = Bracket.GetMatch(matchNum);
-            matchesAffected.Add(matchNum);
 
-            if (head.NextMatchNumber != -1)
+            if (Bracket.BracketType == BracketType.SWISS)
             {
-                List<int> matches = MatchesAffectedList(head.NextMatchNumber);
+                List<IMatch> matches = Bracket.GetRound(head.RoundIndex);
 
-                foreach (int match in matches)
+                if (!matches.Any(x => x.IsFinished == false))
                 {
-                    if (!matchesAffected.Exists((i) => i == match))
+                    matches = Bracket.GetRound(head.RoundIndex + 1);
+                    foreach (IMatch match in matches)
                     {
-                        matchesAffected.Add(match);
+                        matchesAffected.Add(match.MatchNumber);
+                    }
+                }
+
+                matchesAffected.Add(head.MatchNumber);
+            }
+            else
+            {
+                
+                matchesAffected.Add(matchNum);
+
+                if (head.NextMatchNumber != -1)
+                {
+                    List<int> matches = MatchesAffectedList(head.NextMatchNumber);
+
+                    foreach (int match in matches)
+                    {
+                        if (!matchesAffected.Exists((i) => i == match))
+                        {
+                            matchesAffected.Add(match);
+                        }
+                    }
+                }
+
+                if (head.NextLoserMatchNumber != -1)
+                {
+                    List<int> matches = MatchesAffectedList(head.NextLoserMatchNumber);
+
+                    foreach (int match in matches)
+                    {
+                        if (!matchesAffected.Exists((i) => i == match))
+                        {
+                            matchesAffected.Add(match);
+                        }
                     }
                 }
             }
-
-            if (head.NextLoserMatchNumber != -1)
-            {
-                List<int> matches = MatchesAffectedList(head.NextLoserMatchNumber);
-
-                foreach (int match in matches)
-                {
-                    if (!matchesAffected.Exists((i) => i == match))
-                    {
-                        matchesAffected.Add(match);
-                    }
-                }
-            }
-
             return matchesAffected;
         }
 
@@ -228,12 +261,12 @@ namespace WebApplication.Models
             }
         }
 
-        public int TotalDispalyRounds()
+        public int TotalDispalyRounds(List<bool> upper, List<bool> lower)
         {
-            int upper = RoundShowing(BracketSection.UPPER).Count;
-            int lower = RoundShowing(BracketSection.LOWER).Count;
+            //int upper = RoundShowing(BracketSection.UPPER).Count;
+            //int lower = RoundShowing(BracketSection.LOWER).Count;
 
-            int maxDisplay = Math.Max(upper, lower);
+            int maxDisplay = Math.Max(upper.Count, lower.Count);
 
             if (Bracket.GrandFinal != null) maxDisplay++;
 
@@ -246,7 +279,7 @@ namespace WebApplication.Models
             bool isPowerRule = IsPowerOfTwo(Bracket.Players.Count);
             int roundNum = 1;
 
-            if (Bracket.NumberOfRounds > 1)
+            if (Bracket.NumberOfRounds > 0)
             {
                 if (Bracket.BracketType != BracketType.DOUBLE)
                 {
@@ -366,42 +399,52 @@ namespace WebApplication.Models
         {
             foreach (MatchModel match in args.UpdatedMatches)
             {
-                db.UpdateMatch(match);
+                tournamentService.UpdateMatch(match);
             }
 
             foreach (int games in args.DeletedGameIDs)
             {
-                db.DeleteGame(games);
+                tournamentService.DeleteGame(games);
             }
+
+            Save();
         }
 
         public void OnRoundAdd(object sender, BracketEventArgs args)
         {
+            this.roundsModified = true;
             foreach (MatchModel match in args.UpdatedMatches)
             {
-                db.AddMatch(match);
+                tournamentService.AddMatch(match);
             }
+
+            Save();
         }
         
         public void OnRoundDelete(object sender, BracketEventArgs args)
         {
+            this.roundsModified = true;
             foreach (int games in args.DeletedGameIDs)
             {
-                db.DeleteGame(games);
+                tournamentService.DeleteGame(games);
             }
 
             foreach (MatchModel match in args.UpdatedMatches)
             {
-                db.DeleteMatch(match.MatchID);
+                tournamentService.DeleteMatch(match.MatchID);
             }
+
+            Save();
         }
 
         public void OnGamesDeleted(object sender, BracketEventArgs args)
         {
             foreach (int gameId in args.DeletedGameIDs)
             {
-                db.DeleteGame(gameId);
+                tournamentService.DeleteGame(gameId);
             }
+
+            Save();
         }
 
         #endregion

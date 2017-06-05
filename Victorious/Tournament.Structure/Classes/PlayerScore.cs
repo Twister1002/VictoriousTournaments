@@ -54,7 +54,7 @@ namespace Tournament.Structure
 			this.Id = _id;
 			this.Name = _name;
 			this.Rank = _rank;
-			//MatchRecord = new PlayerRecord();
+			MatchRecord = new PlayerRecord();
 			OpponentsScore = GameScore = PointsScore = -1;
 		}
 		/// <summary>
@@ -92,18 +92,20 @@ namespace Tournament.Structure
 			this.Name = _name;
 		}
 
-		public void AddMatchOutcome(Outcome _outcome, int _gameScore, int _pointsScore, bool _isAddition)
+		public void AddMatchOutcome(Outcome _outcome, bool _isAddition)
+		{
+			MatchRecord.AddOutcome(_outcome, _isAddition);
+		}
+		public void UpdateScores(int _gamesChange, int _pointsChange, bool _isAddition)
 		{
 			int add = (_isAddition) ? 1 : -1;
-			MatchRecord.AddOutcome(_outcome, _isAddition);
-			GameScore += (_gameScore * add);
-			PointsScore += (_pointsScore * add);
+			GameScore += (_gamesChange * add);
+			PointsScore += (_pointsChange * add);
 		}
 
 		public int CalculateScore(int _matchWinValue, int _matchTieValue, int _matchLossValue)
 		{
-			int score = 0;
-			score += (MatchRecord.Wins * _matchWinValue);
+			int score = (MatchRecord.Wins * _matchWinValue);
 			score += (MatchRecord.Ties * _matchTieValue);
 			score += (MatchRecord.Losses * _matchLossValue);
 			return score;
@@ -115,6 +117,14 @@ namespace Tournament.Structure
 			OpponentsScore = 0;
 		}
 
+		#region Obsolete Methods
+		public void AddMatchOutcome(Outcome _outcome, int _gameScore, int _pointsScore, bool _isAddition)
+		{
+			int add = (_isAddition) ? 1 : -1;
+			MatchRecord.AddOutcome(_outcome, _isAddition);
+			GameScore += (_gameScore * add);
+			PointsScore += (_pointsScore * add);
+		}
 		public void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _isAddition)
 		{
 			switch (_matchScore)
@@ -130,6 +140,7 @@ namespace Tournament.Structure
 					break;
 			}
 		}
+		#endregion
 		#endregion
 	}
 }

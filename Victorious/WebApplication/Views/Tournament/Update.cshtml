@@ -17,7 +17,7 @@
 
 }
 <div id="TournamentEdit" data-id="@Model.Model.TournamentID">
-    @using (Html.BeginForm("Update", "Tournament", new { tournamentId = Model.Model.TournamentID }, FormMethod.Post))
+    @using (Html.BeginForm("Update", "Tournament", FormMethod.Post))
     {
         <div class="section form-section">
             <h2>Basic Information</h2>
@@ -33,21 +33,14 @@
                     @Html.ValidationMessageFor(t => t.Description)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.GameType)
-                    @Html.DropDownListFor(t => t.GameType, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---", attributes)
-                    @Html.ValidationMessageFor(t => t.GameType)
+                    @Html.LabelFor(t => t.GameTypeID)
+                    @Html.DropDownListFor(t => t.GameTypeID, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Select Game---", attributes)
+                    @Html.ValidationMessageFor(t => t.GameTypeID)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.BracketType)
-                    @Html.DropDownListFor(t => t.BracketType, new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---", attributes)
-                    @Html.ValidationMessageFor(t => t.BracketType)
-                </li>
-                <li>
-                    @Html.LabelFor(t => t.PlatformType)
-                    @Html.DropDownListFor(t => t.PlatformType, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---", attributes)
-                    @Html.ValidationMessageFor(t => t.PlatformType)
-                </li>
-                <li>
+                    @Html.LabelFor(t => t.PlatformTypeID)
+                    @Html.DropDownListFor(t => t.PlatformTypeID, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---", attributes)
+                    @Html.ValidationMessageFor(t => t.PlatformTypeID)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.PublicViewing)
@@ -58,6 +51,36 @@
                     @Html.LabelFor(t => t.PublicRegistration)
                     @Html.CheckBoxFor(t => t.PublicRegistration, attributes)
                     @Html.ValidationMessageFor(t => t.PublicRegistration)
+                </li>
+            </ul>
+        </div>
+        <div class="section form-section bracketSection">
+            <h2>Brackets <span class="icon icon-plus"></span></h2>
+            @for (int i = 0; i < Model.BracketData.Count; i++)
+            {
+                var bracketData = Model.BracketData[i];
+
+                <ul class="brackets">
+                    <li class="rounds">
+                        @Html.LabelFor(t => t.BracketTypes)
+                        @Html.DropDownList("BracketData[" + i + "].BracketType", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName", bracketData.BracketType), "---Select Bracket---", attributes)
+                        @Html.ValidationMessageFor(t => t.BracketTypes)
+                    </li>
+                    <li class="swiss rr hide">
+                        @Html.LabelFor(t => t.NumberOfRounds)
+                        @Html.DropDownList("BracketData[" + i + "].NumberOfRounds", new SelectList(Model.NumberOfRounds, bracketData.NumberOfRounds), "---Rounds---", attributes)
+                    </li>
+                </ul>
+            }
+            <ul class="hide bracketOrig">
+                <li class="rounds">
+                    @Html.LabelFor(t => t.BracketTypes)
+                    @Html.DropDownList("BracketData[%n%].BracketType", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---", attributes)
+                    @Html.ValidationMessageFor(t => t.BracketTypes)
+                </li>
+                <li class="swiss rr hide">
+                    @Html.LabelFor(t => t.NumberOfRounds)
+                    @Html.DropDownList("BracketData[%n%].NumberOfRounds", Enumerable.Range(0, 100).Select(n => new SelectListItem() { Text = n.ToString(), Value = n.ToString() }), attributes)
                 </li>
             </ul>
         </div>
@@ -105,59 +128,6 @@
                     @Html.ValidationMessageFor(t => t.CheckinEndDate)
 
                     @Html.TextBoxFor(t => t.CheckinEndTime, "{0:hh:mm tt}", timeAttributes)
-                </li>
-            </ul>
-        </div>
-        <div class="section user-section">
-            <h2>
-                User Information
-                @if (!Model.Model.InProgress)
-                {
-                    <span class="icon icon-plus addUser"></span>
-                }
-            </h2>
-            <ul class="list-table">
-                <li class="list-table-header">
-                    <ul class="border" data-columns="4">
-                        <li class="column">Name/Email</li>
-                        <li class="column">Involvement</li>
-                        <li class="column">Checked In</li>
-                        <li class="column">Actions</li>
-                    </ul>
-                </li>
-                <li class="list-table-body users">
-                    @foreach (var user in Model.Administrators) // Display the Admins first
-                {
-                        <ul class="user border" data-user="@user.TournamentUserID" data-columns="4">
-                            <li class="column name">@user.Name</li>
-                            <li class="column permission">Admin</li>
-                            <li class="column"><span class='icon icon-checkmark'></span></li>
-                            <li class="column actions">
-                                @if ((Model.IsCreator(userId) && user.AccountID != userId) && Model.CanEdit())
-                                {
-                                    <button class="demote">Demote</button>
-                                }
-                            </li>
-                        </ul>
-                    }
-                    @foreach (var user in Model.Participants) // Display the Participats Second
-                {
-                        <ul class="user border" data-user="@user.TournamentUserID" data-columns="4">
-                            <li class="column name">@user.Name</li>
-                            <li class="column permission">Participant</li>
-                            <li class="column"><span class='icon icon-checkmark checkedIn @(Model.isUserCheckedIn(user.TournamentUserID) ? "green" : "red")'></span></li>
-                            <li class="column actions">
-                                @if (Model.IsCreator(userId) && user.AccountID != null && Model.CanEdit())
-                                {
-                                    <button class="promote">Promote</button>
-                                }
-                                @if (Model.IsAdministrator(userId) && Model.CanEdit())
-                                {
-                                    <button class="demote">Remove</button>
-                                }
-                            </li>
-                        </ul>
-                    }
                 </li>
             </ul>
         </div>

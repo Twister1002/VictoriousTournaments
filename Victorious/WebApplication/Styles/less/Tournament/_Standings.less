@@ -1,78 +1,135 @@
-﻿.TournamentStandings {
-    &.open {
-        display: block;
-    }
-
+﻿.TournamentInfo {
     position: absolute;
     display: none;
-    background-color: black;
     opacity: .95;
     top: 0em;
     width: 100%;
     height: 100%;
-
-    label {
-        display: inline-block;
-    }
-
-    .options {
-        display: inline-block;
-    }
-
-    .position {
-        padding: .5em 0em;
-        border-bottom: 1px solid @white;
-    }
-
-    .rank {
-        text-align: center;
-    }
-}
-
-
-
-
-
-
-
-/*#TournamentStandings {
-    display: none;
-    position:absolute;
-    top:0em;
-    left: -100%;
-    height: 100%;
-    width: 100%;
-    overflow: auto;
+    min-height: 20em;
+    z-index: 1;
 
     &.open {
         display: block;
-        left:0%;
-        opacity: 0.9;
-        background-color: darken(@color-primary-0, 15%);
     }
 
-    .title {
-        > * {
-            display: inline-block;
+    .close {
+        position: absolute;
+        right: 1em;
+        top: .25em;
+        z-index: 1;
+    }
+
+    .details {
+        background-color: black;
+        position: relative;
+        height: 98%;
+        padding: .5em;
+        text-align: center;
+        overflow-y: auto;
+        .grid(15);
+
+        .bracketNum {
+            &:hover {
+                cursor: pointer;
+                background-color: @color-primary-0;
+            }
+
+            &.show {
+                .selected;
+            }
         }
 
-        img {
-            cursor: pointer;
+        .bracketData {
+            display: none;
+            height: 93%;
+            &.show {
+                display: block;
+            }
         }
     }
 
-    .standings {
-        
-        .list-table-body {
-            
-            ul {
-                border-bottom: 1px solid @white;
-                padding: 1em 0em;
+    .selection {
+        text-align: center;
+        cursor: pointer;
 
-                .position-rank, .position-score, .position-name {
+        &:hover {
+            background-color: @color-primary-0;
+        }
+
+        &.show {
+            background-color: @color-primary-0;
+        }
+    }
+
+    .infoSection {
+        display: none;
+        position: relative;
+        height: 100%;
+        &.show {
+            display: block;
+        }
+
+        .column {
+            vertical-align: middle;
+        }
+    }
+
+    .playerInfo {
+        position: relative;
+        padding-top: .5em;
+        height: 100%;
+        /*background-color: orange;*/
+
+        ul {
+            border: 1px solid @white;
+        }
+
+        .header {
+            padding: 0em .25em;
+        }
+
+        .data {
+            padding: .25em .25em;
+
+            .column {
+                overflow: hidden;
+
+                input {
+                    &:disabled {
+                        border: none;
+                    }
+
+                    padding: .25em 0em;
                     text-align: center;
                 }
             }
         }
+
+        .adminSettings {
+            position: relative;
+            width:100%;
+            bottom: 0;
+            /*background-color: red;*/
+        }
     }
-}*/
+
+    .standingInfo {
+        padding-top: .5em;
+
+        ul {
+            border: 1px solid @white;
+        }
+
+        .header {
+            padding: 0em .25em;
+        }
+
+        .data {
+            padding: .5em .25em;
+        }
+    }
+
+    .resetInfo {
+        padding-top: .5em;
+    }
+}
