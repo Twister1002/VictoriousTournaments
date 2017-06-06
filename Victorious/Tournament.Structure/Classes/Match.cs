@@ -217,6 +217,10 @@ namespace Tournament.Structure
 		#region Player Methods
 		public void AddPlayer(IPlayer _player, PlayerSlot _slot = PlayerSlot.unspecified)
 		{
+			if (null == _player)
+			{
+				throw new ArgumentNullException("_player");
+			}
 			if (_slot != PlayerSlot.unspecified &&
 				_slot != PlayerSlot.Defender &&
 				_slot != PlayerSlot.Challenger)
