@@ -1504,6 +1504,7 @@ namespace Tournament.Structure.Tests
 		#endregion
 
 		#region Models
+#if false
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("BracketModel")]
@@ -1559,7 +1560,7 @@ namespace Tournament.Structure.Tests
 			BracketModel bModel = b.GetModel();
 			Assert.AreEqual(b.NumberOfMatches, bModel.Matches.Count);
 		}
-
+#endif
 		#endregion
 
 		#region Accessors & Mutators

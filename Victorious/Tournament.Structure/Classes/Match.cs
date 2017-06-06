@@ -123,13 +123,10 @@ namespace Tournament.Structure
 			model.PrevChallengerMatchNumber = this.PreviousMatchNumbers[(int)PlayerSlot.Challenger];
 			model.MaxGames = this.MaxGames;
 
-			model.ChallengerID = (null != Players[(int)PlayerSlot.Challenger])
-				? Players[(int)PlayerSlot.Challenger].Id : -1;
-			model.DefenderID = (null != Players[(int)PlayerSlot.Defender])
-				? Players[(int)PlayerSlot.Defender].Id : -1;
+			model.ChallengerID = Players[(int)PlayerSlot.Challenger]?.Id ?? -1;
+			model.DefenderID = Players[(int)PlayerSlot.Defender]?.Id ?? -1;
 			model.WinnerID = (PlayerSlot.unspecified == WinnerSlot)
-				? (int)this.WinnerSlot
-				: Players[(int)WinnerSlot].Id;
+				? -1 : Players[(int)WinnerSlot].Id;
 			model.ChallengerScore = this.Score[(int)PlayerSlot.Challenger];
 			model.DefenderScore = this.Score[(int)PlayerSlot.Defender];
 
@@ -156,8 +153,7 @@ namespace Tournament.Structure
 				? null : new Player(_model.Defender);
 			Players[(int)PlayerSlot.Challenger] = (null == _model.Challenger)
 				? null : new Player(_model.Challenger);
-			this.IsReady = (null == Players[0] || null == Players[1])
-				? false : true;
+			this.IsReady = (null != Players[0] && null != Players[1]);
 
 			this.Games = new List<IGame>();
 			this.Score = new int[2] { 0, 0 };
@@ -175,15 +171,17 @@ namespace Tournament.Structure
 			}
 
 			int winsNeeded = (int)(MaxGames * 0.5);
-			winsNeeded = (0 == MaxGames % 2)
-				? winsNeeded : winsNeeded + 1;
+			if (MaxGames % 2 > 0)
+			{
+				++winsNeeded;
+			}
 			if (Score[0] > winsNeeded || Score[1] > winsNeeded)
 			{
 				throw new ScoreException
 					("Score cannot be higher than the match allows!");
 			}
 
-			if (!this.IsManualWin)
+			if (!IsManualWin)
 			{
 				this.WinnerSlot = PlayerSlot.unspecified;
 				if (Score[(int)PlayerSlot.Defender] == winsNeeded)
@@ -209,7 +207,7 @@ namespace Tournament.Structure
 			this.NextMatchNumber = _model.NextMatchNumber.GetValueOrDefault(-1);
 			this.NextLoserMatchNumber = _model.NextLoserMatchNumber.GetValueOrDefault(-1);
 
-			this.PreviousMatchNumbers = new int[2] { -1, -1 };
+			this.PreviousMatchNumbers = new int[2];
 			PreviousMatchNumbers[(int)PlayerSlot.Defender] =
 				_model.PrevDefenderMatchNumber.GetValueOrDefault(-1);
 			PreviousMatchNumbers[(int)PlayerSlot.Challenger] =
@@ -226,8 +224,8 @@ namespace Tournament.Structure
 				throw new InvalidSlotException
 					("PlayerSlot must be -1, 0, or 1!");
 			}
-			if ((null != Players[0] && Players[0].Id == _player.Id) ||
-				(null != Players[1] && Players[1].Id == _player.Id))
+			if (Players[0]?.Id == _player.Id ||
+				Players[1]?.Id == _player.Id)
 			{
 				throw new DuplicateObjectException
 					("Match already contains this Player!");
@@ -241,10 +239,7 @@ namespace Tournament.Structure
 					{
 						Players[i] = _player;
 
-						if (null != Players[0] && null != Players[1])
-						{
-							IsReady = true;
-						}
+						IsReady = (null != Players[0] && null != Players[1]);
 						return;
 					}
 				}
@@ -260,8 +255,7 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_newPlayer");
 			}
 
-			if (null != Players[(int)PlayerSlot.Defender] &&
-				_oldPlayerId == Players[(int)PlayerSlot.Defender].Id)
+			if (_oldPlayerId == Players[(int)PlayerSlot.Defender]?.Id)
 			{
 				Players[(int)PlayerSlot.Defender] = _newPlayer;
 				foreach (IGame game in Games)
@@ -269,8 +263,7 @@ namespace Tournament.Structure
 					game.PlayerIDs[(int)PlayerSlot.Defender] = _newPlayer.Id;
 				}
 			}
-			else if (null != Players[(int)PlayerSlot.Challenger] &&
-				_oldPlayerId == Players[(int)PlayerSlot.Challenger].Id)
+			else if (_oldPlayerId == Players[(int)PlayerSlot.Challenger]?.Id)
 			{
 				Players[(int)PlayerSlot.Challenger] = _newPlayer;
 				foreach (IGame game in Games)
@@ -288,7 +281,7 @@ namespace Tournament.Structure
 		{
 			for (int i = 0; i < 2; ++i)
 			{
-				if (null != Players[i] && Players[i].Id == _playerId)
+				if (Players[i]?.Id == _playerId)
 				{
 					Players[i] = null;
 
@@ -329,10 +322,7 @@ namespace Tournament.Structure
 			// Add Game's data (players and score):
 			for (int i = 0; i < 2; ++i)
 			{
-				if (null != this.Players[i])
-				{
-					game.PlayerIDs[i] = this.Players[i].Id;
-				}
+				game.PlayerIDs[i] = this.Players[i]?.Id ?? -1;
 			}
 			game.Score[(int)PlayerSlot.Defender] = _defenderScore;
 			game.Score[(int)PlayerSlot.Challenger] = _challengerScore;

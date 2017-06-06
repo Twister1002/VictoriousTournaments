@@ -72,9 +72,9 @@ namespace Tournament.Structure
 				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
-			foreach (TournamentUserModel model in userModels)
+			foreach (TournamentUserModel userModel in userModels)
 			{
-				Players.Add(new Player(model));
+				Players.Add(new Player(userModel));
 			}
 
 			this.Id = _model.BracketID;

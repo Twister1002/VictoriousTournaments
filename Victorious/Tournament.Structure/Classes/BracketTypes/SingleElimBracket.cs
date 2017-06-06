@@ -63,9 +63,9 @@ namespace Tournament.Structure
 				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
-			foreach (TournamentUserModel model in userModels)
+			foreach (TournamentUserModel userModel in userModels)
 			{
-				Players.Add(new Player(model));
+				Players.Add(new Player(userModel));
 			}
 
 			ResetBracketData();
@@ -427,8 +427,7 @@ namespace Tournament.Structure
 
 			Match match = GetInternalMatch(_matchNumber);
 			if (match.Players
-				.Where(p => p != null)
-				.Any(p => p.Id == _playerId))
+				.Any(p => p?.Id == _playerId))
 			{
 				if (match.IsFinished)
 				{
@@ -458,7 +457,7 @@ namespace Tournament.Structure
 		private void ReassignPlayers(Match _currMatch, List<Match> _prevRound)
 		{
 			if (null == _currMatch ||
-				null == _prevRound || 0 == _prevRound.Count)
+				0 == (_prevRound?.Count ?? 0))
 			{
 				throw new NullReferenceException
 					("NULL error in calling ReassignPlayers()...");

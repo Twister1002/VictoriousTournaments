@@ -69,10 +69,10 @@ namespace Tournament.Structure
 				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
-			foreach (TournamentUserModel model in userModels)
+			foreach (TournamentUserModel userModel in userModels)
 			{
-				Players.Add(new Player(model));
-				Rankings.Add(new PlayerScore(model.TournamentUserID, model.Name));
+				Players.Add(new Player(userModel));
+				Rankings.Add(new PlayerScore(userModel.TournamentUserID, userModel.Name));
 			}
 
 			foreach (MatchModel mm in _model.Matches)
@@ -83,12 +83,8 @@ namespace Tournament.Structure
 			this.NumberOfMatches = Matches.Count;
 			this.NumberOfRounds = 0;
 
-			this.IsFinished = true;
-			if (0 == NumberOfMatches)
-			{
-				this.IsFinished = false;
-			}
-			else
+			this.IsFinished = false;
+			if (NumberOfMatches > 0)
 			{
 				this.NumberOfRounds = Matches.Values
 					.Select(m => m.RoundIndex)
@@ -96,6 +92,10 @@ namespace Tournament.Structure
 				if (Matches.Values.Any(m => !m.IsFinished))
 				{
 					this.IsFinished = false;
+				}
+				else
+				{
+					this.IsFinished = true;
 				}
 			}
 

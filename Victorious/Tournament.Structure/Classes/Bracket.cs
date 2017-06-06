@@ -60,7 +60,7 @@ namespace Tournament.Structure
 		}
 		protected void OnRoundDeleted(List<MatchModel> _modelList)
 		{
-			if (null != _modelList && _modelList.Count > 0)
+			if ((_modelList?.Count ?? 0) > 0)
 			{
 				OnRoundDeleted(new BracketEventArgs(_modelList));
 			}
@@ -71,7 +71,7 @@ namespace Tournament.Structure
 		}
 		protected void OnMatchesModified(List<MatchModel> _modelList)
 		{
-			if (null != _modelList && _modelList.Count > 0)
+			if ((_modelList?.Count ?? 0) > 0)
 			{
 				OnMatchesModified(new BracketEventArgs(_modelList));
 			}
@@ -82,7 +82,7 @@ namespace Tournament.Structure
 		}
 		protected void OnGamesDeleted(List<IGame> _games)
 		{
-			if (null != _games && _games.Count > 0)
+			if ((_games?.Count ?? 0) > 0)
 			{
 				OnGamesDeleted(new BracketEventArgs(_games
 					.Select(g => g.Id).ToList()));
@@ -90,7 +90,7 @@ namespace Tournament.Structure
 		}
 		protected void OnGamesDeleted(List<int> _gameIDs)
 		{
-			if (null != _gameIDs && _gameIDs.Count > 0)
+			if ((_gameIDs?.Count ?? 0) > 0)
 			{
 				OnGamesDeleted(new BracketEventArgs(_gameIDs));
 			}
@@ -180,12 +180,12 @@ namespace Tournament.Structure
 
 		public void RandomizeSeeds()
 		{
-			if (null == Players || Players.Count < 2)
+			if (null == Players)
 			{
-				if (null == Players)
-				{
-					Players = new List<IPlayer>();
-				}
+				Players = new List<IPlayer>();
+			}
+			if (Players.Count < 2)
+			{
 				DeleteBracketData();
 				return;
 			}
@@ -722,7 +722,7 @@ namespace Tournament.Structure
 		{
 			List<MatchModel> alteredMatches = new List<MatchModel>();
 			List<int> deletedGameIDs = new List<int>();
-			if (NumberOfMatches > 0 && null != Matches)
+			if (Matches?.Count > 0)
 			{
 				for (int n = 1; n <= NumberOfMatches; ++n)
 				{
@@ -746,18 +746,15 @@ namespace Tournament.Structure
 					("Match number cannot be less than 1!");
 			}
 
-			if (null != grandFinal &&
-				grandFinal.MatchNumber == _matchNumber)
+			if (grandFinal?.MatchNumber == _matchNumber)
 			{
 				return grandFinal;
 			}
-			if (null != Matches &&
-				Matches.ContainsKey(_matchNumber))
+			if (Matches?.ContainsKey(_matchNumber) ?? false)
 			{
 				return Matches[_matchNumber];
 			}
-			if (null != LowerMatches &&
-				LowerMatches.ContainsKey(_matchNumber))
+			if (LowerMatches?.ContainsKey(_matchNumber) ?? false)
 			{
 				return LowerMatches[_matchNumber];
 			}

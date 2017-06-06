@@ -77,7 +77,7 @@ namespace Tournament.Structure
 			}
 
 			RecalculateRankings();
-			if (null != grandFinal && grandFinal.IsFinished)
+			if (grandFinal?.IsFinished ?? false)
 			{
 				this.IsFinished = true;
 			}
@@ -312,7 +312,7 @@ namespace Tournament.Structure
 						? PlayerSlot.Challenger
 						: PlayerSlot.Defender;
 					int rank = 2; // 2 = grand final loser
-					if (null != LowerMatches && LowerMatches.ContainsKey(_matchNumber))
+					if (LowerMatches?.ContainsKey(_matchNumber) ?? false)
 					{
 						rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
 					}
@@ -321,7 +321,7 @@ namespace Tournament.Structure
 						(match.Players[(int)loserSlot].Id,
 						match.Players[(int)loserSlot].Name,
 						rank));
-					if (null != grandFinal && grandFinal.MatchNumber == _matchNumber)
+					if (grandFinal?.MatchNumber == _matchNumber)
 					{
 						Rankings.Add(new PlayerScore
 							(match.Players[(int)(match.WinnerSlot)].Id,
@@ -382,7 +382,7 @@ namespace Tournament.Structure
 				}
 			}
 
-			if (null != grandFinal && grandFinal.IsFinished)
+			if (grandFinal?.IsFinished ?? false)
 			{
 				// Add grand final results to Rankings:
 				IPlayer winningPlayer = grandFinal.Players[(int)grandFinal.WinnerSlot];
@@ -415,8 +415,7 @@ namespace Tournament.Structure
 			Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
 			if (match.Players
-				.Where(p => p != null)
-				.Any(p => p.Id == _playerId))
+				.Any(p => p?.Id == _playerId))
 			{
 				if (match.IsFinished)
 				{
