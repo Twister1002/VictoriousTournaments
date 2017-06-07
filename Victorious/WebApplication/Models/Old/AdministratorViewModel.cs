@@ -4,7 +4,7 @@ using DatabaseLib;
 using WebApplication.Models.Administrator;
 using WebApplication.Utility;
 
-namespace WebApplication.Models
+namespace WebApplication.Models.Old
 {
     public class AdministratorViewModel : ViewModel
     {

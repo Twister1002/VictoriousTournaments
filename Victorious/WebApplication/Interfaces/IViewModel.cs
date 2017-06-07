@@ -7,7 +7,6 @@ namespace WebApplication.Interfaces
 {
     public interface IViewModel
     {
-        void Init();
         void ApplyChanges();
         void SetFields();
     }

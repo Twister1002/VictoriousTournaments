@@ -4,7 +4,7 @@ using System.Linq;
 using DatabaseLib;
 using WebApplication.Interfaces;
 
-namespace WebApplication.Models.Administrator
+namespace WebApplication.Models.Administrator.Old
 {
     public class BracketTypeViewModel : ViewModel, IViewModel
     {

@@ -50,7 +50,7 @@ namespace WebApplication.Controllers
         {
             if (!ModelState.IsValid)
             {
-                viewModel.error = ViewModel.ViewError.CRITICAL;
+                viewModel.error = ViewModel.ViewError.ERROR;
                 viewModel.message = "Please enter in the required fields.";
             }
             else
@@ -90,7 +90,7 @@ namespace WebApplication.Controllers
             if (!ModelState.IsValid)
             {
                 //If we hit this, then something failed 
-                viewModel.error = ViewModel.ViewError.EXCEPTION;
+                viewModel.error = ViewModel.ViewError.ERROR;
                 viewModel.message = "Please enter in the required fields.";
                 return View(viewModel);
             }
@@ -105,7 +105,7 @@ namespace WebApplication.Controllers
                 }
                 else
                 {
-                    viewModel.error = ViewModel.ViewError.CRITICAL;
+                    viewModel.error = ViewModel.ViewError.ERROR;
                     viewModel.message = "We were unable to register your account. Please try again";
                     return View("Register", viewModel);
                 }
@@ -149,7 +149,7 @@ namespace WebApplication.Controllers
                     else
                     {
                         // There was an error updating the account
-                        viewModel.error = ViewModel.ViewError.CRITICAL;
+                        viewModel.error = ViewModel.ViewError.ERROR;
                         viewModel.message = "There was an error updating your account.";
                     }
                 }
@@ -158,7 +158,7 @@ namespace WebApplication.Controllers
                     // Log the user out as I feel this is a hacking attempt
                     Session.RemoveAll();
                     Session["Message"] = "Unfortunately, we're unable to update your account. Please login and try again.";
-                    Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
+                    Session["Message.Class"] = ViewModel.ViewError.ERROR;
                     return RedirectToAction("Login", "Account");
                 }
             }

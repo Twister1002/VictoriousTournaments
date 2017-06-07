@@ -11,16 +11,14 @@ namespace WebApplication.Models
             NONE,
             SUCCESS,
             WARNING,
-            EXCEPTION,
-            CRITICAL
+            ERROR
         }
 
         public String[] errorClassNames = new String[] {
             "none",
             "success",
             "warning",
-            "exception",
-            "critical"
+            "error",
         };
         
         public ViewError error = ViewError.NONE;

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using WebApplication.Interfaces;
 
-namespace WebApplication.Models
+namespace WebApplication.Models.Old
 {
     public class HomeViewModel : ViewModel
     {

@@ -6,7 +6,7 @@ using DatabaseLib;
 using WebApplication.Utility;
 using WebApplication.Interfaces;
 
-namespace WebApplication.Models
+namespace WebApplication.Models.Old
 {
     public class TournamentViewModel : ViewModel
     {

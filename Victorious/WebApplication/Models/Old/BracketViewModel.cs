@@ -6,7 +6,7 @@ using DatabaseLib;
 using DatabaseLib.Services;
 using WebApplication.Interfaces;
 
-namespace WebApplication.Models
+namespace WebApplication.Models.Old
 {
     public enum BracketSection
     {

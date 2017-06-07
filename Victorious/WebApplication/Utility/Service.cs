@@ -10,16 +10,16 @@ namespace WebApplication.Utility
     public class Service
     {
         private IUnitOfWork work;
-        public AccountService AccountService { get; private set; }
-        public TournamentService TournamentService { get; private set; }
-        public TypeService TypeService { get; private set; } 
+        public AccountService Account { get; private set; }
+        public TournamentService Tournament { get; private set; }
+        public TypeService Type { get; private set; } 
 
         public Service(IUnitOfWork work)
         {
             this.work = work;
-            AccountService = new AccountService(work);
-            TournamentService = new TournamentService(work);
-            TypeService = new TypeService(work);
+            Account = new AccountService(work);
+            Tournament = new TournamentService(work);
+            Type = new TypeService(work);
         }
 
         public bool Save()

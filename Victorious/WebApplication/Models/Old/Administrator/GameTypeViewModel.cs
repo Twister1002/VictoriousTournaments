@@ -1,17 +1,18 @@
 ﻿using DatabaseLib;
 using System.Collections.Generic;
 using WebApplication.Interfaces;
+using System;
 
-namespace WebApplication.Models.Administrator
+namespace WebApplication.Models.Administrator.Old
 {
-    public class PlatformTypeViewModel : PlatformTypeFields
+    public class GameTypeViewModel : ViewModel
     {
-        public List<PlatformModel> platforms { get; protected set; }
-        public PlatformModel Model { get; protected set; }
+        public List<GameTypeModel> GameTypes { get; private set; }
+        public GameTypeModel GameType { get; private set; }
 
-        public PlatformTypeViewModel(IUnitOfWork work) : base(work)
+        public GameTypeViewModel(IUnitOfWork work) : base (work)
         {
-            Model = new PlatformModel();
+            GameType = new GameTypeModel();
             Init();
         }
 
@@ -22,18 +23,23 @@ namespace WebApplication.Models.Administrator
 
         public void ApplyChanges()
         {
-            Model.PlatformName = this.Platform;
+            GameType.Title = Title;
         }
 
         public void SetFields()
         {
-            this.Platform = Model.PlatformName;
+            Title = GameType.Title;
+        }
+
+        public bool Update(int id)
+        {
+            return false;
         }
 
         public bool Create()
         {
             ApplyChanges();
-            typeService.AddPlatform(Model);
+            typeService.AddGameType(GameType);
 
             if (Save())
             {
@@ -46,14 +52,10 @@ namespace WebApplication.Models.Administrator
             }
         }
 
-        public bool Update(int id)
+        public bool Delete(int gameTypeId)
         {
-            return false;
-        }
+            typeService.DeleteGameType(gameTypeId);
 
-        public bool Delete(int platformId)
-        {
-            typeService.DeletePlatform(platformId);
             if (Save())
             {
                 Select();
@@ -67,7 +69,7 @@ namespace WebApplication.Models.Administrator
 
         private void Select()
         {
-            platforms = typeService.GetAllPlatforms();
+            GameTypes = typeService.GetAllGameTypes();
         }
     }
 }

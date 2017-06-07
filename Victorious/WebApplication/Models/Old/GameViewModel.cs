@@ -3,7 +3,7 @@ using DatabaseLib;
 using System;
 using WebApplication.Interfaces;
 
-namespace WebApplication.Models
+namespace WebApplication.Models.Old
 {
     public class GameViewModel : ViewModel
     {
