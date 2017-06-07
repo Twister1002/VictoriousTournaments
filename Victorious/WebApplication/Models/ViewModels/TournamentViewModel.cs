@@ -69,11 +69,11 @@ namespace WebApplication.Models.ViewModels
         public DateTime CheckinEndTime { get; set; }
 
         [Display(Name = "Bracket Type")]
-        public List<BracketTypeModel> BracketTypes { get; protected set; }
+        public List<BracketTypeModel> BracketTypes { get; set; }
         [Display(Name = "Rounds")]
-        public List<int> NumberOfRounds { get; protected set; }
-        public List<GameTypeModel> GameTypes { get; protected set; }
-        public List<PlatformModel> PlatformTypes { get; protected set; }
+        public List<int> NumberOfRounds { get; set; }
+        public List<GameTypeModel> GameTypes { get; set; }
+        public List<PlatformModel> PlatformTypes { get; set; }
 
         public List<BracketInfo> BracketData { get; set; }
 

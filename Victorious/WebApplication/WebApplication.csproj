@@ -166,7 +166,7 @@
     <Compile Include="Models\Old\MatchViewModel.cs" />
     <Compile Include="Models\Tournament.cs" />
     <Compile Include="Models\Old\TournamentViewModel.cs" />
-    <Compile Include="Models\ViewModel.cs" />
+    <Compile Include="Models\Old\ViewModel.cs" />
     <Compile Include="Models\ViewModels\AccountViewModel.cs" />
     <Compile Include="Models\ViewModels\BracketTypeViewModel.cs" />
     <Compile Include="Models\ViewModels\BracketViewModel.cs" />

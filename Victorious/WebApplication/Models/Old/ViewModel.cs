@@ -2,7 +2,7 @@
 using System;
 using WebApplication.Utility;
 
-namespace WebApplication.Models
+namespace WebApplication.Models.Old
 {
     public abstract class ViewModel
     {

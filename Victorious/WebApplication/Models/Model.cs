@@ -15,6 +15,26 @@ namespace WebApplication.Models
         PAST
     }
 
+    public enum BracketSection
+    {
+        UPPER,
+        LOWER,
+        FINAL
+    }
+
+    public struct RoundHeader
+    {
+        public int roundNum;
+        public int bestOf;
+        public String title;
+    }
+
+    public struct BracketInfo
+    {
+        public int BracketType;
+        public int NumberOfRounds;
+    }
+
     public abstract class Model
     {
         protected Service services;
