@@ -10,15 +10,22 @@ namespace WebApplication.Models
     public class Admin : Model
     {
         AdminViewModel viewModel;
+        //public List<BracketTypeModel> Brackets { get; private set; }
+        //public List<PlatformModel> Platforms { get; private set; }
+        //public List<GameTypeModel> Games { get; private set; }
 
         public Admin(IUnitOfWork work) : base(work)
         {
-
+            Init();
         }
 
-        #region CRUD
-
-        #endregion
+        private void Init()
+        {
+            // Load the lists
+            //Games = services.Type.GetAllGameTypes();
+            //Brackets = services.Type.GetAllBracketTypes();
+            //Platforms = services.Type.GetAllPlatforms();
+        }
 
         #region Helpers
 
