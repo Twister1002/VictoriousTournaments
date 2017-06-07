@@ -83,6 +83,7 @@
     <Compile Include="Non-Repo Tests\TournamentInviteTests.cs" />
     <Compile Include="Non-Repo Tests\TournamentTests.cs" />
     <Compile Include="Non-Repo Tests\TournamentUserTests.cs" />
+    <Compile Include="TeamServiceTests.cs" />
     <Compile Include="TournamentServiceTests.cs" />
     <Compile Include="TypeServiceTests.cs" />
   </ItemGroup>

@@ -21,10 +21,10 @@ namespace DatabaseLib
     		OnInit();
         }
     
-        public int SiteTeamMemberID { get; set; }
+        public int SiteTeamMemberID { get; private set; }
         public int AccountID { get; set; }
         public int SiteTeamID { get; set; }
-        public int Role { get; set; }
+        public DatabaseLib.Permission Role { get; set; }
     	
     	partial void OnInit();
     

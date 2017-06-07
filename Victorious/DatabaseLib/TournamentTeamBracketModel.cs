@@ -14,7 +14,7 @@ namespace DatabaseLib
     
     public partial class TournamentTeamBracketModel
     {
-        public int TournamentTeamID { get; set; }
+        public int TournamentTeamID { get; private set; }
         public int BracketID { get; set; }
         public int Seed { get; set; }
     	

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public interface IUnitOfWork 
+    public interface IUnitOfWork : IDisposable
     {
         IRepository<AccountInviteModel> AccountInviteRepo { get; }
         IRepository<AccountModel> AccountRepo { get; }
@@ -30,5 +30,8 @@ namespace DatabaseLib
         void Refresh();
 
         bool Save();
+
+
+
     }
 }

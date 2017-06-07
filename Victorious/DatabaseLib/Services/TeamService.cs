@@ -96,7 +96,7 @@ namespace DatabaseLib.Services
             unitOfWork.SiteTeamMemberRepo.Update(siteTeamMember);
         }
 
-        public void DeleteSiteTeamMembet(int siteTeamMembetId)
+        public void DeleteSiteTeamMember(int siteTeamMembetId)
         {
             unitOfWork.SiteTeamMemberRepo.Delete(siteTeamMembetId);
         }
