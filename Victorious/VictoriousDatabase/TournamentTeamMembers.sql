@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[TournamentTeamMember]
+﻿CREATE TABLE [dbo].[TournamentTeamMembers]
 (
 	[TournamentTeamMemberID] INT NOT NULL IDENTITY, 
     [TournamentTeamID] INT NOT NULL, 

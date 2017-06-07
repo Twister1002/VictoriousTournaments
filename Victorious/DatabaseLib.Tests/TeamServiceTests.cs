@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DatabaseLib.Services;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DatabaseLib.Tests
 {
@@ -11,6 +12,7 @@ namespace DatabaseLib.Tests
         IUnitOfWork unitOfWork;
         TeamService service;
         AccountService accountService;
+        TournamentService tournamentService;
 
         [TestInitialize]
         public void Initialize()
@@ -18,6 +20,7 @@ namespace DatabaseLib.Tests
             unitOfWork = new UnitOfWork();
             service = new TeamService(unitOfWork);
             accountService = new AccountService(unitOfWork);
+            tournamentService = new TournamentService(unitOfWork);
         }
 
         #region SiteTeams
@@ -195,7 +198,7 @@ namespace DatabaseLib.Tests
             service.DeleteTournamentTeam(service.GetAllTournamentTeams()[0].TournamentTeamID);
             var result = unitOfWork.Save();
 
-            //Assert.AreEqual();
+            Assert.AreEqual(true, result);
         }
 
         #endregion
@@ -206,35 +209,55 @@ namespace DatabaseLib.Tests
         [TestCategory("Team Service")]
         public void AddTournamentTeamMember_Save()
         {
+            TournamentTeamMemberModel tm = new TournamentTeamMemberModel()
+            {
+                SiteTeamMemberID = service.GetAllSiteTeamMembers()[0].SiteTeamMemberID,
+                TournamentTeamID = service.GetAllTournamentTeams()[0].TournamentTeamID
+            };
+            service.AddTournamentTeamMember(tm);
+            var result = unitOfWork.Save();
 
+            Assert.AreEqual(true, result);
         }
 
         [TestMethod]
         [TestCategory("Team Service")]
         public void GetTournamentTeamMember_Save()
         {
+            var tm = service.GetTournamentTeamMember(1);
 
+            Assert.AreEqual(2, tm.SiteTeamMemberID);
         }
 
         [TestMethod]
         [TestCategory("Team Service")]
         public void GetAllTournamentTeamMembers()
         {
+            var tms = service.GetAllTournamentTeamMembers();
 
+            Assert.AreEqual(1, tms.Count);
         }
 
         [TestMethod]
         [TestCategory("Team Service")]
         public void UpdateTournamentTeamMember_Save()
         {
+            var tms = service.GetAllTournamentTeamMembers()[0];
+            tms.SiteTeamMember = service.GetAllSiteTeams()[0].SiteTeamMembers.ToList()[1];
+            service.UpdateTournamentTeamMember(tms);
+            var result = unitOfWork.Save();
 
+            Assert.AreEqual(true, result);
         }
 
         [TestMethod]
         [TestCategory("Team Service")]
         public void DeleteTournamentTeamMemeber_Save()
         {
+            service.DeleteTournamentTeamMember(service.GetAllTournamentTeams()[0].TournamentTeamMembers.ToList()[0].TournamentTeamMemberID);
+            var result = unitOfWork.Save();
 
+            Assert.AreEqual(true, result);
         }
 
         #endregion
@@ -245,35 +268,56 @@ namespace DatabaseLib.Tests
         [TestCategory("Team Service")]
         public void AddTournamentTeamBracket_Save()
         {
+            TournamentTeamBracketModel t = new TournamentTeamBracketModel()
+            {
+                BracketID = tournamentService.GetAllBrackets()[0].BracketID,
+                TournamentTeamID = service.GetAllTournamentTeams()[0].TournamentTeamID,
+                Seed = 1,
+            };
+            service.AddTournamentTeamBracket(t);
+            var result = unitOfWork.Save();
 
+            Assert.AreEqual(true, result);
         }
 
         [TestMethod]
         [TestCategory("Team Service")]
         public void GetTournamentTeamBracket()
         {
+            var t = service.GetTournamentTeamBracket(2,1);
 
+            Assert.AreEqual(1, t.Seed);
         }
 
         [TestMethod]
         [TestCategory("Team Service")]
         public void GetAllTournamentTeamBrackets()
         {
+            var ts = service.GetAllTournamentTeamBrackets();
 
+            Assert.AreEqual(1, ts.Count);
         }
 
         [TestMethod]
         [TestCategory("Team Service")]
         public void UpdateTournamentTeamBracket_Save()
         {
+            var t = service.GetAllTournamentTeamBrackets()[0];
+            t.Seed = 2;
+            service.UpdateTournamentTeamBracket(t);
+            var result = unitOfWork.Save();
 
+            Assert.AreEqual(true, result);
         }
 
         [TestMethod]
         [TestCategory("Team Service")]
         public void DeleteTournamentTeamBracket()
         {
+            service.DeleteTournamentTeamBracket(service.GetAllTournamentTeamBrackets()[0]);
+            var result = unitOfWork.Save();
 
+            Assert.AreEqual(true, result);
         }
 
         #endregion

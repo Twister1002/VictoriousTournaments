@@ -181,6 +181,16 @@ namespace DatabaseLib.Services
             }
         }
 
+        public void UpdateTournamentTeamMember(TournamentTeamMemberModel tournamentTeamMember)
+        {
+            unitOfWork.TournamentTeamMemberRepo.Update(tournamentTeamMember);
+        }
+
+        public void DeleteTournamentTeamMember(int tournamentTeamMemberId)
+        {
+            unitOfWork.TournamentTeamMemberRepo.Delete(tournamentTeamMemberId);
+        }
+
         #endregion
 
 
@@ -191,11 +201,11 @@ namespace DatabaseLib.Services
             unitOfWork.TournamentTeamBracketRepo.Add(tournamentTeamBracket);
         }
 
-        public TournamentTeamBracketModel GetTournamentTeamBracket(int tournamentTeamBracketId)
+        public TournamentTeamBracketModel GetTournamentTeamBracket(int tournamentTeamId, int bracketId)
         {
             try
             {
-                return unitOfWork.TournamentTeamBracketRepo.Get(tournamentTeamBracketId);
+                return unitOfWork.TournamentTeamBracketRepo.GetSingle(x => x.TournamentTeamID == tournamentTeamId && x.BracketID == bracketId);
             }
             catch (Exception ex)
             {
@@ -203,7 +213,7 @@ namespace DatabaseLib.Services
             }
         }
 
-        public List<TournamentTeamBracketModel> GetAllTOurnamentBrackets()
+        public List<TournamentTeamBracketModel> GetAllTournamentTeamBrackets()
         {
             try
             {
@@ -220,9 +230,9 @@ namespace DatabaseLib.Services
             unitOfWork.TournamentTeamBracketRepo.Update(tournamentTeamBracket);
         }
 
-        public void DeleteTournamentTeamBracket(int tournamentTeamBracketId)
+        public void DeleteTournamentTeamBracket(TournamentTeamBracketModel tournamentTeamBracket)
         {
-            unitOfWork.TournamentTeamBracketRepo.Delete(tournamentTeamBracketId);
+            unitOfWork.TournamentTeamBracketRepo.DeleteEntity(tournamentTeamBracket);
         }
 
         #endregion
