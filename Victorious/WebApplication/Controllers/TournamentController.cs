@@ -6,6 +6,7 @@ using DatabaseLib;
 
 namespace WebApplication.Controllers
 {
+    [SessionState(System.Web.SessionState.SessionStateBehavior.ReadOnly)]
     public class TournamentController : VictoriousController
     {
 

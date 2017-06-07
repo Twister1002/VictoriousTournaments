@@ -34,6 +34,7 @@ namespace WebApplication.Models
         public int BracketType;
         public int NumberOfRounds;
     }
+
     public enum ViewError
     {
         NONE,

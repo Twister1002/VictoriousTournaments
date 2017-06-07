@@ -3,6 +3,7 @@ using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
+    [SessionState(System.Web.SessionState.SessionStateBehavior.ReadOnly)]
     public class HomeController : VictoriousController
     {
 

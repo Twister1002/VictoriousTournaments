@@ -43,7 +43,7 @@ namespace WebApplication.Controllers
                 }
                 else
                 {
-                    account = null;
+                    account = new Account(work);
                 }
             }
             else

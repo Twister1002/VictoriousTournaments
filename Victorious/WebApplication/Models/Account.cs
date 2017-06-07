@@ -13,6 +13,7 @@ namespace WebApplication.Models
         public AccountModel Model { get; private set; }
         public Dictionary<TournamentStatus, List<TournamentModel>> Tournaments { get; private set; }
 
+        public Account(IUnitOfWork work) : base(work) { }
         public Account(IUnitOfWork work, int id) : base(work)
         {
             Retreive(id);
@@ -37,11 +38,14 @@ namespace WebApplication.Models
         {
             if (viewModel != null)
             {
+                // Acquire the account in question
+                Model = services.Account.GetAccount(viewModel.Username);
+
                 if (viewModel.Password == Model.Password)
                 {
                     Model.LastLogin = DateTime.Now;
                     services.Account.UpdateAccount(Model);
-                    services.Save();
+                    return services.Save();
                 }
             }
 

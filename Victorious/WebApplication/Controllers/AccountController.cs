@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using WebApplication.Models;
+using WebApplication.Models.ViewModels;
 
 namespace WebApplication.Controllers
 {
@@ -17,10 +18,6 @@ namespace WebApplication.Controllers
         [Route("Account/Index")]
         public ActionResult Index()
         {
-#if DEBUG
-            // Since this is debug, save me the time and just log me in
-            if (!IsLoggedIn()) Session["User.UserId"] = 1;
-#endif
             if (IsLoggedIn())
             {
                 return View("Index", account);
@@ -40,7 +37,7 @@ namespace WebApplication.Controllers
             }
             else
             {
-                return View("Login", account);
+                return View("Login", account.viewModel);
             }
         }
 
@@ -50,20 +47,19 @@ namespace WebApplication.Controllers
         {
             if (!ModelState.IsValid)
             {
-                viewModel.error = ViewModel.ViewError.ERROR;
-                viewModel.message = "Please enter in the required fields.";
+                Session["Message"] = "Please enter in the required fields.";
+                Session["Message.Class"] = ViewError.ERROR;
             }
             else
             {
-                if (viewModel.Login())
+                if (account.Login(viewModel))
                 {
-                    Session["User.UserId"] = viewModel.Account.AccountID;
-                    Session["User.Name"] = viewModel.Account.FirstName;
+                    Session["User.UserId"] = account.Model.AccountID;
                 }
                 else
                 {
                     Session["Message"] = "The username or password is invalid.";
-                    Session["Message.Class"] = ViewModel.ViewError.WARNING; 
+                    Session["Message.Class"] = ViewError.WARNING;
                 }
             }
 
@@ -79,7 +75,7 @@ namespace WebApplication.Controllers
             }
             else
             {
-                return View("Register", account);
+                return View("Register", account.viewModel);
             }
         }
 
@@ -89,24 +85,26 @@ namespace WebApplication.Controllers
         {
             if (!ModelState.IsValid)
             {
-                //If we hit this, then something failed 
-                viewModel.error = ViewModel.ViewError.ERROR;
-                viewModel.message = "Please enter in the required fields.";
+                Session["Message"] = "Please enter in the required fields.";
+                Session["Message.ClasS"] = ViewError.ERROR;
+
                 return View(viewModel);
             }
             else
             {
-                if (viewModel.Create())
+                if (account.Create(viewModel))
                 {
                     // User Registraion was successful
                     Session["Message"] = "Registration was successful. Please login to continue.";
-                    Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
+                    Session["Message.Class"] = ViewError.SUCCESS;
+
                     return RedirectToAction("Login", "Account");
                 }
                 else
                 {
-                    viewModel.error = ViewModel.ViewError.ERROR;
-                    viewModel.message = "We were unable to register your account. Please try again";
+                    Session["Message"] = "We were unable to register your account. Please try again";
+                    Session["Message.Class"] = ViewError.ERROR;
+
                     return View("Register", viewModel);
                 }
             }
@@ -115,15 +113,15 @@ namespace WebApplication.Controllers
         [Route("Account/Update")]
         public ActionResult Update()
         {
-            if (account != null)
+            if (IsLoggedIn())
             {
                 account.SetFields();
-                return View("Update", account);
+                return View("Update", account.viewModel);
             }
             else
             {
                 Session["Message"] = "You need you login to update your account.";
-                Session["Message.Class"] = ViewModel.ViewError.WARNING;
+                Session["Message.Class"] = ViewError.WARNING;
                 return RedirectToAction("Login", "Account");
             }
         }
@@ -135,22 +133,21 @@ namespace WebApplication.Controllers
             if (IsLoggedIn())
             {
                 // Verify the user being updated is legitly the user logged in
-                if (viewModel.AccountId == account.AccountId)
+                if (viewModel.AccountId == account.Model.AccountID)
                 {
                     if (account.Update(viewModel))
                     {
-                        viewModel.error = ViewModel.ViewError.SUCCESS;
-                        viewModel.message = "Your account was successfully updated.";
                         Session["User.Name"] = viewModel.FirstName;
-                        Session["Message"] = viewModel.message;
-                        Session["Message.Class"] = viewModel.error;
+                        Session["Message"] = "Your account was successfully updated.";
+                        Session["Message.Class"] = ViewError.SUCCESS;
+
                         return RedirectToAction("Index", "Account");
                     }
                     else
                     {
                         // There was an error updating the account
-                        viewModel.error = ViewModel.ViewError.ERROR;
-                        viewModel.message = "There was an error updating your account.";
+                        Session["Message"] = "There was an error updating your account.";
+                        Session["Message.Class"] = ViewError.ERROR;
                     }
                 }
                 else
@@ -158,7 +155,7 @@ namespace WebApplication.Controllers
                     // Log the user out as I feel this is a hacking attempt
                     Session.RemoveAll();
                     Session["Message"] = "Unfortunately, we're unable to update your account. Please login and try again.";
-                    Session["Message.Class"] = ViewModel.ViewError.ERROR;
+                    Session["Message.Class"] = ViewError.ERROR;
                     return RedirectToAction("Login", "Account");
                 }
             }
@@ -166,7 +163,7 @@ namespace WebApplication.Controllers
             {
                 Session.RemoveAll();
                 Session["Message"] = "Please login to edit your account information";
-                Session["Message.Class"] = ViewModel.ViewError.WARNING;
+                Session["Message.Class"] = ViewError.WARNING;
                 return RedirectToAction("Login", "Account");
             }
 
