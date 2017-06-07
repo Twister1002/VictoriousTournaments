@@ -145,27 +145,24 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdministratorController.cs" />
     <Compile Include="Controllers\AjaxController.cs" />
-    <Compile Include="Controllers\BracketController.cs" />
     <Compile Include="Controllers\VictoriousController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\MatchController.cs" />
     <Compile Include="Controllers\TournamentController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\IViewModel.cs" />
     <Compile Include="Models\Account.cs" />
+    <Compile Include="Models\Administrator.cs" />
+    <Compile Include="Models\Bracket.cs" />
+    <Compile Include="Models\Home.cs" />
+    <Compile Include="Models\Match.cs" />
     <Compile Include="Models\Model.cs" />
     <Compile Include="Models\Old\AdministratorViewModel.cs" />
     <Compile Include="Models\Old\Administrator\BracketTypeViewModel.cs" />
     <Compile Include="Models\Old\Administrator\GameTypeViewModel.cs" />
     <Compile Include="Models\Old\Administrator\PlatformTypeViewModel.cs" />
-    <Compile Include="Models\Old\BracketViewModel.cs" />
-    <Compile Include="Models\Old\GameViewModel.cs" />
-    <Compile Include="Models\Old\HomeViewModel.cs" />
-    <Compile Include="Models\Old\MatchViewModel.cs" />
     <Compile Include="Models\Tournament.cs" />
-    <Compile Include="Models\Old\TournamentViewModel.cs" />
     <Compile Include="Models\Old\ViewModel.cs" />
     <Compile Include="Models\ViewModels\AccountViewModel.cs" />
     <Compile Include="Models\ViewModels\BracketTypeViewModel.cs" />
