@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public class UnitOfWork : IUnitOfWork, IDisposable
+    public class UnitOfWork : IUnitOfWork
     {
         private VictoriousEntities context = new VictoriousEntities();
         IRepository<AccountInviteModel> accountInviteRepo;
@@ -273,7 +273,7 @@ namespace DatabaseLib
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
+                    context.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

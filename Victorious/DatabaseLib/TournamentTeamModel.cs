@@ -22,9 +22,11 @@ namespace DatabaseLib
     		OnInit();
         }
     
-        public int TournamentTeamID { get; set; }
+        public int TournamentTeamID { get; private set; }
         public int TournamentID { get; set; }
         public int SiteTeamID { get; set; }
+        public int CreatedByID { get; set; }
+        public string TeamName { get; set; }
     	
     	partial void OnInit();
     

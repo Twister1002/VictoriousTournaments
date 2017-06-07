@@ -345,6 +345,12 @@ namespace DatabaseLib.Services
         {
             try
             {
+                var matches = unitOfWork.MatchRepo.GetAll().ToList();
+                foreach (var match in matches)
+                {
+                    match.Challenger = unitOfWork.TournamentUserRepo.Get(match.ChallengerID);
+                    match.Defender = unitOfWork.TournamentUserRepo.Get(match.DefenderID);
+                }
                 return unitOfWork.MatchRepo.GetAll().ToList();
             }
             catch (Exception ex)

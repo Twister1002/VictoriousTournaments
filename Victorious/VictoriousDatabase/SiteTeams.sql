@@ -5,5 +5,5 @@
     [DateCreated] DATETIME NOT NULL, 
     [CreatedByID] INT NOT NULL, 
     CONSTRAINT [PK_SiteTeam] PRIMARY KEY ([SiteTeamID]),
-	CONSTRAINT FK_SiteTeam_Accounts_CreatedBy FOREIGN KEY (CreatedByID) REFERENCES Accounts(AccountID)
+	--CONSTRAINT FK_SiteTeam_Accounts_CreatedBy FOREIGN KEY (CreatedByID) REFERENCES Accounts(AccountID)
 )

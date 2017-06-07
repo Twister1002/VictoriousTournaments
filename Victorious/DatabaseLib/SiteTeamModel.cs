@@ -22,14 +22,13 @@ namespace DatabaseLib
     		OnInit();
         }
     
-        public int SiteTeamID { get; set; }
+        public int SiteTeamID { get; private set; }
         public string TeamName { get; set; }
         public System.DateTime DateCreated { get; set; }
         public int CreatedByID { get; set; }
     	
     	partial void OnInit();
     
-        public virtual AccountModel Account { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SiteTeamMemberModel> SiteTeamMembers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -193,6 +193,8 @@
           <Property Name="TournamentTeamID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TournamentID" Type="int" Nullable="false" />
           <Property Name="SiteTeamID" Type="int" Nullable="false" />
+          <Property Name="CreatedByID" Type="int" Nullable="false" />
+          <Property Name="TeamName" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="TournamentUsers">
           <Key>
@@ -263,18 +265,6 @@
             </Principal>
             <Dependent Role="Matches">
               <PropertyRef Name="BracketID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_SiteTeam_Accounts_CreatedBy">
-          <End Role="Accounts" Type="Self.Accounts" Multiplicity="1" />
-          <End Role="SiteTeams" Type="Self.SiteTeams" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Accounts">
-              <PropertyRef Name="AccountID" />
-            </Principal>
-            <Dependent Role="SiteTeams">
-              <PropertyRef Name="CreatedByID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -501,10 +491,6 @@
             <End Role="Brackets" EntitySet="Brackets" />
             <End Role="Matches" EntitySet="Matches" />
           </AssociationSet>
-          <AssociationSet Name="FK_SiteTeam_Accounts_CreatedBy" Association="Self.FK_SiteTeam_Accounts_CreatedBy">
-            <End Role="Accounts" EntitySet="Accounts" />
-            <End Role="SiteTeams" EntitySet="SiteTeams" />
-          </AssociationSet>
           <AssociationSet Name="FK_SiteTeamMembers_Accounts_AccountID" Association="Self.FK_SiteTeamMembers_Accounts_AccountID">
             <End Role="Accounts" EntitySet="Accounts" />
             <End Role="SiteTeamMembers" EntitySet="SiteTeamMembers" />
@@ -665,10 +651,6 @@
           <EntitySet Name="TournamentTeamBracketModels" EntityType="VictoriousDatabaseModel.TournamentTeamBracketModel" />
           <EntitySet Name="TournamentTeamMemberModels" EntityType="VictoriousDatabaseModel.TournamentTeamMemberModel" />
           <EntitySet Name="TournamentTeamModels" EntityType="VictoriousDatabaseModel.TournamentTeamModel" />
-          <AssociationSet Name="FK_SiteTeam_Accounts_CreatedBy" Association="VictoriousDatabaseModel.FK_SiteTeam_Accounts_CreatedBy">
-            <End Role="AccountModel" EntitySet="AccountModels" />
-            <End Role="SiteTeam" EntitySet="SiteTeamModels" />
-          </AssociationSet>
           <AssociationSet Name="FK_SiteTeamMembers_Accounts_AccountID" Association="VictoriousDatabaseModel.FK_SiteTeamMembers_Accounts_AccountID">
             <End Role="AccountModel" EntitySet="AccountModels" />
             <End Role="SiteTeamMember" EntitySet="SiteTeamMemberModels" />
@@ -810,7 +792,6 @@
           <Property Name="InviteCode" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="InvitedByID" Type="Int32" />
           <NavigationProperty Name="AccountInvites" Relationship="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy" FromRole="AccountModel" ToRole="AccountInvite" />
-          <NavigationProperty Name="SiteTeams" Relationship="VictoriousDatabaseModel.FK_SiteTeam_Accounts_CreatedBy" FromRole="AccountModel" ToRole="SiteTeam" />
           <NavigationProperty Name="SiteTeamMembers" Relationship="VictoriousDatabaseModel.FK_SiteTeamMembers_Accounts_AccountID" FromRole="AccountModel" ToRole="SiteTeamMember" />
         </EntityType>
         <EntityType Name="MatchModel">
@@ -1007,10 +988,10 @@
           <Key>
             <PropertyRef Name="SiteTeamMemberID" />
           </Key>
-          <Property Name="SiteTeamMemberID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SiteTeamMemberID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" a:SetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
           <Property Name="AccountID" Type="Int32" Nullable="false" />
           <Property Name="SiteTeamID" Type="Int32" Nullable="false" />
-          <Property Name="Role" Type="Int32" Nullable="false" />
+          <Property Name="Role" Type="VictoriousDatabaseModel.Permission" Nullable="false" />
           <NavigationProperty Name="Account" Relationship="VictoriousDatabaseModel.FK_SiteTeamMembers_Accounts_AccountID" FromRole="SiteTeamMember" ToRole="AccountModel" />
           <NavigationProperty Name="SiteTeam" Relationship="VictoriousDatabaseModel.FK_SiteTeamMembers_SiteTeams_SiteTeamID" FromRole="SiteTeamMember" ToRole="SiteTeam" />
           <NavigationProperty Name="TournamentTeamMembers" Relationship="VictoriousDatabaseModel.FK_TournamentTeamMember_SiteTeamMembers_SiteTeamMemberID" FromRole="SiteTeamMember" ToRole="TournamentTeamMember" />
@@ -1019,11 +1000,10 @@
           <Key>
             <PropertyRef Name="SiteTeamID" />
           </Key>
-          <Property Name="SiteTeamID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SiteTeamID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" a:SetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
           <Property Name="TeamName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="CreatedByID" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Account" Relationship="VictoriousDatabaseModel.FK_SiteTeam_Accounts_CreatedBy" FromRole="SiteTeam" ToRole="AccountModel" />
           <NavigationProperty Name="SiteTeamMembers" Relationship="VictoriousDatabaseModel.FK_SiteTeamMembers_SiteTeams_SiteTeamID" FromRole="SiteTeam" ToRole="SiteTeamMember" />
           <NavigationProperty Name="TournamentTeams" Relationship="VictoriousDatabaseModel.FK_TournamentTeams_SiteTeams_SiteTeamID" FromRole="SiteTeam" ToRole="TournamentTeam" />
         </EntityType>
@@ -1032,7 +1012,7 @@
             <PropertyRef Name="TournamentTeamID" />
             <PropertyRef Name="BracketID" />
           </Key>
-          <Property Name="TournamentTeamID" Type="Int32" Nullable="false" />
+          <Property Name="TournamentTeamID" Type="Int32" Nullable="false" a:SetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
           <Property Name="BracketID" Type="Int32" Nullable="false" />
           <Property Name="Seed" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Bracket" Relationship="VictoriousDatabaseModel.FK_TournamentTeamsBrackets_Brackets_BracketID" FromRole="TournamentTeamBracket" ToRole="BracketModel" />
@@ -1052,26 +1032,16 @@
           <Key>
             <PropertyRef Name="TournamentTeamID" />
           </Key>
-          <Property Name="TournamentTeamID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TournamentTeamID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" a:SetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
           <Property Name="TournamentID" Type="Int32" Nullable="false" />
           <Property Name="SiteTeamID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="SiteTeam" Relationship="VictoriousDatabaseModel.FK_TournamentTeams_SiteTeams_SiteTeamID" FromRole="TournamentTeam" ToRole="SiteTeam" />
           <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.FK_SiteTeamMembers_Tournaments_TournamentID" FromRole="TournamentTeam" ToRole="TournamentModel" />
           <NavigationProperty Name="TournamentTeamBrackets" Relationship="VictoriousDatabaseModel.FK_TournamentTeamsBrackets_TournamentTeam_TournamentTeamID" FromRole="TournamentTeam" ToRole="TournamentTeamBracket" />
           <NavigationProperty Name="TournamentTeamMembers" Relationship="VictoriousDatabaseModel.FK_TournamentTeamMember_TournamentTeams_TournamentTeamID" FromRole="TournamentTeam" ToRole="TournamentTeamMember" />
+          <Property Name="CreatedByID" Type="Int32" Nullable="false" />
+          <Property Name="TeamName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="true" />
         </EntityType>
-        <Association Name="FK_SiteTeam_Accounts_CreatedBy">
-          <End Type="VictoriousDatabaseModel.AccountModel" Role="AccountModel" Multiplicity="1" />
-          <End Type="VictoriousDatabaseModel.SiteTeamModel" Role="SiteTeam" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AccountModel">
-              <PropertyRef Name="AccountID" />
-            </Principal>
-            <Dependent Role="SiteTeam">
-              <PropertyRef Name="CreatedByID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_SiteTeamMembers_Accounts_AccountID">
           <End Type="VictoriousDatabaseModel.AccountModel" Role="AccountModel" Multiplicity="1" />
           <End Type="VictoriousDatabaseModel.SiteTeamMemberModel" Role="SiteTeamMember" Multiplicity="*" />
@@ -1172,6 +1142,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EnumType Name="Permission" a:ExternalTypeName="DatabaseLib.Permission" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1401,6 +1372,8 @@
           <EntitySetMapping Name="TournamentTeamModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentTeamModel">
               <MappingFragment StoreEntitySet="TournamentTeams">
+                <ScalarProperty Name="TeamName" ColumnName="TeamName" />
+                <ScalarProperty Name="CreatedByID" ColumnName="CreatedByID" />
                 <ScalarProperty Name="SiteTeamID" ColumnName="SiteTeamID" />
                 <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
                 <ScalarProperty Name="TournamentTeamID" ColumnName="TournamentTeamID" />
