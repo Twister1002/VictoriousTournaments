@@ -13,8 +13,8 @@ namespace WebApplication.Models
     {
         //MatchViewModel viewModel;
         Service services;
-        IMatch match;
 
+        public IMatch match { get; private set; }
         public IPlayer Challenger { get; private set; }
         public IPlayer Defender { get; private set; }
 
@@ -51,6 +51,21 @@ namespace WebApplication.Models
                     Name = name
                 };
             }
+        }
+
+        public int ChallengerScore()
+        {
+            return match.Score[(int)PlayerSlot.Challenger];
+        }
+
+        public int DefenderScore()
+        {
+            return match.Score[(int)PlayerSlot.Defender];
+        }
+
+        public List<IGame> GetGames()
+        {
+            return match.Games;
         }
 
         #region CRUD

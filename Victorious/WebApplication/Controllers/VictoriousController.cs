@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Tournaments = Tournament.Structure;
 using Tournament.Structure;
 using WebApplication.Models;
 
@@ -11,8 +12,8 @@ namespace WebApplication.Controllers
 {
     public abstract class VictoriousController : Controller
     {
-        protected AccountViewModel account;
-        public IUnitOfWork uow;
+        protected Account account;
+        public IUnitOfWork work;
         Dictionary<String, object> jsonResponse;
 
         protected override void Initialize(RequestContext requestContext)
@@ -24,12 +25,12 @@ namespace WebApplication.Controllers
         public VictoriousController()
         {
             jsonResponse = new Dictionary<String, object>();
-            uow = new UnitOfWork();
+            work = new UnitOfWork();
         }
 
         protected override void Dispose(bool disposing)
         {
-            uow.Dispose();
+            work.Dispose();
         }
 
         public void LoadAccount(HttpSessionStateBase Session)
@@ -38,11 +39,11 @@ namespace WebApplication.Controllers
             {
                 if (Session["User.UserId"] != null)
                 {
-                    account = new AccountViewModel((int)Session["User.UserId"]);
+                    account = new Account(work, (int)Session["User.UserId"]);
                 }
                 else
                 {
-                    account = new AccountViewModel();
+                    account = null;
                 }
             }
             else
@@ -53,7 +54,7 @@ namespace WebApplication.Controllers
 
         public bool IsLoggedIn()
         {
-            if (account != null && account.AccountId > 0)
+            if (account != null && account.Model.AccountID > 0)
             {
                 return true;
             }
@@ -80,17 +81,16 @@ namespace WebApplication.Controllers
             };
         }
 
-        protected object JsonMatchResponse(IMatch match, bool includeGames)
+        protected object JsonMatchResponse(Models.Match match, bool includeGames)
         {
-            MatchViewModel matchModel = new MatchViewModel(match);
             List<object> gameData = new List<object>();
 
-            IPlayer Challenger = matchModel.Challenger;
-            IPlayer Defender = matchModel.Defender;
+            IPlayer Challenger = match.Challenger;
+            IPlayer Defender = match.Defender;
 
             if (includeGames)
             {
-                foreach (IGame game in match.Games)
+                foreach (IGame game in match.GetGames())
                 {
                     gameData.Add(JsonGameResponse(game));
                 }
@@ -98,12 +98,12 @@ namespace WebApplication.Controllers
 
             return new
             {
-                matchId = match.Id,
-                matchNum = match.MatchNumber,
-                ready = match.IsReady,
-                finished = match.IsFinished,
-                challenger = JsonPlayerDataResponse(Challenger, match.Score[(int)PlayerSlot.Challenger]),
-                defender = JsonPlayerDataResponse(Defender, match.Score[(int)PlayerSlot.Defender]),
+                matchId = match.match.Id,
+                matchNum = match.match.MatchNumber,
+                ready = match.match.IsReady,
+                finished = match.match.IsFinished,
+                challenger = JsonPlayerDataResponse(Challenger, match.ChallengerScore()),
+                defender = JsonPlayerDataResponse(Defender, match.DefenderScore()),
                 games = gameData
             };
         }
