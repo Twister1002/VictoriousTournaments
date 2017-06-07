@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatabaseLib;
+using System;
 using WebApplication.Utility;
 
 namespace WebApplication.Models
@@ -25,9 +26,9 @@ namespace WebApplication.Models
         public ViewError error = ViewError.NONE;
         protected Service services;
 
-        protected ViewModel(Service service)
+        protected ViewModel(IUnitOfWork uow)
         {
-            services = service;
+            services = new Service(uow);
         }
         
         public String message { get; set; }

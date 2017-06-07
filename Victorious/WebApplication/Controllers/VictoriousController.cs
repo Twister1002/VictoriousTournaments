@@ -12,7 +12,7 @@ namespace WebApplication.Controllers
     public abstract class VictoriousController : Controller
     {
         protected AccountViewModel account;
-        public static IUnitOfWork uow;
+        public IUnitOfWork uow;
         Dictionary<String, object> jsonResponse;
 
         protected override void Initialize(RequestContext requestContext)

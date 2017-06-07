@@ -8,23 +8,23 @@ using WebApplication.Interfaces;
 
 namespace WebApplication.Models
 {
-    public class TournamentViewModel : TournamentFields, IViewModel
+    public class TournamentViewModel : ViewModel
     {
         private bool TempFixMatchObjects = true;
         public ITournament Tourny { get; private set; }
         public TournamentModel Model { get; private set; }
         public List<TournamentModel> SearchedTournaments { get; private set; }
 
-        public TournamentViewModel() : base()
+        public TournamentViewModel(IUnitOfWork work) : base(work)
         {
             Model = new TournamentModel();
             Init();
         }
 
-        public TournamentViewModel(String id) : this(int.Parse(id))
+        public TournamentViewModel(IUnitOfWork work, String id) : this(work, int.Parse(id))
         { }
 
-        public TournamentViewModel(int id) : base()
+        public TournamentViewModel(IUnitOfWork work, int id) : base(work)
         {
             Model = tournamentService.GetTournament(id);
             Init();
@@ -40,7 +40,7 @@ namespace WebApplication.Models
             ProcessTournament();
         }
 
-        public TournamentViewModel(TournamentModel model) : base()
+        public TournamentViewModel(IUnitOfWork work, TournamentModel model) : base(work)
         {
             Init();
 

@@ -15,24 +15,24 @@ namespace WebApplication.Models
         PAST
     };
 
-    public class AccountViewModel : AccountFields, IViewModel
+    public class AccountViewModel : ViewModel
     {
         public AccountModel Account { get; private set; }
         public Dictionary<TournamentStatus, List<TournamentModel>> Tournaments { get; private set; }
 
-        public AccountViewModel() : base()
+        public AccountViewModel(IUnitOfWork work) : base(work)
         {
             Account = new AccountModel();
             Init();
         }
 
-        public AccountViewModel(int id) : base()
+        public AccountViewModel(IUnitOfWork work, int id) : base(work)
         {
             Account = services.AccountService.GetAccount(id);
             Init();
         }
 
-        public AccountViewModel(AccountModel model) : base()
+        public AccountViewModel(IUnitOfWork work, AccountModel model) : base(work)
         {
             Account = model;
             Init();

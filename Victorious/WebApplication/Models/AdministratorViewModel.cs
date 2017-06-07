@@ -8,7 +8,7 @@ namespace WebApplication.Models
 {
     public class AdministratorViewModel : ViewModel
     {
-        public AdministratorViewModel(Service services) : base(services)
+        public AdministratorViewModel(IUnitOfWork work) : base(work)
         {
 
         }

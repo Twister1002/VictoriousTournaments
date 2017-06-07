@@ -5,7 +5,7 @@ using WebApplication.Interfaces;
 
 namespace WebApplication.Models
 {
-    public class MatchViewModel : MatchFields, IViewModel
+    public class MatchViewModel : ViewModel
     {
         public MatchModel Model { get; private set; }
         public IMatch Match { get; private set; }
@@ -13,27 +13,27 @@ namespace WebApplication.Models
         public IPlayer Challenger { get; private set;}
         public IPlayer Defender { get; private set; }
 
-        public MatchViewModel()
+        public MatchViewModel(IUnitOfWork work) : base(work)
         {
             Match = new Match();
             Model = new MatchModel();
         }
 
-        public MatchViewModel(IMatch match)
+        public MatchViewModel(IUnitOfWork work, IMatch match) : base(work)
         {
             Match = match;
             Model = Match.GetModel();
             LoadPlayers();
         }
 
-        public MatchViewModel(MatchModel match)
+        public MatchViewModel(IUnitOfWork work, MatchModel match) : base(work)
         {
             Model = match;
             Match = new Match(match);
             LoadPlayers();
         }
 
-        public MatchViewModel(int matchId)
+        public MatchViewModel(IUnitOfWork work, int matchId) : base(work)
         {
             Model = tournamentService.GetMatch(matchId);
             if (Model != null)

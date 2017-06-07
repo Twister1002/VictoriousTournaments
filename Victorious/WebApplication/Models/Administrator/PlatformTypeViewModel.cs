@@ -4,12 +4,12 @@ using WebApplication.Interfaces;
 
 namespace WebApplication.Models.Administrator
 {
-    public class PlatformTypeViewModel : PlatformTypeFields, IViewModel
+    public class PlatformTypeViewModel : PlatformTypeFields
     {
         public List<PlatformModel> platforms { get; protected set; }
         public PlatformModel Model { get; protected set; }
 
-        public PlatformTypeViewModel()
+        public PlatformTypeViewModel(IUnitOfWork work) : base(work)
         {
             Model = new PlatformModel();
             Init();

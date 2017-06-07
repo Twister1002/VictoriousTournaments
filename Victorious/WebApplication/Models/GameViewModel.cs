@@ -5,7 +5,7 @@ using WebApplication.Interfaces;
 
 namespace WebApplication.Models
 {
-    public class GameViewModel : GameFields, IViewModel
+    public class GameViewModel : ViewModel
     {
         public GameModel Model { get; private set; }
         public IGame Game { get; private set; }

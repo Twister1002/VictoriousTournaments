@@ -5,12 +5,12 @@ using System;
 
 namespace WebApplication.Models.Administrator
 {
-    public class GameTypeViewModel : GameTypeFields, IViewModel
+    public class GameTypeViewModel : ViewModel
     {
         public List<GameTypeModel> GameTypes { get; private set; }
         public GameTypeModel GameType { get; private set; }
 
-        public GameTypeViewModel()
+        public GameTypeViewModel(IUnitOfWork work) : base (work)
         {
             GameType = new GameTypeModel();
             Init();

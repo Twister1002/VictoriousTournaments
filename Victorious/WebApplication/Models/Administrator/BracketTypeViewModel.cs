@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DatabaseLib;
 using WebApplication.Interfaces;
-using WebApplication.Utility;
 
 namespace WebApplication.Models.Administrator
 {
@@ -11,7 +10,7 @@ namespace WebApplication.Models.Administrator
     {
         public List<BracketTypeModel> Brackets { get; private set; }
 
-        public BracketTypeViewModel(Service services) : base(services)
+        public BracketTypeViewModel(IUnitOfWork work) : base(work)
         {
             Init();
         }

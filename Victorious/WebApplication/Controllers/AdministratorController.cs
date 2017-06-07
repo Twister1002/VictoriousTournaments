@@ -11,7 +11,7 @@ namespace WebApplication.Controllers
         {
             if (account.IsAdministrator())
             {
-                return View("Index", new AdministratorViewModel());
+                return View("Index", new AdministratorViewModel(uow));
             }
             else
             {

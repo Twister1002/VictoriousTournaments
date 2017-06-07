@@ -1,58 +1,11 @@
-﻿using System;
+﻿using DatabaseLib;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using DatabaseLib;
 
-namespace WebApplication.Models
+namespace WebApplication.Models.ViewModels
 {
-    public struct BracketInfo
-    {
-        public int BracketType { get; set; }
-        public int NumberOfRounds { get; set; }
-    }
-
-    public abstract class AccountFields : ViewModel
-    {
-        public int AccountId { get; set; } 
-
-        //[Required(ErrorMessage = "First Name is required")]
-        [DataType(DataType.Text)]
-        [StringLength(AccountModel.FirstNameLength)]
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; }
-
-        //[Required(ErrorMessage = "Last Name is required")]
-        [DataType(DataType.Text)]
-        [StringLength(AccountModel.LastNameLength)]
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; }
-
-        //[Required(ErrorMessage = "Username is required")]
-        [DataType(DataType.Text)]
-        [StringLength(AccountModel.UsernameLength)]
-        [Display(Name = "Username")]
-        public string Username { get; set; }
-
-        //[Required(ErrorMessage = "Email is required")]
-        [StringLength(AccountModel.EmailLength)]
-        [DataType(DataType.Text)]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
-
-        //[Required(ErrorMessage = "Password is required")]
-        [DataType(DataType.Password)]
-        [StringLength(AccountModel.PasswordLength)]
-        [Display(Name = "Password")]
-        public string Password { get; set; }
-
-        //[Compare("Password", ErrorMessage = "Passwords do not match")]
-        [DataType(DataType.Password)]
-        [StringLength(AccountModel.PasswordLength)]
-        [Display(Name = "Verify Password")]
-        public string PasswordVerify { get; set; }
-    }
-
-    public abstract class TournamentFields : ViewModel
+    public class TournamentViewModel
     {
         [Required(ErrorMessage = "Name your tournament")]
         [DataType(DataType.Text)]
@@ -117,62 +70,29 @@ namespace WebApplication.Models
 
         [Display(Name = "Bracket Type")]
         public List<BracketTypeModel> BracketTypes { get; protected set; }
-        [Display(Name ="Rounds")]
+        [Display(Name = "Rounds")]
         public List<int> NumberOfRounds { get; protected set; }
         public List<GameTypeModel> GameTypes { get; protected set; }
         public List<PlatformModel> PlatformTypes { get; protected set; }
-        
+
         public List<BracketInfo> BracketData { get; set; }
 
-        [Display(Name ="Game")]
-        [Required(ErrorMessage ="Select a game")]
+        [Display(Name = "Game")]
+        [Required(ErrorMessage = "Select a game")]
         public int? GameTypeID { get; set; }
 
         [Display(Name = "Platform")]
         [Required(ErrorMessage = "Choose a platform")]
-        public int PlatformTypeID { get; set; } 
+        public int PlatformTypeID { get; set; }
 
         [Display(Name = "Public Viewing")]
         public bool PublicViewing { get; set; }
         [Display(Name = "Public Registation")]
         public bool PublicRegistration { get; set; }
-    }
 
-    public abstract class BracketFields : ViewModel
-    {
+
+        // Bracket stuff
         [Display(Name = "Best Of ")]
         public int BestOfMatches { get; set; }
-    }
-
-    public abstract class MatchFields : ViewModel
-    {
-    } 
-
-    public abstract class GameFields : ViewModel
-    {
-        public int GameNumber { get; set; }
-        public int ChallengerScore { get; set; }
-        public int DefenderScore { get; set; }
-    }
-
-    public class TournamentRegistrationFields : ViewModel
-    {
-        public String Name { get; set; }
-        public int TournamentID { get; set; }
-        public int AccountID { get; set; }
-    }
-
-    public abstract class GameTypeFields : ViewModel
-    {
-        [Display(Name = "Title")]
-        [DataType(DataType.Text)]
-        public String Title { get; set; }
-    }
-
-    public abstract class PlatformTypeFields : ViewModel
-    {
-        [Display(Name = "Platform")]
-        [DataType(DataType.Text)]
-        public String Platform { get; set; }
     }
 }

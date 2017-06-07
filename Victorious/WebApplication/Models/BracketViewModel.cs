@@ -22,7 +22,7 @@ namespace WebApplication.Models
         public String title;
     }
 
-    public class BracketViewModel : BracketFields, IViewModel
+    public class BracketViewModel : ViewModel
     {
         public bool roundsModified { get; private set; }
         public IBracket Bracket { get; private set; }
