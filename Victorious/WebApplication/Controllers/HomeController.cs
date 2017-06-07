@@ -9,7 +9,7 @@ namespace WebApplication.Controllers
         [Route("")]
         public ActionResult Index()
         {
-            HomeViewModel model = new HomeViewModel();
+            Home model = new Home(work);
 
             return View("Index", model);
         }
@@ -17,7 +17,7 @@ namespace WebApplication.Controllers
         [Route("FAQ")]
         public ActionResult FAQ()
         {
-            HomeViewModel model = new HomeViewModel();
+            Home model = new Home(work);
             return View("FAQ", model);
         }
 
@@ -25,28 +25,28 @@ namespace WebApplication.Controllers
         public ActionResult Blog()
         {
             Session["Message"] = "The blog is currently not working.";
-            Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
+            Session["Message.Class"] = ViewError.ERROR;
             return RedirectToAction("Index");
         }
 
         [Route("About")]
         public ActionResult About()
         {
-            HomeViewModel model = new HomeViewModel();
+            Home model = new Home(work);
             return View("About", model);
         }
 
         [Route("Contact")]
         public ActionResult Contact()
         {
-            HomeViewModel model = new HomeViewModel();
+            Home model = new Home(work);
             return View("Contact", model);
         }
 
         [Route("Rules")]
         public ActionResult Rules()
         {
-            HomeViewModel model = new HomeViewModel();
+            Home model = new Home(work);
             return View("Rules", model);
         }
     }

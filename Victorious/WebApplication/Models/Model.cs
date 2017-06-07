@@ -34,10 +34,26 @@ namespace WebApplication.Models
         public int BracketType;
         public int NumberOfRounds;
     }
+    public enum ViewError
+    {
+        NONE,
+        SUCCESS,
+        WARNING,
+        ERROR
+    }
 
     public abstract class Model
     {
         protected Service services;
+
+        public String[] errorClassNames = new String[] {
+            "none",
+            "success",
+            "warning",
+            "error",
+        };
+
+        public ViewError error = ViewError.NONE;
         public String message;
         public Exception ex;
 
