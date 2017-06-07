@@ -1243,32 +1243,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="MatchModels">
-            <EntityTypeMapping TypeName="VictoriousDatabaseModel.MatchModel">
-              <MappingFragment StoreEntitySet="Matches">
-                <ScalarProperty Name="IsManualWin" ColumnName="IsManualWin" />
-                <ScalarProperty Name="BracketID" ColumnName="BracketID" />
-                <ScalarProperty Name="MaxGames" ColumnName="MaxGames" />
-                <ScalarProperty Name="PrevChallengerMatchNumber" ColumnName="PrevChallengerMatchNumber" />
-                <ScalarProperty Name="PrevDefenderMatchNumber" ColumnName="PrevDefenderMatchNumber" />
-                <ScalarProperty Name="NextLoserMatchNumber" ColumnName="NextLoserMatchNumber" />
-                <ScalarProperty Name="PrevMatchIndex" ColumnName="PrevMatchIndex" />
-                <ScalarProperty Name="NextMatchNumber" ColumnName="NextMatchNumber" />
-                <ScalarProperty Name="MatchIndex" ColumnName="MatchIndex" />
-                <ScalarProperty Name="MatchDuration" ColumnName="MatchDuration" />
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="StartDateTime" ColumnName="StartDateTime" />
-                <ScalarProperty Name="MatchNumber" ColumnName="MatchNumber" />
-                <ScalarProperty Name="RoundIndex" ColumnName="RoundIndex" />
-                <ScalarProperty Name="DefenderScore" ColumnName="DefenderScore" />
-                <ScalarProperty Name="ChallengerScore" ColumnName="ChallengerScore" />
-                <ScalarProperty Name="WinnerID" ColumnName="WinnerID" />
-                <ScalarProperty Name="DefenderID" ColumnName="DefenderID" />
-                <ScalarProperty Name="ChallengerID" ColumnName="ChallengerID" />
-                <ScalarProperty Name="MatchID" ColumnName="MatchID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="GameTypeModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.GameTypeModel">
               <MappingFragment StoreEntitySet="GameTypes">
@@ -1377,6 +1351,32 @@
                 <ScalarProperty Name="SiteTeamMemberID" ColumnName="SiteTeamMemberID" />
                 <ScalarProperty Name="TournamentTeamID" ColumnName="TournamentTeamID" />
                 <ScalarProperty Name="TournamentTeamMemberID" ColumnName="TournamentTeamMemberID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MatchModels">
+            <EntityTypeMapping TypeName="IsTypeOf(VictoriousDatabaseModel.MatchModel)">
+              <MappingFragment StoreEntitySet="Matches">
+                <ScalarProperty Name="IsManualWin" ColumnName="IsManualWin" />
+                <ScalarProperty Name="BracketID" ColumnName="BracketID" />
+                <ScalarProperty Name="MaxGames" ColumnName="MaxGames" />
+                <ScalarProperty Name="PrevChallengerMatchNumber" ColumnName="PrevChallengerMatchNumber" />
+                <ScalarProperty Name="PrevDefenderMatchNumber" ColumnName="PrevDefenderMatchNumber" />
+                <ScalarProperty Name="NextLoserMatchNumber" ColumnName="NextLoserMatchNumber" />
+                <ScalarProperty Name="PrevMatchIndex" ColumnName="PrevMatchIndex" />
+                <ScalarProperty Name="NextMatchNumber" ColumnName="NextMatchNumber" />
+                <ScalarProperty Name="MatchIndex" ColumnName="MatchIndex" />
+                <ScalarProperty Name="MatchDuration" ColumnName="MatchDuration" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="StartDateTime" ColumnName="StartDateTime" />
+                <ScalarProperty Name="MatchNumber" ColumnName="MatchNumber" />
+                <ScalarProperty Name="RoundIndex" ColumnName="RoundIndex" />
+                <ScalarProperty Name="DefenderScore" ColumnName="DefenderScore" />
+                <ScalarProperty Name="ChallengerScore" ColumnName="ChallengerScore" />
+                <ScalarProperty Name="WinnerID" ColumnName="WinnerID" />
+                <ScalarProperty Name="DefenderID" ColumnName="DefenderID" />
+                <ScalarProperty Name="ChallengerID" ColumnName="ChallengerID" />
+                <ScalarProperty Name="MatchID" ColumnName="MatchID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

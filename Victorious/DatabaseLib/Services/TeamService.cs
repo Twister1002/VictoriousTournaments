@@ -57,6 +57,20 @@ namespace DatabaseLib.Services
             unitOfWork.SiteTeamRepo.Delete(siteTeamId);
         }
 
+        public bool SiteTeamNameExists(string teamName)
+        {
+            throw new NotImplementedException();
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
+
         #endregion
 
 
@@ -123,7 +137,6 @@ namespace DatabaseLib.Services
             }
         }
 
-
         public List<TournamentTeamModel> GetAllTournamentTeams()
         {
             try
@@ -146,6 +159,19 @@ namespace DatabaseLib.Services
             unitOfWork.TournamentTeamRepo.Delete(tournamentTeamId);
         }
 
+        public bool TournamentTeamNameExists(string teamName)
+        {
+            throw new NotImplementedException();
+            try
+            {
+                TournamentTeamModel team = unitOfWork.TournamentTeamRepo.GetSingle(x => x.TeamName == teamName);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
 
         #endregion
 

@@ -71,7 +71,7 @@ namespace DatabaseLib.Services
             unitOfWork.AccountRepo.Update(account);
         }
 
-        public DbError AccountUsernameExists(string username)
+        public bool AccountUsernameExists(string username)
         {
             try
             {
@@ -79,12 +79,12 @@ namespace DatabaseLib.Services
             }
             catch (Exception)
             {
-                return DbError.DOES_NOT_EXIST;
+                return false;
             }
-            return DbError.EXISTS;
+            return true;
         }
 
-        public DbError AccountEmailExists(string email)
+        public bool AccountEmailExists(string email)
         {
             try
             {
@@ -92,9 +92,9 @@ namespace DatabaseLib.Services
             }
             catch (Exception)
             {
-                return DbError.DOES_NOT_EXIST;
+                return false;
             }
-            return DbError.EXISTS;
+            return true;
         }
 
         public List<TournamentModel> GetTournamentsForAccount(int accountId)
