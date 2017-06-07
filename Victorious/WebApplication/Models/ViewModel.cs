@@ -1,6 +1,5 @@
 ﻿using System;
-using DatabaseLib;
-using DatabaseLib.Services;
+using WebApplication.Utility;
 
 namespace WebApplication.Models
 {
@@ -24,40 +23,14 @@ namespace WebApplication.Models
         };
         
         public ViewError error = ViewError.NONE;
-        protected AccountService accountService;
-        protected TournamentService tournamentService;
-        protected TypeService typeService;
+        protected Service services;
 
-#if DEBUG
-        protected IUnitOfWork work = new UnitOfWork();
-        //protected DatabaseRepository db = new DatabaseRepository("Debug");
-#elif !DEBUG
-        protected DatabaseRepository db = new DatabaseRepository("Production");
-#endif
-        protected ViewModel()
+        protected ViewModel(Service service)
         {
-            accountService = new AccountService(work);
-            tournamentService = new TournamentService(work);
-            typeService = new TypeService(work);
-
-            Init();
+            services = service;
         }
-
-        protected abstract void Init();
+        
         public String message { get; set; }
         public Exception dbException { get; set; }
-
-        protected bool Save()
-        {
-            if (work.Save())
-            {
-                return true;
-            }
-            else
-            {
-                work.Refresh();
-                return false;
-            }
-        }
     }
 }

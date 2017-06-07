@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatabaseLib;
+using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
@@ -11,6 +12,7 @@ namespace WebApplication.Controllers
     public abstract class VictoriousController : Controller
     {
         protected AccountViewModel account;
+        public static IUnitOfWork uow;
         Dictionary<String, object> jsonResponse;
 
         protected override void Initialize(RequestContext requestContext)
@@ -22,6 +24,12 @@ namespace WebApplication.Controllers
         public VictoriousController()
         {
             jsonResponse = new Dictionary<String, object>();
+            uow = new UnitOfWork();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            uow.Dispose();
         }
 
         public void LoadAccount(HttpSessionStateBase Session)

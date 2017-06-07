@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Tournament.Structure;
+﻿using Tournament.Structure;
 using DatabaseLib;
 using System;
+using WebApplication.Interfaces;
 
 namespace WebApplication.Models
 {
-    public class MatchViewModel : MatchFields
+    public class MatchViewModel : MatchFields, IViewModel
     {
         public MatchModel Model { get; private set; }
         public IMatch Match { get; private set; }
@@ -63,7 +62,7 @@ namespace WebApplication.Models
             LoadPlayers();
         }
 
-        protected override void Init()
+        public void Init()
         {
             
         }
@@ -133,6 +132,16 @@ namespace WebApplication.Models
         public int ChallengerScore()
         {
             return Match.Score[(int)PlayerSlot.Challenger];
+        }
+
+        public void ApplyChanges()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetFields()
+        {
+            throw new NotImplementedException();
         }
     }
 }

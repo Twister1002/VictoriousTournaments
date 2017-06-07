@@ -1,12 +1,10 @@
 ﻿using DatabaseLib;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using WebApplication.Interfaces;
 
 namespace WebApplication.Models.Administrator
 {
-    public class PlatformTypeViewModel : PlatformTypeFields
+    public class PlatformTypeViewModel : PlatformTypeFields, IViewModel
     {
         public List<PlatformModel> platforms { get; protected set; }
         public PlatformModel Model { get; protected set; }
@@ -14,14 +12,15 @@ namespace WebApplication.Models.Administrator
         public PlatformTypeViewModel()
         {
             Model = new PlatformModel();
+            Init();
         }
 
-        protected override void Init()
+        public void Init()
         {
             Select();
         }
 
-        public void ApplyFields()
+        public void ApplyChanges()
         {
             Model.PlatformName = this.Platform;
         }
@@ -33,7 +32,7 @@ namespace WebApplication.Models.Administrator
 
         public bool Create()
         {
-            ApplyFields();
+            ApplyChanges();
             typeService.AddPlatform(Model);
 
             if (Save())
@@ -47,7 +46,7 @@ namespace WebApplication.Models.Administrator
             }
         }
 
-        public bool Update()
+        public bool Update(int id)
         {
             return false;
         }

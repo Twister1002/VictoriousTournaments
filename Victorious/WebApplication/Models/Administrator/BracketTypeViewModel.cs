@@ -1,26 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using DatabaseLib;
+using WebApplication.Interfaces;
+using WebApplication.Utility;
 
 namespace WebApplication.Models.Administrator
 {
-    public class BracketTypeViewModel : ViewModel
+    public class BracketTypeViewModel : ViewModel, IViewModel
     {
         public List<BracketTypeModel> Brackets { get; private set; }
 
-        public BracketTypeViewModel()
+        public BracketTypeViewModel(Service services) : base(services)
+        {
+            Init();
+        }
+
+        public void Init()
         {
             Select();
-        }
-        protected override void Init()
-        {
         }
 
         private void Select()
         {
-            Brackets = typeService.GetAllBracketTypes();
+            Brackets = services.TypeService.GetAllBracketTypes();
         }
 
         public bool Update(int bracketTypeId)
@@ -28,8 +31,8 @@ namespace WebApplication.Models.Administrator
             BracketTypeModel model = Brackets.First(y => y.BracketTypeID == bracketTypeId);
             model.IsActive = model.IsActive ? false : true;
 
-            typeService.UpdateBracketType(model);
-            if (Save())
+            services.TypeService.UpdateBracketType(model);
+            if (services.Save())
             {
                 Select();
                 return true;
@@ -38,6 +41,26 @@ namespace WebApplication.Models.Administrator
             {
                 return false;
             }
+        }
+
+        public void ApplyChanges()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetFields()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Create()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -4,11 +4,11 @@ using System.Linq;
 using Tournament.Structure;
 using DatabaseLib;
 using WebApplication.Utility;
-using DatabaseLib.Services;
+using WebApplication.Interfaces;
 
 namespace WebApplication.Models
 {
-    public class TournamentViewModel : TournamentFields
+    public class TournamentViewModel : TournamentFields, IViewModel
     {
         private bool TempFixMatchObjects = true;
         public ITournament Tourny { get; private set; }
@@ -18,6 +18,7 @@ namespace WebApplication.Models
         public TournamentViewModel() : base()
         {
             Model = new TournamentModel();
+            Init();
         }
 
         public TournamentViewModel(String id) : this(int.Parse(id))
@@ -26,6 +27,8 @@ namespace WebApplication.Models
         public TournamentViewModel(int id) : base()
         {
             Model = tournamentService.GetTournament(id);
+            Init();
+
             if (Model != null)
             {
                 SetFields();
@@ -39,6 +42,8 @@ namespace WebApplication.Models
 
         public TournamentViewModel(TournamentModel model) : base()
         {
+            Init();
+
             if (model != null)
             {
                 Model = model;
@@ -48,7 +53,7 @@ namespace WebApplication.Models
             ProcessTournament();
         }
 
-        protected override void Init()
+        public void Init()
         {
             this.BracketTypes = typeService.GetAllBracketTypes().Where(x=>x.IsActive == true).ToList();
             this.GameTypes = typeService.GetAllGameTypes();
@@ -77,7 +82,7 @@ namespace WebApplication.Models
             }
         }
 
-        public override void ApplyChanges()
+        public void ApplyChanges()
         {
             // Tournament Stuff
             Model.Title = this.Title;
@@ -96,7 +101,7 @@ namespace WebApplication.Models
             Model.CheckInEnds = this.CheckinEndDate + this.CheckinEndTime.TimeOfDay;
         }
 
-        public override void SetFields()
+        public void SetFields()
         {
             this.Title = Model.Title;
             this.Description = Model.Description;

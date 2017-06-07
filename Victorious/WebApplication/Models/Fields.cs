@@ -50,9 +50,6 @@ namespace WebApplication.Models
         [StringLength(AccountModel.PasswordLength)]
         [Display(Name = "Verify Password")]
         public string PasswordVerify { get; set; }
-
-        public abstract void ApplyChanges();
-        public abstract void SetFields();
     }
 
     public abstract class TournamentFields : ViewModel
@@ -139,10 +136,6 @@ namespace WebApplication.Models
         public bool PublicViewing { get; set; }
         [Display(Name = "Public Registation")]
         public bool PublicRegistration { get; set; }
-
-        
-        public abstract void ApplyChanges();
-        public abstract void SetFields();
     }
 
     public abstract class BracketFields : ViewModel
@@ -167,8 +160,6 @@ namespace WebApplication.Models
         public String Name { get; set; }
         public int TournamentID { get; set; }
         public int AccountID { get; set; }
-
-        protected override void Init() { }
     }
 
     public abstract class GameTypeFields : ViewModel

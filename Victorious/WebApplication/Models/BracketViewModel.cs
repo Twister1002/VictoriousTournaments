@@ -4,6 +4,7 @@ using System.Linq;
 using Tournament.Structure;
 using DatabaseLib;
 using DatabaseLib.Services;
+using WebApplication.Interfaces;
 
 namespace WebApplication.Models
 {
@@ -21,9 +22,8 @@ namespace WebApplication.Models
         public String title;
     }
 
-    public class BracketViewModel : BracketFields
+    public class BracketViewModel : BracketFields, IViewModel
     {
-        private TournamentService service;
         public bool roundsModified { get; private set; }
         public IBracket Bracket { get; private set; }
         public BracketModel Model { get; private set; }
@@ -32,28 +32,31 @@ namespace WebApplication.Models
         {
             Bracket = null;
             Model = null;
+            Init();
         }
 
         public BracketViewModel(BracketModel model)
         {
             Model = model;
             Bracket = null;
+            Init();
         }
 
         public BracketViewModel(IBracket bracket)
         {
             Bracket = bracket;
             Model = null;
+            Init();
         }
 
         public BracketViewModel(int id)
         {
             Model = tournamentService.GetBracket(id);
+            Init();
         }
 
-        protected override void Init()
+        public void Init()
         {
-            service = new TournamentService(work);
             if (Model != null && Bracket == null)
             {
                 Bracket = new Tournament.Structure.Tournament().RestoreBracket(Model);
@@ -445,6 +448,16 @@ namespace WebApplication.Models
             }
 
             Save();
+        }
+
+        public void ApplyChanges()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetFields()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

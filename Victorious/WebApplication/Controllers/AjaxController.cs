@@ -122,11 +122,14 @@ namespace WebApplication.Controllers
 
             if (IsLoggedIn())
             {
+                // TODO: Once the Issue with Defender and Challenger objects are solved, fix this.
                 TournamentViewModel tournamentModel = new TournamentViewModel(tournamentId);
-                //BracketViewModel viewModel = new BracketViewModel(bracketId);
+                BracketViewModel bracketModel = new BracketViewModel(tournamentModel.Tourny.Brackets.Single(x=>x.Id == bracketId));
+
                 if (tournamentModel.IsCreator(account.AccountId))
                 {
-                    tournamentModel.Tourny.Brackets.Where(x => x.Id == bracketId).Single().ResetMatches();
+                    //tournamentModel.Tourny.Brackets.Where(x => x.Id == bracketId).Single().ResetMatches();
+                    bracketModel.Bracket.ResetMatches();
 
                     status = true;
                     message = "Bracket was reset";

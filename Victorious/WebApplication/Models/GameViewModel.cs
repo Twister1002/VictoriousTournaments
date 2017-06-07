@@ -1,10 +1,11 @@
 ﻿using Tournament.Structure;
 using DatabaseLib;
 using System;
+using WebApplication.Interfaces;
 
 namespace WebApplication.Models
 {
-    public class GameViewModel : GameFields
+    public class GameViewModel : GameFields, IViewModel
     {
         public GameModel Model { get; private set; }
         public IGame Game { get; private set; }
@@ -27,8 +28,7 @@ namespace WebApplication.Models
             Model = Game.GetModel();
         }
 
-        protected override void Init()
-        {
+        public void Init() { 
         }
 
         public bool Create()
@@ -45,6 +45,16 @@ namespace WebApplication.Models
         public bool Update()
         {
             return false;
+        }
+
+        public void ApplyChanges()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetFields()
+        {
+            throw new NotImplementedException();
         }
     }
 }

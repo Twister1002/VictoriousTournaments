@@ -1,12 +1,11 @@
 ﻿using DatabaseLib;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using WebApplication.Interfaces;
+using System;
 
 namespace WebApplication.Models.Administrator
 {
-    public class GameTypeViewModel : GameTypeFields
+    public class GameTypeViewModel : GameTypeFields, IViewModel
     {
         public List<GameTypeModel> GameTypes { get; private set; }
         public GameTypeModel GameType { get; private set; }
@@ -14,14 +13,15 @@ namespace WebApplication.Models.Administrator
         public GameTypeViewModel()
         {
             GameType = new GameTypeModel();
+            Init();
         }
 
-        protected override void Init()
+        public void Init()
         {
             Select();
         }
 
-        public void ApplyFields()
+        public void ApplyChanges()
         {
             GameType.Title = Title;
         }
@@ -31,14 +31,14 @@ namespace WebApplication.Models.Administrator
             Title = GameType.Title;
         }
 
-        public bool Update()
+        public bool Update(int id)
         {
             return false;
         }
 
         public bool Create()
         {
-            ApplyFields();
+            ApplyChanges();
             typeService.AddGameType(GameType);
 
             if (Save())
