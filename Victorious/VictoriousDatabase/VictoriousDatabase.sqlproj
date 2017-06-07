@@ -74,7 +74,7 @@
     <Build Include="SiteTeams.sql" />
     <Build Include="SiteTeamMembers.sql" />
     <Build Include="TournamentTeams.sql" />
-    <Build Include="TournamentTeamMember.sql" />
+    <Build Include="TournamentTeamMembers.sql" />
     <Build Include="TournamentTeamBrackets.sql" />
   </ItemGroup>
   <ItemGroup>

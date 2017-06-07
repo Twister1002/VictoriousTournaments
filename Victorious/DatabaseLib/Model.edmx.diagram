@@ -32,15 +32,15 @@
         <EntityTypeShape EntityType="VictoriousDatabaseModel.SiteTeamMemberModel" Width="2" PointX="5.5" PointY="16.875" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.SiteTeamModel" Width="2" PointX="5.5" PointY="14.375" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentTeamBracketModel" Width="1.875" PointX="11.25" PointY="11.625" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentTeamMemberModel" Width="1.875" PointX="11.25" PointY="14" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentTeamModel" Width="1.875" PointX="8.375" PointY="12.5" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_SiteTeamMembers_Accounts_AccountID" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamsBrackets_Brackets_BracketID" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_SiteTeamMembers_SiteTeams_SiteTeamID" />
-        <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamMember_SiteTeamMembers_SiteTeamMemberID" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeams_SiteTeams_SiteTeamID" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_SiteTeamMembers_Tournaments_TournamentID" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamsBrackets_TournamentTeam_TournamentTeamID" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentTeamMemberModel" Width="1.5" PointX="11" PointY="14.875" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamMember_SiteTeamMembers_SiteTeamMemberID" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamMember_TournamentTeams_TournamentTeamID" />
         </Diagram>
     </edmx:Diagrams>

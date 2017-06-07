@@ -15,6 +15,7 @@ namespace DatabaseLib
         TEntity Get(int id);
         void Add(TEntity entity);
         void Delete(int id);
+        void DeleteWhere(Expression<Func<TEntity, bool>> predicate);
         void DeleteEntity(TEntity entity);
         void Update(TEntity entity);
     }
