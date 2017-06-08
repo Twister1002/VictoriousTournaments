@@ -164,12 +164,18 @@ namespace Tournament.Structure
 		#region Accessors
 		public override BracketModel GetModel(int _tournamentID = 0)
 		{
-			throw new NotImplementedException();
-#if false
 			BracketModel model = base.GetModel(_tournamentID);
+
 			model.NumberOfGroups = this.NumberOfGroups;
+			//model.Matches.Clear();
+			for (int n = 1; n <= NumberOfMatches; ++n)
+			{
+				MatchModel matchModel = GetMatchModel(n);
+				matchModel.MatchNumber = n;
+				model.Matches.Add(matchModel);
+			}
+
 			return model;
-#endif
 		}
 
 		public IBracket GetGroup(int _groupNumber)

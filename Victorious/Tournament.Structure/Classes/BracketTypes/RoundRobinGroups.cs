@@ -21,7 +21,7 @@ namespace Tournament.Structure
 		//protected Dictionary<int, Match> Matches = empty
 		//public int NumberOfRounds
 		//protected Dictionary<int, Match> LowerMatches = empty
-		//public int NumberOfLowerRounds
+		//public int NumberOfLowerRounds = 0
 		//protected Match grandFinal = null
 		//public IMatch GrandFinal = null
 		//public int NumberOfMatches
@@ -128,9 +128,7 @@ namespace Tournament.Structure
 			foreach (IBracket group in Groups)
 			{
 				NumberOfMatches += group.NumberOfMatches;
-				NumberOfRounds = (this.NumberOfRounds < group.NumberOfRounds)
-					? group.NumberOfRounds
-					: this.NumberOfRounds;
+				NumberOfRounds = Math.Max(this.NumberOfRounds, group.NumberOfRounds);
 				Rankings.AddRange(group.Rankings);
 			}
 			Rankings.Sort(SortRankingScores);

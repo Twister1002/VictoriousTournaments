@@ -396,10 +396,6 @@ namespace Tournament.Structure
 
 			Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 		}
-		protected override void UpdateRankings()
-		{
-			RecalculateRankings();
-		}
 
 		protected override List<MatchModel> RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 		{

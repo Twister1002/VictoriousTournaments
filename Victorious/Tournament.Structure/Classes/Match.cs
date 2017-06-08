@@ -146,7 +146,7 @@ namespace Tournament.Structure
 			}
 
 			this.Id = _model.MatchID;
-			this.MaxGames = _model.MaxGames.GetValueOrDefault();
+			this.MaxGames = _model.MaxGames.GetValueOrDefault(1);
 
 			this.Players = new IPlayer[2];
 			Players[(int)PlayerSlot.Defender] = (null == _model.Defender)
@@ -259,7 +259,7 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_newPlayer");
 			}
 
-			if (_oldPlayerId == Players[(int)PlayerSlot.Defender]?.Id)
+			if (Players[(int)PlayerSlot.Defender]?.Id == _oldPlayerId)
 			{
 				Players[(int)PlayerSlot.Defender] = _newPlayer;
 				foreach (IGame game in Games)
@@ -267,7 +267,7 @@ namespace Tournament.Structure
 					game.PlayerIDs[(int)PlayerSlot.Defender] = _newPlayer.Id;
 				}
 			}
-			else if (_oldPlayerId == Players[(int)PlayerSlot.Challenger]?.Id)
+			else if (Players[(int)PlayerSlot.Challenger]?.Id == _oldPlayerId)
 			{
 				Players[(int)PlayerSlot.Challenger] = _newPlayer;
 				foreach (IGame game in Games)

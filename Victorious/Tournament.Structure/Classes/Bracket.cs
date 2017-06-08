@@ -566,7 +566,7 @@ namespace Tournament.Structure
 			model.BracketID = this.Id;
 			model.BracketTypeID = Convert.ToInt32(this.BracketType);
 			model.Finalized = this.IsFinalized;
-			//model.NumberOfGroups = 0;
+			model.NumberOfGroups = 0;
 			model.MaxRounds = this.MaxRounds;
 
 			model.BracketType = new BracketTypeModel();
@@ -582,9 +582,12 @@ namespace Tournament.Structure
 			}
 
 			//model.Matches = new List<MatchModel>();
-			for (int n = 1; n <= NumberOfMatches; ++n)
+			if (!(this is IGroupStage))
 			{
-				model.Matches.Add(GetMatchModel(n));
+				for (int n = 1; n <= NumberOfMatches; ++n)
+				{
+					model.Matches.Add(GetMatchModel(n));
+				}
 			}
 
 			return model;
