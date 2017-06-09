@@ -9,7 +9,7 @@ namespace WebApplication.Models
 {
     public class Admin : Model
     {
-        AdminViewModel viewModel;
+        //AdminViewModel viewModel;
         //public List<BracketTypeModel> Brackets { get; private set; }
         //public List<PlatformModel> Platforms { get; private set; }
         //public List<GameTypeModel> Games { get; private set; }

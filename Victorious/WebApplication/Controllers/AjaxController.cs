@@ -118,7 +118,7 @@ namespace WebApplication.Controllers
         [HttpPost]
         public JsonResult Reset(int tournamentId, int bracketId)
         {
-            String redirect = Url.Action("Tournament", "Tournament");
+            String redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
 
             if (account.IsLoggedIn())
             {
@@ -131,13 +131,11 @@ namespace WebApplication.Controllers
 
                     status = true;
                     message = "Bracket was reset";
-                    redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
                 }
                 else
                 {
                     status = false;
                     message = "You do not have permission to do this";
-                    redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
                 }
             }
             else
@@ -149,14 +147,9 @@ namespace WebApplication.Controllers
 
             Session["Message"] = message;
             Session["Message.Class"] = status ? ViewError.SUCCESS : ViewError.WARNING;
+            data = new { redirect = redirect };
 
-            return Json(JsonConvert.SerializeObject(new
-            {
-                status = status,
-                message = message,
-                redirect = redirect
-            }
-            ));
+            return BundleJson();
         }
 
         [HttpPost]
@@ -412,14 +405,13 @@ namespace WebApplication.Controllers
         #region Tournament
         [HttpPost]
         [Route("Ajax/Tournament/Search")]
-        public JsonResult AjaxSearch(String searchData)
+        public JsonResult AjaxSearch(Dictionary<String, String> searchBy)
         {
-            Dictionary<String, String> searchBy = JsonConvert.DeserializeObject<Dictionary<String, String>>(searchData);
-            TournamentViewModel viewModel = new TournamentViewModel();
             List<object> dataReturned = new List<object>();
+            Models.Tournament tournament = new Models.Tournament(work, -1);
+            tournament.Search(searchBy);
 
-            viewModel.Search(searchBy);
-            foreach (TournamentModel tourny in viewModel.SearchedTournaments)
+            foreach (TournamentModel tourny in tournament.searched)
             {
                 dataReturned.Add(new
                 {
@@ -432,137 +424,111 @@ namespace WebApplication.Controllers
                     publicViewing = tourny.PublicViewing,
                     link = Url.Action("Tournament", "Tournament", new { guid = tourny.TournamentID })
                 });
+                data = new
+                {
+                    search = dataReturned
+                };
             }
 
-            return Json(JsonConvert.SerializeObject(dataReturned));
+            return BundleJson();
         }
 
         [HttpPost]
         [Route("Ajax/Tournament/Register")]
         public JsonResult NoAccountRegister(int tournamentId, String name, int bracketId)
         {
-            TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-            bool status = false;
-            object data = new { };
-            String message = "No action taken";
-
-            // Is an Administrator registering a user?
-            if (viewModel.IsAdministrator(account.AccountId))
+            if (account.IsLoggedIn())
             {
-                TournamentUserModel model = viewModel.AddUser(name);
-                data = new
+                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                
+                // Is an Administrator registering a user?
+                if (tournament.IsAdmin(account.Model.AccountID))
                 {
-                    user = new
+                    TournamentUserModel model = tournament.AddUser(name);
+                    data = new
                     {
-                        Name = model.Name,
-                        Permission = model.PermissionLevel,
-                        TournamentUserId = model.TournamentUserID,
-                        Seed = viewModel.UserSeed(model.TournamentUserID, bracketId)
-                    },
-                    actions = viewModel.PermissionAction(account.AccountId, model.TournamentUserID, "default")
-                };
-                if (data != null) status = true;
-                message = "User was " + (status ? "" : "not") + " removed successfully";
+                        user = new
+                        {
+                            Name = model.Name,
+                            Permission = model.PermissionLevel,
+                            TournamentUserId = model.TournamentUserID,
+                            Seed = tournament.GetUserSeed(model.TournamentUserID, bracketId)
+                        },
+                        actions = tournament.PermissionAction(account.Model.AccountID, model.TournamentUserID, "default")
+                    };
+                    if (data != null) status = true;
+                    message = "User was " + (status ? "" : "not") + " removed successfully";
+                }
+                else
+                {
+                    message = "You are not allowed to register a user.";
+                }
             }
             else
             {
-                message = "You are not allowed to register a user.";
+                message = "You need to login first.";
             }
 
-            return Json(JsonConvert.SerializeObject(new
-            {
-                status = status,
-                message = message,
-                data = data
-            }));
+            return BundleJson();
         }
 
         [HttpPost]
         [Route("Ajax/Tournament/CheckIn")]
         public JsonResult CheckIn(int tournamentId, int tournamentUserId = -1)
         {
-            bool status = false;
-            bool isCheckedIn = false;
-            String message = "No action taken";
-
-
+            // Check if a userId was provided first before checking an account
             if (tournamentUserId != -1)
             {
-                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-                if (viewModel.UserCheckIn(tournamentUserId))
-                {
-                    status = true;
-                    message = "User is checkedin";
-                }
-                else
-                {
-                    message = "User was not checked in";
-                }
-
-                isCheckedIn = viewModel.isUserCheckedIn(tournamentUserId);
+                // An admin is checking in a user
+                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                status = tournament.CheckUserIn(tournamentUserId);
+                message = "User is " + (status ? "" : "not") + " checked in";
             }
-            else if (account != null)
+            else if (account.IsLoggedIn())
             {
-                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-                if (viewModel.AccountCheckIn(account.AccountId))
-                {
-                    status = true;
-                    message = "User is checkedin";
-                }
-                else
-                {
-                    message = "User was not checked in";
-                }
-            }
-            else
-            {
-                message = "Account not logged in";
+                // A user with an account is checking in.
+                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                status = tournament.CheckAccountIn(account.Model.AccountID);
+                message = "Account is " + (status ? "" : "not") + " checked in";
             }
 
-            return Json(JsonConvert.SerializeObject(new
-            {
-                status = status,
-                message = message,
-                isCheckedIn = isCheckedIn
-            }));
+            return BundleJson();
         }
 
         [HttpPost]
         [Route("Ajax/Tournament/Finalize")]
         public JsonResult Finalize(int tournamentId, int bracketId, Dictionary<String, Dictionary<String, int>> roundData)
         {
-            bool status = false;
-            String message = "No action was taken";
             String redirect = redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
 
-            if (account != null)
+            if (account.IsLoggedIn())
             {
                 // Load the tournament
-                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-                if (viewModel.IsAdministrator(account.AccountId))
+                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                if (tournament.IsAdmin(account.Model.AccountID))
                 {
-                    if (viewModel.FinalizeTournament(bracketId, roundData))
+                    if (tournament.FinalizeTournament(bracketId, roundData))
                     {
                         status = true;
                         message = "Your tournament has been finalized. No changes can be made.";
 
                         Session["Message"] = message;
-                        Session["Message.Class"] = ViewModel.ViewError.SUCCESS;
+                        Session["Message.Class"] = ViewError.SUCCESS;
                     }
                     else
                     {
                         message = "An error occurred while trying to create the matches.";
 
                         Session["Message"] = message;
-                        Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
+                        Session["Message.Class"] = ViewError.ERROR;
                     }
                 }
                 else
                 {
-                    message = "You are not permitted to do that.";
+                    message = "You are not allowed to do that.";
 
                     Session["Message"] = message;
-                    Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+                    Session["Message.Class"] = ViewError.ERROR;
                 }
             }
             else
@@ -571,33 +537,27 @@ namespace WebApplication.Controllers
                 redirect = Url.Action("Login", "Account");
 
                 Session["Message"] = message;
-                Session["Message.Class"] = ViewModel.ViewError.EXCEPTION;
+                Session["Message.Class"] = ViewError.ERROR;
             }
 
-            return Json(JsonConvert.SerializeObject(
-                new
-                {
-                    status = status,
-                    message = message,
-                    redirect = redirect
-                }
-            ));
+            data = new { redirect = redirect };
+
+
+            return BundleJson();
         }
 
         [HttpPost]
         [Route("Ajax/Tournament/Delete")]
         public JsonResult Delete(int tournamentId)
         {
-            bool status = false;
-            String message = "No action taken";
             String redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
 
-            if (IsLoggedIn())
+            if (account.IsLoggedIn())
             {
-                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-                if (viewModel.IsCreator(account.AccountId))
+                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                if (tournament.IsCreator(account.Model.AccountID))
                 {
-                    if (viewModel.Delete())
+                    if (tournament.Delete())
                     {
                         status = true;
                         message = "Tournament was deleted.";
@@ -621,27 +581,18 @@ namespace WebApplication.Controllers
                 message = "Please login in order to modify a tournament.";
             }
 
-            return Json(JsonConvert.SerializeObject(new
-            {
-                status,
-                message,
-                redirect
-            }));
+            return BundleJson();
         }
 
         [HttpPost]
         [Route("Ajax/Tournament/PermissionChange")]
-        public JsonResult PermissionChange(int TournamentId, int targetUser, String action)
+        public JsonResult PermissionChange(int tournamentId, int targetUser, String action)
         {
-            bool status = false;
-            String message = "No action taken";
-            object data = new { };
-
-            if (account != null)
+            if (account.IsLoggedIn())
             {
-                TournamentViewModel viewModel = new TournamentViewModel(TournamentId);
+                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
 
-                Dictionary<String, int> permissionChange = viewModel.PermissionAction(account.AccountId, targetUser, action);
+                Dictionary<String, int> permissionChange = tournament.PermissionAction(account.Model.AccountID, targetUser, action);
                 if (permissionChange == null)
                 {
                     status = false;
@@ -652,7 +603,7 @@ namespace WebApplication.Controllers
                     data = new
                     {
                         permissions = permissionChange,
-                        isCheckedIn = viewModel.isUserCheckedIn(targetUser)
+                        isCheckedIn = tournament.isUserCheckedIn(targetUser)
                     };
                     message = "Permissions are updated";
                     status = true;
@@ -663,38 +614,34 @@ namespace WebApplication.Controllers
                 message = "You must be logged in to do this action";
             }
 
-            return Json(JsonConvert.SerializeObject(new
-            {
-                status = status,
-                message = message,
-                data = data
-            }));
+            return BundleJson();
         }
 
         [HttpPost]
         [Route("Ajax/Tournament/SeedChange")]
         public JsonResult SeedChange(int tournamentId, int bracketId, Dictionary<String, int> players)
         {
-            bool status = false;
-            String message = "No action taken";
-
-            if (account != null)
+            if (account.IsLoggedIn())
             {
-                TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
+                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
 
-                if (viewModel.IsAdministrator(account.AccountId))
+                if (tournament.IsAdmin(account.Model.AccountID))
                 {
-                    viewModel.UpdateSeeds(players, bracketId);
+                    tournament.UpdateSeeds(players, bracketId);
                     status = true;
                     message = "Seeds are updated";
                 }
+                else
+                {
+                    message = "An error occured. Please try again later";
+                }
+            }
+            else
+            {
+                message = "You must login first";
             }
 
-            return Json(JsonConvert.SerializeObject(new
-            {
-                status = status,
-                message = message
-            }));
+            return BundleJson();
         }
         #endregion
 

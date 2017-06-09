@@ -18,7 +18,7 @@ namespace WebApplication.Controllers
         [Route("Account/Index")]
         public ActionResult Index()
         {
-            if (IsLoggedIn())
+            if (account.IsLoggedIn())
             {
                 return View("Index", account);
             }
@@ -69,7 +69,7 @@ namespace WebApplication.Controllers
         [Route("Account/Register")]
         public ActionResult Register()
         {
-            if (IsLoggedIn())
+            if (account.IsLoggedIn())
             {
                 return RedirectToAction("Index");
             }
@@ -113,7 +113,7 @@ namespace WebApplication.Controllers
         [Route("Account/Update")]
         public ActionResult Update()
         {
-            if (IsLoggedIn())
+            if (account.IsLoggedIn())
             {
                 account.SetFields();
                 return View("Update", account.viewModel);
@@ -130,7 +130,7 @@ namespace WebApplication.Controllers
         [Route("Account/Update")]
         public ActionResult Update(AccountViewModel viewModel)
         {
-            if (IsLoggedIn())
+            if (account.IsLoggedIn())
             {
                 // Verify the user being updated is legitly the user logged in
                 if (viewModel.AccountId == account.Model.AccountID)

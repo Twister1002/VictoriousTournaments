@@ -207,7 +207,7 @@
     function PermissionAction(e, action) {
         userElement = $(this).closest(".user");
         jsonData = {
-            "TournamentId": $("#Tournament").data("id"),
+            "tournamentId": $("#Tournament").data("id"),
             "targetUser": userElement.data("user"),
             "action": action ? action : $(this).attr("class")
         }

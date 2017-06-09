@@ -143,7 +143,7 @@ namespace WebApplication.Controllers
         public ActionResult Create(TournamentViewModel viewModel)
         {
             // Verify the user is logged in first
-            if (IsLoggedIn())
+            if (account.IsLoggedIn())
             {
                 Session["Message"] = "You must login to create a tournament.";
                 Session["Message.Class"] = ViewError.WARNING;
@@ -182,7 +182,7 @@ namespace WebApplication.Controllers
         [Route("Tournament/Update/{tournamentId}")]
         public ActionResult Update(TournamentViewModel viewModel, int tournamentId)
         {
-            if (IsLoggedIn())
+            if (account.IsLoggedIn())
             {
                 Models.Tournament tourny = new Models.Tournament(work, tournamentId);
 
