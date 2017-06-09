@@ -50,7 +50,7 @@ namespace WebApplication.Controllers
         [Route("Tournament/Update/{tournamentId}")]
         public ActionResult Update(int tournamentId)
         {
-            if (account != null)
+            if (account.IsLoggedIn())
             {
                 Models.Tournament tourny = new Models.Tournament(service, tournamentId);
                 if (tourny.IsAdmin(account.Model.AccountID))
