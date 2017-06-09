@@ -234,7 +234,7 @@ namespace Tournament.Structure
 				group.GamesDeleted += DeleteGames;
 			}
 		}
-		protected void AddRounds(object _sender, BracketEventArgs _args)
+		protected virtual void AddRounds(object _sender, BracketEventArgs _args)
 		{
 			OnRoundAdded(_args);
 		}

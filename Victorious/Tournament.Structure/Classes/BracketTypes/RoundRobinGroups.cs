@@ -137,7 +137,26 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected override void AddRounds(object _sender, BracketEventArgs _args)
+		{
+			// Base method relays the RoundsAdded event:
+			base.AddRounds(_sender, _args);
 
+			// Get the highest MatchNumber from the new matches:
+			int highestNewMatchNum = _args.UpdatedMatches
+				.Select(m => m.MatchNumber)
+				.OrderByDescending(n => n)
+				.First();
+			// Make a list of all the matches with "updated" match numbers:
+			List<MatchModel> matchesToUpdate = new List<MatchModel>();
+			for (int n = highestNewMatchNum + 1; n <= NumberOfMatches; ++n)
+			{
+				matchesToUpdate.Add(GetMatchModel(n));
+			}
+
+			// Fire event with the updated matches:
+			OnMatchesModified(matchesToUpdate);
+		}
 		#endregion
 	}
 }
