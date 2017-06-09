@@ -46,7 +46,7 @@
             <ul class="hide bracketOrig">
                 <li class="rounds">
                     @Html.LabelFor(t => t.BracketTypes)
-                    @Html.DropDownList("BracketData[<>].BracketType", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---")
+                    @Html.DropDownList("BracketData[<>].BracketTypeID", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---")
                 </li>
                 <li class="swiss rr hide">
                     @Html.LabelFor(t => t.NumberOfRounds)

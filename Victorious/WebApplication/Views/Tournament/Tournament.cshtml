@@ -4,13 +4,13 @@
     ViewBag.Title = "Tournament";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    bool registrationStarted = (DateTime)Model.RegistrationStartDate <= DateTime.Now;
-    bool tournamentStarted = (DateTime)Model.TournamentStartDate <= DateTime.Now;
-    bool registrationEnded = (DateTime)Model.RegistrationEndDate <= DateTime.Now;
+    bool registrationStarted = (DateTime)Model.Model.RegistrationStartDate <= DateTime.Now;
+    bool tournamentStarted = (DateTime)Model.Model.TournamentStartDate <= DateTime.Now;
+    bool registrationEnded = (DateTime)Model.Model.RegistrationEndDate <= DateTime.Now;
 
     ViewBag.TournamentId = Model.Model.TournamentID;
     ViewBag.UserId = Session["User.UserId"] != null ? Session["User.UserId"] : -1;
-    ViewBag.isAdministrator = Model.IsAdministrator(ViewBag.UserId);
+    ViewBag.isAdministrator = Model.IsAdmin(ViewBag.UserId);
     ViewBag.isCreator = Model.IsCreator(ViewBag.UserId);
     ViewBag.inProgress = Model.Model.InProgress;
 }
@@ -26,7 +26,7 @@
             }
             @if (Model.Model.InProgress)
             {
-                if (Model.IsParticipant(ViewBag.UserId) && ViewBag.UserId != -1 && !Model.isAccountCheckedIn(ViewBag.UserId))
+                if (Model.IsParticipent(ViewBag.UserId) && ViewBag.UserId != -1 && !Model.isAccountCheckedIn(ViewBag.UserId))
                 {
                     <button class="checkIn">CheckIn</button>
                 }
@@ -37,8 +37,8 @@
     <div class="bracketNames">
         <ul class="list-table">
             <li class="list-table-body">
-                <ul data-columns="@Model.Tourny.Brackets.Count">
-                    @foreach (var bracket in Model.Tourny.Brackets)
+                <ul data-columns="@Model.GetTournament().Brackets.Count">
+                    @foreach (var bracket in Model.GetTournament().Brackets)
                     {
                         <li class="column bracketName" data-bracket="@bracket.Id">@bracket.Id</li>
                     }
@@ -46,9 +46,9 @@
             </li>
         </ul>
     </div>
-    @foreach (var bracket in Model.Tourny.Brackets)
+    @foreach (var bracket in Model.GetTournament().Brackets)
     {
-        var bracketViewModel = new WebApplication.Models.BracketViewModel(bracket);
+        var bracketViewModel = Model.GetBracket(bracket.Id);
 
         String bracketFileName = "";
         String bracketName = "";

@@ -1,10 +1,5 @@
-﻿using DatabaseLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System;
 using WebApplication.Interfaces;
-using WebApplication.Utility;
 
 namespace WebApplication.Models
 {
@@ -43,9 +38,7 @@ namespace WebApplication.Models
         WARNING,
         ERROR
     }
-
     
-
     public abstract class Model
     {
         public static String[] errorClassNames = new String[] {

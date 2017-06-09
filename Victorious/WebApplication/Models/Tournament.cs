@@ -97,6 +97,11 @@ namespace WebApplication.Models
             }
         }
 
+        public Tournaments.ITournament GetTournament()
+        {
+            return Tourny;
+        }
+
         #region Bracket
         public Bracket GetBracket(int bracketId)
         {

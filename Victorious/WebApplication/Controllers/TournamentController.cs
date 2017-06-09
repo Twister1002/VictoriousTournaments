@@ -151,9 +151,10 @@ namespace WebApplication.Controllers
             }
             else
             {
+                Models.Tournament tourny = new Models.Tournament(service, -1);
                 if (ModelState.IsValid)
                 {
-                    Models.Tournament tourny = new Models.Tournament(service, -1);
+                    
                     if (tourny.Create(viewModel, account))
                     {
                         return RedirectToAction("Tournament", "Tournament", new { guid = tourny.Model.TournamentID });
@@ -170,9 +171,10 @@ namespace WebApplication.Controllers
                     Session["Message.Class"] = ViewError.ERROR;
                     Session["Message"] = "Please enter in the required fields listed below.";
                 }
+                return View("Create", tourny.viewModel);
             }
 
-            return View("Create", viewModel);
+            
         }
 
         // POST: Tournament/Edit/5
