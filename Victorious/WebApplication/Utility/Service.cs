@@ -4,10 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebApplication.Interfaces;
 
 namespace WebApplication.Utility
 {
-    public class Service
+    public class Service : IService
     {
         private IUnitOfWork work;
         public AccountService Account { get; private set; }

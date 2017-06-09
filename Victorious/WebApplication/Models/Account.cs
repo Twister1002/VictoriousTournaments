@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WebApplication.Interfaces;
 using WebApplication.Models.ViewModels;
 using WebApplication.Utility;
 
@@ -12,9 +13,8 @@ namespace WebApplication.Models
         public ViewModels.AccountViewModel viewModel;
         public AccountModel Model { get; private set; }
         public Dictionary<TournamentStatus, List<TournamentModel>> Tournaments { get; private set; }
-
-        public Account(IUnitOfWork work) : base(work) { }
-        public Account(IUnitOfWork work, int id) : base(work)
+        
+        public Account(IService service, int id) : base(service)
         {
             Retreive(id);
             Init();
@@ -29,7 +29,7 @@ namespace WebApplication.Models
             Tournaments[TournamentStatus.PAST] = new List<TournamentModel>();
 
             // ViewModel
-            viewModel = new ViewModels.AccountViewModel();
+            viewModel = new AccountViewModel();
 
             LoadAccountTournaments();
         }
@@ -97,6 +97,11 @@ namespace WebApplication.Models
         private void Retreive(int id)
         {
             Model = services.Account.GetAccount(id);
+
+            if (Model == null)
+            {
+                Model = new AccountModel();
+            }
         }
 
         public bool Update(AccountViewModel viewModel)
@@ -150,6 +155,11 @@ namespace WebApplication.Models
                     }
                 }
             }
+        }
+
+        public String GetUsername()
+        {
+            return Model.Username != null ? Model.Username : "Guest";
         }
         #endregion
 

@@ -10,7 +10,7 @@ namespace WebApplication.Controllers
         [Route("")]
         public ActionResult Index()
         {
-            Home model = new Home(work);
+            Home model = new Home(service);
 
             return View("Index", model);
         }
@@ -18,7 +18,7 @@ namespace WebApplication.Controllers
         [Route("FAQ")]
         public ActionResult FAQ()
         {
-            Home model = new Home(work);
+            Home model = new Home(service);
             return View("FAQ", model);
         }
 
@@ -33,21 +33,21 @@ namespace WebApplication.Controllers
         [Route("About")]
         public ActionResult About()
         {
-            Home model = new Home(work);
+            Home model = new Home(service);
             return View("About", model);
         }
 
         [Route("Contact")]
         public ActionResult Contact()
         {
-            Home model = new Home(work);
+            Home model = new Home(service);
             return View("Contact", model);
         }
 
         [Route("Rules")]
         public ActionResult Rules()
         {
-            Home model = new Home(work);
+            Home model = new Home(service);
             return View("Rules", model);
         }
     }

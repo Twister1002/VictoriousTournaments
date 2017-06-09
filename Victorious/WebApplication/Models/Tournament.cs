@@ -5,6 +5,7 @@ using System.Linq;
 using Tournaments = Tournament.Structure;
 using WebApplication.Models.ViewModels;
 using WebApplication.Utility;
+using WebApplication.Interfaces;
 
 namespace WebApplication.Models
 {
@@ -16,7 +17,7 @@ namespace WebApplication.Models
         public TournamentModel Model { get; private set; }
         public List<TournamentModel> searched { get; private set; }
 
-        public Tournament(IUnitOfWork work, int id) : base(work)
+        public Tournament(IService service, int id) : base(service)
         {
             Retrieve(id);
             Init();

@@ -7,13 +7,15 @@ using System.Web.Routing;
 using Tournaments = Tournament.Structure;
 using Tournament.Structure;
 using WebApplication.Models;
+using WebApplication.Utility;
 
 namespace WebApplication.Controllers
 {
     public abstract class VictoriousController : Controller
     {
         protected Account account;
-        public IUnitOfWork work;
+        protected IUnitOfWork work;
+        protected Service service;
         Dictionary<String, object> jsonResponse;
 
         protected override void Initialize(RequestContext requestContext)
@@ -26,6 +28,7 @@ namespace WebApplication.Controllers
         {
             jsonResponse = new Dictionary<String, object>();
             work = new UnitOfWork();
+            service = new Service(work);
         }
 
         protected override void Dispose(bool disposing)
@@ -39,17 +42,21 @@ namespace WebApplication.Controllers
             {
                 if (Session["User.UserId"] != null)
                 {
-                    account = new Account(work, (int)Session["User.UserId"]);
+                    account = new Account(service, (int)Session["User.UserId"]);
                 }
                 else
                 {
-                    account = new Account(work);
+                    account = new Account(service, -1);
                 }
             }
             else
             {
                 account = null;
             }
+
+            // Set some Viewbag data
+            ViewBag.IsLoggedin = account.IsLoggedIn();
+            ViewBag.Username = account.GetUsername();
         }
 
         [Obsolete("Use Account.IsLoggedIn()")]

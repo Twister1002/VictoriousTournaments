@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using DatabaseLib;
 using WebApplication.Models.ViewModels;
+using WebApplication.Utility;
+using WebApplication.Interfaces;
 
 namespace WebApplication.Models
 {
@@ -14,7 +16,7 @@ namespace WebApplication.Models
         //public List<PlatformModel> Platforms { get; private set; }
         //public List<GameTypeModel> Games { get; private set; }
 
-        public Admin(IUnitOfWork work) : base(work)
+        public Admin(IService service) : base(service)
         {
             Init();
         }

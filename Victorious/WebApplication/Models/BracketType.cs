@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using DatabaseLib;
 using WebApplication.Models.ViewModels;
+using WebApplication.Utility;
+using WebApplication.Interfaces;
 
 namespace WebApplication.Models
 {
@@ -11,7 +13,7 @@ namespace WebApplication.Models
     {
         public List<BracketTypeModel> Brackets { get; private set; }
 
-        public BracketType(IUnitOfWork work) : base(work)
+        public BracketType(IService service) : base(service)
         {
             Init();
         }

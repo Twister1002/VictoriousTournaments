@@ -48,7 +48,7 @@ namespace WebApplication.Controllers
         {
             if (account.IsAdministrator())
             {
-                GameType gameType = new GameType(work);
+                GameType gameType = new GameType(service);
 
                 switch (function)
                 {
@@ -72,7 +72,7 @@ namespace WebApplication.Controllers
         {
             if (account.IsAdministrator())
             {
-                Platform platform = new Platform(work);
+                Platform platform = new Platform(service);
                 switch (function)
                 {
                     case "add":
@@ -99,7 +99,7 @@ namespace WebApplication.Controllers
         {
             if (account.IsAdministrator())
             {
-                Models.BracketType bracketType = new Models.BracketType(work);
+                Models.BracketType bracketType = new Models.BracketType(service);
 
                 status = bracketType.Update(bracketModel);
                 message = "BracketType was updated " + (status ? "" : "un") + "successfully";
@@ -122,7 +122,7 @@ namespace WebApplication.Controllers
 
             if (account.IsLoggedIn())
             {
-                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                 Models.Bracket bracket = tournament.GetBracket(bracketId);
 
                 if (tournament.IsCreator(account.Model.AccountID))
@@ -158,7 +158,7 @@ namespace WebApplication.Controllers
         {
             if (account.IsLoggedIn())
             {
-                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                 Models.Bracket bracket = tournament.GetBracket(bracketId);
 
                 if (tournament.IsAdmin(account.Model.AccountID))
@@ -208,7 +208,7 @@ namespace WebApplication.Controllers
         [Route("Ajax/Bracket/Standings")]
         public JsonResult Standings(int tournamentId, int bracketId)
         {
-            Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+            Models.Tournament tournament = new Models.Tournament(service, tournamentId);
             Models.Bracket bracket = tournament.GetBracket(bracketId);
             
             if (bracket == null)
@@ -234,7 +234,7 @@ namespace WebApplication.Controllers
         [Route("Ajax/Match")]
         public JsonResult MatchInfo(int tournamentId, int bracketId, int matchId)
         {
-            Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+            Models.Tournament tournament = new Models.Tournament(service, tournamentId);
             Models.Bracket bracket = tournament.GetBracket(bracketId);
             Models.Match match = bracket.GetMatchById(matchId);
 
@@ -259,7 +259,7 @@ namespace WebApplication.Controllers
             {
                 if (account.IsLoggedIn())
                 {
-                    Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                    Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                     Models.Bracket bracket = tournament.GetBracket(bracketId);
                     Models.Match match = bracket.GetMatchByNum(matchNum);
 
@@ -354,7 +354,7 @@ namespace WebApplication.Controllers
         {
             if (account.IsLoggedIn())
             {
-                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                 Models.Bracket bracket = tournament.GetBracket(bracketId);
                 //Models.Match match = bracket.GetMatchByNum(matchNum);
                 List<int> matchesAffected = bracket.MatchesAffectedList(matchNum);
@@ -408,7 +408,7 @@ namespace WebApplication.Controllers
         public JsonResult AjaxSearch(Dictionary<String, String> searchBy)
         {
             List<object> dataReturned = new List<object>();
-            Models.Tournament tournament = new Models.Tournament(work, -1);
+            Models.Tournament tournament = new Models.Tournament(service, -1);
             tournament.Search(searchBy);
 
             foreach (TournamentModel tourny in tournament.searched)
@@ -439,7 +439,7 @@ namespace WebApplication.Controllers
         {
             if (account.IsLoggedIn())
             {
-                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                 
                 // Is an Administrator registering a user?
                 if (tournament.IsAdmin(account.Model.AccountID))
@@ -480,14 +480,14 @@ namespace WebApplication.Controllers
             if (tournamentUserId != -1)
             {
                 // An admin is checking in a user
-                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                 status = tournament.CheckUserIn(tournamentUserId);
                 message = "User is " + (status ? "" : "not") + " checked in";
             }
             else if (account.IsLoggedIn())
             {
                 // A user with an account is checking in.
-                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                 status = tournament.CheckAccountIn(account.Model.AccountID);
                 message = "Account is " + (status ? "" : "not") + " checked in";
             }
@@ -504,7 +504,7 @@ namespace WebApplication.Controllers
             if (account.IsLoggedIn())
             {
                 // Load the tournament
-                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                 if (tournament.IsAdmin(account.Model.AccountID))
                 {
                     if (tournament.FinalizeTournament(bracketId, roundData))
@@ -554,7 +554,7 @@ namespace WebApplication.Controllers
 
             if (account.IsLoggedIn())
             {
-                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                 if (tournament.IsCreator(account.Model.AccountID))
                 {
                     if (tournament.Delete())
@@ -590,7 +590,7 @@ namespace WebApplication.Controllers
         {
             if (account.IsLoggedIn())
             {
-                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
 
                 Dictionary<String, int> permissionChange = tournament.PermissionAction(account.Model.AccountID, targetUser, action);
                 if (permissionChange == null)
@@ -623,7 +623,7 @@ namespace WebApplication.Controllers
         {
             if (account.IsLoggedIn())
             {
-                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
 
                 if (tournament.IsAdmin(account.Model.AccountID))
                 {

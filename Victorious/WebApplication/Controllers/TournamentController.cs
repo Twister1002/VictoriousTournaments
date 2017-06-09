@@ -23,7 +23,7 @@ namespace WebApplication.Controllers
         [Route("Tournament/Search")]
         public ActionResult Search(Dictionary<String, String> searchBy)
         {
-            Models.Tournament model = new Models.Tournament(work, -1);
+            Models.Tournament model = new Models.Tournament(service, -1);
             model.Search(searchBy);
 
             return View("Search", model);
@@ -52,7 +52,7 @@ namespace WebApplication.Controllers
         {
             if (account != null)
             {
-                Models.Tournament tourny = new Models.Tournament(work, tournamentId);
+                Models.Tournament tourny = new Models.Tournament(service, tournamentId);
                 if (tourny.IsAdmin(account.Model.AccountID))
                 {
                     tourny.SetFields();
@@ -80,7 +80,7 @@ namespace WebApplication.Controllers
         public ActionResult Tournament(String guid, String inviteCode)
         {
             int tournamentId = ConvertToInt(guid);
-            Models.Tournament tourny = new Models.Tournament(work, tournamentId);
+            Models.Tournament tourny = new Models.Tournament(service, tournamentId);
 
             if (tourny.Model != null)
             {
@@ -153,7 +153,7 @@ namespace WebApplication.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    Models.Tournament tourny = new Models.Tournament(work, -1);
+                    Models.Tournament tourny = new Models.Tournament(service, -1);
 
                     //TODO COmbine Create and AddUser()
                     if (tourny.Create(viewModel, account))
@@ -184,7 +184,7 @@ namespace WebApplication.Controllers
         {
             if (account.IsLoggedIn())
             {
-                Models.Tournament tourny = new Models.Tournament(work, tournamentId);
+                Models.Tournament tourny = new Models.Tournament(service, tournamentId);
 
                 if (tourny.IsAdmin(account.Model.AccountID))
                 {
@@ -223,7 +223,7 @@ namespace WebApplication.Controllers
         {
             if (userData.AccountID == account.Model.AccountID)
             {
-                Models.Tournament viewModel = new Models.Tournament(work, userData.TournamentID);
+                Models.Tournament viewModel = new Models.Tournament(service, userData.TournamentID);
 
                 if (viewModel.AddUser(account, Permission.TOURNAMENT_STANDARD))
                 {
@@ -252,7 +252,7 @@ namespace WebApplication.Controllers
         {
             if (userData.AccountID == account.Model.AccountID)
             {
-                Models.Tournament viewModel = new Models.Tournament(work, userData.TournamentID);
+                Models.Tournament viewModel = new Models.Tournament(service, userData.TournamentID);
                 if (viewModel.RemoveUser(account.Model.AccountID))
                 {
                     Session["Message"] = "You have been removed from this tournament.";

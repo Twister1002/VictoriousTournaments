@@ -6,19 +6,20 @@ using DatabaseLib;
 using Tournament.Structure;
 using Tournaments = Tournament.Structure;
 using WebApplication.Utility;
+using WebApplication.Interfaces;
 
 namespace WebApplication.Models
 {
     public class Match
     {
         //MatchViewModel viewModel;
-        Service services;
+        IService services;
 
         public IMatch match { get; private set; }
         public IPlayer Challenger { get; private set; }
         public IPlayer Defender { get; private set; }
 
-        public Match(Service services, IMatch match)
+        public Match(IService services, IMatch match)
         {
             this.services = services;
             this.match = match;

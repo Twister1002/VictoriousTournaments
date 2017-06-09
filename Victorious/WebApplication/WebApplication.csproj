@@ -126,6 +126,7 @@
     <Content Include="Content\fonts\icomoon.woff" />
     <Content Include=".bowerrc" />
     <Content Include="bower.json" />
+    <None Include="Properties\PublishProfiles\local.pubxml" />
     <None Include="Properties\PublishProfiles\Tournament.pubxml" />
     <Content Include="Scripts\Administrator\Brackets.js" />
     <Content Include="Scripts\Administrator\Games.js" />
@@ -151,6 +152,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\IService.cs" />
     <Compile Include="Interfaces\IViewModel.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Admin.cs" />

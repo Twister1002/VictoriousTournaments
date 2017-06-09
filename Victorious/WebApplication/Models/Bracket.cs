@@ -6,16 +6,17 @@ using DatabaseLib;
 using Tournament.Structure;
 using Tournaments = Tournament.Structure;
 using WebApplication.Utility;
+using WebApplication.Interfaces;
 
 namespace WebApplication.Models
 {
     public class Bracket 
     {
         public bool roundsModified;
-        private Service services;
+        private IService services;
         private Tournaments.IBracket bracket;
 
-        public Bracket(Service services, Tournaments.IBracket bracket)
+        public Bracket(IService services, Tournaments.IBracket bracket)
         {
             this.services = services;
             this.bracket = bracket;

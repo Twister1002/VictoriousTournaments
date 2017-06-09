@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebApplication.Interfaces;
 using WebApplication.Utility;
 
 namespace WebApplication.Models
@@ -45,7 +46,7 @@ namespace WebApplication.Models
 
     public abstract class Model
     {
-        protected Service services;
+        protected IService services;
 
         public String[] errorClassNames = new String[] {
             "none",
@@ -58,9 +59,9 @@ namespace WebApplication.Models
         public String message;
         public Exception ex;
 
-        public Model(IUnitOfWork work)
+        public Model(IService service)
         {
-            services = new Service(work);
+            services = service;
         }
     }
 }
