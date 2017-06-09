@@ -38,6 +38,23 @@ namespace WebApplication.Models
             return bracket;
         }
 
+        public List<Match> GetRound(int roundNum)
+        {
+            List<Match> matches = new List<Match>();
+
+            foreach (IMatch match in bracket.GetRound(roundNum))
+            {
+                matches.Add(new Match(services, match));
+            }
+
+            return matches;
+        }
+
+        public Match GrandFinal()
+        {
+            return new Match(services, bracket.GrandFinal);
+        }
+
         //public void ResetBracket()
         //{
         //    // Tell the bracket that it has been reset.

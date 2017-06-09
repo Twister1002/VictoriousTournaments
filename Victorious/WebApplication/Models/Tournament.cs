@@ -704,8 +704,8 @@ namespace WebApplication.Models
         {
             int? seed = -1;
 
-            seed = Model.Brackets.Single(x => x.BracketID == bracketId)?
-                .TournamentUsersBrackets.Single(x => x.TournamentUserID == userId)?.Seed;
+            seed = Model.Brackets.Single(x => x.BracketID == bracketId)
+                .TournamentUsersBrackets.SingleOrDefault(x => x.TournamentUserID == userId).Seed;
 
             if (seed != null)
             {

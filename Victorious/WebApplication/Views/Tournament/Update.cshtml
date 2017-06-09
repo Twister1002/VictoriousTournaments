@@ -8,7 +8,7 @@
     object dateAttributes = new { @class = "datepicker" };
     object timeAttributes = new { @class = "timepicker" };
 }
-@if (!Model.CanEdit())
+@if (!ViewBag.CanEdit)
 {
     <div class="message warning">No changes can be made to this tournament.</div>
     attributes = new { disabled = "disabled", @readonly = "readonly" };
@@ -16,7 +16,7 @@
     timeAttributes = new { @class = "timepicker", disabled = "disabled", @readonly = "readonly" };
 
 }
-<div id="TournamentEdit" data-id="@Model.Model.TournamentID">
+<div id="TournamentEdit">
     @using (Html.BeginForm("Update", "Tournament", FormMethod.Post))
     {
         <div class="section form-section">
@@ -56,7 +56,7 @@
         </div>
         <div class="section form-section bracketSection">
             <h2>Brackets 
-                @if (!Model.Model.InProgress)
+                @if (!ViewBag.InProgress)
                 {
                     <span class="icon icon-plus"></span> 
                 } 
@@ -68,7 +68,7 @@
                 <ul class="brackets">
                     <li class="rounds">
                         @Html.LabelFor(t => t.BracketTypes)
-                        @Html.DropDownList("BracketData[" + i + "].BracketType", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName", bracketData.BracketType), "---Select Bracket---", attributes)
+                        @Html.DropDownList("BracketData[" + i + "].BracketTypeID", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName", bracketData.BracketTypeID), "---Select Bracket---", attributes)
                         @Html.ValidationMessageFor(t => t.BracketTypes)
                     </li>
                     <li class="swiss rr hide">
@@ -137,7 +137,7 @@
             </ul>
         </div>
         <div class="section">
-            @if (!Model.Model.InProgress)
+            @if (!ViewBag.InProgress)
             {
                 <button type="submit">Accept Changes</button>
             }

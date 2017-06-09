@@ -27,8 +27,8 @@ namespace WebApplication.Models
 
     public struct BracketInfo
     {
-        public int BracketTypeID;
-        public int NumberOfRounds;
+        public int BracketTypeID { get; set; }
+        public int NumberOfRounds { get; set; }
     }
 
     public enum ViewError

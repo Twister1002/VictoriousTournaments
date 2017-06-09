@@ -15,8 +15,6 @@
                 $brackets.find(".icon").off("click");
             },
             "success": function (json) {
-                json = JSON.parse(json);
-
                 if (json.status) {
                     $.each(json.brackets, function (i, e) {
                         $icon = $("#AdministratorBrackets .bracket[data-id='" + e.BracketTypeID + "'] .icon");
