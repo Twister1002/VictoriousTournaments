@@ -136,16 +136,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void RecalculateRankings()
-		{
-			base.RecalculateRankings();
 
-			Rankings.Sort(SortRankingScores);
-			for (int i = 0; i < Rankings.Count; ++i)
-			{
-				Rankings[i].Rank = i + 1;
-			}
-		}
 		#endregion
 	}
 }

@@ -775,8 +775,8 @@ namespace Tournament.Structure
 		protected int SortRankingScores(IPlayerScore first, IPlayerScore second)
 		{
 			// Rankings sorting: MatchScore > OpponentsScore > GameScore > PointsScore > initial Seeding
-			int compare = -1 * ((first.Wins * MatchWinValue + first.Ties * MatchTieValue)
-				.CompareTo(second.Wins * MatchWinValue + second.Ties * MatchTieValue));
+			int compare = -1 * (first.CalculateScore(MatchWinValue, MatchTieValue, 0)
+				.CompareTo(second.CalculateScore(MatchWinValue, MatchTieValue, 0)));
 			compare = (compare != 0)
 				? compare : -1 * (first.OpponentsScore.CompareTo(second.OpponentsScore));
 			compare = (compare != 0)

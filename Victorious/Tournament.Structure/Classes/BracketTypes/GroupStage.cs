@@ -251,6 +251,7 @@ namespace Tournament.Structure
 			{
 				Rankings.AddRange(group.Rankings);
 			}
+			Rankings.Sort(SortRankingRanks);
 		}
 		protected override void UpdateRankings()
 		{
@@ -310,6 +311,14 @@ namespace Tournament.Structure
 
 			throw new MatchNotFoundException
 				("Match not found; match number may be invalid.");
+		}
+
+		protected int SortRankingRanks(IPlayerScore first, IPlayerScore second)
+		{
+			int compare = first.Rank.CompareTo(second.Rank);
+			return (compare != 0)
+				? compare
+				: GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
 		}
 		#endregion
 	}
