@@ -13,7 +13,7 @@
     function addEvent() {
         var jsonData = {
             "function": "add",
-            "title": $("#AdministratorGames .form .gameTitle .field").val()
+            "Title": $("#AdministratorGames .form .gameTitle .field").val()
         };
 
         GameUpdate(jsonData);
@@ -22,8 +22,7 @@
     function deleteEvent() {
         var jsonData = {
             "function": "delete",
-            "title": $(this).siblings(".gameTitle").text(),
-            "gameid": $(this).closest(".game").data("gameid")
+            "GameID": $(this).closest(".game").data("gameid")
         };
 
         GameUpdate(jsonData);
@@ -33,7 +32,7 @@
         $.ajax({
             "url": "/Ajax/Administrator/Games",
             "type": "POST",
-            "data": { "jsonData": JSON.stringify(jsonData) },
+            "data": jsonData,
             "dataType": "json",
             "beforeSend": function() {
                 $("#AdministratorGames .gameDelete").off("click");

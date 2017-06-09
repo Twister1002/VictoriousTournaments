@@ -7,5 +7,6 @@ namespace WebApplication.Models.ViewModels
 {
     public class BracketTypeViewModel
     {
+        public int BracketID { get; set; }
     }
 }

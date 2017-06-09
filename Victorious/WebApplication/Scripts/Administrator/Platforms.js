@@ -32,7 +32,7 @@
         $.ajax({
             "url": "/Ajax/Administrator/Platform",
             "type": "post",
-            "data": { "jsonData": JSON.stringify(jsonData) },
+            "data": jsonData,
             "dataType": "json",
             "beforeSend": function () {
                 $platform.find(".options .AddPlatform").attr("disabled", true);

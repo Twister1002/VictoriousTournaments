@@ -52,6 +52,18 @@ namespace WebApplication.Models
             return false;
         }
 
+        public bool IsLoggedIn()
+        {
+            if (Model.AccountID != -1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         #region CRUD
         public bool Create(AccountViewModel viewModel)
         {
@@ -170,7 +182,7 @@ namespace WebApplication.Models
 
         public bool IsAdministrator()
         {
-            return AccountPermission() == Permission.SITE_ADMINISTRATOR;
+            return AccountPermission() == Permission.SITE_ADMINISTRATOR && IsLoggedIn();
         }
         #endregion
     }

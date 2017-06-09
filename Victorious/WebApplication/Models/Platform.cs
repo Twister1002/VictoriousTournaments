@@ -44,9 +44,9 @@ namespace WebApplication.Models
             throw new NotSupportedException("Not able to update a Platform");
         }
 
-        public bool Delete(int id)
+        public bool Delete(PlatformViewModel viewModel)
         {
-            services.Type.DeletePlatform(id);
+            services.Type.DeletePlatform(viewModel.PlatformID);
             return services.Save();
         }
         #endregion

@@ -44,9 +44,9 @@ namespace WebApplication.Models
             throw new NotSupportedException("Not able to update a Game");
         }
 
-        public bool Delete(int id)
+        public bool Delete(GameTypeViewModel viewModel)
         {
-            services.Type.DeleteGameType(id);
+            services.Type.DeleteGameType(viewModel.GameID);
             return services.Save();
         }
         #endregion

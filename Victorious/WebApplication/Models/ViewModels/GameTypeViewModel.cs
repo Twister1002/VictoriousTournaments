@@ -8,5 +8,7 @@ namespace WebApplication.Models.ViewModels
         [Display(Name = "Title")]
         [DataType(DataType.Text)]
         public String Title { get; set; }
+
+        public int GameID { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using DatabaseLib;
+using WebApplication.Models.ViewModels;
 
 namespace WebApplication.Models
 {
@@ -31,9 +32,9 @@ namespace WebApplication.Models
             Brackets = services.Type.GetAllBracketTypes();
         }
 
-        public bool Update(int id)
+        public bool Update(BracketTypeViewModel bracket)
         {
-            BracketTypeModel model = services.Type.GetBracketType(id);
+            BracketTypeModel model = services.Type.GetBracketType(bracket.BracketID);
             model.IsActive = model.IsActive ? false : true;
 
             services.Type.UpdateBracketType(model);

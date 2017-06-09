@@ -64,13 +64,15 @@
     $(".TournamentMatch .details").on("click", function () {
         var matchElem = $(this).closest(".TournamentMatch");
         var jsonData = {
-            "matchId": $(matchElem).data("id")
+            "tournamentId": $("#Tournament").data("id"),
+            "bracketId": matchElem.closest(".bracket").data("id"),
+            "matchId": matchElem.data("id")
         };
 
         $.ajax({
             "url": "/Ajax/Match",
             "type": "POST",
-            "data": { "jsonData": JSON.stringify(jsonData) },
+            "data": jsonData,
             "dataType": "json",
             "beforeSend": function () {
                 $(".TournamentInfo, .TournamentGames").removeClass("open");
@@ -128,13 +130,6 @@
 
         if (!validated) return;
 
-        var jsonData = {
-            "matchId": match.data("id"),
-            "matchNum": match.data("matchnum"),
-            "bracketId": $(this).closest(".bracket").data("id"),
-            "tournamentId": $("#Tournament").data("id"),
-        }
-
         // Get all the game data
         $.each(games, function (i, e) {
             gameData.push({
@@ -144,10 +139,18 @@
             });
         });
 
+        var jsonData = {
+            "matchId": match.data("id"),
+            "matchNum": match.data("matchnum"),
+            "bracketId": $(this).closest(".bracket").data("id"),
+            "tournamentId": $("#Tournament").data("id"),
+            "games": games
+        }
+
         $.ajax({
             "url": "/Ajax/Match/Update",
             "type": "POST",
-            "data": { "jsonIds": JSON.stringify(jsonData), "games": gameData },
+            "data": jsonData,
             "dataType": "json",
             "beforeSend": function () {
                 match.find(".TournamentGames .update-games").attr("disabled", true);
@@ -311,6 +314,7 @@
         var $game = $(this).closest("ul");
 
         var jsonData = {
+            "tournamentId": $("#Tournament").data("id"),
             "bracketId": $game.closest(".bracket").data("id"),
             "matchId": $game.closest(".TournamentMatch").data("id"),
             "matchNum": $game.closest(".TournamentMatch").data("matchnum"),

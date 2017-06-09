@@ -413,21 +413,21 @@
     })($);
 });
 
-function UpdateStandings(tournyId, bracketNum) {
+function UpdateStandings(tournyId, bracketId) {
     tournyId = parseInt(tournyId, 10)
-    bracketNum = parseInt(bracketNum, 10);
+    bracketId = parseInt(bracketId, 10);
 
-    if (isNaN(tournyId) || isNaN(bracketNum)) return false;
+    if (isNaN(tournyId) || isNaN(bracketId)) return false;
 
     $.ajax({
         "url": "/Ajax/Bracket/Standings",
         "type": "POST",
-        "data": { "tournamentId": tournyId, "bracketNum": bracketNum },
+        "data": { "tournamentId": tournyId, "bracketId": bracketId },
         "dataType": "json",
         "success": function (json) {
             var json = JSON.parse(json);
             if (json.status) {
-                var standings = $(".TournamentInfo .bracketData[data-bracket='" + bracketNum + "'] .standingInfo");
+                var standings = $(".TournamentInfo .bracketData[data-bracket='" + bracketId + "'] .standingInfo");
                 standings.find(".data").remove();
 
                 $.each(json.data.ranks, function (i, e) {

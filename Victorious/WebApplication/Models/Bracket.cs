@@ -11,8 +11,9 @@ namespace WebApplication.Models
 {
     public class Bracket 
     {
-        Service services;
-        Tournaments.IBracket bracket;
+        public bool roundsModified;
+        private Service services;
+        private Tournaments.IBracket bracket;
 
         public Bracket(Service services, Tournaments.IBracket bracket)
         {
@@ -27,12 +28,32 @@ namespace WebApplication.Models
             bracket.RoundAdded += OnRoundAdd;
             bracket.RoundDeleted += OnRoundDelete;
             bracket.GamesDeleted += OnGamesDeleted;
+
+            roundsModified = false;
         }
 
-        public Match GetMatch(int matchNum)
+        public Tournaments.IBracket GetBracket()
         {
-            return new Match(services, bracket.GetMatch(matchNum));
+            return bracket;
         }
+
+        //public void ResetBracket()
+        //{
+        //    // Tell the bracket that it has been reset.
+        //    bracket.ResetMatches(); // Should call all the events.
+        //}
+
+        //public List<GameModel> ResetMatch(int matchNum)
+        //{
+        //     return bracket.ResetMatchScore(matchNum);
+        //}
+
+        //public List<IPlayerScore> Rankings()
+        //{
+        //    return bracket.Rankings;
+        //}
+
+        //public 
 
         #region CRUD
         public bool Crate()
@@ -62,7 +83,7 @@ namespace WebApplication.Models
             List<int> matchesAffected = new List<int>();
             IMatch head = bracket.GetMatch(matchNum);
 
-            if (bracket.BracketType == BracketType.SWISS)
+            if (bracket.BracketType == DatabaseLib.BracketType.SWISS)
             {
                 List<IMatch> matches = bracket.GetRound(head.RoundIndex);
 
@@ -128,7 +149,7 @@ namespace WebApplication.Models
 
             if (bracket.NumberOfRounds > 0)
             {
-                if (bracket.BracketType != BracketType.DOUBLE)
+                if (bracket.BracketType != DatabaseLib.BracketType.DOUBLE)
                 {
                     for (int i = 0; i < bracket.NumberOfRounds; i++) showMatches.Add(true);
                     return showMatches;
@@ -188,7 +209,7 @@ namespace WebApplication.Models
 
         private String RoundTitle(int roundNum, int maxRounds)
         {
-            if (bracket.BracketType == BracketType.SINGLE || bracket.BracketType == BracketType.DOUBLE)
+            if (bracket.BracketType == DatabaseLib.BracketType.SINGLE || bracket.BracketType == DatabaseLib.BracketType.DOUBLE)
             {
                 if (roundNum == maxRounds)
                 {
@@ -265,19 +286,46 @@ namespace WebApplication.Models
         {
             switch (bracket.BracketType)
             {
-                case BracketType.ROUNDROBIN:
-                case BracketType.SWISS:
-                case BracketType.RRGROUP:
-                case BracketType.GSLGROUP:
+                case DatabaseLib.BracketType.ROUNDROBIN:
+                case DatabaseLib.BracketType.SWISS:
+                case DatabaseLib.BracketType.RRGROUP:
+                case DatabaseLib.BracketType.GSLGROUP:
                     return true;
 
-                case BracketType.SINGLE:
-                case BracketType.DOUBLE:
+                case DatabaseLib.BracketType.SINGLE:
+                case DatabaseLib.BracketType.DOUBLE:
                     return false;
 
                 default:
                     return false;
             }
+        }
+        #endregion
+
+        #region Match Stuff
+        // TODO: Optomize this by getting rid of the query
+        public Match GetMatchById(int matchId)
+        {
+            int? matchNum = services.Tournament.GetMatch(matchId)?.MatchNumber;
+            if (matchNum != null)
+            {
+                return new Match(services, bracket.GetMatch(matchNum.Value));
+            }
+            else
+            {
+                throw new Exception(matchId + " is not a valid id");
+            }
+        }
+
+        public Match GetMatchByNum(int matchNum)
+        {
+            return new Match(services, bracket.GetMatch(matchNum));
+        }
+
+        public bool UpdateMatch(MatchModel match)
+        {
+            services.Tournament.UpdateMatch(match);
+            return services.Save();
         }
         #endregion
 
@@ -294,7 +342,10 @@ namespace WebApplication.Models
                 services.Tournament.DeleteGame(games);
             }
 
-            services.Save();
+            if (services.Save())
+            {
+                roundsModified = true;
+            }
         }
 
         public void OnRoundAdd(object sender, BracketEventArgs args)
@@ -304,7 +355,10 @@ namespace WebApplication.Models
                 services.Tournament.AddMatch(match);
             }
 
-            services.Save();
+            if (services.Save())
+            {
+                roundsModified = true;
+            }
         }
 
         public void OnRoundDelete(object sender, BracketEventArgs args)
@@ -319,7 +373,10 @@ namespace WebApplication.Models
                 services.Tournament.DeleteMatch(match.MatchID);
             }
 
-            services.Save();
+            if (services.Save())
+            {
+                roundsModified = true;
+            }
         }
 
         public void OnGamesDeleted(object sender, BracketEventArgs args)
@@ -329,7 +386,10 @@ namespace WebApplication.Models
                 services.Tournament.DeleteGame(gameId);
             }
 
-            services.Save();
+            if (services.Save())
+            {
+                roundsModified = true;
+            }
         }
         #endregion
     }

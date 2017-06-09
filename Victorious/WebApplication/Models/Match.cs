@@ -71,7 +71,7 @@ namespace WebApplication.Models
         #region CRUD
         public bool Create()
         {
-            throw new NotImplementedException("Not allowed to retrieve a match from Match");
+            throw new NotImplementedException("Not allowed to create a match from Match");
         }
 
         public bool Update()

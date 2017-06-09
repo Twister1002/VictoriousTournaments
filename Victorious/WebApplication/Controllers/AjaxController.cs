@@ -5,108 +5,111 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Tournaments = Tournament.Structure;
 using Tournament.Structure;
 using WebApplication.Models;
+using WebApplication.Models.ViewModels;
 
 namespace WebApplication.Controllers
 {
     [SessionState(System.Web.SessionState.SessionStateBehavior.ReadOnly)]
     public class AjaxController : VictoriousController
     {
+        bool status;
+        String message;
+        object data;
+
+        public AjaxController()
+        {
+            status = false;
+            message = "No action taken";
+            data = new { };
+        }
+
         public JsonResult Index()
         {
             return Json("Invalid Request");
         }
 
+        public JsonResult BundleJson()
+        {
+            return Json(new
+            {
+                status = status,
+                message = message,
+                data = data
+            });
+        }
+
         #region Administrator
         [HttpPost]
         [Route("Ajax/Administrator/Games")]
-        public JsonResult Games(String jsonData)
+        public JsonResult Games(String function, GameTypeViewModel game)
         {
-            object jsonReturn = new
-            {
-                status = false,
-                message = "No action was taken"
-            };
-
             if (account.IsAdministrator())
             {
-                Dictionary<String, String> json = JsonConvert.DeserializeObject<Dictionary<String, String>>(jsonData);
-                GameTypeViewModel gameType = new GameTypeViewModel();
-                bool result = false;
+                GameType gameType = new GameType(work);
 
-                switch (json["function"])
+                switch (function)
                 {
                     case "add":
-                        gameType.Title = json["title"];
-                        result = gameType.Create();
+                        status = gameType.Create(game);
                         break;
                     case "delete":
-                        result = gameType.Delete(int.Parse(json["gameid"]));
+                        status = gameType.Delete(game);
                         break;
                 }
 
-                jsonReturn = new
-                {
-                    status = result,
-                    message = "Was able to " + json["function"] + " " + (result ? "successfully" : "unsuccessfully"),
-                    data = gameType.GameTypes.Select(x => new { x.GameTypeID, x.Title }).ToList()
-                };
+                message = "Was able to " + function + " " + (status ? "successfully" : "unsuccessfully");
             }
 
-            return Json(JsonConvert.SerializeObject(jsonReturn));
+            return BundleJson();
         }
 
         [HttpPost]
         [Route("Ajax/Administrator/Platform")]
-        public JsonResult Platform(String jsonData)
+        public JsonResult Platform(String function, PlatformViewModel viewModel)
         {
-            bool status = false;
-            String message = "No action taken";
-
-            Dictionary<String, String> json = JsonConvert.DeserializeObject<Dictionary<String, String>>(jsonData);
-            PlatformTypeViewModel viewModel = new PlatformTypeViewModel();
-
-            switch (json["action"])
+            if (account.IsAdministrator())
             {
-                case "add":
-                    viewModel.Platform = json["Platform"];
-                    status = viewModel.Create();
-                    break;
-                case "delete":
-                    status = viewModel.Delete(int.Parse(json["PlatformId"]));
-                    break;
+                Platform platform = new Platform(work);
+                switch (function)
+                {
+                    case "add":
+                        status = platform.Create(viewModel);
+                        break;
+                    case "delete":
+                        status = platform.Delete(viewModel);
+                        break;
+                }
+
+                message = "Was able to " + function + " " + (status ? "" : "un") + "successfully";
+                data = new
+                {
+                    platforms = platform.Platforms.Select(x => new { x.PlatformID, x.PlatformName }).ToList()
+                };
             }
 
-            message = "Was able to " + json["action"] + " " + (status ? "" : "un") + "successfully";
-
-
-            return Json(JsonConvert.SerializeObject(new
-            {
-                status = status,
-                message = message,
-                platforms = viewModel.platforms.Select(x => new { x.PlatformID, x.PlatformName }).ToList()
-            }));
+            return BundleJson();
         }
 
         [HttpPost]
         [Route("Ajax/Administrator/Bracket")]
-        public JsonResult Bracket(int bracketTypeId)
+        public JsonResult Bracket(BracketTypeViewModel bracketModel)
         {
-            bool status = false;
-            String message = "No action taken";
-
-            BracketTypeViewModel viewModel = new BracketTypeViewModel();
-            status = viewModel.Update(bracketTypeId);
-            message = "BracketType was updated " + (status ? "" : "un") + "successfully";
-
-
-            return Json(JsonConvert.SerializeObject(new
+            if (account.IsAdministrator())
             {
-                status = status,
-                message = message,
-                brackets = viewModel.Brackets.Select(x => new { x.BracketTypeID, x.TypeName, x.IsActive })
-            }));
+                Models.BracketType bracketType = new Models.BracketType(work);
+
+                status = bracketType.Update(bracketModel);
+                message = "BracketType was updated " + (status ? "" : "un") + "successfully";
+                data = new
+                {
+                    brackets = bracketType.Brackets.Select(x => new { x.BracketTypeID, x.TypeName, x.IsActive })
+                };
+            }
+
+            return BundleJson();
         }
         #endregion
 
@@ -115,30 +118,26 @@ namespace WebApplication.Controllers
         [HttpPost]
         public JsonResult Reset(int tournamentId, int bracketId)
         {
-            bool status = false;
-            String message = "No action taken";
             String redirect = Url.Action("Tournament", "Tournament");
 
-            if (IsLoggedIn())
+            if (account.IsLoggedIn())
             {
-                // TODO: Once the Issue with Defender and Challenger objects are solved, fix this.
-                TournamentViewModel tournamentModel = new TournamentViewModel(tournamentId);
-                BracketViewModel bracketModel = new BracketViewModel(tournamentModel.Tourny.Brackets.Single(x=>x.Id == bracketId));
+                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                Models.Bracket bracket = tournament.GetBracket(bracketId);
 
-                if (tournamentModel.IsCreator(account.AccountId))
+                if (tournament.IsCreator(account.Model.AccountID))
                 {
-                    //tournamentModel.Tourny.Brackets.Where(x => x.Id == bracketId).Single().ResetMatches();
-                    bracketModel.Bracket.ResetMatches();
+                    bracket.GetBracket().ResetMatches();
 
                     status = true;
                     message = "Bracket was reset";
-                    redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentModel.Model.TournamentID });
+                    redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
                 }
                 else
                 {
                     status = false;
                     message = "You do not have permission to do this";
-                    redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentModel.Model.TournamentID });
+                    redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
                 }
             }
             else
@@ -149,7 +148,7 @@ namespace WebApplication.Controllers
             }
 
             Session["Message"] = message;
-            Session["Message.Class"] = status ? ViewModel.ViewError.SUCCESS : ViewModel.ViewError.WARNING;
+            Session["Message.Class"] = status ? ViewError.SUCCESS : ViewError.WARNING;
 
             return Json(JsonConvert.SerializeObject(new
             {
@@ -164,33 +163,35 @@ namespace WebApplication.Controllers
         [Route("Ajax/Bracket/MatchReset")]
         public JsonResult Reset(int tournamentId, int bracketId, int matchNum)
         {
-            bool status = false;
-            String message = "No action taken.";
-            object data = new { };
-
-            if (account != null)
+            if (account.IsLoggedIn())
             {
-                BracketViewModel viewModel = new BracketViewModel(bracketId);
+                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                Models.Bracket bracket = tournament.GetBracket(bracketId);
 
-                if (viewModel.IsAdministrator(account.AccountId))
+                if (tournament.IsAdmin(account.Model.AccountID))
                 {
-                    List<int> matchesAffected = viewModel.MatchesAffectedList(matchNum);
+                    //List<int> matchesAffected = viewModel.MatchesAffectedList(matchNum);
+                    //List<object> matchResponse = new List<object>();
+
+                    //GameViewModel gameModel;
+                    //List<GameModel> games = viewModel.Bracket.ResetMatchScore(matchNum);
+
+                    //// Remove the games from the current match.
+                    //foreach (GameModel game in games)
+                    //{
+                    //    // Delete the games
+                    //    gameModel = new GameViewModel(game);
+                    //    gameModel.Delete();
+                    //}
+
+                    List<int> matchNumsAffected = bracket.MatchesAffectedList(matchNum);
                     List<object> matchResponse = new List<object>();
 
-                    GameViewModel gameModel;
-                    List<GameModel> games = viewModel.Bracket.ResetMatchScore(matchNum);
+                    bracket.GetBracket().ResetMatchScore(matchNum);
 
-                    // Remove the games from the current match.
-                    foreach (GameModel game in games)
+                    foreach (int match in matchNumsAffected)
                     {
-                        // Delete the games
-                        gameModel = new GameViewModel(game);
-                        gameModel.Delete();
-                    }
-
-                    foreach (int match in matchesAffected)
-                    {
-                        matchResponse.Add(JsonMatchResponse(viewModel.Bracket.GetMatch(match), true));
+                        matchResponse.Add(JsonMatchResponse(bracket.GetMatchByNum(match), true));
                     }
 
                     status = true;
@@ -207,112 +208,87 @@ namespace WebApplication.Controllers
                 message = "You must login to do this";
             }
 
-            return Json(JsonConvert.SerializeObject(
-                new
-                {
-                    status = status,
-                    message = message,
-                    data = data
-                }
-            ));
+            return BundleJson();
         }
 
         [HttpPost]
         [Route("Ajax/Bracket/Standings")]
-        public JsonResult Standings(int tournamentId, int bracketNum)
+        public JsonResult Standings(int tournamentId, int bracketId)
         {
-            bool status = true;
-            bool usePoints = false;
-            String message = "Standings are acquired.";
-            object data = new { };
-
-            TournamentViewModel viewModel = new TournamentViewModel(tournamentId);
-            IBracket bracket = viewModel.Tourny.Brackets.ElementAtOrDefault(bracketNum);
-
+            Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+            Models.Bracket bracket = tournament.GetBracket(bracketId);
+            
             if (bracket == null)
             {
                 status = false;
                 message = "Invalid data";
-
             }
             else
             {
-                usePoints = (bracket.BracketType == BracketType.DOUBLE || bracket.BracketType == BracketType.SINGLE ? false : true);
-                data = new { ranks = bracket.Rankings, usePoints = usePoints };
+                data = new
+                {
+                    ranks = bracket.GetBracket().Rankings,
+                    usePoints = bracket.UsePoints()
+                };
             }
 
-            return Json(JsonConvert.SerializeObject(
-                new
-                {
-                    status = status,
-                    message = message,
-                    data = data
-                }
-            ));
+            return BundleJson();
         }
         #endregion
 
         #region Match
         [HttpPost]
         [Route("Ajax/Match")]
-        public JsonResult MatchInfo(String jsonData)
+        public JsonResult MatchInfo(int tournamentId, int bracketId, int matchId)
         {
-            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
-            MatchViewModel viewModel = new MatchViewModel(json["matchId"]);
-            bool status = false;
-            String message = "Match doesn't exist or failed to load";
+            Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+            Models.Bracket bracket = tournament.GetBracket(bracketId);
+            Models.Match match = bracket.GetMatchById(matchId);
 
-            if (viewModel.Model != null)
+            if (match != null)
             {
                 status = true;
                 message = "Match was loaded.";
+                data = new
+                {
+                    match = JsonMatchResponse(match, true)
+                };
             }
 
-            String jsonResult = JsonConvert.SerializeObject(new
-            {
-                status = status,
-                message = message,
-                data = JsonMatchResponse(viewModel.Match, true)
-            });
-
-            return Json(jsonResult);
+            return BundleJson();
         }
 
         [HttpPost]
         [Route("Ajax/Match/Update")]
-        public JsonResult MatchUpdate(String jsonIds, List<GameViewModel> games)
+        public JsonResult MatchUpdate(int tournamentId, int bracketId, int matchNum, List<GameViewModel> games)
         {
-            bool status = false;
-            String message = "No action taken";
-            object data = new { };
-
             if (games != null)
             {
-                if (account != null)
+                if (account.IsLoggedIn())
                 {
-                    Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonIds);
-                    TournamentViewModel tournamentModel = new TournamentViewModel(json["tournamentId"]);
+                    Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                    Models.Bracket bracket = tournament.GetBracket(bracketId);
+                    Models.Match match = bracket.GetMatchByNum(matchNum);
 
-                    if (tournamentModel.IsAdministrator(account.AccountId))
+                    if (tournament.IsAdmin(account.Model.AccountID))
                     {
-                        BracketViewModel bracketModel = new BracketViewModel(tournamentModel.Tourny.Brackets.Where(x => x.Id == json["bracketId"]).Single());
                         Dictionary<int, bool> processed = new Dictionary<int, bool>();
 
                         // Verify these matches exists
                         foreach (GameViewModel gameModel in games)
                         {
                             // Tie game check
-                            if (bracketModel.Bracket.GetMatch(json["matchNum"]).IsFinished || gameModel.ChallengerScore == gameModel.DefenderScore)
+                            if (match.match.IsFinished || gameModel.ChallengerScore == gameModel.DefenderScore)
                             {
                                 processed.Add(gameModel.GameNumber, false);
                                 continue;
                             }
 
-                            if (!bracketModel.Bracket.GetMatch(json["matchNum"]).Games.Any(x => x.GameNumber == gameModel.GameNumber))
+                            if (!match.match.Games.Any(x => x.GameNumber == gameModel.GameNumber))
                             {
                                 // We need to add this game.
                                 PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
-                                bracketModel.Bracket.AddGame(json["matchNum"], gameModel.DefenderScore, gameModel.ChallengerScore, winner);
+                                bracket.GetBracket().AddGame(matchNum, gameModel.DefenderScore, gameModel.ChallengerScore, winner);
                             }
                             else
                             {
@@ -321,28 +297,26 @@ namespace WebApplication.Controllers
                         }
 
                         // Update the matches in the database
-                        MatchViewModel matchModel = new MatchViewModel(tournamentModel.Model.Brackets.Single(x => x.BracketID == json["bracketId"]).Matches.Single(x => x.MatchNumber == json["matchNum"]));
-                        matchModel.ApplyChanges(bracketModel.Bracket.GetMatchModel(json["matchNum"]));
-                        bool currentMatchUpdate = matchModel.Update();
+                        status = bracket.UpdateMatch(bracket.GetBracket().GetMatchModel(matchNum));
+                        match = bracket.GetMatchByNum(matchNum);
                         List<object> matchUpdates = new List<object>();
 
-                        if (currentMatchUpdate)
+                        if (status)
                         {
-                            status = true;
                             message = "Current match was updated";
 
-                            matchUpdates.Add(JsonMatchResponse(matchModel.Match, true));
-                            if (matchModel.Match.NextMatchNumber != -1)
-                                matchUpdates.Add(JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextMatchNumber), false));
-                            if (matchModel.Match.NextLoserMatchNumber != -1)
-                                matchUpdates.Add(JsonMatchResponse(bracketModel.Bracket.GetMatch(matchModel.Match.NextLoserMatchNumber), false));
-                            if (bracketModel.Bracket.BracketType == BracketType.SWISS)
+                            matchUpdates.Add(JsonMatchResponse(match, true));
+                            if (match.match.NextMatchNumber != -1)
+                                matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(match.match.NextMatchNumber), false));
+                            if (match.match.NextLoserMatchNumber != -1)
+                                matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(match.match.NextLoserMatchNumber), false));
+                            if (bracket.GetBracket().BracketType ==  DatabaseLib.BracketType.SWISS)
                             {
-                                List<IMatch> roundMatches = bracketModel.Bracket.GetRound(matchModel.Match.RoundIndex);
+                                List<IMatch> roundMatches = bracket.GetBracket().GetRound(match.match.RoundIndex);
                                 // We need to verify and check if this round is finished
                                 if (!roundMatches.Any(x => x.IsFinished == false))
                                 {
-                                    foreach (IMatch match in bracketModel.Bracket.GetRound(matchModel.Match.RoundIndex + 1))
+                                    foreach (Models.Match iMatch in bracket.GetBracket().GetRound(match.match.RoundIndex + 1))
                                     {
                                         matchUpdates.Add(JsonMatchResponse(match, false));
                                     }
@@ -355,7 +329,7 @@ namespace WebApplication.Controllers
                         {
                             processed = processed,
                             matchUpdates = matchUpdates,
-                            refresh = bracketModel.roundsModified
+                            refresh = bracket.roundsModified
                         };
                     }
                     else
@@ -383,44 +357,55 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Ajax/Match/RemoveGame")]
-        public JsonResult RemoveGame(String jsonData)
+        public JsonResult RemoveGame(int tournamentId, int bracketId, int matchNum, int gameNum)
         {
-            bool status = false;
-            String message = "No action taken";
-            object data = new { };
-
-            Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
-            BracketViewModel bracketViewModel = new BracketViewModel(json["bracketId"]);
-            List<int> matchesAffected = bracketViewModel.MatchesAffectedList(json["matchNum"]);
-            List<object> matchDataAffected = new List<object>();
-            bracketViewModel.Bracket.RemoveGameNumber(json["matchNum"], json["gameNum"]);
-
-            status = true;
-            message = "Matches are affected.";
-
-            foreach (int matchNum in matchesAffected)
+            if (account.IsLoggedIn())
             {
-                // Load the original and load one from the bracket
-                MatchViewModel modified = new MatchViewModel(bracketViewModel.Bracket.GetMatchModel(matchNum));
-                MatchViewModel original = new MatchViewModel(modified.Match.Id);
+                Models.Tournament tournament = new Models.Tournament(work, tournamentId);
+                Models.Bracket bracket = tournament.GetBracket(bracketId);
+                //Models.Match match = bracket.GetMatchByNum(matchNum);
+                List<int> matchesAffected = bracket.MatchesAffectedList(matchNum);
+                List<object> matchesAffectedData = new List<object>();
 
-                List<IGame> games = original.Match.Games.Where(x => !modified.Match.Games.Any(y => y.Id == x.Id)).ToList();
-                foreach (IGame game in games)
+                GameModel gameModel = bracket.GetBracket().RemoveGameNumber(matchNum, gameNum);
+
+                foreach (int matchNumber in matchesAffected)
                 {
-                    GameViewModel gameViewModel = new GameViewModel(game);
-                    gameViewModel.Delete();
+                    matchesAffectedData.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNum), true));
                 }
 
-                modified.Update();
-                matchDataAffected.Add(JsonMatchResponse(modified.Match, true));
+                data = new
+                {
+                    matches = matchesAffectedData
+                };
             }
+            //Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
+            //BracketViewModel bracketViewModel = new BracketViewModel(json["bracketId"]);
+            //List<int> matchesAffected = bracketViewModel.MatchesAffectedList(json["matchNum"]);
+            //List<object> matchDataAffected = new List<object>();
+            //bracketViewModel.Bracket.RemoveGameNumber(json["matchNum"], json["gameNum"]);
 
-            return Json(JsonConvert.SerializeObject(new
-            {
-                status = status,
-                message = message,
-                data = matchDataAffected
-            }));
+            //status = true;
+            //message = "Matches are affected.";
+
+            //foreach (int matchNum in matchesAffected)
+            //{
+            //    // Load the original and load one from the bracket
+            //    MatchViewModel modified = new MatchViewModel(bracketViewModel.Bracket.GetMatchModel(matchNum));
+            //    MatchViewModel original = new MatchViewModel(modified.Match.Id);
+
+            //    List<IGame> games = original.Match.Games.Where(x => !modified.Match.Games.Any(y => y.Id == x.Id)).ToList();
+            //    foreach (IGame game in games)
+            //    {
+            //        GameViewModel gameViewModel = new GameViewModel(game);
+            //        gameViewModel.Delete();
+            //    }
+
+            //    modified.Update();
+            //    matchDataAffected.Add(JsonMatchResponse(modified.Match, true));
+            //}
+
+            return BundleJson();
         }
         #endregion
 
@@ -710,6 +695,55 @@ namespace WebApplication.Controllers
                 status = status,
                 message = message
             }));
+        }
+        #endregion
+
+        #region Helpers
+        protected object JsonMatchResponse(Models.Match match, bool includeGames)
+        {
+            List<object> gameData = new List<object>();
+
+            IPlayer Challenger = match.Challenger;
+            IPlayer Defender = match.Defender;
+
+            if (includeGames)
+            {
+                foreach (IGame game in match.GetGames())
+                {
+                    gameData.Add(JsonGameResponse(game));
+                }
+            }
+
+            return new
+            {
+                matchId = match.match.Id,
+                matchNum = match.match.MatchNumber,
+                ready = match.match.IsReady,
+                finished = match.match.IsFinished,
+                challenger = JsonPlayerDataResponse(Challenger, match.ChallengerScore()),
+                defender = JsonPlayerDataResponse(Defender, match.DefenderScore()),
+                games = gameData
+            };
+        }
+
+        protected object JsonGameResponse(IGame game)
+        {
+            return new
+            {
+                id = game.Id,
+                gameNum = game.GameNumber,
+                matchId = game.MatchId,
+                challenger = new
+                {
+                    id = game.PlayerIDs[(int)PlayerSlot.Challenger],
+                    score = game.Score[(int)PlayerSlot.Challenger]
+                },
+                defender = new
+                {
+                    id = game.PlayerIDs[(int)PlayerSlot.Defender],
+                    score = game.Score[(int)PlayerSlot.Defender]
+                }
+            };
         }
         #endregion
     }

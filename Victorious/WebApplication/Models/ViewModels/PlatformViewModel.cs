@@ -8,5 +8,7 @@ namespace WebApplication.Models.ViewModels
         [Display(Name = "Platform")]
         [DataType(DataType.Text)]
         public String Platform { get; set; }
+
+        public int PlatformID { get; set; }
     }
 }
