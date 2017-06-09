@@ -222,6 +222,35 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected void SubscribeToGroupEvents()
+		{
+			foreach (IBracket group in Groups)
+			{
+				// Subscribe to each group's events,
+				// so we can relay the events to this bracket's subscribers:
+				group.RoundAdded += AddRounds;
+				group.RoundDeleted += DeleteRounds;
+				group.MatchesModified += ModifyMatches;
+				group.GamesDeleted += DeleteGames;
+			}
+		}
+		protected void AddRounds(object _sender, BracketEventArgs _args)
+		{
+			OnRoundAdded(_args);
+		}
+		protected void DeleteRounds(object _sender, BracketEventArgs _args)
+		{
+			OnRoundDeleted(_args);
+		}
+		protected void ModifyMatches(object _sender, BracketEventArgs _args)
+		{
+			OnMatchesModified(_args);
+		}
+		protected void DeleteGames(object _sender, BracketEventArgs _args)
+		{
+			OnGamesDeleted(_args);
+		}
+
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			UpdateFinishStatus();
@@ -229,14 +258,11 @@ namespace Tournament.Structure
 		}
 		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
-			if (PlayerSlot.unspecified == _formerMatchWinnerSlot)
+			if (!(GetMatch(_matchNumber).IsFinished))
 			{
 				this.IsFinished = false;
 			}
-			else
-			{
-				UpdateFinishStatus();
-			}
+
 			return (new List<MatchModel>());
 		}
 		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)

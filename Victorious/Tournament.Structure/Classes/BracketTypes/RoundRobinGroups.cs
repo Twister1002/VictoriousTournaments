@@ -124,6 +124,7 @@ namespace Tournament.Structure
 
 				Groups.Add(new RoundRobinBracket(pList, _gamesPerMatch, MaxRounds));
 			}
+			SubscribeToGroupEvents();
 
 			foreach (IBracket group in Groups)
 			{

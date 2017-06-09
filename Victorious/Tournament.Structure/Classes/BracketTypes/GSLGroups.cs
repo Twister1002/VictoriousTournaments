@@ -317,6 +317,7 @@ namespace Tournament.Structure
 
 				Groups.Add(new GSLBracket(pList, _gamesPerMatch));
 			}
+			SubscribeToGroupEvents();
 
 			foreach (IBracket group in Groups)
 			{
