@@ -7,7 +7,7 @@ namespace WebApplication.Models.ViewModels
 {
     public class BracketViewModel
     {
-        public int BracketType { get; set; }
+        public int BracketTypeID { get; set; }
         public int NumberOfRounds { get; set; }
     }
 }

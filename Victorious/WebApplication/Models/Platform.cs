@@ -12,7 +12,7 @@ namespace WebApplication.Models
     public class Platform : Model
     {
         private PlatformModel Model;
-        private PlatformViewModel viewModel;
+        public PlatformViewModel viewModel { get; private set; }
 
         public List<PlatformModel> Platforms { get; private set; }
 

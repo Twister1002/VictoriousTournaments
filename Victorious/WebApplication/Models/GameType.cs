@@ -11,7 +11,7 @@ namespace WebApplication.Models
 {
     public class GameType : Model
     {
-        private GameTypeViewModel viewModel;
+        public GameTypeViewModel viewModel { get; private set; }
         private GameTypeModel Model;
 
         public List<GameTypeModel> Games { get; private set; }

@@ -1,4 +1,4 @@
-﻿@model WebApplication.Models.TournamentViewModel
+﻿@model WebApplication.Models.ViewModels.TournamentViewModel
 @{
     ViewBag.Title = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -46,11 +46,11 @@
             <ul class="hide bracketOrig">
                 <li class="rounds">
                     @Html.LabelFor(t => t.BracketTypes)
-                    @Html.DropDownList("BracketData[%n%].BracketType", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---")
+                    @Html.DropDownList("BracketData[<>].BracketType", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---")
                 </li>
                 <li class="swiss rr hide">
                     @Html.LabelFor(t => t.NumberOfRounds)
-                    @Html.DropDownList("BracketData[%n%].NumberOfRounds", new SelectList(Model.NumberOfRounds, 0))
+                    @Html.DropDownList("BracketData[<>].NumberOfRounds", new SelectList(Model.NumberOfRounds, 0))
                 </li>
             </ul>
         </div>

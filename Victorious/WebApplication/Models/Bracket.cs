@@ -14,9 +14,9 @@ namespace WebApplication.Models
     {
         public bool roundsModified;
         private IService services;
-        private Tournaments.IBracket bracket;
+        private IBracket bracket;
 
-        public Bracket(IService services, Tournaments.IBracket bracket)
+        public Bracket(IService services, IBracket bracket)
         {
             this.services = services;
             this.bracket = bracket;

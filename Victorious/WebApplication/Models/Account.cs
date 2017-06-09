@@ -10,7 +10,7 @@ namespace WebApplication.Models
 {
     public class Account : Model
     {
-        public ViewModels.AccountViewModel viewModel;
+        public AccountViewModel viewModel { get; private set; }
         public AccountModel Model { get; private set; }
         public Dictionary<TournamentStatus, List<TournamentModel>> Tournaments { get; private set; }
         
@@ -30,6 +30,7 @@ namespace WebApplication.Models
 
             // ViewModel
             viewModel = new AccountViewModel();
+            SetFields();
 
             LoadAccountTournaments();
         }
@@ -40,12 +41,14 @@ namespace WebApplication.Models
             {
                 // Acquire the account in question
                 Model = services.Account.GetAccount(viewModel.Username);
-
-                if (viewModel.Password == Model.Password)
+                if (Model != null)
                 {
-                    Model.LastLogin = DateTime.Now;
-                    services.Account.UpdateAccount(Model);
-                    return services.Save();
+                    if (viewModel.Password == Model.Password)
+                    {
+                        Model.LastLogin = DateTime.Now;
+                        services.Account.UpdateAccount(Model);
+                        return services.Save();
+                    }
                 }
             }
 
@@ -54,7 +57,7 @@ namespace WebApplication.Models
 
         public bool IsLoggedIn()
         {
-            if (Model.AccountID != -1)
+            if (Model.AccountID != 0)
             {
                 return true;
             }
@@ -69,6 +72,7 @@ namespace WebApplication.Models
         {
             if (viewModel != null)
             {
+                this.viewModel = viewModel;
                 ApplyChanges();
 
                 // Verify we can create the user
@@ -81,8 +85,9 @@ namespace WebApplication.Models
                 bool passwordsMatch = viewModel.Password == viewModel.PasswordVerify;
 
 
-                if (usernameExists && emailExists && passwordsMatch)
+                if (!usernameExists && !emailExists && passwordsMatch)
                 {
+                    services.Account.AddAccount(Model);
                     return services.Save();
                 }
                 else
@@ -108,7 +113,7 @@ namespace WebApplication.Models
         {
             if (viewModel.Password == Model.Password)
             {
-                SetFields();
+                this.viewModel = viewModel;
                 ApplyChanges();
                 services.Account.UpdateAccount(Model);
                 return services.Save();

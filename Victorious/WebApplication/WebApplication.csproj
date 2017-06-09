@@ -201,7 +201,6 @@
     <Content Include="Styles\less\_icons.less" />
     <Content Include="Views\Tournament\Update.cshtml" />
     <Content Include="Views\Tournament\Delete.cshtml" />
-    <Content Include="Views\Tournament\Administrator\_Players.cshtml" />
     <Content Include="Styles\less\Tournament\_Tournament.less" />
     <Content Include="Styles\less\Tournament\_Create.less" />
     <Content Include="Styles\less\Tournament\_Edit.less" />
