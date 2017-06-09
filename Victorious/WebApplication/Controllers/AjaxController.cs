@@ -7,7 +7,6 @@ using System.Web;
 using System.Web.Mvc;
 using Tournament.Structure;
 using WebApplication.Models;
-using WebApplication.Models.Administrator;
 
 namespace WebApplication.Controllers
 {

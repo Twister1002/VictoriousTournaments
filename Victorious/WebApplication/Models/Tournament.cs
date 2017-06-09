@@ -12,9 +12,9 @@ namespace WebApplication.Models
     {
         private bool TempFixMatchObjects = true;
         private Tournaments.ITournament Tourny;
-        private TournamentViewModel viewModel;
-        private TournamentModel Model;
-        private List<TournamentModel> searched;
+        public TournamentViewModel viewModel { get; private set; }
+        public TournamentModel Model { get; private set; }
+        public List<TournamentModel> searched { get; private set; }
 
         public Tournament(IUnitOfWork work, int id) : base(work)
         {
@@ -165,11 +165,12 @@ namespace WebApplication.Models
 
         #region CRUD
         //TODO: Fix issue where tournamentCodes can collide and be repeatable.
-        public bool Create(int accountId)
+        public bool Create(TournamentViewModel viewModel, Account account)
         {
+            this.viewModel = viewModel;
             ApplyChanges();
             Model.CreatedOn = DateTime.Now;
-            Model.CreatedByID = accountId;
+            Model.CreatedByID = account.Model.AccountID;
 
             // Generate the Tournament Invite Codes
             Model.InviteCode = Codes.GenerateInviteCode();
@@ -186,6 +187,7 @@ namespace WebApplication.Models
             UpdateBrackets();
             services.Tournament.AddTournament(Model);
             services.Tournament.AddTournamentInvite(inviteModel);
+            AddUser(account, Permission.TOURNAMENT_CREATOR);
 
             return services.Save();
         }
@@ -193,10 +195,12 @@ namespace WebApplication.Models
         public void Retrieve(int id)
         {
             Model = services.Tournament.GetTournament(id);
+            if (Model == null) Model = new TournamentModel();
         }
 
-        public bool Update(int accountId)
+        public bool Update(TournamentViewModel viewModel, int accountId)
         {
+            this.viewModel = viewModel;
             ApplyChanges();
             Model.LastEditedByID = accountId;
             Model.LastEditedOn = DateTime.Now;
@@ -367,15 +371,15 @@ namespace WebApplication.Models
             return AddUserToTournament(userModel) ? userModel : null;
         }
 
-        public bool AddUser(AccountViewModel account, Permission permission)
+        public bool AddUser(Account account, Permission permission)
         {
             // Verify this user doesn't exist in the tournament
-            if (!Model.TournamentUsers.Any(x => x.AccountID == account.AccountId))
+            if (!Model.TournamentUsers.Any(x => x.AccountID == account.Model.AccountID))
             {
                 TournamentUserModel tournamentUserModel = new TournamentUserModel()
                 {
-                    AccountID = account.AccountId,
-                    Name = account.Username,
+                    AccountID = account.Model.AccountID,
+                    Name = account.Model.Username,
                     PermissionLevel = (int)permission,
                     TournamentID = Model.TournamentID
                 };
