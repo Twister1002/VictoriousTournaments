@@ -1,4 +1,4 @@
-﻿@model WebApplication.Models.Administrator.GameTypeViewModel
+﻿@model WebApplication.Models.GameType
 
 <div id="AdministratorGames">
     <h2>Games</h2>
@@ -6,7 +6,7 @@
         <ul class="list-table">
             <li class="list-table-header">
                 <ul class="form options" data-columns="2">
-                    <li class="column gameTitle">@Html.TextBoxFor(x => x.Title, null, new { @class = "field", placeholder = "Game Name" })</li>
+                    <li class="column gameTitle">@Html.TextBoxFor(x => x.viewModel.Title, null, new { @class = "field", placeholder = "Game Name" })</li>
                     <li class="column gameAdd"> <button type="button" class="GameAddButton">Add Game</button></li>
                 </ul>
             </li>
@@ -17,7 +17,7 @@
                 </ul>
             </li>
             <li class="list-table-body border">
-                @foreach (var game in Model.GameTypes)
+                @foreach (var game in Model.Games)
                 {
                     <ul class="game" data-columns="2" data-gameid="@game.GameTypeID">
                         <li class="column gameTitle">@game.Title</li>

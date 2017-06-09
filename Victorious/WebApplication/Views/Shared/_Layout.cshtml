@@ -41,8 +41,9 @@
     {
         var messageClass = WebApplication.Models.ViewError.WARNING;
         if (Session["Message.Class"] != null) { messageClass = (WebApplication.Models.ViewError)Session["Message.Class"]; }
-        <div class="message @Model.errorClassNames[(int)messageClass]">
+        <div class="message @WebApplication.Models.Model.errorClassNames[(int)messageClass]">
             @Html.Raw((String)Session["Message"])
+            <span class="icon icon-cross right closeMessage"></span>
         </div>
 
         Session.Remove("Message");

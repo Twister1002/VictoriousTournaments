@@ -28,6 +28,7 @@ namespace WebApplication.Models
             // Create the tournament
             Tourny = new Tournaments.Tournament(Model);
             searched = new List<TournamentModel>();
+            viewModel = new TournamentViewModel();
 
             // Set the field's original data
             viewModel.BracketTypes = services.Type.GetAllBracketTypes().Where(x => x.IsActive == true).ToList();
@@ -176,6 +177,12 @@ namespace WebApplication.Models
             // Generate the Tournament Invite Codes
             Model.InviteCode = Codes.GenerateInviteCode();
 
+            //Save the tournament First.
+            services.Tournament.AddTournament(Model);
+            AddUser(account, Permission.TOURNAMENT_CREATOR);
+            if (viewModel.BracketData != null) UpdateBrackets();
+            bool tournamentSave = services.Save();
+
             // Create InviteModel
             TournamentInviteModel inviteModel = new TournamentInviteModel()
             {
@@ -185,10 +192,13 @@ namespace WebApplication.Models
                 NumberOfUses = 0
             };
 
-            UpdateBrackets();
-            services.Tournament.AddTournament(Model);
+            // Add the Invite Model
+            
             services.Tournament.AddTournamentInvite(inviteModel);
-            AddUser(account, Permission.TOURNAMENT_CREATOR);
+            bool TournamentInviteSave = services.Save();
+
+
+
 
             return services.Save();
         }
@@ -270,11 +280,11 @@ namespace WebApplication.Models
                     if (bracketModel != null)
                     {
                         // We just need to update the data
-                        bracketModel.BracketTypeID = newBracket.Value.BracketType;
+                        bracketModel.BracketTypeID = newBracket.Value.BracketTypeID;
                         bracketModel.MaxRounds = newBracket.Value.NumberOfRounds;
 
-                        updatedBrackets.Add(bracketModel);
-                        //tournamentService.UpdateBracket(bracketModel);
+                        //updatedBrackets.Add(bracketModel);
+                        services.Tournament.UpdateBracket(bracketModel);
                     }
                     else if (bracketModel == null)
                     {
@@ -282,13 +292,13 @@ namespace WebApplication.Models
                         bracketModel = new BracketModel()
                         {
                             MaxRounds = newBracket.Value.NumberOfRounds,
-                            BracketTypeID = newBracket.Value.BracketType,
+                            BracketTypeID = newBracket.Value.BracketTypeID,
                             Finalized = false,
                             TournamentID = Model.TournamentID
                         };
 
-                        updatedBrackets.Add(bracketModel);
-                        //tournamentService.AddBracket(bracketModel);
+                        //updatedBrackets.Add(bracketModel);
+                        services.Tournament.AddBracket(bracketModel);
                     }
                 }
             }
@@ -798,7 +808,7 @@ namespace WebApplication.Models
             {
                 viewModel.BracketData.Add(new BracketInfo()
                 {
-                    BracketType = bracket.BracketTypeID,
+                    BracketTypeID = bracket.BracketTypeID,
                     NumberOfRounds = bracket.MaxRounds
                 });
             }

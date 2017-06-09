@@ -10,7 +10,7 @@
     //TODO: Fix the issue with %n% not being replaced.
     $("#TournamentCreate #BracketType").on("change", BracketInfoChange);
     $("#TournamentCreate .icon-plus").on("click", function () {
-        var newBracket = bracketInfo.replace(/%n%/g, bracketsCreated);
+        var newBracket = bracketInfo.replace(/<>/g, bracketsCreated);
         $("#TournamentCreate .bracketSection").append("<ul class='brackets'>"+newBracket+"</ul>");
 
         bracketsCreated++;

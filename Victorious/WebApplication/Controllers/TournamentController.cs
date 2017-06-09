@@ -40,8 +40,8 @@ namespace WebApplication.Controllers
             }
             else
             {
-                TournamentViewModel viewModel = new TournamentViewModel();
-                return View("Create", viewModel);
+                Models.Tournament tournament = new Models.Tournament(service, -1);
+                return View("Create", tournament.viewModel);
             }
         }
 
@@ -143,7 +143,7 @@ namespace WebApplication.Controllers
         public ActionResult Create(TournamentViewModel viewModel)
         {
             // Verify the user is logged in first
-            if (account.IsLoggedIn())
+            if (!account.IsLoggedIn())
             {
                 Session["Message"] = "You must login to create a tournament.";
                 Session["Message.Class"] = ViewError.WARNING;
@@ -154,8 +154,6 @@ namespace WebApplication.Controllers
                 if (ModelState.IsValid)
                 {
                     Models.Tournament tourny = new Models.Tournament(service, -1);
-
-                    //TODO COmbine Create and AddUser()
                     if (tourny.Create(viewModel, account))
                     {
                         return RedirectToAction("Tournament", "Tournament", new { guid = tourny.Model.TournamentID });

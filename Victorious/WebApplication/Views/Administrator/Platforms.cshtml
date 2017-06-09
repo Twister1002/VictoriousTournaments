@@ -1,12 +1,11 @@
-﻿@model WebApplication.Models.Administrator.PlatformTypeViewModel
-
+﻿@model WebApplication.Models.Platform
 <div id="AdministratorPlatforms">
     <h2>Platforms</h2>
     <div>
         <ul class="list-table">
             <li class="list-table-header">
                 <ul class="form options" data-columns="2">
-                    <li class="column">@Html.TextBoxFor(x => x.Platform, new { @class = "platformTitle", placeholder = "Platform" })</li>
+                    <li class="column">@Html.TextBoxFor(x=>x.viewModel.Platform, new { @class = "platformTitle", placeholder = "Platform" })</li>
                     <li class="column"><button type="button" class="AddPlatform">Add Platform</button></li>
                 </ul>
             </li>
@@ -17,7 +16,7 @@
                 </ul>
             </li>
             <li class="list-table-body border">
-                @foreach (var platform in Model.platforms)
+                @foreach (var platform in Model.Platforms)
                 {
                     <ul class="platform" data-columns="2" data-id="@platform.PlatformID">
                         <li class="column">@platform.PlatformName</li>

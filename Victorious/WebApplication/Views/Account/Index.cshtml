@@ -1,4 +1,4 @@
-﻿@model WebApplication.Models.AccountViewModel
+﻿@model WebApplication.Models.Account
 @{
     ViewBag.Title = "Account";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -21,7 +21,7 @@
         @{ Html.RenderPartial("Sections/Settings", Model); }
         @{ Html.RenderPartial("Sections/History", Model); }
         @{ Html.RenderPartial("Sections/Tournaments", Model); }
-        @{ Html.RenderPartial("Sections/Update", Model); }
+        @{ Html.RenderPartial("Sections/Update", Model.viewModel); }
         <div id="AccountLoading">Please wait while we redirect you...</div>
     </div>
 </div>

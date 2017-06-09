@@ -32,7 +32,7 @@ namespace WebApplication.Models
 
     public struct BracketInfo
     {
-        public int BracketType;
+        public int BracketTypeID;
         public int NumberOfRounds;
     }
 
@@ -44,17 +44,18 @@ namespace WebApplication.Models
         ERROR
     }
 
+    
+
     public abstract class Model
     {
-        protected IService services;
-
-        public String[] errorClassNames = new String[] {
+        public static String[] errorClassNames = new String[] {
             "none",
             "success",
             "warning",
             "error",
         };
 
+        protected IService services;
         public ViewError error = ViewError.NONE;
         public String message;
         public Exception ex;
