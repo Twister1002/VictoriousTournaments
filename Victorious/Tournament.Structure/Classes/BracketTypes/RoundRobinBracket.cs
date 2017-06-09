@@ -185,7 +185,7 @@ namespace Tournament.Structure
 			this.IsFinished = !(Matches.Values.Any(m => !m.IsFinished));
 #if ENABLE_TIEBREAKERS
 			// Check for, and create, Tiebreaker matches:
-			if (IsFinished)
+			if (IsFinished && BracketType.ROUNDROBIN == this.BracketType)
 			{
 				// Calculate W/L scores for all players:
 				int[] scores = new int[Rankings.Count];

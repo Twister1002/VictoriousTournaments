@@ -127,9 +127,11 @@ namespace Tournament.Structure
 			model.DefenderID = Players[(int)PlayerSlot.Defender]?.Id ?? -1;
 			model.WinnerID = (PlayerSlot.unspecified == WinnerSlot)
 				? -1 : Players[(int)WinnerSlot].Id;
+			model.Defender = Players[(int)PlayerSlot.Defender]?.GetTournamentUserModel();
+			model.Challenger = Players[(int)PlayerSlot.Challenger]?.GetTournamentUserModel();
+
 			model.ChallengerScore = this.Score[(int)PlayerSlot.Challenger];
 			model.DefenderScore = this.Score[(int)PlayerSlot.Defender];
-
 			model.Games = new List<GameModel>();
 			foreach (IGame game in this.Games)
 			{
