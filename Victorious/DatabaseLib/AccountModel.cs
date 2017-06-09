@@ -18,6 +18,7 @@ namespace DatabaseLib
         public AccountModel()
         {
             this.AccountInvites = new HashSet<AccountInviteModel>();
+            this.SiteTeamMembers = new HashSet<SiteTeamMemberModel>();
     		OnInit();
         }
     
@@ -38,5 +39,7 @@ namespace DatabaseLib
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AccountInviteModel> AccountInvites { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SiteTeamMemberModel> SiteTeamMembers { get; set; }
     }
 }

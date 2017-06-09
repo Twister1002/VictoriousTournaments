@@ -1,4 +1,4 @@
-﻿@model WebApplication.Models.AccountViewModel
+﻿@model WebApplication.Models.ViewModels.AccountViewModel
 @{
     ViewBag.Title = "Register";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -6,7 +6,7 @@
 
 <div id="AccountRegister">
     <h2>Account Registration</h2>
-    @using (Html.BeginForm("RegisterUser", "Account", FormMethod.Post, new { @onsubmit = "return Validate(this)" }))
+    @using (Html.BeginForm("RegisterUser", "Account", FormMethod.Post))
     {
         <div class="section">
             <ul>

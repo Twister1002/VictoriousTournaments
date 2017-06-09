@@ -1,4 +1,4 @@
-﻿@model WebApplication.Models.TournamentViewModel
+﻿@model WebApplication.Models.ViewModels.TournamentViewModel
 @{
     ViewBag.Title = "Update";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -55,7 +55,12 @@
             </ul>
         </div>
         <div class="section form-section bracketSection">
-            <h2>Brackets <span class="icon icon-plus"></span></h2>
+            <h2>Brackets 
+                @if (!Model.Model.InProgress)
+                {
+                    <span class="icon icon-plus"></span> 
+                } 
+            </h2>
             @for (int i = 0; i < Model.BracketData.Count; i++)
             {
                 var bracketData = Model.BracketData[i];

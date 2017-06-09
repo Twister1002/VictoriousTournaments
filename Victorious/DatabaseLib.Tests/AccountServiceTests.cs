@@ -30,8 +30,8 @@ namespace DatabaseLib.Tests
                 FirstName = "Ryan",
                 LastName = "Kelton",
                 //Username = Guid.NewGuid().ToString(),
-                Username = "keltonr01",
-                Email = "keltonr01@gmail.com",
+                Username = "keltonr02",
+                Email = "keltonr02@gmail.com",
                 Password = "1234",
                 PermissionLevel = (int)Permission.SITE_STANDARD
             };

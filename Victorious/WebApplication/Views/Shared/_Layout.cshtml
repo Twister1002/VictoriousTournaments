@@ -1,11 +1,4 @@
-﻿
-@{ 
-    // Set necessarry global data
-    ViewBag.isLoggedIn = Session["User.UserId"] != null ? true : false;
-    ViewBag.Name = Session["User.Name"] != null ? Session["User.Name"] : "Guest";
-}
-
-<!DOCTYPE html5>
+﻿<!DOCTYPE html5>
 <html lang="en-us" dir="ltr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
@@ -46,16 +39,17 @@
 
     @if (Session["Message"] != null)
     {
-        var messageClass = WebApplication.Models.ViewModel.ViewError.WARNING;
-        if (Session["Message.Class"] != null) { messageClass = (WebApplication.Models.ViewModel.ViewError)Session["Message.Class"]; }
-        <div class="message @Model.errorClassNames[(int)messageClass]">
+        var messageClass = WebApplication.Models.ViewError.WARNING;
+        if (Session["Message.Class"] != null) { messageClass = (WebApplication.Models.ViewError)Session["Message.Class"]; }
+        <div class="message @WebApplication.Models.Model.errorClassNames[(int)messageClass]">
             @Html.Raw((String)Session["Message"])
+            <span class="icon icon-cross right closeMessage"></span>
         </div>
 
         Session.Remove("Message");
     }
 
-    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
+    @*@if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
     {
         <div class="message @Model.errorClassNames[(int)Model.error]">
             @Html.Raw(Model.message)
@@ -68,7 +62,7 @@
                 @Model.dbException.InnerException <br />
             }
         </div>
-    }
+    }*@
 
     <div id="content">@RenderBody()</div>
     <footer>@{ Html.RenderPartial("_Footer"); }</footer>

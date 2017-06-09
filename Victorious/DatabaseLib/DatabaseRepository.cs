@@ -21,7 +21,7 @@ namespace DatabaseLib
         // 100 = Tournament Permissions
         TOURNAMENT_CREATOR = 100, TOURNAMENT_ADMINISTRATOR, TOURNAMENT_STANDARD,
         // 200 = Team Permissions
-        TEAM_CAPTAIN = 200, TEAM_STANDARD
+        TEAM_CREATOR = 200, TEAM_CAPTAIN, TEAM_STANDARD
     }
 
     public enum BracketType

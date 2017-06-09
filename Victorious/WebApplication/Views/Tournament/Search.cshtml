@@ -1,4 +1,4 @@
-﻿@model WebApplication.Models.TournamentViewModel
+﻿@model WebApplication.Models.Tournament
 @{
     ViewBag.Title = "Search";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -9,9 +9,9 @@
     <ul class="list-table">
         <li class="list-table-header">
             <ul class="options form" data-columns="6">
-                <li class="column">@Html.TextBoxFor(x => x.Title, Model.Title, new { @class = "field title", placeholder = "Search By Title" })</li>
-                <li class="column">@Html.DropDownListFor(x => x.GameTypeID, new SelectList(Model.GameTypes, "GameTypeID", "Title"), "---Game---", new { @class = "field gameType" })</li>
-                <li class="column">@Html.DropDownListFor(t => t.PlatformTypeID, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Platform---", new { @class = "field platformType" })</li>
+                <li class="column">@Html.TextBoxFor(x => x.viewModel.Title, Model.viewModel.Title, new { @class = "field title", placeholder = "Search By Title" })</li>
+                <li class="column">@Html.DropDownListFor(x => x.viewModel.GameTypeID, new SelectList(Model.viewModel.GameTypes, "GameTypeID", "Title"), "---Game---", new { @class = "field gameType" })</li>
+                <li class="column">@Html.DropDownListFor(t => t.viewModel.PlatformTypeID, new SelectList(Model.viewModel.PlatformTypes, "PlatformID", "PlatformName"), "---Platform---", new { @class = "field platformType" })</li>
                 <li class="column"><input type="text" name="startDate" class="field startDate datepicker" placeholder="Range Start" readonly="readonly"/></li>
                 <li class="column"><input type="text" name="endDate" class="field endDate datepicker" placeholder="Range End" readonly="readonly"/></li>
                 <li class="column">
@@ -30,9 +30,9 @@
             </ul>
         </li>
         <li class="list-table-body">
-            @if (Model.SearchedTournaments.Count > 0)
+            @if (Model.searched.Count > 0)
             {
-                foreach (var tournyModel in Model.SearchedTournaments)
+                foreach (var tournyModel in Model.searched)
                 {
                     <a class="column" href="/Tournament/@tournyModel.TournamentID">
                         <ul class="column-clickable" data-columns="5">

@@ -17,7 +17,7 @@
         $.ajax({
             "url": "/Ajax/Tournament/Search",
             "type": "post",
-            "data": { "searchData": JSON.stringify(jsonData) },
+            "data": jsonData,
             "dataType": "json",
             "success": function (json) {
                 json = JSON.parse(json);

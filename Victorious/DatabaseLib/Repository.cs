@@ -67,6 +67,13 @@ namespace DatabaseLib
             return dbSet.Single(predicate);
         }
 
+        public void DeleteWhere(Expression<Func<TEntity, bool>> predicate)
+        {
+            TEntity entity = dbSet.Single(predicate);
+            dbSet.Remove(entity); 
+        }
+
+
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
@@ -101,6 +108,7 @@ namespace DatabaseLib
             // GC.SuppressFinalize(this);
         }
 
+     
         #endregion
 
     }

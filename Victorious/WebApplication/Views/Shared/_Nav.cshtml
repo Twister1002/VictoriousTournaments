@@ -1,5 +1,5 @@
 ﻿@{ 
-    String Username = "Hello, " + ViewBag.Name;
+    String Username = "Hello, " + ViewBag.Username;
 }
 
 <div id="navagation" class="navavation">
@@ -10,7 +10,7 @@
         <li class="menu-dropdown">
             @Html.ActionLink(Username, "Index", "Account")
             <div class="content">
-                @if (ViewBag.isLoggedIn)
+                @if (ViewBag.IsLoggedIn)
                 {
                     @Html.ActionLink("Account", "Index", "Account");
                     @Html.ActionLink("Create Tournament", "Create", "Tournament");

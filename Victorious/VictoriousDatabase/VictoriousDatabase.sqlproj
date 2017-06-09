@@ -71,6 +71,11 @@
     <Build Include="TournamentInvites.sql" />
     <Build Include="Platforms.sql" />
     <Build Include="AccountInvites.sql" />
+    <Build Include="SiteTeams.sql" />
+    <Build Include="SiteTeamMembers.sql" />
+    <Build Include="TournamentTeams.sql" />
+    <Build Include="TournamentTeamMembers.sql" />
+    <Build Include="TournamentTeamBrackets.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="VictoriousDatabase.refactorlog" />

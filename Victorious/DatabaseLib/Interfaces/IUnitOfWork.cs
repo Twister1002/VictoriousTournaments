@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
-    public interface IUnitOfWork 
+    public interface IUnitOfWork : IDisposable
     {
         IRepository<AccountInviteModel> AccountInviteRepo { get; }
         IRepository<AccountModel> AccountRepo { get; }
@@ -20,9 +20,18 @@ namespace DatabaseLib
         IRepository<TournamentUserModel> TournamentUserRepo { get; }
         IRepository<TournamentInviteModel> TournamentInviteRepo { get; }
         IRepository<TournamentUsersBracketModel> TournamentUsersBracketRepo { get; }
+        IRepository<TournamentTeamModel> TournamentTeamRepo { get; }
+        IRepository<TournamentTeamMemberModel> TournamentTeamMemberRepo { get; }
+        IRepository<TournamentTeamBracketModel> TournamentTeamBracketRepo { get; }
+        IRepository<SiteTeamModel> SiteTeamRepo { get; }
+        IRepository<SiteTeamMemberModel> SiteTeamMemberRepo { get; }
+
 
         void Refresh();
 
         bool Save();
+
+
+
     }
 }
