@@ -9,7 +9,7 @@ namespace DatabaseLib.Services
     public class AccountService
     {
         IUnitOfWork unitOfWork;
-
+        EmailService emailService;
 
         public AccountService(IUnitOfWork unitOfWork)
         {
@@ -165,6 +165,8 @@ namespace DatabaseLib.Services
                 throw;
             }
         }
+
+        
 
         #endregion
     }

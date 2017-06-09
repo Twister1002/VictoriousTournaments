@@ -129,9 +129,9 @@ namespace DatabaseLib.Tests
             {
                 DateCreated = DateTime.Today,
                 DateExpires = DateTime.Today.AddDays(1),
-                AccountInviteCode = "1234",
+                AccountInviteCode = Guid.NewGuid().ToString(),
                 IsExpired = false,
-                SentByID = 2,
+                SentByID = service.GetAllAccounts()[0].AccountID,
                 SentToEmail = "keltonr01@gmail.com"
             };
             service.AddAccountInvite(invite);

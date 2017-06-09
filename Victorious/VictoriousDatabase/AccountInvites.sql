@@ -2,8 +2,8 @@
 (
 	[AccountInviteID] INT NOT NULL IDENTITY, 
 	[AccountInviteCode] NVARCHAR(256) NOT NULL , 
-    [SentToEmail] NVARCHAR(50) NOT NULL, 
     [SentByID] INT NOT NULL, 
+    [SentToEmail] NVARCHAR(50) NOT NULL, 
     [DateCreated] DATE NOT NULL, 
     [DateExpires] DATE NOT NULL, 
     [IsExpired] BIT NOT NULL,
