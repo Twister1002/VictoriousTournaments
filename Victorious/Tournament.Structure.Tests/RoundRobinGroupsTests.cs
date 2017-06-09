@@ -2,6 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using Moq;
+using System.Linq;
+
+using DatabaseLib;
 
 namespace Tournament.Structure.Tests
 {
@@ -332,6 +335,232 @@ namespace Tournament.Structure.Tests
 			b.ResetMatchScore(matchNum);
 			Assert.AreEqual(0, b.GetMatch(matchNum).Score[(int)PlayerSlot.Challenger]);
 		}
+		#endregion
+
+		#region Models
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
+		[TestCategory("GetModel")]
+		public void RRGGetModel_HasModelsOfAllPlayers()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 17; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new RoundRobinGroups(pList, 4);
+
+			BracketModel bModel = b.GetModel();
+			Assert.AreEqual(pList.Count, bModel.TournamentUsersBrackets.Count);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
+		[TestCategory("GetModel")]
+		public void RRGGetModel_HasModelsOfAllMatches()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 17; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new RoundRobinGroups(pList, 4);
+
+			BracketModel bModel = b.GetModel();
+			Assert.AreEqual(b.NumberOfMatches, bModel.Matches.Count);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
+		[TestCategory("GetModel")]
+		public void RRGGetModel_AddsGroupOffsetsToMatchNumbers()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 17; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new RoundRobinGroups(pList, 4);
+
+			BracketModel bModel = b.GetModel();
+			List<int> bModelMatchNumbers = bModel.Matches
+				.Select(m => m.MatchNumber).ToList();
+			List<int> distinctMatchNumbers = bModelMatchNumbers
+				.Distinct().ToList();
+			Assert.AreEqual(distinctMatchNumbers.Count, bModelMatchNumbers.Count);
+		}
+
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
+		[TestCategory("GetModel")]
+		[TestCategory("Model Constructor")]
+		public void RRGModelCtor_SetsAndCreatesGroups()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 17; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new RoundRobinGroups(pList, 4);
+
+			BracketModel bModel = b.GetModel();
+			IBracket b2 = new RoundRobinGroups(bModel);
+			Assert.AreEqual((b as IGroupStage).NumberOfGroups,
+				(b2 as IGroupStage).NumberOfGroups);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
+		[TestCategory("GetModel")]
+		[TestCategory("Model Constructor")]
+		public void RRGModelCtor_RedividesPlayersIntoCorrectGroups()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 17; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new RoundRobinGroups(pList, 4);
+
+			BracketModel bModel = b.GetModel();
+			IBracket b2 = new RoundRobinGroups(bModel);
+			bool samePlayersAssigned = true;
+
+			for (int n = 1; n <= (b as IGroupStage).NumberOfGroups; ++n)
+			{
+				List<int> bPlayerIDs = (b as IGroupStage).GetGroup(n)
+					.Players
+					.Select(p => p.Id).ToList();
+				List<int> b2PlayerIDs = (b2 as IGroupStage).GetGroup(n)
+					.Players
+					.Select(p => p.Id).ToList();
+				if (bPlayerIDs.Count != b2PlayerIDs.Count)
+				{
+					samePlayersAssigned = false;
+					break;
+				}
+				for (int i = 0; i < bPlayerIDs.Count; ++i)
+				{
+					if (bPlayerIDs[i] != b2PlayerIDs[i])
+					{
+						samePlayersAssigned = false;
+						break;
+					}
+				}
+				//if (bPlayerIDs.Except(b2PlayerIDs).ToList().Count > 0)
+				//{
+				//	samePlayersAssigned = false;
+				//	break;
+				//}
+			}
+
+			Assert.IsTrue(samePlayersAssigned);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
+		[TestCategory("GetModel")]
+		[TestCategory("Model Constructor")]
+		public void RRGModelCtor_ReassignsAllMatches_AndMatchNumbers()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 17; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new RoundRobinGroups(pList, 4);
+
+			BracketModel bModel = b.GetModel();
+			IBracket b2 = new RoundRobinGroups(bModel);
+
+			// Test that all IMatches are fetchable from the main groupstage:
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				IMatch match = b.GetMatch(n);
+			}
+			// Test that all IMatches are fetchable from each group:
+			for (int n = 1; n <= (b as IGroupStage).NumberOfGroups; ++n)
+			{
+				IBracket group = (b as IGroupStage).GetGroup(n);
+				for (int m = 1; m <= group.NumberOfMatches; ++m)
+				{
+					IMatch match = group.GetMatch(m);
+				}
+			}
+
+			// Test that all old matches are recreated
+			Assert.AreEqual(b.NumberOfMatches, b2.NumberOfMatches);
+		}
+
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
+		[TestCategory("GetModel")]
+		[TestCategory("Model Constructor")]
+		public void RRGModelCtor_SetsMatchScores()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 17; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new RoundRobinGroups(pList, 4);
+			for (int n = 1; n <= b.NumberOfMatches; n += 2)
+			{
+				// Add Games to all ODD matches:
+				b.AddGame(n, 15, 1, PlayerSlot.Defender);
+			}
+
+			BracketModel bModel = b.GetModel();
+			IBracket b2 = new RoundRobinBracket(bModel);
+
+			bool allOddMatchesHaveGames = true;
+			for (int n = 1; n <= b2.NumberOfMatches; ++n)
+			{
+				IMatch match = b2.GetMatch(n);
+				if ((n % 2 == 0 && match.Games.Count > 0) ||
+					(n % 2 > 0 && match.Games.Count != 1))
+				{
+					allOddMatchesHaveGames = false;
+					break;
+				}
+			}
+			Assert.IsTrue(allOddMatchesHaveGames);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
+		[TestCategory("GetModel")]
+		[TestCategory("Model Constructor")]
+		public void RRGModelCtor_CreatesAModifiableBracket()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 17; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new RoundRobinGroups(pList, 4);
+			for (int n = 1; n <= b.NumberOfMatches; n += 2)
+			{
+				// Add Games to all ODD matches:
+				b.AddGame(n, 15, 1, PlayerSlot.Defender);
+			}
+
+			BracketModel bModel = b.GetModel();
+			IBracket b2 = new RoundRobinBracket(bModel);
+
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				if (!(b.GetMatch(n).IsFinished))
+				{
+					b.SetMatchWinner(n, PlayerSlot.Challenger);
+				}
+			}
+			Assert.IsTrue(b.IsFinished);
+		}
+
 		#endregion
 	}
 }
