@@ -32,11 +32,11 @@ namespace Tournament.Structure
 		public int MatchScore
 		{ get { return CalculateScore(2, 1, 0); } }
 		public int OpponentsScore
-		{ get; set; }
+		{ get; private set; }
 		public int GameScore
-		{ get; set; }
+		{ get; private set; }
 		public int PointsScore
-		{ get; set; }
+		{ get; private set; }
 		public int Rank
 		{ get; set; }
 		#endregion
@@ -79,7 +79,7 @@ namespace Tournament.Structure
 		#region Public Methods
 		public int[] GetRecord()
 		{
-			int[] record = new int[3];
+			int[] record = new int[Enum.GetNames(typeof(Record)).Length];
 			record[(int)Record.Wins] = Wins;
 			record[(int)Record.Losses] = Losses;
 			record[(int)Record.Ties] = Ties;
@@ -102,6 +102,10 @@ namespace Tournament.Structure
 			GameScore += (_gamesChange * add);
 			PointsScore += (_pointsChange * add);
 		}
+		public void AddToOpponentsScore(int _scoreChange)
+		{
+			OpponentsScore += _scoreChange;
+		}
 
 		public int CalculateScore(int _matchWinValue, int _matchTieValue, int _matchLossValue)
 		{
@@ -110,11 +114,15 @@ namespace Tournament.Structure
 			score += (MatchRecord.Losses * _matchLossValue);
 			return score;
 		}
+		public void ResetOpponentsScore()
+		{
+			OpponentsScore = 0;
+		}
 		public void ResetScore()
 		{
 			MatchRecord.Reset();
 			GameScore = PointsScore = 0;
-			OpponentsScore = 0;
+			ResetOpponentsScore();
 		}
 
 		#region Obsolete Methods

@@ -359,7 +359,7 @@ namespace Tournament.Structure
 			int[] playerScores = new int[Rankings.Count];
 			for (int p = 0; p < Rankings.Count; ++p)
 			{
-				Rankings[p].OpponentsScore = 0;
+				Rankings[p].ResetOpponentsScore();
 				playerScores[p] = Rankings[p].CalculateScore(MatchWinValue, MatchTieValue, 0);
 			}
 			// Calculate & Assign OpponentsPoints value for each player:
@@ -367,14 +367,12 @@ namespace Tournament.Structure
 			{
 				Rankings
 					.Find(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id)
-					.OpponentsScore
-					+= playerScores[Rankings
-					.FindIndex(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id)];
+					.AddToOpponentsScore(playerScores[Rankings
+						.FindIndex(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id)]);
 				Rankings
 					.Find(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id)
-					.OpponentsScore
-					+= playerScores[Rankings
-					.FindIndex(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id)];
+					.AddToOpponentsScore(playerScores[Rankings
+						.FindIndex(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id)]);
 			}
 
 			// Sort the list and apply Ranks:

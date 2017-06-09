@@ -30,10 +30,46 @@
             min-height: 0em;
             padding: 1em 0em;
         }
+
         .bracketName {
             text-align: center;
+
             &:hover {
                 .hover;
+            }
+        }
+    }
+
+    .bracket {
+        display: none;
+        &.selected {
+            display: block;
+            background-color: inherit;
+        }
+
+        .bracket-data {
+            position: relative;
+
+            .bracket-header {
+                width: 100%;
+
+                .column {
+                    text-align: center;
+                }
+
+                #bestOfMatches {
+                    width: inherit;
+                }
+            }
+
+            .round {
+                position: relative;
+
+                li {
+                    position: relative;
+                    vertical-align: middle;
+                    height: 100%;
+                }
             }
         }
     }

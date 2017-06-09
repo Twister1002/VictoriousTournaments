@@ -3,13 +3,14 @@ using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
+    [SessionState(System.Web.SessionState.SessionStateBehavior.ReadOnly)]
     public class HomeController : VictoriousController
     {
 
         [Route("")]
         public ActionResult Index()
         {
-            HomeViewModel model = new HomeViewModel();
+            Home model = new Home(service);
 
             return View("Index", model);
         }
@@ -17,7 +18,7 @@ namespace WebApplication.Controllers
         [Route("FAQ")]
         public ActionResult FAQ()
         {
-            HomeViewModel model = new HomeViewModel();
+            Home model = new Home(service);
             return View("FAQ", model);
         }
 
@@ -25,28 +26,28 @@ namespace WebApplication.Controllers
         public ActionResult Blog()
         {
             Session["Message"] = "The blog is currently not working.";
-            Session["Message.Class"] = ViewModel.ViewError.CRITICAL;
+            Session["Message.Class"] = ViewError.ERROR;
             return RedirectToAction("Index");
         }
 
         [Route("About")]
         public ActionResult About()
         {
-            HomeViewModel model = new HomeViewModel();
+            Home model = new Home(service);
             return View("About", model);
         }
 
         [Route("Contact")]
         public ActionResult Contact()
         {
-            HomeViewModel model = new HomeViewModel();
+            Home model = new Home(service);
             return View("Contact", model);
         }
 
         [Route("Rules")]
         public ActionResult Rules()
         {
-            HomeViewModel model = new HomeViewModel();
+            Home model = new Home(service);
             return View("Rules", model);
         }
     }

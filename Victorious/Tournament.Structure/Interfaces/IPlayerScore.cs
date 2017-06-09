@@ -22,11 +22,9 @@ namespace Tournament.Structure
 		int Losses { get; }
 		int L { get; }
 
-		[System.Obsolete("use W/L/T instead", false)]
-		int MatchScore { get; }
-		int GameScore { get; set; }
-		int OpponentsScore { get; set; }
-		int PointsScore { get; set; }
+		int GameScore { get; }
+		int OpponentsScore { get; }
+		int PointsScore { get; }
 
 		/// <summary>
 		/// In the case of a "ranged" rank, returns the minimum.
@@ -65,6 +63,12 @@ namespace Tournament.Structure
 		void UpdateScores(int _gamesChange, int _pointsChange, bool _isAddition);
 
 		/// <summary>
+		/// Add to the OpponentsScore value of this PlayerScore.
+		/// </summary>
+		/// <param name="_scoreChange">Amount to add</param>
+		void AddToOpponentsScore(int _scoreChange);
+
+		/// <summary>
 		/// Get a score representative of this player's W/L record.
 		/// </summary>
 		/// <param name="_matchWinValue">Value of each Win (def: 2)</param>
@@ -74,14 +78,14 @@ namespace Tournament.Structure
 		int CalculateScore(int _matchWinValue, int _matchTieValue, int _matchLossValue);
 
 		/// <summary>
+		/// Set OpponentsScore = 0.
+		/// </summary>
+		void ResetOpponentsScore();
+
+		/// <summary>
 		/// Reset this object's W/L Record & Score values.
 		/// </summary>
 		void ResetScore();
-
-		[System.Obsolete("use AddMatchOutcome(Outcome, bool) instead", true)]
-		void AddMatchOutcome(Outcome _outcome, int _gameScore, int _pointsScore, bool _isAddition);
-		[System.Obsolete("use AddMatchOutcome instead", true)]
-		void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _isAddition);
 		#endregion
 	}
 }
