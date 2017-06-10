@@ -50,8 +50,7 @@ namespace Tournament.Structure
 		{
 			if (null == _model)
 			{
-				throw new NullReferenceException
-					("Bracket Model cannot be null!");
+				throw new ArgumentNullException("_model");
 			}
 			
 			this.Id = _model.BracketID;
@@ -274,15 +273,15 @@ namespace Tournament.Structure
 		#region Private Methods
 		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 		{
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
 			if (_isAddition)
 			{
+				int nextWinnerNumber;
+				int nextLoserNumber;
+				Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
 				if (match.IsFinished)
 				{
-					// Add losing player to Rankings:
+					// Add losing Player to Rankings:
 					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
 						? PlayerSlot.Challenger
 						: PlayerSlot.Defender;
@@ -304,7 +303,7 @@ namespace Tournament.Structure
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
 			}
-			else if (_oldMatch.WinnerID.HasValue && _oldMatch.WinnerID > -1)
+			else if ((_oldMatch.WinnerID ?? -1) > -1)
 			{
 				RecalculateRankings();
 			}
@@ -337,7 +336,6 @@ namespace Tournament.Structure
 				IPlayer winningPlayer = Matches[NumberOfMatches]
 					.Players[(int)Matches[NumberOfMatches].WinnerSlot];
 				Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
-				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				this.IsFinished = true;
 			}
 
