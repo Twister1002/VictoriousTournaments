@@ -43,8 +43,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-
-                throw;
+                return new List<GameTypeModel>();
             }
         }
 
@@ -88,7 +87,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<BracketTypeModel>();
             }
         }
 
@@ -134,8 +133,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
-                throw;
+                return new List<PlatformModel>();
             }
         }
 
