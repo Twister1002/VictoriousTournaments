@@ -461,22 +461,35 @@ namespace WebApplication.Controllers
         [Route("Ajax/Tournament/CheckIn")]
         public JsonResult CheckIn(int tournamentId, int tournamentUserId = -1)
         {
-            // Check if a userId was provided first before checking an account
-            if (tournamentUserId != -1)
+            Models.Tournament tournament = new Models.Tournament(service, tournamentId);
+            
+
+            if (tournament.IsAdmin(account.Model.AccountID))
             {
-                // An admin is checking in a user
-                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
-                status = tournament.CheckUserIn(tournamentUserId);
-                message = "User is " + (status ? "" : "not") + " checked in";
+                // Check if a userId was provided first before checking an account
+                if (tournamentUserId != -1)
+                {
+                    // An admin is checking in a user
+                    status = tournament.CheckUserIn(tournamentUserId);
+                    message = "User is " + (status ? "" : "not") + " checked in";
+                }
+                else if (account.IsLoggedIn())
+                {
+                    // A user with an account is checking in.
+                    status = tournament.CheckAccountIn(account.Model.AccountID);
+                    message = "Account is " + (status ? "" : "not") + " checked in";
+                }
             }
-            else if (account.IsLoggedIn())
+            else
             {
-                // A user with an account is checking in.
-                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
-                status = tournament.CheckAccountIn(account.Model.AccountID);
-                message = "Account is " + (status ? "" : "not") + " checked in";
+                message = "You can not do this.";
             }
 
+            data = new
+            {
+                isCheckedIn = tournament.isUserCheckedIn(tournamentUserId),
+                targetUser = tournamentUserId
+            };
             return BundleJson();
         }
 
@@ -588,7 +601,8 @@ namespace WebApplication.Controllers
                     data = new
                     {
                         permissions = permissionChange,
-                        isCheckedIn = tournament.isUserCheckedIn(targetUser)
+                        isCheckedIn = tournament.isUserCheckedIn(targetUser),
+                        targetUser = targetUser
                     };
                     message = "Permissions are updated";
                     status = true;
