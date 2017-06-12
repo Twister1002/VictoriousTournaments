@@ -84,8 +84,8 @@
                     console.log(json);
                     $games = matchElem.find(".TournamentGames");
 
-                    MatchUpdate(json.data, matchElem);
-                    MatchOptionsUpdate(json.data, $games);
+                    MatchUpdate(json.data.match, matchElem);
+                    MatchOptionsUpdate(json.data.match, $games);
                 }
                 else {
                     console.log(json.message);
@@ -141,7 +141,7 @@
             "matchNum": match.data("matchnum"),
             "bracketId": $(this).closest(".bracket").data("id"),
             "tournamentId": $("#Tournament").data("id"),
-            "games": games
+            "games": gameData
         }
 
         $.ajax({

@@ -44,11 +44,11 @@
         <div class="section form-section bracketSection">
             <h2>Brackets <span class="icon icon-plus"></span></h2>
             <ul class="hide bracketOrig">
-                <li class="rounds">
+                <li class="type">
                     @Html.LabelFor(t => t.BracketTypes)
                     @Html.DropDownList("BracketData[%n%].BracketTypeID", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---")
                 </li>
-                <li class="swiss rr hide">
+                <li class="roundSelect hide">
                     @Html.LabelFor(t => t.NumberOfRounds)
                     @Html.DropDownList("BracketData[%n%].NumberOfRounds", new SelectList(Model.NumberOfRounds, 0))
                 </li>

@@ -8,25 +8,41 @@
     var bracketsCreated = 0;
 
     //TODO: Fix the issue with %n% not being replaced.
-    $("#TournamentCreate #BracketType").on("change", BracketInfoChange);
+    $("#TournamentCreate .bracketSection .type select").on("change", BracketInfoChange);
     $("#TournamentCreate .icon-plus").on("click", function () {
         var newBracket = bracketInfo.replace(/%n%/g, bracketsCreated);
         $("#TournamentCreate .bracketSection").append("<ul class='brackets'>"+newBracket+"</ul>");
-
+        
         bracketsCreated++;
+
+        //Reset all the events 
+        $("#TournamentCreate .bracketSection .type select").off("change");
+        $("#TournamentCreate .bracketSection .type select").on("change", BracketInfoChange);
     });
 
     function BracketInfoChange() {
-        $("#TournamentCreate .bracketInfo").addClass("hide");
-        $("." + BracketTypesDictionary[$("#TournamentCreate #BracketType").val()]).removeClass("hide");
+        var bracketData = $(this).closest(".bracketSection");
+        var rounds = bracketData.find(".roundSelect");
+        
+        // Display the round selection for the user and hide it if its not applicable and reset to 0
+        if (BracketTypesDictionary.hasOwnProperty($(this).val())) {
+            // Display the field
+            rounds.removeClass("hide");
+            rounds.find("select").val(0);
+        }
+        else {
+            rounds.addClass("hide");
+            rounds.find("select").val(0);
+        }
     }
 
     (function ($) {
         if ($("#TournamentCreate").length == 1) {
-            BracketInfoChange();
             // Remove the bracket selection and save it.
             bracketInfo = $("#TournamentCreate .bracketOrig").removeClass("hide").html();
             $("#TournamentCreate .bracketOrig").remove();
+
+            $("#TournamentEdit .bracketSection .brackets .type select").trigger("change");
         }
     })($);
 });
