@@ -325,6 +325,16 @@ namespace Tournament.Structure
 				NumberOfRounds = Math.Max(this.NumberOfRounds, group.NumberOfRounds);
 			}
 		}
+
+		public override bool CheckForTies()
+		{
+			return false;
+		}
+		public override bool GenerateTiebreakers()
+		{
+			throw new NotImplementedException
+				("Not applicable for knockout brackets!");
+		}
 		#endregion
 
 		#region Private Methods

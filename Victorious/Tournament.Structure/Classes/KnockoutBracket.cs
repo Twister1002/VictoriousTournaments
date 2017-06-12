@@ -17,6 +17,16 @@ namespace Tournament.Structure
 			Rankings.Clear();
 		}
 
+		public override bool CheckForTies()
+		{
+			return false;
+		}
+		public override bool GenerateTiebreakers()
+		{
+			throw new NotImplementedException
+				("Not applicable for knockout brackets!");
+		}
+
 		public override void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
 		{
 			if (0 == _maxGamesPerMatch % 2)

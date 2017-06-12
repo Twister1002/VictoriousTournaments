@@ -235,6 +235,12 @@ namespace Tournament.Structure
 		/// <param name="_matchNumber">Number of specified match</param>
 		/// <returns>List of Models of removed Games</returns>
 		List<GameModel> ResetMatchScore(int _matchNumber);
+
+
+		bool CheckForTies();
+
+
+		bool GenerateTiebreakers();
 		#endregion
 
 		#region Accessors & Mutators

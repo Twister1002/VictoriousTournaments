@@ -177,6 +177,125 @@ namespace Tournament.Structure
 				ps.ResetScore();
 			}
 		}
+
+		public override bool CheckForTies()
+		{
+			if (!IsFinished)
+			{
+				throw new BracketException
+					("Bracket isn't finished yet!");
+			}
+
+			// Calculate W/L scores for all players:
+			int[] scores = new int[Rankings.Count];
+			for (int i = 0; i < Rankings.Count; ++i)
+			{
+				scores[i] = Rankings[i].CalculateScore(MatchWinValue, MatchTieValue, 0);
+
+				if (i > 0 && scores[i] == scores[i - 1])
+				{
+					// Found a tie. We're finished:
+					return true;
+				}
+			}
+			// No ties found.
+			return false;
+		}
+		public override bool GenerateTiebreakers()
+		{
+			if (!IsFinished)
+			{
+				throw new BracketException
+					("Bracket isn't finished yet!");
+			}
+
+			// Calculate W/L scores for all players:
+			int[] scores = new int[Rankings.Count];
+			for (int i = 0; i < Rankings.Count; ++i)
+			{
+				scores[i] = Rankings[i].CalculateScore(MatchWinValue, MatchTieValue, 0);
+			}
+
+			// Create a "group" for any tied players:
+			List<List<int>> tiedGroups = new List<List<int>>();
+			for (int i = 0; i < Rankings.Count - 1;)
+			{
+				int j = i + 1;
+				for (; j < Rankings.Count; ++j)
+				{
+					if (scores[i] != scores[j])
+					{
+						break;
+					}
+
+					if (i + 1 == j)
+					{
+						tiedGroups.Add(new List<int>());
+						tiedGroups[tiedGroups.Count - 1].Add(Rankings[i].Id);
+					}
+					tiedGroups[tiedGroups.Count - 1].Add(Rankings[j].Id);
+				}
+				i = j;
+			}
+			if (0 == tiedGroups.Count)
+			{
+				// No ties: bracket is finished, so just leave:
+				return false;
+			}
+			// else:
+			this.IsFinished = false;
+			List<MatchModel> newMatchModels = new List<MatchModel>();
+
+			// Create a bracket for each group:
+			List<IBracket> tiebreakerBrackets = new List<IBracket>();
+			foreach (List<int> group in tiedGroups)
+			{
+				List<IPlayer> pList = new List<IPlayer>();
+				foreach (int id in group)
+				{
+					pList.Add(Players.Find(p => p.Id == id));
+				}
+				tiebreakerBrackets.Add(new RoundRobinBracket(pList));
+			}
+
+			// "Copy" matches from new pseudo-brackets onto the end of this bracket:
+			int r = 0;
+			while (true) // Run through once for each new round
+			{
+				// Round-by-round, make a list of matches to add:
+				++r;
+				List<IMatch> currRound = new List<IMatch>();
+				foreach (IBracket bracket in tiebreakerBrackets.Where(b => b.NumberOfRounds >= r))
+				{
+					currRound.AddRange(bracket.GetRound(r));
+				}
+				if (0 == currRound.Count)
+				{
+					// No more new matches; break out:
+					break;
+				}
+
+				// Add a new round and copy applicable matches:
+				this.NumberOfRounds++;
+				for (int m = 0; m < currRound.Count; ++m)
+				{
+					Match match = new Match();
+					match.SetMatchNumber(++NumberOfMatches);
+					match.SetRoundIndex(NumberOfRounds);
+					match.SetMatchIndex(m + 1);
+					match.AddPlayer(currRound[m].Players[0]);
+					match.AddPlayer(currRound[m].Players[1]);
+
+					Matches.Add(match.MatchNumber, match);
+					// Also add a model, for firing the event:
+					newMatchModels.Add(GetMatchModel(match));
+				}
+			}
+
+			// Fire event to notify that new Matches were made, and return:
+			OnRoundAdded(new BracketEventArgs(newMatchModels));
+			return true;
+		}
 		#endregion
 
 		#region Private Methods

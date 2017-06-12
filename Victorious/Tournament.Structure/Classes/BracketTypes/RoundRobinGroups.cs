@@ -134,6 +134,46 @@ namespace Tournament.Structure
 			}
 			Rankings.Sort(SortRankingScores);
 		}
+
+		public override bool CheckForTies()
+		{
+			foreach (IBracket group in Groups)
+			{
+				try
+				{
+					if (group.CheckForTies())
+					{
+						return true;
+					}
+				}
+				catch (BracketException e)
+				{
+					// This means group isn't finished.
+					// Just continue to the next.
+				}
+			}
+
+			return false;
+		}
+		public override bool GenerateTiebreakers()
+		{
+			bool addedMatches = false;
+
+			foreach (IBracket group in Groups)
+			{
+				try
+				{
+					addedMatches |= group.GenerateTiebreakers();
+				}
+				catch (BracketException e)
+				{
+					// This means group isn't finished.
+					// Just continue to the next.
+				}
+			}
+
+			return addedMatches;
+		}
 		#endregion
 
 		#region Private Methods

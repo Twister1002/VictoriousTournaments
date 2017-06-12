@@ -100,6 +100,9 @@ namespace Tournament.Structure
 		#region Abstract Methods
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
 
+		public abstract bool CheckForTies();
+		public abstract bool GenerateTiebreakers();
+
 		protected abstract List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot);
 		protected abstract List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot);
 		protected abstract void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch);
