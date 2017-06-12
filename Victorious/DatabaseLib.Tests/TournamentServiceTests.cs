@@ -143,18 +143,16 @@ namespace DatabaseLib.Tests
         [TestCategory("Tournament Service")]
         public void AddTournamentInvite_Save()
         {
-            TournamentModel tournament = NewTournament();
-            service.AddTournament(tournament);
-
             TournamentInviteModel invite = new TournamentInviteModel()
             {
                 DateCreated = DateTime.Today,
                 DateExpires = DateTime.Today.AddDays(1),
                 IsExpired = false,
-                TournamentInviteCode = "1234",
+                TournamentInviteCode = "1235",
                 NumberOfUses = 0,
-                TournamentID = tournament.TournamentID
+                TournamentID = service.GetAllTournaments()[0].TournamentID
             };
+
             service.AddTournamentInvite(invite);
             var result = unitOfWork.Save();
 
