@@ -60,7 +60,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<TournamentModel>();
             }
         }
 
@@ -95,15 +95,35 @@ namespace DatabaseLib.Services
                     {
                         if (query != String.Empty) query += " AND ";
                         string val = data.Value;
-                        if (data.Key == "TournamentStartDate" || data.Key == "TournamentEndDate" || data.Key == "RegistrationStartDate" ||
-                            data.Key == "RegistrationEndDate" || data.Key == "CreatedOn")
+                      
+                        if (data.Key == "TournamentStartDate" || data.Key == "RegistrationStartDate")
+                        {
+                            val = DateTime.Parse(val).ToShortDateString();
+                            query += data.Key + " >= @" + data.Key;
+                            sqlparams.Add(new SqlParameter("@" + data.Key, val));
+                        }
+                        else if (data.Key == "TournamentEndDate" || data.Key == "RegistrationEndDate")
+                        {
+                            val = DateTime.Parse(val).ToShortDateString();
+                            query += data.Key +  " <= @" + data.Key;
+                            sqlparams.Add(new SqlParameter("@" + data.Key, val));
+                        }
+                        else if (data.Key == "CreatedOn")
                         {
                             val = DateTime.Parse(val).ToShortDateString();
                             query += "datediff(day," + data.Key + ", " + "@" + data.Key + ") = 0 ";
 
                             sqlparams.Add(new SqlParameter("@" + data.Key, val));
-
                         }
+                        //if (data.Key == "TournamentStartDate" || data.Key == "TournamentEndDate" || data.Key == "RegistrationStartDate" ||
+                        //    data.Key == "RegistrationEndDate" || data.Key == "CreatedOn")
+                        //{
+                        //    val = DateTime.Parse(val).ToShortDateString();
+                        //    query += "datediff(day," + data.Key + ", " + "@" + data.Key + ") = 0 ";
+
+                        //    sqlparams.Add(new SqlParameter("@" + data.Key, val));
+
+                        //}
                         else if (data.Key == "Title")
                         {
                             query += data.Key + " LIKE @" + data.Key;
@@ -171,7 +191,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<TournamentUserModel>();
             }
         }
 
@@ -183,7 +203,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<TournamentUserModel>();
             }
         }
 
@@ -231,7 +251,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new TournamentInviteModel();
             }
         }
 
@@ -243,7 +263,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<TournamentInviteModel>();
             }
         }
 
@@ -288,7 +308,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<BracketModel>();
             }
         }
 
@@ -301,7 +321,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<BracketModel>();
             }
         }
 
@@ -355,7 +375,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<MatchModel>();
             }
         }
 
@@ -377,7 +397,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<MatchModel>();
             }
         }
 
@@ -411,7 +431,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<GameModel>();
             }
         }
 
@@ -444,7 +464,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new TournamentUsersBracketModel();
             }
         }
 

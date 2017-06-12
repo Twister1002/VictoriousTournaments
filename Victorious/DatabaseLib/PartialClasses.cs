@@ -51,6 +51,31 @@ namespace DatabaseLib
 
         public ICollection<TournamentModel> Tournaments { get; set; }
 
+        internal string GetFullName()
+        {
+            return this.FirstName + ' ' + this.LastName;
+        }
+
+
+        //internal string FullName
+        //{
+        //   get { return this.FirstName + ' ' + this.LastName; }
+        //}
+
+
+    }
+
+    public partial class AccountInviteModel
+    {
+        partial void OnInit()
+        {
+
+        }
+
+        internal string FullName()
+        {
+            return this.Account.FirstName + ' ' + this.Account.LastName;
+        }
     }
 
     public partial class TournamentInviteModel
@@ -59,6 +84,7 @@ namespace DatabaseLib
         //{
         //    //Tournaments = new Collection<TournamentModel>();
         //}
+
     }
 
     public partial class TournamentModel
@@ -89,7 +115,7 @@ namespace DatabaseLib
         }
     }
 
-    public partial class MatchModel 
+    public partial class MatchModel
     {
         partial void OnInit()
         {
@@ -103,7 +129,7 @@ namespace DatabaseLib
         [NotMapped]
         public TournamentUserModel Defender { get; set; }
 
-      
+
     }
 
     public partial class GameModel

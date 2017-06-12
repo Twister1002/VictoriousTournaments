@@ -25,6 +25,8 @@ namespace WebApplication.Models
 
         private void Init()
         {
+            if (TempFixMatchObjects) MatchObjectFix();
+
             // Create the tournament
             Tourny = new Tournaments.Tournament(Model);
             searched = new List<TournamentModel>();
@@ -80,23 +82,6 @@ namespace WebApplication.Models
             searched = services.Tournament.FindTournaments(searchData);
         }
 
-        private void ProcessTournament()
-        {
-            if (Model == null)
-            {
-                return;
-            }
-
-            if (TempFixMatchObjects) MatchObjectFix();
-
-            Tourny = new Tournaments.Tournament();
-            Tourny.Title = Model.Title;
-            foreach (BracketModel bracket in Model.Brackets)
-            {
-                Tourny.AddBracket(Tourny.RestoreBracket(bracket));
-            }
-        }
-
         public Tournaments.ITournament GetTournament()
         {
             return Tourny;
@@ -149,24 +134,25 @@ namespace WebApplication.Models
             Model.InProgress = true;
 
             // Update the database
-            CreateMatches(bracket, tourny);
+            bracket.Matches = CreateMatches(bracket, tourny);
             services.Tournament.UpdateBracket(bracket);
             services.Tournament.UpdateTournament(Model);
             return services.Save();
         }
 
-        private void CreateMatches(BracketModel bracketModel, Tournaments.IBracket bracket)
+        private List<MatchModel> CreateMatches(BracketModel bracketModel, Tournaments.IBracket bracket)
         {
-            // Verify if the tournament has not need finalized.
-            if (!bracketModel.Finalized)
+            List<MatchModel> matches = new List<MatchModel>();
+            
+            // Add the matches to the database
+            for (int i = 1; i <= bracket.NumberOfMatches; i++)
             {
-                // Add the matches to the database
-                for (int i = 1; i <= bracket.NumberOfMatches; i++)
-                {
-                    MatchModel matchModel = bracket.GetMatchModel(i);
-                    services.Tournament.AddMatch(matchModel);
-                }
+                matches.Add(bracket.GetMatchModel(i));
+                //bracketModel.Matches.Add(matchModel);
+                //services.Tournament.AddMatch(matchModel);
             }
+
+            return matches;
         }
         #endregion
 
@@ -458,7 +444,7 @@ namespace WebApplication.Models
         #region Account
         public Permission GetAccountPermission(int accountId)
         {
-            TournamentUserModel user = Model.TournamentUsers.Single(x => x.AccountID == accountId);
+            TournamentUserModel user = Model.TournamentUsers.SingleOrDefault(x => x.AccountID == accountId);
             if (user != null)
             {
                 return (Permission)user.PermissionLevel;

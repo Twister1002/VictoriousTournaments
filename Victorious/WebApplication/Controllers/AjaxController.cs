@@ -499,7 +499,7 @@ namespace WebApplication.Controllers
         [Route("Ajax/Tournament/Finalize")]
         public JsonResult Finalize(int tournamentId, int bracketId, Dictionary<String, Dictionary<String, int>> roundData)
         {
-            String redirect = redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
+            String redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
 
             if (account.IsLoggedIn())
             {

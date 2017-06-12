@@ -84,6 +84,12 @@ namespace WebApplication.Controllers
             int tournamentId = ConvertToInt(guid);
             Models.Tournament tourny = new Models.Tournament(service, tournamentId);
 
+            if (tournamentId == 0) {
+                Session["Message"] = "This tournament is invalid.";
+                Session["Message.Class"] = ViewError.ERROR;
+                return RedirectToAction("Index", "Tournament");
+            }
+
             if (tourny.Model != null)
             {
                 bool isAdmin = tourny.IsAdmin(account.Model.AccountID);
