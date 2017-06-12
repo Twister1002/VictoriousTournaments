@@ -38,11 +38,23 @@ namespace WebApplication.Models
             return bracket;
         }
 
-        public List<Match> GetRound(int roundNum)
+        public List<Match> GetRound(int roundNum, BracketSection section)
         {
             List<Match> matches = new List<Match>();
+            List<IMatch> origMatches = new List<IMatch>();
 
-            foreach (IMatch match in bracket.GetRound(roundNum))
+            switch (section)
+            {
+                case BracketSection.UPPER:
+                case BracketSection.FINAL:
+                    origMatches = bracket.GetRound(roundNum);
+                    break;
+                case BracketSection.LOWER:
+                    origMatches = bracket.GetLowerRound(roundNum);
+                    break;
+            }
+
+            foreach (IMatch match in origMatches)
             {
                 matches.Add(new Match(services, match));
             }

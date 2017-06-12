@@ -21,7 +21,7 @@
             <li class="column">
                 @if (display)
                 {
-                    foreach (var match in Model.GetRound(roundNum))
+                    foreach (var match in Model.GetRound(roundNum, WebApplication.Models.BracketSection.UPPER))
                     {
                         Html.RenderPartial("Brackets/Shared/_Match", match, new ViewDataDictionary(ViewData));
                     }
@@ -48,7 +48,7 @@
             <li class="column">
                 @if (display)
                 {
-                    foreach (var match in Model.GetRound(roundNum))
+                    foreach (var match in Model.GetRound(roundNum, WebApplication.Models.BracketSection.LOWER))
                     {
                         Html.RenderPartial("Brackets/Shared/_Match", match, new ViewDataDictionary(ViewData));
                     }
