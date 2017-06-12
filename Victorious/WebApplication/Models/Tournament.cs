@@ -174,8 +174,7 @@ namespace WebApplication.Models
         //TODO: Fix issue where tournamentCodes can collide and be repeatable.
         public bool Create(TournamentViewModel viewModel, Account account)
         {
-            this.viewModel = viewModel;
-            ApplyChanges();
+            ApplyChanges(viewModel);
             Model.CreatedOn = DateTime.Now;
             Model.CreatedByID = account.Model.AccountID;
 
@@ -185,7 +184,7 @@ namespace WebApplication.Models
             //Save the tournament First.
             services.Tournament.AddTournament(Model);
             AddUser(account, Permission.TOURNAMENT_CREATOR);
-            if (viewModel.BracketData != null) UpdateBrackets();
+            //if (viewModel.BracketData != null) UpdateBrackets();
             bool tournamentSave = services.Save();
 
             // Create InviteModel
@@ -216,13 +215,12 @@ namespace WebApplication.Models
 
         public bool Update(TournamentViewModel viewModel, int accountId)
         {
-            this.viewModel = viewModel;
-            ApplyChanges();
+            ApplyChanges(viewModel);
             Model.LastEditedByID = accountId;
             Model.LastEditedOn = DateTime.Now;
 
             services.Tournament.UpdateTournament(Model);
-            UpdateBrackets();
+            //UpdateBrackets();
 
             if (services.Save())
             {
@@ -231,6 +229,7 @@ namespace WebApplication.Models
             }
             else
             {
+                SetFields();
                 return false;
             }
         }
@@ -288,8 +287,8 @@ namespace WebApplication.Models
                         bracketModel.BracketTypeID = newBracket.Value.BracketTypeID;
                         bracketModel.MaxRounds = newBracket.Value.NumberOfRounds;
 
-                        //updatedBrackets.Add(bracketModel);
-                        services.Tournament.UpdateBracket(bracketModel);
+                        updatedBrackets.Add(bracketModel);
+                        //services.Tournament.UpdateBracket(bracketModel);
                     }
                     else if (bracketModel == null)
                     {
@@ -302,8 +301,8 @@ namespace WebApplication.Models
                             TournamentID = Model.TournamentID
                         };
 
-                        //updatedBrackets.Add(bracketModel);
-                        services.Tournament.AddBracket(bracketModel);
+                        updatedBrackets.Add(bracketModel);
+                        //services.Tournament.AddBracket(bracketModel);
                     }
                 }
             }
@@ -704,8 +703,8 @@ namespace WebApplication.Models
         {
             int? seed = -1;
 
-            seed = Model.Brackets.Single(x => x.BracketID == bracketId)?
-                .TournamentUsersBrackets.Single(x => x.TournamentUserID == userId)?.Seed;
+            seed = Model.Brackets.Single(x => x.BracketID == bracketId)
+                .TournamentUsersBrackets.SingleOrDefault(x => x.TournamentUserID == userId).Seed;
 
             if (seed != null)
             {
@@ -764,7 +763,7 @@ namespace WebApplication.Models
         #endregion
 
         #region ViewModel
-        public void ApplyChanges()
+        public void ApplyChanges(TournamentViewModel viewModel)
         {
             // Tournament Stuff
             Model.Title = viewModel.Title;
@@ -781,6 +780,12 @@ namespace WebApplication.Models
             Model.TournamentEndDate = viewModel.TournamentEndDate + viewModel.TournamentEndTime.TimeOfDay;
             Model.CheckInBegins = viewModel.CheckinStartDate + viewModel.CheckinStartTime.TimeOfDay;
             Model.CheckInEnds = viewModel.CheckinEndDate + viewModel.CheckinEndTime.TimeOfDay;
+
+            // Give the class viewModel the viewModel data
+            this.viewModel.BracketData = viewModel.BracketData;
+
+            // Add the bracket data
+            UpdateBrackets();
         }
 
         public void SetFields()

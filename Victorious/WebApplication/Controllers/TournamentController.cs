@@ -50,11 +50,13 @@ namespace WebApplication.Controllers
         [Route("Tournament/Update/{tournamentId}")]
         public ActionResult Update(int tournamentId)
         {
-            if (account != null)
+            if (account.IsLoggedIn())
             {
                 Models.Tournament tourny = new Models.Tournament(service, tournamentId);
                 if (tourny.IsAdmin(account.Model.AccountID))
                 {
+                    ViewBag.CanEdit = tourny.CanEdit();
+                    ViewBag.InProgress = tourny.Model.InProgress;
                     tourny.SetFields();
                     return View("Update", tourny.viewModel);
                 }
@@ -206,6 +208,11 @@ namespace WebApplication.Controllers
                     Session["Message"] = "You do not have permission to update this tournament";
                     Session["Message.Class"] = ViewError.ERROR;
                 }
+
+                ViewBag.CanEdit = tourny.CanEdit();
+                ViewBag.InProgress = tourny.Model.InProgress;
+                tourny.SetFields();
+                return View("Update", tourny.viewModel);
             }
             else
             {
@@ -213,8 +220,6 @@ namespace WebApplication.Controllers
                 Session["Message.Class"] = ViewError.ERROR;
                 return RedirectToAction("Login", "Account");
             }
-
-            return View("Update", viewModel);
         }
 
         [HttpPost]

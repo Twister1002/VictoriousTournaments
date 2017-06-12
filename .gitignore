@@ -241,5 +241,6 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 /Victorious/VictoriousLocalDatabase/
-/Victorious/WebApplication/Styles/css/
 /Victorious/VictoriousDatabase/VictoriousDatabase.jfm
+/Victorious/WebApplication/Styles/css/*.min.css
+/Victorious/WebApplication/Scripts/*.min.js

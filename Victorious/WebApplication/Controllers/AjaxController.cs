@@ -452,7 +452,7 @@ namespace WebApplication.Controllers
                             Name = model.Name,
                             Permission = model.PermissionLevel,
                             TournamentUserId = model.TournamentUserID,
-                            Seed = tournament.GetUserSeed(model.TournamentUserID, bracketId)
+                            Seed = tournament.GetUserSeed(bracketId, model.TournamentUserID)
                         },
                         actions = tournament.PermissionAction(account.Model.AccountID, model.TournamentUserID, "default")
                     };

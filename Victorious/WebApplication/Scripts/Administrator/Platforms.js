@@ -39,7 +39,6 @@
                 $platform.find(".options .platformTitle").attr("disabled", true);
             },
             "success": function (json) {
-                json = JSON.parse(json);
                 console.log(json);
 
                 var $table = $("#AdministratorPlatforms .list-table-body");
