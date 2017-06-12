@@ -43,7 +43,7 @@
                     var table = $("#AdministratorGames .list-table-body");
                     table.empty();
 
-                    $.each(json.data, function (i, e) {
+                    $.each(json.data.games, function (i, e) {
                         html = "<ul class='game' data-columns='2' data-gameid='" + e.GameTypeID + "'>";
                         html += "<li class='column gameTitle'>" + e.Title + "</li>";
                         html += "<li class='column gameDelete'><span class='icon icon-cross'></span></li>";

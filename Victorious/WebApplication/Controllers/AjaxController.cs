@@ -59,8 +59,12 @@ namespace WebApplication.Controllers
                         status = gameType.Delete(game);
                         break;
                 }
-
+                gameType.Retrieve();
                 message = "Was able to " + function + " " + (status ? "successfully" : "unsuccessfully");
+                data = new
+                {
+                    games = gameType.Games.Select(x => new { x.GameTypeID, x.Title }).ToList()
+                };
             }
 
             return BundleJson();
@@ -83,6 +87,7 @@ namespace WebApplication.Controllers
                         break;
                 }
 
+                platform.Retrieve();
                 message = "Was able to " + function + " " + (status ? "" : "un") + "successfully";
                 data = new
                 {
@@ -100,9 +105,11 @@ namespace WebApplication.Controllers
             if (account.IsAdministrator())
             {
                 Models.BracketType bracketType = new Models.BracketType(service);
-
+                
                 status = bracketType.Update(bracketModel);
                 message = "BracketType was updated " + (status ? "" : "un") + "successfully";
+
+                bracketType.Retrieve();
                 data = new
                 {
                     brackets = bracketType.Brackets.Select(x => new { x.BracketTypeID, x.TypeName, x.IsActive })
