@@ -137,39 +137,33 @@ namespace Tournament.Structure
 
 		public override bool CheckForTies()
 		{
-			foreach (IBracket group in Groups)
+			if (!(Groups.Any(g => g.IsFinished)))
 			{
-				try
-				{
-					if (group.CheckForTies())
-					{
-						return true;
-					}
-				}
-				catch (BracketException e)
-				{
-					// This means group isn't finished.
-					// Just continue to the next.
-				}
+				throw new BracketException
+					("No groups are finished yet!");
 			}
 
+			foreach (IBracket group in Groups.Where(g => g.IsFinished))
+			{
+				if (group.CheckForTies())
+				{
+					return true;
+				}
+			}
 			return false;
 		}
 		public override bool GenerateTiebreakers()
 		{
-			bool addedMatches = false;
-
-			foreach (IBracket group in Groups)
+			if (!(Groups.Any(g => g.IsFinished)))
 			{
-				try
-				{
-					addedMatches |= group.GenerateTiebreakers();
-				}
-				catch (BracketException e)
-				{
-					// This means group isn't finished.
-					// Just continue to the next.
-				}
+				throw new BracketException
+					("No groups are finished yet!");
+			}
+
+			bool addedMatches = false;
+			foreach (IBracket group in Groups.Where(g => g.IsFinished))
+			{
+				addedMatches |= group.GenerateTiebreakers();
 			}
 
 			return addedMatches;

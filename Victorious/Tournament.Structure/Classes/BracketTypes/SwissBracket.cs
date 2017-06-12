@@ -119,6 +119,16 @@ namespace Tournament.Structure
 				}
 				if (playersInRound.Count < Players.Count)
 				{
+					// Find the player with a bye this round:
+					int byePlayerIndex = Enumerable
+						.Range(0, Players.Count).ToList()
+						.Except(playersInRound).First();
+
+					// Add him to Byes list and award points:
+					PlayerByes.Add(Players[byePlayerIndex].Id);
+					Rankings.Find(p => p.Id == Players[byePlayerIndex].Id)
+						.AddMatchOutcome(Outcome.Win, true);
+#if false
 					// Find the player with a bye this round (if exists),
 					// add him to Byes list, and award points:
 					for (int i = 0; i < Players.Count; ++i)
@@ -131,6 +141,7 @@ namespace Tournament.Structure
 							break;
 						}
 					}
+#endif
 				}
 
 				ActiveRound = r;
