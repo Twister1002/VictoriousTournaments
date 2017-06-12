@@ -181,7 +181,7 @@ namespace WebApplication.Models
             services.Tournament.AddTournament(Model);
             AddUser(account, Permission.TOURNAMENT_CREATOR);
             if (viewModel.BracketData != null) UpdateBrackets();
-            bool tournamentSave = services.Save();
+            //bool tournamentSave = services.Save();
 
             // Create InviteModel
             TournamentInviteModel inviteModel = new TournamentInviteModel()

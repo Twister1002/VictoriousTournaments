@@ -381,7 +381,7 @@ namespace DatabaseLib.Services
 
         public void UpdateMatch(MatchModel match)
         {
-            unitOfWork.MatchRepo.Update(match);
+            unitOfWork.MatchRepo.UpdateDetachCheck(match);
         }
 
         public void DeleteMatch(int matchId)
