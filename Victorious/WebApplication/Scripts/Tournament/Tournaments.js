@@ -368,7 +368,7 @@
             "dataType": "json",
             "success": function (json) {
                 if (json.status) {
-                    window.location.replace(json.redirect);
+                    window.location.replace(json.data.redirect);
                 }
                 else {
                     alert(json.message);

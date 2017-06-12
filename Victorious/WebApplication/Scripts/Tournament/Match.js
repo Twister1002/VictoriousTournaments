@@ -81,7 +81,6 @@
             },
             "success": function (json) {
                 if (json.status) {
-                    console.log(json);
                     $games = matchElem.find(".TournamentGames");
 
                     MatchUpdate(json.data.match, matchElem);
@@ -154,7 +153,6 @@
             },
             "success": function (json) {
                 if (json.status) {
-                    console.log(json.message);
                     var matchElement = null;
 
                     // Check if there is a refresh
@@ -177,11 +175,8 @@
 
                     UpdateStandings(jsonData.tournamentId, jsonData.bracketId);
                 }
-                else {
-                    console.log("Error in updating");
-                }
 
-                console.log(json);
+                console.log(json.message);
             },
             "error": function (json) {
                 console.log(json);
@@ -320,9 +315,6 @@
             "type": "post",
             "data": jsonData,
             "dataType": "json",
-            "beforeSend": function () {
-
-            },
             "success": function (json) {
                 if (json.status) {
                     UpdateStandings($("#Tournament").data("id"), $game.closest(".bracket").data("id"));
@@ -340,15 +332,11 @@
                         });
                     });
                 }
-                else {
-                    console.log(json.message);
-                }
+
+                console.log(json.message);
             },
             "error": function (json) {
                 console.log(json);
-            },
-            "complete": function () {
-
             }
         });
     }
