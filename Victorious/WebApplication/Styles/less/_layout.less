@@ -52,6 +52,7 @@ label {
 .message {
     display:block;
     padding: 1em;
+    position:relative;
 
     &:after {
         padding-bottom: 1em;
@@ -70,6 +71,14 @@ label {
 
     &.error {
         background-color:@alert-red;
+    }
+
+    .closeMessage {
+        position:absolute;
+        padding:.5em;
+        right: 1em;
+        top:.6em;
+        width: 1em;
     }
 }
 
