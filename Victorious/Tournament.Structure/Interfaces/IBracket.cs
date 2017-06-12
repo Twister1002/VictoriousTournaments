@@ -236,10 +236,17 @@ namespace Tournament.Structure
 		/// <returns>List of Models of removed Games</returns>
 		List<GameModel> ResetMatchScore(int _matchNumber);
 
-
+		/// <summary>
+		/// Check a *finished* Bracket for tied Players.
+		/// Only used for round robin-types.
+		/// </summary>
+		/// <returns>True if tie found, false otherwise</returns>
 		bool CheckForTies();
 
-
+		/// <summary>
+		/// Add applicable tiebreaker Matches to this Bracket.
+		/// </summary>
+		/// <returns>True if Matches added, false otherwise</returns>
 		bool GenerateTiebreakers();
 		#endregion
 
