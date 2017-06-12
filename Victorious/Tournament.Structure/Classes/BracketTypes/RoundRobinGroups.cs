@@ -176,11 +176,17 @@ namespace Tournament.Structure
 			// Base method relays the RoundsAdded event:
 			base.AddRounds(_sender, _args);
 
+			// Update Matches and Rounds:
+			NumberOfMatches += _args.UpdatedMatches.Count;
+			NumberOfRounds += _args.UpdatedMatches
+				.Select(m => m.RoundIndex).Distinct()
+				.Count();
 			// Get the highest MatchNumber from the new matches:
 			int highestNewMatchNum = _args.UpdatedMatches
 				.Select(m => m.MatchNumber)
 				.OrderByDescending(n => n)
 				.First();
+
 			// Make a list of all the matches with "updated" match numbers:
 			List<MatchModel> matchesToUpdate = new List<MatchModel>();
 			for (int n = highestNewMatchNum + 1; n <= NumberOfMatches; ++n)
