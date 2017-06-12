@@ -25,6 +25,8 @@ namespace WebApplication.Models
 
         private void Init()
         {
+            if (TempFixMatchObjects) MatchObjectFix();
+
             // Create the tournament
             Tourny = new Tournaments.Tournament(Model);
             searched = new List<TournamentModel>();
@@ -442,7 +444,7 @@ namespace WebApplication.Models
         #region Account
         public Permission GetAccountPermission(int accountId)
         {
-            TournamentUserModel user = Model.TournamentUsers.Single(x => x.AccountID == accountId);
+            TournamentUserModel user = Model.TournamentUsers.SingleOrDefault(x => x.AccountID == accountId);
             if (user != null)
             {
                 return (Permission)user.PermissionLevel;
