@@ -55,6 +55,16 @@ namespace WebApplication.Models
             return new Match(services, bracket.GrandFinal);
         }
 
+        public bool AddGame(int matchNum, int CScore, int DScore, PlayerSlot winner)
+        {
+            GameModel game = bracket.AddGame(matchNum, DScore, CScore, winner);
+
+            // Add the game to the database
+            services.Tournament.AddGame(game);
+
+            return services.Save();
+        }
+
         //public void ResetBracket()
         //{
         //    // Tell the bracket that it has been reset.

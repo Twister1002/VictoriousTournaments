@@ -281,7 +281,7 @@ namespace WebApplication.Controllers
                             {
                                 // We need to add this game.
                                 PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
-                                bracket.GetBracket().AddGame(matchNum, gameModel.DefenderScore, gameModel.ChallengerScore, winner);
+                                bracket.AddGame(matchNum, gameModel.DefenderScore, gameModel.ChallengerScore, winner);
                             }
                             else
                             {
@@ -340,12 +340,7 @@ namespace WebApplication.Controllers
                 message = "No games were received.";
             }
 
-            return Json(JsonConvert.SerializeObject(new
-            {
-                status = status,
-                message = message,
-                data = data
-            }));
+            return BundleJson();
         }
 
         [HttpPost]
