@@ -1,4 +1,6 @@
-﻿using System;
+﻿// #define ENABLE_TIEBREAKERS
+
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using Moq;
@@ -551,6 +553,60 @@ namespace Tournament.Structure.Tests
 			b.ResetMatches();
 			Assert.AreEqual(matchesTouched, affectedMatches);
 		}
+#if ENABLE_TIEBREAKERS
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("AddGame")]
+		[TestCategory("RoundAdded")]
+		public void RRBAddGame_FiresRoundAdded_WhenTiebreakerIsCreated()
+		{
+			bool roundAdded = false;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 3; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			b.RoundAdded += delegate (object sender, BracketEventArgs e)
+			{
+				roundAdded = true;
+			};
+			b.AddGame(1, 100, 0, PlayerSlot.Defender);
+			b.AddGame(2, 15, 2, PlayerSlot.Defender);
+			b.AddGame(3, 20, 10, PlayerSlot.Defender);
+
+			Assert.IsTrue(roundAdded);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("AddGame")]
+		[TestCategory("RoundAdded")]
+		public void RRBAddGame_RoundAdded_ContainsModelsForAllNewMatches()
+		{
+			int matchesAdded = 0;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 3; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			b.RoundAdded += delegate (object sender, BracketEventArgs e)
+			{
+				matchesAdded += e.UpdatedMatches.Count;
+			};
+			b.AddGame(1, 100, 0, PlayerSlot.Defender);
+			b.AddGame(2, 15, 2, PlayerSlot.Defender);
+			b.AddGame(3, 20, 10, PlayerSlot.Defender);
+
+			Assert.AreEqual(3, matchesAdded);
+		}
+#endif
 		#endregion
 	}
 }

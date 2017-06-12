@@ -242,6 +242,16 @@ namespace Tournament.Structure
 			OnMatchesModified(clearedMatches);
 		}
 
+		public override bool CheckForTies()
+		{
+			return false;
+		}
+		public override bool GenerateTiebreakers()
+		{
+			throw new NotImplementedException
+				("Can't create tiebreakers for a Swiss bracket!");
+		}
+
 		public override void ReplacePlayer(IPlayer _player, int _index)
 		{
 			int oldId = Players[_index].Id;
@@ -360,7 +370,6 @@ namespace Tournament.Structure
 					// We just invalidated future match results.
 					// Instead of regular updating, we need to reset/recalculate:
 					RecalculateRankings();
-					UpdateRankings();
 				}
 			}
 			else

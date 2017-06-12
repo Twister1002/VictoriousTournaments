@@ -21,7 +21,7 @@ namespace Tournament.Structure
 		//protected Dictionary<int, Match> Matches = empty
 		//public int NumberOfRounds
 		//protected Dictionary<int, Match> LowerMatches = empty
-		//public int NumberOfLowerRounds
+		//public int NumberOfLowerRounds = 0
 		//protected Match grandFinal = null
 		//public IMatch GrandFinal = null
 		//public int NumberOfMatches
@@ -72,9 +72,9 @@ namespace Tournament.Structure
 				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
-			foreach (TournamentUserModel model in userModels)
+			foreach (TournamentUserModel userModel in userModels)
 			{
-				Players.Add(new Player(model));
+				Players.Add(new Player(userModel));
 			}
 
 			this.Id = _model.BracketID;
@@ -124,29 +124,78 @@ namespace Tournament.Structure
 
 				Groups.Add(new RoundRobinBracket(pList, _gamesPerMatch, MaxRounds));
 			}
+			SubscribeToGroupEvents();
 
 			foreach (IBracket group in Groups)
 			{
 				NumberOfMatches += group.NumberOfMatches;
-				NumberOfRounds = (this.NumberOfRounds < group.NumberOfRounds)
-					? group.NumberOfRounds
-					: this.NumberOfRounds;
+				NumberOfRounds = Math.Max(this.NumberOfRounds, group.NumberOfRounds);
 				Rankings.AddRange(group.Rankings);
 			}
 			Rankings.Sort(SortRankingScores);
 		}
+
+		public override bool CheckForTies()
+		{
+			foreach (IBracket group in Groups)
+			{
+				try
+				{
+					if (group.CheckForTies())
+					{
+						return true;
+					}
+				}
+				catch (BracketException e)
+				{
+					// This means group isn't finished.
+					// Just continue to the next.
+				}
+			}
+
+			return false;
+		}
+		public override bool GenerateTiebreakers()
+		{
+			bool addedMatches = false;
+
+			foreach (IBracket group in Groups)
+			{
+				try
+				{
+					addedMatches |= group.GenerateTiebreakers();
+				}
+				catch (BracketException e)
+				{
+					// This means group isn't finished.
+					// Just continue to the next.
+				}
+			}
+
+			return addedMatches;
+		}
 		#endregion
 
 		#region Private Methods
-		protected override void RecalculateRankings()
+		protected override void AddRounds(object _sender, BracketEventArgs _args)
 		{
-			base.RecalculateRankings();
+			// Base method relays the RoundsAdded event:
+			base.AddRounds(_sender, _args);
 
-			Rankings.Sort(SortRankingScores);
-			for (int i = 0; i < Rankings.Count; ++i)
+			// Get the highest MatchNumber from the new matches:
+			int highestNewMatchNum = _args.UpdatedMatches
+				.Select(m => m.MatchNumber)
+				.OrderByDescending(n => n)
+				.First();
+			// Make a list of all the matches with "updated" match numbers:
+			List<MatchModel> matchesToUpdate = new List<MatchModel>();
+			for (int n = highestNewMatchNum + 1; n <= NumberOfMatches; ++n)
 			{
-				Rankings[i].Rank = i + 1;
+				matchesToUpdate.Add(GetMatchModel(n));
 			}
+
+			// Fire event with the updated matches:
+			OnMatchesModified(matchesToUpdate);
 		}
 		#endregion
 	}
