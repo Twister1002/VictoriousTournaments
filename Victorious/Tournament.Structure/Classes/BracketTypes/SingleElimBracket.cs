@@ -273,7 +273,7 @@ namespace Tournament.Structure
 		#region Private Methods
 		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 		{
-			if (_isAddition)
+			if (_isAddition && _oldMatch.WinnerID.GetValueOrDefault(-1) < 0)
 			{
 				int nextWinnerNumber;
 				int nextLoserNumber;
@@ -285,7 +285,7 @@ namespace Tournament.Structure
 					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
 						? PlayerSlot.Challenger
 						: PlayerSlot.Defender;
-					int rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
+					int rank = (int)(Math.Pow(2, NumberOfRounds - match.RoundIndex) + 1);
 
 					Rankings.Add(new PlayerScore
 						(match.Players[(int)loserSlot].Id,
@@ -303,7 +303,7 @@ namespace Tournament.Structure
 					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 				}
 			}
-			else if ((_oldMatch.WinnerID ?? -1) > -1)
+			else if (!_isAddition && _oldMatch.WinnerID.GetValueOrDefault(-1) > -1)
 			{
 				RecalculateRankings();
 			}
