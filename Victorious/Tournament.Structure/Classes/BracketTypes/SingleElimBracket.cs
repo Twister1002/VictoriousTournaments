@@ -58,8 +58,8 @@ namespace Tournament.Structure
 			this.IsFinalized = _model.Finalized;
 
 			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
-				.OrderBy(tubm => tubm.Seed, new SeedComparer())
-				.Select(tubm => tubm.TournamentUser)
+				.OrderBy(u => u.Seed, new SeedComparer())
+				.Select(u => u.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
 			foreach (TournamentUserModel userModel in userModels)
@@ -69,16 +69,13 @@ namespace Tournament.Structure
 
 			ResetBracketData();
 			int totalUBMatches = Players.Count - 1;
-			this.NumberOfRounds = 0;
 			if (_model.Matches.Count > 0)
 			{
 				foreach (MatchModel mm in _model.Matches.OrderBy(m => m.MatchNumber))
 				{
 					if (mm.MatchNumber <= totalUBMatches)
 					{
-						Match match = new Match(mm);
-						Matches.Add(match.MatchNumber, match);
-						this.NumberOfRounds = Math.Max(NumberOfRounds, match.RoundIndex);
+						Matches.Add(mm.MatchNumber, new Match(mm));
 					}
 					else
 					{
@@ -86,8 +83,11 @@ namespace Tournament.Structure
 						break;
 					}
 				}
+				this.NumberOfMatches = Matches.Count;
+				this.NumberOfRounds = Matches.Values
+					.Select(m => m.RoundIndex)
+					.Max();
 			}
-			this.NumberOfMatches = Matches.Count;
 
 			if (BracketType.SINGLE == BracketType)
 			{

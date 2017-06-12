@@ -74,8 +74,8 @@ namespace Tournament.Structure
 				{
 					Matches.Add(mm.MatchNumber, new Match(mm));
 				}
-				NumberOfMatches = Matches.Count;
-				NumberOfRounds = Matches.Count;
+				this.NumberOfMatches = Matches.Count;
+				this.NumberOfRounds = Matches.Count;
 			}
 
 			RecalculateRankings();

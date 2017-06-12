@@ -184,8 +184,7 @@ namespace Tournament.Structure
 			// Get the highest MatchNumber from the new matches:
 			int highestNewMatchNum = _args.UpdatedMatches
 				.Select(m => m.MatchNumber)
-				.OrderByDescending(n => n)
-				.First();
+				.Max();
 
 			// Make a list of all the matches with "updated" match numbers:
 			List<MatchModel> matchesToUpdate = new List<MatchModel>();
