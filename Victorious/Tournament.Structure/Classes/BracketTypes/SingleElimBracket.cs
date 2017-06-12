@@ -271,42 +271,10 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
+		protected override int CalculateRank(int _matchNumber)
 		{
-			if (_isAddition && _oldMatch.WinnerID.GetValueOrDefault(-1) < 0)
-			{
-				int nextWinnerNumber;
-				int nextLoserNumber;
-				Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
-				if (match.IsFinished)
-				{
-					// Add losing Player to Rankings:
-					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
-						? PlayerSlot.Challenger
-						: PlayerSlot.Defender;
-					int rank = (int)(Math.Pow(2, NumberOfRounds - match.RoundIndex) + 1);
-
-					Rankings.Add(new PlayerScore
-						(match.Players[(int)loserSlot].Id,
-						match.Players[(int)loserSlot].Name,
-						rank));
-					if (nextWinnerNumber < 0)
-					{
-						// Finals match: Add winner to Rankings:
-						Rankings.Add(new PlayerScore
-							(match.Players[(int)(match.WinnerSlot)].Id,
-							match.Players[(int)(match.WinnerSlot)].Name,
-							1));
-						IsFinished = true;
-					}
-					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
-				}
-			}
-			else if (!_isAddition && _oldMatch.WinnerID.GetValueOrDefault(-1) > -1)
-			{
-				RecalculateRankings();
-			}
+			int round = GetInternalMatch(_matchNumber).RoundIndex;
+			return Convert.ToInt32(Math.Pow(2, NumberOfRounds - round) + 1);
 		}
 
 		protected override void RecalculateRankings()
@@ -317,29 +285,35 @@ namespace Tournament.Structure
 			}
 			Rankings.Clear();
 
-			foreach (Match match in Matches.Values)
+			if (NumberOfMatches > 0)
 			{
-				if (match.IsFinished)
+				for (int n = 1; n <= NumberOfMatches; ++n)
 				{
-					// Add losing Player to the Rankings:
-					int rank = (int)(Math.Pow(2, (NumberOfRounds - match.RoundIndex)) + 1);
-					IPlayer losingPlayer = match.Players[
-						(PlayerSlot.Defender == match.WinnerSlot)
-						? (int)PlayerSlot.Challenger
-						: (int)PlayerSlot.Defender];
-					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
+					Match match = GetInternalMatch(n);
+					if (-1 == match.NextLoserMatchNumber && match.IsFinished)
+					{
+						// Add losing Player to the Rankings:
+						int rank = CalculateRank(match.MatchNumber);
+						IPlayer losingPlayer = match.Players[
+							(PlayerSlot.Defender == match.WinnerSlot)
+							? (int)PlayerSlot.Challenger
+							: (int)PlayerSlot.Defender];
+						Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
+					}
 				}
-			}
-			if (NumberOfMatches > 0 && Matches[NumberOfMatches].IsFinished)
-			{
-				// Add Finals winner to Rankings:
-				IPlayer winningPlayer = Matches[NumberOfMatches]
-					.Players[(int)Matches[NumberOfMatches].WinnerSlot];
-				Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
-				this.IsFinished = true;
-			}
 
-			Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+				Match finalMatch = GetInternalMatch(NumberOfMatches);
+				if (finalMatch.IsFinished)
+				{
+					// Add Finals winner to Rankings:
+					IPlayer winningPlayer = finalMatch
+						.Players[(int)Matches[NumberOfMatches].WinnerSlot];
+					Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
+					this.IsFinished = true;
+				}
+
+				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+			}
 		}
 
 		private void ReassignPlayers(Match _currMatch, List<Match> _prevRound)

@@ -271,6 +271,22 @@ namespace Tournament.Structure
 				RecalculateRankings();
 			}
 		}
+		protected override int CalculateRank(int _matchNumber)
+		{
+			int rank = 2; // 2 = GrandFinal loser
+
+			if (LowerMatches?.ContainsKey(_matchNumber) ?? false)
+			{
+				Match match = GetInternalMatch(_matchNumber);
+				rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
+			}
+			else if (Matches?.ContainsKey(_matchNumber) ?? false)
+			{
+				rank = Convert.ToInt32(Math.Pow(2, NumberOfRounds - 1) + 1);
+			}
+
+			return rank;
+		}
 
 		protected override void RecalculateRankings()
 		{

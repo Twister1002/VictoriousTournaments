@@ -126,7 +126,48 @@ namespace Tournament.Structure
 
 			return alteredMatches;
 		}
+		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
+		{
+			if (_isAddition &&
+				_oldMatch.WinnerID.GetValueOrDefault(-1) < 0 &&
+				_oldMatch.NextLoserMatchNumber.GetValueOrDefault(-1) < 0)
+			{
+				int nextWinnerNumber;
+				int nextLoserNumber;
+				Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
+				if (match.IsFinished)
+				{
+					// Add losing Player to Rankings:
+					int rank = CalculateRank(_matchNumber);
+					IPlayer losingPlayer = match.Players[
+						(PlayerSlot.Defender == match.WinnerSlot)
+						? (int)PlayerSlot.Challenger
+						: (int)PlayerSlot.Defender];
+					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
+
+					if (nextWinnerNumber < 0)
+					{
+						// Finals match: Add winner to Rankings:
+						Rankings.Add(new PlayerScore
+							(match.Players[(int)(match.WinnerSlot)].Id,
+							match.Players[(int)(match.WinnerSlot)].Name,
+							1));
+						IsFinished = true;
+					}
+
+					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+				}
+			}
+			else if (!_isAddition &&
+				_oldMatch.WinnerID.GetValueOrDefault(-1) > -1 &&
+				_oldMatch.NextLoserMatchNumber.GetValueOrDefault(-1) < 0)
+			{
+				RecalculateRankings();
+			}
+		}
+
+		protected abstract int CalculateRank(int _matchNumber);
 		protected override void UpdateRankings()
 		{
 			RecalculateRankings();
