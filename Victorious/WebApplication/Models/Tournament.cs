@@ -48,24 +48,6 @@ namespace WebApplication.Models
                 searchData = new Dictionary<String, String>();
             }
 
-            searchData.Add("PublicViewing", "true");
-            if (searchData.Keys.Contains("startDate"))
-            {
-                searchData.Add("TournamentStartDate", "true");
-                searchData.Add("RegistrationStartDate", "true");
-
-                if (searchData.Keys.Contains("endDate"))
-                {
-                    searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
-                    searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
-                }
-                else
-                {
-                    searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
-                    searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
-                }
-            }
-
             List<String> safeParamList = new List<String>() {
                 "Title",
                 "GameTypeID",
@@ -79,6 +61,25 @@ namespace WebApplication.Models
             };
 
             searchData = searchData.Where(k => safeParamList.Contains(k.Key) && k.Value != String.Empty).ToDictionary(k => k.Key, k => k.Value);
+
+            searchData.Add("PublicViewing", "true");
+            if (searchData.Keys.Contains("startDate"))
+            {
+                searchData.Add("TournamentStartDate", searchData["startDate"]);
+                searchData.Add("RegistrationStartDate", searchData["startDate"]);
+
+                if (searchData.Keys.Contains("endDate"))
+                {
+                    searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
+                    searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
+                }
+                else
+                {
+                    searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
+                    searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
+                }
+            }
+
             searched = services.Tournament.FindTournaments(searchData);
         }
 
@@ -767,11 +768,14 @@ namespace WebApplication.Models
             Model.CheckInBegins = viewModel.CheckinStartDate + viewModel.CheckinStartTime.TimeOfDay;
             Model.CheckInEnds = viewModel.CheckinEndDate + viewModel.CheckinEndTime.TimeOfDay;
 
-            // Give the class viewModel the viewModel data
-            this.viewModel.BracketData = viewModel.BracketData;
+            if (viewModel.BracketData != null)
+            {
+                // Give the class viewModel the viewModel data
+                this.viewModel.BracketData = viewModel.BracketData;
 
-            // Add the bracket data
-            UpdateBrackets();
+                // Add the bracket data
+                UpdateBrackets();
+            }
         }
 
         public void SetFields()

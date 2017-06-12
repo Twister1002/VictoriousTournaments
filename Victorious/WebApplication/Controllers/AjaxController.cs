@@ -405,11 +405,11 @@ namespace WebApplication.Controllers
         #region Tournament
         [HttpPost]
         [Route("Ajax/Tournament/Search")]
-        public JsonResult AjaxSearch(Dictionary<String, String> searchBy)
+        public JsonResult AjaxSearch(String searchBy)
         {
             List<object> dataReturned = new List<object>();
             Models.Tournament tournament = new Models.Tournament(service, -1);
-            tournament.Search(searchBy);
+            tournament.Search(JsonConvert.DeserializeObject<Dictionary<String, String>>(searchBy));
 
             foreach (TournamentModel tourny in tournament.searched)
             {
@@ -424,6 +424,7 @@ namespace WebApplication.Controllers
                     publicViewing = tourny.PublicViewing,
                     link = Url.Action("Tournament", "Tournament", new { guid = tourny.TournamentID })
                 });
+
                 data = new
                 {
                     search = dataReturned
