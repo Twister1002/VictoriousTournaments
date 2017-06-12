@@ -112,6 +112,10 @@
     <Content Include="App_Data\Tournaments.sql" />
     <Content Include="App_Data\TournamentUsers.sql" />
     <Content Include="Content\fonts\icomoon.svg" />
+    <Content Include="lib\jquery-timepicker\jquery.ui.timepicker.css" />
+    <Content Include="lib\jquery-timepicker\jquery.ui.timepicker.js" />
+    <Content Include="lib\jquery-ui\jquery-ui.min.js" />
+    <Content Include="lib\jquery\dist\jquery.min.js" />
     <Content Include="Scripts\Account\index.js" />
     <Content Include="Scripts\scripts.min.js" />
     <Content Include="Scripts\Tournament\Create.js" />
