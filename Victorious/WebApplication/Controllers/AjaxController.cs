@@ -316,9 +316,9 @@ namespace WebApplication.Controllers
                                 // We need to verify and check if this round is finished
                                 if (!roundMatches.Any(x => x.IsFinished == false))
                                 {
-                                    foreach (Models.Match iMatch in bracket.GetBracket().GetRound(match.match.RoundIndex + 1))
+                                    foreach (Models.Match iMatch in bracket.GetRound(match.match.RoundIndex + 1))
                                     {
-                                        matchUpdates.Add(JsonMatchResponse(match, false));
+                                        matchUpdates.Add(JsonMatchResponse(iMatch, false));
                                     }
                                 }
                             }
