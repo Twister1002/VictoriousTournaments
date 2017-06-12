@@ -140,45 +140,6 @@ namespace Tournament.Structure
 		{
 			return (2 + NumberOfMatches - _matchNumber);
 		}
-
-		protected override void RecalculateRankings()
-		{
-			if (null == Rankings)
-			{
-				Rankings = new List<IPlayerScore>();
-			}
-			Rankings.Clear();
-
-			if (NumberOfMatches > 0)
-			{
-				foreach (Match match in Matches.Values.OrderBy(m => m.MatchNumber))
-				{
-					if (!(match.IsFinished))
-					{
-						break;
-					}
-
-					// Add each losing Player to the Rankings:
-					int rank = 2 + NumberOfMatches - match.MatchNumber;
-					IPlayer losingPlayer = match.Players[
-						(PlayerSlot.Defender == match.WinnerSlot)
-						? (int)PlayerSlot.Challenger
-						: (int)PlayerSlot.Defender];
-					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
-				}
-
-				if (Matches[NumberOfMatches].IsFinished)
-				{
-					// Add Finals winner to Rankings:
-					IPlayer winningPlayer = Matches[NumberOfMatches]
-						.Players[(int)Matches[NumberOfMatches].WinnerSlot];
-					Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
-					this.IsFinished = true;
-				}
-
-				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
-			}
-		}
 		#endregion
 	}
 }

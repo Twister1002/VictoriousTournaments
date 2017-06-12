@@ -160,14 +160,51 @@ namespace Tournament.Structure
 				}
 			}
 			else if (!_isAddition &&
-				_oldMatch.WinnerID.GetValueOrDefault(-1) > -1 &&
-				_oldMatch.NextLoserMatchNumber.GetValueOrDefault(-1) < 0)
+				_oldMatch.WinnerID.GetValueOrDefault(-1) > -1)
 			{
 				RecalculateRankings();
 			}
 		}
 
 		protected abstract int CalculateRank(int _matchNumber);
+		protected override void RecalculateRankings()
+		{
+			if (null == Rankings)
+			{
+				Rankings = new List<IPlayerScore>();
+			}
+			Rankings.Clear();
+
+			if (NumberOfMatches > 0)
+			{
+				for (int n = 1; n <= NumberOfMatches; ++n)
+				{
+					Match match = GetInternalMatch(n);
+					if (-1 == match.NextLoserMatchNumber && match.IsFinished)
+					{
+						// Add losing Player to the Rankings:
+						int rank = CalculateRank(match.MatchNumber);
+						IPlayer losingPlayer = match.Players[
+							(PlayerSlot.Defender == match.WinnerSlot)
+							? (int)PlayerSlot.Challenger
+							: (int)PlayerSlot.Defender];
+						Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
+					}
+				}
+
+				Match finalMatch = GetInternalMatch(NumberOfMatches);
+				if (finalMatch.IsFinished)
+				{
+					// Add Finals winner to Rankings:
+					IPlayer winningPlayer = finalMatch
+						.Players[(int)finalMatch.WinnerSlot];
+					Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
+					this.IsFinished = true;
+				}
+
+				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+			}
+		}
 		protected override void UpdateRankings()
 		{
 			RecalculateRankings();

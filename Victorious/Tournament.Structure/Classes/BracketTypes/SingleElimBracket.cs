@@ -277,45 +277,6 @@ namespace Tournament.Structure
 			return Convert.ToInt32(Math.Pow(2, NumberOfRounds - round) + 1);
 		}
 
-		protected override void RecalculateRankings()
-		{
-			if (null == Rankings)
-			{
-				Rankings = new List<IPlayerScore>();
-			}
-			Rankings.Clear();
-
-			if (NumberOfMatches > 0)
-			{
-				for (int n = 1; n <= NumberOfMatches; ++n)
-				{
-					Match match = GetInternalMatch(n);
-					if (-1 == match.NextLoserMatchNumber && match.IsFinished)
-					{
-						// Add losing Player to the Rankings:
-						int rank = CalculateRank(match.MatchNumber);
-						IPlayer losingPlayer = match.Players[
-							(PlayerSlot.Defender == match.WinnerSlot)
-							? (int)PlayerSlot.Challenger
-							: (int)PlayerSlot.Defender];
-						Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
-					}
-				}
-
-				Match finalMatch = GetInternalMatch(NumberOfMatches);
-				if (finalMatch.IsFinished)
-				{
-					// Add Finals winner to Rankings:
-					IPlayer winningPlayer = finalMatch
-						.Players[(int)Matches[NumberOfMatches].WinnerSlot];
-					Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
-					this.IsFinished = true;
-				}
-
-				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
-			}
-		}
-
 		private void ReassignPlayers(Match _currMatch, List<Match> _prevRound)
 		{
 			if (null == _currMatch ||
