@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Entity.Migrations;
 
 namespace DatabaseLib
 {
@@ -21,7 +22,7 @@ namespace DatabaseLib
         {
             this.context = _context;
             this.dbSet = context.Set<TEntity>();
-            
+
         }
 
         public void Add(TEntity entity)
@@ -53,11 +54,16 @@ namespace DatabaseLib
 
         public void Update(TEntity entity)
         {
-            if (context.Entry<TEntity>(entity).State == EntityState.Detached)
+            if (context.Entry(entity).State == EntityState.Detached)
             {
-                dbSet.Attach(entity); 
+                dbSet.Attach(entity);
             }
             context.Entry(entity).State = EntityState.Modified;
+        }
+
+        public void UpdateDetachCheck(TEntity entity)
+        {
+            context.Set<TEntity>().AddOrUpdate(entity);
         }
 
         public IQueryable<TEntity> GetWhere(Expression<Func<TEntity, bool>> predicate)
@@ -73,7 +79,7 @@ namespace DatabaseLib
         public void DeleteWhere(Expression<Func<TEntity, bool>> predicate)
         {
             TEntity entity = dbSet.Single(predicate);
-            dbSet.Remove(entity); 
+            dbSet.Remove(entity);
         }
 
 
@@ -111,7 +117,7 @@ namespace DatabaseLib
             // GC.SuppressFinalize(this);
         }
 
-     
+
         #endregion
 
     }

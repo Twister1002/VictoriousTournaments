@@ -18,5 +18,7 @@ namespace DatabaseLib
         void DeleteWhere(Expression<Func<TEntity, bool>> predicate);
         void DeleteEntity(TEntity entity);
         void Update(TEntity entity);
+
+        void UpdateDetachCheck(TEntity entity);
     }
 }
