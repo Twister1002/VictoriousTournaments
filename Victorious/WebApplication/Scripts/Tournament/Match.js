@@ -309,27 +309,25 @@
         var jsonData = {
             "tournamentId": $("#Tournament").data("id"),
             "bracketId": $game.closest(".bracket").data("id"),
-            "matchId": $game.closest(".TournamentMatch").data("id"),
+            //"matchId": $game.closest(".TournamentMatch").data("id"),
             "matchNum": $game.closest(".TournamentMatch").data("matchnum"),
-            "gameId": $game.data("gameid"),
-            "gameNum": $game.data("gamenum"),
+            //"gameId": $game.data("gameid"),
+            "gameNum": $game.data("gamenum")
         };
 
         $.ajax({
             "url": "/Ajax/Match/RemoveGame",
             "type": "post",
-            "data": { "jsonData": JSON.stringify(jsonData) },
+            "data": jsonData,
             "dataType": "json",
             "beforeSend": function () {
 
             },
             "success": function (json) {
-                console.log(json);
-
                 if (json.status) {
                     UpdateStandings($("#Tournament").data("id"), $game.closest(".bracket").data("id"));
 
-                    $.each(json.data, function (i, e) {
+                    $.each(json.data.matches, function (i, e) {
                         $match = $(".TournamentMatch[data-id='" + e.matchId + "']");
                         MatchUpdate(e, $match);
                         MatchOptionsUpdate(e, $match);

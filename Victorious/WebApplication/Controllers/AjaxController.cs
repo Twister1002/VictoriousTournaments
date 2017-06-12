@@ -355,43 +355,25 @@ namespace WebApplication.Controllers
                 List<int> matchesAffected = bracket.MatchesAffectedList(matchNum);
                 List<object> matchesAffectedData = new List<object>();
 
-                GameModel gameModel = bracket.GetBracket().RemoveGameNumber(matchNum, gameNum);
-
-                foreach (int matchNumber in matchesAffected)
+                if (bracket.RemoveGame(matchNum, gameNum))
                 {
-                    matchesAffectedData.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNum), true));
+                    foreach (int matchNumber in matchesAffected)
+                    {
+                        matchesAffectedData.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNum), true));
+                    }
+
+                    status = true;
+                    message = "Matches were updated";
+                    data = new
+                    {
+                        matches = matchesAffectedData
+                    };
                 }
-
-                data = new
+                else
                 {
-                    matches = matchesAffectedData
-                };
+                    message = "There was an error in deleting the game";
+                }
             }
-            //Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
-            //BracketViewModel bracketViewModel = new BracketViewModel(json["bracketId"]);
-            //List<int> matchesAffected = bracketViewModel.MatchesAffectedList(json["matchNum"]);
-            //List<object> matchDataAffected = new List<object>();
-            //bracketViewModel.Bracket.RemoveGameNumber(json["matchNum"], json["gameNum"]);
-
-            //status = true;
-            //message = "Matches are affected.";
-
-            //foreach (int matchNum in matchesAffected)
-            //{
-            //    // Load the original and load one from the bracket
-            //    MatchViewModel modified = new MatchViewModel(bracketViewModel.Bracket.GetMatchModel(matchNum));
-            //    MatchViewModel original = new MatchViewModel(modified.Match.Id);
-
-            //    List<IGame> games = original.Match.Games.Where(x => !modified.Match.Games.Any(y => y.Id == x.Id)).ToList();
-            //    foreach (IGame game in games)
-            //    {
-            //        GameViewModel gameViewModel = new GameViewModel(game);
-            //        gameViewModel.Delete();
-            //    }
-
-            //    modified.Update();
-            //    matchDataAffected.Add(JsonMatchResponse(modified.Match, true));
-            //}
 
             return BundleJson();
         }

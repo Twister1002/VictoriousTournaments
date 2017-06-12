@@ -65,6 +65,15 @@ namespace WebApplication.Models
             return services.Save();
         }
 
+        public bool RemoveGame(int matchNum, int gameNum)
+        {
+            GameModel game = bracket.RemoveGameNumber(matchNum, gameNum);
+            return true;
+            //services.Tournament.DeleteGame(game.GameID);
+
+            //return services.Save();
+        }
+
         //public void ResetBracket()
         //{
         //    // Tell the bracket that it has been reset.
