@@ -259,11 +259,9 @@ namespace Tournament.Structure
 			}
 
 			// "Copy" matches from new pseudo-brackets onto the end of this bracket:
-			int r = 0;
-			while (true) // Run through once for each new round
+			for (int r = 1; ; ++r) // Run through once for each new round
 			{
 				// Round-by-round, make a list of matches to add:
-				++r;
 				List<IMatch> currRound = new List<IMatch>();
 				foreach (IBracket bracket in tiebreakerBrackets.Where(b => b.NumberOfRounds >= r))
 				{
