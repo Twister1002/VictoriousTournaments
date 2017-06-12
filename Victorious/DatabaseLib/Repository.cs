@@ -53,7 +53,10 @@ namespace DatabaseLib
 
         public void Update(TEntity entity)
         {
-            dbSet.Attach(entity);
+            if (context.Entry<TEntity>(entity).State == EntityState.Detached)
+            {
+                dbSet.Attach(entity); 
+            }
             context.Entry(entity).State = EntityState.Modified;
         }
 

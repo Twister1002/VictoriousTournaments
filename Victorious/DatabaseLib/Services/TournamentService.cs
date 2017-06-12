@@ -60,7 +60,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<TournamentModel>();
             }
         }
 
@@ -191,7 +191,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<TournamentUserModel>();
             }
         }
 
@@ -203,7 +203,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<TournamentUserModel>();
             }
         }
 
@@ -251,7 +251,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new TournamentInviteModel();
             }
         }
 
@@ -263,7 +263,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<TournamentInviteModel>();
             }
         }
 
@@ -308,7 +308,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<BracketModel>();
             }
         }
 
@@ -321,7 +321,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<BracketModel>();
             }
         }
 
@@ -375,7 +375,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<MatchModel>();
             }
         }
 
@@ -397,7 +397,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<MatchModel>();
             }
         }
 
@@ -431,7 +431,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<GameModel>();
             }
         }
 
@@ -464,7 +464,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new TournamentUsersBracketModel();
             }
         }
 
