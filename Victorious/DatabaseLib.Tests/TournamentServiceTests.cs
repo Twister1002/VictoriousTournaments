@@ -84,19 +84,39 @@ namespace DatabaseLib.Tests
             Assert.AreEqual(count, result);
         }
 
-      
+        [TestMethod]
+        [TestCategory("Tournament Service")]
+        public void Search_By_Dates_Between()
+        {
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("TournamentStartDate", DateTime.Today.ToString());
+            dict.Add("TournamentEndDate", DateTime.Today.AddDays(10).ToString());
+
+            tournaments = service.FindTournaments(dict);
+            var result = false;
+            foreach (var tournament in tournaments)
+            {
+                if (tournament.Title == "Test Tournament Search")
+                    result = true;
+            }
+
+            Assert.AreEqual(true, result);
+        }
+
+
 
 
         private TournamentModel NewTournament()
         {
             TournamentModel tournament = new TournamentModel()
             {
-                Title = "Test Tournament One",
+                Title = "Test Tournament Search",
                 Description = "Test",
                 RegistrationStartDate = DateTime.Now,
-                RegistrationEndDate = DateTime.Now,
+                RegistrationEndDate = DateTime.Now.AddDays(2),
                 TournamentStartDate = DateTime.Now,
-                TournamentEndDate = DateTime.Now,
+                TournamentEndDate = DateTime.Now.AddDays(2),
                 CheckInBegins = DateTime.Now,
                 CheckInEnds = DateTime.Now,
                 LastEditedByID = 1,
@@ -104,7 +124,8 @@ namespace DatabaseLib.Tests
                 PlatformID = 3,
                 EntryFee = 0,
                 PrizePurse = 0,
-                GameTypeID = 1
+                GameTypeID = 1,
+                PublicViewing = true
 
             };
 
@@ -127,10 +148,11 @@ namespace DatabaseLib.Tests
                 DateCreated = DateTime.Today,
                 DateExpires = DateTime.Today.AddDays(1),
                 IsExpired = false,
-                TournamentInviteCode = "1234",
+                TournamentInviteCode = "1235",
                 NumberOfUses = 0,
-                TournamentID = 2
+                TournamentID = service.GetAllTournaments()[0].TournamentID
             };
+
             service.AddTournamentInvite(invite);
             var result = unitOfWork.Save();
 

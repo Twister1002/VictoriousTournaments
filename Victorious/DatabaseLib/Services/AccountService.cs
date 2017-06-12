@@ -9,7 +9,7 @@ namespace DatabaseLib.Services
     public class AccountService
     {
         IUnitOfWork unitOfWork;
-
+        EmailService emailService;
 
         public AccountService(IUnitOfWork unitOfWork)
         {
@@ -57,7 +57,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<AccountModel>();
             }
         }
 
@@ -111,8 +111,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
-                throw;
+                return new List<TournamentModel>();
             }
             
             return tournaments;
@@ -161,10 +160,11 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
-                throw;
+                return new List<AccountInviteModel>();
             }
         }
+
+        
 
         #endregion
     }

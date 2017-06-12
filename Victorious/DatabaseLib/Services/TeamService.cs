@@ -43,7 +43,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<SiteTeamModel>();
             }
         }
 
@@ -101,7 +101,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<SiteTeamMemberModel>();
             }
         }
 
@@ -145,7 +145,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<TournamentTeamModel>();
             }
         }
 
@@ -203,7 +203,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<TournamentTeamMemberModel>();
             }
         }
 
@@ -247,7 +247,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
-                return null;
+                return new List<TournamentTeamBracketModel>();
             }
         }
 
