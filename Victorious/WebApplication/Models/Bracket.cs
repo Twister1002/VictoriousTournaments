@@ -370,10 +370,7 @@ namespace WebApplication.Models
                 services.Tournament.DeleteGame(games);
             }
 
-            if (services.Save())
-            {
-                roundsModified = true;
-            }
+            services.Save();
         }
 
         public void OnRoundAdd(object sender, BracketEventArgs args)
@@ -414,10 +411,7 @@ namespace WebApplication.Models
                 services.Tournament.DeleteGame(gameId);
             }
 
-            if (services.Save())
-            {
-                roundsModified = true;
-            }
+            services.Save();
         }
         #endregion
     }
