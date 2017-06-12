@@ -70,7 +70,7 @@
             "data": jsonData,
             "dataType": "json",
             "success": function (json) {
-                location.replace(json.redirect);
+                location.replace(json.data.redirect);
                 console.log(json);
             },
             "error": function (json) {
