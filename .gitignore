@@ -244,3 +244,5 @@ ModelManifest.xml
 /Victorious/VictoriousDatabase/VictoriousDatabase.jfm
 /Victorious/WebApplication/Styles/css/*.min.css
 /Victorious/WebApplication/Scripts/*.min.js
+/Victorious/WebApplication/Scripts/scripts.min.js
+/Victorious/WebApplication/Styles/css/style.min.css
