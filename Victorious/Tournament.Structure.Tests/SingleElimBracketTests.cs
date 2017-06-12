@@ -1524,21 +1524,18 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("BracketModel")]
-		public void SEBGetModel_HasModelsOfAllPlayers()
+		public void SEBGetModel_HasModelsOfAllPLayers()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 5; ++i)
 			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i + 1);
-				moq.Setup(p => p.GetTournamentUsersBracketModel(0, i))
-					.Returns(new TournamentUsersBracketModel());
-				pList.Add(moq.Object);
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
 			}
 			IBracket b = new SingleElimBracket(pList);
 
 			BracketModel bModel = b.GetModel();
-			Assert.AreEqual(b.Players.Count, bModel.TournamentUsersBrackets.Count);
+			Assert.AreEqual(pList.Count, bModel.TournamentUsersBrackets.Count);
 		}
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
@@ -1548,16 +1545,119 @@ namespace Tournament.Structure.Tests
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 5; ++i)
 			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i + 1);
-				moq.Setup(p => p.GetTournamentUsersBracketModel(0, i))
-					.Returns(new TournamentUsersBracketModel());
-				pList.Add(moq.Object);
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
 			}
 			IBracket b = new SingleElimBracket(pList);
 
 			BracketModel bModel = b.GetModel();
 			Assert.AreEqual(b.NumberOfMatches, bModel.Matches.Count);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("BracketModel")]
+		public void SEBGetModel_OfCompletedBracket_HasUpdatedMatchData()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 5; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 15, 5, PlayerSlot.Defender);
+			}
+			
+			BracketModel bModel = b.GetModel();
+			Assert.IsTrue(bModel.Matches.ToList().TrueForAll(m => m.Games.Count == 1));
+		}
+
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("BracketModel")]
+		[TestCategory("ModelConstructor")]
+		public void SEBModelCtor_SetsBracketFinishedStatus()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 5; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 15, 5, PlayerSlot.Defender);
+			}
+
+			BracketModel bModel = b.GetModel();
+			IBracket b2 = new SingleElimBracket(bModel);
+			Assert.IsTrue(b2.IsFinished);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("BracketModel")]
+		[TestCategory("ModelConstructor")]
+		public void SEBModelCtor_SetsMatchScores()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 5; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 15, 5, PlayerSlot.Defender);
+			}
+
+			BracketModel bModel = b.GetModel();
+			IBracket b2 = new SingleElimBracket(bModel);
+			bool allMatchesAre1to0 = true;
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				IMatch match = b.GetMatch(n);
+				if (!(1 == match.Score[0] && 0 == match.Score[1]))
+				{
+					allMatchesAre1to0 = false;
+					break;
+				}
+			}
+			Assert.IsTrue(allMatchesAre1to0);
+		}
+		[TestMethod]
+		[TestCategory("SingleElimBracket")]
+		[TestCategory("BracketModel")]
+		[TestCategory("ModelConstructor")]
+		public void SEBModelCtor_RecreatesGames()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 5; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new SingleElimBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 15, 5, PlayerSlot.Defender);
+			}
+
+			BracketModel bModel = b.GetModel();
+			IBracket b2 = new SingleElimBracket(bModel);
+			bool allMatchesContainGames = true;
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				if (b.GetMatch(n).Games.Count != 1)
+				{
+					allMatchesContainGames = false;
+					break;
+				}
+			}
+			Assert.IsTrue(allMatchesContainGames);
 		}
 
 		#endregion

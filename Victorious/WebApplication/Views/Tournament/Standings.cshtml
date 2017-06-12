@@ -2,12 +2,12 @@
 
 <div class="TournamentInfo">
     <span class="icon icon-cross close"></span>
-    <div class="details" data-columns="@Model.Tourny.Brackets.Count">
-        @foreach (var bracket in Model.Tourny.Brackets)
+    <div class="details" data-columns="@Model.GetTournament().Brackets.Count">
+        @foreach (var bracket in Model.GetTournament().Brackets)
         {
             <div class="bracketNum column" data-bracket="@bracket.Id">@bracket.Id</div>
         }
-        @foreach (var bracket in Model.Tourny.Brackets)
+        @foreach (var bracket in Model.GetTournament().Brackets)
         {
             <div class="bracketData" data-bracket="@bracket.Id" data-id="@bracket.Id">
                 <ul class="list-table">
@@ -23,7 +23,7 @@
                     </li>
 
                     <li class="list-table-body infoSection playerInfo">
-                        <ul class="header" data-columns="@(Model.IsAdministrator(ViewBag.UserId) ? 5 : 2)">
+                        <ul class="header" data-columns="@(Model.IsAdmin(ViewBag.UserId) ? 5 : 2)">
                             <li class="column">Name</li>
                             <li class="column">Status</li>
                             @if (ViewBag.isAdministrator)
@@ -52,7 +52,7 @@
                                         <li class="column seed">
                                             @if (!Model.IsUserAdministrator(person.TournamentUserID))
                                             {
-                                                <input type="text" name="seedVal" maxlength="2" value="@Model.UserSeed(person.TournamentUserID, bracket.Id)"/>
+                                                <input type="text" name="seedVal" maxlength="2" value="@Model.GetUserSeed(bracket.Id, person.TournamentUserID)"/>
                                             }
                                         </li>
                                         <li class="column">

@@ -80,21 +80,18 @@
                 matchElem.find(".TournamentGames .list-table-body").empty();
             },
             "success": function (json) {
-                json = JSON.parse(json);
-
                 if (json.status) {
                     console.log(json);
                     $games = matchElem.find(".TournamentGames");
 
-                    MatchUpdate(json.data, matchElem);
-                    MatchOptionsUpdate(json.data, $games);
+                    MatchUpdate(json.data.match, matchElem);
+                    MatchOptionsUpdate(json.data.match, $games);
                 }
                 else {
                     console.log(json.message);
                 }
             },
             "error": function (json) {
-                json = JSON.parse(json);
                 console.log(json);
                 matchElem.find(".TournamentGames").removeClass("open");
             },
@@ -144,7 +141,7 @@
             "matchNum": match.data("matchnum"),
             "bracketId": $(this).closest(".bracket").data("id"),
             "tournamentId": $("#Tournament").data("id"),
-            "games": games
+            "games": gameData
         }
 
         $.ajax({
@@ -156,8 +153,6 @@
                 match.find(".TournamentGames .update-games").attr("disabled", true);
             },
             "success": function (json) {
-                json = JSON.parse(json);
-
                 if (json.status) {
                     console.log(json.message);
                     var matchElement = null;
@@ -210,8 +205,6 @@
             "data": { "tournamentId": $("#Tournament").data("id"), "bracketId": $(this).closest(".bracket").data("id"), "matchNum": match.data("matchnum") },
             "dataType": "json",
             "success": function (json) {
-                json = JSON.parse(json);
-
                 if (json.status) {
                     $.each(json.data, function (i, e) {
                         MatchUpdate(e, $(".TournamentMatch[data-id='" + e.matchId + "']"));
@@ -331,7 +324,6 @@
 
             },
             "success": function (json) {
-                json = JSON.parse(json);
                 console.log(json);
 
                 if (json.status) {

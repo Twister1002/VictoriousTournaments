@@ -20,8 +20,6 @@
             "data": jsonData,
             "dataType": "json",
             "success": function (json) {
-                json = JSON.parse(json);
-
                 var tournaments = $("#TournamentSearch .list-table-body");
 
                 // Clear the games

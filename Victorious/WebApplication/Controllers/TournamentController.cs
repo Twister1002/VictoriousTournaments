@@ -50,11 +50,13 @@ namespace WebApplication.Controllers
         [Route("Tournament/Update/{tournamentId}")]
         public ActionResult Update(int tournamentId)
         {
-            if (account != null)
+            if (account.IsLoggedIn())
             {
                 Models.Tournament tourny = new Models.Tournament(service, tournamentId);
                 if (tourny.IsAdmin(account.Model.AccountID))
                 {
+                    ViewBag.CanEdit = tourny.CanEdit();
+                    ViewBag.InProgress = tourny.Model.InProgress;
                     tourny.SetFields();
                     return View("Update", tourny.viewModel);
                 }
@@ -81,6 +83,12 @@ namespace WebApplication.Controllers
         {
             int tournamentId = ConvertToInt(guid);
             Models.Tournament tourny = new Models.Tournament(service, tournamentId);
+
+            if (tournamentId == 0) {
+                Session["Message"] = "This tournament is invalid.";
+                Session["Message.Class"] = ViewError.ERROR;
+                return RedirectToAction("Index", "Tournament");
+            }
 
             if (tourny.Model != null)
             {
@@ -151,9 +159,10 @@ namespace WebApplication.Controllers
             }
             else
             {
+                Models.Tournament tourny = new Models.Tournament(service, -1);
                 if (ModelState.IsValid)
                 {
-                    Models.Tournament tourny = new Models.Tournament(service, -1);
+                    
                     if (tourny.Create(viewModel, account))
                     {
                         return RedirectToAction("Tournament", "Tournament", new { guid = tourny.Model.TournamentID });
@@ -170,9 +179,10 @@ namespace WebApplication.Controllers
                     Session["Message.Class"] = ViewError.ERROR;
                     Session["Message"] = "Please enter in the required fields listed below.";
                 }
+                return View("Create", tourny.viewModel);
             }
 
-            return View("Create", viewModel);
+            
         }
 
         // POST: Tournament/Edit/5
@@ -204,6 +214,11 @@ namespace WebApplication.Controllers
                     Session["Message"] = "You do not have permission to update this tournament";
                     Session["Message.Class"] = ViewError.ERROR;
                 }
+
+                ViewBag.CanEdit = tourny.CanEdit();
+                ViewBag.InProgress = tourny.Model.InProgress;
+                tourny.SetFields();
+                return View("Update", tourny.viewModel);
             }
             else
             {
@@ -211,8 +226,6 @@ namespace WebApplication.Controllers
                 Session["Message.Class"] = ViewError.ERROR;
                 return RedirectToAction("Login", "Account");
             }
-
-            return View("Update", viewModel);
         }
 
         [HttpPost]

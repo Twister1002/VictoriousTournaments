@@ -164,12 +164,18 @@ namespace Tournament.Structure
 		#region Accessors
 		public override BracketModel GetModel(int _tournamentID = 0)
 		{
-			throw new NotImplementedException();
-#if false
 			BracketModel model = base.GetModel(_tournamentID);
+
 			model.NumberOfGroups = this.NumberOfGroups;
+			//model.Matches.Clear();
+			for (int n = 1; n <= NumberOfMatches; ++n)
+			{
+				MatchModel matchModel = GetMatchModel(n);
+				matchModel.MatchNumber = n;
+				model.Matches.Add(matchModel);
+			}
+
 			return model;
-#endif
 		}
 
 		public IBracket GetGroup(int _groupNumber)
@@ -216,6 +222,35 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected void SubscribeToGroupEvents()
+		{
+			foreach (IBracket group in Groups)
+			{
+				// Subscribe to each group's events,
+				// so we can relay the events to this bracket's subscribers:
+				group.RoundAdded += AddRounds;
+				group.RoundDeleted += DeleteRounds;
+				group.MatchesModified += ModifyMatches;
+				group.GamesDeleted += DeleteGames;
+			}
+		}
+		protected virtual void AddRounds(object _sender, BracketEventArgs _args)
+		{
+			OnRoundAdded(_args);
+		}
+		protected void DeleteRounds(object _sender, BracketEventArgs _args)
+		{
+			OnRoundDeleted(_args);
+		}
+		protected void ModifyMatches(object _sender, BracketEventArgs _args)
+		{
+			OnMatchesModified(_args);
+		}
+		protected void DeleteGames(object _sender, BracketEventArgs _args)
+		{
+			OnGamesDeleted(_args);
+		}
+
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			UpdateFinishStatus();
@@ -223,14 +258,11 @@ namespace Tournament.Structure
 		}
 		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
-			if (PlayerSlot.unspecified == _formerMatchWinnerSlot)
+			if (!(GetMatch(_matchNumber).IsFinished))
 			{
 				this.IsFinished = false;
 			}
-			else
-			{
-				UpdateFinishStatus();
-			}
+
 			return (new List<MatchModel>());
 		}
 		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
@@ -245,6 +277,7 @@ namespace Tournament.Structure
 			{
 				Rankings.AddRange(group.Rankings);
 			}
+			Rankings.Sort(SortRankingRanks);
 		}
 		protected override void UpdateRankings()
 		{
@@ -304,6 +337,14 @@ namespace Tournament.Structure
 
 			throw new MatchNotFoundException
 				("Match not found; match number may be invalid.");
+		}
+
+		protected int SortRankingRanks(IPlayerScore first, IPlayerScore second)
+		{
+			int compare = first.Rank.CompareTo(second.Rank);
+			return (compare != 0)
+				? compare
+				: GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
 		}
 		#endregion
 	}

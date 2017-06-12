@@ -39,8 +39,6 @@
                 $("#AdministratorGames .GameAddButton").attr("disabled", true);
             },
             "success": function (json) {
-                json = JSON.parse(json);
-
                 if (json.status) {
                     var table = $("#AdministratorGames .list-table-body");
                     table.empty();
@@ -60,8 +58,6 @@
                 console.log(json.message);
             },
             "error": function (json) {
-                json = JSON.parse(json);
-
                 console.log("Failure");
                 console.log(json);
             },

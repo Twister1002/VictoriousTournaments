@@ -5,8 +5,8 @@
     ViewBag.isGrandFinal = null;
 }
 
-<div class="TournamentMatch @(isGrandFinal)" data-id="@Model.Model.MatchID" data-matchnum="@Model.Model.MatchNumber">
-    <label class="matchNum">Match @Model.Model.MatchNumber</label>
+<div class="TournamentMatch @(isGrandFinal)" data-id="@Model.match.Id" data-matchnum="@Model.match.MatchNumber">
+    <label class="matchNum">Match @Model.match.MatchNumber</label>
 
     <div class="overview">
         <div class="defender" data-id="@Model.Defender.Id">
@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <div class="details @(Model.Match.IsReady ? "" : "hide") clickable clickable-underline">Details</div>
+    <div class="details @(Model.match.IsReady ? "" : "hide") clickable clickable-underline">Details</div>
 
     <div class="TournamentGames">
         <h2>Details</h2>
@@ -54,7 +54,7 @@
                     <li class="column">Options</li>
                 </ul>
             </li>
-            <li class="list-table-body games" data-max="@Model.Match.MaxGames">
+            <li class="list-table-body games" data-max="@Model.match.MaxGames">
 
             </li>
         </ul>

@@ -25,6 +25,8 @@ namespace WebApplication.Models
 
         private void Init()
         {
+            if (TempFixMatchObjects) MatchObjectFix();
+
             // Create the tournament
             Tourny = new Tournaments.Tournament(Model);
             searched = new List<TournamentModel>();
@@ -80,21 +82,9 @@ namespace WebApplication.Models
             searched = services.Tournament.FindTournaments(searchData);
         }
 
-        private void ProcessTournament()
+        public Tournaments.ITournament GetTournament()
         {
-            if (Model == null)
-            {
-                return;
-            }
-
-            if (TempFixMatchObjects) MatchObjectFix();
-
-            Tourny = new Tournaments.Tournament();
-            Tourny.Title = Model.Title;
-            foreach (BracketModel bracket in Model.Brackets)
-            {
-                Tourny.AddBracket(Tourny.RestoreBracket(bracket));
-            }
+            return Tourny;
         }
 
         #region Bracket
@@ -144,24 +134,25 @@ namespace WebApplication.Models
             Model.InProgress = true;
 
             // Update the database
-            CreateMatches(bracket, tourny);
+            bracket.Matches = CreateMatches(bracket, tourny);
             services.Tournament.UpdateBracket(bracket);
             services.Tournament.UpdateTournament(Model);
             return services.Save();
         }
 
-        private void CreateMatches(BracketModel bracketModel, Tournaments.IBracket bracket)
+        private List<MatchModel> CreateMatches(BracketModel bracketModel, Tournaments.IBracket bracket)
         {
-            // Verify if the tournament has not need finalized.
-            if (!bracketModel.Finalized)
+            List<MatchModel> matches = new List<MatchModel>();
+            
+            // Add the matches to the database
+            for (int i = 1; i <= bracket.NumberOfMatches; i++)
             {
-                // Add the matches to the database
-                for (int i = 1; i <= bracket.NumberOfMatches; i++)
-                {
-                    MatchModel matchModel = bracket.GetMatchModel(i);
-                    services.Tournament.AddMatch(matchModel);
-                }
+                matches.Add(bracket.GetMatchModel(i));
+                //bracketModel.Matches.Add(matchModel);
+                //services.Tournament.AddMatch(matchModel);
             }
+
+            return matches;
         }
         #endregion
 
@@ -169,8 +160,7 @@ namespace WebApplication.Models
         //TODO: Fix issue where tournamentCodes can collide and be repeatable.
         public bool Create(TournamentViewModel viewModel, Account account)
         {
-            this.viewModel = viewModel;
-            ApplyChanges();
+            ApplyChanges(viewModel);
             Model.CreatedOn = DateTime.Now;
             Model.CreatedByID = account.Model.AccountID;
 
@@ -180,7 +170,7 @@ namespace WebApplication.Models
             //Save the tournament First.
             services.Tournament.AddTournament(Model);
             AddUser(account, Permission.TOURNAMENT_CREATOR);
-            if (viewModel.BracketData != null) UpdateBrackets();
+            //if (viewModel.BracketData != null) UpdateBrackets();
             //bool tournamentSave = services.Save();
 
             // Create InviteModel
@@ -211,13 +201,12 @@ namespace WebApplication.Models
 
         public bool Update(TournamentViewModel viewModel, int accountId)
         {
-            this.viewModel = viewModel;
-            ApplyChanges();
+            ApplyChanges(viewModel);
             Model.LastEditedByID = accountId;
             Model.LastEditedOn = DateTime.Now;
 
             services.Tournament.UpdateTournament(Model);
-            UpdateBrackets();
+            //UpdateBrackets();
 
             if (services.Save())
             {
@@ -226,6 +215,7 @@ namespace WebApplication.Models
             }
             else
             {
+                SetFields();
                 return false;
             }
         }
@@ -283,8 +273,8 @@ namespace WebApplication.Models
                         bracketModel.BracketTypeID = newBracket.Value.BracketTypeID;
                         bracketModel.MaxRounds = newBracket.Value.NumberOfRounds;
 
-                        //updatedBrackets.Add(bracketModel);
-                        services.Tournament.UpdateBracket(bracketModel);
+                        updatedBrackets.Add(bracketModel);
+                        //services.Tournament.UpdateBracket(bracketModel);
                     }
                     else if (bracketModel == null)
                     {
@@ -297,8 +287,8 @@ namespace WebApplication.Models
                             TournamentID = Model.TournamentID
                         };
 
-                        //updatedBrackets.Add(bracketModel);
-                        services.Tournament.AddBracket(bracketModel);
+                        updatedBrackets.Add(bracketModel);
+                        //services.Tournament.AddBracket(bracketModel);
                     }
                 }
             }
@@ -454,7 +444,7 @@ namespace WebApplication.Models
         #region Account
         public Permission GetAccountPermission(int accountId)
         {
-            TournamentUserModel user = Model.TournamentUsers.Single(x => x.AccountID == accountId);
+            TournamentUserModel user = Model.TournamentUsers.SingleOrDefault(x => x.AccountID == accountId);
             if (user != null)
             {
                 return (Permission)user.PermissionLevel;
@@ -699,8 +689,8 @@ namespace WebApplication.Models
         {
             int? seed = -1;
 
-            seed = Model.Brackets.Single(x => x.BracketID == bracketId)?
-                .TournamentUsersBrackets.Single(x => x.TournamentUserID == userId)?.Seed;
+            seed = Model.Brackets.Single(x => x.BracketID == bracketId)
+                .TournamentUsersBrackets.SingleOrDefault(x => x.TournamentUserID == userId).Seed;
 
             if (seed != null)
             {
@@ -759,7 +749,7 @@ namespace WebApplication.Models
         #endregion
 
         #region ViewModel
-        public void ApplyChanges()
+        public void ApplyChanges(TournamentViewModel viewModel)
         {
             // Tournament Stuff
             Model.Title = viewModel.Title;
@@ -776,6 +766,12 @@ namespace WebApplication.Models
             Model.TournamentEndDate = viewModel.TournamentEndDate + viewModel.TournamentEndTime.TimeOfDay;
             Model.CheckInBegins = viewModel.CheckinStartDate + viewModel.CheckinStartTime.TimeOfDay;
             Model.CheckInEnds = viewModel.CheckinEndDate + viewModel.CheckinEndTime.TimeOfDay;
+
+            // Give the class viewModel the viewModel data
+            this.viewModel.BracketData = viewModel.BracketData;
+
+            // Add the bracket data
+            UpdateBrackets();
         }
 
         public void SetFields()

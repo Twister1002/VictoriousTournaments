@@ -13,7 +13,24 @@ namespace Tournament.Structure
 		private class GSLBracket : DoubleElimBracket
 		{
 			#region Variables & Properties
-
+			//public int Id
+			//public BracketType BracketType
+			//public bool IsFinalized
+			//public bool IsFinished
+			//public List<IPlayer> Players
+			//public List<IPlayerScore> Rankings
+			//public int MaxRounds = 0
+			//protected Dictionary<int, Match> Matches
+			//public int NumberOfRounds
+			//protected Dictionary<int, Match> LowerMatches
+			//public int NumberOfLowerRounds
+			//protected Match grandFinal = null
+			//public IMatch GrandFinal = null
+			//public int NumberOfMatches
+			//protected int MatchWinValue = 0
+			//protected int MatchTieValue = 0
+			//protected List<IBracket> Groups = empty
+			//public int NumberOfGroups = 0
 			#endregion
 
 			#region Ctors
@@ -48,11 +65,56 @@ namespace Tournament.Structure
 			#endregion
 
 			#region Private Methods
+			protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+			{
+				List<MatchModel> alteredMatches = new List<MatchModel>();
+
+				int nextWinnerNumber;
+				int nextLoserNumber;
+				IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
+				if (match.NextMatchNumber <= NumberOfMatches)
+				{
+					// Case 1: Not a final/endpoint match. Treat like a DEB:
+					alteredMatches.AddRange(base.ApplyWinEffects(_matchNumber, _slot));
+				}
+				else if (match.IsFinished)
+				{
+					if (nextLoserNumber > 0)
+					{
+						// Case 2: UB Finals.
+						// Advance loser to lower bracket:
+						PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
+							? PlayerSlot.Challenger
+							: PlayerSlot.Defender;
+						GetInternalMatch(nextLoserNumber).AddPlayer
+							(match.Players[(int)loserSlot], PlayerSlot.Defender);
+						alteredMatches.Add(GetMatchModel(nextLoserNumber));
+						// Check lower bracket completion:
+						if (GetLowerRound(NumberOfLowerRounds)[0].IsFinished)
+						{
+							this.IsFinished = true;
+						}
+					}
+					else
+					{
+						// Case 3: LB Finals.
+						// Check upper bracket completion:
+						if (GetRound(NumberOfRounds)[0].IsFinished)
+						{
+							this.IsFinished = true;
+						}
+					}
+				}
+
+				return alteredMatches;
+			}
+			// void ApplyGameRemovalEffects() just uses DEB's version.
 			protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 			{
 				if (!_isAddition)
 				{
-					UpdateRankings();
+					RecalculateRankings();
 					return;
 				}
 
@@ -99,51 +161,6 @@ namespace Tournament.Structure
 
 				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 			}
-			protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
-			{
-				List<MatchModel> alteredMatches = new List<MatchModel>();
-
-				int nextWinnerNumber;
-				int nextLoserNumber;
-				IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
-				if (match.NextMatchNumber <= NumberOfMatches)
-				{
-					// Case 1: Not a final/endpoint match. Treat like a DEB:
-					alteredMatches.AddRange(base.ApplyWinEffects(_matchNumber, _slot));
-				}
-				else if (match.IsFinished)
-				{
-					if (nextLoserNumber > 0)
-					{
-						// Case 2: UB Finals.
-						// Advance loser to lower bracket:
-						PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
-							? PlayerSlot.Challenger
-							: PlayerSlot.Defender;
-						GetInternalMatch(nextLoserNumber).AddPlayer
-							(match.Players[(int)loserSlot], PlayerSlot.Defender);
-						alteredMatches.Add(GetMatchModel(nextLoserNumber));
-						// Check lower bracket completion:
-						if (GetLowerRound(NumberOfLowerRounds)[0].IsFinished)
-						{
-							this.IsFinished = true;
-						}
-					}
-					else
-					{
-						// Case 3: LB Finals.
-						// Check upper bracket completion:
-						if (GetRound(NumberOfRounds)[0].IsFinished)
-						{
-							this.IsFinished = true;
-						}
-					}
-				}
-
-				return alteredMatches;
-			}
-			// void ApplyGameRemovalEffects() just uses DEB's version.
 
 			protected override List<MatchModel> RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
 			{
@@ -153,9 +170,10 @@ namespace Tournament.Structure
 				}
 				return base.RemovePlayerFromFutureMatches(_matchNumber, _playerId);
 			}
-			protected override void UpdateRankings()
+
+			protected override void RecalculateRankings()
 			{
-				base.UpdateRankings();
+				base.RecalculateRankings();
 
 				IMatch upperFinal = GetRound(NumberOfRounds)[0];
 				if (upperFinal.IsFinished)
@@ -187,7 +205,24 @@ namespace Tournament.Structure
 		}
 
 		#region Variables & Properties
-
+		//public int Id
+		//public BracketType BracketType
+		//public bool IsFinalized
+		//public bool IsFinished
+		//public List<IPlayer> Players
+		//public List<IPlayerScore> Rankings
+		//public int MaxRounds
+		//protected Dictionary<int, Match> Matches = empty
+		//public int NumberOfRounds
+		//protected Dictionary<int, Match> LowerMatches = empty
+		//public int NumberOfLowerRounds = 0
+		//protected Match grandFinal = null
+		//public IMatch GrandFinal = null
+		//public int NumberOfMatches
+		//protected int MatchWinValue
+		//protected int MatchTieValue
+		//protected List<IBracket> Groups
+		//public int NumberOfGroups
 		#endregion
 
 		#region Ctors
@@ -231,22 +266,27 @@ namespace Tournament.Structure
 				.Select(tubm => tubm.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
-			foreach (TournamentUserModel model in userModels)
+			foreach (TournamentUserModel userModel in userModels)
 			{
-				Players.Add(new Player(model));
+				Players.Add(new Player(userModel));
 			}
 
 			this.Id = _model.BracketID;
 			this.BracketType = _model.BracketType.Type;
 			this.IsFinalized = _model.Finalized;
 			this.NumberOfGroups = _model.NumberOfGroups;
-			CreateBracket();
 
+			CreateBracket();
+			// Find & update every Match:
 			foreach (MatchModel matchModel in _model.Matches)
 			{
 				GetInternalMatch(matchModel.MatchNumber)
 					.SetFromModel(matchModel);
 			}
+
+			// Update the Rankings:
+			RecalculateRankings();
+			UpdateFinishStatus();
 		}
 		#endregion
 
@@ -277,25 +317,28 @@ namespace Tournament.Structure
 
 				Groups.Add(new GSLBracket(pList, _gamesPerMatch));
 			}
+			SubscribeToGroupEvents();
 
 			foreach (IBracket group in Groups)
 			{
 				NumberOfMatches += group.NumberOfMatches;
-				NumberOfRounds = (NumberOfRounds < group.NumberOfRounds)
-					? group.NumberOfRounds
-					: this.NumberOfRounds;
+				NumberOfRounds = Math.Max(this.NumberOfRounds, group.NumberOfRounds);
 			}
 		}
 
-		public override void ResetMatches()
+		public override bool CheckForTies()
 		{
-			base.ResetMatches();
-			Rankings.Clear();
+			return false;
+		}
+		public override bool GenerateTiebreakers()
+		{
+			throw new NotImplementedException
+				("Not applicable for knockout brackets!");
 		}
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateRankings()
+		protected override void RecalculateRankings()
 		{
 			Rankings.Clear();
 			foreach (IBracket group in Groups)

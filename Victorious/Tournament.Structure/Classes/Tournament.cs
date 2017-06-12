@@ -39,9 +39,9 @@ namespace Tournament.Structure
 			this.Title = _model.Title;
 
 			this.Players = new List<IPlayer>();
-			foreach (TournamentUserModel model in _model.TournamentUsers)
+			foreach (TournamentUserModel userModel in _model.TournamentUsers)
 			{
-				Players.Add(new Player(model));
+				Players.Add(new Player(userModel));
 			}
 
 			this.Brackets = new List<IBracket>();

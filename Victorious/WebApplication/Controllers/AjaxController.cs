@@ -452,7 +452,7 @@ namespace WebApplication.Controllers
                             Name = model.Name,
                             Permission = model.PermissionLevel,
                             TournamentUserId = model.TournamentUserID,
-                            Seed = tournament.GetUserSeed(model.TournamentUserID, bracketId)
+                            Seed = tournament.GetUserSeed(bracketId, model.TournamentUserID)
                         },
                         actions = tournament.PermissionAction(account.Model.AccountID, model.TournamentUserID, "default")
                     };
@@ -499,7 +499,7 @@ namespace WebApplication.Controllers
         [Route("Ajax/Tournament/Finalize")]
         public JsonResult Finalize(int tournamentId, int bracketId, Dictionary<String, Dictionary<String, int>> roundData)
         {
-            String redirect = redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
+            String redirect = Url.Action("Tournament", "Tournament", new { guid = tournamentId });
 
             if (account.IsLoggedIn())
             {

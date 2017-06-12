@@ -23,7 +23,6 @@
                 "data": { "tournamentId": $(this).closest("#Tournament").data("id") },
                 "dataType": "json",
                 "success": function (json) {
-                    json = JSON.parse(json);
                     if (json.status) {
                         window.location.replace(json.redirect);
                     }
@@ -32,7 +31,6 @@
                     }
                 },
                 "error": function (json) {
-                    json = JSON.parse(json);
                     alert(json.message);
                 }
             });
@@ -72,8 +70,7 @@
             "data": jsonData,
             "dataType": "json",
             "success": function (json) {
-                json = JSON.parse(json);
-                location.replace(json.redirect);
+                location.replace(json.data.redirect);
                 console.log(json);
             },
             "error": function (json) {
@@ -89,8 +86,6 @@
             "data": { tournamentId: $("#Tournament").data("id") },
             "dataType": "json",
             "success": function (json) {
-                json = JSON.parse(json);
-
                 if (json.status) {
                     $("#Tournament .tournament-buttons.options .checkIn").remove();
                 }
@@ -185,8 +180,6 @@
                 $this.off("click");
             },
             "success": function (json) {
-                json = JSON.parse(json);
-
                 if (json.status) {
                     $this.removeClass("green");
                     $this.removeClass("red");
@@ -228,7 +221,6 @@
                     userElement.find(".demote").off("click");
                 },
                 "success": function (json) {
-                    json = JSON.parse(json);
                     if (json.status) {
                         if (json.data.permissions.Permission == 0) {
                             userElement.remove();
@@ -292,8 +284,6 @@
                 row.find(".name input").attr("disabled", true);
             },
             "success": function (json) {
-                json = JSON.parse(json);
-
                 if (json.status) {
                     html = "<ul class='data user form' data-user='" + json.data.user.TournamentUserId + "' data-columns='5'> ";
                     html += "<li class='column name'>" + json.data.user.Name + "</li> ";
@@ -359,7 +349,6 @@
             "data": jsonData,
             "dataType": "json",
             "success": function (json) {
-                json = JSON.parse(json);
                 if (json.status) {
                     tournamentChanged = true;
                 }
@@ -378,7 +367,6 @@
             "data": { "tournamentId": $("#Tournament").data("id"), "bracketId": $(this).closest(".bracketData").data("id") },
             "dataType": "json",
             "success": function (json) {
-                json = JSON.parse(json);
                 if (json.status) {
                     window.location.replace(json.redirect);
                 }
@@ -425,7 +413,6 @@ function UpdateStandings(tournyId, bracketId) {
         "data": { "tournamentId": tournyId, "bracketId": bracketId },
         "dataType": "json",
         "success": function (json) {
-            var json = JSON.parse(json);
             if (json.status) {
                 var standings = $(".TournamentInfo .bracketData[data-bracket='" + bracketId + "'] .standingInfo");
                 standings.find(".data").remove();
