@@ -28,18 +28,6 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual(pList, b.Players);
 		}
-#if false
-		[TestMethod]
-		[TestCategory("SingleElimBracket")]
-		[TestCategory("SEB Ctor")]
-		[ExpectedException(typeof(NullReferenceException))]
-		public void SEBCtor_ThrowsNullRef_WithNullParam()
-		{
-			IBracket b = new SingleElimBracket(null);
-
-			Assert.AreEqual(1, 2);
-		}
-#endif
 		[TestMethod]
 		[TestCategory("SingleElimBracket")]
 		[TestCategory("SEB Ctor")]

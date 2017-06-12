@@ -553,41 +553,157 @@ namespace Tournament.Structure.Tests
 			b.ResetMatches();
 			Assert.AreEqual(matchesTouched, affectedMatches);
 		}
-#if ENABLE_TIEBREAKERS
+
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
-		[TestCategory("AddGame")]
+		[TestCategory("CheckForTies")]
+		public void RRBCheckForTies_ReturnsTrueWhenTieExists()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 3; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			b.AddGame(1, 100, 0, PlayerSlot.Defender);
+			b.AddGame(2, 15, 2, PlayerSlot.Defender);
+			b.AddGame(3, 20, 10, PlayerSlot.Defender);
+
+			Assert.IsTrue(b.CheckForTies());
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("CheckForTies")]
+		[ExpectedException(typeof(BracketException))]
+		public void RRBCheckForTies_ThrowsBracketExcep_OnUnfinishedBracket()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+
+			b.CheckForTies();
+			Assert.AreEqual(1, 2);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("CheckForTies")]
+		public void RRBCheckForTies_ReturnsFalseIfNoTies()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 2; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.SetMatchWinner(n, PlayerSlot.Defender);
+			}
+
+			Assert.IsFalse(b.CheckForTies());
+		}
+
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("GenerateTiebreakers")]
+		[ExpectedException(typeof(BracketException))]
+		public void RRBGenerateTiebreakers_ThrowsBracketExcep_OnUnfinishedBracket()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 2; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+
+			b.GenerateTiebreakers();
+			Assert.AreEqual(1, 2);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("GenerateTiebreakers")]
+		public void RRBGenerateTiebreakers_ReturnsFalseIfNoTies()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 2; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.SetMatchWinner(n, PlayerSlot.Defender);
+			}
+
+			Assert.IsFalse(b.GenerateTiebreakers());
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("GenerateTiebreakers")]
+		public void RRBGenerateTiebreakers_ReturnsTrueWhenGenerating()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 4; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i + 1);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinBracket(pList);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.SetMatchWinner(n, PlayerSlot.Defender);
+			}
+
+			Assert.IsTrue(b.GenerateTiebreakers());
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinBracket")]
+		[TestCategory("GenerateTiebreakers")]
 		[TestCategory("RoundAdded")]
-		public void RRBAddGame_FiresRoundAdded_WhenTiebreakerIsCreated()
+		public void RRBGenerateTiebreakers_FiresRoundAddedEvent()
 		{
 			bool roundAdded = false;
 
 			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 3; ++i)
+			for (int i = 0; i < 4; ++i)
 			{
 				Mock<IPlayer> moq = new Mock<IPlayer>();
 				moq.Setup(p => p.Id).Returns(i + 1);
 				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
-			b.RoundAdded += delegate (object sender, BracketEventArgs e)
+			b.RoundAdded += delegate
 			{
 				roundAdded = true;
 			};
-			b.AddGame(1, 100, 0, PlayerSlot.Defender);
-			b.AddGame(2, 15, 2, PlayerSlot.Defender);
-			b.AddGame(3, 20, 10, PlayerSlot.Defender);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.SetMatchWinner(n, PlayerSlot.Defender);
+			}
 
+			b.GenerateTiebreakers();
 			Assert.IsTrue(roundAdded);
 		}
 		[TestMethod]
 		[TestCategory("RoundRobinBracket")]
-		[TestCategory("AddGame")]
+		[TestCategory("GenerateTiebreakers")]
 		[TestCategory("RoundAdded")]
-		public void RRBAddGame_RoundAdded_ContainsModelsForAllNewMatches()
+		public void RRBGenerateTiebreakers_RoundAddedEventContainsModelsForAllNewMatches()
 		{
-			int matchesAdded = 0;
-
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 3; ++i)
 			{
@@ -596,17 +712,20 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinBracket(pList);
+			int modelsAdded = 0;
+			int oldMatchCount = b.NumberOfMatches;
 			b.RoundAdded += delegate (object sender, BracketEventArgs e)
 			{
-				matchesAdded += e.UpdatedMatches.Count;
+				modelsAdded += e.UpdatedMatches.Count;
 			};
+
 			b.AddGame(1, 100, 0, PlayerSlot.Defender);
 			b.AddGame(2, 15, 2, PlayerSlot.Defender);
 			b.AddGame(3, 20, 10, PlayerSlot.Defender);
 
-			Assert.AreEqual(3, matchesAdded);
+			b.GenerateTiebreakers();
+			Assert.AreEqual(b.NumberOfMatches - oldMatchCount, modelsAdded);
 		}
-#endif
 		#endregion
 	}
 }
