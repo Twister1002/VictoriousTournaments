@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using System.IO;
 
 
 namespace DatabaseLib
@@ -31,15 +32,40 @@ namespace DatabaseLib
         //    return msg;
         //}
 
+        private async Task<Response> GetTemplate(string id)
+        {
+            return await client.RequestAsync(SendGridClient.Method.GET, "templates" + id);
+
+        }
+
+        private Dictionary<string, string> LoadSubstitutions()
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+
+            StreamReader stream = new StreamReader("");
+
+            return dict;
+        }
+
         public bool SendAccountInviteEmail(AccountInviteModel invite)
         {
             try
             {
                 var msg = new SendGridMessage();
+                var templateId = "70cd6b26-44e7-4b62-b76b-db2c564e24ba";
 
-              
+                msg.TemplateId = templateId;
+
                 AccountModel sender = unitOfWork.AccountRepo.Get(invite.SentByID);
                 msg.SetFrom(new EmailAddress(sender.Email, sender.GetFullName()));
+
+                Dictionary<string, string> substitutions = new Dictionary<string, string>()
+                {
+                    { "{sender_name}", sender.GetFullName().ToString()},
+                    { "{account_creation_url}", "http://localhost:20346/Account/Register" }
+                };
+
+                msg.AddSubstitutions(substitutions);
 
                 var recepiants = new List<EmailAddress>()
                 {
@@ -48,10 +74,10 @@ namespace DatabaseLib
 
                 msg.AddTos(recepiants);
 
-                string subject = "You have been invited to create an account on Victorious by " + sender.GetFullName();
-                msg.SetSubject(subject);
+                //string subject = "You have been invited to create an account on Victorious by " + sender.GetFullName();
+                //msg.SetSubject(subject);
 
-                msg.AddContent(MimeType.Html, "<p> Visit {insert URL here}" + invite.AccountInviteCode + " to create your account </p>");
+                //msg.AddContent(MimeType.Html, "<p> Visit {insert URL here}" + invite.AccountInviteCode + " to create your account </p>");
 
 
                 Execute(client, msg).Wait();
@@ -71,21 +97,32 @@ namespace DatabaseLib
 
                 AccountModel sender = unitOfWork.AccountRepo.Get(invite.Tournament.CreatedByID);
                 msg.SetFrom(new EmailAddress(sender.Email, sender.GetFullName()));
-                
+                var templateId = "d921bc44-497d-41b4-a670-56f4af8f37a5";
+                msg.TemplateId = templateId;
+
+               
+                Dictionary<string, string> substitutions = new Dictionary<string, string>()
+                {
+                    { "{sender_name}", sender.GetFullName().ToString()},
+                    { "{account_creation_url}", "http://localhost:20346/Account/Register" },
+                    { "{tournament_title}", invite.Tournament.Title },
+                    { "{game_type}", invite.Tournament.GameType.Title },
+                    { "{platform}", invite.Tournament.Platform.PlatformName },
+                    { "{registration_start_date}", invite.Tournament.RegistrationStartDate.ToShortDateString() },
+                    { "{registration_end_date}", invite.Tournament.RegistrationEndDate.ToShortDateString() },
+                    { "{tournament_start_date}", invite.Tournament.TournamentStartDate.ToShortDateString() },
+                    { "{tournament_url}", url }
+
+                };
+                msg.AddSubstitutions(substitutions);
+
                 var recepiants = new List<EmailAddress>();
                 foreach (var recepiant in recepiantEmails)
                 {
-                    recepiants.Add(new EmailAddress(recepiant, "Ryan"));
+                    recepiants.Add(new EmailAddress(recepiant));
                 }
                 msg.AddTos(recepiants);
 
-                string subject = "You have been invited to join a tournament on Victorious by " + sender.GetFullName();
-                msg.SetSubject(subject);
-
-                msg.AddContent(MimeType.Html, "<p>Visit " + url + " to join. You will need an account to join this tournament, if you do not have one, visit {insert URL here} to create your account</p>");
-
-
-                //SendGridClient client = new SendGridClient("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");
 
                 Execute(client, msg).Wait();
             }
@@ -108,7 +145,7 @@ namespace DatabaseLib
 
             var response = await client.SendEmailAsync(msg);
             Console.WriteLine(response.Headers.ToString());
-            
+
         }
     }
 }
