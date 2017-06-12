@@ -26,8 +26,8 @@
         $("#TournamentEndDate").datepicker("option", "minDate", new Date($(this).val()));
     });
 
-    $(".message .closeMessage").on("click", function () {
-        $(".message").hide();
+    $("#content .message .closeMessage").on("click", function () {
+        $("#content .message").remove();
     });
 
 
