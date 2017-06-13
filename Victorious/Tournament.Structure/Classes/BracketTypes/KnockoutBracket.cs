@@ -177,10 +177,16 @@ namespace Tournament.Structure
 
 			if (NumberOfMatches > 0)
 			{
-				for (int n = 1; n <= NumberOfMatches; ++n)
+				int n = NumberOfMatches;
+				for (; n > 0; --n)
 				{
 					Match match = GetInternalMatch(n);
-					if (-1 == match.NextLoserMatchNumber && match.IsFinished)
+					if (match.NextLoserMatchNumber > 0)
+					{
+						break;
+					}
+
+					if (match.IsFinished)
 					{
 						// Add losing Player to the Rankings:
 						int rank = CalculateRank(match.MatchNumber);

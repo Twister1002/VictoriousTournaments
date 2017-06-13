@@ -248,6 +248,33 @@ namespace Tournament.Structure
 
 			return rank;
 		}
+		protected override void RecalculateRankings()
+		{
+			// The base method adds all LB losers to Rankings.
+			// It also handles the Grand Final.
+			base.RecalculateRankings();
+
+			// If there's no "Play-in" round, we're done:
+			if (0 == NumberOfMatches || Matches[1].NextLoserMatchNumber > 0)
+			{
+				return;
+			}
+
+			// Get the play-in round:
+			List<IMatch> firstRound = GetRound(1)
+				.Where(m => m.IsFinished && m.NextLoserMatchNumber > 0)
+				.ToList();
+			foreach (IMatch match in firstRound)
+			{
+				// Add each losing Player to the Rankings:
+				int rank = CalculateRank(match.MatchNumber);
+				IPlayer losingPlayer = match.Players[
+					(PlayerSlot.Defender == match.WinnerSlot)
+					? (int)PlayerSlot.Challenger
+					: (int)PlayerSlot.Defender];
+				Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
+			}
+		}
 
 		private int CalculateTotalLowerBracketMatches(int _numPlayers)
 		{
