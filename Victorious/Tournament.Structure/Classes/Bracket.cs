@@ -789,6 +789,13 @@ namespace Tournament.Structure
 			return (compare != 0)
 				? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
 		}
+		protected int SortRankingRanks(IPlayerScore first, IPlayerScore second)
+		{
+			int compare = first.Rank.CompareTo(second.Rank);
+			return (compare != 0)
+				? compare
+				: GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
+		}
 		#endregion
 	}
 }

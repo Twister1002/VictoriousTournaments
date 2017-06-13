@@ -156,7 +156,7 @@ namespace Tournament.Structure
 						IsFinished = true;
 					}
 
-					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+					Rankings.Sort(SortRankingRanks);
 				}
 			}
 			else if (!_isAddition &&
@@ -202,7 +202,7 @@ namespace Tournament.Structure
 					this.IsFinished = true;
 				}
 
-				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+				Rankings.Sort(SortRankingRanks);
 			}
 		}
 		protected override void UpdateRankings()
