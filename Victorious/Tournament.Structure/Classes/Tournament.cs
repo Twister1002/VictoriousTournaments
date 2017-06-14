@@ -326,6 +326,9 @@ namespace Tournament.Structure
 				case (BracketType.DOUBLE):
 					ret = new DoubleElimBracket(_model);
 					break;
+				//case (BracketType.STEP):
+				//	ret = new StepladderBracket(_model);
+				//	break;
 				case (BracketType.ROUNDROBIN):
 					ret = new RoundRobinBracket(_model);
 					break;
@@ -336,9 +339,8 @@ namespace Tournament.Structure
 					ret = new RoundRobinGroups(_model);
 					break;
 				case (BracketType.GSLGROUP):
-					throw new NotImplementedException("GSL doesn't work yet!");
-					//ret = new GSLGroups(_model);
-					//break;
+					ret = new GSLGroups(_model);
+					break;
 				default:
 					throw new NotImplementedException();
 			}
@@ -436,6 +438,18 @@ namespace Tournament.Structure
 			AddDoubleElimBracket(pList);
 		}
 #endif
+
+		/// <summary>
+		/// Creates a new Stepladder Bracket, and adds it to the bracketlist.
+		/// This is just a wrapper method that calls the bracket ctor
+		/// and adds the resulting Bracket object to the list.
+		/// </summary>
+		/// <param name="_playerList">List of Players</param>
+		/// <param name="_maxGamesPerMatch">Max games, applied to every Match</param>
+		public void AddStepladderBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1)
+		{
+			Brackets.Add(new StepladderBracket(_playerList, _maxGamesPerMatch));
+		}
 
 		/// <summary>
 		/// Creates a new Round Robin Bracket, and adds it to the bracketlist.

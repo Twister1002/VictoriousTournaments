@@ -119,6 +119,13 @@ namespace Tournament.Structure
 #endif
 
 		/// <summary>
+		/// Adds a new Stepladder bracket to the tournament.
+		/// </summary>
+		/// <param name="_playerList">List of Players for the Bracket</param>
+		/// <param name="_maxGamesPerMatch">Length of each Match</param>
+		void AddStepladderBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1);
+
+		/// <summary>
 		/// Adds a new Round Robin stage to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the stage</param>
