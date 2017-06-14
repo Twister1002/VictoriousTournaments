@@ -3,9 +3,9 @@
 <div class="TournamentInfo">
     <span class="icon icon-cross close"></span>
     <div class="details" data-columns="@Model.GetTournament().Brackets.Count">
-        @foreach (var bracket in Model.GetTournament().Brackets)
+        @foreach (var bracket in Model.GetBrackets())
         {
-            <div class="bracketNum column" data-bracket="@bracket.Id">@bracket.Id</div>
+            <div class="bracketNum column" data-bracket="@bracket.Id">@bracket.BracketName()</div>
         }
         @foreach (var bracket in Model.GetTournament().Brackets)
         {

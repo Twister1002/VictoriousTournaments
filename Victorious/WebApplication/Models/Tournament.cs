@@ -41,6 +41,10 @@ namespace WebApplication.Models
             viewModel.NumberOfRounds = Enumerable.Range(0, 100).ToList();
         }
 
+        /// <summary>
+        /// Gathers the information from the user and searches all tournaments on data given
+        /// </summary>
+        /// <param name="searchData">Key value pairs of information to search for.</param>
         public void Search(Dictionary<String, String> searchData)
         {
             if (searchData == null)
@@ -83,15 +87,39 @@ namespace WebApplication.Models
             searched = services.Tournament.FindTournaments(searchData);
         }
 
+        /// <summary>
+        /// An accessor to get the tournament's core data
+        /// </summary>
+        /// <returns>An ITournament without a wrapper</returns>
         public Tournaments.ITournament GetTournament()
         {
             return Tourny;
         }
 
         #region Bracket
+        /// <summary>
+        /// Gets the bracket from the loaded tournament.
+        /// </summary>
+        /// <param name="bracketId">ID of the bracket</param>
+        /// <returns>A Bracket wrapper class</returns>
         public Bracket GetBracket(int bracketId)
         {
             return new Bracket(services, Tourny.Brackets.Single(x => x.Id == bracketId));
+        }
+
+        /// <summary>
+        /// Gathers all the brackets loaded into the Tournament class
+        /// </summary>
+        /// <returns>A List of all brackets in the tournament</returns>
+        public List<Bracket> GetBrackets()
+        {
+            List<Bracket> brackets = new List<Bracket>();
+            foreach (Tournaments.IBracket bracket in Tourny.Brackets)
+            {
+                brackets.Add(new Bracket(services, bracket));
+            }
+
+            return brackets;
         }
         #endregion
 

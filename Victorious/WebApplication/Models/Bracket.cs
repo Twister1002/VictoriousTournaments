@@ -15,6 +15,8 @@ namespace WebApplication.Models
         public bool roundsModified;
         private IService services;
         private IBracket bracket;
+        public int Id { get; private set; }
+
 
         public Bracket(IService services, IBracket bracket)
         {
@@ -31,6 +33,7 @@ namespace WebApplication.Models
             bracket.GamesDeleted += OnGamesDeleted;
 
             roundsModified = false;
+            Id = bracket.Id;
         }
 
         public Tournaments.IBracket GetBracket()
@@ -66,43 +69,6 @@ namespace WebApplication.Models
         {
             return new Match(services, bracket.GrandFinal);
         }
-
-        public bool AddGame(int matchNum, int CScore, int DScore, PlayerSlot winner)
-        {
-            GameModel game = bracket.AddGame(matchNum, DScore, CScore, winner);
-
-            // Add the game to the database
-            services.Tournament.AddGame(game);
-
-            return services.Save();
-        }
-
-        public bool RemoveGame(int matchNum, int gameNum)
-        {
-            GameModel game = bracket.RemoveGameNumber(matchNum, gameNum);
-            return true;
-            //services.Tournament.DeleteGame(game.GameID);
-
-            //return services.Save();
-        }
-
-        //public void ResetBracket()
-        //{
-        //    // Tell the bracket that it has been reset.
-        //    bracket.ResetMatches(); // Should call all the events.
-        //}
-
-        //public List<GameModel> ResetMatch(int matchNum)
-        //{
-        //     return bracket.ResetMatchScore(matchNum);
-        //}
-
-        //public List<IPlayerScore> Rankings()
-        //{
-        //    return bracket.Rankings;
-        //}
-
-        //public 
 
         #region CRUD
         public bool Crate()
@@ -349,6 +315,34 @@ namespace WebApplication.Models
                     return false;
             }
         }
+
+        public String BracketName()
+        {
+            String name = "";
+            switch (bracket.BracketType)
+            {
+                case DatabaseLib.BracketType.SINGLE:
+                    name = "Single Elimination";
+                    break;
+                case DatabaseLib.BracketType.DOUBLE:
+                    name = "Double Elimination";
+                    break;
+                case DatabaseLib.BracketType.ROUNDROBIN:
+                    name = "Round Robin";
+                    break;
+                case DatabaseLib.BracketType.SWISS:
+                    name = "Swiss";
+                    break;
+                case DatabaseLib.BracketType.GSLGROUP:
+                    name = "GSL Group";
+                    break;
+                case DatabaseLib.BracketType.RRGROUP:
+                    name = "Roun Robin Groups";
+                    break;
+            }
+
+            return name;
+        }
         #endregion
 
         #region Match Stuff
@@ -375,6 +369,25 @@ namespace WebApplication.Models
         {
             services.Tournament.UpdateMatch(match);
             return services.Save();
+        }
+
+        public bool AddGame(int matchNum, int CScore, int DScore, PlayerSlot winner)
+        {
+            GameModel game = bracket.AddGame(matchNum, DScore, CScore, winner);
+
+            // Add the game to the database
+            services.Tournament.AddGame(game);
+
+            return services.Save();
+        }
+
+        public bool RemoveGame(int matchNum, int gameNum)
+        {
+            GameModel game = bracket.RemoveGameNumber(matchNum, gameNum);
+            return true;
+            //services.Tournament.DeleteGame(game.GameID);
+
+            //return services.Save();
         }
         #endregion
 

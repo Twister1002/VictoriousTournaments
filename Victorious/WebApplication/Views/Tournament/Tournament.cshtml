@@ -37,10 +37,10 @@
     <div class="bracketNames">
         <ul class="list-table">
             <li class="list-table-body">
-                <ul data-columns="@Model.GetTournament().Brackets.Count">
-                    @foreach (var bracket in Model.GetTournament().Brackets)
+                <ul data-columns="@Model.GetBrackets().Count">
+                    @foreach (var bracket in Model.GetBrackets())
                     {
-                        <li class="column bracketName" data-bracket="@bracket.Id">@bracket.Id</li>
+                        <li class="column bracketName" data-bracket="@bracket.Id">@bracket.BracketName()</li>
                     }
                 </ul>
             </li>
@@ -51,27 +51,21 @@
         var bracketViewModel = Model.GetBracket(bracket.Id);
 
         String bracketFileName = "";
-        String bracketName = "";
         switch (bracket.BracketType)
         {
             case DatabaseLib.BracketType.SINGLE:
                 bracketFileName = "Single";
-                bracketName = bracketFileName + " Elimination";
                 break;
             case DatabaseLib.BracketType.DOUBLE:
                 bracketFileName = "Double";
-                bracketName = bracketFileName + " Elimination";
                 break;
             case DatabaseLib.BracketType.ROUNDROBIN:
                 bracketFileName = "RoundRobin";
-                bracketName = bracketFileName;
                 break;
             case DatabaseLib.BracketType.SWISS:
                 bracketFileName = "Swiss";
-                bracketName = bracketFileName;
                 break;
             default:
-                bracketName = null;
                 break;
         }
 
