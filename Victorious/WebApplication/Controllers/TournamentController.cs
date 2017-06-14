@@ -11,6 +11,10 @@ namespace WebApplication.Controllers
     public class TournamentController : VictoriousController
     {
 
+        /// <summary>
+        /// Gets the index of Tournament page.
+        /// </summary>
+        /// <returns>A redirection to the Search element</returns>
         [HttpGet]
         [Route("Tournament")]
         public ActionResult Index()
@@ -18,7 +22,11 @@ namespace WebApplication.Controllers
             return RedirectToAction("Search");
         }
 
-        // Tournament Search
+        /// <summary>
+        /// Handles the user's that come to this page to automatically search and display tournaments
+        /// </summary>
+        /// <param name="searchBy">Params sent to be used to search</param>
+        /// <returns>The search.cshtml page that will display the tournaments</returns>
         [HttpGet]
         [Route("Tournament/Search")]
         public ActionResult Search(Dictionary<String, String> searchBy)
@@ -29,22 +37,34 @@ namespace WebApplication.Controllers
             return View("Search", model);
         }
         
+        /// <summary>
+        /// Allows the user to create a tournament if they are currently logged in
+        /// </summary>
+        /// <returns></returns>
         // GET: Tournament/Create
         [HttpGet]
         [Route("Tournament/Create")]
         public ActionResult Create()
         {
-            if (Session["User.UserId"] == null)
+            if (!account.IsLoggedIn())
             {
                 return RedirectToAction("Login", "Account");
             }
             else
             {
                 Models.Tournament tournament = new Models.Tournament(service, -1);
+                ViewBag.Create = true;
+                ViewBag.CanEdit = tournament.CanEdit();
+                ViewBag.InProgress = tournament.Model.InProgress;
                 return View("Create", tournament.viewModel);
             }
         }
 
+        /// <summary>
+        /// Sends the user to the update page to update their tournament they have created
+        /// </summary>
+        /// <param name="tournamentId">ID of the tournament from the URL</param>
+        /// <returns></returns>
         // GET: Tournament/Edit/5
         [HttpGet]
         [Route("Tournament/Update/{tournamentId}")]
@@ -55,10 +75,11 @@ namespace WebApplication.Controllers
                 Models.Tournament tourny = new Models.Tournament(service, tournamentId);
                 if (tourny.IsAdmin(account.Model.AccountID))
                 {
+                    ViewBag.Create = false;
                     ViewBag.CanEdit = tourny.CanEdit();
                     ViewBag.InProgress = tourny.Model.InProgress;
                     tourny.SetFields();
-                    return View("Update", tourny.viewModel);
+                    return View("Create", tourny.viewModel);
                 }
                 else
                 {
@@ -77,6 +98,12 @@ namespace WebApplication.Controllers
             }
         }
 
+        /// <summary>
+        /// Loads the tournament the user wants to view
+        /// </summary>
+        /// <param name="guid">The unique ID of the tournament</param>
+        /// <param name="inviteCode">The invite code provided for the tournament</param>
+        /// <returns>Allows the user to view the tournament or redirects them elsewhere</returns>
         [HttpGet]
         [Route("Tournament/{guid}")]
         public ActionResult Tournament(String guid, String inviteCode)
@@ -145,6 +172,11 @@ namespace WebApplication.Controllers
             return RedirectToAction("Search", "Tournament");
         }
 
+        /// <summary>
+        /// When the user has submitted the form to create the tournament we must process this data
+        /// </summary>
+        /// <param name="viewModel">The model from the page that was created.</param>
+        /// <returns></returns>
         // POST: Tournament/Create
         [HttpPost]
         [Route("Tournament/Create")]
@@ -179,12 +211,19 @@ namespace WebApplication.Controllers
                     Session["Message.Class"] = ViewError.ERROR;
                     Session["Message"] = "Please enter in the required fields listed below.";
                 }
+
+                ViewBag.CanEdit = tourny.CanEdit();
+                ViewBag.InProgress = tourny.Model.InProgress;
                 return View("Create", tourny.viewModel);
             }
-
-            
         }
 
+        /// <summary>
+        /// Updates a tournament when the user has submitted their form.
+        /// </summary>
+        /// <param name="viewModel">The model of all the form elements.</param>
+        /// <param name="tournamentId">ID of the tournament.</param>
+        /// <returns></returns>
         // POST: Tournament/Edit/5
         [HttpPost]
         [Route("Tournament/Update/{tournamentId}")]
@@ -218,7 +257,7 @@ namespace WebApplication.Controllers
                 ViewBag.CanEdit = tourny.CanEdit();
                 ViewBag.InProgress = tourny.Model.InProgress;
                 tourny.SetFields();
-                return View("Update", tourny.viewModel);
+                return View("Create", tourny.viewModel);
             }
             else
             {
@@ -228,6 +267,11 @@ namespace WebApplication.Controllers
             }
         }
 
+        /// <summary>
+        /// Allows the user to register for a tournament
+        /// </summary>
+        /// <param name="userData">The model of the user</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Tournament/Register")]
         public ActionResult Register(TournamentRegisterViewModel userData)
@@ -257,6 +301,11 @@ namespace WebApplication.Controllers
             return RedirectToAction("Tournament", "Tournament", new { guid = userData.TournamentID });
         }
 
+        /// <summary>
+        /// Removes the user from the tournament
+        /// </summary>
+        /// <param name="userData">The model of the user</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Tournament/Deregister")]
         public ActionResult Deregister(TournamentRegisterViewModel userData)

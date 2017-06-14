@@ -120,7 +120,6 @@
     <Content Include="Scripts\scripts.min.js" />
     <Content Include="Scripts\Tournament\Bracket.js" />
     <Content Include="Scripts\Tournament\Create.js" />
-    <Content Include="Scripts\Tournament\Update.js" />
     <Content Include="Styles\css\jquery.timepicker.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Global.asax" />
@@ -194,7 +193,6 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Index.cshtml" />
     <Content Include="Views\Tournament\Tournament.cshtml" />
-    <Content Include="Views\Tournament\Create.cshtml" />
     <Content Include="Views\Tournament\Search.cshtml" />
     <Content Include="Styles\less\Tournament.less" />
     <Content Include="Styles\less\_forms.less" />
@@ -204,11 +202,10 @@
     <Content Include="Styles\less\_nav.less" />
     <Content Include="Styles\less\_list-table.less" />
     <Content Include="Styles\less\_icons.less" />
-    <Content Include="Views\Tournament\Update.cshtml" />
+    <Content Include="Views\Tournament\Create.cshtml" />
     <Content Include="Views\Tournament\Delete.cshtml" />
     <Content Include="Styles\less\Tournament\_Tournament.less" />
     <Content Include="Styles\less\Tournament\_Create.less" />
-    <Content Include="Styles\less\Tournament\_Edit.less" />
     <Content Include="Styles\less\Tournament\_Search.less" />
     <Content Include="Views\Tournament\Administrator\_Finalize.cshtml" />
     <Content Include="Views\Administrator\Index.cshtml" />

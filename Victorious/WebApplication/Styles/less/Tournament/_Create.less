@@ -1,7 +1,17 @@
-﻿#TournamentCreate {
+﻿#TournamentEdit {
     .section {
-        li {
-            padding: .5em 0em;
+        &.form-section {
+            li {
+                padding: .5em 0em;
+
+                .datepicker, .timepicker {
+                    width: 7em;
+                }
+
+                &.hide {
+                    display: none;
+                }
+            }
 
             .input-validation-error {
                 background-color: @alert-red;
@@ -14,18 +24,15 @@
             .field-validation-error {
                 display: none;
             }
-
-            .datepicker, .timepicker {
-                width: 7em;
-            }
-
-            
         }
 
-        .brackets {
-            li {
-                &.hide {
-                    display: none;
+        &.user-section {
+            /*background-color: red;*/
+            .user {
+                padding: .25em 0em;
+
+                > li {
+                    vertical-align: middle;
                 }
             }
         }

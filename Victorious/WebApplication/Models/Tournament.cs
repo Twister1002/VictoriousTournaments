@@ -40,6 +40,12 @@ namespace WebApplication.Models
             viewModel.BracketData = new List<BracketViewModel>();
             viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
             viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
+            viewModel.RegistrationStartDate = DateTime.Now;
+            viewModel.RegistrationEndDate = DateTime.Now.AddDays(1);
+            viewModel.TournamentStartDate = DateTime.Now.AddDays(3);
+            viewModel.TournamentEndDate = DateTime.Now.AddDays(4);
+            viewModel.CheckinStartDate = DateTime.Now.AddDays(1);
+            viewModel.CheckinEndDate = DateTime.Now.AddDays(2);
         }
 
         /// <summary>
