@@ -46,7 +46,7 @@ namespace DatabaseLib
 
             return dict;
         }
-
+    
         public bool SendAccountInviteEmail(AccountInviteModel invite)
         {
             try
@@ -73,6 +73,8 @@ namespace DatabaseLib
                 };
 
                 msg.AddTos(recepiants);
+
+                msg.SetClickTracking(true, false);
 
                 //string subject = "You have been invited to create an account on Victorious by " + sender.GetFullName();
                 //msg.SetSubject(subject);
@@ -133,7 +135,33 @@ namespace DatabaseLib
             return true;
         }
 
+        public bool SendVerificationEmail(string userEmail, string verificationCode)
+        {
+            try
+            {
+                var msg = new SendGridMessage();
 
+                msg.SetFrom(new EmailAddress("victoriouswebsite@gmail.com", "Administrator"));
+                var templateId = "a942917c-bb5d-4d55-889d-bf6fff84446f";
+                msg.TemplateId = templateId;
+
+                Dictionary<string, string> substitutions = new Dictionary<string, string>()
+                {
+                    { "{verification_url}", "http://localhost:20346/Account/Register" },
+                    { "{verification_code", verificationCode },
+                };
+
+                msg.AddSubstitutions(substitutions);
+                msg.AddTo(userEmail);
+
+                Execute(client, msg).Wait();
+            }
+            catch (Exception ex)
+            {
+                return false;  
+            }
+            return true;
+        }
 
         private void Send(SendGridMessage email)
         {
