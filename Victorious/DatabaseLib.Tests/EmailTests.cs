@@ -44,7 +44,7 @@ namespace DatabaseLib.Tests
             {
                 "keltonr01@gmail.com"
             };
-            var result = emailService.SendTournamentInviteEmail(tournamentService.GetAllTournamentInvites()[0], "url", recepiants);
+            var result = emailService.SendTournamentInviteEmail(tournamentService.GetAllTournamentInvites()[0], "http://localhost:20346/Tournament/5002", recepiants);
 
             Assert.AreEqual(true, result);
         }

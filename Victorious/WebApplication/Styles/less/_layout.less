@@ -6,17 +6,31 @@
 body {
     background-color: @color-primary-2;
     color: @white;
-    font-family: 'Signika', 'Quattrocento Sans', 'Kanit', 'Arimo', 'Francois One', sans-serif;
+    font-family: 'Signika', 'Quattrocento Sans', /*'Kanit', 'Arimo', 'Francois One',*/ sans-serif;
     font-size: 16px;
 }
 
-.hover {
-    color: @white;
-    background-color: @color-primary-4;
-    text-decoration: none;
+.notSelected {
+    &:not(.selected) {
+        background-color: @color-primary-1;
+    }
 }
 
-.selected { 
+.isSelected {
+    &.selected {
+        background-color: @color-primary-3;
+    }
+}
+
+.hover {
+    &:hover {
+        color: @white;
+        background-color: @color-primary-4;
+        text-decoration: none;
+    }
+}
+
+.selected {
     background-color: @color-primary-0;
 }
 
@@ -50,62 +64,76 @@ label {
 }
 
 .message {
-    display:block;
+    display: block;
     padding: 1em;
+    position: relative;
 
     &:after {
         padding-bottom: 1em;
     }
+
     &.none {
-        background-color:@alert-yellow;
+        background-color: @alert-yellow;
     }
 
     &.success {
-        background-color:@alert-green;
+        background-color: @alert-green;
     }
 
     &.warning {
-        background-color:@alert-orange;
+        background-color: @alert-orange;
     }
 
     &.error {
-        background-color:@alert-red;
+        background-color: @alert-red;
+    }
+
+    .closeMessage {
+        position: absolute;
+        padding: .5em;
+        right: 1em;
+        top: .6em;
+        width: 1em;
     }
 }
 
 .dev-bp {
-    position:relative;
-    top:0em;
-    height:.5em;
+    position: relative;
+    top: 0em;
+    height: .5em;
     width: 100%;
     background-color: grey;
 }
 
 #content {
     width: 100%;
+    min-height: 10em;
 }
 
 @media screen and (min-width: @@b1) {
-	.dev-bp {
+    .dev-bp {
         background-color: blue;
-	}
+    }
 }
+
 @media screen and (min-width: @@b2) {
-	.dev-bp {
+    .dev-bp {
         background-color: violet;
-	}
+    }
 }
+
 @media screen and (min-width: @@b3) {
     /*#content {
         width: 90%;
         margin: auto;
     }*/
-	.dev-bp {
+    .dev-bp {
         background-color: yellow;
-	}
+    }
 }
+
 @media screen and (min-width: @@b4) {
     .dev-bp {
         background-color: orange;
-	}
+    }
 }

@@ -41,29 +41,15 @@ namespace WebApplication.Models
             viewModel.NumberOfRounds = Enumerable.Range(0, 100).ToList();
         }
 
+        /// <summary>
+        /// Gathers the information from the user and searches all tournaments on data given
+        /// </summary>
+        /// <param name="searchData">Key value pairs of information to search for.</param>
         public void Search(Dictionary<String, String> searchData)
         {
             if (searchData == null)
             {
                 searchData = new Dictionary<String, String>();
-            }
-
-            searchData.Add("PublicViewing", "true");
-            if (searchData.Keys.Contains("startDate"))
-            {
-                searchData.Add("TournamentStartDate", "true");
-                searchData.Add("RegistrationStartDate", "true");
-
-                if (searchData.Keys.Contains("endDate"))
-                {
-                    searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
-                    searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
-                }
-                else
-                {
-                    searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
-                    searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
-                }
             }
 
             List<String> safeParamList = new List<String>() {
@@ -79,18 +65,61 @@ namespace WebApplication.Models
             };
 
             searchData = searchData.Where(k => safeParamList.Contains(k.Key) && k.Value != String.Empty).ToDictionary(k => k.Key, k => k.Value);
+
+            searchData.Add("PublicViewing", "true");
+            if (searchData.Keys.Contains("startDate"))
+            {
+                searchData.Add("TournamentStartDate", searchData["startDate"]);
+                searchData.Add("RegistrationStartDate", searchData["startDate"]);
+
+                if (searchData.Keys.Contains("endDate"))
+                {
+                    searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
+                    searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
+                }
+                else
+                {
+                    searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
+                    searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
+                }
+            }
+
             searched = services.Tournament.FindTournaments(searchData);
         }
 
+        /// <summary>
+        /// An accessor to get the tournament's core data
+        /// </summary>
+        /// <returns>An ITournament without a wrapper</returns>
         public Tournaments.ITournament GetTournament()
         {
             return Tourny;
         }
 
         #region Bracket
+        /// <summary>
+        /// Gets the bracket from the loaded tournament.
+        /// </summary>
+        /// <param name="bracketId">ID of the bracket</param>
+        /// <returns>A Bracket wrapper class</returns>
         public Bracket GetBracket(int bracketId)
         {
             return new Bracket(services, Tourny.Brackets.Single(x => x.Id == bracketId));
+        }
+
+        /// <summary>
+        /// Gathers all the brackets loaded into the Tournament class
+        /// </summary>
+        /// <returns>A List of all brackets in the tournament</returns>
+        public List<Bracket> GetBrackets()
+        {
+            List<Bracket> brackets = new List<Bracket>();
+            foreach (Tournaments.IBracket bracket in Tourny.Brackets)
+            {
+                brackets.Add(new Bracket(services, bracket));
+            }
+
+            return brackets;
         }
         #endregion
 
@@ -171,7 +200,7 @@ namespace WebApplication.Models
             services.Tournament.AddTournament(Model);
             AddUser(account, Permission.TOURNAMENT_CREATOR);
             //if (viewModel.BracketData != null) UpdateBrackets();
-            bool tournamentSave = services.Save();
+            //bool tournamentSave = services.Save();
 
             // Create InviteModel
             TournamentInviteModel inviteModel = new TournamentInviteModel()
@@ -767,11 +796,14 @@ namespace WebApplication.Models
             Model.CheckInBegins = viewModel.CheckinStartDate + viewModel.CheckinStartTime.TimeOfDay;
             Model.CheckInEnds = viewModel.CheckinEndDate + viewModel.CheckinEndTime.TimeOfDay;
 
-            // Give the class viewModel the viewModel data
-            this.viewModel.BracketData = viewModel.BracketData;
+            if (viewModel.BracketData != null)
+            {
+                // Give the class viewModel the viewModel data
+                this.viewModel.BracketData = viewModel.BracketData;
 
-            // Add the bracket data
-            UpdateBrackets();
+                // Add the bracket data
+                UpdateBrackets();
+            }
         }
 
         public void SetFields()

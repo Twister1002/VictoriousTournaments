@@ -36,6 +36,7 @@ namespace DatabaseLib
 
     }
 
+
     public partial class AccountModel
     {
         public const int FirstNameLength = 50;

@@ -59,8 +59,12 @@ namespace WebApplication.Controllers
                         status = gameType.Delete(game);
                         break;
                 }
-
+                gameType.Retrieve();
                 message = "Was able to " + function + " " + (status ? "successfully" : "unsuccessfully");
+                data = new
+                {
+                    games = gameType.Games.Select(x => new { x.GameTypeID, x.Title }).ToList()
+                };
             }
 
             return BundleJson();
@@ -83,6 +87,7 @@ namespace WebApplication.Controllers
                         break;
                 }
 
+                platform.Retrieve();
                 message = "Was able to " + function + " " + (status ? "" : "un") + "successfully";
                 data = new
                 {
@@ -100,9 +105,11 @@ namespace WebApplication.Controllers
             if (account.IsAdministrator())
             {
                 Models.BracketType bracketType = new Models.BracketType(service);
-
+                
                 status = bracketType.Update(bracketModel);
                 message = "BracketType was updated " + (status ? "" : "un") + "successfully";
+
+                bracketType.Retrieve();
                 data = new
                 {
                     brackets = bracketType.Brackets.Select(x => new { x.BracketTypeID, x.TypeName, x.IsActive })
@@ -127,7 +134,7 @@ namespace WebApplication.Controllers
 
                 if (tournament.IsCreator(account.Model.AccountID))
                 {
-                    bracket.GetBracket().ResetMatches();
+                    bracket.IBracket.ResetMatches();
 
                     status = true;
                     message = "Bracket was reset";
@@ -180,7 +187,7 @@ namespace WebApplication.Controllers
                     List<int> matchNumsAffected = bracket.MatchesAffectedList(matchNum);
                     List<object> matchResponse = new List<object>();
 
-                    bracket.GetBracket().ResetMatchScore(matchNum);
+                    bracket.IBracket.ResetMatchScore(matchNum);
 
                     foreach (int match in matchNumsAffected)
                     {
@@ -220,7 +227,7 @@ namespace WebApplication.Controllers
             {
                 data = new
                 {
-                    ranks = bracket.GetBracket().Rankings,
+                    ranks = bracket.IBracket.Rankings,
                     usePoints = bracket.UsePoints()
                 };
             }
@@ -281,7 +288,7 @@ namespace WebApplication.Controllers
                             {
                                 // We need to add this game.
                                 PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
-                                bracket.GetBracket().AddGame(matchNum, gameModel.DefenderScore, gameModel.ChallengerScore, winner);
+                                bracket.AddGame(matchNum, gameModel.DefenderScore, gameModel.ChallengerScore, winner);
                             }
                             else
                             {
@@ -290,7 +297,7 @@ namespace WebApplication.Controllers
                         }
 
                         // Update the matches in the database
-                        status = bracket.UpdateMatch(bracket.GetBracket().GetMatchModel(matchNum));
+                        status = bracket.UpdateMatch(bracket.IBracket.GetMatchModel(matchNum));
                         match = bracket.GetMatchByNum(matchNum);
                         List<object> matchUpdates = new List<object>();
 
@@ -303,15 +310,15 @@ namespace WebApplication.Controllers
                                 matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(match.match.NextMatchNumber), false));
                             if (match.match.NextLoserMatchNumber != -1)
                                 matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(match.match.NextLoserMatchNumber), false));
-                            if (bracket.GetBracket().BracketType ==  DatabaseLib.BracketType.SWISS)
+                            if (bracket.IBracket.BracketType ==  DatabaseLib.BracketType.SWISS)
                             {
-                                List<IMatch> roundMatches = bracket.GetBracket().GetRound(match.match.RoundIndex);
+                                List<IMatch> roundMatches = bracket.IBracket.GetRound(match.match.RoundIndex);
                                 // We need to verify and check if this round is finished
                                 if (!roundMatches.Any(x => x.IsFinished == false))
                                 {
-                                    foreach (Models.Match iMatch in bracket.GetBracket().GetRound(match.match.RoundIndex + 1))
+                                    foreach (Models.Match iMatch in bracket.GetRound(match.match.RoundIndex + 1, BracketSection.UPPER))
                                     {
-                                        matchUpdates.Add(JsonMatchResponse(match, false));
+                                        matchUpdates.Add(JsonMatchResponse(iMatch, false));
                                     }
                                 }
                             }
@@ -340,12 +347,7 @@ namespace WebApplication.Controllers
                 message = "No games were received.";
             }
 
-            return Json(JsonConvert.SerializeObject(new
-            {
-                status = status,
-                message = message,
-                data = data
-            }));
+            return BundleJson();
         }
 
         [HttpPost]
@@ -360,43 +362,25 @@ namespace WebApplication.Controllers
                 List<int> matchesAffected = bracket.MatchesAffectedList(matchNum);
                 List<object> matchesAffectedData = new List<object>();
 
-                GameModel gameModel = bracket.GetBracket().RemoveGameNumber(matchNum, gameNum);
-
-                foreach (int matchNumber in matchesAffected)
+                if (bracket.RemoveGame(matchNum, gameNum))
                 {
-                    matchesAffectedData.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNum), true));
+                    foreach (int matchNumber in matchesAffected)
+                    {
+                        matchesAffectedData.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNum), true));
+                    }
+
+                    status = true;
+                    message = "Matches were updated";
+                    data = new
+                    {
+                        matches = matchesAffectedData
+                    };
                 }
-
-                data = new
+                else
                 {
-                    matches = matchesAffectedData
-                };
+                    message = "There was an error in deleting the game";
+                }
             }
-            //Dictionary<String, int> json = JsonConvert.DeserializeObject<Dictionary<String, int>>(jsonData);
-            //BracketViewModel bracketViewModel = new BracketViewModel(json["bracketId"]);
-            //List<int> matchesAffected = bracketViewModel.MatchesAffectedList(json["matchNum"]);
-            //List<object> matchDataAffected = new List<object>();
-            //bracketViewModel.Bracket.RemoveGameNumber(json["matchNum"], json["gameNum"]);
-
-            //status = true;
-            //message = "Matches are affected.";
-
-            //foreach (int matchNum in matchesAffected)
-            //{
-            //    // Load the original and load one from the bracket
-            //    MatchViewModel modified = new MatchViewModel(bracketViewModel.Bracket.GetMatchModel(matchNum));
-            //    MatchViewModel original = new MatchViewModel(modified.Match.Id);
-
-            //    List<IGame> games = original.Match.Games.Where(x => !modified.Match.Games.Any(y => y.Id == x.Id)).ToList();
-            //    foreach (IGame game in games)
-            //    {
-            //        GameViewModel gameViewModel = new GameViewModel(game);
-            //        gameViewModel.Delete();
-            //    }
-
-            //    modified.Update();
-            //    matchDataAffected.Add(JsonMatchResponse(modified.Match, true));
-            //}
 
             return BundleJson();
         }
@@ -405,11 +389,11 @@ namespace WebApplication.Controllers
         #region Tournament
         [HttpPost]
         [Route("Ajax/Tournament/Search")]
-        public JsonResult AjaxSearch(Dictionary<String, String> searchBy)
+        public JsonResult AjaxSearch(String searchBy)
         {
             List<object> dataReturned = new List<object>();
             Models.Tournament tournament = new Models.Tournament(service, -1);
-            tournament.Search(searchBy);
+            tournament.Search(JsonConvert.DeserializeObject<Dictionary<String, String>>(searchBy));
 
             foreach (TournamentModel tourny in tournament.searched)
             {
@@ -424,6 +408,7 @@ namespace WebApplication.Controllers
                     publicViewing = tourny.PublicViewing,
                     link = Url.Action("Tournament", "Tournament", new { guid = tourny.TournamentID })
                 });
+
                 data = new
                 {
                     search = dataReturned
@@ -476,22 +461,35 @@ namespace WebApplication.Controllers
         [Route("Ajax/Tournament/CheckIn")]
         public JsonResult CheckIn(int tournamentId, int tournamentUserId = -1)
         {
-            // Check if a userId was provided first before checking an account
-            if (tournamentUserId != -1)
+            Models.Tournament tournament = new Models.Tournament(service, tournamentId);
+            
+
+            if (tournament.IsAdmin(account.Model.AccountID))
             {
-                // An admin is checking in a user
-                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
-                status = tournament.CheckUserIn(tournamentUserId);
-                message = "User is " + (status ? "" : "not") + " checked in";
+                // Check if a userId was provided first before checking an account
+                if (tournamentUserId != -1)
+                {
+                    // An admin is checking in a user
+                    status = tournament.CheckUserIn(tournamentUserId);
+                    message = "User is " + (status ? "" : "not") + " checked in";
+                }
+                else if (account.IsLoggedIn())
+                {
+                    // A user with an account is checking in.
+                    status = tournament.CheckAccountIn(account.Model.AccountID);
+                    message = "Account is " + (status ? "" : "not") + " checked in";
+                }
             }
-            else if (account.IsLoggedIn())
+            else
             {
-                // A user with an account is checking in.
-                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
-                status = tournament.CheckAccountIn(account.Model.AccountID);
-                message = "Account is " + (status ? "" : "not") + " checked in";
+                message = "You can not do this.";
             }
 
+            data = new
+            {
+                isCheckedIn = tournament.isUserCheckedIn(tournamentUserId),
+                targetUser = tournamentUserId
+            };
             return BundleJson();
         }
 
@@ -603,7 +601,8 @@ namespace WebApplication.Controllers
                     data = new
                     {
                         permissions = permissionChange,
-                        isCheckedIn = tournament.isUserCheckedIn(targetUser)
+                        isCheckedIn = tournament.isUserCheckedIn(targetUser),
+                        targetUser = targetUser
                     };
                     message = "Permissions are updated";
                     status = true;

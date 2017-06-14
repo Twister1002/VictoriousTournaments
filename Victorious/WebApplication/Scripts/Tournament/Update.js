@@ -21,7 +21,7 @@
     });
 
     function BracketInfoChange() {
-        var bracketData = $(this).closest(".bracketSection");
+        var bracketData = $(this).closest(".brackets");
         var rounds = bracketData.find(".roundSelect");
 
         // Display the round selection for the user and hide it if its not applicable and reset to 0

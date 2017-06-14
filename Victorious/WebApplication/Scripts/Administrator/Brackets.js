@@ -9,14 +9,14 @@
         $.ajax({
             "url": "/Ajax/Administrator/Bracket",
             "type": "post",
-            "data": { "bracketTypeId": $(this).closest(".bracket").data("id") },
+            "data": { "BracketID": $(this).closest(".bracket").data("id") },
             "dataType": "json",
             "beforeSend": function () {
                 $brackets.find(".icon").off("click");
             },
             "success": function (json) {
                 if (json.status) {
-                    $.each(json.brackets, function (i, e) {
+                    $.each(json.data.brackets, function (i, e) {
                         $icon = $("#AdministratorBrackets .bracket[data-id='" + e.BracketTypeID + "'] .icon");
                         $icon.removeClass();
                         if (e.IsActive) {

@@ -15,11 +15,15 @@ namespace WebApplication.Models
         public bool roundsModified;
         private IService services;
         private IBracket bracket;
+        private IGroupStage groupBracket;
+
+        public int Id { get; private set; }
 
         public Bracket(IService services, IBracket bracket)
         {
             this.services = services;
             this.bracket = bracket;
+            this.groupBracket = bracket as IGroupStage;
             Init();
         }
 
@@ -31,18 +35,41 @@ namespace WebApplication.Models
             bracket.GamesDeleted += OnGamesDeleted;
 
             roundsModified = false;
+            Id = bracket.Id;
         }
 
-        public Tournaments.IBracket GetBracket()
+        public Tournaments.IBracket IBracket { get { return bracket; } }
+        public Tournaments.IGroupStage Group { get { return groupBracket; } }
+
+        public List<Match> GetRound(int roundNum, BracketSection section)
         {
-            return bracket;
+            List<Match> matches = new List<Match>();
+            List<IMatch> origMatches = new List<IMatch>();
+
+            switch (section)
+            {
+                case BracketSection.UPPER:
+                case BracketSection.FINAL:
+                    origMatches = bracket.GetRound(roundNum);
+                    break;
+                case BracketSection.LOWER:
+                    origMatches = bracket.GetLowerRound(roundNum);
+                    break;
+            }
+
+            foreach (IMatch match in origMatches)
+            {
+                matches.Add(new Match(services, match));
+            }
+
+            return matches;
         }
 
-        public List<Match> GetRound(int roundNum)
+        public List<Match> GetRound(int groupNum, int roundNum)
         {
             List<Match> matches = new List<Match>();
 
-            foreach (IMatch match in bracket.GetRound(roundNum))
+            foreach (IMatch match in groupBracket.GetRound(groupNum, roundNum))
             {
                 matches.Add(new Match(services, match));
             }
@@ -54,24 +81,7 @@ namespace WebApplication.Models
         {
             return new Match(services, bracket.GrandFinal);
         }
-
-        //public void ResetBracket()
-        //{
-        //    // Tell the bracket that it has been reset.
-        //    bracket.ResetMatches(); // Should call all the events.
-        //}
-
-        //public List<GameModel> ResetMatch(int matchNum)
-        //{
-        //     return bracket.ResetMatchScore(matchNum);
-        //}
-
-        //public List<IPlayerScore> Rankings()
-        //{
-        //    return bracket.Rankings;
-        //}
-
-        //public 
+        
 
         #region CRUD
         public bool Crate()
@@ -318,6 +328,58 @@ namespace WebApplication.Models
                     return false;
             }
         }
+
+        public String BracketName()
+        {
+            String name = "";
+            switch (bracket.BracketType)
+            {
+                case DatabaseLib.BracketType.SINGLE:
+                    name = "Single Elimination";
+                    break;
+                case DatabaseLib.BracketType.DOUBLE:
+                    name = "Double Elimination";
+                    break;
+                case DatabaseLib.BracketType.ROUNDROBIN:
+                    name = "Round Robin";
+                    break;
+                case DatabaseLib.BracketType.SWISS:
+                    name = "Swiss";
+                    break;
+                case DatabaseLib.BracketType.GSLGROUP:
+                    name = "GSL Group";
+                    break;
+                case DatabaseLib.BracketType.RRGROUP:
+                    name = "Round Robin Groups";
+                    break;
+            }
+
+            return name;
+        }
+
+        public String BracketFileName()
+        {
+            String file = "";
+            switch (bracket.BracketType)
+            {
+                case DatabaseLib.BracketType.SINGLE:
+                case DatabaseLib.BracketType.ROUNDROBIN:
+                case DatabaseLib.BracketType.SWISS:
+                    file = "UpperBracket";
+                    break;
+                case DatabaseLib.BracketType.DOUBLE:
+                    file = "Double";
+                    break;
+                case DatabaseLib.BracketType.GSLGROUP:
+                    file = "GSLGroup";
+                    break;
+                case DatabaseLib.BracketType.RRGROUP:
+                    file = "RoundRobinGroup";
+                    break;
+            }
+
+            return file;
+        }
         #endregion
 
         #region Match Stuff
@@ -345,6 +407,25 @@ namespace WebApplication.Models
             services.Tournament.UpdateMatch(match);
             return services.Save();
         }
+
+        public bool AddGame(int matchNum, int CScore, int DScore, PlayerSlot winner)
+        {
+            GameModel game = bracket.AddGame(matchNum, DScore, CScore, winner);
+
+            // Add the game to the database
+            services.Tournament.AddGame(game);
+
+            return services.Save();
+        }
+
+        public bool RemoveGame(int matchNum, int gameNum)
+        {
+            GameModel game = bracket.RemoveGameNumber(matchNum, gameNum);
+            return true;
+            //services.Tournament.DeleteGame(game.GameID);
+
+            //return services.Save();
+        }
         #endregion
 
         #region Events
@@ -360,10 +441,7 @@ namespace WebApplication.Models
                 services.Tournament.DeleteGame(games);
             }
 
-            if (services.Save())
-            {
-                roundsModified = true;
-            }
+            services.Save();
         }
 
         public void OnRoundAdd(object sender, BracketEventArgs args)
@@ -404,10 +482,7 @@ namespace WebApplication.Models
                 services.Tournament.DeleteGame(gameId);
             }
 
-            if (services.Save())
-            {
-                roundsModified = true;
-            }
+            services.Save();
         }
         #endregion
     }

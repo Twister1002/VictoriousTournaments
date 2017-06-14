@@ -37,53 +37,32 @@
     <div class="bracketNames">
         <ul class="list-table">
             <li class="list-table-body">
-                <ul data-columns="@Model.GetTournament().Brackets.Count">
-                    @foreach (var bracket in Model.GetTournament().Brackets)
+                <ul data-columns="@Model.GetBrackets().Count">
+                    @foreach (var bracket in Model.GetBrackets())
                     {
-                        <li class="column bracketName" data-bracket="@bracket.Id">@bracket.Id</li>
+                        <li class="column bracketName" data-bracket="@bracket.Id">@bracket.BracketName()</li>
                     }
                 </ul>
             </li>
         </ul>
     </div>
-    @foreach (var bracket in Model.GetTournament().Brackets)
+    @foreach (var bracket in Model.GetBrackets())
     {
         var bracketViewModel = Model.GetBracket(bracket.Id);
-
-        String bracketFileName = "";
-        String bracketName = "";
-        switch (bracket.BracketType)
-        {
-            case DatabaseLib.BracketType.SINGLE:
-                bracketFileName = "Single";
-                bracketName = bracketFileName + " Elimination";
-                break;
-            case DatabaseLib.BracketType.DOUBLE:
-                bracketFileName = "Double";
-                bracketName = bracketFileName + " Elimination";
-                break;
-            case DatabaseLib.BracketType.ROUNDROBIN:
-                bracketFileName = "RoundRobin";
-                bracketName = bracketFileName;
-                break;
-            case DatabaseLib.BracketType.SWISS:
-                bracketFileName = "Swiss";
-                bracketName = bracketFileName;
-                break;
-            default:
-                bracketName = null;
-                break;
-        }
+        ViewBag.UpperDisplayRounds = bracket.RoundShowing(WebApplication.Models.BracketSection.UPPER);
+        ViewBag.LowerDisplayRounds = bracket.RoundShowing(WebApplication.Models.BracketSection.LOWER);
+        ViewBag.DisplayRounds = bracket.TotalDispalyRounds(ViewBag.UpperDisplayRounds, ViewBag.LowerDisplayRounds);
+        ViewBag.IsFinalized = bracket.IBracket.IsFinalized;
 
         <div class="bracket" data-id="@bracket.Id">
             <ul class="list-table bracket-data">
                 @{
-                    if (!bracket.IsFinalized && ViewBag.isCreator && Model.GetParticipants().Count >= 4)
+                    if (!bracket.IBracket.IsFinalized && ViewBag.isCreator && Model.GetParticipants().Count >= 4)
                     {
                         Html.RenderPartial("Administrator/_Finalize");
                     }
-
-                    Html.RenderPartial("Brackets/" + bracketFileName, bracketViewModel, new ViewDataDictionary(ViewData));
+                    
+                    Html.RenderPartial("Brackets/" + bracket.BracketFileName(), bracketViewModel, new ViewDataDictionary(ViewData));
                 }
             </ul>
         </div>

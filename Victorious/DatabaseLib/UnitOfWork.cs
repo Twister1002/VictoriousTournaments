@@ -1,9 +1,12 @@
 ﻿using DatabaseLib;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Entity.Utilities;
+using System.Data.Entity.Validation;
 
 namespace DatabaseLib
 {
@@ -273,7 +276,9 @@ namespace DatabaseLib
             {
                 if (disposing)
                 {
+                    
                     context.Dispose();
+                    //context = new VictoriousEntities();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

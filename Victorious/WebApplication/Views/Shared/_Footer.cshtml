@@ -11,15 +11,15 @@
         @Html.ActionLink("Tournaments", "Index", "Tournament")
         @Html.ActionLink("Tournament Rules", "Rules", "Home")
     </div>
-    <div class="footer_subscribe">
+    @*<div class="footer_subscribe">
         <label>Subscribe to Victorious and receive updates to our platform</label>
         @using (Html.BeginForm("Home", "Home", FormMethod.Post))
         {
             <input type="text" name="email" placeholder="Email" />
         }
-    </div>
+    </div>*@
     <div class="footer_copy">
-        &copy; 2017 Victorious. All Rights reserved
+        &copy; 2017 Victorious Tournaments. All Rights reserved
     </div>
     <div class="message warning">ALPHA BUILD @WebApplication.Utility.Codes.GetVersion()</div>
 </div>

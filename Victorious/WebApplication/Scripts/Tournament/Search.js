@@ -11,13 +11,13 @@
         var jsonData = {};
 
         $("#TournamentSearch .options .field").each(function (i, e) {
-            jsonData[$(e).attr("name")] = $(e).val();
+            jsonData[$(e).attr("name").replace("viewModel.", "")] = $(e).val();
         });
 
         $.ajax({
             "url": "/Ajax/Tournament/Search",
             "type": "post",
-            "data": jsonData,
+            "data": { "searchBy": JSON.stringify(jsonData) },
             "dataType": "json",
             "success": function (json) {
                 var tournaments = $("#TournamentSearch .list-table-body");
@@ -26,7 +26,7 @@
                 tournaments.empty();
 
                 // Add all the elements found
-                $.each(json, function (i, e) {
+                $.each(json.data.search, function (i, e) {
                     html = "<a class='column' href='" + e.link + "'> ";
                     html += "<ul class='column-clickable' data-columns='5'> ";
                     html += "<li class='column'>" + e.title + "</li> ";

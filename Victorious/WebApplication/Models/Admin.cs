@@ -11,10 +11,9 @@ namespace WebApplication.Models
 {
     public class Admin : Model
     {
-        //AdminViewModel viewModel;
-        //public List<BracketTypeModel> Brackets { get; private set; }
-        //public List<PlatformModel> Platforms { get; private set; }
-        //public List<GameTypeModel> Games { get; private set; }
+        public GameType gameType { get; private set; }
+        public BracketType bracketTypes { get; private set; }
+        public Platform platformTypes { get; private set; }
 
         public Admin(IService service) : base(service)
         {
@@ -24,9 +23,9 @@ namespace WebApplication.Models
         private void Init()
         {
             // Load the lists
-            //Games = services.Type.GetAllGameTypes();
-            //Brackets = services.Type.GetAllBracketTypes();
-            //Platforms = services.Type.GetAllPlatforms();
+            gameType = new GameType(services);
+            bracketTypes = new BracketType(services);
+            platformTypes = new Platform(services);
         }
 
         #region Helpers

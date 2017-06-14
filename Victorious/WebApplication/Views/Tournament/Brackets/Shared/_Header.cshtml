@@ -16,7 +16,7 @@
 
                     <div>@details.title</div>
 
-                    if (!Model.GetBracket().IsFinalized && ViewBag.isAdministrator)
+                    if (!Model.IBracket.IsFinalized && ViewBag.isAdministrator)
                     {
                         <div>Best of @Html.DropDownList("bestOfMatches", Enumerable.Range(1, 9).Where(x => x % 2 == 1).Select(n => new SelectListItem() { Text = n.ToString(), Value = n.ToString() }), new { @class = "bestOfMatches" })</div>
                     }
@@ -36,7 +36,7 @@
             <li class="column" data-type="final">
                 <div>@details.title</div>
 
-                @if (!Model.GetBracket().IsFinalized && ViewBag.isAdministrator)
+                @if (!Model.IBracket.IsFinalized && ViewBag.isAdministrator)
                 {
                     <div>Best of @Html.DropDownList("bestOfMatches", Enumerable.Range(1, 9).Where(x => x % 2 == 1).Select(n => new SelectListItem() { Text = n.ToString(), Value = n.ToString() }), new { @class = "bestOfMatches" })</div>
                 }
