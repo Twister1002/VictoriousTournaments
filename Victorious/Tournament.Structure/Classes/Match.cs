@@ -109,6 +109,11 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Copies all of this object's current values into a MatchModel object.
+		/// Any contained objects are also converted into Models.
+		/// </summary>
+		/// <returns>Matching MatchModel</returns>
 		public MatchModel GetModel()
 		{
 			MatchModel model = new MatchModel();
@@ -123,16 +128,19 @@ namespace Tournament.Structure
 			model.PrevChallengerMatchNumber = this.PreviousMatchNumbers[(int)PlayerSlot.Challenger];
 			model.MaxGames = this.MaxGames;
 
-			model.ChallengerID = Players[(int)PlayerSlot.Challenger]?.Id ?? -1;
-			model.DefenderID = Players[(int)PlayerSlot.Defender]?.Id ?? -1;
+			model.ChallengerID = Players[(int)PlayerSlot.Challenger]?.Id
+				?? -1;
+			model.DefenderID = Players[(int)PlayerSlot.Defender]?.Id
+				?? -1;
 			model.WinnerID = (PlayerSlot.unspecified == WinnerSlot)
 				? -1 : Players[(int)WinnerSlot].Id;
+			// Create and add PlayerModel objects if applicable:
 			model.Defender = Players[(int)PlayerSlot.Defender]?.GetTournamentUserModel();
 			model.Challenger = Players[(int)PlayerSlot.Challenger]?.GetTournamentUserModel();
 
 			model.ChallengerScore = this.Score[(int)PlayerSlot.Challenger];
 			model.DefenderScore = this.Score[(int)PlayerSlot.Defender];
-			model.Games = new List<GameModel>();
+			//model.Games = new List<GameModel>();
 			foreach (IGame game in this.Games)
 			{
 				model.Games.Add(GetGameModel(game));
@@ -140,6 +148,13 @@ namespace Tournament.Structure
 
 			return model;
 		}
+
+		/// <summary>
+		/// Sets this object's values from a related MatchModel.
+		/// Convert's any null values into appropriate defaults.
+		/// Note: passing an unrealistic MatchModel can cause impossible situations.
+		/// </summary>
+		/// <param name="_model">MatchModel with data</param>
 		public void SetFromModel(MatchModel _model)
 		{
 			if (null == _model)

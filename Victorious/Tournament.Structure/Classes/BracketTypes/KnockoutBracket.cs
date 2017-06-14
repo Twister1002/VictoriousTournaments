@@ -177,8 +177,7 @@ namespace Tournament.Structure
 
 			if (NumberOfMatches > 0)
 			{
-				int n = NumberOfMatches;
-				for (; n > 0; --n)
+				for (int n = NumberOfMatches; n > 0; --n)
 				{
 					Match match = GetInternalMatch(n);
 					if (match.NextLoserMatchNumber > 0)
