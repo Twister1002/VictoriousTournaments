@@ -1,8 +1,8 @@
 ﻿jQuery(document).ready(function () {
     var $ = jQuery;
     var BracketTypesDictionary = {
-        3: "rr",
-        6: "swiss"
+        "3": "rr",
+        "6": "swiss"
     };
     var bracketInfo;
     var bracketsCreated = 0;
@@ -21,7 +21,7 @@
     });
 
     function BracketInfoChange() {
-        var bracketData = $(this).closest(".bracketSection");
+        var bracketData = $(this).closest(".brackets");
         var rounds = bracketData.find(".roundSelect");
         
         // Display the round selection for the user and hide it if its not applicable and reset to 0

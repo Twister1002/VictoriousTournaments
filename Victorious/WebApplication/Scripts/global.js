@@ -26,6 +26,10 @@
         $("#TournamentEndDate").datepicker("option", "minDate", new Date($(this).val()));
     });
 
+    $("#content .message .closeMessage").on("click", function () {
+        $("#content .message").remove();
+    });
+
 
     function Ajax(path, data, beforeSend, success, error, complete) {
         $.ajax({

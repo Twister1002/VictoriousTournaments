@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="content-language" content="en" />
+
     <title>Tournament Platform</title>
     <script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="~/lib/jquery-ui/jquery-ui.min.js"></script>
@@ -36,35 +37,20 @@
         <div class="dev-bp"></div>
     }
     @Html.Partial("_Nav", new ViewDataDictionary(ViewData))
+    <div id="content">
+        @if (Session["Message"] != null)
+        {
+            var messageClass = WebApplication.Models.ViewError.WARNING;
+            if (Session["Message.Class"] != null) { messageClass = (WebApplication.Models.ViewError)Session["Message.Class"]; }
+            <div class="message @WebApplication.Models.Model.errorClassNames[(int)messageClass]">
+                @Html.Raw((String)Session["Message"])
+                <span class="icon icon-cross right closeMessage"></span>
+            </div>
 
-    @if (Session["Message"] != null)
-    {
-        var messageClass = WebApplication.Models.ViewError.WARNING;
-        if (Session["Message.Class"] != null) { messageClass = (WebApplication.Models.ViewError)Session["Message.Class"]; }
-        <div class="message @WebApplication.Models.Model.errorClassNames[(int)messageClass]">
-            @Html.Raw((String)Session["Message"])
-            <span class="icon icon-cross right closeMessage"></span>
-        </div>
-
-        Session.Remove("Message");
-    }
-
-    @*@if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
-    {
-        <div class="message @Model.errorClassNames[(int)Model.error]">
-            @Html.Raw(Model.message)
-            <br />
-            @if (Model.dbException != null)
-            {
-                <h2>Exception Message</h2>
-                @Model.dbException.Message <br />
-                <h2>Inner Message</h2>
-                @Model.dbException.InnerException <br />
-            }
-        </div>
-    }*@
-
-    <div id="content">@RenderBody()</div>
+            Session.Remove("Message");
+        }
+        @RenderBody()
+    </div>
     <footer>@{ Html.RenderPartial("_Footer"); }</footer>
 </body>
 </html>

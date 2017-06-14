@@ -112,11 +112,7 @@ namespace Tournament.Structure
 			// void ApplyGameRemovalEffects() just uses DEB's version.
 			protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 			{
-				if (!_isAddition)
-				{
-					RecalculateRankings();
-					return;
-				}
+				throw new NotImplementedException();
 
 				int nextWinnerNumber;
 				int nextLoserNumber;
@@ -173,6 +169,8 @@ namespace Tournament.Structure
 
 			protected override void RecalculateRankings()
 			{
+				throw new NotImplementedException();
+
 				base.RecalculateRankings();
 
 				IMatch upperFinal = GetRound(NumberOfRounds)[0];

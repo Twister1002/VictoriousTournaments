@@ -58,8 +58,8 @@ namespace Tournament.Structure
 			this.IsFinalized = _model.Finalized;
 
 			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
-				.OrderBy(tubm => tubm.Seed, new SeedComparer())
-				.Select(tubm => tubm.TournamentUser)
+				.OrderBy(u => u.Seed, new SeedComparer())
+				.Select(u => u.TournamentUser)
 				.ToList();
 			this.Players = new List<IPlayer>();
 			foreach (TournamentUserModel userModel in userModels)
@@ -69,16 +69,13 @@ namespace Tournament.Structure
 
 			ResetBracketData();
 			int totalUBMatches = Players.Count - 1;
-			this.NumberOfRounds = 0;
 			if (_model.Matches.Count > 0)
 			{
 				foreach (MatchModel mm in _model.Matches.OrderBy(m => m.MatchNumber))
 				{
 					if (mm.MatchNumber <= totalUBMatches)
 					{
-						Match match = new Match(mm);
-						Matches.Add(match.MatchNumber, match);
-						this.NumberOfRounds = Math.Max(NumberOfRounds, match.RoundIndex);
+						Matches.Add(mm.MatchNumber, new Match(mm));
 					}
 					else
 					{
@@ -86,8 +83,11 @@ namespace Tournament.Structure
 						break;
 					}
 				}
+				this.NumberOfMatches = Matches.Count;
+				this.NumberOfRounds = Matches.Values
+					.Select(m => m.RoundIndex)
+					.Max();
 			}
-			this.NumberOfMatches = Matches.Count;
 
 			if (BracketType.SINGLE == BracketType)
 			{
@@ -271,75 +271,10 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
+		protected override int CalculateRank(int _matchNumber)
 		{
-			if (_isAddition)
-			{
-				int nextWinnerNumber;
-				int nextLoserNumber;
-				Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
-				if (match.IsFinished)
-				{
-					// Add losing Player to Rankings:
-					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
-						? PlayerSlot.Challenger
-						: PlayerSlot.Defender;
-					int rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
-
-					Rankings.Add(new PlayerScore
-						(match.Players[(int)loserSlot].Id,
-						match.Players[(int)loserSlot].Name,
-						rank));
-					if (nextWinnerNumber < 0)
-					{
-						// Finals match: Add winner to Rankings:
-						Rankings.Add(new PlayerScore
-							(match.Players[(int)(match.WinnerSlot)].Id,
-							match.Players[(int)(match.WinnerSlot)].Name,
-							1));
-						IsFinished = true;
-					}
-					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
-				}
-			}
-			else if ((_oldMatch.WinnerID ?? -1) > -1)
-			{
-				RecalculateRankings();
-			}
-		}
-
-		protected override void RecalculateRankings()
-		{
-			if (null == Rankings)
-			{
-				Rankings = new List<IPlayerScore>();
-			}
-			Rankings.Clear();
-
-			foreach (Match match in Matches.Values)
-			{
-				if (match.IsFinished)
-				{
-					// Add losing Player to the Rankings:
-					int rank = (int)(Math.Pow(2, (NumberOfRounds - match.RoundIndex)) + 1);
-					IPlayer losingPlayer = match.Players[
-						(PlayerSlot.Defender == match.WinnerSlot)
-						? (int)PlayerSlot.Challenger
-						: (int)PlayerSlot.Defender];
-					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank));
-				}
-			}
-			if (NumberOfMatches > 0 && Matches[NumberOfMatches].IsFinished)
-			{
-				// Add Finals winner to Rankings:
-				IPlayer winningPlayer = Matches[NumberOfMatches]
-					.Players[(int)Matches[NumberOfMatches].WinnerSlot];
-				Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
-				this.IsFinished = true;
-			}
-
-			Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+			int round = GetInternalMatch(_matchNumber).RoundIndex;
+			return Convert.ToInt32(Math.Pow(2, NumberOfRounds - round) + 1);
 		}
 
 		private void ReassignPlayers(Match _currMatch, List<Match> _prevRound)

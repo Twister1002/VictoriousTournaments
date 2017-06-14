@@ -17,7 +17,7 @@
         @for (int i = 1; i <= ViewBag.DisplayRounds; i++)
         {
             <li class="column">
-                @foreach (var match in Model.GetRound(i))
+                @foreach (var match in Model.GetRound(i, WebApplication.Models.BracketSection.UPPER))
                 {
                     Html.RenderPartial("Brackets/Shared/_Match", match, new ViewDataDictionary(ViewData));
                 }

@@ -181,9 +181,11 @@
             },
             "success": function (json) {
                 if (json.status) {
-                    $this.removeClass("green");
-                    $this.removeClass("red");
-                    $this.addClass(json.isCheckedIn ? "green" : "red");
+                    $(".TournamentInfo .bracketData").each(function (i, e) {
+                        $(e).find(".user[data-user='" + json.data.targetUser + "'] .checkIn")
+                            .removeClass("green red")
+                            .addClass(json.data.isCheckedIn ? "green" : "red");
+                    });
                 }
 
                 console.log(json.message);
@@ -223,7 +225,9 @@
                 "success": function (json) {
                     if (json.status) {
                         if (json.data.permissions.Permission == 0) {
-                            userElement.remove();
+                            $(".TournamentInfo .bracketData").each(function (i, e) {
+                                $(e).find(".user[data-user='" + json.data.targetUser + "']").remove();
+                            });
                         }
                         else {
                             var actions = userElement.find(".actions");
@@ -293,7 +297,11 @@
                     html += "<li class='column actions'>"+PermissionButtons(json.data.actions)+"</li> ";
                     html += "</ul> ";
 
-                    row.closest(".infoSection").find(".user:last").after(html);
+                    // Add this user to every bracket
+                    $(".TournamentInfo .bracketData").each(function (i, e) {
+                        $(e).find(".user:last").after(html);
+                    });
+                    //row.closest(".infoSection").find(".user:last").after(html);
                     row.find(".name input").val('');
                     
                     $(".TournamentInfo .user .actions .remove").off("click");
@@ -368,7 +376,7 @@
             "dataType": "json",
             "success": function (json) {
                 if (json.status) {
-                    window.location.replace(json.redirect);
+                    window.location.replace(json.data.redirect);
                 }
                 else {
                     alert(json.message);
