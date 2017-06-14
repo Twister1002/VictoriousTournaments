@@ -31,7 +31,8 @@ namespace DatabaseLib
         ROUNDROBIN,
         RRGROUP,
         GSLGROUP,
-        SWISS
+        SWISS,
+        STEP
     }
 
     public enum DbError
