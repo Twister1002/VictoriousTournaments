@@ -111,6 +111,20 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		public virtual bool Validate()
+		{
+			if ((Players?.Count ?? 0) < 2)
+			{
+				return false;
+			}
+			if ((Matches?.Count ?? 0) == 0 ||
+				Matches.Values.Any(m => m.MaxGames < 1))
+			{
+				return false;
+			}
+
+			return true;
+		}
 		public virtual void ResetMatches()
 		{
 			List<MatchModel> alteredMatches = new List<MatchModel>();

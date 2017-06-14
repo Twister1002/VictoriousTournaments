@@ -86,16 +86,6 @@ namespace Tournament.Structure
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			ResetBracketData();
-			if (_gamesPerMatch < 1)
-			{
-				throw new BracketException
-					("Games per Match must be greater than 0!");
-			}
-			else if (0 == _gamesPerMatch % 2)
-			{
-				throw new BracketException
-					("Games per Match must be ODD in an elimination bracket!");
-			}
 			if (Players.Count < 2)
 			{
 				return;

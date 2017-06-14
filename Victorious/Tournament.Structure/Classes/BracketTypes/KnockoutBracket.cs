@@ -11,6 +11,23 @@ namespace Tournament.Structure
 	public abstract class KnockoutBracket : Bracket
 	{
 		#region Public Methods
+		public override bool Validate()
+		{
+			if (false == base.Validate())
+			{
+				return false;
+			}
+
+			for (int n = 1; n <= NumberOfMatches; ++n)
+			{
+				if (0 == GetMatch(n).MaxGames % 2)
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
 		public override void ResetMatches()
 		{
 			base.ResetMatches();

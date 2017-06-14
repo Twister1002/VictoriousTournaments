@@ -34,6 +34,21 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		public override bool Validate()
+		{
+			if (false == base.Validate())
+			{
+				return false;
+			}
+
+			if ((Groups?.Count ?? 0) < 2 ||
+				Groups.Any(g => false == g.Validate()))
+			{
+				return false;
+			}
+
+			return true;
+		}
 		public override void ResetMatches()
 		{
 			foreach (IBracket group in Groups)

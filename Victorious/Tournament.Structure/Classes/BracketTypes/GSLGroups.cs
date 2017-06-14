@@ -51,16 +51,24 @@ namespace Tournament.Structure
 			#region Public Methods
 			public override void CreateBracket(int _gamesPerMatch = 1)
 			{
-				if (4 != Players.Count &&
-					8 != Players.Count)
-				{
-					throw new BracketException
-						("Each GSL-style bracket must have exactly 4 or 8 players!");
-				}
-
 				base.CreateBracket(_gamesPerMatch);
 				grandFinal = null;
 				--NumberOfMatches;
+			}
+			public override bool Validate()
+			{
+				if (false == base.Validate())
+				{
+					return false;
+				}
+
+				if ((Players?.Count ?? 0) != 4 &&
+					Players.Count != 8)
+				{
+					return false;
+				}
+
+				return true;
 			}
 			#endregion
 
@@ -218,17 +226,6 @@ namespace Tournament.Structure
 			{
 				throw new ArgumentNullException("_players");
 			}
-			if (_numberOfGroups < 2)
-			{
-				throw new ArgumentOutOfRangeException
-					("_numberOfGroups", "Must have more than 1 group!");
-			}
-			if (_numberOfGroups * 4 != _players.Count &&
-				_numberOfGroups * 8 != _players.Count)
-			{
-				throw new BracketException
-					("Must have 4 or 8 players per group!");
-			}
 
 			Players = _players;
 			Id = 0;
@@ -280,18 +277,6 @@ namespace Tournament.Structure
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			ResetBracketData();
-			if (_gamesPerMatch < 1)
-			{
-				throw new BracketException
-					("Games Per Match must be positive!");
-			}
-			if (Players.Count < 2 ||
-				NumberOfGroups < 2 ||
-				(NumberOfGroups * 4 != Players.Count && NumberOfGroups * 8 != Players.Count))
-			{
-				throw new BracketException
-					("Must have 4 or 8 Players Per Group!");
-			}
 
 			for (int b = 0; b < NumberOfGroups; ++b)
 			{

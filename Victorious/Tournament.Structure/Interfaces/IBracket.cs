@@ -96,6 +96,13 @@ namespace Tournament.Structure
 		void CreateBracket(int _gamesPerMatch = 1);
 
 		/// <summary>
+		/// Checks if this bracket's fields are legal.
+		/// This should be called before Finalizing.
+		/// </summary>
+		/// <returns>true if legal, false if any errors</returns>
+		bool Validate();
+
+		/// <summary>
 		/// Resets EVERY Match to a pre-play state (no games played).
 		/// </summary>
 		void ResetMatches();

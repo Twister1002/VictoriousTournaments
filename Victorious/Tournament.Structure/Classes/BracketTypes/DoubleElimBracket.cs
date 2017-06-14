@@ -229,6 +229,15 @@ namespace Tournament.Structure
 				NumberOfMatches += (LowerMatches.Count + 1);
 			}
 		}
+		public override bool Validate()
+		{
+			if ((Players?.Count ?? 0) < 4)
+			{
+				return false;
+			}
+
+			return base.Validate();
+		}
 		#endregion
 
 		#region Private Methods
