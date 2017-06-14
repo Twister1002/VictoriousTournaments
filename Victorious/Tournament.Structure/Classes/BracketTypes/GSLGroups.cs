@@ -51,16 +51,24 @@ namespace Tournament.Structure
 			#region Public Methods
 			public override void CreateBracket(int _gamesPerMatch = 1)
 			{
-				if (4 != Players.Count &&
-					8 != Players.Count)
-				{
-					throw new BracketException
-						("Each GSL-style bracket must have exactly 4 or 8 players!");
-				}
-
 				base.CreateBracket(_gamesPerMatch);
 				grandFinal = null;
 				--NumberOfMatches;
+			}
+			public override bool Validate()
+			{
+				if (false == base.Validate())
+				{
+					return false;
+				}
+
+				if ((Players?.Count ?? 0) != 4 &&
+					Players.Count != 8)
+				{
+					return false;
+				}
+
+				return true;
 			}
 			#endregion
 
@@ -112,50 +120,71 @@ namespace Tournament.Structure
 			// void ApplyGameRemovalEffects() just uses DEB's version.
 			protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 			{
-				throw new NotImplementedException();
+				// The base method will add all match losers to the Rankings:
+				base.UpdateScore(_matchNumber, _games, _isAddition, _oldMatch);
 
-				int nextWinnerNumber;
-				int nextLoserNumber;
-				IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
-				if (match.NextMatchNumber <= NumberOfMatches)
+				// Now, check for special cases (winners to add):
+				if (_isAddition &&
+					_oldMatch.WinnerID.GetValueOrDefault(-1) < 0)
 				{
-					// Case 1: Not a final/endpoint match. Treat like a DEB:
-					base.UpdateScore(_matchNumber, _games, _isAddition, _oldMatch);
-					return;
-				}
+					int nextWinnerNumber;
+					int nextLoserNumber;
+					IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
-				if (match.IsFinished)
-				{
-					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
-						? PlayerSlot.Challenger
-						: PlayerSlot.Defender;
-
-					if (nextLoserNumber > 0)
+					if (match.IsFinished &&
+						nextWinnerNumber > NumberOfMatches)
 					{
-						// Case 2: UB Finals.
-						// Add winner to top of Rankings:
+						if (nextLoserNumber < 0)
+						{
+							// Case 1: Lower bracket finals.
+							// Add winner (rank 2):
+							Rankings.Add(new PlayerScore
+								(match.Players[(int)(match.WinnerSlot)].Id,
+								match.Players[(int)(match.WinnerSlot)].Name,
+								2));
+						}
+						else
+						{
+							// Case 2: Upper bracket finals.
+							// Add winner (rank 1):
+							Rankings.Add(new PlayerScore
+								(match.Players[(int)(match.WinnerSlot)].Id,
+								match.Players[(int)(match.WinnerSlot)].Name,
+								1));
+						}
+
+						Rankings.Sort(SortRankingRanks);
+					}
+				}
+			}
+
+			protected override void RecalculateRankings()
+			{
+				// The base method will add all losers to rankings.
+				// It will also add the LB winner as Rank 1...
+				base.RecalculateRankings();
+
+				if (Rankings.Count > 0)
+				{
+					if (1 == Rankings[0].Rank)
+					{
+						// The LB winner was erroneously added as Rank 1.
+						// Fix it (change to 2):
+						Rankings[0].Rank = 2;
+					}
+
+					IMatch upperFinal = GetRound(NumberOfRounds)[0];
+					if (upperFinal.IsFinished)
+					{
+						// Add the UB winner as Rank 1:
 						Rankings.Add(new PlayerScore
-							(match.Players[(int)(match.WinnerSlot)].Id,
-							match.Players[(int)(match.WinnerSlot)].Name,
+							(upperFinal.Players[(int)(upperFinal.WinnerSlot)].Id,
+							upperFinal.Players[(int)(upperFinal.WinnerSlot)].Name,
 							1));
-					}
-					else
-					{
-						// Case 3: LB Finals.
-						// Add both players to Rankings:
-						Rankings.Add(new PlayerScore
-							(match.Players[(int)(match.WinnerSlot)].Id,
-							match.Players[(int)(match.WinnerSlot)].Name,
-							2));
-						Rankings.Add(new PlayerScore
-							(match.Players[(int)loserSlot].Id,
-							match.Players[(int)loserSlot].Name,
-							3));
+
+						Rankings.Sort(SortRankingRanks);
 					}
 				}
-
-				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 			}
 
 			protected override List<MatchModel> RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
@@ -165,39 +194,6 @@ namespace Tournament.Structure
 					return new List<MatchModel>();
 				}
 				return base.RemovePlayerFromFutureMatches(_matchNumber, _playerId);
-			}
-
-			protected override void RecalculateRankings()
-			{
-				throw new NotImplementedException();
-
-				base.RecalculateRankings();
-
-				IMatch upperFinal = GetRound(NumberOfRounds)[0];
-				if (upperFinal.IsFinished)
-				{
-					Rankings.Add(new PlayerScore
-						(upperFinal.Players[(int)(upperFinal.WinnerSlot)].Id,
-						upperFinal.Players[(int)(upperFinal.WinnerSlot)].Name,
-						1));
-				}
-				IMatch lowerFinal = GetLowerRound(NumberOfLowerRounds)[0];
-				if (lowerFinal.IsFinished)
-				{
-					PlayerSlot loserSlot = (PlayerSlot.Defender == lowerFinal.WinnerSlot)
-						? PlayerSlot.Challenger
-						: PlayerSlot.Defender;
-					Rankings.Add(new PlayerScore
-						(lowerFinal.Players[(int)(lowerFinal.WinnerSlot)].Id,
-						lowerFinal.Players[(int)(lowerFinal.WinnerSlot)].Name,
-						2));
-					Rankings.Add(new PlayerScore
-						(lowerFinal.Players[(int)loserSlot].Id,
-						lowerFinal.Players[(int)loserSlot].Name,
-						3));
-				}
-
-				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
 			}
 			#endregion
 		}
@@ -229,17 +225,6 @@ namespace Tournament.Structure
 			if (null == _players)
 			{
 				throw new ArgumentNullException("_players");
-			}
-			if (_numberOfGroups < 2)
-			{
-				throw new ArgumentOutOfRangeException
-					("_numberOfGroups", "Must have more than 1 group!");
-			}
-			if (_numberOfGroups * 4 != _players.Count &&
-				_numberOfGroups * 8 != _players.Count)
-			{
-				throw new BracketException
-					("Must have 4 or 8 players per group!");
 			}
 
 			Players = _players;
@@ -285,6 +270,12 @@ namespace Tournament.Structure
 			// Update the Rankings:
 			RecalculateRankings();
 			UpdateFinishStatus();
+
+			if (this.IsFinalized && false == Validate())
+			{
+				throw new BracketValidationException
+					("Bracket is Finalized but not Valid!");
+			}
 		}
 		#endregion
 
@@ -292,18 +283,6 @@ namespace Tournament.Structure
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			ResetBracketData();
-			if (_gamesPerMatch < 1)
-			{
-				throw new BracketException
-					("Games Per Match must be positive!");
-			}
-			if (Players.Count < 2 ||
-				NumberOfGroups < 2 ||
-				(NumberOfGroups * 4 != Players.Count && NumberOfGroups * 8 != Players.Count))
-			{
-				throw new BracketException
-					("Must have 4 or 8 Players Per Group!");
-			}
 
 			for (int b = 0; b < NumberOfGroups; ++b)
 			{
@@ -336,15 +315,7 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
-		protected override void RecalculateRankings()
-		{
-			Rankings.Clear();
-			foreach (IBracket group in Groups)
-			{
-				Rankings.AddRange(group.Rankings);
-			}
-			Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
-		}
+
 		#endregion
 	}
 }

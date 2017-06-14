@@ -20,8 +20,22 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Creates an AccountModel of this Player.
+		/// </summary>
 		AccountModel GetAccountModel();
+
+		/// <summary>
+		/// Creates a TournamentUserModel of this Player.
+		/// </summary>
 		TournamentUserModel GetTournamentUserModel();
+
+		/// <summary>
+		/// Creates a TournamentUsersBracketModel of this Player.
+		/// This Model will also contain the Player's bracketID and seed.
+		/// </summary>
+		/// <param name="_bracketId">ID of containing Bracket</param>
+		/// <param name="_seed">Player's seed-value within the Bracket</param>
 		TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed);
 		#endregion
 	}

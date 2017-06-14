@@ -109,4 +109,12 @@ namespace Tournament.Structure
 
 		protected BracketException(SerializationInfo info, StreamingContext context) { }
 	}
+	public class BracketValidationException : Exception, ISerializable
+	{
+		public BracketValidationException() { }
+		public BracketValidationException(string message) { }
+		public BracketValidationException(string message, Exception inner) { }
+
+		protected BracketValidationException(SerializationInfo info, StreamingContext context) { }
+	}
 }

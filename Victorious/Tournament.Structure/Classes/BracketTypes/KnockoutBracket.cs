@@ -11,6 +11,23 @@ namespace Tournament.Structure
 	public abstract class KnockoutBracket : Bracket
 	{
 		#region Public Methods
+		public override bool Validate()
+		{
+			if (false == base.Validate())
+			{
+				return false;
+			}
+
+			for (int n = 1; n <= NumberOfMatches; ++n)
+			{
+				if (0 == GetMatch(n).MaxGames % 2)
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
 		public override void ResetMatches()
 		{
 			base.ResetMatches();
@@ -156,7 +173,7 @@ namespace Tournament.Structure
 						IsFinished = true;
 					}
 
-					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+					Rankings.Sort(SortRankingRanks);
 				}
 			}
 			else if (!_isAddition &&
@@ -177,10 +194,15 @@ namespace Tournament.Structure
 
 			if (NumberOfMatches > 0)
 			{
-				for (int n = 1; n <= NumberOfMatches; ++n)
+				for (int n = NumberOfMatches; n > 0; --n)
 				{
 					Match match = GetInternalMatch(n);
-					if (-1 == match.NextLoserMatchNumber && match.IsFinished)
+					if (match.NextLoserMatchNumber > 0)
+					{
+						break;
+					}
+
+					if (match.IsFinished)
 					{
 						// Add losing Player to the Rankings:
 						int rank = CalculateRank(match.MatchNumber);
@@ -202,7 +224,7 @@ namespace Tournament.Structure
 					this.IsFinished = true;
 				}
 
-				Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
+				Rankings.Sort(SortRankingRanks);
 			}
 		}
 		protected override void UpdateRankings()

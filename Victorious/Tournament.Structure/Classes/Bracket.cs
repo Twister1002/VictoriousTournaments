@@ -111,6 +111,20 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		public virtual bool Validate()
+		{
+			if ((Players?.Count ?? 0) < 2)
+			{
+				return false;
+			}
+			if ((Matches?.Count ?? 0) == 0 ||
+				Matches.Values.Any(m => m.MaxGames < 1))
+			{
+				return false;
+			}
+
+			return true;
+		}
 		public virtual void ResetMatches()
 		{
 			List<MatchModel> alteredMatches = new List<MatchModel>();
@@ -788,6 +802,13 @@ namespace Tournament.Structure
 				? compare : -1 * (first.PointsScore.CompareTo(second.PointsScore));
 			return (compare != 0)
 				? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
+		}
+		protected int SortRankingRanks(IPlayerScore first, IPlayerScore second)
+		{
+			int compare = first.Rank.CompareTo(second.Rank);
+			return (compare != 0)
+				? compare
+				: GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
 		}
 		#endregion
 	}

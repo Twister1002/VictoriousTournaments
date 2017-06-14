@@ -52,7 +52,7 @@ namespace Tournament.Structure
 			{
 				throw new ArgumentNullException("_model");
 			}
-			
+
 			this.Id = _model.BracketID;
 			this.BracketType = _model.BracketType.Type;
 			this.IsFinalized = _model.Finalized;
@@ -92,6 +92,12 @@ namespace Tournament.Structure
 			if (BracketType.SINGLE == BracketType)
 			{
 				RecalculateRankings();
+
+				if (this.IsFinalized && false == Validate())
+				{
+					throw new BracketValidationException
+						("Bracket is Finalized but not Valid!");
+				}
 			}
 		}
 		#endregion
@@ -100,16 +106,6 @@ namespace Tournament.Structure
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			ResetBracketData();
-			if (_gamesPerMatch < 1)
-			{
-				throw new BracketException
-					("Games Per Match must be greater than 0!");
-			}
-			else if (_gamesPerMatch % 2 == 0)
-			{
-				throw new BracketException
-					("Games/Match must be odd in an elimination bracket!");
-			}
 			if (Players.Count < 2)
 			{
 				return;
