@@ -19,13 +19,13 @@ namespace Tournament.Structure
 
 		#region Methods
 		/// <summary>
-		/// Gets the number of Players in the tournament.
+		/// Get the number of Players in the tournament.
 		/// </summary>
 		/// <returns>Players.Count</returns>
 		int NumberOfPlayers();
 
 		/// <summary>
-		/// Clears and sets a new list of Players.
+		/// Clear and set a new list of Players.
 		/// </summary>
 		/// <param name="_players">New list of Player-type objects</param>
 		void SetNewPlayerlist(List<IPlayer> _players);
@@ -36,7 +36,7 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_initialBracketIndex">Finished Bracket (0-indexed)</param>
 		/// <param name="_newBracketIndex">New Bracket (0-indexed)</param>
-		/// <param name="_numberOfPlayers">How many Players to advance (0=all)</param>
+		/// <param name="_numberOfPlayers">How many Players to advance (0 = all)</param>
 		void AdvancePlayersByRanking(int _initialBracketIndex, int _newBracketIndex, int _numberOfPlayers = 0);
 
 		/// <summary>
@@ -46,7 +46,7 @@ namespace Tournament.Structure
 		void AddPlayer(IPlayer _player);
 
 		/// <summary>
-		/// Replaces a player/slot in the playerlist.
+		/// Replace a player/slot in the playerlist.
 		/// Also replaces old Player in any brackets.
 		/// </summary>
 		/// <param name="_player">Player-type object to add.</param>
@@ -54,20 +54,20 @@ namespace Tournament.Structure
 		void ReplacePlayer(IPlayer _player, int _index);
 
 		/// <summary>
-		/// Removes a Player from the tournament.
+		/// Remove a Player from the tournament.
 		/// Also removes from all brackets.
 		/// </summary>
 		/// <param name="_playerId">ID of Player to remove</param>
 		void RemovePlayer(int _playerId);
 
 		/// <summary>
-		/// Clears the tournament's player list.
+		/// Clear the tournament's player list.
 		/// Also clears all bracket playerlists.
 		/// </summary>
 		void ResetPlayers();
 
 		/// <summary>
-		/// Gets the number of Brackets in the tournament.
+		/// Get the number of Brackets in the tournament.
 		/// </summary>
 		/// <returns>Number of Brackets</returns>
 		int NumberOfBrackets();
