@@ -76,6 +76,7 @@
     <Build Include="TournamentTeams.sql" />
     <Build Include="TournamentTeamMembers.sql" />
     <Build Include="TournamentTeamBrackets.sql" />
+    <Build Include="MailingList.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="VictoriousDatabase.refactorlog" />

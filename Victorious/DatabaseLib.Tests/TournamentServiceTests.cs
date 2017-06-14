@@ -125,8 +125,8 @@ namespace DatabaseLib.Tests
                 EntryFee = 0,
                 PrizePurse = 0,
                 GameTypeID = 1,
-                PublicViewing = true
-
+                PublicViewing = true,
+                PublicRegistration = true
             };
 
             return tournament;

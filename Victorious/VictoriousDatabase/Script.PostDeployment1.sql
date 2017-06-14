@@ -102,6 +102,10 @@ INSERT BracketTypes SELECT	@count, 'Swiss', 6, 1
 	WHERE NOT EXISTS (SELECT @count from BracketTypes WHERE TypeName = 'Swiss')
 SET @count = @count + 1
 
+INSERT BracketTypes SELECT	@count, 'Step', 7, 1
+	WHERE NOT EXISTS (SELECT @count from BracketTypes WHERE TypeName = 'Step')
+SET @count = @count + 1
+
 -- Game inserts
 SET @count = 1 
 
