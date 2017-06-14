@@ -72,10 +72,12 @@ namespace WebApplication.Models.ViewModels
         public List<BracketTypeModel> BracketTypes { get; set; }
         [Display(Name = "Rounds")]
         public List<int> NumberOfRounds { get; set; }
+        [Display(Name = "Groups")]
+        public List<int> NumberOfGroups { get; set; }
         public List<GameTypeModel> GameTypes { get; set; }
         public List<PlatformModel> PlatformTypes { get; set; }
 
-        public List<BracketInfo> BracketData { get; set; }
+        public List<BracketViewModel> BracketData { get; set; }
 
         [Display(Name = "Game")]
         [Required(ErrorMessage = "Select a game")]

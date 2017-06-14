@@ -1,8 +1,18 @@
 ﻿jQuery(document).ready(function () {
     var $ = jQuery;
     var BracketTypesDictionary = {
-        "3": "rr",
-        "6": "swiss"
+        "3": {
+            "show": ".roundSelect",
+            "hide": ".groupSelect"
+        },
+        "6": {
+            "show": ".roundSelect",
+            "hide": ".groupSelect"
+        },
+        "4": {
+            "show": ".groupSelect",
+            "hide": ".roundSelect"
+        },
     };
     var bracketInfo;
     var bracketsCreated = 0;
@@ -22,25 +32,24 @@
 
     function BracketInfoChange() {
         var bracketData = $(this).closest(".brackets");
-        var rounds = bracketData.find(".roundSelect");
+        var info = BracketTypesDictionary[$(this).val()];
 
-        // Display the round selection for the user and hide it if its not applicable and reset to 0
-        if (BracketTypesDictionary.hasOwnProperty($(this).val())) {
-            // Display the field
-            rounds.removeClass("hide");
-            rounds.find("select").val(0);
+        if (info) {
+            // Show and hide the data
+            bracketData.find(info.show).removeClass("hide").find("select");
+            bracketData.find(info.hide).addClass("hide").find("select").val(0);
         }
         else {
-            rounds.addClass("hide");
-            rounds.find("select").val(0);
+            bracketData.find(".roundSelect").addClass("hide").val(0);
+            bracketData.find(".groupSelect").addClass("hide").val(0);
         }
     }
 
     (function ($) {
         if ($("#TournamentEdit").length == 1) {
             // Remove the bracket selection and save it.
-            bracketInfo = $("#TournamentEdit .bracketOrig").removeClass("hide").html();
-            $("#TournamentEdit .bracketOrig").remove();
+            bracketInfo = $("#TournamentEdit .bracketSection .bracketOrig").removeClass("hide").html();
+            $("#TournamentEdit .bracketSection .bracketOrig").remove();
 
             $("#TournamentEdit .bracketSection .brackets .type select").trigger("change");
         }

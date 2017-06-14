@@ -75,6 +75,10 @@
                         @Html.LabelFor(t => t.NumberOfRounds)
                         @Html.DropDownList("BracketData[" + i + "].NumberOfRounds", new SelectList(Model.NumberOfRounds, bracketData.NumberOfRounds), "---Rounds---", attributes)
                     </li>
+                    <li class="groupSelect hide">
+                        @Html.LabelFor(t => t.NumberOfGroups)
+                        @Html.DropDownList("BracketData["+i+"].NumberOfGroups", new SelectList(Model.NumberOfGroups, bracketData.NumberOfGroups), "---Rounds---", attributes)
+                    </li>
                 </ul>
             }
             <ul class="hide bracketOrig">

@@ -37,8 +37,9 @@ namespace WebApplication.Models
             viewModel.GameTypes = services.Type.GetAllGameTypes();
             viewModel.PlatformTypes = services.Type.GetAllPlatforms();
             viewModel.PublicViewing = true;
-            viewModel.BracketData = new List<BracketInfo>();
-            viewModel.NumberOfRounds = Enumerable.Range(0, 100).ToList();
+            viewModel.BracketData = new List<BracketViewModel>();
+            viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
+            viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
         }
 
         /// <summary>
@@ -290,7 +291,7 @@ namespace WebApplication.Models
 
             for (int i = 0; i < updates; i++)
             {
-                BracketInfo? newBracket = viewModel.BracketData.ElementAtOrDefault(i);
+                BracketViewModel newBracket = viewModel.BracketData.ElementAtOrDefault(i);
                 BracketModel bracketModel = Model.Brackets.ElementAtOrDefault(i);
                 //List<TournamentUsersBracketModel> users = new List<TournamentUsersBracketModel>();
 
@@ -299,8 +300,8 @@ namespace WebApplication.Models
                     if (bracketModel != null)
                     {
                         // We just need to update the data
-                        bracketModel.BracketTypeID = newBracket.Value.BracketTypeID;
-                        bracketModel.MaxRounds = newBracket.Value.NumberOfRounds;
+                        bracketModel.BracketTypeID = newBracket.BracketTypeID;
+                        bracketModel.MaxRounds = newBracket.NumberOfRounds;
 
                         updatedBrackets.Add(bracketModel);
                         //services.Tournament.UpdateBracket(bracketModel);
@@ -310,8 +311,8 @@ namespace WebApplication.Models
                         // We need to add this bracket
                         bracketModel = new BracketModel()
                         {
-                            MaxRounds = newBracket.Value.NumberOfRounds,
-                            BracketTypeID = newBracket.Value.BracketTypeID,
+                            MaxRounds = newBracket.NumberOfRounds,
+                            BracketTypeID = newBracket.BracketTypeID,
                             Finalized = false,
                             TournamentID = Model.TournamentID
                         };
@@ -834,10 +835,11 @@ namespace WebApplication.Models
             // Bracket data
             foreach (BracketModel bracket in Model.Brackets)
             {
-                viewModel.BracketData.Add(new BracketInfo()
+                viewModel.BracketData.Add(new BracketViewModel()
                 {
                     BracketTypeID = bracket.BracketTypeID,
-                    NumberOfRounds = bracket.MaxRounds
+                    NumberOfRounds = bracket.MaxRounds,
+                    NumberOfGroups = bracket.NumberOfGroups
                 });
             }
         }

@@ -25,12 +25,6 @@ namespace WebApplication.Models
         public String title;
     }
 
-    public struct BracketInfo
-    {
-        public int BracketTypeID { get; set; }
-        public int NumberOfRounds { get; set; }
-    }
-
     public enum ViewError
     {
         NONE,

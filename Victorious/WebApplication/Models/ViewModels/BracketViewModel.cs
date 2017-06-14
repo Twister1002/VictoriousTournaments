@@ -9,5 +9,6 @@ namespace WebApplication.Models.ViewModels
     {
         public int BracketTypeID { get; set; }
         public int NumberOfRounds { get; set; }
+        public int NumberOfGroups { get; set; }
     }
 }
