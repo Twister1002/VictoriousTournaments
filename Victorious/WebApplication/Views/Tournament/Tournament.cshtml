@@ -46,38 +46,19 @@
             </li>
         </ul>
     </div>
-    @foreach (var bracket in Model.GetTournament().Brackets)
+    @foreach (var bracket in Model.GetBrackets())
     {
         var bracketViewModel = Model.GetBracket(bracket.Id);
-
-        String bracketFileName = "";
-        switch (bracket.BracketType)
-        {
-            case DatabaseLib.BracketType.SINGLE:
-                bracketFileName = "Single";
-                break;
-            case DatabaseLib.BracketType.DOUBLE:
-                bracketFileName = "Double";
-                break;
-            case DatabaseLib.BracketType.ROUNDROBIN:
-                bracketFileName = "RoundRobin";
-                break;
-            case DatabaseLib.BracketType.SWISS:
-                bracketFileName = "Swiss";
-                break;
-            default:
-                break;
-        }
 
         <div class="bracket" data-id="@bracket.Id">
             <ul class="list-table bracket-data">
                 @{
-                    if (!bracket.IsFinalized && ViewBag.isCreator && Model.GetParticipants().Count >= 4)
+                    if (!bracket.IBracket.IsFinalized && ViewBag.isCreator && Model.GetParticipants().Count >= 4)
                     {
                         Html.RenderPartial("Administrator/_Finalize");
                     }
 
-                    Html.RenderPartial("Brackets/" + bracketFileName, bracketViewModel, new ViewDataDictionary(ViewData));
+                    Html.RenderPartial("Brackets/" + bracket.BracketFileName(), bracketViewModel, new ViewDataDictionary(ViewData));
                 }
             </ul>
         </div>

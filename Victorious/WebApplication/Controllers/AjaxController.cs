@@ -134,7 +134,7 @@ namespace WebApplication.Controllers
 
                 if (tournament.IsCreator(account.Model.AccountID))
                 {
-                    bracket.GetBracket().ResetMatches();
+                    bracket.IBracket.ResetMatches();
 
                     status = true;
                     message = "Bracket was reset";
@@ -187,7 +187,7 @@ namespace WebApplication.Controllers
                     List<int> matchNumsAffected = bracket.MatchesAffectedList(matchNum);
                     List<object> matchResponse = new List<object>();
 
-                    bracket.GetBracket().ResetMatchScore(matchNum);
+                    bracket.IBracket.ResetMatchScore(matchNum);
 
                     foreach (int match in matchNumsAffected)
                     {
@@ -227,7 +227,7 @@ namespace WebApplication.Controllers
             {
                 data = new
                 {
-                    ranks = bracket.GetBracket().Rankings,
+                    ranks = bracket.IBracket.Rankings,
                     usePoints = bracket.UsePoints()
                 };
             }
@@ -297,7 +297,7 @@ namespace WebApplication.Controllers
                         }
 
                         // Update the matches in the database
-                        status = bracket.UpdateMatch(bracket.GetBracket().GetMatchModel(matchNum));
+                        status = bracket.UpdateMatch(bracket.IBracket.GetMatchModel(matchNum));
                         match = bracket.GetMatchByNum(matchNum);
                         List<object> matchUpdates = new List<object>();
 
@@ -310,9 +310,9 @@ namespace WebApplication.Controllers
                                 matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(match.match.NextMatchNumber), false));
                             if (match.match.NextLoserMatchNumber != -1)
                                 matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(match.match.NextLoserMatchNumber), false));
-                            if (bracket.GetBracket().BracketType ==  DatabaseLib.BracketType.SWISS)
+                            if (bracket.IBracket.BracketType ==  DatabaseLib.BracketType.SWISS)
                             {
-                                List<IMatch> roundMatches = bracket.GetBracket().GetRound(match.match.RoundIndex);
+                                List<IMatch> roundMatches = bracket.IBracket.GetRound(match.match.RoundIndex);
                                 // We need to verify and check if this round is finished
                                 if (!roundMatches.Any(x => x.IsFinished == false))
                                 {

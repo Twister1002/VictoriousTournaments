@@ -11,7 +11,7 @@
         var jsonData = {};
 
         $("#TournamentSearch .options .field").each(function (i, e) {
-            jsonData[$(e).attr("name")] = $(e).val();
+            jsonData[$(e).attr("name").replace("viewModel.", "")] = $(e).val();
         });
 
         $.ajax({

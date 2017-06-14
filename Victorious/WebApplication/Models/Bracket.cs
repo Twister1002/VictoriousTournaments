@@ -36,10 +36,7 @@ namespace WebApplication.Models
             Id = bracket.Id;
         }
 
-        public Tournaments.IBracket GetBracket()
-        {
-            return bracket;
-        }
+        public Tournaments.IBracket IBracket { get { return bracket; } }
 
         public List<Match> GetRound(int roundNum, BracketSection section)
         {
@@ -337,11 +334,39 @@ namespace WebApplication.Models
                     name = "GSL Group";
                     break;
                 case DatabaseLib.BracketType.RRGROUP:
-                    name = "Roun Robin Groups";
+                    name = "Round Robin Groups";
                     break;
             }
 
             return name;
+        }
+
+        public String BracketFileName()
+        {
+            String file = "";
+            switch (bracket.BracketType)
+            {
+                case DatabaseLib.BracketType.SINGLE:
+                    file = "Single";
+                    break;
+                case DatabaseLib.BracketType.DOUBLE:
+                    file = "Double";
+                    break;
+                case DatabaseLib.BracketType.ROUNDROBIN:
+                    file = "RoundRobin";
+                    break;
+                case DatabaseLib.BracketType.SWISS:
+                    file = "Swiss";
+                    break;
+                case DatabaseLib.BracketType.GSLGROUP:
+                    file = "GSL Group";
+                    break;
+                case DatabaseLib.BracketType.RRGROUP:
+                    file = "RoundRobinGroup";
+                    break;
+            }
+
+            return file;
         }
         #endregion
 

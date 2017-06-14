@@ -241,6 +241,9 @@
     <Content Include="Views\Account\Sections\Settings.cshtml" />
     <Content Include="Views\Account\Sections\Tournaments.cshtml" />
     <Content Include="Views\Account\Sections\History.cshtml" />
+    <Content Include="Views\Tournament\Brackets\RoundRobinGroup.cshtml" />
+    <Content Include="Views\Tournament\Brackets\GSLGroup.cshtml" />
+    <Content Include="Views\Tournament\Brackets\StepLadder.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
