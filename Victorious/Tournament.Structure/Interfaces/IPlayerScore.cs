@@ -41,7 +41,7 @@ namespace Tournament.Structure
 		int[] GetRecord();
 
 		/// <summary>
-		/// Replace the Player's information.
+		/// Replace the player's information.
 		/// </summary>
 		/// <param name="_id">New player ID</param>
 		/// <param name="_name">New player name</param>
@@ -83,7 +83,7 @@ namespace Tournament.Structure
 		void ResetOpponentsScore();
 
 		/// <summary>
-		/// Reset this object's W/L Record & Score values.
+		/// Reset this object's W/L Record & score values.
 		/// </summary>
 		void ResetScore();
 		#endregion
