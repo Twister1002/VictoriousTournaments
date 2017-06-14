@@ -92,6 +92,12 @@ namespace Tournament.Structure
 			if (BracketType.SINGLE == BracketType)
 			{
 				RecalculateRankings();
+
+				if (this.IsFinalized && false == Validate())
+				{
+					throw new BracketValidationException
+						("Bracket is Finalized but not Valid!");
+				}
 			}
 		}
 		#endregion

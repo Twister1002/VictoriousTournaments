@@ -84,6 +84,12 @@ namespace Tournament.Structure
 			// Update the rankings:
 			RecalculateRankings();
 			UpdateFinishStatus();
+
+			if (this.IsFinalized && false == Validate())
+			{
+				throw new BracketValidationException
+					("Bracket is Finalized but not Valid!");
+			}
 		}
 		#endregion
 
