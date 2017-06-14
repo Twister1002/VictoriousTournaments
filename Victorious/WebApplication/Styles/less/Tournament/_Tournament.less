@@ -33,15 +33,15 @@
 
         .bracketName {
             text-align: center;
-
-            &:hover {
-                .hover;
-            }
+            padding: .5em;
+            .notSelected;
+            .hover;
         }
     }
 
     .bracket {
         display: none;
+
         &.selected {
             display: block;
             background-color: inherit;
@@ -52,6 +52,7 @@
 
             .bracket-header {
                 width: 100%;
+                padding-bottom: 1em;
 
                 .column {
                     text-align: center;
@@ -62,9 +63,23 @@
                 }
             }
 
+            .group-data {
+                min-height: 2em;
+
+                .groupName {
+                    text-align: center;
+                    padding: .5em;
+                    .notSelected;
+                    .isSelected;
+                    .hover;
+                }
+            }
+
             .round {
                 position: relative;
-
+                &.hide {
+                    display: none;
+                }
                 li {
                     position: relative;
                     vertical-align: middle;

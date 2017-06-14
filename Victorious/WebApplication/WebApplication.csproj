@@ -118,6 +118,7 @@
     <Content Include="lib\jquery\dist\jquery.min.js" />
     <Content Include="Scripts\Account\index.js" />
     <Content Include="Scripts\scripts.min.js" />
+    <Content Include="Scripts\Tournament\Bracket.js" />
     <Content Include="Scripts\Tournament\Create.js" />
     <Content Include="Scripts\Tournament\Update.js" />
     <Content Include="Styles\css\jquery.timepicker.css" />
@@ -244,6 +245,8 @@
     <Content Include="Views\Tournament\Brackets\RoundRobinGroup.cshtml" />
     <Content Include="Views\Tournament\Brackets\GSLGroup.cshtml" />
     <Content Include="Views\Tournament\Brackets\StepLadder.cshtml" />
+    <Content Include="Views\Tournament\Brackets\UpperBracket.cshtml" />
+    <Content Include="Views\Tournament\Brackets\LowerBracket.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

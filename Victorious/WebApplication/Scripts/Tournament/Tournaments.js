@@ -156,7 +156,7 @@
         var bracketId = $(this).data("bracket");
         $(".TournamentInfo .bracketData, .TournamentInfo .bracketNum").removeClass("show");
 
-        $(this).addClass("show");
+        $(this).addClass("selected").siblings().removeClass("selected");
         $(this).siblings(".TournamentInfo .bracketData[data-bracket='" + bracketId + "']").addClass("show");
     }
 
@@ -164,7 +164,7 @@
         var bracket = $(this).closest(".bracketData");
         var info = $(this).data("show");
 
-        $(this).addClass("show").siblings().removeClass("show");
+        $(this).addClass("selected").siblings().removeClass("selected");
         bracket.find("." + info).addClass("show").siblings().removeClass("show");
     }
 

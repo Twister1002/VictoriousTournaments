@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <div class="details @(Model.match.IsReady ? "" : "hide") clickable clickable-underline">Details</div>
+    <div class="details @(Model.match.IsReady && ViewBag.IsFinalized ? "" : "hide") clickable clickable-underline">Details</div>
 
     <div class="TournamentGames">
         <h2>Details</h2>

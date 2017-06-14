@@ -29,14 +29,9 @@
         .grid(15);
 
         .bracketNum {
-            &:hover {
-                cursor: pointer;
-                background-color: @color-primary-0;
-            }
-
-            &.show {
-                .selected;
-            }
+            .notSelected;
+            .hover;
+            .isSelected;
         }
 
         .bracketData {
@@ -52,13 +47,9 @@
         text-align: center;
         cursor: pointer;
 
-        &:hover {
-            background-color: @color-primary-0;
-        }
-
-        &.show {
-            background-color: @color-primary-0;
-        }
+        .notSelected;
+        .hover;
+        .isSelected;
     }
 
     .infoSection {

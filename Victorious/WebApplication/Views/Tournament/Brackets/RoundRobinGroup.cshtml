@@ -13,15 +13,31 @@
 }
 
 <li class="list-table-body">
-    <ul class="round" data-columns="@ViewBag.DisplayRounds">
-        @for (int i = 1; i <= ViewBag.DisplayRounds; i++)
-        {
-            <li class="column">
-                @foreach (var match in Model.GetRound(i, WebApplication.Models.BracketSection.UPPER))
+    <ul class="list-table group-data">
+        <li class="list-table-header">
+            <ul data-columns="@Model.Group.NumberOfGroups">
+                @for (int g = 1; g <= Model.Group.NumberOfGroups; g++)
                 {
-                    Html.RenderPartial("Brackets/Shared/_Match", match, new ViewDataDictionary(ViewData));
+                    <li class="column">
+                        <div class="groupName" data-groupnum="@g">Group @g</div>
+                    </li>
                 }
-            </li>
-        }
+            </ul>
+        </li>
     </ul>
+
+    @for (int g = 1; g <= Model.Group.NumberOfGroups; g++)
+    {
+        <ul class="round hide" data-groupnum="@g" data-columns="@ViewBag.DisplayRounds">
+            @for (int i = 1; i <= ViewBag.DisplayRounds; i++)
+            {
+                <li class="column">
+                    @foreach (var match in Model.GetRound(g, i))
+                    {
+                        Html.RenderPartial("Brackets/Shared/_Match", match, new ViewDataDictionary(ViewData));
+                    }
+                </li>
+            }
+        </ul>
+    }
 </li>

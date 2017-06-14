@@ -15,13 +15,15 @@ namespace WebApplication.Models
         public bool roundsModified;
         private IService services;
         private IBracket bracket;
-        public int Id { get; private set; }
+        private IGroupStage groupBracket;
 
+        public int Id { get; private set; }
 
         public Bracket(IService services, IBracket bracket)
         {
             this.services = services;
             this.bracket = bracket;
+            this.groupBracket = bracket as IGroupStage;
             Init();
         }
 
@@ -37,6 +39,7 @@ namespace WebApplication.Models
         }
 
         public Tournaments.IBracket IBracket { get { return bracket; } }
+        public Tournaments.IGroupStage Group { get { return groupBracket; } }
 
         public List<Match> GetRound(int roundNum, BracketSection section)
         {
@@ -62,10 +65,23 @@ namespace WebApplication.Models
             return matches;
         }
 
+        public List<Match> GetRound(int groupNum, int roundNum)
+        {
+            List<Match> matches = new List<Match>();
+
+            foreach (IMatch match in groupBracket.GetRound(groupNum, roundNum))
+            {
+                matches.Add(new Match(services, match));
+            }
+
+            return matches;
+        }
+
         public Match GrandFinal()
         {
             return new Match(services, bracket.GrandFinal);
         }
+        
 
         #region CRUD
         public bool Crate()
@@ -347,19 +363,15 @@ namespace WebApplication.Models
             switch (bracket.BracketType)
             {
                 case DatabaseLib.BracketType.SINGLE:
-                    file = "Single";
+                case DatabaseLib.BracketType.ROUNDROBIN:
+                case DatabaseLib.BracketType.SWISS:
+                    file = "UpperBracket";
                     break;
                 case DatabaseLib.BracketType.DOUBLE:
                     file = "Double";
                     break;
-                case DatabaseLib.BracketType.ROUNDROBIN:
-                    file = "RoundRobin";
-                    break;
-                case DatabaseLib.BracketType.SWISS:
-                    file = "Swiss";
-                    break;
                 case DatabaseLib.BracketType.GSLGROUP:
-                    file = "GSL Group";
+                    file = "GSLGroup";
                     break;
                 case DatabaseLib.BracketType.RRGROUP:
                     file = "RoundRobinGroup";
