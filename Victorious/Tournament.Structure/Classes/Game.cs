@@ -105,7 +105,7 @@ namespace Tournament.Structure
 
 		#region Public Methods
 		/// <summary>
-		/// Copies all of this object's current values into a GameModel object.
+		/// Creates a Model of this Game's current state.
 		/// </summary>
 		/// <returns>Matching GameModel</returns>
 		public GameModel GetModel()

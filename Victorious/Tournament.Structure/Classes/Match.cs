@@ -8,6 +8,11 @@ using DatabaseLib;
 
 namespace Tournament.Structure
 {
+	/// <summary>
+	/// Matches combine, in different combinations, to form Brackets.
+	/// Similarly, Match objects are always associated with a containing Bracket,
+	/// and contain information such as the two competing Players, a List of Games, and score.
+	/// </summary>
 	public class Match : IMatch
 	{
 		#region Variables & Properties
@@ -110,7 +115,7 @@ namespace Tournament.Structure
 
 		#region Public Methods
 		/// <summary>
-		/// Copies all of this object's current values into a MatchModel object.
+		/// Creates a Model of this Match's current state.
 		/// Any contained objects are also converted into Models.
 		/// </summary>
 		/// <returns>Matching MatchModel</returns>
@@ -737,7 +742,7 @@ namespace Tournament.Structure
 
 		#region Private Methods
 		/// <summary>
-		/// Gets a GameModel of the given Game.
+		/// Creates a GameModel of the given Game.
 		/// This Model includes the appropriate Match ID.
 		/// </summary>
 		/// <param name="_game">Game-type object</param>
