@@ -9,7 +9,7 @@ using WebApplication.Interfaces;
 
 namespace WebApplication.Models
 {
-    public class Tournament : Model
+    public class Tournament : Model, IViewModel<TournamentViewModel>
     {
         private bool TempFixMatchObjects = true;
         private Tournaments.ITournament Tourny;
@@ -30,22 +30,7 @@ namespace WebApplication.Models
             // Create the tournament
             Tourny = new Tournaments.Tournament(Model);
             searched = new List<TournamentModel>();
-            viewModel = new TournamentViewModel();
-
-            // Set the field's original data
-            viewModel.BracketTypes = services.Type.GetAllBracketTypes().Where(x => x.IsActive == true).ToList();
-            viewModel.GameTypes = services.Type.GetAllGameTypes();
-            viewModel.PlatformTypes = services.Type.GetAllPlatforms();
-            viewModel.PublicViewing = true;
-            viewModel.BracketData = new List<BracketViewModel>();
-            viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
-            viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
-            viewModel.RegistrationStartDate = DateTime.Now;
-            viewModel.RegistrationEndDate = DateTime.Now.AddDays(1);
-            viewModel.TournamentStartDate = DateTime.Now.AddDays(3);
-            viewModel.TournamentEndDate = DateTime.Now.AddDays(4);
-            viewModel.CheckinStartDate = DateTime.Now.AddDays(1);
-            viewModel.CheckinEndDate = DateTime.Now.AddDays(2);
+            SetupViewModel();
         }
 
         /// <summary>
@@ -207,7 +192,7 @@ namespace WebApplication.Models
             services.Tournament.AddTournament(Model);
             AddUser(account, Permission.TOURNAMENT_CREATOR);
             //if (viewModel.BracketData != null) UpdateBrackets();
-            //bool tournamentSave = services.Save();
+            bool tournamentSave = services.Save();
 
             // Create InviteModel
             TournamentInviteModel inviteModel = new TournamentInviteModel()
@@ -222,9 +207,6 @@ namespace WebApplication.Models
             
             services.Tournament.AddTournamentInvite(inviteModel);
             bool TournamentInviteSave = services.Save();
-
-
-
 
             return services.Save();
         }
@@ -785,6 +767,28 @@ namespace WebApplication.Models
         #endregion
 
         #region ViewModel
+        public void SetupViewModel()
+        {
+            viewModel = new TournamentViewModel();
+
+            // Set the field's original data
+            viewModel.BracketTypes = services.Type.GetAllBracketTypes().Where(x => x.IsActive == true).ToList();
+            viewModel.GameTypes = services.Type.GetAllGameTypes();
+            viewModel.PlatformTypes = services.Type.GetAllPlatforms();
+            viewModel.PublicViewing = true;
+            viewModel.BracketData = new List<BracketViewModel>();
+            viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
+            viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
+            viewModel.NumberPlayersAdvance = Enumerable.Range(-1, GetParticipants().Count).ToList();
+
+            viewModel.RegistrationStartDate = DateTime.Now;
+            viewModel.RegistrationEndDate = DateTime.Now.AddDays(1);
+            viewModel.TournamentStartDate = DateTime.Now.AddDays(3);
+            viewModel.TournamentEndDate = DateTime.Now.AddDays(4);
+            viewModel.CheckinStartDate = DateTime.Now.AddDays(1);
+            viewModel.CheckinEndDate = DateTime.Now.AddDays(2);
+        }
+
         public void ApplyChanges(TournamentViewModel viewModel)
         {
             // Tournament Stuff

@@ -67,13 +67,7 @@ namespace WebApplication.Models.ViewModels
         [DataType(DataType.Time)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "hh:mm tt")]
         public DateTime CheckinEndTime { get; set; }
-
-        [Display(Name = "Bracket Type")]
-        public List<BracketTypeModel> BracketTypes { get; set; }
-        [Display(Name = "Rounds")]
-        public List<int> NumberOfRounds { get; set; }
-        [Display(Name = "Groups")]
-        public List<int> NumberOfGroups { get; set; }
+        
         public List<GameTypeModel> GameTypes { get; set; }
         public List<PlatformModel> PlatformTypes { get; set; }
 
@@ -96,5 +90,13 @@ namespace WebApplication.Models.ViewModels
         // Bracket stuff
         [Display(Name = "Best Of ")]
         public int BestOfMatches { get; set; }
+        [Display(Name = "Bracket Type")]
+        public List<BracketTypeModel> BracketTypes { get; set; }
+        [Display(Name = "Rounds")]
+        public List<int> NumberOfRounds { get; set; }
+        [Display(Name = "Groups")]
+        public List<int> NumberOfGroups { get; set; }
+        [Display(Name = "Number of player to advace")]
+        public List<int> NumberPlayersAdvance { get; set; }
     }
 }

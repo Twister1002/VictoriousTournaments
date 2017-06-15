@@ -95,6 +95,10 @@
                     @Html.LabelFor(t => t.NumberOfGroups)
                     @Html.DropDownList("BracketData[%n%].NumberOfGroups", Model.NumberOfGroups.Select(n => new SelectListItem() { Text = n.ToString(), Value = n.ToString() }), attributes)
                 </li>
+                <li class="advanceSelect hide">
+                    @Html.LabelFor(t => t.NumberPlayersAdvance)
+                    @Html.DropDownList("BracketData[%n%].NumberPlayersAdvance", Model.NumberPlayersAdvance.Select(n => new SelectListItem() { Text = n.ToString(), Value = n.ToString() }), attributes)
+                </li>
             </ul>
         </div>
         <div class="section form-section">

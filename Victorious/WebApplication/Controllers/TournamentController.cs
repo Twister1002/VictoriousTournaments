@@ -194,7 +194,6 @@ namespace WebApplication.Controllers
                 Models.Tournament tourny = new Models.Tournament(service, -1);
                 if (ModelState.IsValid)
                 {
-                    
                     if (tourny.Create(viewModel, account))
                     {
                         return RedirectToAction("Tournament", "Tournament", new { guid = tourny.Model.TournamentID });
@@ -257,6 +256,7 @@ namespace WebApplication.Controllers
                 ViewBag.CanEdit = tourny.CanEdit();
                 ViewBag.InProgress = tourny.Model.InProgress;
                 tourny.SetFields();
+
                 return View("Create", tourny.viewModel);
             }
             else
