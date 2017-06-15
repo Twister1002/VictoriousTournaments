@@ -5,9 +5,10 @@ using System.Web;
 
 namespace WebApplication.Interfaces
 {
-    public interface IViewModel
+    public interface IViewModel<T> where T : class
     {
-        void ApplyChanges();
+        void SetupViewModel();
+        void ApplyChanges(T viewModel);
         void SetFields();
     }
 }
