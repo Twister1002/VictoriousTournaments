@@ -17,8 +17,8 @@
           </Key>
           <Property Name="AccountInviteID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AccountInviteCode" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="SentToEmail" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="SentByID" Type="int" Nullable="false" />
+          <Property Name="SentToEmail" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="DateCreated" Type="date" Nullable="false" />
           <Property Name="DateExpires" Type="date" Nullable="false" />
           <Property Name="IsExpired" Type="bit" Nullable="false" />
@@ -39,6 +39,8 @@
           <Property Name="PermissionLevel" Type="int" Nullable="false" />
           <Property Name="InviteCode" Type="nvarchar" MaxLength="256" />
           <Property Name="InvitedByID" Type="int" />
+          <Property Name="Salt" Type="nvarchar(max)" />
+          <Property Name="ReceiveTournamentUpdates" Type="bit" />
         </EntityType>
         <EntityType Name="Brackets">
           <Key>
@@ -50,6 +52,7 @@
           <Property Name="NumberOfGroups" Type="int" Nullable="false" />
           <Property Name="TournamentID" Type="int" />
           <Property Name="MaxRounds" Type="int" Nullable="false" />
+          <Property Name="NumberPlayersAdvance" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="BracketTypes">
           <Key>
@@ -79,6 +82,12 @@
           </Key>
           <Property Name="GameTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Title" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="MailingList">
+          <Key>
+            <PropertyRef Name="EmailAddress" />
+          </Key>
+          <Property Name="EmailAddress" Type="nvarchar" MaxLength="256" Nullable="false" />
         </EntityType>
         <EntityType Name="Matches">
           <Key>
@@ -464,6 +473,7 @@
           <EntitySet Name="BracketTypes" EntityType="Self.BracketTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Games" EntityType="Self.Games" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GameTypes" EntityType="Self.GameTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MailingList" EntityType="Self.MailingList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Matches" EntityType="Self.Matches" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Platforms" EntityType="Self.Platforms" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SiteTeamMembers" EntityType="Self.SiteTeamMembers" Schema="dbo" store:Type="Tables" />
@@ -577,6 +587,7 @@
           <NavigationProperty Name="Matches" Relationship="VictoriousDatabaseModel.FK_Matches_Brackets" FromRole="BracketModel" ToRole="Match" />
           <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.FK_Brackets_Tournaments" FromRole="BracketModel" ToRole="Tournament" />
           <NavigationProperty Name="TournamentTeamBrackets" Relationship="VictoriousDatabaseModel.FK_TournamentTeamsBrackets_Brackets_BracketID" FromRole="BracketModel" ToRole="TournamentTeamBracket" />
+          <Property Name="NumberPlayersAdvance" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="BracketTypeModel">
           <Key>
@@ -683,6 +694,7 @@
             <End Role="TournamentTeamModel" EntitySet="TournamentTeamModels" />
             <End Role="TournamentTeamMember" EntitySet="TournamentTeamMemberModels" />
           </AssociationSet>
+          <EntitySet Name="MailingLists" EntityType="VictoriousDatabaseModel.MailingList" />
           </EntityContainer>
         <EntityType Name="TournamentUserModel">
           <Key>
@@ -793,6 +805,8 @@
           <Property Name="InvitedByID" Type="Int32" />
           <NavigationProperty Name="AccountInvites" Relationship="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy" FromRole="AccountModel" ToRole="AccountInvite" />
           <NavigationProperty Name="SiteTeamMembers" Relationship="VictoriousDatabaseModel.FK_SiteTeamMembers_Accounts_AccountID" FromRole="AccountModel" ToRole="SiteTeamMember" />
+          <Property Name="Salt" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ReceiveTournamentUpdates" Type="Boolean" />
         </EntityType>
         <EntityType Name="MatchModel">
           <Key>
@@ -1143,6 +1157,12 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="MailingList">
+          <Key>
+            <PropertyRef Name="EmailAddress" />
+          </Key>
+          <Property Name="EmailAddress" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1159,6 +1179,7 @@
           <EntitySetMapping Name="BracketModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.BracketModel">
               <MappingFragment StoreEntitySet="Brackets">
+                <ScalarProperty Name="NumberPlayersAdvance" ColumnName="NumberPlayersAdvance" />
                 <ScalarProperty Name="MaxRounds" ColumnName="MaxRounds" />
                 <ScalarProperty Name="BracketID" ColumnName="BracketID" />
                 <ScalarProperty Name="BracketTypeID" ColumnName="BracketTypeID" />
@@ -1228,6 +1249,8 @@
           <EntitySetMapping Name="AccountModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.AccountModel">
               <MappingFragment StoreEntitySet="Accounts">
+                <ScalarProperty Name="ReceiveTournamentUpdates" ColumnName="ReceiveTournamentUpdates" />
+                <ScalarProperty Name="Salt" ColumnName="Salt" />
                 <ScalarProperty Name="InvitedByID" ColumnName="InvitedByID" />
                 <ScalarProperty Name="InviteCode" ColumnName="InviteCode" />
                 <ScalarProperty Name="PermissionLevel" ColumnName="PermissionLevel" />
@@ -1377,6 +1400,13 @@
                 <ScalarProperty Name="DefenderID" ColumnName="DefenderID" />
                 <ScalarProperty Name="ChallengerID" ColumnName="ChallengerID" />
                 <ScalarProperty Name="MatchID" ColumnName="MatchID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MailingLists">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.MailingList">
+              <MappingFragment StoreEntitySet="MailingList">
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

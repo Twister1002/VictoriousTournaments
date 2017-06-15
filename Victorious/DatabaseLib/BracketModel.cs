@@ -29,6 +29,7 @@ namespace DatabaseLib
         public int NumberOfGroups { get; set; }
         public Nullable<int> TournamentID { get; set; }
         public int MaxRounds { get; set; }
+        public int NumberPlayersAdvance { get; set; }
     	
     	partial void OnInit();
     

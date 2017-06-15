@@ -67,6 +67,9 @@
     <Compile Include="AccountModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="MailingList.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Repositories\AccountRepository.cs" />
     <Compile Include="BracketModel.cs">

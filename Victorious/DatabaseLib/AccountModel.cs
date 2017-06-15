@@ -34,6 +34,8 @@ namespace DatabaseLib
         public int PermissionLevel { get; set; }
         public string InviteCode { get; set; }
         public Nullable<int> InvitedByID { get; set; }
+        public string Salt { get; set; }
+        public Nullable<bool> ReceiveTournamentUpdates { get; set; }
     	
     	partial void OnInit();
     

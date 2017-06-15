@@ -44,6 +44,7 @@
         <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamMember_SiteTeamMembers_SiteTeamMemberID" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamMember_TournamentTeams_TournamentTeamID" ManuallyRouted="false" >
         </AssociationConnector>
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.MailingList" Width="1.5" PointX="0.75" PointY="0.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
