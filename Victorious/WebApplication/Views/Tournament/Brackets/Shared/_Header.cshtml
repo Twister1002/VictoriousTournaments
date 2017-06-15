@@ -2,7 +2,6 @@
 
 @{ 
     int roundNum = 1;
-    bool grandFinal = ViewBag.GrandFinalShow != null ? ViewBag.GrandFinalShow : false;
 }
 
 <li class="list-table-header bracket-header">
@@ -29,7 +28,7 @@
                 }
             </li>
         }
-        @if (grandFinal)
+        @if (ViewBag.GrandFinal && ViewBag.Class == "upper")
         {
             var details = Model.GetRoundHeaders(roundNum, WebApplication.Models.BracketSection.FINAL);
 
