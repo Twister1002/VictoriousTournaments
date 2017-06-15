@@ -1,0 +1,1126 @@
+/*********************************
+    /////////////////////////////
+    //////// Style Sheet ////////
+    /////////////////////////////
+*********************************/
+/* Light Blue */
+/* Main Primary color */
+/* Dark Blue */
+/* Main Secondary color (1) */
+/* Green */
+/* Main Secondary color (2) */
+/* Tan */
+/* Main Complement color */
+@font-face {
+  font-family: 'icomoon';
+  src: url('/Content/fonts/icomoon.eot?tuw12n');
+  src: url('/Content/fonts/icomoon.eot?tuw12n#iefix') format('embedded-opentype'), url('/Content/fonts/icomoon.ttf?tuw12n') format('truetype'), url('/Content/fonts/icomoon.woff?tuw12n') format('woff'), url('/Content/fonts/icomoon.svg?tuw12n#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+[class^="icon-"],
+[class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: pointer;
+}
+[class^="icon-"].green,
+[class*=" icon-"].green {
+  color: green;
+}
+[class^="icon-"].red,
+[class*=" icon-"].red {
+  color: #D80600;
+}
+.icon-pencil:before {
+  content: "\e905";
+}
+.icon-search:before {
+  content: "\e986";
+}
+.icon-wrench:before {
+  content: "\e991";
+}
+.icon-cog:before {
+  content: "\e994";
+}
+.icon-cogs:before {
+  content: "\e995";
+}
+.icon-trophy:before {
+  content: "\e99e";
+}
+.icon-bin:before {
+  content: "\e9ac";
+}
+.icon-bin2:before {
+  content: "\e9ad";
+}
+.icon-tree:before {
+  content: "\e9bc";
+}
+.icon-menu:before {
+  content: "\e9bd";
+}
+.icon-plus:before {
+  content: "\ea0a";
+}
+.icon-minus:before {
+  content: "\ea0b";
+}
+.icon-cancel-circle:before {
+  content: "\ea0d";
+}
+.icon-cross:before {
+  content: "\ea0f";
+}
+.icon-checkmark:before {
+  content: "\ea10";
+}
+.icon-play3:before {
+  content: "\ea1c";
+}
+.icon-pause2:before {
+  content: "\ea1d";
+}
+.icon-loop2:before {
+  content: "\ea2e";
+}
+.icon-shuffle:before {
+  content: "\ea30";
+}
+.icon-facebook:before {
+  content: "\ea90";
+}
+.icon-twitter:before {
+  content: "\ea96";
+}
+.icon-youtube:before {
+  content: "\ea9d";
+}
+.icon-twitch:before {
+  content: "\ea9f";
+}
+.icon-tumblr:before {
+  content: "\eab9";
+}
+ul.list-table {
+  position: relative;
+  display: table;
+  width: 100%;
+  min-height: 5em;
+  height: inherit;
+}
+ul.list-table li.list-table-header ul,
+ul.list-table li.list-table-body ul {
+  position: relative;
+}
+ul.list-table li.list-table-header ul.border,
+ul.list-table li.list-table-body ul.border {
+  border-bottom: 0.1em solid #FFFFFF;
+}
+ul.list-table li.list-table-header ul.options,
+ul.list-table li.list-table-body ul.options {
+  padding-bottom: 1.5em;
+}
+ul.list-table li.list-table-header ul.form input,
+ul.list-table li.list-table-body ul.form input,
+ul.list-table li.list-table-header ul.form select,
+ul.list-table li.list-table-body ul.form select {
+  border: 0em;
+  border-bottom: 0.1em solid #FFFFFF;
+  padding: .5em 0em .5em 1em;
+  background-color: inherit;
+  color: #FFFFFF;
+  width: 92%;
+}
+ul.list-table li.list-table-header ul.form input::-webkit-input-placeholder,
+ul.list-table li.list-table-body ul.form input::-webkit-input-placeholder,
+ul.list-table li.list-table-header ul.form select::-webkit-input-placeholder,
+ul.list-table li.list-table-body ul.form select::-webkit-input-placeholder {
+  color: #d9d9d9;
+}
+ul.list-table li.list-table-header ul.form input::-moz-placeholder,
+ul.list-table li.list-table-body ul.form input::-moz-placeholder,
+ul.list-table li.list-table-header ul.form select::-moz-placeholder,
+ul.list-table li.list-table-body ul.form select::-moz-placeholder {
+  color: #d9d9d9;
+}
+ul.list-table li.list-table-header ul.form input:-ms-input-placeholder,
+ul.list-table li.list-table-body ul.form input:-ms-input-placeholder,
+ul.list-table li.list-table-header ul.form select:-ms-input-placeholder,
+ul.list-table li.list-table-body ul.form select:-ms-input-placeholder {
+  color: #d9d9d9;
+}
+ul.list-table li.list-table-header ul.form input:-moz-placeholder,
+ul.list-table li.list-table-body ul.form input:-moz-placeholder,
+ul.list-table li.list-table-header ul.form select:-moz-placeholder,
+ul.list-table li.list-table-body ul.form select:-moz-placeholder {
+  color: #d9d9d9;
+}
+ul.list-table li.list-table-header ul.form input option,
+ul.list-table li.list-table-body ul.form input option,
+ul.list-table li.list-table-header ul.form select option,
+ul.list-table li.list-table-body ul.form select option {
+  color: #000000;
+}
+ul.list-table li.list-table-header ul.row-clickable:hover,
+ul.list-table li.list-table-body ul.row-clickable:hover {
+  background-color: #01111E;
+  color: #FFFFFF;
+}
+ul.list-table li.list-table-header ul[data-columns="12"] .column,
+ul.list-table li.list-table-body ul[data-columns="12"] .column {
+  display: inline-block;
+  width: 7.83333333%;
+}
+ul.list-table li.list-table-header ul[data-columns="11"] .column,
+ul.list-table li.list-table-body ul[data-columns="11"] .column {
+  display: inline-block;
+  width: 8.54545455%;
+}
+ul.list-table li.list-table-header ul[data-columns="10"] .column,
+ul.list-table li.list-table-body ul[data-columns="10"] .column {
+  display: inline-block;
+  width: 9.4%;
+}
+ul.list-table li.list-table-header ul[data-columns="9"] .column,
+ul.list-table li.list-table-body ul[data-columns="9"] .column {
+  display: inline-block;
+  width: 10.44444444%;
+}
+ul.list-table li.list-table-header ul[data-columns="8"] .column,
+ul.list-table li.list-table-body ul[data-columns="8"] .column {
+  display: inline-block;
+  width: 11.75%;
+}
+ul.list-table li.list-table-header ul[data-columns="7"] .column,
+ul.list-table li.list-table-body ul[data-columns="7"] .column {
+  display: inline-block;
+  width: 13.42857143%;
+}
+ul.list-table li.list-table-header ul[data-columns="6"] .column,
+ul.list-table li.list-table-body ul[data-columns="6"] .column {
+  display: inline-block;
+  width: 15.66666667%;
+}
+ul.list-table li.list-table-header ul[data-columns="5"] .column,
+ul.list-table li.list-table-body ul[data-columns="5"] .column {
+  display: inline-block;
+  width: 18.8%;
+}
+ul.list-table li.list-table-header ul[data-columns="4"] .column,
+ul.list-table li.list-table-body ul[data-columns="4"] .column {
+  display: inline-block;
+  width: 23.5%;
+}
+ul.list-table li.list-table-header ul[data-columns="3"] .column,
+ul.list-table li.list-table-body ul[data-columns="3"] .column {
+  display: inline-block;
+  width: 31.33333333%;
+}
+ul.list-table li.list-table-header ul[data-columns="2"] .column,
+ul.list-table li.list-table-body ul[data-columns="2"] .column {
+  display: inline-block;
+  width: 47%;
+}
+ul.list-table li.list-table-header ul[data-columns="1"] .column,
+ul.list-table li.list-table-body ul[data-columns="1"] .column {
+  display: inline-block;
+  width: 94%;
+}
+html {
+  padding: 0em;
+  margin: 0em;
+}
+body {
+  background-color: #264C69;
+  color: #FFFFFF;
+  font-family: 'Signika', 'Quattrocento Sans', /*'Kanit', 'Arimo', 'Francois One',*/ sans-serif;
+  font-size: 16px;
+}
+.notSelected:not(.selected) {
+  background-color: #456985;
+}
+.isSelected.selected {
+  background-color: #031F35;
+}
+.hover:hover {
+  color: #FFFFFF;
+  background-color: #01111E;
+  text-decoration: none;
+}
+.selected {
+  background-color: #10334E;
+}
+a,
+a:link,
+a:visited {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+a:hover:hover {
+  color: #FFFFFF;
+  background-color: #01111E;
+  text-decoration: none;
+}
+a.clickable-underline,
+.clickable-underline {
+  text-decoration: underline;
+  cursor: pointer;
+}
+.clickable {
+  cursor: pointer;
+}
+ul,
+li {
+  list-style-type: none;
+  padding: 0em;
+  margin: 0em;
+}
+label {
+  display: block;
+  padding: .25em 0em .25em 0em;
+}
+.message {
+  display: block;
+  padding: 1em;
+  position: relative;
+}
+.message:after {
+  padding-bottom: 1em;
+}
+.message.none {
+  background-color: #887308;
+}
+.message.success {
+  background-color: #066D06;
+}
+.message.warning {
+  background-color: #884208;
+}
+.message.error {
+  background-color: #880C08;
+}
+.message .closeMessage {
+  position: absolute;
+  padding: .5em;
+  right: 1em;
+  top: .6em;
+  width: 1em;
+}
+.dev-bp {
+  position: relative;
+  top: 0em;
+  height: .5em;
+  width: 100%;
+  background-color: grey;
+}
+#content {
+  width: 100%;
+  min-height: 10em;
+}
+@media screen and (min-width: 30.0625em) {
+  .dev-bp {
+    background-color: blue;
+  }
+}
+@media screen and (min-width: 48em) {
+  .dev-bp {
+    background-color: violet;
+  }
+}
+@media screen and (min-width: 64em) {
+  /*#content {
+        width: 90%;
+        margin: auto;
+    }*/
+  .dev-bp {
+    background-color: yellow;
+  }
+}
+@media screen and (min-width: 90em) {
+  .dev-bp {
+    background-color: orange;
+  }
+}
+#navagation {
+  position: relative;
+  background-color: #456985;
+  width: 100%;
+}
+#navagation .logo {
+  background-color: green;
+}
+#navagation .nav {
+  position: relative;
+  text-align: center;
+}
+#navagation .nav > li:hover {
+  background-color: #10334E;
+  color: inherit;
+}
+#navagation .nav > li a {
+  display: block;
+  padding: 1em;
+  color: #FFFFFF;
+}
+#navagation .nav > li.menu-dropdown .content {
+  display: none;
+}
+#navagation .nav > li.searchBar {
+  position: relative;
+}
+#navagation .nav > li.searchBar:hover {
+  background-color: inherit;
+}
+#navagation .nav > li.searchBar form {
+  padding: 0em;
+  margin: 0em;
+}
+#navagation .nav > li.searchBar form .fieldImage {
+  position: absolute;
+  padding: 0em;
+  height: 1.5em;
+  width: 1.5em;
+}
+#navagation .nav > li.searchBar form .field {
+  width: 100%;
+  padding: .5em 0em .5em 2em;
+}
+#navagation .nav > li.searchBar form .field::-webkit-input-placeholder {
+  color: #d9d9d9;
+}
+#navagation .nav > li.searchBar form .field::-moz-placeholder {
+  color: #d9d9d9;
+}
+#navagation .nav > li.searchBar form .field:-ms-input-placeholder {
+  color: #d9d9d9;
+}
+#navagation .nav > li.searchBar form .field:-moz-placeholder {
+  color: #d9d9d9;
+}
+@media screen and (min-width: 30.0625em) {
+  #navagation .nav > li {
+    display: inline-block;
+  }
+  #navagation .nav > li.menu-dropdown {
+    position: relative;
+  }
+  #navagation .nav > li.menu-dropdown:hover .content {
+    display: block;
+  }
+  #navagation .nav > li.menu-dropdown .content {
+    display: none;
+    position: absolute;
+    background-color: #456985;
+    left: 0em;
+    top: 3.2em;
+    z-index: 1;
+  }
+  #navagation .nav > li.menu-dropdown .content:hover {
+    display: block;
+  }
+  #navagation .nav > li.menu-dropdown .content > a {
+    display: block;
+    padding: .5em;
+    min-width: 10em;
+    background-color: inherit;
+  }
+  #navagation .nav > li.menu-dropdown .content > a:hover {
+    color: #FFFFFF;
+    background-color: #10334E;
+  }
+}
+form input[type="text"],
+form input[type="password"],
+form select {
+  border: 0em;
+  border-bottom: 0.1em solid #FFFFFF;
+  padding: .5em 0em .5em 1em;
+  background-color: inherit;
+  color: #FFFFFF;
+}
+form input[type="text"]::-webkit-input-placeholder,
+form input[type="password"]::-webkit-input-placeholder,
+form select::-webkit-input-placeholder {
+  color: #d9d9d9;
+}
+form input[type="text"]::-moz-placeholder,
+form input[type="password"]::-moz-placeholder,
+form select::-moz-placeholder {
+  color: #d9d9d9;
+}
+form input[type="text"]:-ms-input-placeholder,
+form input[type="password"]:-ms-input-placeholder,
+form select:-ms-input-placeholder {
+  color: #d9d9d9;
+}
+form input[type="text"]:-moz-placeholder,
+form input[type="password"]:-moz-placeholder,
+form select:-moz-placeholder {
+  color: #d9d9d9;
+}
+form input[type="text"] option,
+form input[type="password"] option,
+form select option {
+  color: #000000;
+}
+form label {
+  display: block;
+}
+form > * {
+  padding: .5em;
+}
+form .required {
+  color: red;
+}
+footer {
+  padding-top: 1em;
+}
+footer #footer {
+  width: 100%;
+  text-align: center;
+  background-color: #456985;
+}
+footer #footer > div:not(.message) {
+  padding: .5em;
+}
+footer #footer .footer_social {
+  font-size: 24px;
+}
+footer #footer .footer_social span.icon {
+  padding: 0em .5em;
+}
+footer #footer .footer_social span.icon:hover {
+  color: #A37333;
+}
+footer #footer .footer_information {
+  position: relative;
+}
+footer #footer .footer_information a {
+  display: block;
+  padding: .25em;
+}
+footer #footer .footer_information a:hover:hover {
+  color: #FFFFFF;
+  background-color: #01111E;
+  text-decoration: none;
+}
+footer #footer .footer_information:after {
+  clear: both;
+  height: 0em;
+  display: block;
+  visibility: hidden;
+  content: ".";
+}
+@media screen and (min-width: 30.0625em) {
+  footer #footer .footer_information a {
+    display: inline-block;
+  }
+}
+#Tournament {
+  position: relative;
+  width: 100%;
+}
+#Tournament .content-header {
+  width: 100%;
+}
+#Tournament .content-header .tournamentTitle {
+  margin-bottom: 0em;
+  padding: 0em;
+}
+#Tournament .content-header .tournament-buttons {
+  display: inline-block;
+}
+#Tournament .content-header .gameTitle {
+  margin-top: 0em;
+}
+#Tournament .options > span {
+  padding: .25em;
+}
+#Tournament .bracketNames .list-table {
+  min-height: 0em;
+  padding: 1em 0em;
+}
+#Tournament .bracketNames .bracketName {
+  text-align: center;
+  padding: .5em;
+}
+#Tournament .bracketNames .bracketName:not(.selected) {
+  background-color: #456985;
+}
+#Tournament .bracketNames .bracketName:hover {
+  color: #FFFFFF;
+  background-color: #01111E;
+  text-decoration: none;
+}
+#Tournament .bracket {
+  display: none;
+}
+#Tournament .bracket.selected {
+  display: block;
+  background-color: inherit;
+}
+#Tournament .bracket .bracket-data {
+  position: relative;
+}
+#Tournament .bracket .bracket-data .bracket-header {
+  width: 100%;
+  padding-bottom: 1em;
+}
+#Tournament .bracket .bracket-data .bracket-header .column {
+  text-align: center;
+}
+#Tournament .bracket .bracket-data .bracket-header #bestOfMatches {
+  width: inherit;
+}
+#Tournament .bracket .bracket-data .group-data {
+  min-height: 2em;
+}
+#Tournament .bracket .bracket-data .group-data .groupName {
+  text-align: center;
+  padding: .5em;
+}
+#Tournament .bracket .bracket-data .group-data .groupName:not(.selected) {
+  background-color: #456985;
+}
+#Tournament .bracket .bracket-data .group-data .groupName.selected {
+  background-color: #031F35;
+}
+#Tournament .bracket .bracket-data .group-data .groupName:hover {
+  color: #FFFFFF;
+  background-color: #01111E;
+  text-decoration: none;
+}
+#Tournament .bracket .bracket-data .round {
+  position: relative;
+}
+#Tournament .bracket .bracket-data .round.hide {
+  display: none;
+}
+#Tournament .bracket .bracket-data .round li {
+  position: relative;
+  vertical-align: middle;
+  height: 100%;
+}
+#TournamentEdit .section.form-section li {
+  padding: .5em 0em;
+}
+#TournamentEdit .section.form-section li .datepicker,
+#TournamentEdit .section.form-section li .timepicker {
+  width: 7em;
+}
+#TournamentEdit .section.form-section li.hide {
+  display: none;
+}
+#TournamentEdit .section.form-section .input-validation-error {
+  background-color: #880C08;
+}
+#TournamentEdit .section.form-section .input-validation-error option {
+  color: #FFFFFF;
+}
+#TournamentEdit .section.form-section .field-validation-error {
+  display: none;
+}
+#TournamentEdit .section.user-section {
+  /*background-color: red;*/
+}
+#TournamentEdit .section.user-section .user {
+  padding: .25em 0em;
+}
+#TournamentEdit .section.user-section .user > li {
+  vertical-align: middle;
+}
+#TournamentSearch li.list-table-body a {
+  text-decoration: none;
+}
+#TournamentSearch li.list-table-body a:hover {
+  background-color: inherit;
+  color: inherit;
+}
+#TournamentSearch li.list-table-body .column-clickable {
+  padding: 1em 0em;
+  border-bottom: 1px solid #FFFFFF;
+}
+#TournamentSearch li.list-table-body .column-clickable:hover {
+  background-color: #01111E;
+  cursor: pointer;
+}
+.TournamentInfo {
+  position: absolute;
+  display: none;
+  opacity: .95;
+  top: 0em;
+  width: 100%;
+  height: 100%;
+  min-height: 20em;
+  z-index: 1;
+}
+.TournamentInfo.open {
+  display: block;
+}
+.TournamentInfo .close {
+  position: absolute;
+  right: 1em;
+  top: .25em;
+  z-index: 1;
+}
+.TournamentInfo .details {
+  background-color: black;
+  position: relative;
+  height: 98%;
+  padding: .5em;
+  text-align: center;
+  overflow-y: auto;
+}
+.TournamentInfo .details[data-columns="15"] .column {
+  display: inline-block;
+  width: 6.26666667%;
+}
+.TournamentInfo .details[data-columns="14"] .column {
+  display: inline-block;
+  width: 6.71428571%;
+}
+.TournamentInfo .details[data-columns="13"] .column {
+  display: inline-block;
+  width: 7.23076923%;
+}
+.TournamentInfo .details[data-columns="12"] .column {
+  display: inline-block;
+  width: 7.83333333%;
+}
+.TournamentInfo .details[data-columns="11"] .column {
+  display: inline-block;
+  width: 8.54545455%;
+}
+.TournamentInfo .details[data-columns="10"] .column {
+  display: inline-block;
+  width: 9.4%;
+}
+.TournamentInfo .details[data-columns="9"] .column {
+  display: inline-block;
+  width: 10.44444444%;
+}
+.TournamentInfo .details[data-columns="8"] .column {
+  display: inline-block;
+  width: 11.75%;
+}
+.TournamentInfo .details[data-columns="7"] .column {
+  display: inline-block;
+  width: 13.42857143%;
+}
+.TournamentInfo .details[data-columns="6"] .column {
+  display: inline-block;
+  width: 15.66666667%;
+}
+.TournamentInfo .details[data-columns="5"] .column {
+  display: inline-block;
+  width: 18.8%;
+}
+.TournamentInfo .details[data-columns="4"] .column {
+  display: inline-block;
+  width: 23.5%;
+}
+.TournamentInfo .details[data-columns="3"] .column {
+  display: inline-block;
+  width: 31.33333333%;
+}
+.TournamentInfo .details[data-columns="2"] .column {
+  display: inline-block;
+  width: 47%;
+}
+.TournamentInfo .details[data-columns="1"] .column {
+  display: inline-block;
+  width: 94%;
+}
+.TournamentInfo .details .bracketNum:not(.selected) {
+  background-color: #456985;
+}
+.TournamentInfo .details .bracketNum:hover {
+  color: #FFFFFF;
+  background-color: #01111E;
+  text-decoration: none;
+}
+.TournamentInfo .details .bracketNum.selected {
+  background-color: #031F35;
+}
+.TournamentInfo .details .bracketData {
+  display: none;
+  height: 93%;
+}
+.TournamentInfo .details .bracketData.show {
+  display: block;
+}
+.TournamentInfo .selection {
+  text-align: center;
+  cursor: pointer;
+}
+.TournamentInfo .selection:not(.selected) {
+  background-color: #456985;
+}
+.TournamentInfo .selection:hover {
+  color: #FFFFFF;
+  background-color: #01111E;
+  text-decoration: none;
+}
+.TournamentInfo .selection.selected {
+  background-color: #031F35;
+}
+.TournamentInfo .infoSection {
+  display: none;
+  position: relative;
+  height: 100%;
+}
+.TournamentInfo .infoSection.show {
+  display: block;
+}
+.TournamentInfo .infoSection .column {
+  vertical-align: middle;
+}
+.TournamentInfo .playerInfo {
+  position: relative;
+  padding-top: .5em;
+  height: 100%;
+  /*background-color: orange;*/
+}
+.TournamentInfo .playerInfo ul {
+  border: 1px solid #FFFFFF;
+}
+.TournamentInfo .playerInfo .header {
+  padding: 0em .25em;
+}
+.TournamentInfo .playerInfo .data {
+  padding: .25em .25em;
+}
+.TournamentInfo .playerInfo .data .column {
+  overflow: hidden;
+}
+.TournamentInfo .playerInfo .data .column input {
+  padding: .25em 0em;
+  text-align: center;
+}
+.TournamentInfo .playerInfo .data .column input:disabled {
+  border: none;
+}
+.TournamentInfo .playerInfo .adminSettings {
+  position: relative;
+  width: 100%;
+  bottom: 0;
+  /*background-color: red;*/
+}
+.TournamentInfo .standingInfo {
+  padding-top: .5em;
+}
+.TournamentInfo .standingInfo ul {
+  border: 1px solid #FFFFFF;
+}
+.TournamentInfo .standingInfo .header {
+  padding: 0em .25em;
+}
+.TournamentInfo .standingInfo .data {
+  padding: .5em .25em;
+}
+.TournamentInfo .resetInfo {
+  padding-top: .5em;
+}
+.TournamentMatch {
+  position: relative;
+  padding: .5em .2em;
+}
+.TournamentMatch.grand-final {
+  position: relative;
+  top: -35%;
+}
+.TournamentMatch .teamHover {
+  background-color: #10334E;
+}
+.TournamentMatch .overview {
+  background-color: #26252B;
+  border: 1px solid #FFFFFF;
+  overflow: hidden;
+}
+.TournamentMatch .overview .defender,
+.TournamentMatch .overview .challenger {
+  height: 1.25em;
+  white-space: nowrap;
+  position: relative;
+  padding: .1em;
+  overflow: hidden;
+}
+.TournamentMatch .overview .defender[data-id='-1'] .name,
+.TournamentMatch .overview .challenger[data-id='-1'] .name {
+  font-style: italic;
+}
+.TournamentMatch .overview .defender .name,
+.TournamentMatch .overview .challenger .name {
+  padding-left: .25em;
+  margin-right: 1em;
+  overflow: hidden;
+}
+.TournamentMatch .overview .defender .score,
+.TournamentMatch .overview .challenger .score {
+  position: absolute;
+  right: 0em;
+  top: 0em;
+  height: 1.5em;
+  line-height: 1.5em;
+  text-align: right;
+  padding: 0em .25em;
+  border-left: 1px solid #FFFFFF;
+}
+.TournamentMatch .overview .defender .score-edit,
+.TournamentMatch .overview .challenger .score-edit {
+  display: none;
+}
+.TournamentMatch .overview .defender {
+  border-bottom: 1px solid #FFFFFF;
+}
+.TournamentMatch .details {
+  display: block;
+  text-align: center;
+}
+.TournamentMatch .details.hide {
+  display: none;
+}
+.TournamentGames {
+  position: absolute;
+  opacity: .95;
+  background-color: black;
+  z-index: 1;
+  min-width: 14em;
+  padding: .5em .2em;
+  width: 99%;
+  display: none;
+  /* OVERRIDE */
+}
+.TournamentGames.open {
+  display: block;
+}
+.TournamentGames h2 {
+  margin: 0em;
+  padding: .25em .5em;
+}
+.TournamentGames .updates {
+  padding: 1em .25em;
+}
+.TournamentGames .options {
+  display: block;
+  position: absolute;
+  right: 1em;
+  top: 1em;
+}
+.TournamentGames .options .add-game.hide {
+  display: none;
+}
+.TournamentGames ul.list-table li.list-table-header ul .column,
+.TournamentGames ul.list-table li.list-table-body ul .column {
+  text-align: center;
+  text-overflow: clip;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.TournamentGames ul.list-table li.list-table-header ul.form input,
+.TournamentGames ul.list-table li.list-table-body ul.form input {
+  padding: .25em .5em;
+}
+.TournamentGames ul.list-table li.list-table-header ul[data-columns="4"] .column,
+.TournamentGames ul.list-table li.list-table-body ul[data-columns="4"] .column {
+  display: inline-block;
+  width: 23.5%;
+}
+.TournamentGames ul.list-table li.list-table-header ul[data-columns="3"] .column,
+.TournamentGames ul.list-table li.list-table-body ul[data-columns="3"] .column {
+  display: inline-block;
+  width: 31.33333333%;
+}
+.TournamentGames ul.list-table li.list-table-header ul[data-columns="2"] .column,
+.TournamentGames ul.list-table li.list-table-body ul[data-columns="2"] .column {
+  display: inline-block;
+  width: 47%;
+}
+.TournamentGames ul.list-table li.list-table-header ul[data-columns="1"] .column,
+.TournamentGames ul.list-table li.list-table-body ul[data-columns="1"] .column {
+  display: inline-block;
+  width: 94%;
+}
+.TournamentGames .score input {
+  width: 2.5em;
+  text-align: center;
+}
+.TournamentGames .score input.invalid {
+  background-color: #880C08;
+  color: #FFFFFF;
+}
+.TournamentGames .score.no-edit input {
+  background-color: inherit;
+  border: none;
+}
+.TournamentGames .update-games.hide {
+  display: none;
+}
+@media screen and (min-width: 30.0625em) {
+  #TournamentCreate .section.form-section li,
+  #TournamentEdit .section.form-section li {
+    width: 48%;
+    display: inline-block;
+  }
+  #TournamentCreate .section.form-section li input,
+  #TournamentEdit .section.form-section li input,
+  #TournamentCreate .section.form-section li select,
+  #TournamentEdit .section.form-section li select {
+    width: 90%;
+  }
+  #TournamentCreate .section.form-section li input.datepicker,
+  #TournamentEdit .section.form-section li input.datepicker,
+  #TournamentCreate .section.form-section li select.datepicker,
+  #TournamentEdit .section.form-section li select.datepicker,
+  #TournamentCreate .section.form-section li input.timepicker,
+  #TournamentEdit .section.form-section li input.timepicker,
+  #TournamentCreate .section.form-section li select.timepicker,
+  #TournamentEdit .section.form-section li select.timepicker {
+    width: 48%;
+  }
+  #Tournament .content-header h2,
+  #Tournament .content-header .tournament-buttons {
+    display: inline-block;
+  }
+  .TournamentInfo {
+    width: 75%;
+  }
+}
+@media screen and (min-width: 48em) {
+  #TournamentCreate .section.form-section li input,
+  #TournamentEdit .section.form-section li input,
+  #TournamentCreate .section.form-section li select,
+  #TournamentEdit .section.form-section li select {
+    width: 80%;
+  }
+  #TournamentCreate .section.form-section li input.datepicker,
+  #TournamentEdit .section.form-section li input.datepicker,
+  #TournamentCreate .section.form-section li select.datepicker,
+  #TournamentEdit .section.form-section li select.datepicker,
+  #TournamentCreate .section.form-section li input.timepicker,
+  #TournamentEdit .section.form-section li input.timepicker,
+  #TournamentCreate .section.form-section li select.timepicker,
+  #TournamentEdit .section.form-section li select.timepicker {
+    width: 30%;
+  }
+  #Tournament .options > span {
+    padding: 0em .25em;
+  }
+  #Tournament .TournamentInfo {
+    width: 60%;
+  }
+}
+@media screen and (min-width: 64em) {
+  .TournamentInfo {
+    width: 40%;
+  }
+}
+@media screen and (min-width: 90em) {
+  .TournamentInfo {
+    width: 33%;
+  }
+}
+#Account {
+  position: relative;
+  margin-top: 1em;
+}
+#Account .accountMenu {
+  position: relative;
+  background-color: #456985;
+}
+#Account .accountMenu > * {
+  text-align: center;
+  display: block;
+  padding: .5em;
+}
+#Account .accountMenu > *.active {
+  background-color: #0C5335;
+  /*background-color: @color-primary-2;*/
+}
+#Account .accountMenu > *:hover:not(.active):hover {
+  color: #FFFFFF;
+  background-color: #01111E;
+  text-decoration: none;
+}
+#Account .sections > div {
+  display: none;
+}
+#Account .sections > div.active {
+  display: block;
+}
+#Account .sections > div h2 {
+  margin-top: 0em;
+  padding-top: 0em;
+}
+#Account .sections > div#AccountTournaments ul.list-table {
+  padding-bottom: 2em;
+}
+#Account .sections > div#AccountTournaments ul.list-table li.list-table-body ul {
+  padding: .5em 0em;
+}
+#Account .sections > div#AccountUpdate .section ul li {
+  padding: .5em 0em;
+}
+#Account .sections > div#AccountUpdate .section ul li input::-webkit-input-placeholder {
+  color: #d9d9d9;
+}
+#Account .sections > div#AccountUpdate .section ul li input::-moz-placeholder {
+  color: #d9d9d9;
+}
+#Account .sections > div#AccountUpdate .section ul li input:-ms-input-placeholder {
+  color: #d9d9d9;
+}
+#Account .sections > div#AccountUpdate .section ul li input:-moz-placeholder {
+  color: #d9d9d9;
+}
+@media screen and (min-width: 30.0625em) {
+  #AccountRegister .section li {
+    width: 35%;
+    display: inline-block;
+  }
+  #AccountRegister .section li input {
+    width: 90%;
+  }
+}
+@media screen and (min-width: 48em) {
+  #Account {
+    position: relative;
+  }
+  #Account .accountMenu {
+    position: relative;
+    display: inline-block;
+    width: 20%;
+    height: 100%;
+    vertical-align: top;
+  }
+  #Account .sections {
+    position: relative;
+    display: inline-block;
+    width: 79%;
+    vertical-align: top;
+  }
+}
+#Administrator .section {
+  width: 100%;
+}
+#AdministratorGames .list-table-input .gameTitle .field {
+  width: 100%;
+}
+@media screen and (min-width: 48em) {
+  #Administrator .section {
+    width: 48%;
+    display: inline-block;
+  }
+}
