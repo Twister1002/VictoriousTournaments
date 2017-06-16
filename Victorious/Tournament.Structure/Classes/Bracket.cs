@@ -916,8 +916,8 @@ namespace Tournament.Structure
 		}
 
 		/// <summary>
-		/// Gets all Matches in the given Round.
-		/// The list of Matches is correctly ordered.
+		/// Gets all IMatches in the given Round.
+		/// The list of IMatches is correctly ordered.
 		/// If the round index is out-of-range, an exception is thrown.
 		/// </summary>
 		/// <remarks>
@@ -946,10 +946,12 @@ namespace Tournament.Structure
 		}
 
 		/// <summary>
-		/// 
+		/// Gets all IMatches in the given Lower-Bracket Round.
+		/// The list of IMatches is correctly ordered.
+		/// If the round index is out-of-range, an exception is thrown.
 		/// </summary>
-		/// <param name="_round"></param>
-		/// <returns></returns>
+		/// <param name="_round">1-indexed</param>
+		/// <returns>Ordered list of IMatches</returns>
 		public List<IMatch> GetLowerRound(int _round)
 		{
 			if (null == LowerMatches)
@@ -963,17 +965,30 @@ namespace Tournament.Structure
 					("Round index cannot be less than 1!");
 			}
 
-			List<IMatch> ret = LowerMatches.Values
+			return LowerMatches.Values
 				.Where(m => m.RoundIndex == _round)
 				.OrderBy(m => m.MatchIndex)
 				.Cast<IMatch>()
 				.ToList();
-			return ret;
 		}
+
+		/// <summary>
+		/// Gets one IMatch, from its Match Number.
+		/// If no matching IMatch is found, an exception is thrown.
+		/// </summary>
+		/// <param name="_matchNumber">Number of Match to find</param>
+		/// <returns>relevant IMatch</returns>
 		public virtual IMatch GetMatch(int _matchNumber)
 		{
 			return (GetInternalMatch(_matchNumber) as IMatch);
 		}
+
+		/// <summary>
+		/// Creates a Model from the given Match Number's Match.
+		/// If no matching Match is found, an exception is thrown.
+		/// </summary>
+		/// <param name="_matchNumber">Number of Match to find/use for Model</param>
+		/// <returns>Matching MatchModel</returns>
 		public MatchModel GetMatchModel(int _matchNumber)
 		{
 			MatchModel model = GetInternalMatch(_matchNumber).GetModel();
@@ -1035,6 +1050,11 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		/// <summary>
+		/// Sets this Bracket's main data from a related BracketModel.
+		/// Data affected includes most fields, as well as the playerlist.
+		/// </summary>
+		/// <param name="_model">Related BracketModel</param>
 		protected void SetDataFromModel(BracketModel _model)
 		{
 			if (null == _model)
@@ -1050,6 +1070,8 @@ namespace Tournament.Structure
 			this.MatchWinValue = 2;
 			this.MatchTieValue = 1;
 
+			// Convert TournamentUserBracketModels into Players,
+			// and add them to the Bracket's playerlist:
 			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
 				.OrderBy(u => u.Seed, new SeedComparer())
 				.Select(u => u.TournamentUser)
@@ -1063,6 +1085,10 @@ namespace Tournament.Structure
 			ResetBracketData();
 		}
 
+		/// <summary>
+		/// Resets the Bracket.
+		/// Affects Matches, Rankings, and bracket status.
+		/// </summary>
 		protected virtual void ResetBracketData()
 		{
 			if (null == Matches)
@@ -1086,6 +1112,11 @@ namespace Tournament.Structure
 			NumberOfMatches = 0;
 			Rankings.Clear();
 		}
+
+		/// <summary>
+		/// Resets the Bracket, AND fires appropriate events:
+		/// MatchesModified and GamesDeleted.
+		/// </summary>
 		protected void DeleteBracketData()
 		{
 			List<MatchModel> alteredMatches = new List<MatchModel>();
@@ -1094,18 +1125,28 @@ namespace Tournament.Structure
 			{
 				for (int n = 1; n <= NumberOfMatches; ++n)
 				{
+					// For each Match, save the Model...
 					MatchModel match = GetMatchModel(n);
 					alteredMatches.Add(match);
+					// ... and save any Game ID's (these will be deleted):
 					deletedGameIDs.AddRange(match.Games.Select(g => g.GameID));
 				}
 			}
 
+			// ResetBracketData handles the work of resetting the Bracket:
 			ResetBracketData();
 
+			// Fire the events we built:
 			OnGamesDeleted(deletedGameIDs);
 			OnMatchesModified(alteredMatches);
 		}
 
+		/// <summary>
+		/// Gets one Match, from its Match Number.
+		/// If no matching Match is found, an exception is thrown.
+		/// </summary>
+		/// <param name="_matchNumber">Number of Match to find</param>
+		/// <returns>relevant Match</returns>
 		protected virtual Match GetInternalMatch(int _matchNumber)
 		{
 			if (_matchNumber < 1)
@@ -1130,6 +1171,13 @@ namespace Tournament.Structure
 			throw new MatchNotFoundException
 				("Match not found; match number may be invalid.");
 		}
+
+		/// <summary>
+		/// Creates a Model of the given Match's current state,
+		/// and adds this Bracket's ID.
+		/// </summary>
+		/// <param name="_match">Match to Model</param>
+		/// <returns>Matching Model of Match</returns>
 		protected MatchModel GetMatchModel(IMatch _match)
 		{
 			MatchModel model = (_match as Match).GetModel();
@@ -1137,6 +1185,10 @@ namespace Tournament.Structure
 			return model;
 		}
 
+		/// <summary>
+		/// Sorting helper method for ordering the Rankings by score metrics.
+		/// This is used in scoring-type brackets, such as Round Robin.
+		/// </summary>
 		protected int SortRankingScores(IPlayerScore first, IPlayerScore second)
 		{
 			// Rankings sorting: MatchScore > OpponentsScore > GameScore > PointsScore > initial Seeding
@@ -1151,6 +1203,11 @@ namespace Tournament.Structure
 			return (compare != 0)
 				? compare : GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
 		}
+
+		/// <summary>
+		/// Sorting helper method for ordering the Rankings by finish position.
+		/// This is used in knockout brackets and Group Stages.
+		/// </summary>
 		protected int SortRankingRanks(IPlayerScore first, IPlayerScore second)
 		{
 			int compare = first.Rank.CompareTo(second.Rank);
