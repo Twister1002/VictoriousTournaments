@@ -113,23 +113,6 @@ namespace WebApplication.Models
 
             return brackets;
         }
-
-        /// <summary>
-        /// Adds the information changed within a bracketModel to be reflected into the entity's object
-        /// </summary>
-        /// <param name="bracket">The model of the bracket to get information from</param>
-        /// <param name="bracketId">the ID of the bracket</param>
-        /// <returns>The model to update</returns>
-        private BracketModel ApplyBracketInfo(BracketModel bracket)
-        {
-            BracketModel orig = Model.Brackets.Single(x => x.BracketID == bracket.BracketID);
-
-            orig.Finalized = bracket.Finalized;
-            orig.Matches = bracket.Matches;
-            orig.TournamentUsersBrackets = bracket.TournamentUsersBrackets;
-
-            return orig;
-        }
         #endregion
 
         #region Match
@@ -214,12 +197,31 @@ namespace WebApplication.Models
             Tournaments.IBracket currentBracket = Tourny.Brackets.Single(x => x.Id == bracketId);
             Tournaments.IBracket nextBracket = Tourny.Brackets.ElementAtOrDefault(Tourny.Brackets.FindIndex(x => x == currentBracket)+1);
 
+            BracketModel nextBracketModel = Model.Brackets.Single(x => x.BracketID == nextBracket.Id);
+
             if (nextBracket != null)
             {
+                List<TournamentUsersBracketModel> usersToProceed = new List<TournamentUsersBracketModel>();
                 Tourny.AdvancePlayersByRanking(currentBracket, nextBracket);
-                BracketModel bracketModel = ApplyBracketInfo(nextBracket.GetModel(Model.TournamentID));
 
-                services.Tournament.UpdateBracket(bracketModel);
+                //nextBracketModel.TournamentUsersBrackets = nextBracket.GetModel(Model.TournamentID).TournamentUsersBrackets;
+
+                foreach (Tournaments.IPlayer player in nextBracket.Players)
+                {
+                    TournamentUsersBracketModel user = new TournamentUsersBracketModel()
+                    {
+                        BracketID = nextBracket.Id,
+                        TournamentID = Model.TournamentID,
+                        TournamentUserID = player.Id,
+                        Seed = nextBracket.GetPlayerSeed(player.Id)
+                    };
+
+                    usersToProceed.Add(user);
+                }
+
+                nextBracketModel.TournamentUsersBrackets = usersToProceed;
+
+                services.Tournament.UpdateBracket(nextBracketModel);
             }
 
             return services.Save();
