@@ -57,11 +57,6 @@ namespace Tournament.Structure
 			}
 			public override bool Validate()
 			{
-				if (false == base.Validate())
-				{
-					return false;
-				}
-
 				if ((Players?.Count ?? 0) != 4 &&
 					Players.Count != 8)
 				{
