@@ -997,6 +997,15 @@ namespace Tournament.Structure
 		}
 		#endregion
 		#region Mutators
+		/// <summary>
+		/// Sets MaxGames for every Match in the given round.
+		/// Can also be used to affect the GrandFinal (rounds + 1).
+		/// If the given value is invalid, an exception is thrown.
+		/// If the round can't be found, an exception is thrown.
+		/// If any Match in the round is finished, an exception is thrown.
+		/// </summary>
+		/// <param name="_round">Number of round to affect</param>
+		/// <param name="_maxGamesPerMatch">Max Games per Match</param>
 		public virtual void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
 		{
 			if (_maxGamesPerMatch < 1)
@@ -1008,6 +1017,8 @@ namespace Tournament.Structure
 			List<IMatch> round = null;
 			if (null != grandFinal && _round == 1 + NumberOfRounds)
 			{
+				// If the given Round is (rounds+1),
+				// then apply effects to the Grand Final:
 				round = new List<IMatch>() { grandFinal };
 			}
 			else
@@ -1026,6 +1037,15 @@ namespace Tournament.Structure
 				match.SetMaxGames(_maxGamesPerMatch);
 			}
 		}
+
+		/// <summary>
+		/// Sets MaxGames for every Match in the given Lower-Bracket round.
+		/// If the given value is invalid, an exception is thrown.
+		/// If the round can't be found, an exception is thrown.
+		/// If any Match in the round is finished, an exception is thrown.
+		/// </summary>
+		/// <param name="_round">Number of round to affect</param>
+		/// <param name="_maxGamesPerMatch">Max Games per Match</param>
 		public virtual void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch)
 		{
 			if (_maxGamesPerMatch < 1)
@@ -1089,6 +1109,9 @@ namespace Tournament.Structure
 		/// Resets the Bracket.
 		/// Affects Matches, Rankings, and bracket status.
 		/// </summary>
+		/// <remarks>
+		/// This is overriden in Group Stages and Swiss, for added functionality.
+		/// </remarks>
 		protected virtual void ResetBracketData()
 		{
 			if (null == Matches)
@@ -1147,6 +1170,9 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_matchNumber">Number of Match to find</param>
 		/// <returns>relevant Match</returns>
+		/// <remarks>
+		/// This method is overriden in Group Stages.
+		/// </remarks>
 		protected virtual Match GetInternalMatch(int _matchNumber)
 		{
 			if (_matchNumber < 1)

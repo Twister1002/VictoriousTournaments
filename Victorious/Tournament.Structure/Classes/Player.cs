@@ -79,30 +79,33 @@ namespace Tournament.Structure
 			model.Email = this.Email;
 			return model;
 		}
-
+#if false
 		/// <summary>
 		/// Creates a TournamentUserModel of this Player.
 		/// </summary>
-		public TournamentUserModel GetTournamentUserModel()
+		/// <param name="_tournamentId">ID of containing Tournament</param>
+		public TournamentUserModel GetTournamentUserModel(int _tournamentId)
 		{
 			TournamentUserModel model = new TournamentUserModel();
+			//model.AccountID = this.AccountId;
 			model.TournamentUserID = this.Id;
-			model.AccountID = this.Id;
 			model.Name = this.Name;
+			model.TournamentID = _tournamentId;
 			return model;
 		}
-
+#endif
 		/// <summary>
 		/// Creates a TournamentUsersBracketModel of this Player.
 		/// This Model will also contain the Player's bracketID and seed.
 		/// </summary>
 		/// <param name="_bracketId">ID of containing Bracket</param>
 		/// <param name="_seed">Player's seed-value within the Bracket</param>
-		public TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed, int _tournamentId = 0)
+		/// <param name="_tournamentId">ID of containing Tournament</param>
+		public TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed, int _tournamentId)
 		{
 			TournamentUsersBracketModel model = new TournamentUsersBracketModel();
-			model.TournamentUser = this.GetTournamentUserModel();
-			model.TournamentUserID = model.TournamentUser.TournamentUserID;
+			//model.TournamentUser = GetTournamentUserModel(_tournamentId);
+			model.TournamentUserID = this.Id;
 			model.BracketID = _bracketId;
 			model.Seed = _seed;
 			model.TournamentID = _tournamentId;
