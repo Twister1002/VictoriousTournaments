@@ -61,8 +61,7 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_model");
 			}
 
-			this.Id = _model.AccountID ?? _model.TournamentUserID;
-			//this.Id = _model.TournamentUserID;
+			this.Id = _model.TournamentUserID;
 			this.Name = _model.Name;
 			this.Email = "";
 		}
@@ -102,6 +101,7 @@ namespace Tournament.Structure
 		public TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed, int _tournamentId = 0)
 		{
 			TournamentUsersBracketModel model = new TournamentUsersBracketModel();
+			model.TournamentID = _tournamentId;
 			model.BracketID = _bracketId;
 			model.Seed = _seed;
 			model.TournamentUser = this.GetTournamentUserModel();
