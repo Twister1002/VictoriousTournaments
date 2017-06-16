@@ -338,6 +338,33 @@ namespace Tournament.Structure.Tests
 
 		[TestMethod]
 		[TestCategory("RoundRobinGroups")]
+		[TestCategory("RRG ResetMatches")]
+		public void RRGResetMatches_FiresMatchesModifiedEventsForEveryGroup()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 12; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinGroups(pList, 3);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+
+			int eventsFired = 0;
+			b.MatchesModified += delegate
+			{
+				++eventsFired;
+			};
+			b.ResetMatches();
+			Assert.AreEqual((b as IGroupStage).NumberOfGroups, eventsFired);
+		}
+
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
 		[TestCategory("CheckForTies")]
 		[ExpectedException(typeof(BracketException))]
 		public void RRGCheckForTies_ThrowsBracketExcep_OnUnfinishedBracket()
@@ -763,6 +790,34 @@ namespace Tournament.Structure.Tests
 			BracketModel bModel = b.GetModel();
 			IBracket b2 = new RoundRobinBracket(bModel);
 			Assert.IsTrue(b2.IsFinished);
+		}
+
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
+		[TestCategory("RRG ResetMatches")]
+		public void RRGModelCtor_CorrectlyRelaysGroupEvents()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 12; ++i)
+			{
+				IPlayer p = new Player(i + 1, (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new RoundRobinGroups(pList, 3);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 1, 0, PlayerSlot.Defender);
+			}
+			BracketModel model = b.GetModel();
+
+			IBracket b2 = new RoundRobinGroups(model);
+			int eventsFired = 0;
+			b2.MatchesModified += delegate
+			{
+				++eventsFired;
+			};
+			b2.ResetMatches();
+			Assert.AreEqual((b2 as IGroupStage).NumberOfGroups, eventsFired);
 		}
 
 		#endregion
