@@ -505,7 +505,7 @@ namespace WebApplication.Controllers
                 Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                 if (tournament.IsAdmin(account.Model.AccountID))
                 {
-                    if (tournament.FinalizeTournament(bracketId, roundData))
+                    if (tournament.FinalizeBracket(bracketId, roundData))
                     {
                         status = true;
                         message = "Your tournament has been finalized. No changes can be made.";

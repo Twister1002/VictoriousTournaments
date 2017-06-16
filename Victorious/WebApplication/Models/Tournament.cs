@@ -124,7 +124,13 @@ namespace WebApplication.Models
         #endregion
 
         #region Finalize
-        public bool FinalizeTournament(int bracketId, Dictionary<String, Dictionary<String, int>> roundData)
+        /// <summary>
+        /// This will finalize a bracket.
+        /// </summary>
+        /// <param name="bracketId">The ID of the bracket</param>
+        /// <param name="roundData">The data that will be used to set the max amount of games.</param>
+        /// <returns>True if the bracket was finalized or false if failed to save</returns>
+        public bool FinalizeBracket(int bracketId, Dictionary<String, Dictionary<String, int>> roundData)
         {
             // Set variables
             BracketModel bracket = Model.Brackets.Single(x => x.BracketID == bracketId);
@@ -150,18 +156,25 @@ namespace WebApplication.Models
                 }
             }
 
-            // Update the necesarry information
-            bracket.Finalized = true;
-            Model.InProgress = true;
+            if (tourny.Validate())
+            {
+                // Update the necesarry information
+                bracket.Finalized = true;
+                Model.InProgress = true;
 
-            // Update the database
-            bracket.Matches = CreateMatches(bracket, tourny);
-            services.Tournament.UpdateBracket(bracket);
-            services.Tournament.UpdateTournament(Model);
-            return services.Save();
+                // Update the database
+                bracket.Matches = CreateMatches(tourny);
+                services.Tournament.UpdateBracket(bracket);
+                services.Tournament.UpdateTournament(Model);
+                return services.Save();
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        private List<MatchModel> CreateMatches(BracketModel bracketModel, Tournaments.IBracket bracket)
+        private List<MatchModel> CreateMatches(Tournaments.IBracket bracket)
         {
             List<MatchModel> matches = new List<MatchModel>();
             
@@ -169,8 +182,6 @@ namespace WebApplication.Models
             for (int i = 1; i <= bracket.NumberOfMatches; i++)
             {
                 matches.Add(bracket.GetMatchModel(i));
-                //bracketModel.Matches.Add(matchModel);
-                //services.Tournament.AddMatch(matchModel);
             }
 
             return matches;
