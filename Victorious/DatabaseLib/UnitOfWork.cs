@@ -30,6 +30,7 @@ namespace DatabaseLib
         IRepository<TournamentTeamBracketModel> tournamentTeamBracketRepo;
         IRepository<SiteTeamModel> siteTeamRepo;
         IRepository<SiteTeamMemberModel> siteTeamMemberRepo;
+        IRepository<MailingList> mailingListRepo;
 
         public UnitOfWork(string name = null, VictoriousEntities context = null)
         {
@@ -266,6 +267,17 @@ namespace DatabaseLib
             }
         }
 
+        public IRepository<MailingList> MailingListRepo
+        {
+            get
+            {
+                if (this.mailingListRepo == null)
+                {
+                    this.mailingListRepo = new Repository<MailingList>(context);
+                }
+                return mailingListRepo;
+            }
+        }
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls

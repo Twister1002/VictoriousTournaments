@@ -25,7 +25,7 @@ namespace DatabaseLib
         IRepository<TournamentTeamBracketModel> TournamentTeamBracketRepo { get; }
         IRepository<SiteTeamModel> SiteTeamRepo { get; }
         IRepository<SiteTeamMemberModel> SiteTeamMemberRepo { get; }
-
+        IRepository<MailingList> MailingListRepo { get; }
 
         void Refresh();
 
