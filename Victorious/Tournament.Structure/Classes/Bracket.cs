@@ -481,6 +481,15 @@ namespace Tournament.Structure
 				("Player not found in this Bracket!");
 		}
 
+		/// <summary>
+		/// Swaps the seeds of two Players.
+		/// (also swaps their positions in the playerlist)
+		/// Deletes any/all Matches.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// If either playerindex is invalid, an exception is thrown.
+		/// </summary>
+		/// <param name="_index1">Playerlist index of Player</param>
+		/// <param name="_index2">Playerlist index of Player</param>
 		public void SwapPlayers(int _index1, int _index2)
 		{
 			if (_index1 < 0 || _index1 >= Players.Count
@@ -496,6 +505,17 @@ namespace Tournament.Structure
 
 			DeleteBracketData();
 		}
+
+		/// <summary>
+		/// Applies a new seed to one Player.
+		/// (also moves him in the playerlist)
+		/// Other Players will be shifted up/down as needed.
+		/// Deletes any/all Matches.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// If either playerindex is invalid, an exception is thrown.
+		/// </summary>
+		/// <param name="_oldIndex">Playerlist index of Player to move</param>
+		/// <param name="_newIndex">Playerlist index of destination</param>
 		public void ReinsertPlayer(int _oldIndex, int _newIndex)
 		{
 			if (_oldIndex < 0 || _oldIndex >= Players.Count
@@ -512,6 +532,8 @@ namespace Tournament.Structure
 			IPlayer tmp = Players[_oldIndex];
 			if (_oldIndex > _newIndex)
 			{
+				// We're moving the Player "down" in the list.
+				// All other affected Players need to be shifted up one:
 				for (int i = _oldIndex; i > _newIndex; --i)
 				{
 					Players[i] = Players[i - 1];
@@ -519,16 +541,24 @@ namespace Tournament.Structure
 			}
 			else // _oldIndex < _newIndex
 			{
+				// We're moving the Player "up" in the list.
+				// All other affected Players need to be shifted down one:
 				for (int i = _oldIndex; i < _newIndex; ++i)
 				{
 					Players[i] = Players[i + 1];
 				}
 			}
+			
+			// Now, reinsert the Player (and reset the bracket):
 			Players[_newIndex] = tmp;
-
 			DeleteBracketData();
 		}
 
+		/// <summary>
+		/// Clears the playerlist.
+		/// Deletes any/all Matches.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// </summary>
 		public void ResetPlayers()
 		{
 			if (null == Players)
@@ -541,6 +571,20 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Match & Game Methods
+		/// <summary>
+		/// Adds a new Game to a Match.
+		/// Takes a given gamescore to create a new Game.
+		/// The Game is added to the Match's gamelist, and the Match's score & status is updated.
+		/// The new game's affects on the rest of the Bracket are also applied here.
+		/// Rankings are updated as necessary.
+		/// May fire events: MatchesModified, RoundDeleted.
+		/// If game-data input is invalid, an exception is thrown.
+		/// </summary>
+		/// <param name="_matchNumber">Number of Match to add to</param>
+		/// <param name="_defenderScore">First player's score</param>
+		/// <param name="_challengerScore">Second player's score</param>
+		/// <param name="_winnerSlot">Game winner: Defender or Challenger</param>
+		/// <returns>Model of added Game</returns>
 		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			Match match = GetInternalMatch(_matchNumber);
