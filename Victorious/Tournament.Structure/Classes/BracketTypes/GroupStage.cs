@@ -301,14 +301,7 @@ namespace Tournament.Structure
 
 		protected void UpdateFinishStatus()
 		{
-			if (Groups.Any(g => !g.IsFinished))
-			{
-				this.IsFinished = false;
-			}
-			else
-			{
-				this.IsFinished = true;
-			}
+			this.IsFinished = Groups.All(g => g.IsFinished);
 		}
 
 		protected override void ResetBracketData()

@@ -91,44 +91,36 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Takes the ordered rankings from a *finished* Bracket,
 		/// and adds those Players to a new Bracket.
-		/// Moves all Players by default, but a cutoff number can be specified.
-		/// If an invalid index is given, an exception is thrown.
-		/// If the initial bracket is not finished, an exception is thrown.
+		/// Moves the amount of players specified by the first bracket's data.
+		/// If the first bracket is not finished, an exception is thrown.
+		/// If the first bracket's "AdvancingPlayers" value is invalid, an exception is thrown.
 		/// </summary>
-		/// <param name="_initialBracketIndex">Finished Bracket (0-indexed)</param>
-		/// <param name="_newBracketIndex">New Bracket (0-indexed)</param>
-		/// <param name="_numberOfPlayers">How many Players to advance (0 = all)</param>
-		public void AdvancePlayersByRanking(int _initialBracketIndex, int _newBracketIndex, int _numberOfPlayers = 0)
+		/// <param name="_firstBracket">Finished Bracket</param>
+		/// <param name="_secondBracket">New Bracket</param>
+		public void AdvancePlayersByRanking(IBracket _firstBracket, IBracket _secondBracket)
 		{
-			if (_initialBracketIndex < 0 || _initialBracketIndex >= Brackets.Count)
-			{
-				throw new InvalidIndexException
-					("Initial Bracket Index is out of range!");
-			}
-			if (_newBracketIndex < 0 || _newBracketIndex >= Brackets.Count)
-			{
-				throw new InvalidIndexException
-					("New Bracket Index is out of range!");
-			}
-			if (!Brackets[_initialBracketIndex].IsFinished)
+			if (!(_firstBracket.IsFinished))
 			{
 				throw new BracketException
 					("Can't retrieve seeds from an unfinished bracket!");
 			}
+			if (_firstBracket.AdvancingPlayers <= 0 ||
+				_firstBracket.AdvancingPlayers > _firstBracket.NumberOfPlayers())
+			{
+				throw new BracketException
+					("Invalid value for advancing player!");
+			}
 
 			// How many Players are we advancing?
-			int maxPlayers = (_numberOfPlayers > 0)
-				? _numberOfPlayers
-				: Brackets[_initialBracketIndex].Rankings.Count;
 			List<IPlayer> pList = new List<IPlayer>();
-			pList.Capacity = maxPlayers;
-			foreach (IPlayerScore pScore in Brackets[_initialBracketIndex].Rankings)
+			pList.Capacity = _firstBracket.AdvancingPlayers;
+			foreach (IPlayerScore pScore in _firstBracket.Rankings)
 			{
 				// For each (ordered) Rankings entry, add the relevant Player to a list:
-				pList.Add(Brackets[_initialBracketIndex].Players
+				pList.Add(_firstBracket.Players
 					.Find(p => p.Id == pScore.Id));
 
-				if (pList.Count == maxPlayers)
+				if (pList.Count == _firstBracket.AdvancingPlayers)
 				{
 					break;
 				}
@@ -136,7 +128,7 @@ namespace Tournament.Structure
 
 			// Apply the playerlist to the new Bracket.
 			// This also clears the new Bracket's playerlist, if it isn't empty:
-			Brackets[_newBracketIndex].SetNewPlayerlist(pList);
+			_secondBracket.SetNewPlayerlist(pList);
 		}
 
 		/// <summary>

@@ -742,6 +742,28 @@ namespace Tournament.Structure.Tests
 			}
 			Assert.IsTrue(b.IsFinished);
 		}
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
+		[TestCategory("GetModel")]
+		[TestCategory("Model Constructor")]
+		public void RRGModelCtor_LoadsAFinishedGroupStage()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 17; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new RoundRobinGroups(pList, 4);
+			for (int n = 1; n <= b.NumberOfMatches; ++n)
+			{
+				b.AddGame(n, 15, 1, PlayerSlot.Defender);
+			}
+
+			BracketModel bModel = b.GetModel();
+			IBracket b2 = new RoundRobinBracket(bModel);
+			Assert.IsTrue(b2.IsFinished);
+		}
 
 		#endregion
 	}
