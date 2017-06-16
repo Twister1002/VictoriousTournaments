@@ -278,6 +278,7 @@ namespace Tournament.Structure
 			}
 			foreach (MatchModel matchModel in _args.UpdatedMatches)
 			{
+				matchModel.BracketID = this.Id;
 				matchModel.MatchNumber += offset;
 			}
 		}

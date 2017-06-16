@@ -355,7 +355,7 @@ namespace Tournament.Structure.Tests
 			b.AddGame(matchNum, 1, 0, PlayerSlot.Defender);
 
 			int modifiedMatchNum = 0;
-			b.MatchesModified += delegate(object sender, BracketEventArgs e)
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
 			{
 				modifiedMatchNum = e.UpdatedMatches.First().MatchNumber;
 			};
@@ -382,7 +382,7 @@ namespace Tournament.Structure.Tests
 			}
 
 			int eventsFired = 0;
-			b.MatchesModified += delegate
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
 			{
 				++eventsFired;
 			};
@@ -527,7 +527,7 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinGroups(pList, 3);
-			b.MatchesModified += delegate(object sender, BracketEventArgs e)
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
 			{
 				if (e.UpdatedMatches.Count > 1)
 				{
