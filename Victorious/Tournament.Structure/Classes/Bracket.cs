@@ -172,14 +172,6 @@ namespace Tournament.Structure
 				return false;
 			}
 
-			// Matches must be generated.
-			// Matches must be at least BO1.
-			if ((Matches?.Count ?? 0) == 0 ||
-				Matches.Values.Any(m => m.MaxGames < 1))
-			{
-				return false;
-			}
-
 			return true;
 		}
 
