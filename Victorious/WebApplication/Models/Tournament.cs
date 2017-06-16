@@ -214,13 +214,13 @@ namespace WebApplication.Models
             Tournaments.IBracket currentBracket = Tourny.Brackets.Single(x => x.Id == bracketId);
             Tournaments.IBracket nextBracket = Tourny.Brackets.ElementAtOrDefault(Tourny.Brackets.FindIndex(x => x == currentBracket)+1);
 
-            //if (nextBracket != null)
-            //{
-            //    Tourny.AdvancePlayersByRanking(currentBracket, nextBracket);
-            //    BracketModel bracketModel = ApplyBracketInfo(nextBracket.GetModel(Model.TournamentID));
+            if (nextBracket != null)
+            {
+                Tourny.AdvancePlayersByRanking(currentBracket, nextBracket);
+                BracketModel bracketModel = ApplyBracketInfo(nextBracket.GetModel(Model.TournamentID));
 
-            //    services.Tournament.UpdateBracket(bracketModel);
-            //}
+                services.Tournament.UpdateBracket(bracketModel);
+            }
 
             return services.Save();
         }
