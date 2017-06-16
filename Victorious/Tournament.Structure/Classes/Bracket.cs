@@ -29,6 +29,8 @@ namespace Tournament.Structure
 		{ get; protected set; }
 		public List<IPlayerScore> Rankings
 		{ get; protected set; }
+		public int AdvancingPlayers
+		{ get; protected set; }
 		public int MaxRounds
 		{ get; set; }
 		protected Dictionary<int, Match> Matches
@@ -766,6 +768,7 @@ namespace Tournament.Structure
 			model.Finalized = this.IsFinalized;
 			model.NumberOfGroups = 0;
 			model.MaxRounds = this.MaxRounds;
+			model.NumberPlayersAdvance = this.AdvancingPlayers;
 
 			model.BracketType = new BracketTypeModel();
 			model.BracketType.BracketTypeID = model.BracketTypeID;
@@ -896,6 +899,34 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected void SetDataFromModel(BracketModel _model)
+		{
+			if (null == _model)
+			{
+				throw new ArgumentNullException("_model");
+			}
+
+			this.Id = _model.BracketID;
+			this.BracketType = _model.BracketType.Type;
+			this.IsFinalized = _model.Finalized;
+			this.AdvancingPlayers = _model.NumberPlayersAdvance;
+			this.MaxRounds = _model.MaxRounds;
+			this.MatchWinValue = 2;
+			this.MatchTieValue = 1;
+
+			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
+				.OrderBy(u => u.Seed, new SeedComparer())
+				.Select(u => u.TournamentUser)
+				.ToList();
+			this.Players = new List<IPlayer>();
+			foreach (TournamentUserModel userModel in userModels)
+			{
+				Players.Add(new Player(userModel));
+			}
+
+			ResetBracketData();
+		}
+
 		protected virtual void ResetBracketData()
 		{
 			if (null == Matches)

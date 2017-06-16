@@ -48,26 +48,8 @@ namespace Tournament.Structure
 		{ }
 		public StepladderBracket(BracketModel _model)
 		{
-			if (null == _model)
-			{
-				throw new ArgumentNullException("_model");
-			}
+			SetDataFromModel(_model);
 
-			this.Id = _model.BracketID;
-			this.BracketType = _model.BracketType.Type;
-			this.IsFinalized = _model.Finalized;
-
-			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
-				.OrderBy(u => u.Seed, new SeedComparer())
-				.Select(u => u.TournamentUser)
-				.ToList();
-			this.Players = new List<IPlayer>();
-			foreach (TournamentUserModel userModel in userModels)
-			{
-				Players.Add(new Player(userModel));
-			}
-
-			ResetBracketData();
 			if (_model.Matches.Count > 0)
 			{
 				foreach (MatchModel mm in _model.Matches)
