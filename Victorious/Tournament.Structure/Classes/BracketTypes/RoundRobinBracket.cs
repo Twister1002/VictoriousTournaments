@@ -74,14 +74,7 @@ namespace Tournament.Structure
 				this.NumberOfRounds = Matches.Values
 					.Select(m => m.RoundIndex)
 					.Last();
-				if (Matches.Values.Any(m => !m.IsFinished))
-				{
-					this.IsFinished = false;
-				}
-				else
-				{
-					this.IsFinished = true;
-				}
+				this.IsFinished = Matches.Values.All(m => m.IsFinished);
 			}
 
 			RecalculateRankings();
@@ -283,7 +276,7 @@ namespace Tournament.Structure
 		#region Private Methods
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
-			this.IsFinished = !(Matches.Values.Any(m => !m.IsFinished));
+			this.IsFinished = Matches.Values.All(m => m.IsFinished);
 #if ENABLE_TIEBREAKERS
 			// Check for, and create, Tiebreaker matches:
 			if (IsFinished && BracketType.ROUNDROBIN == this.BracketType)

@@ -580,8 +580,12 @@ namespace Tournament.Structure
 		/// The new game's affects on the rest of the Bracket are also applied here.
 		/// Rankings are updated as necessary.
 		/// May fire events: MatchesModified, RoundDeleted.
+		/// If Match can't be found, an exception is thrown.
 		/// If game-data input is invalid, an exception is thrown.
 		/// </summary>
+		/// <remarks>
+		/// This method is overriden in Group Stages.
+		/// </remarks>
 		/// <param name="_matchNumber">Number of Match to add to</param>
 		/// <param name="_defenderScore">First player's score</param>
 		/// <param name="_challengerScore">Second player's score</param>
@@ -592,25 +596,50 @@ namespace Tournament.Structure
 			Match match = GetInternalMatch(_matchNumber);
 			MatchModel oldModel = GetMatchModel(match);
 
-			// Add the new Game and update Bracket & Rankings:
+			// Add the new Game (only affects the Match, not the bracket):
 			GameModel gameModel = match
 				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
+
+			// UpdateScore will update the bracket's Rankings:
 			UpdateScore(_matchNumber, new List<GameModel>() { gameModel }, true, oldModel);
+
+			// ApplyWinEffects will apply any updates to other affected Matches:
+			// (also updates the Bracket's status, as necessary)
 			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
 
 			// Fire Event with any Matches that changed:
 			alteredMatches.Add(GetMatchModel(match));
 			OnMatchesModified(alteredMatches);
+
 			// Return a Model of the new Game:
 			return gameModel;
 		}
+
+		/// <summary>
+		/// Applies the given gamescore to an existing Game within a Match.
+		/// The Match's score & status is updated.
+		/// If the update affects the rest of the Bracket, those changes are applied.
+		/// Rankings are updated as necessary.
+		/// May fire events: MatchesModified, GamesDeleted, RoundDeleted.
+		/// If Match or Game is not fond, an exception is thrown.
+		/// If game-data input is invalid, an exception is thrown.
+		/// </summary>
+		/// <remarks>
+		/// This method is overriden in Group Stages.
+		/// </remarks>
+		/// <param name="_matchNumber">Number of Match to update</param>
+		/// <param name="_gameNumber">Number of Game to update</param>
+		/// <param name="_defenderScore">First Player's score</param>
+		/// <param name="_challengerScore">Second Player's score</param>
+		/// <param name="_winnerSlot">Game winner: Defender or Challenger</param>
+		/// <returns></returns>
 		public virtual GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			Match match = GetInternalMatch(_matchNumber);
 			int gameIndex = match.Games.FindIndex(g => g.GameNumber == _gameNumber);
 			if (gameIndex < 0)
 			{
-				// Case 1: Game doesn't exist:
+				// Case 1: Game doesn't exist (this is bad):
 				throw new GameNotFoundException
 					("Game not found; Game Number may be invalid!");
 			}
@@ -622,14 +651,16 @@ namespace Tournament.Structure
 			if (match.Games[gameIndex].WinnerSlot == _winnerSlot)
 			{
 				// Case 2: Game winner won't change.
+				// This won't affect other Matches, so our job is easier.
 
 				// Subtract old scores from rankings:
 				GameModel oldGame = match.Games[gameIndex].GetModel();
 				UpdateScore(_matchNumber, new List<GameModel> { oldGame }, false, oldMatchModel);
 
-				// Update the Game (and Match):
+				// Update the Game's score:
 				match.Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;
 				match.Games[gameIndex].Score[(int)PlayerSlot.Challenger] = _challengerScore;
+				// and save the updated GameModel for returning:
 				alteredGames.Add(match.Games[gameIndex].GetModel());
 				alteredGames[0].MatchID = match.Id;
 
