@@ -326,9 +326,9 @@ namespace Tournament.Structure
 				case (BracketType.DOUBLE):
 					ret = new DoubleElimBracket(_model);
 					break;
-				//case (BracketType.STEP):
-				//	ret = new StepladderBracket(_model);
-				//	break;
+				case (BracketType.STEP):
+					ret = new StepladderBracket(_model);
+					break;
 				case (BracketType.ROUNDROBIN):
 					ret = new RoundRobinBracket(_model);
 					break;

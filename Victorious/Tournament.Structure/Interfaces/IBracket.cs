@@ -36,6 +36,11 @@ namespace Tournament.Structure
 		List<IPlayerScore> Rankings { get; }
 
 		/// <summary>
+		/// How many Players will advance from this Bracket.
+		/// </summary>
+		int AdvancingPlayers { get; }
+
+		/// <summary>
 		/// Limit on the number of rounds;
 		/// for RoundRobin-type brackets.
 		/// </summary>
