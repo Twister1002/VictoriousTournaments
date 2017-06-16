@@ -39,7 +39,7 @@ namespace Tournament.Structure
 
 			Players = _players;
 			Id = 0;
-			//BracketType = BracketType.STEP;
+			BracketType = BracketType.STEP;
 
 			CreateBracket(_maxGamesPerMatch);
 		}
