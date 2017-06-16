@@ -657,24 +657,28 @@ namespace Tournament.Structure
 				GameModel oldGame = match.Games[gameIndex].GetModel();
 				UpdateScore(_matchNumber, new List<GameModel> { oldGame }, false, oldMatchModel);
 
-				// Update the Game's score:
+				// Update the Game's score...
 				match.Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;
 				match.Games[gameIndex].Score[(int)PlayerSlot.Challenger] = _challengerScore;
 				// and save the updated GameModel for returning:
 				alteredGames.Add(match.Games[gameIndex].GetModel());
 				alteredGames[0].MatchID = match.Id;
 
-				// Add new scores to rankings:
+				// Add new scores to Rankings:
 				UpdateScore(_matchNumber, alteredGames, true, oldMatchModel);
 			}
 			else
 			{
 				// Case 3: Game winner changes.
+				// This is the hard case. Other Matches may well be affected.
 
-				// Remove (and save) the current Game:
+				// Remove (and save) the current/old Game from the Match.
+				// This will affect the Bracket as if that Game had not been entered:
 				GameModel removedGame = RemoveGameNumber(_matchNumber, _gameNumber);
-				UpdateScore(_matchNumber, new List<GameModel> { removedGame }, false, oldMatchModel);
 				oldMatchModel = GetMatchModel(match);
+
+				// Update the Rankings according to this state:
+				UpdateScore(_matchNumber, new List<GameModel> { removedGame }, false, oldMatchModel);
 
 				// Update the Game's values:
 				removedGame.DefenderScore = _defenderScore;
@@ -686,7 +690,8 @@ namespace Tournament.Structure
 
 				// Add the updated Game back to the Match:
 				alteredGames.Add(match.AddGame(removedGame));
-				// Update the Bracket (Scores and progression):
+
+				// Apply the "new" Game's affects to the rest of the Bracket:
 				UpdateScore(_matchNumber, alteredGames, true, oldMatchModel);
 				alteredMatches.AddRange(ApplyWinEffects(_matchNumber, _winnerSlot));
 			}
@@ -694,6 +699,7 @@ namespace Tournament.Structure
 			// Fire Event with any changed Matches:
 			alteredMatches.Add(GetMatchModel(match));
 			OnMatchesModified(alteredMatches);
+
 			// Return a Model of the updated Game:
 			return alteredGames[0];
 		}
