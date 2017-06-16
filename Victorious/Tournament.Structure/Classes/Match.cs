@@ -139,9 +139,11 @@ namespace Tournament.Structure
 				?? -1;
 			model.WinnerID = (PlayerSlot.unspecified == WinnerSlot)
 				? -1 : Players[(int)WinnerSlot].Id;
+#if false
 			// Create and add PlayerModel objects if applicable:
 			model.Defender = Players[(int)PlayerSlot.Defender]?.GetTournamentUserModel();
 			model.Challenger = Players[(int)PlayerSlot.Challenger]?.GetTournamentUserModel();
+#endif
 
 			model.ChallengerScore = this.Score[(int)PlayerSlot.Challenger];
 			model.DefenderScore = this.Score[(int)PlayerSlot.Defender];

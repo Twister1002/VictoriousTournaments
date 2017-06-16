@@ -251,24 +251,24 @@ namespace Tournament.Structure
 		}
 		protected virtual void AddRounds(object _sender, BracketEventArgs _args)
 		{
-			ApplyMatchOffsetForEvents(_sender as IBracket, _args);
+			UpdateModelDataForEvents(_sender as IBracket, _args);
 			OnRoundAdded(_args);
 		}
 		protected void DeleteRounds(object _sender, BracketEventArgs _args)
 		{
-			ApplyMatchOffsetForEvents(_sender as IBracket, _args);
+			UpdateModelDataForEvents(_sender as IBracket, _args);
 			OnRoundDeleted(_args);
 		}
 		protected void ModifyMatches(object _sender, BracketEventArgs _args)
 		{
-			ApplyMatchOffsetForEvents(_sender as IBracket, _args);
+			UpdateModelDataForEvents(_sender as IBracket, _args);
 			OnMatchesModified(_args);
 		}
 		protected void DeleteGames(object _sender, BracketEventArgs _args)
 		{
 			OnGamesDeleted(_args);
 		}
-		protected void ApplyMatchOffsetForEvents(IBracket _group, BracketEventArgs _args)
+		protected void UpdateModelDataForEvents(IBracket _group, BracketEventArgs _args)
 		{
 			int groupIndex = Groups.FindIndex(g => g == _group);
 			int offset = 0;
@@ -278,6 +278,7 @@ namespace Tournament.Structure
 			}
 			foreach (MatchModel matchModel in _args.UpdatedMatches)
 			{
+				matchModel.BracketID = this.Id;
 				matchModel.MatchNumber += offset;
 			}
 		}
