@@ -493,6 +493,12 @@ namespace WebApplication.Controllers
             return BundleJson();
         }
 
+        /// <summary>
+        /// This is an ajax call that will finalize the tournament's selected bracket
+        /// </summary>
+        /// <param name="tournamentId">The ID of the tournament</param>
+        /// <param name="bracketId">The ID of the bracket</param>
+        /// <param name="roundData">The data from all the rounds.</param>
         [HttpPost]
         [Route("Ajax/Tournament/Finalize")]
         public JsonResult Finalize(int tournamentId, int bracketId, Dictionary<String, Dictionary<String, int>> roundData)
@@ -544,6 +550,10 @@ namespace WebApplication.Controllers
             return BundleJson();
         }
 
+        /// <summary>
+        /// This is an ajax request to delete the tournament
+        /// </summary>
+        /// <param name="tournamentId">ID of the tournament</param>
         [HttpPost]
         [Route("Ajax/Tournament/Delete")]
         public JsonResult Delete(int tournamentId)
@@ -582,6 +592,13 @@ namespace WebApplication.Controllers
             return BundleJson();
         }
 
+        /// <summary>
+        /// This will change the permissions of a user in the tournament.
+        /// </summary>
+        /// <param name="tournamentId">The ID of the tournament</param>
+        /// <param name="targetUser">The ID of the user to change permissions</param>
+        /// <param name="action">The action requested to perform</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Ajax/Tournament/PermissionChange")]
         public JsonResult PermissionChange(int tournamentId, int targetUser, String action)
@@ -616,6 +633,13 @@ namespace WebApplication.Controllers
             return BundleJson();
         }
 
+        /// <summary>
+        /// This will seed the users in the tournament 
+        /// </summary>
+        /// <param name="tournamentId">The ID of the tournament</param>
+        /// <param name="bracketId">The ID of the bracket</param>
+        /// <param name="players">A list of players to update the seeds.</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Ajax/Tournament/SeedChange")]
         public JsonResult SeedChange(int tournamentId, int bracketId, Dictionary<String, int> players)

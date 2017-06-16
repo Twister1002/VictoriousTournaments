@@ -422,6 +422,11 @@ namespace WebApplication.Models
             }
         }
 
+        /// <summary>
+        /// Adds a user to the tournament of the first bracket.
+        /// </summary>
+        /// <param name="model">The user model to be added to the tournament</param>
+        /// <returns>True if saved; false if save failed</returns>
         private bool AddUserToTournament(TournamentUserModel model)
         {
             // Add the user to the tournament
@@ -429,6 +434,7 @@ namespace WebApplication.Models
 
             if (model.PermissionLevel == (int)Permission.TOURNAMENT_STANDARD)
             {
+                // TODO: Only add the user to the first bracket ONLY.
                 // Add user to every bracket
                 foreach (BracketModel bracket in Model.Brackets)
                 {
@@ -778,6 +784,9 @@ namespace WebApplication.Models
         #endregion
 
         #region ViewModel
+        /// <summary>
+        /// This will setup the base of the viewmodel without the Model's information
+        /// </summary>
         public void SetupViewModel()
         {
             viewModel = new TournamentViewModel();
@@ -800,6 +809,10 @@ namespace WebApplication.Models
             viewModel.CheckinEndDate = DateTime.Now.AddDays(2);
         }
 
+        /// <summary>
+        /// This will apply the changes from the viewModel to the model for saving
+        /// </summary>
+        /// <param name="viewModel">Saves all data from the viewModel to the Model</param>
         public void ApplyChanges(TournamentViewModel viewModel)
         {
             // Tournament Stuff
@@ -828,6 +841,9 @@ namespace WebApplication.Models
             }
         }
 
+        /// <summary>
+        /// Sets the viewModel's data based on the Model's data
+        /// </summary>
         public void SetFields()
         {
             viewModel.Title = Model.Title;
