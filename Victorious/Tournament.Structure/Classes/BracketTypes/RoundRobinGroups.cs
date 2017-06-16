@@ -52,26 +52,8 @@ namespace Tournament.Structure
 		{ }
 		public RoundRobinGroups(BracketModel _model)
 		{
-			if (null == _model)
-			{
-				throw new ArgumentNullException("_model");
-			}
-
-			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
-				.OrderBy(tubm => tubm.Seed, new SeedComparer())
-				.Select(tubm => tubm.TournamentUser)
-				.ToList();
-			this.Players = new List<IPlayer>();
-			foreach (TournamentUserModel userModel in userModels)
-			{
-				Players.Add(new Player(userModel));
-			}
-
-			this.Id = _model.BracketID;
-			this.BracketType = _model.BracketType.Type;
-			this.IsFinalized = _model.Finalized;
+			SetDataFromModel(_model);
 			this.NumberOfGroups = _model.NumberOfGroups;
-			this.MaxRounds = _model.MaxRounds;
 
 			CreateBracket();
 			// Find & update every Match:

@@ -105,12 +105,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\Accounts.sql" />
-    <Content Include="App_Data\Brackets.sql" />
-    <Content Include="App_Data\GameTypes.sql" />
-    <Content Include="App_Data\masterSQL.sql" />
-    <Content Include="App_Data\Tournaments.sql" />
-    <Content Include="App_Data\TournamentUsers.sql" />
     <Content Include="Content\fonts\icomoon.svg" />
     <Content Include="lib\jquery-timepicker\jquery.ui.timepicker.css" />
     <Content Include="lib\jquery-timepicker\jquery.ui.timepicker.js" />
@@ -179,6 +173,7 @@
     <Compile Include="Models\ViewModels\TournamentViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\Codes.cs" />
+    <Compile Include="Utility\ErrorCodes.cs" />
     <Compile Include="Utility\Service.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -252,6 +247,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Views\Ajax\" />
   </ItemGroup>
   <ItemGroup>

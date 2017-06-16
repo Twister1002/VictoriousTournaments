@@ -53,11 +53,12 @@
         ViewBag.LowerDisplayRounds = bracket.RoundShowing(WebApplication.Models.BracketSection.LOWER);
         ViewBag.DisplayRounds = bracket.TotalDispalyRounds(ViewBag.UpperDisplayRounds, ViewBag.LowerDisplayRounds);
         ViewBag.IsFinalized = bracket.IBracket.IsFinalized;
+        ViewBag.GrandFinal = bracket.IBracket.GrandFinal != null;
 
         <div class="bracket" data-id="@bracket.Id">
             <ul class="list-table bracket-data">
                 @{
-                    if (!bracket.IBracket.IsFinalized && ViewBag.isCreator && Model.GetParticipants().Count >= 4)
+                    if (!bracket.IBracket.IsFinalized && ViewBag.isCreator && bracket.GetPlayers().Count >= 4)
                     {
                         Html.RenderPartial("Administrator/_Finalize");
                     }

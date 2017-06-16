@@ -4,13 +4,12 @@
     ViewBag.Section = WebApplication.Models.BracketSection.UPPER;
     ViewBag.RoundShowing = ViewBag.UpperDisplayRounds;
     ViewBag.Class = "upper";
-    ViewBag.GrandFinalShow = true;
     int roundNum = 1;
 
     Html.RenderPartial("Brackets/Shared/_Header", Model, new ViewDataDictionary(ViewData));
 }
 <li class="list-table-body">
-    <ul class="round" data-columns="@ViewBag.DisplayRounds">
+    <ul class="round @(ViewBag.GrandFinal ? "border" : "")" data-columns="@ViewBag.DisplayRounds">
         @foreach (bool display in ViewBag.UpperDisplayRounds)
         {
             <li class="column">

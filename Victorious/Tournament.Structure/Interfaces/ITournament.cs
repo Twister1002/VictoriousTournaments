@@ -34,10 +34,9 @@ namespace Tournament.Structure
 		/// Advance Players from one Bracket to another.
 		/// Players will be seeded by their final Ranking.
 		/// </summary>
-		/// <param name="_initialBracketIndex">Finished Bracket (0-indexed)</param>
-		/// <param name="_newBracketIndex">New Bracket (0-indexed)</param>
-		/// <param name="_numberOfPlayers">How many Players to advance (0 = all)</param>
-		void AdvancePlayersByRanking(int _initialBracketIndex, int _newBracketIndex, int _numberOfPlayers = 0);
+		/// <param name="_firstBracket">Finished Bracket</param>
+		/// <param name="_secondBracket">New Bracket</param>
+		void AdvancePlayersByRanking(IBracket _firstBracket, IBracket _secondBracket);
 
 		/// <summary>
 		/// Add a Player to this Tournament.

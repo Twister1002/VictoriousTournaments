@@ -242,7 +242,7 @@ namespace Tournament.Structure
 				return false;
 			}
 
-			return base.Validate();
+			return true;
 		}
 		#endregion
 

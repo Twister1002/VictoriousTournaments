@@ -16,13 +16,15 @@ namespace WebApplication.Models
         private IService services;
         private IBracket bracket;
         private IGroupStage groupBracket;
+        private BracketModel model;
 
         public int Id { get; private set; }
 
-        public Bracket(IService services, IBracket bracket)
+        public Bracket(IService services, IBracket bracket, BracketModel model)
         {
             this.services = services;
             this.bracket = bracket;
+            this.model = model;
             this.groupBracket = bracket as IGroupStage;
             Init();
         }
@@ -380,6 +382,15 @@ namespace WebApplication.Models
 
             return file;
         }
+
+        /// <summary>
+        /// Gets a list of all users in the bracket
+        /// </summary>
+        /// <returns>A list of users in the bracket</returns>
+        public List<TournamentUsersBracketModel> GetPlayers()
+        {
+            return model.TournamentUsersBrackets.ToList();
+        }
         #endregion
 
         #region Match Stuff
@@ -404,8 +415,9 @@ namespace WebApplication.Models
 
         public bool UpdateMatch(MatchModel match)
         {
-            services.Tournament.UpdateMatch(match);
-            return services.Save();
+            //services.Tournament.UpdateMatch(match);
+            //return services.Save();
+            return true;
         }
 
         public bool AddGame(int matchNum, int CScore, int DScore, PlayerSlot winner)

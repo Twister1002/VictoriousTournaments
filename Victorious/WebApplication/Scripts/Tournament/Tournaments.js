@@ -297,10 +297,8 @@
                     html += "<li class='column actions'>"+PermissionButtons(json.data.actions)+"</li> ";
                     html += "</ul> ";
 
-                    // Add this user to every bracket
-                    $(".TournamentInfo .bracketData").each(function (i, e) {
-                        $(e).find(".user:last").after(html);
-                    });
+                    $(".TournamentInfo .bracketData:first .bracketPlayers").append(html);
+
                     //row.closest(".infoSection").find(".user:last").after(html);
                     row.find(".name input").val('');
                     

@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace Tournament.Structure
 {
+	/// <summary>
+	/// Compares too [nullable int] seeds.
+	/// "Sorts" null seeds to the back.
+	/// If both seeds are equal (or null), sorts them randomly.
+	/// </summary>
 	public class SeedComparer : IComparer<int?>
 	{
 		public int Compare(int? first, int? second)
@@ -35,10 +40,15 @@ namespace Tournament.Structure
 
 		private int RandCompare()
 		{
-			Random rng = new Random();
+			//Random rng = new Random();
+			int rand = new Random().Next(2);
+			return (rand > 0)
+				? 1 : -1;
+#if false
 			int compare = rng.Next().CompareTo(rng.Next());
 			return (0 == compare)
 				? RandCompare() : compare;
+#endif
 		}
 	}
 }

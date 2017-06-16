@@ -296,14 +296,22 @@ namespace WebApplication.Controllers
                             }
                         }
 
-                        // Update the matches in the database
+                        // Updating of the matches happens by an event.
                         status = bracket.UpdateMatch(bracket.IBracket.GetMatchModel(matchNum));
                         match = bracket.GetMatchByNum(matchNum);
+                        bool refresh = bracket.roundsModified;
                         List<object> matchUpdates = new List<object>();
 
                         if (status)
                         {
                             message = "Current match was updated";
+
+                            // Verify if this bracket is finished. 
+                            if (bracket.IBracket.IsFinished)
+                            {
+                                tournament.BracketFinished(bracketId);
+                                refresh = true;
+                            }
 
                             matchUpdates.Add(JsonMatchResponse(match, true));
                             if (match.match.NextMatchNumber != -1)
@@ -329,7 +337,7 @@ namespace WebApplication.Controllers
                         {
                             processed = processed,
                             matchUpdates = matchUpdates,
-                            refresh = bracket.roundsModified
+                            refresh = refresh
                         };
                     }
                     else
@@ -442,7 +450,7 @@ namespace WebApplication.Controllers
                         actions = tournament.PermissionAction(account.Model.AccountID, model.TournamentUserID, "default")
                     };
                     if (data != null) status = true;
-                    message = "User was " + (status ? "" : "not") + " removed successfully";
+                    message = "User was " + (status ? "" : "not") + " added successfully";
                 }
                 else
                 {
@@ -493,6 +501,12 @@ namespace WebApplication.Controllers
             return BundleJson();
         }
 
+        /// <summary>
+        /// This is an ajax call that will finalize the tournament's selected bracket
+        /// </summary>
+        /// <param name="tournamentId">The ID of the tournament</param>
+        /// <param name="bracketId">The ID of the bracket</param>
+        /// <param name="roundData">The data from all the rounds.</param>
         [HttpPost]
         [Route("Ajax/Tournament/Finalize")]
         public JsonResult Finalize(int tournamentId, int bracketId, Dictionary<String, Dictionary<String, int>> roundData)
@@ -505,7 +519,7 @@ namespace WebApplication.Controllers
                 Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                 if (tournament.IsAdmin(account.Model.AccountID))
                 {
-                    if (tournament.FinalizeTournament(bracketId, roundData))
+                    if (tournament.FinalizeBracket(bracketId, roundData))
                     {
                         status = true;
                         message = "Your tournament has been finalized. No changes can be made.";
@@ -544,6 +558,10 @@ namespace WebApplication.Controllers
             return BundleJson();
         }
 
+        /// <summary>
+        /// This is an ajax request to delete the tournament
+        /// </summary>
+        /// <param name="tournamentId">ID of the tournament</param>
         [HttpPost]
         [Route("Ajax/Tournament/Delete")]
         public JsonResult Delete(int tournamentId)
@@ -582,6 +600,13 @@ namespace WebApplication.Controllers
             return BundleJson();
         }
 
+        /// <summary>
+        /// This will change the permissions of a user in the tournament.
+        /// </summary>
+        /// <param name="tournamentId">The ID of the tournament</param>
+        /// <param name="targetUser">The ID of the user to change permissions</param>
+        /// <param name="action">The action requested to perform</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Ajax/Tournament/PermissionChange")]
         public JsonResult PermissionChange(int tournamentId, int targetUser, String action)
@@ -616,6 +641,13 @@ namespace WebApplication.Controllers
             return BundleJson();
         }
 
+        /// <summary>
+        /// This will seed the users in the tournament 
+        /// </summary>
+        /// <param name="tournamentId">The ID of the tournament</param>
+        /// <param name="bracketId">The ID of the bracket</param>
+        /// <param name="players">A list of players to update the seeds.</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Ajax/Tournament/SeedChange")]
         public JsonResult SeedChange(int tournamentId, int bracketId, Dictionary<String, int> players)

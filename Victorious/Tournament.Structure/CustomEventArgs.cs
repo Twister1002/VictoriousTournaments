@@ -8,6 +8,11 @@ using DatabaseLib;
 
 namespace Tournament.Structure
 {
+	/// <summary>
+	/// Custom EventArgs used for Bracket events.
+	/// This contains data for adding/removing/modifying Matches,
+	/// and/or deleting Games from the database.
+	/// </summary>
 	public class BracketEventArgs : EventArgs
 	{
 		/// <summary>

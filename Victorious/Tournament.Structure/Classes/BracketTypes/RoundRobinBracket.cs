@@ -53,28 +53,11 @@ namespace Tournament.Structure
 		{ }
 		public RoundRobinBracket(BracketModel _model)
 		{
-			if (null == _model)
-			{
-				throw new ArgumentNullException("_model");
-			}
+			SetDataFromModel(_model);
 
-			this.Id = _model.BracketID;
-			this.BracketType = _model.BracketType.Type;
-			this.IsFinalized = _model.Finalized;
-			this.MaxRounds = _model.MaxRounds;
-			this.MatchWinValue = 2;
-			this.MatchTieValue = 1;
-			ResetBracketData();
-
-			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
-				.OrderBy(tubm => tubm.Seed, new SeedComparer())
-				.Select(tubm => tubm.TournamentUser)
-				.ToList();
-			this.Players = new List<IPlayer>();
-			foreach (TournamentUserModel userModel in userModels)
+			foreach (IPlayer player in Players)
 			{
-				Players.Add(new Player(userModel));
-				Rankings.Add(new PlayerScore(userModel.TournamentUserID, userModel.Name));
+				Rankings.Add(new PlayerScore(player.Id, player.Name));
 			}
 
 			foreach (MatchModel mm in _model.Matches)
@@ -91,14 +74,7 @@ namespace Tournament.Structure
 				this.NumberOfRounds = Matches.Values
 					.Select(m => m.RoundIndex)
 					.Last();
-				if (Matches.Values.Any(m => !m.IsFinished))
-				{
-					this.IsFinished = false;
-				}
-				else
-				{
-					this.IsFinished = true;
-				}
+				this.IsFinished = Matches.Values.All(m => m.IsFinished);
 			}
 
 			RecalculateRankings();
@@ -300,7 +276,7 @@ namespace Tournament.Structure
 		#region Private Methods
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
-			this.IsFinished = !(Matches.Values.Any(m => !m.IsFinished));
+			this.IsFinished = Matches.Values.All(m => m.IsFinished);
 #if ENABLE_TIEBREAKERS
 			// Check for, and create, Tiebreaker matches:
 			if (IsFinished && BracketType.ROUNDROBIN == this.BracketType)

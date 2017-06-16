@@ -57,11 +57,6 @@ namespace Tournament.Structure
 			}
 			public override bool Validate()
 			{
-				if (false == base.Validate())
-				{
-					return false;
-				}
-
 				if ((Players?.Count ?? 0) != 4 &&
 					Players.Count != 8)
 				{
@@ -239,24 +234,7 @@ namespace Tournament.Structure
 		{ }
 		public GSLGroups(BracketModel _model)
 		{
-			if (null == _model)
-			{
-				throw new ArgumentNullException("_model");
-			}
-
-			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
-				.OrderBy(tubm => tubm.Seed, new SeedComparer())
-				.Select(tubm => tubm.TournamentUser)
-				.ToList();
-			this.Players = new List<IPlayer>();
-			foreach (TournamentUserModel userModel in userModels)
-			{
-				Players.Add(new Player(userModel));
-			}
-
-			this.Id = _model.BracketID;
-			this.BracketType = _model.BracketType.Type;
-			this.IsFinalized = _model.Finalized;
+			SetDataFromModel(_model);
 			this.NumberOfGroups = _model.NumberOfGroups;
 
 			CreateBracket();

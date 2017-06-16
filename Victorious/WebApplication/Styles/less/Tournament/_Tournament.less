@@ -26,16 +26,19 @@
     }
 
     .bracketNames {
+        /*width: 100%;*/
+
         .list-table {
             min-height: 0em;
             padding: 1em 0em;
-        }
 
-        .bracketName {
-            text-align: center;
-            padding: .5em;
-            .notSelected;
-            .hover;
+            .bracketName {
+                text-align: center;
+                padding: .5em 0em;
+                .isSelected;
+                .notSelected;
+                .hover;
+            }
         }
     }
 
@@ -64,10 +67,10 @@
             }
 
             .group-data {
+                width: 100%;
                 min-height: 2em;
 
                 .groupName {
-                    text-align: center;
                     padding: .5em;
                     .notSelected;
                     .isSelected;
@@ -77,9 +80,11 @@
 
             .round {
                 position: relative;
+
                 &.hide {
                     display: none;
                 }
+
                 li {
                     position: relative;
                     vertical-align: middle;

@@ -8,6 +8,12 @@ using DatabaseLib;
 
 namespace Tournament.Structure
 {
+	/// <summary>
+	/// One or more Brackets form a Tournament.
+	/// Each Bracket is a group of Matches,
+	/// and is designed either for elimination or seeding (or both).
+	/// The type of bracket determines the progression and algorithms.
+	/// </summary>
 	public abstract class Bracket : IBracket
 	{
 		#region Variables & Properties
@@ -22,6 +28,8 @@ namespace Tournament.Structure
 		public List<IPlayer> Players
 		{ get; protected set; }
 		public List<IPlayerScore> Rankings
+		{ get; protected set; }
+		public int AdvancingPlayers
 		{ get; protected set; }
 		public int MaxRounds
 		{ get; set; }
@@ -46,10 +54,42 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Events
+		/// <summary>
+		/// Notifies subscribers when new Matches have been created and added.
+		/// Associated BracketEventArgs must contain updated MatchModels
+		/// for all new additions.
+		/// </summary>
 		public event EventHandler<BracketEventArgs> RoundAdded;
+
+		/// <summary>
+		/// Notifies subscribers when Matches have been deleted/removed.
+		/// Associated BracketEventArgs must contain Models of all removals.
+		/// May also contain Game ID's, if any were deleted.
+		/// </summary>
 		public event EventHandler<BracketEventArgs> RoundDeleted;
+
+		/// <summary>
+		/// Notifies subscribers when Matches have been changed.
+		/// This can include adding/removing a Game,
+		/// or changing the Match's values (such as MatchNumber).
+		/// Associated BracketEventArgs must contain all updated MatchModels.
+		/// May also contain Game ID's, if any were deleted.
+		/// </summary>
 		public event EventHandler<BracketEventArgs> MatchesModified;
+
+		/// <summary>
+		/// Notifies subscribers when Games have been deleted.
+		/// Associated BracketEventArgs must contain ID's for all deleted Games.
+		/// </summary>
 		public event EventHandler<BracketEventArgs> GamesDeleted;
+
+		/* 
+		 * The following protected methods are helpers.
+		 * They are included to simplify the firing of Bracket events.
+		 * Each helper will translate the given parameter(s) to a relevant BracketEventArgs.
+		 * If the passed list is empty, no event will be fired.
+		 * If the relevant event's subscriber-list is empty/null, no event will be fired.
+		*/
 		protected void OnRoundAdded(BracketEventArgs _e)
 		{
 			RoundAdded?.Invoke(this, _e);
@@ -98,6 +138,12 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Abstract Methods
+		/*
+		 * These abstract methods are fundamental to the behavior of brackets,
+		 * but their specific functionality depends on the bracket type.
+		 * See the derived bracket classes for implementation details.
+		*/
+
 		public abstract void CreateBracket(int _gamesPerMatch = 1);
 
 		public abstract bool CheckForTies();
@@ -111,20 +157,36 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Verifies this bracket's status is legal.
+		/// This is called before allowing play to begin.
+		/// </summary>
+		/// <remarks>
+		/// This method is overriden in some derived Brackets
+		/// in order to allow additional type-specific functionality.
+		/// </remarks>
+		/// <returns>true if okay, false if errors</returns>
 		public virtual bool Validate()
 		{
+			// Playercount must be at least 2.
 			if ((Players?.Count ?? 0) < 2)
-			{
-				return false;
-			}
-			if ((Matches?.Count ?? 0) == 0 ||
-				Matches.Values.Any(m => m.MaxGames < 1))
 			{
 				return false;
 			}
 
 			return true;
 		}
+
+		/// <summary>
+		/// Resets the state of all Matches.
+		/// Deletes all Games and sets scores to 0-0.
+		/// Removes Players from Matches they had advanced to.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// </summary>
+		/// <remarks>
+		/// This method is overriden in some derived Brackets
+		/// in order to allow additional type-specific functionality.
+		/// </remarks>
 		public virtual void ResetMatches()
 		{
 			List<MatchModel> alteredMatches = new List<MatchModel>();
@@ -167,6 +229,10 @@ namespace Tournament.Structure
 		}
 
 		#region Player Methods
+		/// <summary>
+		/// Gets the playercount.
+		/// </summary>
+		/// <returns>Players.Count</returns>
 		public int NumberOfPlayers()
 		{
 			if (null == Players)
@@ -175,6 +241,13 @@ namespace Tournament.Structure
 			}
 			return Players.Count;
 		}
+
+		/// <summary>
+		/// Finds a Player's seed value for this bracket.
+		/// If the given Player ID is not found, an exception is thrown.
+		/// </summary>
+		/// <param name="_playerId">ID of Player to find</param>
+		/// <returns>Seed number of given Player</returns>
 		public int GetPlayerSeed(int _playerId)
 		{
 			if (null == Players)
@@ -187,6 +260,7 @@ namespace Tournament.Structure
 			{
 				if (_playerId == Players[i].Id)
 				{
+					// Each Player's seed is their (list index + 1):
 					return (i + 1);
 				}
 			}
@@ -195,6 +269,12 @@ namespace Tournament.Structure
 				("Player not found in this Bracket!");
 		}
 
+		/// <summary>
+		/// Randomized the order of the current playerlist.
+		/// Reassigns seeds for all Players.
+		/// Deletes any/all Matches.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// </summary>
 		public void RandomizeSeeds()
 		{
 			if (null == Players)
@@ -203,6 +283,7 @@ namespace Tournament.Structure
 			}
 			if (Players.Count < 2)
 			{
+				// Not applicable for playerlists smaller than 2. Just exit:
 				DeleteBracketData();
 				return;
 			}
@@ -218,24 +299,38 @@ namespace Tournament.Structure
 				int rand = -1;
 				while (rand < 0 || rolls.ContainsKey(rand))
 				{
+					// Roll random values until we get a valid one.
+					// Valid is >=0 and not-yet used:
 					rand = rng.Next(Players.Count * 3);
 				}
+				// Associate each Player with a random roll.
+				// Dictionary Key = random roll, Value = old playerlist index:
 				rolls.Add(rand, i);
 			}
 
-			// Sort rolls in list, then add Players to new list in order
+			// Sort rolls in a list...
 			List<int> rollsList = rolls.Keys
 				.OrderByDescending(v => v)
 				.ToList();
+			// ...then add Players to new temp playerlist in order:
 			foreach (int key in rollsList)
 			{
 				pList.Add(Players[rolls[key]]);
 			}
 
+			// Replace the old playerlist with the new, and delete any Matches, etc.
+			// (a new playerlist means Matches will have to be regenerated)
 			Players = pList;
 			DeleteBracketData();
 		}
 
+		/// <summary>
+		/// Deletes the old playerlist (if any)
+		/// and replaces it with the given list.
+		/// Deletes any/all Matches.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// </summary>
+		/// <param name="_players">New playerlist for the Bracket</param>
 		public void SetNewPlayerlist(List<IPlayer> _players)
 		{
 			if (null == _players)
@@ -246,13 +341,23 @@ namespace Tournament.Structure
 			Players = _players;
 			DeleteBracketData();
 		}
+
+		/// <summary>
+		/// Deletes the old playerlist (if any)
+		/// and replaces it with one generated from the given Models.
+		/// Deletes any/all Matches.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// </summary>
+		/// <param name="_players">List of Models associating Players and seeds</param>
 		public void SetNewPlayerlist(ICollection<TournamentUsersBracketModel> _players)
 		{
+			// Order the given Collection by their seed values:
 			List<TournamentUserModel> userModels = _players
 				.OrderBy(p => p.Seed, new SeedComparer())
 				.Select(p => p.TournamentUser)
 				.ToList();
 
+			// Construct Players from the Models, and save the new list:
 			List<IPlayer> playerList = new List<IPlayer>();
 			foreach (TournamentUserModel model in userModels)
 			{
@@ -261,6 +366,13 @@ namespace Tournament.Structure
 			SetNewPlayerlist(playerList);
 		}
 
+		/// <summary>
+		/// Adds a Player to (the end of) the playerlist.
+		/// Deletes any/all Matches.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// If the Player is a duplicate, an exception is thrown.
+		/// </summary>
+		/// <param name="_player">Player to add</param>
 		public void AddPlayer(IPlayer _player)
 		{
 			if (null == _player)
@@ -281,6 +393,22 @@ namespace Tournament.Structure
 			Players.Add(_player);
 			DeleteBracketData();
 		}
+
+		/// <summary>
+		/// Removes a Player from the playerlist,
+		/// and replaces him with a given Player.
+		/// The new Player inherits the old's seed value.
+		/// The removed Player is replaced in all Matches, Games, & Rankings
+		/// by the new Player.
+		/// May fire MatchesModified event, if updates happen.
+		/// If the Player-to-replace's index is invalid, an exception is thrown.
+		/// </summary>
+		/// <remarks>
+		/// This method is overriden in some derived Brackets
+		/// in order to allow additional type-specific functionality.
+		/// </remarks>
+		/// <param name="_player">Player to add</param>
+		/// <param name="_index">Index (in playerlist) of Player to remove</param>
 		public virtual void ReplacePlayer(IPlayer _player, int _index)
 		{
 			if (null == _player)
@@ -304,6 +432,7 @@ namespace Tournament.Structure
 					{
 						Match match = GetInternalMatch(n);
 						match.ReplacePlayer(_player, Players[_index].Id);
+						// If this Match was altered, save its Model for firing an event:
 						alteredMatches.Add(GetMatchModel(match));
 					}
 					catch (PlayerNotFoundException)
@@ -320,9 +449,19 @@ namespace Tournament.Structure
 				}
 			}
 
+			// Now we can replace the Player in the playerlist,
+			// and fire a notification event before continuing:
 			Players[_index] = _player;
 			OnMatchesModified(alteredMatches);
 		}
+
+		/// <summary>
+		/// Removes a Player from the playerlist.
+		/// Deletes any/all Matches.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// If the Player is not found, an exception is thrown.
+		/// </summary>
+		/// <param name="_playerId">ID of Player to remove</param>
 		public void RemovePlayer(int _playerId)
 		{
 			if (null == Players)
@@ -344,6 +483,15 @@ namespace Tournament.Structure
 				("Player not found in this Bracket!");
 		}
 
+		/// <summary>
+		/// Swaps the seeds of two Players.
+		/// (also swaps their positions in the playerlist)
+		/// Deletes any/all Matches.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// If either playerindex is invalid, an exception is thrown.
+		/// </summary>
+		/// <param name="_index1">Playerlist index of Player</param>
+		/// <param name="_index2">Playerlist index of Player</param>
 		public void SwapPlayers(int _index1, int _index2)
 		{
 			if (_index1 < 0 || _index1 >= Players.Count
@@ -359,6 +507,17 @@ namespace Tournament.Structure
 
 			DeleteBracketData();
 		}
+
+		/// <summary>
+		/// Applies a new seed to one Player.
+		/// (also moves him in the playerlist)
+		/// Other Players will be shifted up/down as needed.
+		/// Deletes any/all Matches.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// If either playerindex is invalid, an exception is thrown.
+		/// </summary>
+		/// <param name="_oldIndex">Playerlist index of Player to move</param>
+		/// <param name="_newIndex">Playerlist index of destination</param>
 		public void ReinsertPlayer(int _oldIndex, int _newIndex)
 		{
 			if (_oldIndex < 0 || _oldIndex >= Players.Count
@@ -375,6 +534,8 @@ namespace Tournament.Structure
 			IPlayer tmp = Players[_oldIndex];
 			if (_oldIndex > _newIndex)
 			{
+				// We're moving the Player "down" in the list.
+				// All other affected Players need to be shifted up one:
 				for (int i = _oldIndex; i > _newIndex; --i)
 				{
 					Players[i] = Players[i - 1];
@@ -382,16 +543,24 @@ namespace Tournament.Structure
 			}
 			else // _oldIndex < _newIndex
 			{
+				// We're moving the Player "up" in the list.
+				// All other affected Players need to be shifted down one:
 				for (int i = _oldIndex; i < _newIndex; ++i)
 				{
 					Players[i] = Players[i + 1];
 				}
 			}
+			
+			// Now, reinsert the Player (and reset the bracket):
 			Players[_newIndex] = tmp;
-
 			DeleteBracketData();
 		}
 
+		/// <summary>
+		/// Clears the playerlist.
+		/// Deletes any/all Matches.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// </summary>
 		public void ResetPlayers()
 		{
 			if (null == Players)
@@ -404,30 +573,73 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Match & Game Methods
+		/// <summary>
+		/// Adds a new Game to a Match.
+		/// Takes a given gamescore to create a new Game.
+		/// The Game is added to the Match's gamelist, and the Match's score & status is updated.
+		/// The new game's affects on the rest of the Bracket are also applied here.
+		/// Rankings are updated as necessary.
+		/// May fire events: MatchesModified, RoundDeleted.
+		/// If Match can't be found, an exception is thrown.
+		/// If game-data input is invalid, an exception is thrown.
+		/// </summary>
+		/// <remarks>
+		/// This method is overriden in Group Stages.
+		/// </remarks>
+		/// <param name="_matchNumber">Number of Match to add to</param>
+		/// <param name="_defenderScore">First player's score</param>
+		/// <param name="_challengerScore">Second player's score</param>
+		/// <param name="_winnerSlot">Game winner: Defender or Challenger</param>
+		/// <returns>Model of added Game</returns>
 		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			Match match = GetInternalMatch(_matchNumber);
 			MatchModel oldModel = GetMatchModel(match);
 
-			// Add the new Game and update Bracket & Rankings:
+			// Add the new Game (only affects the Match, not the bracket):
 			GameModel gameModel = match
 				.AddGame(_defenderScore, _challengerScore, _winnerSlot);
+
+			// UpdateScore will update the bracket's Rankings:
 			UpdateScore(_matchNumber, new List<GameModel>() { gameModel }, true, oldModel);
+
+			// ApplyWinEffects will apply any updates to other affected Matches:
+			// (also updates the Bracket's status, as necessary)
 			List<MatchModel> alteredMatches = ApplyWinEffects(_matchNumber, _winnerSlot);
 
 			// Fire Event with any Matches that changed:
 			alteredMatches.Add(GetMatchModel(match));
 			OnMatchesModified(alteredMatches);
+
 			// Return a Model of the new Game:
 			return gameModel;
 		}
+
+		/// <summary>
+		/// Applies the given gamescore to an existing Game within a Match.
+		/// The Match's score & status is updated.
+		/// If the update affects the rest of the Bracket, those changes are applied.
+		/// Rankings are updated as necessary.
+		/// May fire events: MatchesModified, GamesDeleted, RoundDeleted.
+		/// If Match or Game is not fond, an exception is thrown.
+		/// If game-data input is invalid, an exception is thrown.
+		/// </summary>
+		/// <remarks>
+		/// This method is overriden in Group Stages.
+		/// </remarks>
+		/// <param name="_matchNumber">Number of Match to update</param>
+		/// <param name="_gameNumber">Number of Game to update</param>
+		/// <param name="_defenderScore">First Player's score</param>
+		/// <param name="_challengerScore">Second Player's score</param>
+		/// <param name="_winnerSlot">Game winner: Defender or Challenger</param>
+		/// <returns></returns>
 		public virtual GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			Match match = GetInternalMatch(_matchNumber);
 			int gameIndex = match.Games.FindIndex(g => g.GameNumber == _gameNumber);
 			if (gameIndex < 0)
 			{
-				// Case 1: Game doesn't exist:
+				// Case 1: Game doesn't exist (this is bad):
 				throw new GameNotFoundException
 					("Game not found; Game Number may be invalid!");
 			}
@@ -439,28 +651,34 @@ namespace Tournament.Structure
 			if (match.Games[gameIndex].WinnerSlot == _winnerSlot)
 			{
 				// Case 2: Game winner won't change.
+				// This won't affect other Matches, so our job is easier.
 
 				// Subtract old scores from rankings:
 				GameModel oldGame = match.Games[gameIndex].GetModel();
 				UpdateScore(_matchNumber, new List<GameModel> { oldGame }, false, oldMatchModel);
 
-				// Update the Game (and Match):
+				// Update the Game's score...
 				match.Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;
 				match.Games[gameIndex].Score[(int)PlayerSlot.Challenger] = _challengerScore;
+				// and save the updated GameModel for returning:
 				alteredGames.Add(match.Games[gameIndex].GetModel());
 				alteredGames[0].MatchID = match.Id;
 
-				// Add new scores to rankings:
+				// Add new scores to Rankings:
 				UpdateScore(_matchNumber, alteredGames, true, oldMatchModel);
 			}
 			else
 			{
 				// Case 3: Game winner changes.
+				// This is the hard case. Other Matches may well be affected.
 
-				// Remove (and save) the current Game:
+				// Remove (and save) the current/old Game from the Match.
+				// This will affect the Bracket as if that Game had not been entered:
 				GameModel removedGame = RemoveGameNumber(_matchNumber, _gameNumber);
-				UpdateScore(_matchNumber, new List<GameModel> { removedGame }, false, oldMatchModel);
 				oldMatchModel = GetMatchModel(match);
+
+				// Update the Rankings according to this state:
+				UpdateScore(_matchNumber, new List<GameModel> { removedGame }, false, oldMatchModel);
 
 				// Update the Game's values:
 				removedGame.DefenderScore = _defenderScore;
@@ -472,7 +690,8 @@ namespace Tournament.Structure
 
 				// Add the updated Game back to the Match:
 				alteredGames.Add(match.AddGame(removedGame));
-				// Update the Bracket (Scores and progression):
+
+				// Apply the "new" Game's affects to the rest of the Bracket:
 				UpdateScore(_matchNumber, alteredGames, true, oldMatchModel);
 				alteredMatches.AddRange(ApplyWinEffects(_matchNumber, _winnerSlot));
 			}
@@ -480,6 +699,7 @@ namespace Tournament.Structure
 			// Fire Event with any changed Matches:
 			alteredMatches.Add(GetMatchModel(match));
 			OnMatchesModified(alteredMatches);
+
 			// Return a Model of the updated Game:
 			return alteredGames[0];
 		}
@@ -494,6 +714,17 @@ namespace Tournament.Structure
 			}
 			return (RemoveGameNumber(_matchNumber, lastGame.GameNumber));
 		}
+
+		/// <summary>
+		/// Remove a specified Game from a Match.
+		/// Applies necessary affects to other, related Matches.
+		/// Updates scores and Rankings accordingly.
+		/// May fire events: MatchesModified, GamesDeleted.
+		/// If Match or Game is not found, an exception is thrown.
+		/// </summary>
+		/// <param name="_matchNumber">Match to alter</param>
+		/// <param name="_gameNumber">Game to remove</param>
+		/// <returns>Model of removed Game</returns>
 		public virtual GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
 		{
 			Match match = GetInternalMatch(_matchNumber);
@@ -585,6 +816,7 @@ namespace Tournament.Structure
 			model.Finalized = this.IsFinalized;
 			model.NumberOfGroups = 0;
 			model.MaxRounds = this.MaxRounds;
+			model.NumberPlayersAdvance = this.AdvancingPlayers;
 
 			model.BracketType = new BracketTypeModel();
 			model.BracketType.BracketTypeID = model.BracketTypeID;
@@ -594,7 +826,7 @@ namespace Tournament.Structure
 			//model.TournamentUsersBrackets = new List<TournamentUsersBracketModel>();
 			foreach (IPlayer player in Players)
 			{
-				TournamentUsersBracketModel m = player.GetTournamentUsersBracketModel(this.Id, GetPlayerSeed(player.Id));
+				TournamentUsersBracketModel m = player.GetTournamentUsersBracketModel(this.Id, GetPlayerSeed(player.Id), _tournamentID);
 				model.TournamentUsersBrackets.Add(m);
 			}
 
@@ -715,6 +947,34 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected void SetDataFromModel(BracketModel _model)
+		{
+			if (null == _model)
+			{
+				throw new ArgumentNullException("_model");
+			}
+
+			this.Id = _model.BracketID;
+			this.BracketType = _model.BracketType.Type;
+			this.IsFinalized = _model.Finalized;
+			this.AdvancingPlayers = _model.NumberPlayersAdvance;
+			this.MaxRounds = _model.MaxRounds;
+			this.MatchWinValue = 2;
+			this.MatchTieValue = 1;
+
+			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
+				.OrderBy(u => u.Seed, new SeedComparer())
+				.Select(u => u.TournamentUser)
+				.ToList();
+			this.Players = new List<IPlayer>();
+			foreach (TournamentUserModel userModel in userModels)
+			{
+				Players.Add(new Player(userModel));
+			}
+
+			ResetBracketData();
+		}
+
 		protected virtual void ResetBracketData()
 		{
 			if (null == Matches)

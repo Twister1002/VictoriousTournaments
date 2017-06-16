@@ -96,7 +96,7 @@ namespace WebApplication.Models
         /// <returns>A Bracket wrapper class</returns>
         public Bracket GetBracket(int bracketId)
         {
-            return new Bracket(services, Tourny.Brackets.Single(x => x.Id == bracketId));
+            return new Bracket(services, Tourny.Brackets.Single(x => x.Id == bracketId), Model.Brackets.Single(x=>x.BracketID == bracketId));
         }
 
         /// <summary>
@@ -108,10 +108,27 @@ namespace WebApplication.Models
             List<Bracket> brackets = new List<Bracket>();
             foreach (Tournaments.IBracket bracket in Tourny.Brackets)
             {
-                brackets.Add(new Bracket(services, bracket));
+                brackets.Add(new Bracket(services, bracket, Model.Brackets.Single(x=>x.BracketID == bracket.Id)));
             }
 
             return brackets;
+        }
+
+        /// <summary>
+        /// Adds the information changed within a bracketModel to be reflected into the entity's object
+        /// </summary>
+        /// <param name="bracket">The model of the bracket to get information from</param>
+        /// <param name="bracketId">the ID of the bracket</param>
+        /// <returns>The model to update</returns>
+        private BracketModel ApplyBracketInfo(BracketModel bracket)
+        {
+            BracketModel orig = Model.Brackets.Single(x => x.BracketID == bracket.BracketID);
+
+            orig.Finalized = bracket.Finalized;
+            orig.Matches = bracket.Matches;
+            orig.TournamentUsersBrackets = bracket.TournamentUsersBrackets;
+
+            return orig;
         }
         #endregion
 
@@ -124,11 +141,17 @@ namespace WebApplication.Models
         #endregion
 
         #region Finalize
-        public bool FinalizeTournament(int bracketId, Dictionary<String, Dictionary<String, int>> roundData)
+        /// <summary>
+        /// This will finalize a bracket.
+        /// </summary>
+        /// <param name="bracketId">The ID of the bracket</param>
+        /// <param name="roundData">The data that will be used to set the max amount of games.</param>
+        /// <returns>True if the bracket was finalized or false if failed to save</returns>
+        public bool FinalizeBracket(int bracketId, Dictionary<String, Dictionary<String, int>> roundData)
         {
             // Set variables
-            BracketModel bracket = Model.Brackets.Single(x => x.BracketID == bracketId);
-            Tournaments.IBracket tourny = Tourny.Brackets.Single(x => x.Id == bracketId);
+            BracketModel bracketModel = Model.Brackets.Single(x => x.BracketID == bracketId);
+            Tournaments.IBracket bracket = Tourny.Brackets.Single(x => x.Id == bracketId);
 
             // Set max games for every round
             foreach (KeyValuePair<String, Dictionary<String, int>> roundInfo in roundData)
@@ -138,30 +161,37 @@ namespace WebApplication.Models
                     switch (roundInfo.Key)
                     {
                         case "upper":
-                            tourny.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
+                            bracket.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
                             break;
                         case "lower":
-                            tourny.SetMaxGamesForWholeLowerRound(int.Parse(data.Key), data.Value);
+                            bracket.SetMaxGamesForWholeLowerRound(int.Parse(data.Key), data.Value);
                             break;
                         case "final":
-                            tourny.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
+                            bracket.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
                             break;
                     }
                 }
             }
 
-            // Update the necesarry information
-            bracket.Finalized = true;
-            Model.InProgress = true;
+            if (bracket.Validate())
+            {
+                // Update the necesarry information
+                bracketModel.Finalized = true;
+                Model.InProgress = true;
 
-            // Update the database
-            bracket.Matches = CreateMatches(bracket, tourny);
-            services.Tournament.UpdateBracket(bracket);
-            services.Tournament.UpdateTournament(Model);
-            return services.Save();
+                // Update the database
+                bracketModel.Matches = bracket.GetModel().Matches;
+                services.Tournament.UpdateBracket(bracketModel);
+                services.Tournament.UpdateTournament(Model);
+                return services.Save();
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        private List<MatchModel> CreateMatches(BracketModel bracketModel, Tournaments.IBracket bracket)
+        private List<MatchModel> CreateMatches(Tournaments.IBracket bracket)
         {
             List<MatchModel> matches = new List<MatchModel>();
             
@@ -169,11 +199,30 @@ namespace WebApplication.Models
             for (int i = 1; i <= bracket.NumberOfMatches; i++)
             {
                 matches.Add(bracket.GetMatchModel(i));
-                //bracketModel.Matches.Add(matchModel);
-                //services.Tournament.AddMatch(matchModel);
             }
 
             return matches;
+        }
+
+        /// <summary>
+        /// Will progress the tournament and add new players to the net bracket
+        /// </summary>
+        /// <param name="bracketId">ID of the bracket</param>
+        /// <returns>True if saved; false if not saved</returns>
+        public bool BracketFinished(int bracketId)
+        {
+            Tournaments.IBracket currentBracket = Tourny.Brackets.Single(x => x.Id == bracketId);
+            Tournaments.IBracket nextBracket = Tourny.Brackets.ElementAtOrDefault(Tourny.Brackets.FindIndex(x => x == currentBracket)+1);
+
+            if (nextBracket != null)
+            {
+                Tourny.AdvancePlayersByRanking(currentBracket, nextBracket);
+                BracketModel bracketModel = ApplyBracketInfo(nextBracket.GetModel(Model.TournamentID));
+
+                services.Tournament.UpdateBracket(bracketModel);
+            }
+
+            return services.Save();
         }
         #endregion
 
@@ -224,12 +273,10 @@ namespace WebApplication.Models
             Model.LastEditedOn = DateTime.Now;
 
             services.Tournament.UpdateTournament(Model);
-            //UpdateBrackets();
-
+            
             if (services.Save())
             {
-                UpdatePlayers();
-                return services.Save();
+                return true;
             }
             else
             {
@@ -290,6 +337,8 @@ namespace WebApplication.Models
                         // We just need to update the data
                         bracketModel.BracketTypeID = newBracket.BracketTypeID;
                         bracketModel.MaxRounds = newBracket.NumberOfRounds;
+                        bracketModel.NumberOfGroups = newBracket.NumberOfGroups;
+                        bracketModel.NumberPlayersAdvance = newBracket.NumberPlayersAdvance;
 
                         updatedBrackets.Add(bracketModel);
                         //services.Tournament.UpdateBracket(bracketModel);
@@ -301,6 +350,8 @@ namespace WebApplication.Models
                         {
                             MaxRounds = newBracket.NumberOfRounds,
                             BracketTypeID = newBracket.BracketTypeID,
+                            NumberOfGroups = newBracket.NumberOfGroups,
+                            NumberPlayersAdvance = newBracket.NumberPlayersAdvance,
                             Finalized = false,
                             TournamentID = Model.TournamentID
                         };
@@ -372,6 +423,11 @@ namespace WebApplication.Models
         #endregion
 
         #region AddUsers
+        /// <summary>
+        /// Adds a user to the tournament
+        /// </summary>
+        /// <param name="name">The name of the user</param>
+        /// <returns>The user model of the created user</returns>
         public TournamentUserModel AddUser(String name)
         {
             bool isEmail = false;
@@ -411,6 +467,11 @@ namespace WebApplication.Models
             }
         }
 
+        /// <summary>
+        /// Adds a user to the tournament of the first bracket.
+        /// </summary>
+        /// <param name="model">The user model to be added to the tournament</param>
+        /// <returns>True if saved; false if save failed</returns>
         private bool AddUserToTournament(TournamentUserModel model)
         {
             // Add the user to the tournament
@@ -418,22 +479,20 @@ namespace WebApplication.Models
 
             if (model.PermissionLevel == (int)Permission.TOURNAMENT_STANDARD)
             {
-                // Add user to every bracket
-                foreach (BracketModel bracket in Model.Brackets)
+                // Add user to the beginning bracket
+                BracketModel bracket = Model.Brackets.ElementAt(0);
+                int? seedData = bracket.TournamentUsersBrackets.Max(x => x.Seed);
+                int seed = seedData != null ? seedData.Value + 1 : 1;
+
+                TournamentUsersBracketModel bracketUser = new TournamentUsersBracketModel()
                 {
-                    int? seedData = bracket.TournamentUsersBrackets.Max(x => x.Seed);
-                    int seed = seedData != null ? seedData.Value + 1 : 1;
+                    TournamentID = Model.TournamentID,
+                    TournamentUserID = model.TournamentUserID,
+                    Seed = seed,
+                    BracketID = bracket.BracketID
+                };
 
-                    TournamentUsersBracketModel bracketUser = new TournamentUsersBracketModel()
-                    {
-                        TournamentID = Model.TournamentID,
-                        TournamentUserID = model.TournamentUserID,
-                        Seed = seed,
-                        BracketID = bracket.BracketID
-                    };
-
-                    services.Tournament.AddTournamentUsersBracket(bracketUser);
-                }
+                services.Tournament.AddTournamentUsersBracket(bracketUser);
             }
 
             return services.Save();
@@ -441,6 +500,11 @@ namespace WebApplication.Models
         #endregion
 
         #region RemoveUsers
+        /// <summary>
+        /// Removes a user by the user's accuontID
+        /// </summary>
+        /// <param name="accountId">ID of user's accuont</param>
+        /// <returns>True if saved; false is not</returns>
         public bool RemoveUser(int accountId)
         {
             TournamentUserModel user = Model.TournamentUsers.First(x => x.AccountID == accountId);
@@ -449,6 +513,11 @@ namespace WebApplication.Models
             return services.Save();
         }
 
+        /// <summary>
+        /// Removes a user by the name 
+        /// </summary>
+        /// <param name="username">The name of the user to remove</param>
+        /// <returns>True if saved; false is not</returns>
         public bool RemoveUser(String username)
         {
             TournamentUserModel user = Model.TournamentUsers.First(x => x.Name == username);
@@ -703,12 +772,37 @@ namespace WebApplication.Models
         #endregion
 
         #region Helper
+        /// <summary>
+        /// Returns a list of users that are registered to this tournament.
+        /// </summary>
+        /// <returns></returns>
+        public List<TournamentUserModel> GetRegisteredUsers()
+        {
+            return Model.TournamentUsers.OrderBy(x => x.PermissionLevel).ToList();
+        }
+
+        /// <summary>
+        /// Gets the registration of the user's model.
+        /// </summary>
+        /// <param name="tournamentUserId">ID of the user </param>
+        /// <returns>Tournament level user model or null</returns>
+        public TournamentUserModel GetUserModel(int tournamentUserId)
+        {
+            return Model.TournamentUsers.SingleOrDefault(x => x.TournamentUserID == tournamentUserId);
+        }
+
+        /// <summary>
+        /// Gets the seed of the user
+        /// </summary>
+        /// <param name="bracketId">The bracket's ID</param>
+        /// <param name="userId">ID of the user</param>
+        /// <returns>The seed value</returns>
         public int GetUserSeed(int bracketId, int userId)
         {
             int? seed = -1;
 
             seed = Model.Brackets.Single(x => x.BracketID == bracketId)
-                .TournamentUsersBrackets.SingleOrDefault(x => x.TournamentUserID == userId).Seed;
+                .TournamentUsersBrackets.SingleOrDefault(x => x.TournamentUserID == userId)?.Seed;
 
             if (seed != null)
             {
@@ -720,21 +814,38 @@ namespace WebApplication.Models
             }
         }
 
+        /// <summary>
+        /// Gets a list of all participants in the tournament.
+        /// </summary>
+        /// <returns></returns>
         public List<TournamentUserModel> GetParticipants()
         {
             return Model.TournamentUsers.Where(x => x.PermissionLevel == (int)Permission.TOURNAMENT_STANDARD).ToList();
         }
 
+        /// <summary>
+        /// Determins if this tournament is editable or not
+        /// </summary>
+        /// <returns>True if can edit; false if not</returns>
         public bool CanEdit()
         {
             return !Model.InProgress ? true : false;
         }
 
+        /// <summary>
+        /// Determins if the user is registered to the tournament
+        /// </summary>
+        /// <param name="accountId">The Account ID of the user</param>
+        /// <returns>True if registered; false is not</returns>
         public bool isRegistered(int accountId)
         {
             return Model.TournamentUsers.Any(x => x.AccountID == accountId);
         }
 
+        /// <summary>
+        /// Determins if the user can register or not
+        /// </summary>
+        /// <returns>True if can register; false is not</returns>
         public bool CanRegister()
         {
             if (Model.RegistrationStartDate < DateTime.Now && Model.RegistrationEndDate > DateTime.Now)
@@ -767,6 +878,9 @@ namespace WebApplication.Models
         #endregion
 
         #region ViewModel
+        /// <summary>
+        /// This will setup the base of the viewmodel without the Model's information
+        /// </summary>
         public void SetupViewModel()
         {
             viewModel = new TournamentViewModel();
@@ -779,7 +893,7 @@ namespace WebApplication.Models
             viewModel.BracketData = new List<BracketViewModel>();
             viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
             viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
-            viewModel.NumberPlayersAdvance = Enumerable.Range(-1, GetParticipants().Count).ToList();
+            viewModel.NumberPlayersAdvance = Enumerable.Range(4, 20).ToList();
 
             viewModel.RegistrationStartDate = DateTime.Now;
             viewModel.RegistrationEndDate = DateTime.Now.AddDays(1);
@@ -789,6 +903,10 @@ namespace WebApplication.Models
             viewModel.CheckinEndDate = DateTime.Now.AddDays(2);
         }
 
+        /// <summary>
+        /// This will apply the changes from the viewModel to the model for saving
+        /// </summary>
+        /// <param name="viewModel">Saves all data from the viewModel to the Model</param>
         public void ApplyChanges(TournamentViewModel viewModel)
         {
             // Tournament Stuff
@@ -817,6 +935,9 @@ namespace WebApplication.Models
             }
         }
 
+        /// <summary>
+        /// Sets the viewModel's data based on the Model's data
+        /// </summary>
         public void SetFields()
         {
             viewModel.Title = Model.Title;
@@ -849,7 +970,8 @@ namespace WebApplication.Models
                 {
                     BracketTypeID = bracket.BracketTypeID,
                     NumberOfRounds = bracket.MaxRounds,
-                    NumberOfGroups = bracket.NumberOfGroups
+                    NumberOfGroups = bracket.NumberOfGroups,
+                    NumberPlayersAdvance = bracket.NumberPlayersAdvance
                 });
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using WebApplication.Interfaces;
 
 namespace WebApplication.Models
@@ -32,7 +33,7 @@ namespace WebApplication.Models
         WARNING,
         ERROR
     }
-    
+
     public abstract class Model
     {
         public static String[] errorClassNames = new String[] {
