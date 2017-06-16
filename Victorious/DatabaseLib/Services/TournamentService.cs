@@ -23,23 +23,20 @@ namespace DatabaseLib.Services
 
         #region Tournaments
 
+        /// <summary>
+        /// Adds a single TournamentModel to the database.
+        /// </summary>
+        /// <param name="tournament"> The tournament to be added. </param>
         public void AddTournament(TournamentModel tournament)
         {
-            //TournamentInviteModel invite = new TournamentInviteModel()
-            //{
-            //    TournamentID = tournamentToAdd.TournamentID,
-            //    TournamentInviteCode = tournamentToAdd.InviteCode,
-            //    DateCreated = DateTime.Today,
-            //    IsExpired = false,
-            //    DateExpires = tournamentToAdd.RegistrationEndDate
-            //};
-            //AddTournamentInvite(invite, true);
             unitOfWork.TournamentRepo.Add(tournament);
-            //invite.TournamentID = tournamentToAdd.TournamentID;
-            //UpdateTournamentInvite(invite);
-
         }
 
+        /// <summary>
+        /// Retreives a single TournamentModel from the database.
+        /// </summary>
+        /// <param name="tournamentId"> The primary key of the TournamentModel </param>
+        /// <returns> Returns a single TournamentModel </returns>
         public TournamentModel GetTournament(int tournamentId)
         {
             try
@@ -52,6 +49,10 @@ namespace DatabaseLib.Services
             }
         }
 
+        /// <summary>
+        /// Retreives all TournamentModels from the database.
+        /// </summary>
+        /// <returns> Returns a List of TournamentModels. </returns>
         public List<TournamentModel> GetAllTournaments()
         {
             try
@@ -64,16 +65,33 @@ namespace DatabaseLib.Services
             }
         }
 
+        /// <summary>
+        /// Updates a single TournamentModel.
+        /// </summary>
+        /// <param name="tournament"> The TournamentModel that is being updated. </param>
         public void UpdateTournament(TournamentModel tournament)
         {
             unitOfWork.TournamentRepo.Update(tournament);
         }
 
+        /// <summary>
+        /// Deletes a single TournamentModel from the database. 
+        /// </summary>
+        /// <param name="tournamentId"> The primary key of the TournamentModel that is to be deleted. </param>
         public void DeleteTournament(int tournamentId)
         {
             unitOfWork.TournamentRepo.Delete(tournamentId);
         }
 
+        /// <summary>
+        /// Search function for tournaments. 
+        /// </summary>
+        /// <param name="searchParams"> Dictionary used to specify search criteria. </param>
+        /// <param name="returnCount"> Number of items to return. </param>
+        /// <returns> Returns a List of TournamentModels. </returns>
+        /// <remarks>
+        /// For the <paramref name="searchParams"/>, the key is the column name and the value is the data being used to search against that column.
+        /// </remarks>
         public List<TournamentModel> FindTournaments(Dictionary<string, string> searchParams, int returnCount = 25)
         {
             List<TournamentModel> tournaments = new List<TournamentModel>();
@@ -166,11 +184,20 @@ namespace DatabaseLib.Services
 
         #region TournamentUsers
 
+        /// <summary>
+        /// Adds a single TournamentUser to the databse.
+        /// </summary>
+        /// <param name="tournamentUser"> The TournamentUser to be added. </param>
         public void AddTournamentUser(TournamentUserModel tournamentUser)
         {
             unitOfWork.TournamentUserRepo.Add(tournamentUser);
         }
 
+        /// <summary>
+        /// Retreives a single TournamentUser from the database.
+        /// </summary>
+        /// <param name="tournamentUserId"> Primary key of the TournamentUser being retreived. </param>
+        /// <returns> Returns a single TournamentUser. </returns>
         public TournamentUserModel GetTournamentUser(int tournamentUserId)
         {
             try
@@ -183,6 +210,10 @@ namespace DatabaseLib.Services
             }
         }
 
+        /// <summary>
+        /// Retreieve all TournamentUserModels from the database.
+        /// </summary>
+        /// <returns> Returns a List of TournamentUserModels. </returns>
         public List<TournamentUserModel> GetAllTournamentUsers()
         {
             try
@@ -195,6 +226,11 @@ namespace DatabaseLib.Services
             }
         }
 
+        /// <summary>
+        /// Retreives all TournamentUserModels in a specific tournament.
+        /// </summary>
+        /// <param name="tournamentId"> Id of the tournament to retreive TournamentUserModels from. </param>
+        /// <returns> List of TournamentUserModels </returns>
         public List<TournamentUserModel> GetAllUsersInTournament(int tournamentId)
         {
             try
