@@ -97,7 +97,7 @@
     <Compile Include="Classes\BracketTypes\RoundRobinBracket.cs" />
     <Compile Include="Classes\BracketTypes\RoundRobinGroups.cs" />
     <Compile Include="Classes\BracketTypes\SwissBracket.cs" />
-    <Compile Include="Classes\SeedComparer.cs" />
+    <Compile Include="SeedComparer.cs" />
     <Compile Include="Classes\BracketTypes\StepladderBracket.cs" />
     <Compile Include="StructsAndEnums.cs" />
   </ItemGroup>
