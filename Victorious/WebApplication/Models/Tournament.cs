@@ -187,13 +187,23 @@ namespace WebApplication.Models
             return matches;
         }
 
-        public void BracketFinished(int bracketId)
+        /// <summary>
+        /// Will progress the tournament and add new players to the net bracket
+        /// </summary>
+        /// <param name="bracketId">ID of the bracket</param>
+        /// <returns>True if saved; false if not saved</returns>
+        public bool BracketFinished(int bracketId)
         {
-            int thisBracketIndex = Tourny.Brackets.FindIndex(x => x.Id == bracketId);
-            int nextBracketIndex = Tourny.Brackets.Count < thisBracketIndex ? thisBracketIndex + 1 : -1;
-            int playersAdvance = Tourny.Brackets.Single(x => x.Id == bracketId).AdvancingPlayers;
+            Tournaments.IBracket currentBracket = Tourny.Brackets.Single(x => x.Id == bracketId);
+            Tournaments.IBracket nextBracket = Tourny.Brackets.ElementAtOrDefault(Tourny.Brackets.FindIndex(x => x == currentBracket)+1);
 
-            Tourny.AdvancePlayersByRanking(thisBracketIndex, nextBracketIndex, playersAdvance);
+            if (nextBracket != null)
+            {
+                Tourny.AdvancePlayersByRanking(currentBracket, nextBracket);
+                BracketModel bracketModel = nextBracket.GetModel(Model.TournamentID);
+            }
+
+            return services.Save();
         }
         #endregion
 
@@ -394,6 +404,11 @@ namespace WebApplication.Models
         #endregion
 
         #region AddUsers
+        /// <summary>
+        /// Adds a user to the tournament
+        /// </summary>
+        /// <param name="name">The name of the user</param>
+        /// <returns>The user model of the created user</returns>
         public TournamentUserModel AddUser(String name)
         {
             bool isEmail = false;
