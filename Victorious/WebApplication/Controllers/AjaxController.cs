@@ -296,14 +296,22 @@ namespace WebApplication.Controllers
                             }
                         }
 
-                        // Update the matches in the database
+                        // Updating of the matches happens by an event.
                         status = bracket.UpdateMatch(bracket.IBracket.GetMatchModel(matchNum));
                         match = bracket.GetMatchByNum(matchNum);
+                        bool refresh = bracket.roundsModified;
                         List<object> matchUpdates = new List<object>();
 
                         if (status)
                         {
                             message = "Current match was updated";
+
+                            // Verify if this bracket is finished. 
+                            if (bracket.IBracket.IsFinished)
+                            {
+                                tournament.BracketFinished(bracketId);
+                                refresh = true;
+                            }
 
                             matchUpdates.Add(JsonMatchResponse(match, true));
                             if (match.match.NextMatchNumber != -1)
@@ -329,7 +337,7 @@ namespace WebApplication.Controllers
                         {
                             processed = processed,
                             matchUpdates = matchUpdates,
-                            refresh = bracket.roundsModified
+                            refresh = refresh
                         };
                     }
                     else
@@ -442,7 +450,7 @@ namespace WebApplication.Controllers
                         actions = tournament.PermissionAction(account.Model.AccountID, model.TournamentUserID, "default")
                     };
                     if (data != null) status = true;
-                    message = "User was " + (status ? "" : "not") + " removed successfully";
+                    message = "User was " + (status ? "" : "not") + " added successfully";
                 }
                 else
                 {

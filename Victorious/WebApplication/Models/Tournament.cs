@@ -96,7 +96,7 @@ namespace WebApplication.Models
         /// <returns>A Bracket wrapper class</returns>
         public Bracket GetBracket(int bracketId)
         {
-            return new Bracket(services, Tourny.Brackets.Single(x => x.Id == bracketId));
+            return new Bracket(services, Tourny.Brackets.Single(x => x.Id == bracketId), Model.Brackets.Single(x=>x.BracketID == bracketId));
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace WebApplication.Models
             List<Bracket> brackets = new List<Bracket>();
             foreach (Tournaments.IBracket bracket in Tourny.Brackets)
             {
-                brackets.Add(new Bracket(services, bracket));
+                brackets.Add(new Bracket(services, bracket, Model.Brackets.Single(x=>x.BracketID == bracket.Id)));
             }
 
             return brackets;
@@ -133,8 +133,8 @@ namespace WebApplication.Models
         public bool FinalizeBracket(int bracketId, Dictionary<String, Dictionary<String, int>> roundData)
         {
             // Set variables
-            BracketModel bracket = Model.Brackets.Single(x => x.BracketID == bracketId);
-            Tournaments.IBracket tourny = Tourny.Brackets.Single(x => x.Id == bracketId);
+            BracketModel bracketModel = Model.Brackets.Single(x => x.BracketID == bracketId);
+            Tournaments.IBracket bracket = Tourny.Brackets.Single(x => x.Id == bracketId);
 
             // Set max games for every round
             foreach (KeyValuePair<String, Dictionary<String, int>> roundInfo in roundData)
@@ -144,27 +144,27 @@ namespace WebApplication.Models
                     switch (roundInfo.Key)
                     {
                         case "upper":
-                            tourny.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
+                            bracket.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
                             break;
                         case "lower":
-                            tourny.SetMaxGamesForWholeLowerRound(int.Parse(data.Key), data.Value);
+                            bracket.SetMaxGamesForWholeLowerRound(int.Parse(data.Key), data.Value);
                             break;
                         case "final":
-                            tourny.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
+                            bracket.SetMaxGamesForWholeRound(int.Parse(data.Key), data.Value);
                             break;
                     }
                 }
             }
 
-            if (tourny.Validate())
+            if (bracket.Validate())
             {
                 // Update the necesarry information
-                bracket.Finalized = true;
+                bracketModel.Finalized = true;
                 Model.InProgress = true;
 
                 // Update the database
-                bracket.Matches = CreateMatches(tourny);
-                services.Tournament.UpdateBracket(bracket);
+                bracketModel.Matches = bracket.GetModel().Matches;
+                services.Tournament.UpdateBracket(bracketModel);
                 services.Tournament.UpdateTournament(Model);
                 return services.Save();
             }
@@ -185,6 +185,15 @@ namespace WebApplication.Models
             }
 
             return matches;
+        }
+
+        public void BracketFinished(int bracketId)
+        {
+            int thisBracketIndex = Tourny.Brackets.FindIndex(x => x.Id == bracketId);
+            int nextBracketIndex = Tourny.Brackets.Count < thisBracketIndex ? thisBracketIndex + 1 : -1;
+            int playersAdvance = Tourny.Brackets.Single(x => x.Id == bracketId).AdvancingPlayers;
+
+            Tourny.AdvancePlayersByRanking(thisBracketIndex, nextBracketIndex, playersAdvance);
         }
         #endregion
 
@@ -235,12 +244,10 @@ namespace WebApplication.Models
             Model.LastEditedOn = DateTime.Now;
 
             services.Tournament.UpdateTournament(Model);
-            //UpdateBrackets();
-
+            
             if (services.Save())
             {
-                UpdatePlayers();
-                return services.Save();
+                return true;
             }
             else
             {
@@ -301,6 +308,8 @@ namespace WebApplication.Models
                         // We just need to update the data
                         bracketModel.BracketTypeID = newBracket.BracketTypeID;
                         bracketModel.MaxRounds = newBracket.NumberOfRounds;
+                        bracketModel.NumberOfGroups = newBracket.NumberOfGroups;
+                        bracketModel.NumberPlayersAdvance = newBracket.NumberPlayersAdvance;
 
                         updatedBrackets.Add(bracketModel);
                         //services.Tournament.UpdateBracket(bracketModel);
@@ -312,6 +321,8 @@ namespace WebApplication.Models
                         {
                             MaxRounds = newBracket.NumberOfRounds,
                             BracketTypeID = newBracket.BracketTypeID,
+                            NumberOfGroups = newBracket.NumberOfGroups,
+                            NumberPlayersAdvance = newBracket.NumberPlayersAdvance,
                             Finalized = false,
                             TournamentID = Model.TournamentID
                         };
@@ -434,23 +445,20 @@ namespace WebApplication.Models
 
             if (model.PermissionLevel == (int)Permission.TOURNAMENT_STANDARD)
             {
-                // TODO: Only add the user to the first bracket ONLY.
-                // Add user to every bracket
-                foreach (BracketModel bracket in Model.Brackets)
+                // Add user to the beginning bracket
+                BracketModel bracket = Model.Brackets.ElementAt(0);
+                int? seedData = bracket.TournamentUsersBrackets.Max(x => x.Seed);
+                int seed = seedData != null ? seedData.Value + 1 : 1;
+
+                TournamentUsersBracketModel bracketUser = new TournamentUsersBracketModel()
                 {
-                    int? seedData = bracket.TournamentUsersBrackets.Max(x => x.Seed);
-                    int seed = seedData != null ? seedData.Value + 1 : 1;
+                    TournamentID = Model.TournamentID,
+                    TournamentUserID = model.TournamentUserID,
+                    Seed = seed,
+                    BracketID = bracket.BracketID
+                };
 
-                    TournamentUsersBracketModel bracketUser = new TournamentUsersBracketModel()
-                    {
-                        TournamentID = Model.TournamentID,
-                        TournamentUserID = model.TournamentUserID,
-                        Seed = seed,
-                        BracketID = bracket.BracketID
-                    };
-
-                    services.Tournament.AddTournamentUsersBracket(bracketUser);
-                }
+                services.Tournament.AddTournamentUsersBracket(bracketUser);
             }
 
             return services.Save();
@@ -720,12 +728,37 @@ namespace WebApplication.Models
         #endregion
 
         #region Helper
+        /// <summary>
+        /// Returns a list of users that are registered to this tournament.
+        /// </summary>
+        /// <returns></returns>
+        public List<TournamentUserModel> GetRegisteredUsers()
+        {
+            return Model.TournamentUsers.OrderBy(x => x.PermissionLevel).ToList();
+        }
+
+        /// <summary>
+        /// Gets the registration of the user's model.
+        /// </summary>
+        /// <param name="tournamentUserId">ID of the user </param>
+        /// <returns>Tournament level user model or null</returns>
+        public TournamentUserModel GetUserModel(int tournamentUserId)
+        {
+            return Model.TournamentUsers.SingleOrDefault(x => x.TournamentUserID == tournamentUserId);
+        }
+
+        /// <summary>
+        /// Gets the seed of the user
+        /// </summary>
+        /// <param name="bracketId">The bracket's ID</param>
+        /// <param name="userId">ID of the user</param>
+        /// <returns>The seed value</returns>
         public int GetUserSeed(int bracketId, int userId)
         {
             int? seed = -1;
 
             seed = Model.Brackets.Single(x => x.BracketID == bracketId)
-                .TournamentUsersBrackets.SingleOrDefault(x => x.TournamentUserID == userId).Seed;
+                .TournamentUsersBrackets.SingleOrDefault(x => x.TournamentUserID == userId)?.Seed;
 
             if (seed != null)
             {
@@ -799,7 +832,7 @@ namespace WebApplication.Models
             viewModel.BracketData = new List<BracketViewModel>();
             viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
             viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
-            viewModel.NumberPlayersAdvance = Enumerable.Range(-1, GetParticipants().Count).ToList();
+            viewModel.NumberPlayersAdvance = Enumerable.Range(4, 20).ToList();
 
             viewModel.RegistrationStartDate = DateTime.Now;
             viewModel.RegistrationEndDate = DateTime.Now.AddDays(1);
@@ -876,7 +909,8 @@ namespace WebApplication.Models
                 {
                     BracketTypeID = bracket.BracketTypeID,
                     NumberOfRounds = bracket.MaxRounds,
-                    NumberOfGroups = bracket.NumberOfGroups
+                    NumberOfGroups = bracket.NumberOfGroups,
+                    NumberPlayersAdvance = bracket.NumberPlayersAdvance
                 });
             }
         }

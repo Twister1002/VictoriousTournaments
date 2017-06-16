@@ -17,7 +17,6 @@
     var bracketInfo;
     var bracketsCreated = 0;
 
-    //TODO: Fix the issue with %n% not being replaced.
     $("#TournamentEdit .bracketSection .type select").on("change", BracketInfoChange);
     $("#TournamentEdit .icon-plus").on("click", function () {
         var newBracket = bracketInfo.replace(/%n%/g, $("#TournamentEdit .brackets").length);
@@ -28,6 +27,14 @@
         //Reset all the events 
         $("#TournamentEdit .bracketSection .type select").off("change");
         $("#TournamentEdit .bracketSection .type select").on("change", BracketInfoChange);
+
+        // Display the new field only if there is multiple brackets
+        if (bracketsCreated > 1) {
+            $("#TournamentEdit .bracketSection .advancePlayers").not(":last").removeClass("hide");
+        }
+        else {
+            $("#TournamentEdit .bracketSection .advancePlayers").addClass("hide");
+        }
     });
 
     function BracketInfoChange() {
@@ -51,7 +58,13 @@
             bracketInfo = $("#TournamentEdit .bracketSection .bracketOrig").removeClass("hide").html();
             $("#TournamentEdit .bracketSection .bracketOrig").remove();
 
+            // Trigger all the fields
             $("#TournamentEdit .bracketSection .brackets .type select").trigger("change");
+
+            // Show the Advance Players if more than one bracket
+            if ($("#TournamentEdit .bracketSection .brackets").length > 1) {
+                $("#TournamentEdit .bracketSection .advancePlayers").not(":last").removeClass("hide");
+            }
         }
     })($);
 });
