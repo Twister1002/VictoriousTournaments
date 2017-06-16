@@ -714,6 +714,17 @@ namespace Tournament.Structure
 			}
 			return (RemoveGameNumber(_matchNumber, lastGame.GameNumber));
 		}
+
+		/// <summary>
+		/// Remove a specified Game from a Match.
+		/// Applies necessary affects to other, related Matches.
+		/// Updates scores and Rankings accordingly.
+		/// May fire events: MatchesModified, GamesDeleted.
+		/// If Match or Game is not found, an exception is thrown.
+		/// </summary>
+		/// <param name="_matchNumber">Match to alter</param>
+		/// <param name="_gameNumber">Game to remove</param>
+		/// <returns>Model of removed Game</returns>
 		public virtual GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
 		{
 			Match match = GetInternalMatch(_matchNumber);
@@ -815,7 +826,7 @@ namespace Tournament.Structure
 			//model.TournamentUsersBrackets = new List<TournamentUsersBracketModel>();
 			foreach (IPlayer player in Players)
 			{
-				TournamentUsersBracketModel m = player.GetTournamentUsersBracketModel(this.Id, GetPlayerSeed(player.Id));
+				TournamentUsersBracketModel m = player.GetTournamentUsersBracketModel(this.Id, GetPlayerSeed(player.Id), _tournamentID);
 				model.TournamentUsersBrackets.Add(m);
 			}
 

@@ -36,7 +36,7 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_bracketId">ID of containing Bracket</param>
 		/// <param name="_seed">Player's seed-value within the Bracket</param>
-		TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed);
+		TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed, int _tournamentId = 0);
 		#endregion
 	}
 }

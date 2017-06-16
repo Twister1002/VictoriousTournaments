@@ -99,7 +99,7 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_bracketId">ID of containing Bracket</param>
 		/// <param name="_seed">Player's seed-value within the Bracket</param>
-		public TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed)
+		public TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed, int _tournamentId = 0)
 		{
 			TournamentUsersBracketModel model = new TournamentUsersBracketModel();
 			model.BracketID = _bracketId;
