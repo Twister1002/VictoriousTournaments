@@ -338,6 +338,33 @@ namespace Tournament.Structure.Tests
 
 		[TestMethod]
 		[TestCategory("RoundRobinGroups")]
+		[TestCategory("RRG ResetMatchScore")]
+		[TestCategory("MatchesModified")]
+		public void RRGResetMatchScore_FiresMatchesModifiedEvent_WithCorrectMatchNumberOffset()
+		{
+			int matchNum = 12;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 1; i <= 12; ++i)
+			{
+				Mock<IPlayer> moq = new Mock<IPlayer>();
+				moq.Setup(p => p.Id).Returns(i);
+				pList.Add(moq.Object);
+			}
+			IBracket b = new RoundRobinGroups(pList, 3);
+			b.AddGame(matchNum, 1, 0, PlayerSlot.Defender);
+
+			int modifiedMatchNum = 0;
+			b.MatchesModified += delegate(object sender, BracketEventArgs e)
+			{
+				modifiedMatchNum = e.UpdatedMatches.First().MatchNumber;
+			};
+			b.ResetMatches();
+			Assert.AreEqual(matchNum, modifiedMatchNum);
+		}
+
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
 		[TestCategory("RRG ResetMatches")]
 		public void RRGResetMatches_FiresMatchesModifiedEventsForEveryGroup()
 		{
