@@ -235,25 +235,6 @@ namespace Tournament.Structure
 		public GSLGroups(BracketModel _model)
 		{
 			SetDataFromModel(_model);
-			this.NumberOfGroups = _model.NumberOfGroups;
-
-			CreateBracket();
-			// Find & update every Match:
-			foreach (MatchModel matchModel in _model.Matches)
-			{
-				GetInternalMatch(matchModel.MatchNumber)
-					.SetFromModel(matchModel);
-			}
-
-			// Update the Rankings:
-			RecalculateRankings();
-			UpdateFinishStatus();
-
-			if (this.IsFinalized && false == Validate())
-			{
-				throw new BracketValidationException
-					("Bracket is Finalized but not Valid!");
-			}
 		}
 		#endregion
 
