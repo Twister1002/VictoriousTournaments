@@ -800,6 +800,43 @@ namespace Tournament.Structure.Tests
 		[TestCategory("RoundRobinGroups")]
 		[TestCategory("GetModel")]
 		[TestCategory("Model Constructor")]
+		public void RRGModelCtor_CorrectlyRegeneratesMatchNumbers()
+		{
+			int matchNum = 10;
+			int modifiedMatchNum = -1;
+
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 8; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new RoundRobinGroups(pList, 2);
+			b.MatchesModified += delegate (object sender, BracketEventArgs e)
+			{
+				modifiedMatchNum = e.UpdatedMatches.First().MatchNumber;
+			};
+			b.AddGame(matchNum, 1, 0, PlayerSlot.Defender);
+			//Assert.AreEqual(matchNum, modifiedMatchNum);
+
+			BracketModel bModel = b.GetModel();
+			//foreach (TournamentUsersBracketModel userModel in bModel.TournamentUsersBrackets)
+			//{
+			//	userModel.TournamentUser = new TournamentUserModel();
+			//	userModel.TournamentUser.AccountID = userModel.TournamentUserID;
+			//	userModel.TournamentUser.TournamentUserID = userModel.TournamentUserID;
+			//	userModel.TournamentUser.Name = "Player " + (userModel.TournamentUserID).ToString();
+			//	userModel.TournamentUser.TournamentID = -1;
+			//}
+			IBracket b2 = new RoundRobinGroups(bModel);
+
+			b.AddGame(++matchNum, 1, 0, PlayerSlot.Defender);
+			Assert.AreEqual(matchNum, modifiedMatchNum);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
+		[TestCategory("GetModel")]
+		[TestCategory("Model Constructor")]
 		public void RRGModelCtor_LoadsAFinishedGroupStage()
 		{
 			List<IPlayer> pList = new List<IPlayer>();

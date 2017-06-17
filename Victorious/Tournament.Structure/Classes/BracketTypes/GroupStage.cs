@@ -283,6 +283,32 @@ namespace Tournament.Structure
 			}
 		}
 
+		protected override void SetDataFromModel(BracketModel _model)
+		{
+			base.SetDataFromModel(_model);
+			this.NumberOfGroups = _model.NumberOfGroups;
+
+			CreateBracket();
+			// Find & update every Match:
+			foreach (MatchModel matchModel in _model.Matches)
+			{
+				Match match = GetInternalMatch(matchModel.MatchNumber);
+
+				matchModel.MatchNumber = match.MatchNumber;
+				match.SetFromModel(matchModel);
+			}
+
+			// Update the rankings:
+			RecalculateRankings();
+			UpdateFinishStatus();
+
+			if (this.IsFinalized && false == Validate())
+			{
+				throw new BracketValidationException
+					("Bracket is Finalized but not Valid!");
+			}
+		}
+
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			UpdateFinishStatus();

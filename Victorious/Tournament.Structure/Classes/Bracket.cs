@@ -1075,7 +1075,7 @@ namespace Tournament.Structure
 		/// Data affected includes most fields, as well as the playerlist.
 		/// </summary>
 		/// <param name="_model">Related BracketModel</param>
-		protected void SetDataFromModel(BracketModel _model)
+		protected virtual void SetDataFromModel(BracketModel _model)
 		{
 			if (null == _model)
 			{
