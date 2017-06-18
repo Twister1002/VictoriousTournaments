@@ -10,6 +10,7 @@ namespace WebApplication.Models
 {
     public class Account : Model
     {
+        private HashManager hasher;
         public AccountViewModel viewModel { get; private set; }
         public AccountModel Model { get; private set; }
         public Dictionary<TournamentStatus, List<TournamentModel>> Tournaments { get; private set; }
@@ -22,6 +23,8 @@ namespace WebApplication.Models
 
         private void Init()
         {
+            hasher = new HashManager();
+
             Tournaments = new Dictionary<TournamentStatus, List<TournamentModel>>();
             Tournaments[TournamentStatus.ADMIN] = new List<TournamentModel>();
             Tournaments[TournamentStatus.ACTIVE] = new List<TournamentModel>();
@@ -81,7 +84,7 @@ namespace WebApplication.Models
                 ApplyChanges();
 
                 // Verify we can create the user
-                Model.Salt =
+                Model.Salt = hasher.GetSalt();
                 Model.CreatedOn = DateTime.Now;
                 Model.InviteCode = Codes.GenerateInviteCode();
 
