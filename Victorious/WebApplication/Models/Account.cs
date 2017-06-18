@@ -8,7 +8,7 @@ using WebApplication.Utility;
 
 namespace WebApplication.Models
 {
-    public class Account : Model
+    public class Account : Model, IViewModel<AccountViewModel>
     {
         private HashManager hasher;
         public AccountViewModel viewModel { get; private set; }
@@ -38,6 +38,11 @@ namespace WebApplication.Models
             LoadAccountTournaments();
         }
 
+        /// <summary>
+        /// Logs the user in
+        /// </summary>
+        /// <param name="viewModel">The model that was submitted by a form</param>
+        /// <returns>True if user is authenticated</returns>
         public bool Login(AccountViewModel viewModel)
         {
             if (viewModel != null)
@@ -46,7 +51,7 @@ namespace WebApplication.Models
                 Model = services.Account.GetAccount(viewModel.Username);
                 if (Model != null)
                 {
-                    if (viewModel.Password == Model.Password)
+                    if (HashManager.ValidatePassword(viewModel.Password, Model.Password))
                     {
                         Model.LastLogin = DateTime.Now;
                         services.Account.UpdateAccount(Model);
@@ -58,6 +63,10 @@ namespace WebApplication.Models
             return false;
         }
 
+        /// <summary>
+        /// Determins if user is logged in
+        /// </summary>
+        /// <returns>True if user is logged in</returns>
         public bool IsLoggedIn()
         {
             if (Model.AccountID != 0)
@@ -80,11 +89,11 @@ namespace WebApplication.Models
         {
             if (viewModel != null)
             {
-                this.viewModel = viewModel;
-                ApplyChanges();
+                ApplyChanges(viewModel);
 
                 // Verify we can create the user
-                Model.Salt = hasher.GetSalt();
+                Model.Salt = HashManager.GetSalt();
+                Model.Password = HashManager.HashPassword(Model.Password, Model.Salt);
                 Model.CreatedOn = DateTime.Now;
                 Model.InviteCode = Codes.GenerateInviteCode();
 
@@ -107,6 +116,10 @@ namespace WebApplication.Models
             return false;
         }
         
+        /// <summary>
+        /// Acquires the Model of the user in question
+        /// </summary>
+        /// <param name="id">ID of the account</param>
         private void Retreive(int id)
         {
             Model = services.Account.GetAccount(id);
@@ -117,12 +130,16 @@ namespace WebApplication.Models
             }
         }
 
+        /// <summary>
+        /// Updates the user with the model provided by a form
+        /// </summary>
+        /// <param name="viewModel">The model of the form</param>
+        /// <returns>True if updated; false if not.</returns>
         public bool Update(AccountViewModel viewModel)
         {
-            if (viewModel.Password == Model.Password)
+            if (HashManager.ValidatePassword(viewModel.Password, Model.Password))
             {
-                this.viewModel = viewModel;
-                ApplyChanges();
+                ApplyChanges(viewModel);
                 services.Account.UpdateAccount(Model);
                 return services.Save();
             }
@@ -177,7 +194,12 @@ namespace WebApplication.Models
         #endregion
 
         #region ViewModel
-        public void ApplyChanges()
+        public void SetupViewModel()
+        {
+
+        }
+        
+        public void ApplyChanges(AccountViewModel viewModel)
         {
             Model.AccountID   = viewModel.AccountId;
             Model.Username    = viewModel.Username != String.Empty ? viewModel.Username : String.Empty;
