@@ -225,6 +225,7 @@
                 "success": function (json) {
                     if (json.status) {
                         if (json.data.permissions.Permission == 0) {
+                            tournamentChanged = true;
                             $(".TournamentInfo .bracketData").each(function (i, e) {
                                 $(e).find(".user[data-user='" + json.data.targetUser + "']").remove();
                             });

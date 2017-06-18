@@ -68,6 +68,11 @@ namespace WebApplication.Models
         }
 
         #region CRUD
+        /// <summary>
+        /// Creates the user to the database
+        /// </summary>
+        /// <param name="viewModel">The form of the model that was used</param>
+        /// <returns>True if successful save, false if not.</returns>
         public bool Create(AccountViewModel viewModel)
         {
             if (viewModel != null)
@@ -76,7 +81,7 @@ namespace WebApplication.Models
                 ApplyChanges();
 
                 // Verify we can create the user
-
+                Model.Salt =
                 Model.CreatedOn = DateTime.Now;
                 Model.InviteCode = Codes.GenerateInviteCode();
 
