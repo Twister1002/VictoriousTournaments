@@ -93,7 +93,7 @@ namespace WebApplication.Models
 
                 // Verify we can create the user
                 Model.Salt = HashManager.GetSalt();
-                Model.Password = HashManager.HashPassword(Model.Password, Model.Salt);
+                Model.Password = HashManager.HashPassword(viewModel.Password, Model.Salt);
                 Model.CreatedOn = DateTime.Now;
                 Model.InviteCode = Codes.GenerateInviteCode();
 
@@ -201,17 +201,14 @@ namespace WebApplication.Models
         
         public void ApplyChanges(AccountViewModel viewModel)
         {
-            Model.AccountID   = viewModel.AccountId;
-            Model.Username    = viewModel.Username != String.Empty ? viewModel.Username : String.Empty;
-            Model.Email       = viewModel.Email != String.Empty ? viewModel.Email : String.Empty;
-            Model.FirstName   = viewModel.FirstName != String.Empty ? viewModel.FirstName : String.Empty;
-            Model.LastName    = viewModel.LastName != String.Empty ? viewModel.LastName : String.Empty;
-            Model.Password    = viewModel.Password != String.Empty ? viewModel.Password : String.Empty;
+            Model.Username      = viewModel.Username;
+            Model.Email         = viewModel.Email != String.Empty ? viewModel.Email : String.Empty;
+            Model.FirstName     = viewModel.FirstName != String.Empty ? viewModel.FirstName : String.Empty;
+            Model.LastName      = viewModel.LastName != String.Empty ? viewModel.LastName : String.Empty;
         }
 
         public void SetFields()
         {
-            viewModel.AccountId     = Model.AccountID;
             viewModel.Username      = Model.Username;
             viewModel.Email         = Model.Email;
             viewModel.LastName      = Model.LastName;
