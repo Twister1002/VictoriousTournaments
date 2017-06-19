@@ -166,7 +166,111 @@ namespace Tournament.Structure
 		}
 		public override bool GenerateTiebreakers()
 		{
-			throw new NotImplementedException();
+			List<MatchModel> createdMatches = new List<MatchModel>();
+
+			for (int grp = 1; grp <= NumberOfGroups; ++grp)
+			{
+				// Get the group's matches, and make sure they're all finished:
+				List<Match> group = Matches.Values
+					.Where(m => m.GroupNumber == grp)
+					.ToList();
+				if (group.Any(m => !m.IsFinished))
+				{
+					continue;
+				}
+				int finalGroupRound = group
+					.Max(m => m.RoundIndex);
+				int finalGroupMatch = group
+					.Max(m => m.MatchNumber);
+
+				// Calculate W/L scores for all players:
+				int[] scores = new int[Rankings.Count];
+				for (int i = 0; i < Rankings.Count; ++i)
+				{
+					scores[i] = GroupRankings[grp][i]
+						.CalculateScore(MatchWinValue, MatchTieValue, 0);
+				}
+
+				// Create lists for any tied players:
+				List<List<int>> tiedBlocks = new List<List<int>>();
+				for (int i = 0; i < Rankings.Count - 1;)
+				{
+					int j = i + 1;
+					for (; j < Rankings.Count; ++j)
+					{
+						if (scores[i] != scores[j])
+						{
+							// Different scores; look for a new tie value.
+							break;
+						}
+
+						if (i + 1 == j)
+						{
+							// NEW tied block:
+							tiedBlocks.Add(new List<int>());
+							tiedBlocks[tiedBlocks.Count - 1].Add(Rankings[i].Id);
+						}
+						// If we're here, scores[i] == scores[j]:
+						tiedBlocks[tiedBlocks.Count - 1].Add(Rankings[j].Id);
+					}
+
+					// Increment the loop:
+					i = j;
+				}
+				if (0 == tiedBlocks.Count)
+				{
+					// No ties in this group; continue to the next:
+					continue;
+				}
+				// else:
+
+				this.IsFinished = false;
+				List<MatchModel> newMatchModels = new List<MatchModel>();
+
+				// Create a temporary bracket for each tied block:
+				List<IBracket> tiebreakerBrackets = new List<IBracket>();
+				tiebreakerBrackets.Capacity = tiedBlocks.Count;
+				foreach (List<int> block in tiedBlocks)
+				{
+					List<IPlayer> pList = new List<IPlayer>();
+					foreach (int id in block)
+					{
+						pList.Add(Players.Find(p => p.Id == id));
+					}
+					tiebreakerBrackets.Add(new RoundRobinBracket(pList));
+				}
+
+				// Copy matches from new temp brackets onto the end of this bracket:
+				for (int r = 1; ; ++r) // Run through once for each round
+				{
+					// Round-by-round, make a list of matches to add:
+					List<IMatch> currRound = new List<IMatch>();
+					foreach (IBracket bracket in tiebreakerBrackets
+						.Where(b => b.NumberOfRounds >= r))
+					{
+						currRound.AddRange(bracket.GetRound(r));
+					}
+					if (0 == currRound.Count)
+					{
+						// No more round to add; break out.
+						break;
+					}
+
+					// Add the new round and copy applicable matches:
+					++finalGroupRound;
+					for (int m = 0; m < currRound.Count; ++m)
+					{
+						Match match = new Match();
+						match.SetMatchNumber(++finalGroupMatch);
+						match.SetRoundIndex(finalGroupRound);
+						match.SetMatchIndex(m + 1);
+						match.AddPlayer(currRound[m].Players[0]);
+						match.AddPlayer(currRound[m].Players[1]);
+
+						Matches.Add(match.MatchNumber, match);
+					}
+				}
+			}
 		}
 		#endregion
 
