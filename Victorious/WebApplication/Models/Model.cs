@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using WebApplication.Interfaces;
+using WebApplication.Models.ViewModels;
 
 namespace WebApplication.Models
 {
@@ -44,9 +45,6 @@ namespace WebApplication.Models
         };
 
         protected IService services;
-        public ViewError error = ViewError.NONE;
-        public String message;
-        public Exception ex;
 
         public Model(IService service)
         {
