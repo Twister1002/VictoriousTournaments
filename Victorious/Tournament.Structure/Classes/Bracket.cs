@@ -1074,6 +1074,9 @@ namespace Tournament.Structure
 		/// Sets this Bracket's main data from a related BracketModel.
 		/// Data affected includes most fields, as well as the playerlist.
 		/// </summary>
+		/// <remarks>
+		/// This is overriden in Group Stages for additional functionality.
+		/// </remarks>
 		/// <param name="_model">Related BracketModel</param>
 		protected virtual void SetDataFromModel(BracketModel _model)
 		{

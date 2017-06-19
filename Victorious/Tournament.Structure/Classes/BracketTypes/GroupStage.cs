@@ -294,8 +294,12 @@ namespace Tournament.Structure
 			{
 				Match match = GetInternalMatch(matchModel.MatchNumber);
 
+				int modelMatchNumber = matchModel.MatchNumber;
 				matchModel.MatchNumber = match.MatchNumber;
+
 				match.SetFromModel(matchModel);
+
+				matchModel.MatchNumber = modelMatchNumber;
 			}
 
 			// Update the rankings:
