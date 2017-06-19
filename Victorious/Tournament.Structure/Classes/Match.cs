@@ -171,6 +171,7 @@ namespace Tournament.Structure
 
 			this.Id = _model.MatchID;
 			this.MaxGames = _model.MaxGames.GetValueOrDefault(1);
+			this.WinnerSlot = PlayerSlot.unspecified;
 
 			// Copy Players:
 			this.Players = new IPlayer[2];
