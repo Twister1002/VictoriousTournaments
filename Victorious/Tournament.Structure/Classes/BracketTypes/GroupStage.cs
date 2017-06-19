@@ -49,22 +49,6 @@ namespace Tournament.Structure
 
 			return true;
 		}
-		public override void ResetMatches()
-		{
-			base.ResetMatches();
-
-			Rankings.Clear();
-			foreach (List<IPlayerScore> group in GroupRankings)
-			{
-				foreach (IPlayerScore playerScore in group)
-				{
-					playerScore.Rank = 1;
-					playerScore.ResetScore();
-				}
-
-				Rankings.AddRange(group);
-			}
-		}
 
 		#region Player Methods
 		public override void ReplacePlayer(IPlayer _player, int _index)

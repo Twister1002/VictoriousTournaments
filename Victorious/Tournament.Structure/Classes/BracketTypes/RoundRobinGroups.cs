@@ -44,6 +44,8 @@ namespace Tournament.Structure
 			BracketType = BracketType.RRGROUP;
 			NumberOfGroups = _numberOfGroups;
 			MaxRounds = _numberOfRounds;
+			MatchWinValue = 2;
+			MatchTieValue = 1;
 
 			CreateBracket(_maxGamesPerMatch);
 		}
@@ -60,15 +62,21 @@ namespace Tournament.Structure
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			ResetBracketData();
+			if (NumberOfGroups < 2 ||
+				NumberOfGroups * 2 > Players.Count)
+			{
+				return;
+			}
+
 			List<IBracket> groups = new List<IBracket>();
 
 			List<List<IPlayer>> playerGroups = DividePlayersIntoGroups();
 			GroupRankings.Capacity = NumberOfGroups;
-#if false
+
 			for (int g = 0; g < playerGroups.Count; ++g)
 			{
 				groups.Add(new RoundRobinBracket(playerGroups[g], _gamesPerMatch, MaxRounds));
-
+#if false
 				GroupRankings.Add(new List<IPlayerScore>());
 				GroupRankings[g].Capacity = playerGroups[g].Count;
 				foreach (IPlayer player in playerGroups[g])
@@ -76,8 +84,9 @@ namespace Tournament.Structure
 					GroupRankings[g].Add(new PlayerScore(player.Id, player.Name));
 					Rankings.Add(GroupRankings[g][GroupRankings[g].Count - 1]);
 				}
-			}
 #endif
+			}
+
 			for (int g = 0; g < groups.Count; ++g)
 			{
 				for (int m = 1; m <= groups[g].NumberOfMatches; ++m)
@@ -112,6 +121,23 @@ namespace Tournament.Structure
 				.Select(m => m.RoundIndex)
 				.Max();
 			Rankings.Sort(SortRankingRanks);
+		}
+
+		public override void ResetMatches()
+		{
+			base.ResetMatches();
+
+			Rankings.Clear();
+			foreach (List<IPlayerScore> group in GroupRankings)
+			{
+				foreach (IPlayerScore playerScore in group)
+				{
+					playerScore.Rank = 1;
+					playerScore.ResetScore();
+				}
+
+				Rankings.AddRange(group);
+			}
 		}
 
 		public override bool CheckForTies()

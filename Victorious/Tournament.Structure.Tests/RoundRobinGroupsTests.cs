@@ -8,11 +8,9 @@ using DatabaseLib;
 
 namespace Tournament.Structure.Tests
 {
-#if false
 	[TestClass]
 	public class RoundRobinGroupsTests
 	{
-		#region Bracket Creation
 		[TestMethod]
 		[TestCategory("RoundRobinGroups")]
 		[TestCategory("RRG Ctor")]
@@ -22,7 +20,7 @@ namespace Tournament.Structure.Tests
 			for (int i = 1; i <= 4; ++i)
 			{
 				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i);
+				moq.Setup(p => p.Id).Returns(i + 1);
 				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinGroups(pList, 2);
@@ -36,33 +34,6 @@ namespace Tournament.Structure.Tests
 		public void RRGCtor_ThrowsNullException()
 		{
 			IBracket b = new RoundRobinGroups(null, 2);
-
-			Assert.AreEqual(1, 2);
-		}
-		[TestMethod]
-		[TestCategory("RoundRobinGroups")]
-		[TestCategory("RRG Ctor")]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
-		public void RRGCtor_ThrowsOutOfRange_WithTooFewGroups()
-		{
-			IBracket b = new RoundRobinGroups(new List<IPlayer>(), 0);
-
-			Assert.AreEqual(1, 2);
-		}
-		[TestMethod]
-		[TestCategory("RoundRobinGroups")]
-		[TestCategory("RRG Ctor")]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
-		public void RRGCtor_ThrowsOutOfRange_WithTooManyGroups()
-		{
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 1; i <= 4; ++i)
-			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i);
-				pList.Add(moq.Object);
-			}
-			IBracket b = new RoundRobinGroups(pList, pList.Count);
 
 			Assert.AreEqual(1, 2);
 		}
@@ -100,75 +71,7 @@ namespace Tournament.Structure.Tests
 
 			Assert.AreEqual((2 * 3 + 3), b.NumberOfMatches);
 		}
-#if false
-		[TestMethod]
-		[TestCategory("RoundRobinGroups")]
-		[TestCategory("RRG Ctor")]
-		public void RRGCtor_IntCtorConstructs()
-		{
-			int numPlayers = 4;
-			IBracket b = new RoundRobinGroups(numPlayers, 2);
 
-			Assert.AreEqual(numPlayers, b.Players.Count);
-		}
-#endif
-		#endregion
-
-		[TestMethod]
-		[TestCategory("RoundRobinGroups")]
-		[TestCategory("RRG Overloaded Accessors")]
-		public void RRGGetMatch_ReturnsMatchesFromAllGroups()
-		{
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 1; i <= 32; ++i)
-			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i);
-				pList.Add(moq.Object);
-			}
-			IBracket b = new RoundRobinGroups(pList, 4);
-
-			int getMatchNumber = 30;
-			IMatch m = b.GetMatch(getMatchNumber);
-
-			Assert.AreNotEqual(getMatchNumber, m.MatchNumber);
-		}
-		[TestMethod]
-		[TestCategory("RoundRobinGroups")]
-		[TestCategory("RRG Overloaded Accessors")]
-		[ExpectedException(typeof(InvalidIndexException))]
-		public void RRGGetMatch_ThrowsInvalidIndex_WithLowMatchNumber()
-		{
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 1; i <= 4; ++i)
-			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i);
-				pList.Add(moq.Object);
-			}
-			IBracket b = new RoundRobinGroups(pList, 2);
-
-			var m = b.GetMatch(-1);
-			Assert.AreEqual(1, 2);
-		}
-		[TestMethod]
-		[TestCategory("RoundRobinGroups")]
-		[TestCategory("RRG Overloaded Accessors")]
-		[ExpectedException(typeof(MatchNotFoundException))]
-		public void RRGGetMatch_ThrowsNotFound_WithHighMatchNumber()
-		{
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 1; i <= 4; ++i)
-			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i);
-				pList.Add(moq.Object);
-			}
-			IBracket b = new RoundRobinGroups(pList, 2);
-
-			b.GetMatch(b.NumberOfMatches + 1);
-			Assert.AreEqual(1, 2);
-		}
 		[TestMethod]
 		[TestCategory("RoundRobinGroups")]
 		[TestCategory("RRG Overloaded Accessors")]
@@ -339,35 +242,8 @@ namespace Tournament.Structure.Tests
 
 		[TestMethod]
 		[TestCategory("RoundRobinGroups")]
-		[TestCategory("RRG ResetMatchScore")]
-		[TestCategory("MatchesModified")]
-		public void RRGResetMatchScore_FiresMatchesModifiedEvent_WithCorrectMatchNumberOffset()
-		{
-			int matchNum = 12;
-
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 1; i <= 12; ++i)
-			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i);
-				pList.Add(moq.Object);
-			}
-			IBracket b = new RoundRobinGroups(pList, 3);
-			b.AddGame(matchNum, 1, 0, PlayerSlot.Defender);
-
-			int modifiedMatchNum = 0;
-			b.MatchesModified += delegate (object sender, BracketEventArgs e)
-			{
-				modifiedMatchNum = e.UpdatedMatches.First().MatchNumber;
-			};
-			b.ResetMatches();
-			Assert.AreEqual(matchNum, modifiedMatchNum);
-		}
-
-		[TestMethod]
-		[TestCategory("RoundRobinGroups")]
 		[TestCategory("RRG ResetMatches")]
-		public void RRGResetMatches_FiresMatchesModifiedEventsForEveryGroup()
+		public void RRGResetMatches_FiresMatchesModifiedEventsForEveryMatch()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 1; i <= 12; ++i)
@@ -382,33 +258,15 @@ namespace Tournament.Structure.Tests
 				b.AddGame(n, 1, 0, PlayerSlot.Defender);
 			}
 
-			int eventsFired = 0;
+			int matchesModded = 0;
 			b.MatchesModified += delegate (object sender, BracketEventArgs e)
 			{
-				++eventsFired;
+				matchesModded += e.UpdatedMatches.Count;
 			};
 			b.ResetMatches();
-			Assert.AreEqual((b as IGroupStage).NumberOfGroups, eventsFired);
+			Assert.AreEqual(b.NumberOfMatches, matchesModded);
 		}
 
-		[TestMethod]
-		[TestCategory("RoundRobinGroups")]
-		[TestCategory("CheckForTies")]
-		[ExpectedException(typeof(BracketException))]
-		public void RRGCheckForTies_ThrowsBracketExcep_OnUnfinishedBracket()
-		{
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 12; ++i)
-			{
-				Mock<IPlayer> moq = new Mock<IPlayer>();
-				moq.Setup(p => p.Id).Returns(i + 1);
-				pList.Add(moq.Object);
-			}
-			IBracket b = new RoundRobinGroups(pList, 3);
-
-			b.CheckForTies();
-			Assert.AreEqual(1, 2);
-		}
 		[TestMethod]
 		[TestCategory("RoundRobinGroups")]
 		[TestCategory("CheckForTies")]
@@ -429,7 +287,7 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("RoundRobinGroups")]
 		[TestCategory("CheckForTies")]
-		public void RRGCheckForTies_ReturnsTrueIfTiesFound()
+		public void RRGCheckForTies_ReturnsTrueIfAnyTieIsFound()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
 			for (int i = 0; i < 12; ++i)
@@ -439,7 +297,7 @@ namespace Tournament.Structure.Tests
 				pList.Add(moq.Object);
 			}
 			IBracket b = new RoundRobinGroups(pList, 3);
-			int matchesPerGroup = (b as IGroupStage).GetGroup(1).NumberOfMatches;
+			int matchesPerGroup = b.NumberOfMatches / 3;
 			for (int n = 1; n <= matchesPerGroup; ++n)
 			{
 				b.SetMatchWinner(n, PlayerSlot.Defender);
@@ -447,7 +305,48 @@ namespace Tournament.Structure.Tests
 
 			Assert.IsTrue(b.CheckForTies());
 		}
+		#endregion
 
+		#region Models
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
+		[TestCategory("GetModel")]
+		public void RRGGetModel_HasModelsOfAllPlayers()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 17; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new RoundRobinGroups(pList, 4);
+
+			BracketModel bModel = b.GetModel();
+			Assert.AreEqual(pList.Count, bModel.TournamentUsersBrackets.Count);
+		}
+		[TestMethod]
+		[TestCategory("RoundRobinGroups")]
+		[TestCategory("GetModel")]
+		public void RRGGetModel_HasModelsOfAllMatches()
+		{
+			List<IPlayer> pList = new List<IPlayer>();
+			for (int i = 0; i < 17; ++i)
+			{
+				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
+				pList.Add(p);
+			}
+			IBracket b = new RoundRobinGroups(pList, 4);
+
+			BracketModel bModel = b.GetModel();
+			Assert.AreEqual(b.NumberOfMatches, bModel.Matches.Count);
+		}
+
+		#endregion
+	}
+}
+
+#if false
+#region Tiebreakers
 		[TestMethod]
 		[TestCategory("RoundRobinGroups")]
 		[TestCategory("GenerateTiebreakers")]
@@ -572,41 +471,8 @@ namespace Tournament.Structure.Tests
 			b.GenerateTiebreakers();
 			Assert.AreEqual((b as IGroupStage).NumberOfGroups, roundAddedCalls);
 		}
-		#endregion
-
-		#region Models
-		[TestMethod]
-		[TestCategory("RoundRobinGroups")]
-		[TestCategory("GetModel")]
-		public void RRGGetModel_HasModelsOfAllPlayers()
-		{
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 17; ++i)
-			{
-				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
-				pList.Add(p);
-			}
-			IBracket b = new RoundRobinGroups(pList, 4);
-
-			BracketModel bModel = b.GetModel();
-			Assert.AreEqual(pList.Count, bModel.TournamentUsersBrackets.Count);
-		}
-		[TestMethod]
-		[TestCategory("RoundRobinGroups")]
-		[TestCategory("GetModel")]
-		public void RRGGetModel_HasModelsOfAllMatches()
-		{
-			List<IPlayer> pList = new List<IPlayer>();
-			for (int i = 0; i < 17; ++i)
-			{
-				IPlayer p = new Player(i + 1, "Player " + (i + 1).ToString());
-				pList.Add(p);
-			}
-			IBracket b = new RoundRobinGroups(pList, 4);
-
-			BracketModel bModel = b.GetModel();
-			Assert.AreEqual(b.NumberOfMatches, bModel.Matches.Count);
-		}
+#endregion
+#region Models
 		[TestMethod]
 		[TestCategory("RoundRobinGroups")]
 		[TestCategory("GetModel")]
@@ -884,8 +750,6 @@ namespace Tournament.Structure.Tests
 			b2.ResetMatches();
 			Assert.AreEqual((b2 as IGroupStage).NumberOfGroups, eventsFired);
 		}
-
-		#endregion
-	}
-#endif
 }
+#endregion
+#endif
