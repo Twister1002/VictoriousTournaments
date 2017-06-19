@@ -11,6 +11,7 @@ namespace WebApplication.Models
 {
     public class Tournament : Model, IViewModel<TournamentViewModel>
     {
+        private int maxBrackets = 2;
         private bool TempFixMatchObjects = true;
         private Tournaments.ITournament Tourny;
         public TournamentViewModel viewModel { get; private set; }
@@ -235,6 +236,13 @@ namespace WebApplication.Models
         public bool Create(TournamentViewModel viewModel, Account account)
         {
             ApplyChanges(viewModel);
+            // Exit the create if we detect there is an exception in the viewModel.
+            if (viewModel.e != null)
+            {
+                SetupViewModel(viewModel);
+                return false;
+            }
+
             Model.CreatedOn = DateTime.Now;
             Model.CreatedByID = account.Model.AccountID;
 
@@ -273,6 +281,12 @@ namespace WebApplication.Models
         public bool Update(TournamentViewModel viewModel, int accountId)
         {
             ApplyChanges(viewModel);
+            // Exit the create if we detect there is an exception in the viewModel.
+            if (viewModel.e != null)
+            {
+                SetupViewModel(viewModel);
+                return false;
+            }
             Model.LastEditedByID = accountId;
             Model.LastEditedOn = DateTime.Now;
 
@@ -908,6 +922,29 @@ namespace WebApplication.Models
         }
 
         /// <summary>
+        /// Helper method to set the default data for a view model passed in.
+        /// </summary>
+        /// <param name="viewModel">The model to set default data</param>
+        public void SetupViewModel(TournamentViewModel viewModel)
+        {
+            // Set the field's original data
+            viewModel.BracketTypes = services.Type.GetAllBracketTypes().Where(x => x.IsActive == true).ToList();
+            viewModel.GameTypes = services.Type.GetAllGameTypes();
+            viewModel.PlatformTypes = services.Type.GetAllPlatforms();
+            viewModel.BracketData = new List<BracketViewModel>();
+            viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
+            viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
+            viewModel.NumberPlayersAdvance = Enumerable.Range(4, 20).ToList();
+
+            viewModel.RegistrationStartDate = DateTime.Now;
+            viewModel.RegistrationEndDate = DateTime.Now.AddDays(1);
+            viewModel.TournamentStartDate = DateTime.Now.AddDays(3);
+            viewModel.TournamentEndDate = DateTime.Now.AddDays(4);
+            viewModel.CheckinStartDate = DateTime.Now.AddDays(1);
+            viewModel.CheckinEndDate = DateTime.Now.AddDays(2);
+        }
+
+        /// <summary>
         /// This will apply the changes from the viewModel to the model for saving
         /// </summary>
         /// <param name="viewModel">Saves all data from the viewModel to the Model</param>
@@ -929,13 +966,17 @@ namespace WebApplication.Models
             Model.CheckInBegins = viewModel.CheckinStartDate + viewModel.CheckinStartTime.TimeOfDay;
             Model.CheckInEnds = viewModel.CheckinEndDate + viewModel.CheckinEndTime.TimeOfDay;
 
-            if (viewModel.BracketData != null)
+            if (viewModel.BracketData != null && viewModel.BracketData.Count < maxBrackets)
             {
                 // Give the class viewModel the viewModel data
                 this.viewModel.BracketData = viewModel.BracketData;
 
                 // Add the bracket data
                 UpdateBrackets();
+            }
+            else
+            {
+                viewModel.e = new Exception("You may only have " + maxBrackets + " or less brackets.");
             }
         }
 

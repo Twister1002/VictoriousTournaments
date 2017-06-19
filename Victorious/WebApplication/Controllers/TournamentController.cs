@@ -254,11 +254,11 @@ namespace WebApplication.Controllers
                     Session["Message.Class"] = ViewError.ERROR;
                 }
 
+                ViewBag.Create = false;
                 ViewBag.CanEdit = tourny.CanEdit();
                 ViewBag.InProgress = tourny.Model.InProgress;
-                tourny.SetFields();
 
-                return View("Create", tourny.viewModel);
+                return View("Create", viewModel);
             }
             else
             {
