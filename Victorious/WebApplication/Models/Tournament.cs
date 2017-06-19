@@ -197,10 +197,10 @@ namespace WebApplication.Models
             Tournaments.IBracket currentBracket = Tourny.Brackets.Single(x => x.Id == bracketId);
             Tournaments.IBracket nextBracket = Tourny.Brackets.ElementAtOrDefault(Tourny.Brackets.FindIndex(x => x == currentBracket)+1);
 
-            BracketModel nextBracketModel = Model.Brackets.Single(x => x.BracketID == nextBracket.Id);
-
             if (nextBracket != null)
             {
+                BracketModel nextBracketModel = Model.Brackets.Single(x => x.BracketID == nextBracket.Id);
+
                 List<TournamentUsersBracketModel> usersToProceed = new List<TournamentUsersBracketModel>();
                 Tourny.AdvancePlayersByRanking(currentBracket, nextBracket);
 
@@ -222,9 +222,11 @@ namespace WebApplication.Models
                 nextBracketModel.TournamentUsersBrackets = usersToProceed;
 
                 services.Tournament.UpdateBracket(nextBracketModel);
+
+                return services.Save();
             }
 
-            return services.Save();
+            return false;
         }
         #endregion
 

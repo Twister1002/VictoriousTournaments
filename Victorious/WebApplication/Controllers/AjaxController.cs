@@ -309,8 +309,11 @@ namespace WebApplication.Controllers
                             // Verify if this bracket is finished. 
                             if (bracket.IBracket.IsFinished)
                             {
-                                tournament.BracketFinished(bracketId);
-                                refresh = true;
+                                // If the tournament pushed players to the next bracket, refresh.
+                                if (tournament.BracketFinished(bracketId))
+                                {
+                                    refresh = true;
+                                }
                             }
 
                             matchUpdates.Add(JsonMatchResponse(match, true));
