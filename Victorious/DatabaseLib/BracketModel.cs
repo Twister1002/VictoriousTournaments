@@ -30,6 +30,7 @@ namespace DatabaseLib
         public Nullable<int> TournamentID { get; set; }
         public int MaxRounds { get; set; }
         public int NumberPlayersAdvance { get; set; }
+        public Nullable<bool> IsLocked { get; set; }
     	
     	partial void OnInit();
     

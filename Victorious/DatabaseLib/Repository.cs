@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.Entity.Migrations;
 
 namespace DatabaseLib
 {
@@ -89,10 +89,10 @@ namespace DatabaseLib
         /// <param name="entity"> The entity to be updated. </param>
         public void Update(TEntity entity)
         {
-            if (context.Entry(entity).State == EntityState.Detached)
-            {
-                dbSet.Attach(entity);
-            }
+            //if (context.Entry(entity).State == EntityState.Detached)
+            //{
+            //    dbSet.Attach(entity);
+            //}
             context.Entry(entity).State = EntityState.Modified;
         }
 
