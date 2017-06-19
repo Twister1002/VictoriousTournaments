@@ -188,6 +188,10 @@
     });
 
     $(".TournamentGames .options .reset-match").on("click", function () {
+        if (!confirm("Are you sure you want to reset this match? It could affect future matches.")) {
+            return;
+        }
+
         var match = $(this).closest(".TournamentMatch");
         var jsonData = {
             "bracketId": $(this).closest(".bracket").data("id"),
@@ -299,6 +303,10 @@
     }
 
     function RemoveGame() {
+        if (!confirm("Are you sure you want to delete this game? It could affect future matches.")) {
+            return;
+        }
+
         var $game = $(this).closest("ul");
 
         var jsonData = {
