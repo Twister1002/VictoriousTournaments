@@ -204,7 +204,6 @@
     <Content Include="Styles\less\Tournament\_Tournament.less" />
     <Content Include="Styles\less\Tournament\_Create.less" />
     <Content Include="Styles\less\Tournament\_Search.less" />
-    <Content Include="Views\Tournament\Administrator\_Finalize.cshtml" />
     <Content Include="Views\Administrator\Index.cshtml" />
     <Content Include="Styles\less\Tournament\_Standings.less" />
     <Content Include="Views\Administrator\Games.cshtml" />

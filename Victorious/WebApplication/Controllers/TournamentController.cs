@@ -244,7 +244,7 @@ namespace WebApplication.Controllers
                     }
                     else
                     {
-                        Session["Message"] = "We were unable to update your tournament. Please try again soon";
+                        Session["Message"] = "We were unable to update your tournament.";
                         Session["Message.Class"] = ViewError.ERROR;
                     }
                 }

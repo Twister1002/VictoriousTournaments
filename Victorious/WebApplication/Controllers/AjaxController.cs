@@ -134,7 +134,7 @@ namespace WebApplication.Controllers
 
                 if (tournament.IsCreator(account.Model.AccountID))
                 {
-                    bracket.IBracket.ResetMatches();
+                    bracket.Reset();
 
                     status = true;
                     message = "Bracket was reset";

@@ -2,16 +2,17 @@
 
 @{
     bool isFirstBracket = true;
+    var brackets = Model.GetBrackets();
 }
 
 <div class="TournamentInfo">
     <span class="icon icon-cross close"></span>
-    <div class="details" data-columns="@Model.GetTournament().Brackets.Count">
-        @foreach (var bracket in Model.GetBrackets())
+    <div class="details" data-columns="@brackets.Count">
+        @foreach (var bracket in brackets)
         {
             <div class="bracketNum column" data-bracket="@bracket.Id">@bracket.BracketName()</div>
         }
-        @foreach (var bracket in Model.GetBrackets())
+        @foreach (var bracket in brackets)
         {
             <div class="bracketData" data-bracket="@bracket.Id" data-id="@bracket.Id">
                 <ul class="list-table">
@@ -141,9 +142,17 @@
                     @if (ViewBag.isCreator)
                     {
                         <li class="list-table-body infoSection resetInfo">
-                            Are you sure you want to reset this bracket? This can not be reverted.
-                            <br />
-                            <button type="button" class="reset-bracket">Reset</button>
+                            @if (bracket.CanModify) { 
+                                <span>
+                                    Are you sure you want to reset this bracket? This can not be reverted.
+                                    <br />
+                                    <button type="button" class="reset-bracket">Reset</button>
+                                </span>
+                            }
+                            else
+                            {
+                                <span>This bracket can not be reset.</span>
+                            }
                         </li>
                     }
                 </ul>

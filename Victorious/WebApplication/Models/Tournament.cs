@@ -97,7 +97,16 @@ namespace WebApplication.Models
         /// <returns>A Bracket wrapper class</returns>
         public Bracket GetBracket(int bracketId)
         {
-            return new Bracket(services, Tourny.Brackets.Single(x => x.Id == bracketId), Model.Brackets.Single(x=>x.BracketID == bracketId));
+            // Get the current bracket
+            Tournaments.IBracket bracket = Tourny.Brackets.Single(x => x.Id == bracketId);
+            bool canModify = Tourny.Brackets.ElementAtOrDefault(Tourny.Brackets.IndexOf(bracket) + 1)?.IsFinalized == true ? false : true;
+
+            return new Bracket(
+                services,
+                bracket,
+                Model.Brackets.Single(x => x.BracketID == bracketId),
+                canModify
+            );
         }
 
         /// <summary>
@@ -107,9 +116,20 @@ namespace WebApplication.Models
         public List<Bracket> GetBrackets()
         {
             List<Bracket> brackets = new List<Bracket>();
-            foreach (Tournaments.IBracket bracket in Tourny.Brackets)
+            for (int i = 0; i < Tourny.Brackets.Count; i++)
             {
-                brackets.Add(new Bracket(services, bracket, Model.Brackets.Single(x=>x.BracketID == bracket.Id)));
+                Tournaments.IBracket bracket = Tourny.Brackets.ElementAt(i);
+                Tournaments.IBracket nextBracket = Tourny.Brackets.ElementAtOrDefault(i + 1);
+                bool canModify = Tourny.Brackets.ElementAtOrDefault(Tourny.Brackets.IndexOf(bracket) + 1)?.IsFinalized == true ? false : true;
+
+                brackets.Add(
+                    new Bracket(
+                        services,
+                        bracket,
+                        Model.Brackets.Single(x => x.BracketID == bracket.Id),
+                        canModify
+                    )
+                );
             }
 
             return brackets;
