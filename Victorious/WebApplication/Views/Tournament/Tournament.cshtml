@@ -57,16 +57,22 @@
 
         <div class="bracket" data-id="@bracket.Id">
             <ul class="list-table bracket-data">
-                @{
-                    if (!bracket.IBracket.IsFinalized && ViewBag.isCreator && bracket.GetPlayers().Count >= 4)
+                <li>
+                    @if (!bracket.IBracket.IsFinalized && ViewBag.isCreator)
                     {
-                        Html.RenderPartial("Administrator/_Finalize");
+                        if (bracket.GetPlayers().Count >= 4)
+                        {
+                            Html.RenderPartial("Administrator/_Finalize");
+                        }
+                        else
+                        {
+                            <div class="message warning">You must have 4 or more participants in this bracket to finalize the bracket.</div>
+                        }
                     }
-                    
-                    Html.RenderPartial("Brackets/" + bracket.BracketFileName(), bracketViewModel, new ViewDataDictionary(ViewData));
-                }
+                    @{ Html.RenderPartial("Brackets/" + bracket.BracketFileName(), bracketViewModel, new ViewDataDictionary(ViewData)); }
+                </li>
             </ul>
         </div>
-                    }
+    }
     @{ Html.RenderPartial("Standings", Model, new ViewDataDictionary(ViewData)); }
 </div>

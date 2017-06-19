@@ -171,6 +171,7 @@
     <Compile Include="Models\ViewModels\PlatformViewModel.cs" />
     <Compile Include="Models\ViewModels\TournamentRegisterViewModel.cs" />
     <Compile Include="Models\ViewModels\TournamentViewModel.cs" />
+    <Compile Include="Models\ViewModels\ViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\Codes.cs" />
     <Compile Include="Utility\ErrorCodes.cs" />
@@ -212,10 +213,10 @@
     <Content Include="Styles\less\Administrator.less" />
     <Content Include="Styles\less\Tournament\_Match.less" />
     <Content Include="Views\Tournament\Brackets\Shared\_Header.cshtml" />
-    <Content Include="Views\Tournament\Brackets\Single.cshtml" />
+    <Content Include="Views\Tournament\Brackets\remove\Single.cshtml" />
     <Content Include="Views\Tournament\Brackets\Double.cshtml" />
-    <Content Include="Views\Tournament\Brackets\Swiss.cshtml" />
-    <Content Include="Views\Tournament\Brackets\RoundRobin.cshtml" />
+    <Content Include="Views\Tournament\Brackets\remove\Swiss.cshtml" />
+    <Content Include="Views\Tournament\Brackets\remove\RoundRobin.cshtml" />
     <Content Include="Views\Tournament\Brackets\Shared\_Match.cshtml" />
     <Content Include="Styles\less\Tournament\_Game.less" />
     <Content Include="Styles\less\Tournament\_Bracket.less" />
@@ -237,7 +238,7 @@
     <Content Include="Views\Account\Sections\History.cshtml" />
     <Content Include="Views\Tournament\Brackets\RoundRobinGroup.cshtml" />
     <Content Include="Views\Tournament\Brackets\GSLGroup.cshtml" />
-    <Content Include="Views\Tournament\Brackets\StepLadder.cshtml" />
+    <Content Include="Views\Tournament\Brackets\remove\StepLadder.cshtml" />
     <Content Include="Views\Tournament\Brackets\UpperBracket.cshtml" />
     <Content Include="Views\Tournament\Brackets\LowerBracket.cshtml" />
     <None Include="Web.Debug.config">
