@@ -118,8 +118,7 @@ namespace Tournament.Structure
 			}
 
 			NumberOfRounds = Matches.Values
-				.Select(m => m.RoundIndex)
-				.Max();
+				.Max(m => m.RoundIndex);
 			Rankings.Sort(SortRankingRanks);
 		}
 
@@ -182,8 +181,7 @@ namespace Tournament.Structure
 				Matches.Add(matchModel.MatchNumber, new Match(matchModel));
 			}
 			this.NumberOfRounds = Matches.Values
-				.Select(m => m.RoundIndex)
-				.Max();
+				.Max(m => m.RoundIndex);
 			this.IsFinished = Matches.Values
 				.All(m => m.IsFinished);
 

@@ -67,8 +67,7 @@ namespace Tournament.Structure
 				}
 				this.NumberOfMatches = Matches.Count;
 				this.NumberOfRounds = Matches.Values
-					.Select(m => m.RoundIndex)
-					.Max();
+					.Max(m => m.RoundIndex);
 			}
 
 			if (BracketType.SINGLE == BracketType)

@@ -72,8 +72,7 @@ namespace Tournament.Structure
 			if (NumberOfMatches > 0)
 			{
 				this.NumberOfRounds = Matches.Values
-					.Select(m => m.RoundIndex)
-					.Max();
+					.Max(m => m.RoundIndex);
 				this.IsFinished = Matches.Values.All(m => m.IsFinished);
 			}
 

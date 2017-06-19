@@ -128,7 +128,7 @@ namespace Tournament.Structure
 			MatchModel model = new MatchModel();
 
 			model.MatchID = this.Id;
-			//model.GroupNumber = this.GroupNumber;
+			model.GroupNumber = this.GroupNumber;
 			model.RoundIndex = this.RoundIndex;
 			model.MatchIndex = this.MatchIndex;
 			model.MatchNumber = this.MatchNumber;
@@ -206,7 +206,7 @@ namespace Tournament.Structure
 				AddGame(gameModel);
 			}
 
-			//this.GroupNumber = _model.GroupNumber;
+			this.GroupNumber = _model.GroupNumber.GetValueOrDefault(-1);
 			this.RoundIndex = _model.RoundIndex.GetValueOrDefault(-1);
 			this.MatchIndex = _model.MatchIndex.GetValueOrDefault(-1);
 			this.MatchNumber = _model.MatchNumber;
