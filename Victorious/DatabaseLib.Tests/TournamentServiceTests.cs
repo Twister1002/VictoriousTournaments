@@ -16,7 +16,7 @@ namespace DatabaseLib.Tests
         [TestInitialize]
         public void Initialize()
         {
-            unitOfWork = new UnitOfWork();
+            unitOfWork = new UnitOfWork("StringTest");
             service = new TournamentService(unitOfWork);
         }
 

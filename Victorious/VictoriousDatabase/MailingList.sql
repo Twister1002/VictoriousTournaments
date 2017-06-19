@@ -1,4 +1,4 @@
 ﻿CREATE TABLE [dbo].[MailingList]
 (
-	[EmailAddress] NVARCHAR(256) NOT NULL PRIMARY KEY
+	[EmailAddress] NVARCHAR(255) NOT NULL PRIMARY KEY
 )

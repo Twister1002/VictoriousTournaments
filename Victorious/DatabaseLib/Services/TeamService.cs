@@ -31,6 +31,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return null;
             }
         }
@@ -43,6 +44,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<SiteTeamModel>();
             }
         }
@@ -59,13 +61,14 @@ namespace DatabaseLib.Services
 
         public bool SiteTeamNameExists(string teamName)
         {
-            throw new NotImplementedException();
+            
             try
             {
-
+                unitOfWork.SiteTeamRepo.GetSingle(x => x.TeamName == teamName);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return false;
             }
             return true;
@@ -89,6 +92,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return null;
             }
         }
@@ -101,6 +105,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<SiteTeamMemberModel>();
             }
         }
@@ -133,6 +138,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return null;
             }
         }
@@ -145,6 +151,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<TournamentTeamModel>();
             }
         }
@@ -161,13 +168,13 @@ namespace DatabaseLib.Services
 
         public bool TournamentTeamNameExists(string teamName)
         {
-            throw new NotImplementedException();
             try
             {
                 TournamentTeamModel team = unitOfWork.TournamentTeamRepo.GetSingle(x => x.TeamName == teamName);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return false;
             }
             return true;
@@ -191,6 +198,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return null;
             }
         }
@@ -203,6 +211,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<TournamentTeamMemberModel>();
             }
         }
@@ -235,6 +244,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return null;
             }
         }
@@ -247,6 +257,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<TournamentTeamBracketModel>();
             }
         }

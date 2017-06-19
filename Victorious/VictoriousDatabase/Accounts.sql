@@ -5,7 +5,7 @@
     [LastName]                  NVARCHAR (50) NULL,
     [Email]                     NVARCHAR (50) NULL,
     [Username]                  NVARCHAR (50) NULL,
-    [Password]                  NVARCHAR (50) NULL,
+    [Password]                  NVARCHAR (255) NULL,
     [PhoneNumber]               NCHAR (15)    NULL,
     [CreatedOn]                 DATETIME      NULL,
     [LastLogin]                 DATETIME      NULL, 

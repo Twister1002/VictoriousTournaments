@@ -43,7 +43,7 @@ namespace DatabaseLib
         public const int LastNameLength = 50;
         public const int UsernameLength = 50;
         public const int EmailLength = 100;
-        public const int PasswordLength = 50;
+        public const int PasswordLength = 255;
 
         partial void OnInit()
         {
@@ -92,10 +92,7 @@ namespace DatabaseLib
     {
         partial void OnInit()
         {
-            WinnerID = -1;
-            CreatedOn = DateTime.Now;
-            LastEditedOn = DateTime.Now;
-
+           
         }
 
     }
@@ -141,5 +138,13 @@ namespace DatabaseLib
         }
     }
 
+    /// <summary>
+    /// Class that ties a TournamentUser to a specific Bracket within a Tournament. 
+    /// Since a Tournament may have more than one bracket, this class allows a user to be placed in
+    /// multiple Brackets without having conflicting info, such as their seed.
+    /// </summary>
+    public partial class TournamentUsersBracketModel
+    {
 
+    }
 }

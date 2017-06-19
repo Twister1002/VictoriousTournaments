@@ -9,6 +9,13 @@ using System.Data.Entity.Migrations;
 
 namespace DatabaseLib
 {
+    /// <summary>
+    /// Templated repository. Contains methods ncessary for CRUD of an <typeparamref name="TEntity"/>.
+    /// </summary>
+    /// <typeparam name="TEntity"> The model type of repository. </typeparam>
+    /// <remarks>
+    /// A repositoty should be created for each model tpye. />
+    /// </remarks>
     internal class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         private DbSet<TEntity> dbSet;
@@ -17,6 +24,9 @@ namespace DatabaseLib
             get { return DbSet; }
         }
 
+        /// <summary>
+        /// Database context
+        /// </summary>
         private VictoriousEntities context;
         public Repository(VictoriousEntities _context)
         {
@@ -25,33 +35,58 @@ namespace DatabaseLib
 
         }
 
+        /// <summary>
+        /// Inserts a new row into the datbase.
+        /// </summary>
+        /// <param name="entity"> The model to be inserted. </param>
         public void Add(TEntity entity)
         {
             dbSet.Add(entity);
         }
 
+        /// <summary>
+        /// Deletes a row from the database.
+        /// </summary>
+        /// <param name="id"> The primary key of the entity to delete from the database. </param>
         public void Delete(int id)
         {
             TEntity entityToDelete = dbSet.Find(id);
             dbSet.Remove(entityToDelete);
         }
 
+        /// <summary>
+        /// Deletes a row from the database by the .
+        /// </summary>
+        /// <param name="entity"> The whole model to be deleted from the database. </param>
         public void DeleteEntity(TEntity entity)
         {
             dbSet.Attach(entity);
             dbSet.Remove(entity);
         }
 
+        /// <summary>
+        /// Retrieves all itmes of type <typeparamref name="TEntity"/> from the database.
+        /// </summary>
+        /// <returns> Returns IQueryable collection of <typeparamref name="TEntity"/>. </returns>
         public IQueryable<TEntity> GetAll()
         {
             return dbSet;
         }
 
+        /// <summary>
+        /// Retreive a single item from the database.
+        /// </summary>
+        /// <param name="id"> The primary key of the entity being retreived. </param>
+        /// <returns> Returns a single <typeparamref name="TEntity"/>. </returns>
         public TEntity Get(int id)
         {
             return dbSet.Find(id);
         }
 
+        /// <summary>
+        /// Updates an item in the database.
+        /// </summary>
+        /// <param name="entity"> The entity to be updated. </param>
         public void Update(TEntity entity)
         {
             if (context.Entry(entity).State == EntityState.Detached)
@@ -66,11 +101,17 @@ namespace DatabaseLib
             context.Set<TEntity>().AddOrUpdate(entity);
         }
 
+
         public IQueryable<TEntity> GetWhere(Expression<Func<TEntity, bool>> predicate)
         {
             return DbSet.Where(predicate);
         }
 
+        /// <summary>
+        /// Retreives a single item from the database.
+        /// </summary>
+        /// <param name="predicate"> Criteria used to query item from database. </param>
+        /// <returns> Returns a single <typeparamref name="TEntity"/> that matches the criteria set in the predicate. </returns>
         public TEntity GetSingle(Expression<Func<TEntity, bool>> predicate)
         {
             return dbSet.Single(predicate);

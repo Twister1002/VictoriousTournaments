@@ -14,7 +14,7 @@ namespace DatabaseLib
     public class EmailService
     {
         IUnitOfWork unitOfWork;
-        string responseHeaders;
+        //string responseHeaders;
         SendGridClient client;
 
         public EmailService(IUnitOfWork unitOfWork)
@@ -38,15 +38,6 @@ namespace DatabaseLib
 
         }
 
-        private Dictionary<string, string> LoadSubstitutions()
-        {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-
-            StreamReader stream = new StreamReader("");
-
-            return dict;
-        }
-    
         public bool SendAccountInviteEmail(AccountInviteModel invite)
         {
             try
@@ -86,6 +77,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return false;
             }
             return true;
@@ -130,6 +122,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return false;
             }
             return true;
@@ -148,7 +141,7 @@ namespace DatabaseLib
                 Dictionary<string, string> substitutions = new Dictionary<string, string>()
                 {
                     { "{verification_url}", "http://localhost:20346/Account/Register" },
-                    { "{verification_code", verificationCode },
+                    { "{verification_code}", verificationCode },
                 };
 
                 msg.AddSubstitutions(substitutions);
@@ -158,10 +151,76 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return false;  
             }
             return true;
         }
+
+        #region MailingList
+
+        public void AddEmailToMailingList(string email)
+        {
+            unitOfWork.MailingListRepo.Add(new MailingList() { EmailAddress = email });
+        }
+
+        public List<string> GetMailingList()
+        {
+            List<string> mailingList = new List<string>();
+            foreach (var email in unitOfWork.MailingListRepo.GetAll())
+            {
+                mailingList.Add(email.EmailAddress);
+            }
+            return mailingList;
+        }
+
+        public void RemoveEmailFromMailingList(string email)
+        {
+            MailingList emailToDelete = unitOfWork.MailingListRepo.GetSingle(x => x.EmailAddress == email);
+            unitOfWork.MailingListRepo.DeleteEntity(emailToDelete);
+        }
+
+        public bool SendEmailToMailingList(string subject, string message)
+        {
+            try
+            {
+                var msg = new SendGridMessage();
+
+                msg.SetFrom(new EmailAddress("victoriouswebsite@gmail.com", "Administrator"));
+                var templateId = "1fde50ac-07f2-4f82-9f38-7194b77490a9";
+                msg.TemplateId = templateId;
+
+                Dictionary<string, string> substitutions = new Dictionary<string, string>()
+                {
+                    { "{subject}", subject },
+                    { "{message}", message },
+                };
+                msg.AddSubstitutions(substitutions);
+
+                List<EmailAddress> recpients = new List<EmailAddress>();
+                foreach (var recipient in unitOfWork.MailingListRepo.GetAll())
+                {
+                    recpients.Add(new EmailAddress(recipient.EmailAddress));
+                } 
+                msg.AddTos(recpients);
+
+                Execute(client, msg).Wait();
+            }
+            catch (Exception ex)
+            {
+                unitOfWork.SetException(ex);
+                return false;
+            }
+            return true;
+        }
+
+        #endregion
+
+        #region PasswordReset
+
+
+
+        #endregion
 
         private void Send(SendGridMessage email)
         {
