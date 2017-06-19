@@ -324,6 +324,7 @@ namespace WebApplication.Models
 
                 case DatabaseLib.BracketType.SINGLE:
                 case DatabaseLib.BracketType.DOUBLE:
+                case DatabaseLib.BracketType.STEP:
                     return false;
 
                 default:
@@ -352,7 +353,10 @@ namespace WebApplication.Models
                     name = "GSL Group";
                     break;
                 case DatabaseLib.BracketType.RRGROUP:
-                    name = "Round Robin Groups";
+                    name = "Round Robin Group";
+                    break;
+                case DatabaseLib.BracketType.STEP:
+                    name = "Step Ladder";
                     break;
             }
 
@@ -367,6 +371,7 @@ namespace WebApplication.Models
                 case DatabaseLib.BracketType.SINGLE:
                 case DatabaseLib.BracketType.ROUNDROBIN:
                 case DatabaseLib.BracketType.SWISS:
+                case DatabaseLib.BracketType.STEP:
                     file = "UpperBracket";
                     break;
                 case DatabaseLib.BracketType.DOUBLE:
