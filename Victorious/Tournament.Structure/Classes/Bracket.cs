@@ -90,7 +90,8 @@ namespace Tournament.Structure
 		 * If the passed list is empty, no event will be fired.
 		 * If the relevant event's subscriber-list is empty/null, no event will be fired.
 		*/
-		protected void OnRoundAdded(BracketEventArgs _e)
+
+		protected virtual void OnRoundAdded(BracketEventArgs _e)
 		{
 			RoundAdded?.Invoke(this, _e);
 		}
@@ -904,13 +905,13 @@ namespace Tournament.Structure
 
 			// Convert all Matches to Models, and add them:
 			//model.Matches = new List<MatchModel>();
-			if (!(this is IGroupStage))
-			{
+			//if (!(this is IGroupStage))
+			//{
 				for (int n = 1; n <= NumberOfMatches; ++n)
 				{
 					model.Matches.Add(GetMatchModel(n));
 				}
-			}
+			//}
 
 			return model;
 		}

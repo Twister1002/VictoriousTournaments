@@ -27,9 +27,9 @@ namespace Tournament.Structure
 		//public int NumberOfMatches
 		//protected int MatchWinValue
 		//protected int MatchTieValue
-		protected List<IBracket> Groups
-		{ get; set; }
 		public int NumberOfGroups
+		{ get; set; }
+		protected List<List<IPlayerScore>> GroupRankings
 		{ get; set; }
 		#endregion
 
@@ -41,8 +41,8 @@ namespace Tournament.Structure
 				return false;
 			}
 
-			if ((Groups?.Count ?? 0) < 2 ||
-				Groups.Any(g => false == g.Validate()))
+			if (NumberOfGroups < 2 ||
+				NumberOfGroups * 2 > NumberOfPlayers())
 			{
 				return false;
 			}
@@ -51,55 +51,40 @@ namespace Tournament.Structure
 		}
 		public override void ResetMatches()
 		{
-			foreach (IBracket group in Groups)
+			base.ResetMatches();
+
+			Rankings.Clear();
+			foreach (List<IPlayerScore> group in GroupRankings)
 			{
-				group.ResetMatches();
+				foreach (IPlayerScore playerScore in group)
+				{
+					playerScore.Rank = 1;
+					playerScore.ResetScore();
+				}
+
+				Rankings.AddRange(group);
 			}
-			IsFinished = false;
-			IsFinalized = false;
-			RecalculateRankings();
 		}
 
 		#region Player Methods
 		public override void ReplacePlayer(IPlayer _player, int _index)
 		{
-			if (null == _player)
-			{
-				throw new ArgumentNullException("_player");
-			}
-			if (_index < 0 || _index >= Players.Count)
-			{
-				throw new InvalidIndexException
-					("Invalid index; outside Playerlist bounds.");
-			}
-			if (null == Players[_index])
-			{
-				throw new NotImplementedException
-					("Player to replace doesn't exist!");
-			}
+			int? oldPlayerId = Players[_index]?.Id;
 
-			// Find existing Player's group, and replace him inside:
-			foreach (IBracket group in Groups)
+			base.ReplacePlayer(_player, _index);
+
+			foreach (List<IPlayerScore> groupRanks in GroupRankings)
 			{
-				int innerGroupIndex = group.Players
-					.FindIndex(p => p.Id == this.Players[_index].Id);
-				if (innerGroupIndex > -1)
+				int i = groupRanks.FindIndex(r => r.Id == oldPlayerId.Value);
+				if (i > -1)
 				{
-					group.ReplacePlayer(_player, innerGroupIndex);
+					groupRanks[i].ReplacePlayerData(_player.Id, _player.Name);
 					break;
 				}
 			}
-
-			// Replace existing Player in Rankings and Playerlist:
-			int rankIndex = Rankings.FindIndex(r => r.Id == Players[_index].Id);
-			if (rankIndex > -1)
-			{
-				Rankings[rankIndex].ReplacePlayerData(_player.Id, _player.Name);
-			}
-			this.Players[_index] = _player;
 		}
 		#endregion
-
+#if false
 		#region Match & Game Methods
 		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
@@ -175,136 +160,81 @@ namespace Tournament.Structure
 			return modelList;
 		}
 		#endregion
-
+#endif
 		#region Accessors
 		public override BracketModel GetModel(int _tournamentID = 0)
 		{
 			BracketModel model = base.GetModel(_tournamentID);
-
 			model.NumberOfGroups = this.NumberOfGroups;
-			//model.Matches.Clear();
-			for (int n = 1; n <= NumberOfMatches; ++n)
-			{
-				MatchModel matchModel = GetMatchModel(n);
-				matchModel.MatchNumber = n;
-				model.Matches.Add(matchModel);
-			}
 
 			return model;
 		}
 
-		public IBracket GetGroup(int _groupNumber)
+		public List<List<IMatch>> GetGroup(int _groupNumber)
 		{
-			if (null == Groups)
+			if (0 == (Matches?.Count ?? 0))
 			{
 				throw new NullReferenceException
 					("No groups exist! Create a bracket first.");
 			}
-			if (_groupNumber < 1 || _groupNumber > Groups.Count)
+			if (_groupNumber < 1 || _groupNumber > NumberOfGroups)
 			{
 				throw new BracketNotFoundException
 					("Group not found! Invalid group number.");
 			}
 
-			return Groups[_groupNumber - 1];
-		}
-		public override List<IMatch> GetRound(int _round)
-		{
-			List<IMatch> ret = new List<IMatch>();
-			for (int i = 0; i < Groups.Count; ++i)
+			List<List<IMatch>> ret = new List<List<IMatch>>();
+
+			List<Match> group = Matches.Values
+				.Where(m => m.GroupNumber == _groupNumber)
+				//.OrderBy(m => m.MatchNumber)
+				.ToList();
+			for (int r = 1; r <= NumberOfRounds; ++r)
 			{
-				ret.AddRange(GetRound(i + 1, _round));
+				List<IMatch> round = group
+					.Where(m => m.RoundIndex == r)
+					//.OrderBy(m => m.MatchNumber)
+					.Cast<IMatch>()
+					.ToList();
+
+				if (0 == round.Count)
+				{
+					break;
+				}
+				ret.Add(round);
 			}
+
 			return ret;
 		}
 		public List<IMatch> GetRound(int _groupNumber, int _round)
 		{
-			if (null == Groups)
+			List<List<IMatch>> group = GetGroup(_groupNumber);
+
+			if (_round < 1 || _round > group.Count)
 			{
-				throw new NullReferenceException
-					("No groups exist! Create a bracket first.");
+				throw new InvalidIndexException
+					("Round Number invalid!");
 			}
 
-			return (GetGroup(_groupNumber).GetRound(_round));
-		}
-		public override IMatch GetMatch(int _matchNumber)
-		{
-			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			return Groups[groupIndex].GetMatch(_matchNumber);
+			return group[_round - 1];
 		}
 		#endregion
 		#endregion
 
 		#region Private Methods
-		protected void SubscribeToGroupEvents()
-		{
-			foreach (IBracket group in Groups)
-			{
-				// Subscribe to each group's events,
-				// so we can relay the events to this bracket's subscribers:
-				group.RoundAdded += AddRounds;
-				group.RoundDeleted += DeleteRounds;
-				group.MatchesModified += ModifyMatches;
-				group.GamesDeleted += DeleteGames;
-			}
-		}
-		protected virtual void AddRounds(object _sender, BracketEventArgs _args)
-		{
-			UpdateModelDataForEvents(_sender as IBracket, _args);
-			OnRoundAdded(_args);
-		}
-		protected void DeleteRounds(object _sender, BracketEventArgs _args)
-		{
-			UpdateModelDataForEvents(_sender as IBracket, _args);
-			OnRoundDeleted(_args);
-		}
-		protected void ModifyMatches(object _sender, BracketEventArgs _args)
-		{
-			UpdateModelDataForEvents(_sender as IBracket, _args);
-			OnMatchesModified(_args);
-		}
-		protected void DeleteGames(object _sender, BracketEventArgs _args)
-		{
-			OnGamesDeleted(_args);
-		}
-		protected void UpdateModelDataForEvents(IBracket _group, BracketEventArgs _args)
-		{
-			int groupIndex = Groups.FindIndex(g => g == _group);
-			int offset = 0;
-			for (int g = 0; g < groupIndex; ++g)
-			{
-				offset += Groups[g].NumberOfMatches;
-			}
-			foreach (MatchModel matchModel in _args.UpdatedMatches)
-			{
-				matchModel.BracketID = this.Id;
-				matchModel.MatchNumber += offset;
-			}
-		}
-
 		protected override void SetDataFromModel(BracketModel _model)
 		{
 			base.SetDataFromModel(_model);
 			this.NumberOfGroups = _model.NumberOfGroups;
 
-			CreateBracket();
-			// Find & update every Match:
 			foreach (MatchModel matchModel in _model.Matches)
 			{
-				Match match = GetInternalMatch(matchModel.MatchNumber);
-
-				int modelMatchNumber = matchModel.MatchNumber;
-				matchModel.MatchNumber = match.MatchNumber;
-
-				match.SetFromModel(matchModel);
-
-				matchModel.MatchNumber = modelMatchNumber;
+				Matches.Add(matchModel.MatchNumber, new Match(matchModel));
 			}
 
-			// Update the rankings:
+			this.IsFinished = Matches.Values
+				.All(m => m.IsFinished);
 			RecalculateRankings();
-			UpdateFinishStatus();
 
 			if (this.IsFinalized && false == Validate())
 			{
@@ -313,24 +243,6 @@ namespace Tournament.Structure
 			}
 		}
 
-		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
-		{
-			UpdateFinishStatus();
-			return (new List<MatchModel>());
-		}
-		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
-		{
-			if (!(GetMatch(_matchNumber).IsFinished))
-			{
-				this.IsFinished = false;
-			}
-
-			return (new List<MatchModel>());
-		}
-		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
-		{
-			UpdateRankings();
-		}
 
 		protected override void RecalculateRankings()
 		{

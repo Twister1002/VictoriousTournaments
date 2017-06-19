@@ -13,13 +13,8 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-		/// <summary>
-		/// Get one of this stage's groups.
-		/// Should only be used for access/display, not editing.
-		/// </summary>
-		/// <param name="_groupNumber">1-indexed</param>
-		/// <returns>Bracket-type object; the specified group</returns>
-		IBracket GetGroup(int _groupNumber);
+
+		List<List<IMatch>> GetGroup(int _groupNumber);
 
 		/// <summary>
 		/// Gets all Matches in specified round, from specified group.

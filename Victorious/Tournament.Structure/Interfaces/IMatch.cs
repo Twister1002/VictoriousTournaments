@@ -53,6 +53,12 @@ namespace Tournament.Structure
 		int[] Score { get; }
 
 		/// <summary>
+		/// For Group Stages; which group this Match is part of.
+		/// (1-indexed)
+		/// </summary>
+		int GroupNumber { get; }
+
+		/// <summary>
 		/// 1-indexed
 		/// </summary>
 		int RoundIndex { get; }

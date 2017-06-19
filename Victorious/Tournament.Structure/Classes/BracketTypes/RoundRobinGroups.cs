@@ -60,6 +60,7 @@ namespace Tournament.Structure
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			ResetBracketData();
+			List<IBracket> groups = new List<IBracket>();
 
 			for (int b = 0; b < NumberOfGroups; ++b)
 			{
@@ -69,21 +70,52 @@ namespace Tournament.Structure
 					pList.Add(Players[p + b]);
 				}
 
-				Groups.Add(new RoundRobinBracket(pList, _gamesPerMatch, MaxRounds));
+				groups.Add(new RoundRobinBracket(pList, _gamesPerMatch, MaxRounds));
 			}
-			SubscribeToGroupEvents();
-
-			foreach (IBracket group in Groups)
+			
+			for (int g = 0; g < groups.Count; ++g)
 			{
-				NumberOfMatches += group.NumberOfMatches;
-				NumberOfRounds = Math.Max(this.NumberOfRounds, group.NumberOfRounds);
-				Rankings.AddRange(group.Rankings);
+				for (int m = 1; m <= groups[g].NumberOfMatches; ++m)
+				{
+					++NumberOfMatches;
+					IMatch currMatch = groups[g].GetMatch(m);
+
+					if (0 == g)
+					{
+						Matches.Add(currMatch.MatchNumber, (currMatch as Match));
+					}
+					else
+					{
+						Match match = new Match();
+						match.SetMaxGames(currMatch.MaxGames);
+						match.SetRoundIndex(currMatch.RoundIndex);
+						match.SetMatchIndex(currMatch.MatchIndex);
+						match.SetMatchNumber(NumberOfMatches);
+						match.AddPlayer(currMatch.Players[(int)PlayerSlot.Defender]);
+						match.AddPlayer(currMatch.Players[(int)PlayerSlot.Challenger]);
+
+						Matches.Add(match.MatchNumber, match);
+					}
+					Matches[NumberOfMatches].SetGroupNumber(g + 1);
+				}
+
+				Rankings.AddRange(groups[g].Rankings);
 			}
-			Rankings.Sort(SortRankingScores);
+
+			NumberOfRounds = Matches.Values
+				.Select(m => m.RoundIndex)
+				.Max();
+			Rankings.Sort(SortRankingRanks);
 		}
 
 		public override bool CheckForTies()
 		{
+			for (int g = 1; g <= NumberOfGroups; ++g)
+			{
+				IBracket 
+			}
+
+
 			if (!(Groups.Any(g => g.IsFinished)))
 			{
 				throw new BracketException
@@ -118,6 +150,21 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		{
+			this.IsFinished = Matches.Values
+				.All(m => m.IsFinished);
+			return (new List<MatchModel>());
+		}
+		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
+		{
+			this.IsFinished = (IsFinished && GetMatch(_matchNumber).IsFinished);
+			return (new List<MatchModel>());
+		}
+		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
+		{
+			UpdateRankings();
+		}
 		protected override void AddRounds(object _sender, BracketEventArgs _args)
 		{
 			// Base method relays the RoundsAdded event:
