@@ -208,102 +208,38 @@ namespace Tournament.Structure
 		}
 		public List<IMatch> GetRound(int _groupNumber, int _round)
 		{
-			List<List<IMatch>> group = GetGroup(_groupNumber);
-
-			if (_round < 1 || _round > group.Count)
+			if (_groupNumber < 1 || _groupNumber > NumberOfGroups)
 			{
-				throw new InvalidIndexException
-					("Round Number invalid!");
+				throw new BracketNotFoundException
+					("Group not found! Invalid group number.");
 			}
 
-			return group[_round - 1];
+			return GetRound(_round)
+				.Where(m => m.GroupNumber == _groupNumber)
+				.ToList();
 		}
 		#endregion
 		#endregion
 
 		#region Private Methods
-		protected override void SetDataFromModel(BracketModel _model)
+		protected List<List<IPlayer>> DividePlayersIntoGroups()
 		{
-			base.SetDataFromModel(_model);
-			this.NumberOfGroups = _model.NumberOfGroups;
-
-			foreach (MatchModel matchModel in _model.Matches)
+			List<List<IPlayer>> groups = new List<List<IPlayer>>();
+			groups.Capacity = NumberOfGroups;
+			for (int i = 0; i < NumberOfGroups; ++i)
 			{
-				Matches.Add(matchModel.MatchNumber, new Match(matchModel));
+				groups.Add(new List<IPlayer>());
 			}
 
-			this.IsFinished = Matches.Values
-				.All(m => m.IsFinished);
-			RecalculateRankings();
-
-			if (this.IsFinalized && false == Validate())
+			for (int g = 0; g < NumberOfGroups; ++g)
 			{
-				throw new BracketValidationException
-					("Bracket is Finalized but not Valid!");
-			}
-		}
-
-
-		protected override void RecalculateRankings()
-		{
-			Rankings.Clear();
-			foreach (IBracket group in Groups)
-			{
-				Rankings.AddRange(group.Rankings);
-			}
-			Rankings.Sort(SortRankingRanks);
-		}
-		protected override void UpdateRankings()
-		{
-			RecalculateRankings();
-		}
-
-		protected void UpdateFinishStatus()
-		{
-			this.IsFinished = Groups.All(g => g.IsFinished);
-		}
-
-		protected override void ResetBracketData()
-		{
-			base.ResetBracketData();
-
-			if (null == Groups)
-			{
-				Groups = new List<IBracket>();
-			}
-			Groups.Clear();
-		}
-
-		protected override Match GetInternalMatch(int _matchNumber)
-		{
-			return (GetMatch(_matchNumber) as Match);
-		}
-		protected void GetMatchData(ref int _matchNumber, out int _groupIndex)
-		{
-			if (_matchNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Match Number cannot be less than 1!");
-			}
-
-			for (_groupIndex = 0; _groupIndex < Groups.Count; ++_groupIndex)
-			{
-				if (_matchNumber < 1)
+				for (int p = 0; (p + g) < Players.Count; p += NumberOfGroups)
 				{
-					break;
-				}
-				if (_matchNumber <= Groups[_groupIndex].NumberOfMatches)
-				{
-					return;
-				}
-				else
-				{
-					_matchNumber -= Groups[_groupIndex].NumberOfMatches;
+					groups[g].Add(Players[p + g]);
 				}
 			}
 
-			throw new MatchNotFoundException
-				("Match not found; match number may be invalid.");
+			return groups;
 		}
 		#endregion
 	}

@@ -62,17 +62,22 @@ namespace Tournament.Structure
 			ResetBracketData();
 			List<IBracket> groups = new List<IBracket>();
 
-			for (int b = 0; b < NumberOfGroups; ++b)
+			List<List<IPlayer>> playerGroups = DividePlayersIntoGroups();
+			GroupRankings.Capacity = NumberOfGroups;
+#if false
+			for (int g = 0; g < playerGroups.Count; ++g)
 			{
-				List<IPlayer> pList = new List<IPlayer>();
-				for (int p = 0; (p + b) < Players.Count; p += NumberOfGroups)
-				{
-					pList.Add(Players[p + b]);
-				}
+				groups.Add(new RoundRobinBracket(playerGroups[g], _gamesPerMatch, MaxRounds));
 
-				groups.Add(new RoundRobinBracket(pList, _gamesPerMatch, MaxRounds));
+				GroupRankings.Add(new List<IPlayerScore>());
+				GroupRankings[g].Capacity = playerGroups[g].Count;
+				foreach (IPlayer player in playerGroups[g])
+				{
+					GroupRankings[g].Add(new PlayerScore(player.Id, player.Name));
+					Rankings.Add(GroupRankings[g][GroupRankings[g].Count - 1]);
+				}
 			}
-			
+#endif
 			for (int g = 0; g < groups.Count; ++g)
 			{
 				for (int m = 1; m <= groups[g].NumberOfMatches; ++m)
@@ -100,6 +105,7 @@ namespace Tournament.Structure
 				}
 
 				Rankings.AddRange(groups[g].Rankings);
+				GroupRankings.Add(groups[g].Rankings);
 			}
 
 			NumberOfRounds = Matches.Values
@@ -150,6 +156,27 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected override void SetDataFromModel(BracketModel _model)
+		{
+			base.SetDataFromModel(_model);
+			this.NumberOfGroups = _model.NumberOfGroups;
+
+			foreach (MatchModel matchModel in _model.Matches)
+			{
+				Matches.Add(matchModel.MatchNumber, new Match(matchModel));
+			}
+
+			this.IsFinished = Matches.Values
+				.All(m => m.IsFinished);
+			RecalculateRankings();
+
+			if (this.IsFinalized && false == Validate())
+			{
+				throw new BracketValidationException
+					("Bracket is Finalized but not Valid!");
+			}
+		}
+
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			this.IsFinished = Matches.Values
@@ -163,8 +190,112 @@ namespace Tournament.Structure
 		}
 		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 		{
+			
+		}
+
+		protected override void RecalculateRankings()
+		{
+			if (0 == (Players?.Count ?? 0))
+			{
+				return;
+			}
+
+			foreach (IPlayerScore playerScore in Rankings)
+			{
+				playerScore.Rank = 1;
+				playerScore.ResetScore();
+			}
+
+			foreach (IMatch match in Matches.Values.Where(m => !(m.Players.Contains(null))))
+			{
+				int defIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id);
+				int chalIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id);
+
+				if (match.IsFinished)
+				{
+					// Apply the match outcome:
+					Outcome defOutcome = Outcome.Tie;
+					Outcome chalOutcome = Outcome.Tie;
+					switch (match.WinnerSlot)
+					{
+						case PlayerSlot.Defender:
+							defOutcome = Outcome.Win;
+							chalOutcome = Outcome.Loss;
+							break;
+						case PlayerSlot.Challenger:
+							defOutcome = Outcome.Loss;
+							chalOutcome = Outcome.Win;
+							break;
+					}
+
+					Rankings[defIndex].AddMatchOutcome(defOutcome, true);
+					Rankings[chalIndex].AddMatchOutcome(chalOutcome, true);
+				}
+				if (match.Games.Count > 0 && !(match.IsManualWin))
+				{
+					// Update the player scores:
+					int defScore = 0, chalScore = 0;
+					foreach (IGame game in match.Games)
+					{
+						defScore += game.Score[(int)PlayerSlot.Defender];
+						chalScore += game.Score[(int)PlayerSlot.Challenger];
+					}
+
+					Rankings[defIndex].UpdateScores
+						(match.Score[(int)PlayerSlot.Defender], defScore, true);
+					Rankings[chalIndex].UpdateScores
+						(match.Score[(int)PlayerSlot.Challenger], chalScore, true);
+				}
+			}
+
 			UpdateRankings();
 		}
+		protected override void UpdateRankings()
+		{
+			// Calculate MatchScore values for each player:
+			int[] playerScores = new int[Rankings.Count];
+			for (int p = 0; p < Rankings.Count; ++p)
+			{
+				Rankings[p].ResetOpponentsScore();
+				playerScores[p] = Rankings[p].CalculateScore(MatchWinValue, MatchTieValue, 0);
+			}
+			// Calculate & Assign OpponentsPoints value for each player:
+			foreach (IMatch match in Matches.Values.Where(m => m.IsFinished).ToList())
+			{
+				Rankings
+					.Find(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id)
+					.AddToOpponentsScore(playerScores[Rankings
+						.FindIndex(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id)]);
+				Rankings
+					.Find(p => p.Id == match.Players[(int)PlayerSlot.Defender].Id)
+					.AddToOpponentsScore(playerScores[Rankings
+						.FindIndex(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id)]);
+			}
+
+			foreach (List<IPlayerScore> group in GroupRankings)
+			{
+				group.Clear();
+			}
+			List<List<IPlayer>> playerGroups = DividePlayersIntoGroups();
+			for (int g = 0; g < playerGroups.Count; ++g)
+			{
+				foreach (IPlayer player in playerGroups[g])
+				{
+					GroupRankings[g].Add(Rankings.Find(r => r.Id == player.Id));
+				}
+
+				GroupRankings[g].Sort(SortRankingScores);
+				for (int i = 0; i < GroupRankings[g].Count; ++i)
+				{
+					GroupRankings[g][i].Rank = i + 1;
+					Rankings.Find(r => r.Id == GroupRankings[g][i].Id)
+						.Rank = i + 1;
+				}
+			}
+
+			Rankings.Sort(SortRankingRanks);
+		}
+
 		protected override void AddRounds(object _sender, BracketEventArgs _args)
 		{
 			// Base method relays the RoundsAdded event:
@@ -189,6 +320,17 @@ namespace Tournament.Structure
 
 			// Fire event with the updated matches:
 			OnMatchesModified(matchesToUpdate);
+		}
+
+		protected override void ResetBracketData()
+		{
+			base.ResetBracketData();
+
+			if (null == GroupRankings)
+			{
+				GroupRankings = new List<List<IPlayerScore>>():
+			}
+			GroupRankings.Clear();
 		}
 		#endregion
 	}

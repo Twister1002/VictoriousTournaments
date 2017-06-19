@@ -921,12 +921,9 @@ namespace Tournament.Structure
 		/// The list of IMatches is correctly ordered.
 		/// If the round index is out-of-range, an exception is thrown.
 		/// </summary>
-		/// <remarks>
-		/// This method is overriden in Group Stages.
-		/// </remarks>
 		/// <param name="_round">1-indexed</param>
 		/// <returns>Ordered list of IMatches</returns>
-		public virtual List<IMatch> GetRound(int _round)
+		public List<IMatch> GetRound(int _round)
 		{
 			if (null == Matches)
 			{
