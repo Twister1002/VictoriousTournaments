@@ -76,15 +76,6 @@ namespace Tournament.Structure
 			for (int g = 0; g < playerGroups.Count; ++g)
 			{
 				groups.Add(new RoundRobinBracket(playerGroups[g], _gamesPerMatch, MaxRounds));
-#if false
-				GroupRankings.Add(new List<IPlayerScore>());
-				GroupRankings[g].Capacity = playerGroups[g].Count;
-				foreach (IPlayer player in playerGroups[g])
-				{
-					GroupRankings[g].Add(new PlayerScore(player.Id, player.Name));
-					Rankings.Add(GroupRankings[g][GroupRankings[g].Count - 1]);
-				}
-#endif
 			}
 
 			for (int g = 0; g < groups.Count; ++g)
