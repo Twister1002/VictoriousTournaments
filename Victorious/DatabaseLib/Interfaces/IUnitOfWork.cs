@@ -31,6 +31,9 @@ namespace DatabaseLib
 
         bool Save();
 
+        void SetException(Exception exception);
+
+        Exception GetException();
 
 
     }

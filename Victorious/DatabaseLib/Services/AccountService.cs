@@ -9,7 +9,7 @@ namespace DatabaseLib.Services
     public class AccountService
     {
         IUnitOfWork unitOfWork;
-        EmailService emailService;
+        //EmailService emailService;
 
         public AccountService(IUnitOfWork unitOfWork)
         {
@@ -32,6 +32,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return null;
             }
         }
@@ -44,8 +45,8 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return null;
-                throw;
             }
         }
 
@@ -57,6 +58,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<AccountModel>();
             }
         }
@@ -77,8 +79,9 @@ namespace DatabaseLib.Services
             {
                 AccountModel account = unitOfWork.AccountRepo.GetAll().Single(u => u.Username == username);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return false;
             }
             return true;
@@ -90,8 +93,9 @@ namespace DatabaseLib.Services
             {
                 AccountModel account = unitOfWork.AccountRepo.GetSingle(e => e.Email == email);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return false;
             }
             return true;
@@ -111,6 +115,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<TournamentModel>();
             }
             
@@ -135,8 +140,9 @@ namespace DatabaseLib.Services
             {
                 return unitOfWork.AccountInviteRepo.GetSingle(x => x.AccountInviteCode == inviteCode);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return null;
             }
         }
@@ -160,6 +166,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<AccountInviteModel>();
             }
         }

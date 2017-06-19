@@ -45,6 +45,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return null;
             }
         }
@@ -61,6 +62,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<TournamentModel>();
             }
         }
@@ -167,10 +169,11 @@ namespace DatabaseLib.Services
 
 
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     //interfaceException = ex;
                     //WriteException(ex);
+                    unitOfWork.SetException(ex);
                     tournaments.Clear();
                 }
             }
@@ -206,6 +209,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return null;
             }
         }
@@ -222,6 +226,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<TournamentUserModel>();
             }
         }
@@ -239,6 +244,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<TournamentUserModel>();
             }
         }
@@ -287,6 +293,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new TournamentInviteModel();
             }
         }
@@ -299,6 +306,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<TournamentInviteModel>();
             }
         }
@@ -332,6 +340,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return null;
             }
         }
@@ -344,6 +353,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<BracketModel>();
             }
         }
@@ -357,6 +367,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<BracketModel>();
             }
         }
@@ -393,6 +404,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return null;
             }
         }
@@ -411,6 +423,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<MatchModel>();
             }
         }
@@ -433,6 +446,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<MatchModel>();
             }
         }
@@ -455,6 +469,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return null;
             }
         }
@@ -467,6 +482,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new List<GameModel>();
             }
         }
@@ -500,6 +516,7 @@ namespace DatabaseLib.Services
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return new TournamentUsersBracketModel();
             }
         }

@@ -16,7 +16,7 @@
             <PropertyRef Name="AccountInviteCode" />
           </Key>
           <Property Name="AccountInviteID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="AccountInviteCode" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="AccountInviteCode" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="SentByID" Type="int" Nullable="false" />
           <Property Name="SentToEmail" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="DateCreated" Type="date" Nullable="false" />
@@ -32,7 +32,7 @@
           <Property Name="LastName" Type="nvarchar" MaxLength="50" />
           <Property Name="Email" Type="nvarchar" MaxLength="50" />
           <Property Name="Username" Type="nvarchar" MaxLength="50" />
-          <Property Name="Password" Type="nvarchar" MaxLength="50" />
+          <Property Name="Password" Type="nvarchar" MaxLength="255" />
           <Property Name="PhoneNumber" Type="nchar" MaxLength="15" />
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="LastLogin" Type="datetime" />
@@ -87,7 +87,7 @@
           <Key>
             <PropertyRef Name="EmailAddress" />
           </Key>
-          <Property Name="EmailAddress" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="EmailAddress" Type="nvarchar" MaxLength="255" Nullable="false" />
         </EntityType>
         <EntityType Name="Matches">
           <Key>
@@ -796,7 +796,7 @@
           <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="PhoneNumber" Type="String" MaxLength="15" FixedLength="true" Unicode="true" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
           <Property Name="LastLogin" Type="DateTime" Precision="3" />
@@ -872,7 +872,7 @@
             <PropertyRef Name="AccountInviteCode" />
           </Key>
           <Property Name="AccountInviteID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="AccountInviteCode" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="AccountInviteCode" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="SentToEmail" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="SentByID" Type="Int32" Nullable="false" />
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="0" />
@@ -1161,7 +1161,7 @@
           <Key>
             <PropertyRef Name="EmailAddress" />
           </Key>
-          <Property Name="EmailAddress" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="EmailAddress" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>

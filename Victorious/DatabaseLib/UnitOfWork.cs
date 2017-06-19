@@ -32,6 +32,8 @@ namespace DatabaseLib
         IRepository<SiteTeamMemberModel> siteTeamMemberRepo;
         IRepository<MailingList> mailingListRepo;
 
+        Exception exception;
+
         public UnitOfWork(string name = null, VictoriousEntities context = null)
         {
             if (name != null)
@@ -52,6 +54,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
+                this.SetException(ex);
                 return false;
             }
             return true;
@@ -61,6 +64,16 @@ namespace DatabaseLib
         {
             context.Dispose();
             context = new VictoriousEntities();
+        }
+
+        public void SetException(Exception _exception)
+        {
+            exception = _exception;
+        }
+
+        public Exception GetException()
+        {
+            return exception;
         }
       
         public IRepository<AccountModel> AccountRepo

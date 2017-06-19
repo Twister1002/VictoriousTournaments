@@ -14,7 +14,7 @@ namespace DatabaseLib
     public class EmailService
     {
         IUnitOfWork unitOfWork;
-        string responseHeaders;
+        //string responseHeaders;
         SendGridClient client;
 
         public EmailService(IUnitOfWork unitOfWork)
@@ -77,6 +77,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return false;
             }
             return true;
@@ -121,6 +122,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return false;
             }
             return true;
@@ -149,6 +151,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return false;  
             }
             return true;
@@ -205,6 +208,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
+                unitOfWork.SetException(ex);
                 return false;
             }
             return true;
