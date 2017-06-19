@@ -55,15 +55,17 @@ namespace WebApplication.Controllers
                 if (account.Login(viewModel))
                 {
                     Session["User.UserId"] = account.Model.AccountID;
+                    return RedirectToAction("Index", "Account");
                 }
                 else
                 {
                     Session["Message"] = "The username or password is invalid.";
                     Session["Message.Class"] = ViewError.WARNING;
+                    viewModel.e = service.e;
                 }
             }
 
-            return RedirectToAction("Index", "Account");
+            return View("Login", viewModel);
         }
 
         [Route("Account/Register")]
@@ -104,6 +106,7 @@ namespace WebApplication.Controllers
                 {
                     Session["Message"] = "We were unable to register your account. Please try again";
                     Session["Message.Class"] = ViewError.ERROR;
+                    viewModel.e = service.e;
 
                     return View("Register", viewModel);
                 }

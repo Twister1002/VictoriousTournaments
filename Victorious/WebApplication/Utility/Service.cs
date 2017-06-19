@@ -10,6 +10,7 @@ namespace WebApplication.Utility
 {
     public class Service : IService
     {
+        public Exception e { get; set; }
         private IUnitOfWork work;
         public AccountService Account { get; private set; }
         public TournamentService Tournament { get; private set; }
@@ -31,9 +32,15 @@ namespace WebApplication.Utility
             }
             else
             {
+                //e = work.getException();
                 work.Refresh();
                 return false;
             }
+        }
+
+        public Exception GetException()
+        {
+            return e;
         }
     }
 }

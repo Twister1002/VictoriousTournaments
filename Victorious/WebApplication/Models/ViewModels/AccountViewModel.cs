@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication.Models.ViewModels
 {
-    public class AccountViewModel
+    public class AccountViewModel : ViewModel
     {
         //[Required(ErrorMessage = "First Name is required")]
         [DataType(DataType.Text)]

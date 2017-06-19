@@ -5,7 +5,7 @@ using System.Web;
 
 namespace WebApplication.Models.ViewModels
 {
-    public class TournamentRegisterViewModel
+    public class TournamentRegisterViewModel : ViewModel
     {
         public String Name { get; set; }
         public int TournamentID { get; set; }
