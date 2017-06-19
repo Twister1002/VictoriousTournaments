@@ -113,6 +113,23 @@ namespace WebApplication.Models
 
             return brackets;
         }
+
+        /// <summary>
+        /// Adds the information changed within a bracketModel to be reflected into the entity's object
+        /// </summary>
+        /// <param name="bracket">The model of the bracket to get information from</param>
+        /// <param name="bracketId">the ID of the bracket</param>
+        /// <returns>The model to update</returns>
+        private BracketModel ApplyBracketInfo(BracketModel bracket)
+        {
+            BracketModel orig = Model.Brackets.Single(x => x.BracketID == bracket.BracketID);
+
+            orig.Finalized = bracket.Finalized;
+            orig.Matches = bracket.Matches;
+            orig.TournamentUsersBrackets = bracket.TournamentUsersBrackets;
+
+            return orig;
+        }
         #endregion
 
         #region Match
@@ -200,7 +217,9 @@ namespace WebApplication.Models
             if (nextBracket != null)
             {
                 Tourny.AdvancePlayersByRanking(currentBracket, nextBracket);
-                BracketModel bracketModel = nextBracket.GetModel(Model.TournamentID);
+                BracketModel bracketModel = ApplyBracketInfo(nextBracket.GetModel(Model.TournamentID));
+
+                services.Tournament.UpdateBracket(bracketModel);
             }
 
             return services.Save();
@@ -481,6 +500,11 @@ namespace WebApplication.Models
         #endregion
 
         #region RemoveUsers
+        /// <summary>
+        /// Removes a user by the user's accuontID
+        /// </summary>
+        /// <param name="accountId">ID of user's accuont</param>
+        /// <returns>True if saved; false is not</returns>
         public bool RemoveUser(int accountId)
         {
             TournamentUserModel user = Model.TournamentUsers.First(x => x.AccountID == accountId);
@@ -489,6 +513,11 @@ namespace WebApplication.Models
             return services.Save();
         }
 
+        /// <summary>
+        /// Removes a user by the name 
+        /// </summary>
+        /// <param name="username">The name of the user to remove</param>
+        /// <returns>True if saved; false is not</returns>
         public bool RemoveUser(String username)
         {
             TournamentUserModel user = Model.TournamentUsers.First(x => x.Name == username);
@@ -785,21 +814,38 @@ namespace WebApplication.Models
             }
         }
 
+        /// <summary>
+        /// Gets a list of all participants in the tournament.
+        /// </summary>
+        /// <returns></returns>
         public List<TournamentUserModel> GetParticipants()
         {
             return Model.TournamentUsers.Where(x => x.PermissionLevel == (int)Permission.TOURNAMENT_STANDARD).ToList();
         }
 
+        /// <summary>
+        /// Determins if this tournament is editable or not
+        /// </summary>
+        /// <returns>True if can edit; false if not</returns>
         public bool CanEdit()
         {
             return !Model.InProgress ? true : false;
         }
 
+        /// <summary>
+        /// Determins if the user is registered to the tournament
+        /// </summary>
+        /// <param name="accountId">The Account ID of the user</param>
+        /// <returns>True if registered; false is not</returns>
         public bool isRegistered(int accountId)
         {
             return Model.TournamentUsers.Any(x => x.AccountID == accountId);
         }
 
+        /// <summary>
+        /// Determins if the user can register or not
+        /// </summary>
+        /// <returns>True if can register; false is not</returns>
         public bool CanRegister()
         {
             if (Model.RegistrationStartDate < DateTime.Now && Model.RegistrationEndDate > DateTime.Now)

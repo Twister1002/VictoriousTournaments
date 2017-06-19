@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[AccountInvites]
 (
 	[AccountInviteID] INT NOT NULL IDENTITY, 
-	[AccountInviteCode] NVARCHAR(256) NOT NULL , 
+	[AccountInviteCode] NVARCHAR(255) NOT NULL , 
     [SentByID] INT NOT NULL, 
     [SentToEmail] NVARCHAR(50) NOT NULL, 
     [DateCreated] DATE NOT NULL, 

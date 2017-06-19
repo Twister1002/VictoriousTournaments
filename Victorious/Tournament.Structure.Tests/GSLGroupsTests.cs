@@ -8,6 +8,7 @@ using DatabaseLib;
 
 namespace Tournament.Structure.Tests
 {
+#if false
 	[TestClass]
 	public class GSLGroupsTests
 	{
@@ -229,4 +230,5 @@ namespace Tournament.Structure.Tests
 		}
 		#endregion
 	}
+#endif
 }

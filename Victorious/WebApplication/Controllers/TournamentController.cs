@@ -211,6 +211,7 @@ namespace WebApplication.Controllers
                     Session["Message"] = "Please enter in the required fields listed below.";
                 }
 
+                ViewBag.Create = true;
                 ViewBag.CanEdit = tourny.CanEdit();
                 ViewBag.InProgress = tourny.Model.InProgress;
                 return View("Create", tourny.viewModel);

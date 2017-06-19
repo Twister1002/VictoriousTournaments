@@ -20,6 +20,7 @@
     [MaxGames]                  INT      NULL, 
     [BracketID] INT NULL, 
     [IsManualWin] BIT NOT NULL DEFAULT 0, 
+    [GroupNumber] INT NULL, 
     CONSTRAINT [PK_Matches] PRIMARY KEY ([MatchID]),
 	CONSTRAINT FK_Matches_Brackets FOREIGN KEY(BracketID) REFERENCES Brackets(BracketID)
 

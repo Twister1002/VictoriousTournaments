@@ -90,7 +90,8 @@ namespace Tournament.Structure
 		 * If the passed list is empty, no event will be fired.
 		 * If the relevant event's subscriber-list is empty/null, no event will be fired.
 		*/
-		protected void OnRoundAdded(BracketEventArgs _e)
+
+		protected virtual void OnRoundAdded(BracketEventArgs _e)
 		{
 			RoundAdded?.Invoke(this, _e);
 		}
@@ -904,13 +905,13 @@ namespace Tournament.Structure
 
 			// Convert all Matches to Models, and add them:
 			//model.Matches = new List<MatchModel>();
-			if (!(this is IGroupStage))
-			{
+			//if (!(this is IGroupStage))
+			//{
 				for (int n = 1; n <= NumberOfMatches; ++n)
 				{
 					model.Matches.Add(GetMatchModel(n));
 				}
-			}
+			//}
 
 			return model;
 		}
@@ -920,12 +921,9 @@ namespace Tournament.Structure
 		/// The list of IMatches is correctly ordered.
 		/// If the round index is out-of-range, an exception is thrown.
 		/// </summary>
-		/// <remarks>
-		/// This method is overriden in Group Stages.
-		/// </remarks>
 		/// <param name="_round">1-indexed</param>
 		/// <returns>Ordered list of IMatches</returns>
-		public virtual List<IMatch> GetRound(int _round)
+		public List<IMatch> GetRound(int _round)
 		{
 			if (null == Matches)
 			{
