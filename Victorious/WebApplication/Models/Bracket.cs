@@ -111,8 +111,6 @@ namespace WebApplication.Models
         {
             // Fires events below
             bracket.ResetMatches();
-            
-
 
             return services.Save();
         }

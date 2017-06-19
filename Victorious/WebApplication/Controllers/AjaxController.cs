@@ -234,6 +234,14 @@ namespace WebApplication.Controllers
 
             return BundleJson();
         }
+
+        [HttpPost]
+        [Route("Ajax/Bracket/Lockout")]
+        public JsonResult Lockout(int tournamentId, int bracketId)
+        {
+
+            return BundleJson();
+        }
         #endregion
 
         #region Match
