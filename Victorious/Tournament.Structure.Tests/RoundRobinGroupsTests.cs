@@ -8,6 +8,7 @@ using DatabaseLib;
 
 namespace Tournament.Structure.Tests
 {
+#if false
 	[TestClass]
 	public class RoundRobinGroupsTests
 	{
@@ -886,4 +887,5 @@ namespace Tournament.Structure.Tests
 
 		#endregion
 	}
+#endif
 }
