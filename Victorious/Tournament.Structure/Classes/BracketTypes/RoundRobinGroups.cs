@@ -241,7 +241,7 @@ namespace Tournament.Structure
 				}
 
 				// Copy matches from new temp brackets onto the end of this bracket:
-				for (int r = 1; ; ++r) // Run through once for each round
+				for (int r = 1; ; ++r) // Run through once for each new round
 				{
 					// Round-by-round, make a list of matches to add:
 					List<IMatch> currRound = new List<IMatch>();
@@ -261,16 +261,29 @@ namespace Tournament.Structure
 					for (int m = 0; m < currRound.Count; ++m)
 					{
 						Match match = new Match();
-						match.SetMatchNumber(++finalGroupMatch);
+						match.SetMatchNumber(++NumberOfMatches);
 						match.SetRoundIndex(finalGroupRound);
 						match.SetMatchIndex(m + 1);
 						match.AddPlayer(currRound[m].Players[0]);
 						match.AddPlayer(currRound[m].Players[1]);
 
 						Matches.Add(match.MatchNumber, match);
+						// Also add a model, for firing an event:
+						createdMatches.Add(GetMatchModel(match));
 					}
 				}
+				this.NumberOfRounds = Math.Max(NumberOfRounds, finalGroupRound);
 			}
+
+			if (createdMatches.Count > 0)
+			{
+				// Fire event to notify that new Matches were made, then we're done:
+				OnRoundAdded(new BracketEventArgs(createdMatches));
+				return true;
+			}
+
+			// No tiebreakers generated. False!
+			return false;
 		}
 		#endregion
 
