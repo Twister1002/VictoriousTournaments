@@ -138,5 +138,13 @@ namespace DatabaseLib
         }
     }
 
+    /// <summary>
+    /// Class that ties a TournamentUser to a specific Bracket within a Tournament. 
+    /// Since a Tournament may have more than one bracket, this class allows a user to be placed in
+    /// multiple Brackets without having conflicting info, such as their seed.
+    /// </summary>
+    public partial class TournamentUsersBracketModel
+    {
 
+    }
 }
