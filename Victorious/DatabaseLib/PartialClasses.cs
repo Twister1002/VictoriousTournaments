@@ -18,16 +18,7 @@ namespace DatabaseLib
 {
     public partial class VictoriousEntities : DbContext
     {
-        //public VictoriousEntities(string server, string targetDb) : 
-        //    base(@"metadata=res://*/Model.csdl|res://*/Model.ssdl|res://*/Model.msl;provider=System.Data.SqlClient;provider connection string=';data source="+server+";initial catalog="+targetDb+";integrated security=True;MultipleActiveResultSets=True;App=EntityFramework';")
-        //{
-        //    SqlConnectionStringBuilder sqlBuilder = new SqlConnectionStringBuilder();
-        //    sqlBuilder.DataSource = server;
-        //    sqlBuilder.InitialCatalog = targetDb;
-
-
-        //}
-
+        
         public VictoriousEntities(string name) :
            base(name)
         {
@@ -147,4 +138,38 @@ namespace DatabaseLib
     {
 
     }
+
+    /// <summary>
+    /// A site-wide team. 
+    /// </summary>
+    public partial class SiteTeamModel
+    {
+
+    }
+
+    /// <summary>
+    /// Member of a SiteTeam.
+    /// </summary>
+    public partial class SiteTeamMember
+    {
+
+    }
+    
+    /// <summary>
+    /// A team that exists only as part of a Tournament. 
+    /// </summary>
+    public partial class TournamentTeamModel
+    {
+
+    }
+
+    /// <summary>
+    /// Ties a TournamentTeam to a specific Bracket within a Tournament. 
+    /// Works very similarly to TournamentUsersBracketModel.
+    /// </summary>
+    public partial class TournamentTeamBracketModel
+    {
+        
+    }
+
 }
