@@ -45,6 +45,7 @@ namespace DatabaseLib
             {
                 this.context = context; 
             }
+            //this.context.Configuration.AutoDetectChangesEnabled = false;
         }
 
         public bool Save()

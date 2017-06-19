@@ -83,7 +83,8 @@ namespace DatabaseLib
     {
         partial void OnInit()
         {
-           
+            CreatedOn = DateTime.Now;
+            LastEditedOn = DateTime.Now;
         }
 
     }

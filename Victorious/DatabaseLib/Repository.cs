@@ -31,6 +31,7 @@ namespace DatabaseLib
         public Repository(VictoriousEntities _context)
         {
             this.context = _context;
+            context.Configuration.AutoDetectChangesEnabled = false;
             this.dbSet = context.Set<TEntity>();
 
         }
@@ -89,10 +90,12 @@ namespace DatabaseLib
         /// <param name="entity"> The entity to be updated. </param>
         public void Update(TEntity entity)
         {
-            //if (context.Entry(entity).State == EntityState.Detached)
-            //{
-            //    dbSet.Attach(entity);
-            //}
+            if (context.Entry(entity).State == EntityState.Detached)
+            {
+                dbSet.Attach(entity);
+            }
+
+            //context.Entry(entity).CurrentValues.SetValues(entity);
             context.Entry(entity).State = EntityState.Modified;
         }
 
