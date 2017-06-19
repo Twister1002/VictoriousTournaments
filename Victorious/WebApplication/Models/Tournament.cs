@@ -931,7 +931,6 @@ namespace WebApplication.Models
             viewModel.BracketTypes = services.Type.GetAllBracketTypes().Where(x => x.IsActive == true).ToList();
             viewModel.GameTypes = services.Type.GetAllGameTypes();
             viewModel.PlatformTypes = services.Type.GetAllPlatforms();
-            viewModel.BracketData = new List<BracketViewModel>();
             viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
             viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
             viewModel.NumberPlayersAdvance = Enumerable.Range(4, 20).ToList();
