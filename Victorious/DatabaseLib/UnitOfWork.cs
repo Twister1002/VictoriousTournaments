@@ -30,6 +30,9 @@ namespace DatabaseLib
         IRepository<TournamentTeamBracketModel> tournamentTeamBracketRepo;
         IRepository<SiteTeamModel> siteTeamRepo;
         IRepository<SiteTeamMemberModel> siteTeamMemberRepo;
+        IRepository<MailingList> mailingListRepo;
+
+        Exception exception;
 
         public UnitOfWork(string name = null, VictoriousEntities context = null)
         {
@@ -51,6 +54,7 @@ namespace DatabaseLib
             }
             catch (Exception ex)
             {
+                this.SetException(ex);
                 return false;
             }
             return true;
@@ -60,6 +64,16 @@ namespace DatabaseLib
         {
             context.Dispose();
             context = new VictoriousEntities();
+        }
+
+        public void SetException(Exception _exception)
+        {
+            exception = _exception;
+        }
+
+        public Exception GetException()
+        {
+            return exception;
         }
       
         public IRepository<AccountModel> AccountRepo
@@ -266,6 +280,17 @@ namespace DatabaseLib
             }
         }
 
+        public IRepository<MailingList> MailingListRepo
+        {
+            get
+            {
+                if (this.mailingListRepo == null)
+                {
+                    this.mailingListRepo = new Repository<MailingList>(context);
+                }
+                return mailingListRepo;
+            }
+        }
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls

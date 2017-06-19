@@ -41,6 +41,7 @@ namespace DatabaseLib
         public Nullable<int> MaxGames { get; set; }
         public Nullable<int> BracketID { get; set; }
         public bool IsManualWin { get; set; }
+        public Nullable<int> GroupNumber { get; set; }
     	
     	partial void OnInit();
     
