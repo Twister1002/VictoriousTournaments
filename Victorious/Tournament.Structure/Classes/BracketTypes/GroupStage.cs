@@ -154,48 +154,27 @@ namespace Tournament.Structure
 			return model;
 		}
 
-		public List<List<IMatch>> GetGroup(int _groupNumber)
+		public List<IPlayerScore> GetGroupRanking(int _groupNumber)
 		{
-			if (0 == (Matches?.Count ?? 0))
+			if (_groupNumber < 1)
 			{
-				throw new NullReferenceException
-					("No groups exist! Create a bracket first.");
+				throw new InvalidIndexException
+					("Group number cannot be less than 1!");
 			}
-			if (_groupNumber < 1 || _groupNumber > NumberOfGroups)
+			if (_groupNumber > NumberOfGroups)
 			{
-				throw new BracketNotFoundException
-					("Group not found! Invalid group number.");
-			}
-
-			List<List<IMatch>> ret = new List<List<IMatch>>();
-
-			List<Match> group = Matches.Values
-				.Where(m => m.GroupNumber == _groupNumber)
-				//.OrderBy(m => m.MatchNumber)
-				.ToList();
-			for (int r = 1; r <= NumberOfRounds; ++r)
-			{
-				List<IMatch> round = group
-					.Where(m => m.RoundIndex == r)
-					//.OrderBy(m => m.MatchNumber)
-					.Cast<IMatch>()
-					.ToList();
-
-				if (0 == round.Count)
-				{
-					break;
-				}
-				ret.Add(round);
+				return new List<IPlayerScore>();
 			}
 
-			return ret;
+			return GroupRankings[_groupNumber - 1];
 		}
+
 		public List<IMatch> GetRound(int _groupNumber, int _round)
 		{
-			if (_groupNumber < 1 || _groupNumber > NumberOfGroups)
+			if (_groupNumber < 1)
 			{
-				throw new BracketNotFoundException
-					("Group not found! Invalid group number.");
+				throw new InvalidIndexException
+					("Group number cannot be less than 1!");
 			}
 
 			return GetRound(_round)

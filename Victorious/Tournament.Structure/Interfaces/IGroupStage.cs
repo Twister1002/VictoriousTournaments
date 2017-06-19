@@ -13,11 +13,15 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
-
-		List<List<IMatch>> GetGroup(int _groupNumber);
+		/// <summary>
+		/// Get the Rankings list for a particular group.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <returns>List of IPlayerScore ranking objects</returns>
+		List<IPlayerScore> GetGroupRanking(int _groupNumber);
 
 		/// <summary>
-		/// Gets all Matches in specified round, from specified group.
+		/// Get all Matches in specified round, from specified group.
 		/// </summary>
 		/// <param name="_groupNumber">1-indexed</param>
 		/// <param name="_round">1-indexed</param>
