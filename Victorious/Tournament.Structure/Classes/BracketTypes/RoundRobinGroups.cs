@@ -241,7 +241,7 @@ namespace Tournament.Structure
 					}
 					if (0 == currRound.Count)
 					{
-						// No more round to add; break out.
+						// No more rounds to add; break out.
 						break;
 					}
 
@@ -266,7 +266,7 @@ namespace Tournament.Structure
 
 			if (createdMatches.Count > 0)
 			{
-				// Fire event to notify that new Matches were made, then we're done:
+				// Fire event to notify that new Matches were created, then we're done:
 				OnRoundAdded(new BracketEventArgs(createdMatches));
 				return true;
 			}

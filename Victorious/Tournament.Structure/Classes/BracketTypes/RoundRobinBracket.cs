@@ -1,4 +1,4 @@
-﻿// #define ENABLE_TIEBREAKERS
+﻿// #define AUTOMATIC_TIEBREAKERS
 
 using System;
 using System.Collections.Generic;
@@ -19,6 +19,7 @@ namespace Tournament.Structure
 		//public bool IsFinished
 		//public List<IPlayer> Players
 		//public List<IPlayerScore> Rankings
+		//public int AdvancingPlayers
 		//public int MaxRounds
 		//protected Dictionary<int, Match> Matches
 		//public int NumberOfRounds
@@ -53,16 +54,19 @@ namespace Tournament.Structure
 		{ }
 		public RoundRobinBracket(BracketModel _model)
 		{
+			// Call a helper method to copy the bracket status fields,
+			// and to load the playerlist:
 			SetDataFromModel(_model);
 
 			foreach (IPlayer player in Players)
 			{
+				// Create an initial ranking for every Player:
 				Rankings.Add(new PlayerScore(player.Id, player.Name));
 			}
 
 			foreach (MatchModel mm in _model.Matches)
 			{
-				// Create the Match:
+				// Create Matches from all MatchModels:
 				Matches.Add(mm.MatchNumber, new Match(mm));
 			}
 			this.NumberOfMatches = Matches.Count;
@@ -87,8 +91,16 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Uses the playerlist to generate the bracket structure & matchups.
+		/// This creates & populates all the Match objects.
+		/// If any Matches already exist, they will be deleted first.
+		/// If there are <2 players, nothing will be made.
+		/// </summary>
+		/// <param name="_gamesPerMatch">Max games for every Match</param>
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
+			// First, clear any existing Matches and results:
 			ResetBracketData();
 			if (Players.Count < 2)
 			{
@@ -96,14 +108,16 @@ namespace Tournament.Structure
 			}
 			foreach (IPlayer player in Players)
 			{
+				// Create an initial ranking for every Player:
 				Rankings.Add(new PlayerScore(player.Id, player.Name));
 			}
 
+			// Calculate the number of round to create:
 			int totalRounds = (0 == Players.Count % 2)
 				? Players.Count - 1 : Players.Count;
 
 			// Randomly choose which rounds to "remove"
-			// (only applies if MaxRounds is capped)
+			// (only applies if MaxRounds is capped).
 			List<int> roundsToRemove = new List<int>();
 			if (MaxRounds > 0 && MaxRounds < totalRounds)
 			{
@@ -111,24 +125,30 @@ namespace Tournament.Structure
 				Random rng = new Random();
 				while (roundsToRemove.Count < roundsDiff)
 				{
+					// Randomly choose a round number.
 					int randomRound = rng.Next(totalRounds);
 					if (!roundsToRemove.Contains(randomRound))
 					{
+						// Add the round number to a list:
 						roundsToRemove.Add(randomRound);
 					}
 				}
 			}
 
-			// Create all the matchups:
 			int matchesPerRound = (int)(Players.Count * 0.5);
+			// (truncated because matchups=4 for 8 players or 9)
+
+			// Create all the matchups:
 			for (int r = 0; r < totalRounds; ++r)
 			{
 				if (roundsToRemove.Contains(r))
 				{
+					// If this round was chosen to skip, do so:
 					continue;
 				}
 				++NumberOfRounds;
 
+				// Create the Matches for this round:
 				for (int m = 0; m < matchesPerRound; ++m, ++NumberOfMatches)
 				{
 					Match match = new Match();
@@ -144,44 +164,73 @@ namespace Tournament.Structure
 			}
 		}
 
+		/// <summary>
+		/// Resets the state of all Matches.
+		/// Deletes all Games and sets scores to 0-0.
+		/// If tiebreakers had been added, those Matches will be deleted.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// May fire a RoundDeleted event, if tiebreakers are deleted.
+		/// </summary>
 		public override void ResetMatches()
 		{
+			// Calling the base method (Bracket) handles:
+			// resetting all Matches.
 			base.ResetMatches();
 
+			// Reset all the Rankings to initial states:
+			foreach (IPlayerScore ps in Rankings)
+			{
+				ps.Rank = 1;
+				ps.ResetScore();
+			}
+
+			/*
+			 * Now, re-calculate the number of standard rounds for a round robin.
+			 * (if the MaxRounds variable is used, that's all we need)
+			 * This is how many rounds we initially created for the bracket.
+			 * If we now have more, that means tiebreaker Matches were added.
+			 * We need to find and delete those Matches.
+			*/
 			int standardRounds = MaxRounds;
 			if (0 == standardRounds)
 			{
 				standardRounds = (0 == Players.Count % 2)
 					? Players.Count - 1 : Players.Count;
 			}
-			int totalStandardMatches = standardRounds * (int)(Players.Count * 0.5);
 
+			// If no tiebreakers were added, we're done.
+			// Otherwise:
 			if (NumberOfRounds > standardRounds)
 			{
+				// Get all the tiebreaker Matches:
 				List<Match> matchesToDelete = Matches.Values
 					.Where(m => m.RoundIndex > standardRounds)
 					.ToList();
 				List<MatchModel> modelsToDelete = new List<MatchModel>();
 				foreach (Match match in matchesToDelete)
 				{
+					// Delete each tiebreaker.
+					// (but first, save a Model of it for firing an event)
 					modelsToDelete.Add(GetMatchModel(match));
 					Matches.Remove(match.MatchNumber);
 				}
 
+				// Update necessary Bracket variables:
 				NumberOfMatches = Matches.Count;
 				NumberOfRounds = Matches.Values
 					.Max(m => m.RoundIndex);
 
+				// Fire an event to notify the database to delete Matches:
 				OnRoundDeleted(modelsToDelete);
-			}
-
-			foreach (IPlayerScore ps in Rankings)
-			{
-				ps.Rank = 1;
-				ps.ResetScore();
 			}
 		}
 
+		/// <summary>
+		/// Determines if any players are tied.
+		/// Criteria is W/L/T record only: scores are not taken into account here.
+		/// If the bracket is not finished, an exception is thrown.
+		/// </summary>
+		/// <returns>true if any ties are found, false if none</returns>
 		public override bool CheckForTies()
 		{
 			if (!IsFinished)
@@ -190,7 +239,7 @@ namespace Tournament.Structure
 					("Bracket isn't finished yet!");
 			}
 
-			// Calculate W/L scores for all players:
+			// Using Rankings, calculate W/L scores for all players:
 			int[] scores = new int[Rankings.Count];
 			for (int i = 0; i < Rankings.Count; ++i)
 			{
@@ -205,6 +254,16 @@ namespace Tournament.Structure
 			// No ties found.
 			return false;
 		}
+
+		/// <summary>
+		/// Finds pairs/groups of tied players,
+		/// and creates any necessary tiebreaker Matches for them.
+		/// This may result in one new Match or in multiple rounds.
+		/// All new Matches will be put in new rounds on the "back" of the Bracket.
+		/// If the Bracket is not finished, an exception is thrown.
+		/// If the Bracket has no ties, no Matches are created and false is returned.
+		/// </summary>
+		/// <returns>true if tiebreakers added, false if no ties</returns>
 		public override bool GenerateTiebreakers()
 		{
 			if (!IsFinished)
@@ -220,7 +279,7 @@ namespace Tournament.Structure
 				scores[i] = Rankings[i].CalculateScore(MatchWinValue, MatchTieValue, 0);
 			}
 
-			// Create a "group" for any tied players:
+			// Create "groups" for any tied players:
 			List<List<int>> tiedGroups = new List<List<int>>();
 			for (int i = 0; i < Rankings.Count - 1;)
 			{
@@ -229,16 +288,21 @@ namespace Tournament.Structure
 				{
 					if (scores[i] != scores[j])
 					{
+						// Different scores; look for a new tie value.
 						break;
 					}
 
 					if (i + 1 == j)
 					{
+						// NEW tied group:
 						tiedGroups.Add(new List<int>());
 						tiedGroups[tiedGroups.Count - 1].Add(Rankings[i].Id);
 					}
+					// If we're here, scores[j-1] == scores[j]:
 					tiedGroups[tiedGroups.Count - 1].Add(Rankings[j].Id);
 				}
+
+				// Increment the loop:
 				i = j;
 			}
 			if (0 == tiedGroups.Count)
@@ -247,10 +311,11 @@ namespace Tournament.Structure
 				return false;
 			}
 			// else:
+
 			this.IsFinished = false;
 			List<MatchModel> newMatchModels = new List<MatchModel>();
 
-			// Create a bracket for each group:
+			// Create a temporary bracket for each group:
 			List<IBracket> tiebreakerBrackets = new List<IBracket>();
 			foreach (List<int> group in tiedGroups)
 			{
@@ -262,18 +327,19 @@ namespace Tournament.Structure
 				tiebreakerBrackets.Add(new RoundRobinBracket(pList));
 			}
 
-			// "Copy" matches from new pseudo-brackets onto the end of this bracket:
+			// Copy matches from new temp brackets onto the end of this bracket:
 			for (int r = 1; ; ++r) // Run through once for each new round
 			{
 				// Round-by-round, make a list of matches to add:
 				List<IMatch> currRound = new List<IMatch>();
-				foreach (IBracket bracket in tiebreakerBrackets.Where(b => b.NumberOfRounds >= r))
+				foreach (IBracket bracket in tiebreakerBrackets
+					.Where(b => b.NumberOfRounds >= r))
 				{
 					currRound.AddRange(bracket.GetRound(r));
 				}
 				if (0 == currRound.Count)
 				{
-					// No more new matches; break out:
+					// No more rounds to add; break out:
 					break;
 				}
 
@@ -289,127 +355,62 @@ namespace Tournament.Structure
 					match.AddPlayer(currRound[m].Players[1]);
 
 					Matches.Add(match.MatchNumber, match);
-					// Also add a model, for firing the event:
+					// Also add a model, for firing an event:
 					newMatchModels.Add(GetMatchModel(match));
 				}
 			}
 
-			// Fire event to notify that new Matches were made, and return:
+			// Fire event to notify that new Matches were created, then we're done:
 			OnRoundAdded(new BracketEventArgs(newMatchModels));
 			return true;
 		}
 		#endregion
 
 		#region Private Methods
+		/// <summary>
+		/// Processes the effects of adding a "game win" to a Match.
+		/// In round robins, simply updates whether the Bracket is finished.
+		/// </summary>
+		/// <param name="_matchNumber">Number of affected Match</param>
+		/// <param name="_slot">Slot of game winner: Defender or Challenger</param>
+		/// <returns>empty list</returns>
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			this.IsFinished = Matches.Values.All(m => m.IsFinished);
-#if ENABLE_TIEBREAKERS
-			// Check for, and create, Tiebreaker matches:
-			if (IsFinished && BracketType.ROUNDROBIN == this.BracketType)
-			{
-				// Calculate W/L scores for all players:
-				int[] scores = new int[Rankings.Count];
-				for (int i = 0; i < Rankings.Count; ++i)
-				{
-					scores[i] = Rankings[i].CalculateScore(MatchWinValue, MatchTieValue, 0);
-				}
-
-				// Create a "group" for any tied players:
-				List<List<int>> tiedGroups = new List<List<int>>();
-				for (int i = 0; i < Rankings.Count - 1; )
-				{
-					int j = i + 1;
-					for ( ; j < Rankings.Count; ++j)
-					{
-						if (scores[i] != scores[j])
-						{
-							break;
-						}
-
-						if (i + 1 == j)
-						{
-							tiedGroups.Add(new List<int>());
-							tiedGroups[tiedGroups.Count - 1].Add(Rankings[i].Id);
-						}
-						tiedGroups[tiedGroups.Count - 1].Add(Rankings[j].Id);
-					}
-					i = j;
-				}
-				if (0 == tiedGroups.Count)
-				{
-					// No ties: bracket is finished, so just leave:
-					return (new List<MatchModel>());
-				}
-				// else:
-				this.IsFinished = false;
-				List<MatchModel> newMatchModels = new List<MatchModel>();
-
-				// Create a bracket for each group:
-				List<IBracket> tiebreakerBrackets = new List<IBracket>();
-				foreach (List<int> group in tiedGroups)
-				{
-					List<IPlayer> pList = new List<IPlayer>();
-					foreach (int id in group)
-					{
-						pList.Add(Players.Find(p => p.Id == id));
-					}
-					tiebreakerBrackets.Add(new RoundRobinBracket(pList));
-				}
-
-				// "Copy" matches from new pseudo-brackets onto the end of this bracket:
-				int r = 0;
-				while (true) // Run through once for each new round
-				{
-					// Round-by-round, make a list of matches to add:
-					++r;
-					List<IMatch> currRound = new List<IMatch>();
-					foreach (IBracket bracket in tiebreakerBrackets.Where(b => b.NumberOfRounds >= r))
-					{
-						currRound.AddRange(bracket.GetRound(r));
-					}
-					if (0 == currRound.Count)
-					{
-						// No more new matches; break out:
-						break;
-					}
-
-					// Add a new round and copy applicable matches:
-					this.NumberOfRounds++;
-					for (int m = 0; m < currRound.Count; ++m)
-					{
-						Match match = new Match();
-						match.SetMatchNumber(++NumberOfMatches);
-						match.SetRoundIndex(NumberOfRounds);
-						match.SetMatchIndex(m + 1);
-						match.AddPlayer(currRound[m].Players[0]);
-						match.AddPlayer(currRound[m].Players[1]);
-
-						Matches.Add(match.MatchNumber, match);
-						// Also add a model, for firing the event:
-						newMatchModels.Add(GetMatchModel(match));
-					}
-				}
-
-				// Fire event to notify that new Matches were made:
-				OnRoundAdded(new BracketEventArgs(newMatchModels));
-			}
-#endif
 			return (new List<MatchModel>());
 		}
+
+		/// <summary>
+		/// Processes the effects of removing a game(s) from a Match.
+		/// In round robins, simply updates whether the Bracket is finished.
+		/// </summary>
+		/// <param name="_matchNumber">Number of affected Match</param>
+		/// <param name="_games">List of Games removed (if any)</param>
+		/// <param name="_formerMatchWinnerSlot">Slot of Match winner prior to removal</param>
+		/// <returns>empty list</returns>
 		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
 			this.IsFinished = (IsFinished && GetMatch(_matchNumber).IsFinished);
 			return (new List<MatchModel>());
 		}
+
+		/// <summary>
+		/// Applies effects to Rankings any time a Match is modified.
+		/// This updates match outcomes and score values for any affected players.
+		/// If the Match is not found, an exception is thrown.
+		/// </summary>
+		/// <param name="_matchNumber">Number of affected Match</param>
+		/// <param name="_games">List of Games removed (if any)</param>
+		/// <param name="_isAddition">Is the result being added or removed?</param>
+		/// <param name="_oldMatch">Model of the Match before the modification</param>
 		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 		{
 			IMatch match = GetMatch(_matchNumber);
 
 			if (null == _games)
 			{
-				// Case 1: Match winner was manually set.
-				// Apply outcome to rankings (but no games!):
+				// Case 1: Match winner is being manually set.
+				// Add the match outcome to Rankings (but no games!):
 				int winnerIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)(match.WinnerSlot)].Id);
 				PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
 					? PlayerSlot.Challenger : PlayerSlot.Defender;
@@ -420,8 +421,9 @@ namespace Tournament.Structure
 			}
 			else if (_oldMatch.IsManualWin && !(match.IsManualWin))
 			{
-				// Case 2: Match had a manual winner: being removed.
-				// Update rankings accordingly, ignoring individual game scores:
+				// Case 2: Match had a manual winner that is being removed.
+				// Remove the match outcome from Rankings,
+				// but ignore individual game scores:
 				int loserId = (_oldMatch.WinnerID == _oldMatch.DefenderID)
 					? _oldMatch.ChallengerID : _oldMatch.DefenderID;
 
@@ -432,7 +434,9 @@ namespace Tournament.Structure
 			}
 			else
 			{
-				// Standard case: Update score for new game(s):
+				// Standard case: Update score for new game(s).
+
+				// Find both Players' indexes in Rankings:
 				int defIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id);
 				int chalIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id);
 
@@ -463,12 +467,14 @@ namespace Tournament.Structure
 					if (PlayerSlot.Defender == match.WinnerSlot ||
 						PlayerSlot.Defender == oldWinnerSlot)
 					{
+						// Defender is or was the winner:
 						defenderOutcome = Outcome.Win;
 						challengerOutcome = Outcome.Loss;
 					}
 					else if (PlayerSlot.Challenger == match.WinnerSlot ||
 						PlayerSlot.Challenger == oldWinnerSlot)
 					{
+						// Challenger is or was the winner:
 						defenderOutcome = Outcome.Loss;
 						challengerOutcome = Outcome.Win;
 					}
@@ -489,20 +495,23 @@ namespace Tournament.Structure
 						// GameScore +1 for wins, -1 for losses
 						if (model.WinnerID == model.DefenderID)
 						{
+							// Defender win:
 							++defenderGameScore;
 							--challengerGameScore;
 						}
 						else if (model.WinnerID == model.ChallengerID)
 						{
+							// Challenger win:
 							--defenderGameScore;
 							++challengerGameScore;
 						}
+
 						// PointScore adjusts for "points" in each Game
 						defenderPointScore += model.DefenderScore;
 						challengerPointScore += model.ChallengerScore;
 					}
 
-					// Apply the Score updates:
+					// Apply the Score updates to Rankings:
 					Rankings[defIndex].UpdateScores
 						(defenderGameScore, defenderPointScore, _isAddition);
 					Rankings[chalIndex].UpdateScores
@@ -510,25 +519,41 @@ namespace Tournament.Structure
 				}
 			}
 
+			// Call UpdateRankings() to calculate advanced scoring values,
+			// and to sort the Rankings list appropriately:
 			UpdateRankings();
 		}
 
+		/// <summary>
+		/// Clears the Rankings, and recalculates them from the Matches list.
+		/// Sorts the Rankings.
+		/// If no Matches have begun, the Rankings will be set to initial values.
+		/// </summary>
 		protected override void RecalculateRankings()
 		{
+			// Set initial values:
 			foreach (IPlayerScore ps in Rankings)
 			{
 				ps.Rank = 1;
 				ps.ResetScore();
 			}
 
+			/*
+			 * Since this method is used in Swiss brackets
+			 * and Swiss has some Matches with no Players,
+			 * we throw those out when updating the Rankings.
+			*/
 			foreach (IMatch match in Matches.Values.Where(m => !(m.Players.Contains(null))))
 			{
+				// For every Match...
+
+				// Find indexes for both players in the Rankings list:
 				int defIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Defender].Id);
 				int chalIndex = Rankings.FindIndex(r => r.Id == match.Players[(int)PlayerSlot.Challenger].Id);
 
 				if (match.IsFinished)
 				{
-					// Apply the match outcome:
+					// Determine the match outcome:
 					Outcome defOutcome = Outcome.Tie;
 					Outcome chalOutcome = Outcome.Tie;
 					switch (match.WinnerSlot)
@@ -543,38 +568,73 @@ namespace Tournament.Structure
 							break;
 					}
 
+					// Add the Outcome to relevant player rankings:
 					Rankings[defIndex].AddMatchOutcome(defOutcome, true);
 					Rankings[chalIndex].AddMatchOutcome(chalOutcome, true);
 				}
+
+				// If this Match has a winner OR any Games played:
 				if (match.Games.Count > 0 && !(match.IsManualWin))
 				{
-					// Update the player scores:
-					int defScore = 0, chalScore = 0;
+					// Update the player scores for each Game:
+					int defGameScore = 0, chalGameScore = 0;
+					int defPointScore = 0, chalPointScore = 0;
 					foreach (IGame game in match.Games)
 					{
-						defScore += game.Score[(int)PlayerSlot.Defender];
-						chalScore += game.Score[(int)PlayerSlot.Challenger];
+						// Update each player's GameScore:
+						switch (game.WinnerSlot)
+						{
+							case PlayerSlot.Defender:
+								++defGameScore;
+								--chalGameScore;
+								break;
+							case PlayerSlot.Challenger:
+								--defGameScore;
+								++chalGameScore;
+								break;
+						}
+						// Update each player's PointScore:
+						defPointScore += game.Score[(int)PlayerSlot.Defender];
+						chalPointScore += game.Score[(int)PlayerSlot.Challenger];
 					}
 
+					// Apply the score updates to Rankings:
 					Rankings[defIndex].UpdateScores
-						(match.Score[(int)PlayerSlot.Defender], defScore, true);
+						(defGameScore, defPointScore, true);
 					Rankings[chalIndex].UpdateScores
-						(match.Score[(int)PlayerSlot.Challenger], chalScore, true);
+						(chalGameScore, chalPointScore, true);
 				}
 			}
 
+			// Call UpdateRankings() to calculate advanced scoring values,
+			// and to sort the Rankings list appropriately:
 			UpdateRankings();
 		}
+
+		/// <summary>
+		/// Sorts the Rankings list, and assigns ranks.
+		/// This also calculates each player's OpponentsScore,
+		/// a strength-of-schedule metric.
+		/// </summary>
 		protected override void UpdateRankings()
 		{
 			// Calculate MatchScore values for each player:
 			int[] playerScores = new int[Rankings.Count];
 			for (int p = 0; p < Rankings.Count; ++p)
 			{
-				Rankings[p].ResetOpponentsScore();
 				playerScores[p] = Rankings[p].CalculateScore(MatchWinValue, MatchTieValue, 0);
+
+				// Also reset their OpponentsScore (we'll update it below).
+				Rankings[p].ResetOpponentsScore();
 			}
+
 			// Calculate & Assign OpponentsPoints value for each player:
+			/*
+			 * Here, we find every opponent a player has faced,
+			 * and total up those opponents' MatchScores.
+			 * This provides a "strength-of-schedule" value
+			 * for the Player in question: high numbers mean tough competition.
+			*/
 			foreach (IMatch match in Matches.Values.Where(m => m.IsFinished).ToList())
 			{
 				Rankings
@@ -587,10 +647,13 @@ namespace Tournament.Structure
 						.FindIndex(p => p.Id == match.Players[(int)PlayerSlot.Challenger].Id)]);
 			}
 
-			// Sort the list and apply Ranks:
+			// Sort the list, and apply Ranks:
 			Rankings.Sort(SortRankingScores);
 			for (int i = 0; i < Rankings.Count; ++i)
 			{
+				// FUTURE NOTE:
+				// Here, we may want to have tied rank values for players with equal W/L scores.
+				// (the list would still be sorted by the metrics we calculated)
 				Rankings[i].Rank = i + 1;
 			}
 		}

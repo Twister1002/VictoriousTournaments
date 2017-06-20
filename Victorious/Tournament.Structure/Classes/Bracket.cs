@@ -585,15 +585,12 @@ namespace Tournament.Structure
 		/// If the Match is finished or not ready, an exception is thrown.
 		/// If game-data input is invalid, an exception is thrown.
 		/// </summary>
-		/// <remarks>
-		/// This method is overriden in Group Stages.
-		/// </remarks>
 		/// <param name="_matchNumber">Number of Match to add to</param>
 		/// <param name="_defenderScore">First player's score</param>
 		/// <param name="_challengerScore">Second player's score</param>
 		/// <param name="_winnerSlot">Game winner: Defender or Challenger</param>
 		/// <returns>Model of added Game</returns>
-		public virtual GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		public GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			Match match = GetInternalMatch(_matchNumber);
 			MatchModel oldModel = GetMatchModel(match);
@@ -626,16 +623,13 @@ namespace Tournament.Structure
 		/// If Match or Game is not fond, an exception is thrown.
 		/// If game-data input is invalid, an exception is thrown.
 		/// </summary>
-		/// <remarks>
-		/// This method is overriden in Group Stages.
-		/// </remarks>
 		/// <param name="_matchNumber">Number of Match to update</param>
 		/// <param name="_gameNumber">Number of Game to update</param>
 		/// <param name="_defenderScore">First Player's score</param>
 		/// <param name="_challengerScore">Second Player's score</param>
 		/// <param name="_winnerSlot">Game winner: Defender or Challenger</param>
 		/// <returns></returns>
-		public virtual GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
+		public GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
 			Match match = GetInternalMatch(_matchNumber);
 			int gameIndex = match.Games.FindIndex(g => g.GameNumber == _gameNumber);
@@ -714,12 +708,9 @@ namespace Tournament.Structure
 		/// If Match is not found, an exception is thrown.
 		/// If Match has no games, an exception is thrown.
 		/// </summary>
-		/// <remarks>
-		/// This method is overriden in Group Stages.
-		/// </remarks>
 		/// <param name="_matchNumber">Match to alter</param>
 		/// <returns>Model of removed Game</returns>
-		public virtual GameModel RemoveLastGame(int _matchNumber)
+		public GameModel RemoveLastGame(int _matchNumber)
 		{
 			// Find the Match and Game in question:
 			IGame lastGame = GetInternalMatch(_matchNumber).Games.LastOrDefault();
@@ -743,13 +734,10 @@ namespace Tournament.Structure
 		/// May fire events: MatchesModified, GamesDeleted.
 		/// If Match or Game is not found, an exception is thrown.
 		/// </summary>
-		/// <remarks>
-		/// This method is overriden in Group Stages.
-		/// </remarks>
 		/// <param name="_matchNumber">Match to alter</param>
 		/// <param name="_gameNumber">Game to remove</param>
 		/// <returns>Model of removed Game</returns>
-		public virtual GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
+		public GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
 		{
 			Match match = GetInternalMatch(_matchNumber);
 			MatchModel oldMatchModel = GetMatchModel(match);
@@ -779,12 +767,9 @@ namespace Tournament.Structure
 		/// If the Match is finished or not ready, an exception is thrown.
 		/// If the winner slot is invalid, an exception is thrown.
 		/// </summary>
-		/// <remarks>
-		/// This method is overriden in Group Stages.
-		/// </remarks>
 		/// <param name="_matchNumber">Number of Match to alter</param>
 		/// <param name="_winnerSlot">Slot of winner: Defender or Challenger</param>
-		public virtual void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
+		public void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
 		{
 			Match match = GetInternalMatch(_matchNumber);
 			MatchModel oldMatchModel = GetMatchModel(match);
@@ -839,12 +824,9 @@ namespace Tournament.Structure
 		/// May fire events: MatchesModified, GamesDeleted.
 		/// If Match is not found, an exception is thrown.
 		/// </summary>
-		/// <remarks>
-		/// This method is overriden in Group Stages.
-		/// </remarks>
 		/// <param name="_matchNumber">Number of Match to alter</param>
 		/// <returns>Models of any deleted Games</returns>
-		public virtual List<GameModel> ResetMatchScore(int _matchNumber)
+		public List<GameModel> ResetMatchScore(int _matchNumber)
 		{
 			Match match = GetInternalMatch(_matchNumber);
 			PlayerSlot winnerSlot = match.WinnerSlot;
