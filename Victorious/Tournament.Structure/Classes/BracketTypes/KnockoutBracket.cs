@@ -106,16 +106,20 @@ namespace Tournament.Structure
 			int nextLoserNumber;
 			Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
+			// Only advance players if the Match is finished.
 			if (match.IsFinished)
 			{
+				// Check if the winner has a Match to advance to:
 				if (nextWinnerNumber > 0)
 				{
-					// Advance the winning player:
+					// Find the next Match:
 					Match nextWinMatch = GetInternalMatch(nextWinnerNumber);
+					// Find which PlayerSlot to move the winner into:
 					for (int i = 0; i < nextWinMatch.PreviousMatchNumbers.Length; ++i)
 					{
 						if (_matchNumber == nextWinMatch.PreviousMatchNumbers[i])
 						{
+							// Advance the winner:
 							nextWinMatch.AddPlayer
 								(match.Players[(int)(match.WinnerSlot)], (PlayerSlot)i);
 							alteredMatches.Add(GetMatchModel(nextWinMatch));
@@ -124,10 +128,12 @@ namespace Tournament.Structure
 					}
 				}
 
+				// Check if the loser has a Match to advance to:
 				if (nextLoserNumber > 0)
 				{
-					// Advance the losing player:
+					// Find the next Match:
 					Match nextLosMatch = GetInternalMatch(nextLoserNumber);
+					// Find which PlayerSlot to move the loser into:
 					for (int i = 0; i < nextLosMatch.PreviousMatchNumbers.Length; ++i)
 					{
 						if (_matchNumber == nextLosMatch.PreviousMatchNumbers[i])
@@ -136,6 +142,7 @@ namespace Tournament.Structure
 								? PlayerSlot.Challenger
 								: PlayerSlot.Defender;
 
+							// Advance the loser:
 							nextLosMatch.AddPlayer(match.Players[(int)loserSlot], (PlayerSlot)i);
 							alteredMatches.Add(GetMatchModel(nextLosMatch));
 							break;
@@ -144,6 +151,7 @@ namespace Tournament.Structure
 				}
 			}
 
+			// Return a list of any MatchModels we changed:
 			return alteredMatches;
 		}
 
@@ -164,6 +172,9 @@ namespace Tournament.Structure
 			int nextLoserNumber;
 			Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
+			// We only need to check other Matches if the winner of this one changed.
+			// (If the winner changed, that means there previous was a winner,
+			// and there isn't one anymore. That means we need to revert things.)
 			if (match.WinnerSlot != _formerMatchWinnerSlot)
 			{
 				this.IsFinished = false;
@@ -172,11 +183,19 @@ namespace Tournament.Structure
 					? PlayerSlot.Challenger
 					: PlayerSlot.Defender;
 
+				// RemovePlayerFromFutureMatches() is a recursive method.
+				// We send it a Player, and it removes that Player from
+				// any Matches further along the chain.
+				// Here, we call it twice: for the winner and for the loser.
 				alteredMatches.AddRange(RemovePlayerFromFutureMatches
 					(nextWinnerNumber, match.Players[(int)_formerMatchWinnerSlot].Id));
 				List<MatchModel> secondList = RemovePlayerFromFutureMatches
 					(nextLoserNumber, match.Players[(int)loserSlot].Id);
 
+				// Since we called the recursive method twice,
+				// and each of those calls can multiply,
+				// we may have affected a particular Match twice.
+				// We need to check for that, and if found, only keep the last updated Model.
 				List<int> dupeMatchNums = alteredMatches.Select(m => m.MatchNumber).ToList()
 					.Intersect(secondList.Select(m => m.MatchNumber).ToList())
 					.ToList();
@@ -184,6 +203,7 @@ namespace Tournament.Structure
 				alteredMatches.AddRange(secondList);
 			}
 
+			// Return the list of any MatchModels we changed:
 			return alteredMatches;
 		}
 
@@ -200,6 +220,9 @@ namespace Tournament.Structure
 		/// <param name="_oldMatch">Model of the Match before the modification</param>
 		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
 		{
+			// Enter here if we're adding a win,
+			// if the Match formerly had no winner,
+			// and if the loser has no new Match to advance to:
 			if (_isAddition &&
 				_oldMatch.WinnerID.GetValueOrDefault(-1) < 0 &&
 				_oldMatch.NextLoserMatchNumber.GetValueOrDefault(-1) < 0)
@@ -208,6 +231,7 @@ namespace Tournament.Structure
 				int nextLoserNumber;
 				Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
+				// For knockout brackets, we only care if the Match finished:
 				if (match.IsFinished)
 				{
 					// Add losing Player to Rankings:
@@ -220,20 +244,26 @@ namespace Tournament.Structure
 
 					if (nextWinnerNumber < 0)
 					{
-						// Finals match: Add winner to Rankings:
+						// If the winner has nowhere to advance to, this is the final Match.
+						// Add the winner to the top of the Rankings:
 						Rankings.Add(new PlayerScore
 							(match.Players[(int)(match.WinnerSlot)].Id,
 							match.Players[(int)(match.WinnerSlot)].Name,
 							1));
+						// Set the Bracket as finished:
 						IsFinished = true;
 					}
 
+					// This sorts the list by player rank.
+					// Tied ranks are ordered by player seed.
 					Rankings.Sort(SortRankingRanks);
 				}
 			}
 			else if (!_isAddition &&
 				_oldMatch.WinnerID.GetValueOrDefault(-1) > -1)
 			{
+				// If we just undid a match win, updating the score can be very complicated.
+				// Instead, we just clear the Rankings and rebuild them:
 				RecalculateRankings();
 			}
 		}
@@ -250,7 +280,7 @@ namespace Tournament.Structure
 		/// Clears the Rankings, and recalculates them from the Matches list.
 		/// Finds every eliminated player, calculates his rank, and adds him to the Rankings.
 		/// Sorts the Rankings.
-		/// If no players are eliminated, the Rankings will be an empty list.
+		/// If no players have been eliminated, the Rankings will be an empty list.
 		/// </summary>
 		protected override void RecalculateRankings()
 		{
@@ -267,6 +297,10 @@ namespace Tournament.Structure
 					Match match = GetInternalMatch(n);
 					if (match.NextLoserMatchNumber > 0)
 					{
+						// This is a special case check.
+						// If we're here, it means the bracket is double elimination,
+						// and we've reached the upper bracket.
+						// Breaking out now will save us some process cycles.
 						break;
 					}
 
@@ -285,13 +319,16 @@ namespace Tournament.Structure
 				Match finalMatch = GetInternalMatch(NumberOfMatches);
 				if (finalMatch.IsFinished)
 				{
-					// Add Finals winner to Rankings:
+					// Add Finals winner to the top of the Rankings:
 					IPlayer winningPlayer = finalMatch
 						.Players[(int)finalMatch.WinnerSlot];
 					Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, 1));
+					// Set the Bracket as finished:
 					this.IsFinished = true;
 				}
 
+				// This sorts the list by player rank.
+				// Tied ranks are ordered by player seed.
 				Rankings.Sort(SortRankingRanks);
 			}
 		}
@@ -319,6 +356,7 @@ namespace Tournament.Structure
 		{
 			if (_matchNumber < 1 || _playerId == -1)
 			{
+				// This is the recursive break condition.
 				return (new List<MatchModel>());
 			}
 
@@ -327,20 +365,25 @@ namespace Tournament.Structure
 			int nextLoserNumber;
 			Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
 
+			// If this Match doesn't contain the given Player, we can stop.
 			if (match.Players.Any(p => p?.Id == _playerId))
 			{
+				// If this match is finished, we need to continue to the next round:
 				if (match.IsFinished)
 				{
 					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
 						? PlayerSlot.Challenger
 						: PlayerSlot.Defender;
 
-					// Remove any advanced Players from future Matches:
+					// Remove any advanced Players from future Matches.
+					// Again, this is called twice: for winner and loser.
 					alteredMatches.AddRange(RemovePlayerFromFutureMatches
 						(nextWinnerNumber, match.Players[(int)(match.WinnerSlot)].Id));
 					List<MatchModel> secondList = RemovePlayerFromFutureMatches
 						(nextLoserNumber, match.Players[(int)loserSlot].Id);
 
+					// If we affected the same Match twice down the line,
+					// only save the final updated Model:
 					List<int> dupeNumbers = alteredMatches.Select(m => m.MatchNumber).ToList()
 						.Intersect(secondList.Select(m => m.MatchNumber).ToList())
 						.ToList();
@@ -348,13 +391,18 @@ namespace Tournament.Structure
 					alteredMatches.AddRange(secondList);
 				}
 
+				// Fire an event to notify we're deleting this Match's Games:
 				OnGamesDeleted(match.Games);
+				
+				// Remove the Player from this Match:
 				match.RemovePlayer(_playerId);
+
+				// Save the updated Model of this Match, for event firing:
+				alteredMatches.RemoveAll(m => m.MatchNumber == _matchNumber);
+				alteredMatches.Add(GetMatchModel(match));
 			}
 
-			alteredMatches.RemoveAll(m => m.MatchNumber == _matchNumber);
-			alteredMatches.Add(GetMatchModel(match));
-
+			// Return the list of Matches we're changing:
 			return alteredMatches;
 		}
 
