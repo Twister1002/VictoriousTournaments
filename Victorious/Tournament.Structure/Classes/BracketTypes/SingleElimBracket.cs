@@ -17,6 +17,7 @@ namespace Tournament.Structure
 		//public bool IsFinished
 		//public List<IPlayer> Players
 		//public List<IPlayerScore> Rankings
+		//public int AdvancingPlayers
 		//public int MaxRounds = 0
 		//protected Dictionary<int, Match> Matches
 		//public int NumberOfRounds
@@ -48,8 +49,17 @@ namespace Tournament.Structure
 		{ }
 		public SingleElimBracket(BracketModel _model)
 		{
+			// Call a helper method to copy the bracket status fields,
+			// and to load the playerlist:
 			SetDataFromModel(_model);
 
+			/*
+			 * Since this method is extended in child classes,
+			 * we may be loading a lower bracket.
+			 * We need to add a couple checks here to make sure
+			 * we don't accidentally load lower bracket Matches
+			 * into our upper bracket.
+			 */
 			int totalUBMatches = Players.Count - 1;
 			if (_model.Matches.Count > 0)
 			{
@@ -61,7 +71,7 @@ namespace Tournament.Structure
 					}
 					else
 					{
-						// Match doesn't belong in upper bracket, so break out:
+						// Match doesn't belong in upper bracket, so we're done:
 						break;
 					}
 				}
