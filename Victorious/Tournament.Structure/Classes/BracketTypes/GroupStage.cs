@@ -29,11 +29,23 @@ namespace Tournament.Structure
 		//protected int MatchTieValue
 		public int NumberOfGroups
 		{ get; set; }
+
+		/// <summary>
+		/// A list of PlayerScores for each group.
+		/// Each group is sorted.
+		/// Each PlayerScore is a copied reference from the main Rankings.
+		/// These can be referenced with GetGroupRanking().
+		/// </summary>
 		protected List<List<IPlayerScore>> GroupRankings
 		{ get; set; }
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Verifies this bracket's status is legal.
+		/// This is called before allowing play to begin.
+		/// </summary>
+		/// <returns>true if okay, false if errors</returns>
 		public override bool Validate()
 		{
 			if (false == base.Validate())
@@ -51,6 +63,17 @@ namespace Tournament.Structure
 		}
 
 		#region Player Methods
+		/// <summary>
+		/// Removes a Player from the playerlist,
+		/// and replaces him with a given Player.
+		/// The new Player inherits the old's seed value.
+		/// The removed Player is replaced in all groups, Matches, Games, & Rankings
+		/// by the new Player.
+		/// May fire MatchesModified event, if updates happen.
+		/// If the Player-to-replace's index is invalid, an exception is thrown.
+		/// </summary>
+		/// <param name="_player">Player to add</param>
+		/// <param name="_index">Index (in playerlist) of Player to remove</param>
 		public override void ReplacePlayer(IPlayer _player, int _index)
 		{
 			int? oldPlayerId = Players[_index]?.Id;
@@ -146,7 +169,13 @@ namespace Tournament.Structure
 		#endregion
 #endif
 		#region Accessors
-		public override BracketModel GetModel(int _tournamentID = 0)
+		/// <summary>
+		/// Creates a Model of this Bracket's current state.
+		/// Any contained objects (Players, Matches) are also converted into Models.
+		/// </summary>
+		/// <param name="_tournamentID">ID of containing Tournament</param>
+		/// <returns>Matching BracketModel</returns>
+		public override BracketModel GetModel(int _tournamentID)
 		{
 			BracketModel model = base.GetModel(_tournamentID);
 			model.NumberOfGroups = this.NumberOfGroups;
@@ -154,6 +183,13 @@ namespace Tournament.Structure
 			return model;
 		}
 
+		/// <summary>
+		/// Gets the ordered Rankings list for the given group.
+		/// If the given group number is <1, an exception is thrown.
+		/// If the group number is out of range, an empty list is returned.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <returns>Sorted list of IPlayerScore rankings objects</returns>
 		public List<IPlayerScore> GetGroupRanking(int _groupNumber)
 		{
 			if (_groupNumber < 1)
@@ -169,6 +205,15 @@ namespace Tournament.Structure
 			return GroupRankings[_groupNumber - 1];
 		}
 
+		/// <summary>
+		/// Gets all Matches in a specified round, from the given group.
+		/// If the group number is <1, an exception is thrown.
+		/// If the round number is <1, an exception is thrown.
+		/// If either is otherwise out-of-range, an empty list is returned.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <param name="_round">1-indexed</param>
+		/// <returns>Sorted list of IMatches in the given group's round</returns>
 		public List<IMatch> GetRound(int _groupNumber, int _round)
 		{
 			if (_groupNumber < 1)
@@ -185,6 +230,13 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		/// <summary>
+		/// Takes the playerlist and NumberOfGroups,
+		/// and divides (or re-divides) the players into the correct groups.
+		/// This can be used to determine how to create the brackets
+		/// or the sub-rankings.
+		/// </summary>
+		/// <returns>List of groups (each of which is a list of players)</returns>
 		protected List<List<IPlayer>> DividePlayersIntoGroups()
 		{
 			List<List<IPlayer>> groups = new List<List<IPlayer>>();

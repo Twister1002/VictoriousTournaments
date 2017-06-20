@@ -878,7 +878,7 @@ namespace Tournament.Structure
 		/// </remarks>
 		/// <param name="_tournamentID">ID of containing Tournament</param>
 		/// <returns>Matching BracketModel</returns>
-		public virtual BracketModel GetModel(int _tournamentID = 0)
+		public virtual BracketModel GetModel(int _tournamentID)
 		{
 			BracketModel model = new BracketModel();
 			model.TournamentID = _tournamentID;
