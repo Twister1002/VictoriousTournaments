@@ -80,11 +80,15 @@ namespace Tournament.Structure
 
 			base.ReplacePlayer(_player, _index);
 
+			// After replacing the old player,
+			// we also need to find & replace him in the group-specific Rankings:
 			foreach (List<IPlayerScore> groupRanks in GroupRankings)
 			{
 				int i = groupRanks.FindIndex(r => r.Id == oldPlayerId.Value);
 				if (i > -1)
 				{
+					// The player will always only be in one group.
+					// After we find it, replace him and break out.
 					groupRanks[i].ReplacePlayerData(_player.Id, _player.Name);
 					break;
 				}
@@ -235,6 +239,8 @@ namespace Tournament.Structure
 		/// and divides (or re-divides) the players into the correct groups.
 		/// This can be used to determine how to create the brackets
 		/// or the sub-rankings.
+		/// If the type of group-forming is to be changed,
+		/// simply modify this method.
 		/// </summary>
 		/// <returns>List of groups (each of which is a list of players)</returns>
 		protected List<List<IPlayer>> DividePlayersIntoGroups()

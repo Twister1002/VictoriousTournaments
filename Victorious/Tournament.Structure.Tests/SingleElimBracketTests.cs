@@ -1506,7 +1506,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			BracketModel bModel = b.GetModel();
+			BracketModel bModel = b.GetModel(0);
 			Assert.IsInstanceOfType(bModel, typeof(BracketModel));
 		}
 		[TestMethod]
@@ -1522,7 +1522,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			BracketModel bModel = b.GetModel();
+			BracketModel bModel = b.GetModel(0);
 			Assert.AreEqual(pList.Count, bModel.TournamentUsersBrackets.Count);
 		}
 		[TestMethod]
@@ -1538,7 +1538,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new SingleElimBracket(pList);
 
-			BracketModel bModel = b.GetModel();
+			BracketModel bModel = b.GetModel(0);
 			Assert.AreEqual(b.NumberOfMatches, bModel.Matches.Count);
 		}
 		[TestMethod]
@@ -1558,7 +1558,7 @@ namespace Tournament.Structure.Tests
 				b.AddGame(n, 15, 5, PlayerSlot.Defender);
 			}
 			
-			BracketModel bModel = b.GetModel();
+			BracketModel bModel = b.GetModel(0);
 			Assert.IsTrue(bModel.Matches.ToList().TrueForAll(m => m.Games.Count == 1));
 		}
 
@@ -1580,7 +1580,7 @@ namespace Tournament.Structure.Tests
 				b.AddGame(n, 15, 5, PlayerSlot.Defender);
 			}
 
-			BracketModel bModel = b.GetModel();
+			BracketModel bModel = b.GetModel(0);
 			IBracket b2 = new SingleElimBracket(bModel);
 			Assert.IsTrue(b2.IsFinished);
 		}
@@ -1602,7 +1602,7 @@ namespace Tournament.Structure.Tests
 				b.AddGame(n, 15, 5, PlayerSlot.Defender);
 			}
 
-			BracketModel bModel = b.GetModel();
+			BracketModel bModel = b.GetModel(0);
 			IBracket b2 = new SingleElimBracket(bModel);
 			bool allMatchesAre1to0 = true;
 			for (int n = 1; n <= b.NumberOfMatches; ++n)
@@ -1634,7 +1634,7 @@ namespace Tournament.Structure.Tests
 				b.AddGame(n, 15, 5, PlayerSlot.Defender);
 			}
 
-			BracketModel bModel = b.GetModel();
+			BracketModel bModel = b.GetModel(0);
 			IBracket b2 = new SingleElimBracket(bModel);
 			bool allMatchesContainGames = true;
 			for (int n = 1; n <= b.NumberOfMatches; ++n)
