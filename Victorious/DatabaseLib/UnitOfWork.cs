@@ -39,7 +39,7 @@ namespace DatabaseLib
             if (name != null)
             {
                 context = new VictoriousEntities(name);
-                context.Configuration.AutoDetectChangesEnabled = false;
+                context.Configuration.AutoDetectChangesEnabled = true;
             }
             if (context != null)
             {

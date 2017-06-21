@@ -31,7 +31,7 @@ namespace DatabaseLib
         public Repository(VictoriousEntities _context)
         {
             this.context = _context;
-            context.Configuration.AutoDetectChangesEnabled = false;
+            context.Configuration.AutoDetectChangesEnabled = true;
             this.dbSet = context.Set<TEntity>();
 
         }
