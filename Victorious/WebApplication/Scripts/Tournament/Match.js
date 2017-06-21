@@ -152,7 +152,7 @@
                         return;
                     }
                     
-                    UpdateMatch(json.data, match);
+                    UpdateMatch(json.data, match, true);
                 }
 
                 console.log(json.message);
@@ -239,7 +239,7 @@
         
     }
 
-    function UpdateMatch(matchData, $match) {
+    function UpdateMatch(matchData, $match, autoclose) {
         // Update the overview of the match
         $.each(matchData.matches, function (i, data) {
             $match = $(".TournamentMatch[data-id='" + data.matchId + "']");
@@ -262,6 +262,13 @@
             // Update the Game data 
             $match.find(".TournamentGames .defender.name").text(data.defender.name);
             $match.find(".TournamentGames .challenger.name").text(data.challenger.name);
+
+            // Is the original match finished? 
+            if (data.matchId == $match.data("id") && autoclose) {
+                if (data.finished) {
+                    $match.find(".TournamentGames").removeClass("open");
+                }
+            }
 
             // Add the games to the match
             UpdateGamesFromMatch(data, $match);
@@ -326,8 +333,8 @@
         }
     }
 
-    function UpdateTournamentOptions(jsonData, $inBracket) {
-        if (jsonData.bracketFinished) {
+    function UpdateTournamentOptions(data, $inBracket) {
+        if (data.bracketFinished) {
             $inBracket.closest(".bracket").find(".options .BracketLock").removeClass("hide");
         }
         else {
