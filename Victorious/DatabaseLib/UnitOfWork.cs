@@ -10,6 +10,11 @@ using System.Data.Entity.Validation;
 
 namespace DatabaseLib
 {
+    /// <summary>
+    /// This class contains the database context and all repositories for CRUD of database objects.
+    /// These repositories are utilized in the service classes.
+    /// There should only be one instance of this class in existance at any time, to avoid conflicts within the context.
+    /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
         private VictoriousEntities context = new VictoriousEntities();
@@ -34,6 +39,11 @@ namespace DatabaseLib
 
         Exception exception;
 
+        /// <summary>
+        /// Constructor for the UnitOfWork class. 
+        /// </summary>
+        /// <param name="name"> Optional string for the name of the connection string used to connect to the database. </param>
+        /// <param name="context"> Optional </param>
         public UnitOfWork(string name = null, VictoriousEntities context = null)
         {
             if (name != null)
