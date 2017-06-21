@@ -415,7 +415,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new RoundRobinGroups(pList, 4);
 
-			BracketModel bModel = b.GetModel();
+			BracketModel bModel = b.GetModel(0);
 			Assert.AreEqual(pList.Count, bModel.TournamentUsersBrackets.Count);
 		}
 		[TestMethod]
@@ -431,7 +431,7 @@ namespace Tournament.Structure.Tests
 			}
 			IBracket b = new RoundRobinGroups(pList, 4);
 
-			BracketModel bModel = b.GetModel();
+			BracketModel bModel = b.GetModel(0);
 			Assert.AreEqual(b.NumberOfMatches, bModel.Matches.Count);
 		}
 

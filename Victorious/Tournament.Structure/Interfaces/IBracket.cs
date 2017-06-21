@@ -268,7 +268,7 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_tournamentID">ID of this Bracket's Tournament</param>
 		/// <returns>BracketModel</returns>
-		BracketModel GetModel(int _tournamentID = 0);
+		BracketModel GetModel(int _tournamentID);
 
 		/// <summary>
 		/// Get all Matches in specified round.

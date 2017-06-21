@@ -44,16 +44,6 @@ namespace Tournament.Structure.Tests
 		[TestMethod]
 		[TestCategory("SwissBracket")]
 		[TestCategory("Swiss CreateBracket")]
-		[ExpectedException(typeof(BracketException))]
-		public void SwissCreateBracket_ThrowsException_WithNegativeGPM()
-		{
-			IBracket b = new SwissBracket(new List<IPlayer>(), PairingMethod.Slide, -1);
-
-			Assert.AreEqual(1, 2);
-		}
-		[TestMethod]
-		[TestCategory("SwissBracket")]
-		[TestCategory("Swiss CreateBracket")]
 		public void SwissCreateBracket_GeneratesFirstRound()
 		{
 			List<IPlayer> pList = new List<IPlayer>();
