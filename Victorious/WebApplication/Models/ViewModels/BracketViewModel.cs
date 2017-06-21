@@ -5,7 +5,7 @@ using System.Web;
 
 namespace WebApplication.Models.ViewModels
 {
-    public class BracketViewModel
+    public class BracketViewModel : ViewModel
     {
         public int BracketTypeID { get; set; }
         public int NumberOfRounds { get; set; }

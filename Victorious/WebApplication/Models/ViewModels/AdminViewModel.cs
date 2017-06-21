@@ -6,7 +6,7 @@ using System.Web;
 
 namespace WebApplication.Models.ViewModels
 {
-    public class AdminViewModel
+    public class AdminViewModel : ViewModel
     {
         [Display(Name = "Platform")]
         [DataType(DataType.Text)]

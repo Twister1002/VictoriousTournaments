@@ -11,6 +11,7 @@ namespace WebApplication.Models
 {
     public class Tournament : Model, IViewModel<TournamentViewModel>
     {
+        private int maxBrackets = 2;
         private bool TempFixMatchObjects = true;
         private Tournaments.ITournament Tourny;
         public TournamentViewModel viewModel { get; private set; }
@@ -96,7 +97,16 @@ namespace WebApplication.Models
         /// <returns>A Bracket wrapper class</returns>
         public Bracket GetBracket(int bracketId)
         {
-            return new Bracket(services, Tourny.Brackets.Single(x => x.Id == bracketId), Model.Brackets.Single(x=>x.BracketID == bracketId));
+            // Get the current bracket
+            Tournaments.IBracket bracket = Tourny.Brackets.Single(x => x.Id == bracketId);
+            bool canModify = Tourny.Brackets.ElementAtOrDefault(Tourny.Brackets.IndexOf(bracket) + 1)?.IsFinalized == true ? false : true;
+
+            return new Bracket(
+                services,
+                bracket,
+                Model.Brackets.Single(x => x.BracketID == bracketId),
+                canModify
+            );
         }
 
         /// <summary>
@@ -106,29 +116,23 @@ namespace WebApplication.Models
         public List<Bracket> GetBrackets()
         {
             List<Bracket> brackets = new List<Bracket>();
-            foreach (Tournaments.IBracket bracket in Tourny.Brackets)
+            for (int i = 0; i < Tourny.Brackets.Count; i++)
             {
-                brackets.Add(new Bracket(services, bracket, Model.Brackets.Single(x=>x.BracketID == bracket.Id)));
+                Tournaments.IBracket bracket = Tourny.Brackets.ElementAt(i);
+                Tournaments.IBracket nextBracket = Tourny.Brackets.ElementAtOrDefault(i + 1);
+                bool canModify = Tourny.Brackets.ElementAtOrDefault(Tourny.Brackets.IndexOf(bracket) + 1)?.IsFinalized == true ? false : true;
+
+                brackets.Add(
+                    new Bracket(
+                        services,
+                        bracket,
+                        Model.Brackets.Single(x => x.BracketID == bracket.Id),
+                        canModify
+                    )
+                );
             }
 
             return brackets;
-        }
-
-        /// <summary>
-        /// Adds the information changed within a bracketModel to be reflected into the entity's object
-        /// </summary>
-        /// <param name="bracket">The model of the bracket to get information from</param>
-        /// <param name="bracketId">the ID of the bracket</param>
-        /// <returns>The model to update</returns>
-        private BracketModel ApplyBracketInfo(BracketModel bracket)
-        {
-            BracketModel orig = Model.Brackets.Single(x => x.BracketID == bracket.BracketID);
-
-            orig.Finalized = bracket.Finalized;
-            orig.Matches = bracket.Matches;
-            orig.TournamentUsersBrackets = bracket.TournamentUsersBrackets;
-
-            return orig;
         }
         #endregion
 
@@ -216,13 +220,34 @@ namespace WebApplication.Models
 
             if (nextBracket != null)
             {
-                Tourny.AdvancePlayersByRanking(currentBracket, nextBracket);
-                BracketModel bracketModel = ApplyBracketInfo(nextBracket.GetModel(Model.TournamentID));
+                BracketModel nextBracketModel = Model.Brackets.Single(x => x.BracketID == nextBracket.Id);
 
-                services.Tournament.UpdateBracket(bracketModel);
+                List<TournamentUsersBracketModel> usersToProceed = new List<TournamentUsersBracketModel>();
+                Tourny.AdvancePlayersByRanking(currentBracket, nextBracket);
+
+                //nextBracketModel.TournamentUsersBrackets = nextBracket.GetModel(Model.TournamentID).TournamentUsersBrackets;
+
+                foreach (Tournaments.IPlayer player in nextBracket.Players)
+                {
+                    TournamentUsersBracketModel user = new TournamentUsersBracketModel()
+                    {
+                        BracketID = nextBracket.Id,
+                        TournamentID = Model.TournamentID,
+                        TournamentUserID = player.Id,
+                        Seed = nextBracket.GetPlayerSeed(player.Id)
+                    };
+
+                    usersToProceed.Add(user);
+                }
+
+                nextBracketModel.TournamentUsersBrackets = usersToProceed;
+
+                services.Tournament.UpdateBracket(nextBracketModel);
+
+                return services.Save();
             }
 
-            return services.Save();
+            return false;
         }
         #endregion
 
@@ -231,6 +256,13 @@ namespace WebApplication.Models
         public bool Create(TournamentViewModel viewModel, Account account)
         {
             ApplyChanges(viewModel);
+            // Exit the create if we detect there is an exception in the viewModel.
+            if (viewModel.e != null)
+            {
+                SetupViewModel(viewModel);
+                return false;
+            }
+
             Model.CreatedOn = DateTime.Now;
             Model.CreatedByID = account.Model.AccountID;
 
@@ -269,6 +301,12 @@ namespace WebApplication.Models
         public bool Update(TournamentViewModel viewModel, int accountId)
         {
             ApplyChanges(viewModel);
+            // Exit the create if we detect there is an exception in the viewModel.
+            if (viewModel.e != null)
+            {
+                SetupViewModel(viewModel);
+                return false;
+            }
             Model.LastEditedByID = accountId;
             Model.LastEditedOn = DateTime.Now;
 
@@ -904,6 +942,28 @@ namespace WebApplication.Models
         }
 
         /// <summary>
+        /// Helper method to set the default data for a view model passed in.
+        /// </summary>
+        /// <param name="viewModel">The model to set default data</param>
+        public void SetupViewModel(TournamentViewModel viewModel)
+        {
+            // Set the field's original data
+            viewModel.BracketTypes = services.Type.GetAllBracketTypes().Where(x => x.IsActive == true).ToList();
+            viewModel.GameTypes = services.Type.GetAllGameTypes();
+            viewModel.PlatformTypes = services.Type.GetAllPlatforms();
+            viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
+            viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
+            viewModel.NumberPlayersAdvance = Enumerable.Range(4, 20).ToList();
+
+            viewModel.RegistrationStartDate = DateTime.Now;
+            viewModel.RegistrationEndDate = DateTime.Now.AddDays(1);
+            viewModel.TournamentStartDate = DateTime.Now.AddDays(3);
+            viewModel.TournamentEndDate = DateTime.Now.AddDays(4);
+            viewModel.CheckinStartDate = DateTime.Now.AddDays(1);
+            viewModel.CheckinEndDate = DateTime.Now.AddDays(2);
+        }
+
+        /// <summary>
         /// This will apply the changes from the viewModel to the model for saving
         /// </summary>
         /// <param name="viewModel">Saves all data from the viewModel to the Model</param>
@@ -925,13 +985,17 @@ namespace WebApplication.Models
             Model.CheckInBegins = viewModel.CheckinStartDate + viewModel.CheckinStartTime.TimeOfDay;
             Model.CheckInEnds = viewModel.CheckinEndDate + viewModel.CheckinEndTime.TimeOfDay;
 
-            if (viewModel.BracketData != null)
+            if (viewModel.BracketData != null && viewModel.BracketData.Count < maxBrackets)
             {
                 // Give the class viewModel the viewModel data
                 this.viewModel.BracketData = viewModel.BracketData;
 
                 // Add the bracket data
                 UpdateBrackets();
+            }
+            else
+            {
+                viewModel.e = new Exception("You may only have " + maxBrackets + " or less brackets.");
             }
         }
 

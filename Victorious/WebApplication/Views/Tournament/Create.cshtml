@@ -58,7 +58,7 @@
             <h2>Brackets 
                 @if (!ViewBag.InProgress)
                 {
-                    <span class="icon icon-plus"></span> 
+                    <span class="icon icon-plus addBracket"></span> 
                 } 
             </h2>
             @for (int i = 0; i < Model.BracketData.Count; i++)
@@ -123,20 +123,6 @@
                     @Html.TextBoxFor(t => t.RegistrationEndTime, "{0:hh:mm tt}", timeAttributes)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.TournamentStartDate)
-                    @Html.TextBoxFor(t => t.TournamentStartDate, "{0:MM/dd/yyyy}", dateAttributes)
-                    @Html.ValidationMessageFor(t => t.TournamentStartDate)
-
-                    @Html.TextBoxFor(t => t.TournamentStartTime, "{0:hh:mm tt}", timeAttributes)
-                </li>
-                <li>
-                    @Html.LabelFor(t => t.TournamentEndDate)
-                    @Html.TextBoxFor(t => t.TournamentEndDate, "{0:MM/dd/yyyy}", dateAttributes)
-                    @Html.ValidationMessageFor(t => t.TournamentEndDate)
-
-                    @Html.TextBoxFor(t => t.TournamentEndTime, "{0:hh:mm tt}", timeAttributes)
-                </li>
-                <li>
                     @Html.LabelFor(t => t.CheckinStartDate)
                     @Html.TextBoxFor(t => t.CheckinStartDate, "{0:MM/dd/yyyy}", dateAttributes)
                     @Html.ValidationMessageFor(t => t.CheckinStartDate)
@@ -149,6 +135,20 @@
                     @Html.ValidationMessageFor(t => t.CheckinEndDate)
 
                     @Html.TextBoxFor(t => t.CheckinEndTime, "{0:hh:mm tt}", timeAttributes)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.TournamentStartDate)
+                    @Html.TextBoxFor(t => t.TournamentStartDate, "{0:MM/dd/yyyy}", dateAttributes)
+                    @Html.ValidationMessageFor(t => t.TournamentStartDate)
+
+                    @Html.TextBoxFor(t => t.TournamentStartTime, "{0:hh:mm tt}", timeAttributes)
+                </li>
+                <li>
+                    @Html.LabelFor(t => t.TournamentEndDate)
+                    @Html.TextBoxFor(t => t.TournamentEndDate, "{0:MM/dd/yyyy}", dateAttributes)
+                    @Html.ValidationMessageFor(t => t.TournamentEndDate)
+
+                    @Html.TextBoxFor(t => t.TournamentEndTime, "{0:hh:mm tt}", timeAttributes)
                 </li>
             </ul>
         </div>

@@ -273,4 +273,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="EmailAddress" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="e17a0072-8a2a-4be9-847d-89b6b608a982" ChangeDateTime="06/19/2017 21:10:27">
+    <Property Name="ElementName" Value="[dbo].[Brackets].[CanModify]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Brackets]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IsLocked" />
+  </Operation>
 </Operations>

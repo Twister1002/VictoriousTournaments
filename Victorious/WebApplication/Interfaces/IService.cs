@@ -12,6 +12,7 @@ namespace WebApplication.Interfaces
         AccountService Account { get; }
         TournamentService Tournament { get; }
         TypeService Type { get; }
+        Exception GetException();
         bool Save();
     }
 }

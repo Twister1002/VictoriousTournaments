@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication.Models.ViewModels
 {
-    public class PlatformViewModel
+    public class PlatformViewModel : ViewModel
     {
         [Display(Name = "Platform")]
         [DataType(DataType.Text)]

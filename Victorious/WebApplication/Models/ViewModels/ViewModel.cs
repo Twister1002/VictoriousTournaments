@@ -5,8 +5,8 @@ using System.Web;
 
 namespace WebApplication.Models.ViewModels
 {
-    public class BracketTypeViewModel : ViewModel
+    public class ViewModel
     {
-        public int BracketID { get; set; }
+        public Exception e;
     }
 }
