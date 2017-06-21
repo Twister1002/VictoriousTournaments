@@ -153,12 +153,7 @@
                         window.location.reload();
                         return;
                     }
-
-                    // Close the match if it is finished
-                    if (data.finished) {
-                        $match.find(".TournamentGames").removeClass("open");
-                    }
-
+                    
                     UpdateMatch(json.data, match);
                     UpdateStandings(jsonData.tournamentId, jsonData.bracketId);
                 }
@@ -192,12 +187,6 @@
             "dataType": "json",
             "success": function (json) {
                 if (json.status) {
-                    //$.each(json.data, function (i, e) {
-                    //    MatchUpdate(e, $(".TournamentMatch[data-id='" + e.matchId + "']"));
-                    //});
-                    
-                    //match.find(".TournamentGames .games").empty();
-
                     UpdateMatch(json.data, match);
                     UpdateStandings($("#Tournament").data("id"), match.closest(".bracket").data("id"));
                 }
@@ -210,67 +199,12 @@
         });
     });
 
-    //function MatchUpdate(json, $match) {
-    //    overview = $match.find(".overview");
-    //    games = $match.find(".TournamentGames");
-    //    matchData = json.match;
-
-    //    // Update the Match data
-    //    overview.find(".defender .name").text(json.defender.name);
-    //    overview.find(".defender .score").text(json.defender.score);
-    //    overview.find(".defender").attr("data-id", json.defender.id).data("id", json.defender.id);
-
-    //    overview.find(".challenger .name").text(json.challenger.name);
-    //    overview.find(".challenger .score").text(json.challenger.score);
-    //    overview.find(".challenger").attr("data-id", json.challenger.id).data("id", json.challenger.id);
-
-    //    // Update the Game data 
-    //    games.find(".defender.name").text(json.defender.name);
-    //    games.find(".challenger.name").text(json.challenger.name);
-
-    //    games.find(".games").empty();
-    //    AddGamesToMatch(json, games);
-    //    MatchOptionsUpdate(json.data.match, $games);
-
-    //    // Verify if the match is ready
-    //    if (json.ready) {
-    //        // Show the details button
-    //        $match.find(".details").removeClass("hide");
-    //    }
-    //    else {
-    //        $match.find(".details").addClass("hide");
-    //    }
-    //}
-
-    //function AddGamesToMatch(data, $games) {
-    //    var detailHtml = "";
-
-    //    $.each(dataObject.matches, function (i, e) {
-    //        html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + e.id + "' data-gamenum='" + data.gameNum + "'> ";
-    //        html += "<li class='column game-number'>" + e.gameNum + "</li> ";
-    //        html += "<li class='column defender score' data-id='" + e.defender.id + "'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li> ";
-    //        html += "<li class='column challenger score' data-id='" + e.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li> ";
-    //        html += "<li class='column'>";
-    //        if (!dataObject.IsLocked) html += "<span class='icon icon-bin removeGame'></span>";
-    //        html += "</li> ";
-    //        html += "</ul> ";
-
-    //        detailHtml += html;
-    //    });
-
-    //    $games.find(".games").append(html);
-
-    //    // Register the hover events
-    //    $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseover").on("mouseover", MouseOverEvents);
-    //    $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseleave").on("mouseleave", MouseLeaveEvents);
-    //    $(".TournamentMatch .removeGame").off("click").on("click", RemoveGame);
-    //}
-
     function RemoveGame() {
         if (!confirm("Are you sure you want to delete this game? It could affect future matches.")) {
             return;
         }
 
+        var match = $(this).closest(".TournamentMatch");
         var $game = $(this).closest("ul");
 
         var jsonData = {
@@ -289,7 +223,7 @@
             "dataType": "json",
             "success": function (json) {
                 if (json.status) {
-                    UpdateMatch(json.data, $(this).closest(".TournamentMatch"));
+                    UpdateMatch(json.data, match.closest(".TournamentMatch"));
                     UpdateStandings($("#Tournament").data("id"), $game.closest(".bracket").data("id"));
                 }
 
@@ -304,6 +238,8 @@
     // Helper functions
     function UpdateMatch(matchData, $match) {
         console.log(matchData);
+
+        UpdateTournamentOptions(matchData, $match);
 
         // Update the overview of the match
         $.each(matchData.matches, function (i, data) {
@@ -384,7 +320,12 @@
         }
     }
 
-    function UpdateTournamentOptions(jsonData) {
-
+    function UpdateTournamentOptions(jsonData, $inBracket) {
+        if (jsonData.bracketFinished) {
+            $inBracket.closest(".bracket").find(".options .BracketLock").removeClass("hide");
+        }
+        else {
+            $inBracket.closest(".bracket").find(".options .BracketLock").addClass("hide");
+        }
     }
 });

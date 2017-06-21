@@ -269,6 +269,7 @@ namespace WebApplication.Controllers
                 message = "Match was loaded.";
                 data = new
                 {
+                    bracketFinished = bracket.IBracket.IsFinished,
                     isLocked = bracket.IsLocked,
                     matches = matches
                 };
@@ -347,6 +348,7 @@ namespace WebApplication.Controllers
                         // Prepare data
                         data = new
                         {
+                            bracketFinished = bracket.IBracket.IsFinished,
                             isLocked = bracket.IsLocked,
                             processed = processed,
                             matches = matchUpdates,
