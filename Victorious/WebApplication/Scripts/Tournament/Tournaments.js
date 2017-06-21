@@ -353,13 +353,17 @@
                 $(e).text(permissionDictionary[$(e).text()]);
             });
 
-            if ($(".TournamentInfo .bracketNum").length == 1) {
+            if ($(".TournamentInfo .bracketNum").length > 0) {
+                // Always auto select the first bracket
                 $(".TournamentInfo .bracketNum")[0].click();
+
+                // Always auto select the standings
+                $(".TournamentInfo .bracketData .list-table-header .selection[data-show='standingInfo']").click();
             }
         }
 
         if ($("#Tournament").length == 1) {
-            if ($("#Tournament .bracketName").length == 1) {
+            if ($("#Tournament .bracketName").length > 0) {
                 $("#Tournament .bracketName")[0].click();
             }
         }
