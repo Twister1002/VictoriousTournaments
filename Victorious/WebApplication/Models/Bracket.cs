@@ -111,6 +111,11 @@ namespace WebApplication.Models
             // Fires events below
             bracket.ResetMatches();
 
+            //model.Finalized = false;
+            //model.Matches = new List<MatchModel>();
+
+            //services.Tournament.UpdateBracket(model);
+
             return services.Save();
         }
 
