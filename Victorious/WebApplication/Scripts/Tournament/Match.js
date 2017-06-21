@@ -289,7 +289,7 @@
 
     function UpdateGamesFromMatch(matchInfo, $match) {
         // Remove all the games
-        $(".TournamentGames .list-table .games").empty();
+        $match.find(".TournamentGames .list-table .games").empty();
 
         $.each(matchInfo.games, function (i, e) {
             // Add the game
@@ -300,7 +300,7 @@
             html += "<li class='column'><span class='icon icon-bin removeGame'></span></li> ";
             html += "</ul> ";
 
-            $(".TournamentGames .list-table .games").append(html);
+            $match.find(".TournamentGames .list-table .games").append(html);
         });
     }
 
