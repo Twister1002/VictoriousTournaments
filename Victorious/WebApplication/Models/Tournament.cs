@@ -990,17 +990,20 @@ namespace WebApplication.Models
             Model.CheckInBegins = viewModel.CheckinStartDate + viewModel.CheckinStartTime.TimeOfDay;
             Model.CheckInEnds = viewModel.CheckinEndDate + viewModel.CheckinEndTime.TimeOfDay;
 
-            if (viewModel.BracketData != null && viewModel.BracketData.Count < maxBrackets)
+            if (viewModel.BracketData != null)
             {
-                // Give the class viewModel the viewModel data
-                this.viewModel.BracketData = viewModel.BracketData;
+                if (viewModel.BracketData.Count <= maxBrackets)
+                {
+                    // Give the class viewModel the viewModel data
+                    this.viewModel.BracketData = viewModel.BracketData;
 
-                // Add the bracket data
-                UpdateBrackets();
-            }
-            else
-            {
-                viewModel.e = new Exception("You may only have " + maxBrackets + " or less brackets.");
+                    // Add the bracket data
+                    UpdateBrackets();
+                }
+                else
+                {
+                    viewModel.e = new Exception("You may only have " + maxBrackets + " or less brackets.");
+                }
             }
         }
 
