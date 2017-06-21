@@ -53,7 +53,7 @@
           <Property Name="TournamentID" Type="int" />
           <Property Name="MaxRounds" Type="int" Nullable="false" />
           <Property Name="NumberPlayersAdvance" Type="int" Nullable="false" />
-          <Property Name="IsLocked" Type="bit" />
+          <Property Name="IsLocked" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="BracketTypes">
           <Key>
@@ -590,7 +590,7 @@
           <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.FK_Brackets_Tournaments" FromRole="BracketModel" ToRole="Tournament" />
           <NavigationProperty Name="TournamentTeamBrackets" Relationship="VictoriousDatabaseModel.FK_TournamentTeamsBrackets_Brackets_BracketID" FromRole="BracketModel" ToRole="TournamentTeamBracket" />
           <Property Name="NumberPlayersAdvance" Type="Int32" Nullable="false" />
-          <Property Name="IsLocked" Type="Boolean" />
+          <Property Name="IsLocked" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="BracketTypeModel">
           <Key>

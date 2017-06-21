@@ -463,8 +463,8 @@ namespace DatabaseLib.Services
             try
             {
                 MatchModel match = unitOfWork.MatchRepo.Get(matchId);
-                //match.Challenger = unitOfWork.TournamentUserRepo.Get(match.ChallengerID);
-                //match.Defender = unitOfWork.TournamentUserRepo.Get(match.DefenderID);
+                match.Challenger = unitOfWork.TournamentUserRepo.Get(match.ChallengerID);
+                match.Defender = unitOfWork.TournamentUserRepo.Get(match.DefenderID);
                 return match;
 
             }

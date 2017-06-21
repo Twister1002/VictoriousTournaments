@@ -18,7 +18,7 @@
     [CheckInBegins]         DATETIME NOT NULL,
     [CheckInEnds]           DATETIME NOT NULL,
     [PlatformID]              INT      NOT NULL, 
-    [InProgress] BIT NOT NULL, 
+    [InProgress] BIT NOT NULL DEFAULT 0, 
     [InviteCode] NVARCHAR(256) NULL, 
     [PublicRegistration] BIT NOT NULL DEFAULT 0, 
     [PublicViewing] BIT NOT NULL DEFAULT 0, 
