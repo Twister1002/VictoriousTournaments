@@ -24,19 +24,21 @@ namespace Tournament.Structure
 		/// Creates an AccountModel of this Player.
 		/// </summary>
 		AccountModel GetAccountModel();
-
+#if false
 		/// <summary>
 		/// Creates a TournamentUserModel of this Player.
 		/// </summary>
-		TournamentUserModel GetTournamentUserModel();
-
+		/// <param name="_tournamentId">ID of containing Tournament</param>
+		TournamentUserModel GetTournamentUserModel(int _tournamentId);
+#endif
 		/// <summary>
 		/// Creates a TournamentUsersBracketModel of this Player.
 		/// This Model will also contain the Player's bracketID and seed.
 		/// </summary>
 		/// <param name="_bracketId">ID of containing Bracket</param>
 		/// <param name="_seed">Player's seed-value within the Bracket</param>
-		TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed, int _tournamentId = 0);
+		/// <param name="_tournamentId">ID of containing Tournament</param>
+		TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed, int _tournamentId);
 		#endregion
 	}
 }

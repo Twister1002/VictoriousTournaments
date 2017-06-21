@@ -244,7 +244,7 @@ namespace WebApplication.Controllers
                     }
                     else
                     {
-                        Session["Message"] = "We were unable to update your tournament. Please try again soon";
+                        Session["Message"] = "We were unable to update your tournament.";
                         Session["Message.Class"] = ViewError.ERROR;
                     }
                 }
@@ -254,11 +254,11 @@ namespace WebApplication.Controllers
                     Session["Message.Class"] = ViewError.ERROR;
                 }
 
+                ViewBag.Create = false;
                 ViewBag.CanEdit = tourny.CanEdit();
                 ViewBag.InProgress = tourny.Model.InProgress;
-                tourny.SetFields();
 
-                return View("Create", tourny.viewModel);
+                return View("Create", viewModel);
             }
             else
             {

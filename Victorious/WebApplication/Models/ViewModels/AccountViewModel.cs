@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication.Models.ViewModels
 {
-    public class AccountViewModel
+    public class AccountViewModel : ViewModel
     {
-        public int AccountId { get; set; }
-
         //[Required(ErrorMessage = "First Name is required")]
         [DataType(DataType.Text)]
         [StringLength(AccountModel.FirstNameLength)]

@@ -235,25 +235,6 @@ namespace Tournament.Structure
 		public GSLGroups(BracketModel _model)
 		{
 			SetDataFromModel(_model);
-			this.NumberOfGroups = _model.NumberOfGroups;
-
-			CreateBracket();
-			// Find & update every Match:
-			foreach (MatchModel matchModel in _model.Matches)
-			{
-				GetInternalMatch(matchModel.MatchNumber)
-					.SetFromModel(matchModel);
-			}
-
-			// Update the Rankings:
-			RecalculateRankings();
-			UpdateFinishStatus();
-
-			if (this.IsFinalized && false == Validate())
-			{
-				throw new BracketValidationException
-					("Bracket is Finalized but not Valid!");
-			}
 		}
 		#endregion
 
@@ -270,15 +251,15 @@ namespace Tournament.Structure
 					pList.Add(Players[p + b]);
 				}
 
-				Groups.Add(new GSLBracket(pList, _gamesPerMatch));
+				//Groups.Add(new GSLBracket(pList, _gamesPerMatch));
 			}
-			SubscribeToGroupEvents();
+			//SubscribeToGroupEvents();
 
-			foreach (IBracket group in Groups)
-			{
-				NumberOfMatches += group.NumberOfMatches;
-				NumberOfRounds = Math.Max(this.NumberOfRounds, group.NumberOfRounds);
-			}
+			//foreach (IBracket group in Groups)
+			//{
+			//	NumberOfMatches += group.NumberOfMatches;
+			//	NumberOfRounds = Math.Max(this.NumberOfRounds, group.NumberOfRounds);
+			//}
 		}
 
 		public override bool CheckForTies()
@@ -293,7 +274,27 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		{
+			throw new NotImplementedException();
+		}
+		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
+		{
+			throw new NotImplementedException();
+		}
+		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
+		{
+			throw new NotImplementedException();
+		}
 
+		protected override void RecalculateRankings()
+		{
+			throw new NotImplementedException();
+		}
+		protected override void UpdateRankings()
+		{
+			throw new NotImplementedException();
+		}
 		#endregion
 	}
 }

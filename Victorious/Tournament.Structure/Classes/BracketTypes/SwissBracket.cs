@@ -246,6 +246,7 @@ namespace Tournament.Structure
 			ActiveRound = 1;
 			RecalculateRankings();
 			OnMatchesModified(clearedMatches);
+			IsFinalized = false;
 		}
 
 		public override bool CheckForTies()

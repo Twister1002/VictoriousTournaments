@@ -34,6 +34,8 @@ namespace Tournament.Structure
 		{ get; private set; }
 		public int[] Score
 		{ get; private set; }
+		public int GroupNumber
+		{ get; private set; }
 		public int RoundIndex
 		{ get; private set; }
 		public int MatchIndex
@@ -63,6 +65,7 @@ namespace Tournament.Structure
 			Games = new List<IGame>();
 			Score = new int[2] { 0, 0 };
 
+			GroupNumber = -1;
 			RoundIndex = -1;
 			MatchIndex = -1;
 			MatchNumber = -1;
@@ -84,6 +87,7 @@ namespace Tournament.Structure
 			this.IsManualWin = _match.IsManualWin; // NOTE : This needs fixing.
 			this.MaxGames = _match.MaxGames;
 			this.WinnerSlot = _match.WinnerSlot;
+			this.GroupNumber = _match.GroupNumber;
 			this.RoundIndex = _match.RoundIndex;
 			this.MatchIndex = _match.MatchIndex;
 			this.MatchNumber = _match.MatchNumber;
@@ -124,6 +128,7 @@ namespace Tournament.Structure
 			MatchModel model = new MatchModel();
 
 			model.MatchID = this.Id;
+			model.GroupNumber = this.GroupNumber;
 			model.RoundIndex = this.RoundIndex;
 			model.MatchIndex = this.MatchIndex;
 			model.MatchNumber = this.MatchNumber;
@@ -139,9 +144,11 @@ namespace Tournament.Structure
 				?? -1;
 			model.WinnerID = (PlayerSlot.unspecified == WinnerSlot)
 				? -1 : Players[(int)WinnerSlot].Id;
+#if false
 			// Create and add PlayerModel objects if applicable:
 			model.Defender = Players[(int)PlayerSlot.Defender]?.GetTournamentUserModel();
 			model.Challenger = Players[(int)PlayerSlot.Challenger]?.GetTournamentUserModel();
+#endif
 
 			model.ChallengerScore = this.Score[(int)PlayerSlot.Challenger];
 			model.DefenderScore = this.Score[(int)PlayerSlot.Defender];
@@ -169,6 +176,7 @@ namespace Tournament.Structure
 
 			this.Id = _model.MatchID;
 			this.MaxGames = _model.MaxGames.GetValueOrDefault(1);
+			this.WinnerSlot = PlayerSlot.unspecified;
 
 			// Copy Players:
 			this.Players = new IPlayer[2];
@@ -199,6 +207,7 @@ namespace Tournament.Structure
 				AddGame(gameModel);
 			}
 
+			this.GroupNumber = _model.GroupNumber.GetValueOrDefault(-1);
 			this.RoundIndex = _model.RoundIndex.GetValueOrDefault(-1);
 			this.MatchIndex = _model.MatchIndex.GetValueOrDefault(-1);
 			this.MatchNumber = _model.MatchNumber;
@@ -590,6 +599,29 @@ namespace Tournament.Structure
 			}
 
 			MaxGames = _numberOfGames;
+		}
+
+		/// <summary>
+		/// Sets the group number for this Match.
+		/// This is only needed for Group Stage-type brackets.
+		/// If this has already been set, an exception is thrown.
+		/// If an invalid (negative) index is given, an exception is thrown.
+		/// </summary>
+		/// <param name="_groupNumber">Group number</param>
+		public void SetGroupNumber(int _groupNumber)
+		{
+			if (GroupNumber > 0)
+			{
+				throw new AlreadyAssignedException
+					("Group Number is already set!");
+			}
+			if (_groupNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Group Number cannot be less than 1!");
+			}
+
+			GroupNumber = _groupNumber;
 		}
 
 		/// <summary>

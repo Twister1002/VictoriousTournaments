@@ -16,9 +16,12 @@
     };
     var bracketInfo;
     var bracketsCreated = 0;
+    var maxBrackets = 2;
 
     $("#TournamentEdit .bracketSection .type select").on("change", BracketInfoChange);
-    $("#TournamentEdit .icon-plus").on("click", function () {
+    $("#TournamentEdit .addBracket").on("click", AddBracket);
+    
+    function AddBracket() {
         var newBracket = bracketInfo.replace(/%n%/g, $("#TournamentEdit .brackets").length);
         $("#TournamentEdit .bracketSection").append("<ul class='brackets'>" + newBracket + "</ul>");
 
@@ -35,7 +38,9 @@
         else {
             $("#TournamentEdit .bracketSection .advancePlayers").addClass("hide");
         }
-    });
+
+        LimitBrackets();
+    }
 
     function BracketInfoChange() {
         var bracketData = $(this).closest(".brackets");
@@ -52,6 +57,15 @@
         }
     }
 
+    // This function will limit the brackets in the tournament
+    function LimitBrackets() {
+        $("#TournamentEdit .bracketSection .addBracket").off("click").addClass("hide");
+
+        if ($("#TournamentEdit .brackets").length < maxBrackets) {
+            $("#TournamentEdit .bracketSection .addBracket").on("click", AddBracket).removeClass("hide");
+        }
+    }
+
     (function ($) {
         if ($("#TournamentEdit").length == 1) {
             // Remove the bracket selection and save it.
@@ -65,6 +79,8 @@
             if ($("#TournamentEdit .bracketSection .brackets").length > 1) {
                 $("#TournamentEdit .bracketSection .advancePlayers").not(":last").removeClass("hide");
             }
+
+            LimitBrackets();
         }
     })($);
 });

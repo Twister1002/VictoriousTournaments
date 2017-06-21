@@ -13,6 +13,8 @@
     ViewBag.isAdministrator = Model.IsAdmin(ViewBag.UserId);
     ViewBag.isCreator = Model.IsCreator(ViewBag.UserId);
     ViewBag.inProgress = Model.Model.InProgress;
+
+    var brackets = Model.GetBrackets();
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
@@ -37,8 +39,8 @@
     <div class="bracketNames">
         <ul class="list-table">
             <li class="list-table-body">
-                <ul data-columns="@Model.GetBrackets().Count">
-                    @foreach (var bracket in Model.GetBrackets())
+                <ul data-columns="@brackets.Count">
+                    @foreach (var bracket in brackets)
                     {
                         <li class="column bracketName" data-bracket="@bracket.Id">@bracket.BracketName()</li>
                     }
@@ -46,27 +48,42 @@
             </li>
         </ul>
     </div>
-    @foreach (var bracket in Model.GetBrackets())
+    @foreach (var bracket in brackets)
     {
-        var bracketViewModel = Model.GetBracket(bracket.Id);
         ViewBag.UpperDisplayRounds = bracket.RoundShowing(WebApplication.Models.BracketSection.UPPER);
         ViewBag.LowerDisplayRounds = bracket.RoundShowing(WebApplication.Models.BracketSection.LOWER);
         ViewBag.DisplayRounds = bracket.TotalDispalyRounds(ViewBag.UpperDisplayRounds, ViewBag.LowerDisplayRounds);
         ViewBag.IsFinalized = bracket.IBracket.IsFinalized;
         ViewBag.GrandFinal = bracket.IBracket.GrandFinal != null;
+        ViewBag.BracketCanModify = bracket.CanModify;
 
         <div class="bracket" data-id="@bracket.Id">
             <ul class="list-table bracket-data">
-                @{
-                    if (!bracket.IBracket.IsFinalized && ViewBag.isCreator && bracket.GetPlayers().Count >= 4)
+                <li>
+                    @if (!bracket.IBracket.IsFinalized && ViewBag.isCreator)
                     {
-                        Html.RenderPartial("Administrator/_Finalize");
+                        if (bracket.GetPlayers().Count >= 4)
+                        {
+                            <div class="BracketFinalize">
+                                <button type="button" class="bracketFinalizeButton">Finalize Bracket</button>
+                            </div>
+
+                            if (bracket.IBracket.IsFinished)
+                            {
+                                <div class="BracketLock">
+                                    <button type="button" class="bracketLockButton">Lock Bracket</button>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="message warning">You must have 4 or more participants in this bracket to finalize the bracket.</div>
+                        }
                     }
-                    
-                    Html.RenderPartial("Brackets/" + bracket.BracketFileName(), bracketViewModel, new ViewDataDictionary(ViewData));
-                }
+                    @{ Html.RenderPartial("Brackets/" + bracket.BracketFileName(), bracket, new ViewDataDictionary(ViewData)); }
+                </li>
             </ul>
         </div>
-                    }
+    }
     @{ Html.RenderPartial("Standings", Model, new ViewDataDictionary(ViewData)); }
 </div>

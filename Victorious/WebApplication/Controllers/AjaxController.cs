@@ -134,7 +134,7 @@ namespace WebApplication.Controllers
 
                 if (tournament.IsCreator(account.Model.AccountID))
                 {
-                    bracket.IBracket.ResetMatches();
+                    bracket.Reset();
 
                     status = true;
                     message = "Bracket was reset";
@@ -234,6 +234,14 @@ namespace WebApplication.Controllers
 
             return BundleJson();
         }
+
+        [HttpPost]
+        [Route("Ajax/Bracket/Lockout")]
+        public JsonResult Lockout(int tournamentId, int bracketId)
+        {
+
+            return BundleJson();
+        }
         #endregion
 
         #region Match
@@ -309,8 +317,11 @@ namespace WebApplication.Controllers
                             // Verify if this bracket is finished. 
                             if (bracket.IBracket.IsFinished)
                             {
-                                tournament.BracketFinished(bracketId);
-                                refresh = true;
+                                // If the tournament pushed players to the next bracket, refresh.
+                                if (tournament.BracketFinished(bracketId))
+                                {
+                                    refresh = true;
+                                }
                             }
 
                             matchUpdates.Add(JsonMatchResponse(match, true));

@@ -55,15 +55,17 @@ namespace WebApplication.Controllers
                 if (account.Login(viewModel))
                 {
                     Session["User.UserId"] = account.Model.AccountID;
+                    return RedirectToAction("Index", "Account");
                 }
                 else
                 {
                     Session["Message"] = "The username or password is invalid.";
                     Session["Message.Class"] = ViewError.WARNING;
+                    viewModel.e = service.e;
                 }
             }
 
-            return RedirectToAction("Index", "Account");
+            return View("Login", viewModel);
         }
 
         [Route("Account/Register")]
@@ -104,6 +106,7 @@ namespace WebApplication.Controllers
                 {
                     Session["Message"] = "We were unable to register your account. Please try again";
                     Session["Message.Class"] = ViewError.ERROR;
+                    viewModel.e = service.e;
 
                     return View("Register", viewModel);
                 }
@@ -132,9 +135,9 @@ namespace WebApplication.Controllers
         {
             if (account.IsLoggedIn())
             {
-                // Verify the user being updated is legitly the user logged in
-                if (viewModel.AccountId == account.Model.AccountID)
-                {
+                //// Verify the user being updated is legitly the user logged in
+                //if (viewModel.AccountId == account.Model.AccountID)
+                //{
                     if (account.Update(viewModel))
                     {
                         Session["User.Name"] = viewModel.FirstName;
@@ -149,15 +152,15 @@ namespace WebApplication.Controllers
                         Session["Message"] = "There was an error updating your account.";
                         Session["Message.Class"] = ViewError.ERROR;
                     }
-                }
-                else
-                {
-                    // Log the user out as I feel this is a hacking attempt
-                    Session.RemoveAll();
-                    Session["Message"] = "Unfortunately, we're unable to update your account. Please login and try again.";
-                    Session["Message.Class"] = ViewError.ERROR;
-                    return RedirectToAction("Login", "Account");
-                }
+                //}
+                //else
+                //{
+                //    // Log the user out as I feel this is a hacking attempt
+                //    Session.RemoveAll();
+                //    Session["Message"] = "Unfortunately, we're unable to update your account. Please login and try again.";
+                //    Session["Message.Class"] = ViewError.ERROR;
+                //    return RedirectToAction("Login", "Account");
+                //}
             }
             else
             {

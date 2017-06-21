@@ -331,8 +331,9 @@ namespace Tournament.Structure
 					ret = new RoundRobinGroups(_model);
 					break;
 				case (BracketType.GSLGROUP):
-					ret = new GSLGroups(_model);
-					break;
+					throw new NotImplementedException();
+					//ret = new GSLGroups(_model);
+					//break;
 				default:
 					throw new NotImplementedException();
 			}
@@ -516,7 +517,8 @@ namespace Tournament.Structure
 		/// <param name="_maxGamesPerMatch">Max games, applied to every Match</param>
 		public void AddGSLGroupStage(List<IPlayer> _playerList, int _numGroups = 2, int _maxGamesPerMatch = 1)
 		{
-			Brackets.Add(new GSLGroups(_playerList, _numGroups, _maxGamesPerMatch));
+			throw new NotImplementedException();
+			//Brackets.Add(new GSLGroups(_playerList, _numGroups, _maxGamesPerMatch));
 		}
 		#endregion
 		#endregion

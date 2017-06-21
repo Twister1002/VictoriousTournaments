@@ -49,6 +49,10 @@
 
             Session.Remove("Message");
         }
+        @if (Model is WebApplication.Models.ViewModels.ViewModel && Model.e != null)
+        {
+            <div class="message error">@Model.e.ToString()</div>
+        }
         @RenderBody()
     </div>
     <footer>@{ Html.RenderPartial("_Footer"); }</footer>

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication.Models.ViewModels
 {
-    public class GameTypeViewModel
+    public class GameTypeViewModel : ViewModel
     {
         [Display(Name = "Title")]
         [DataType(DataType.Text)]

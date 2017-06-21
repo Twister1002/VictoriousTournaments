@@ -18,10 +18,13 @@ namespace WebApplication.Models
         private IGroupStage groupBracket;
         private BracketModel model;
 
+        public bool CanModify { get; private set; }
+
         public int Id { get; private set; }
 
-        public Bracket(IService services, IBracket bracket, BracketModel model)
+        public Bracket(IService services, IBracket bracket, BracketModel model, bool canEdit)
         {
+            this.CanModify = canEdit;
             this.services = services;
             this.bracket = bracket;
             this.model = model;
@@ -43,6 +46,12 @@ namespace WebApplication.Models
         public Tournaments.IBracket IBracket { get { return bracket; } }
         public Tournaments.IGroupStage Group { get { return groupBracket; } }
 
+        /// <summary>
+        /// Gets a list of matches for a round
+        /// </summary>
+        /// <param name="roundNum">the round number</param>
+        /// <param name="section">the section of the tournament to get</param>
+        /// <returns></returns>
         public List<Match> GetRound(int roundNum, BracketSection section)
         {
             List<Match> matches = new List<Match>();
@@ -67,6 +76,12 @@ namespace WebApplication.Models
             return matches;
         }
 
+        /// <summary>
+        /// Gets the round for a group
+        /// </summary>
+        /// <param name="groupNum">the group number</param>
+        /// <param name="roundNum">the round number</param>
+        /// <returns>A list of matches for the group</returns>
         public List<Match> GetRound(int groupNum, int roundNum)
         {
             List<Match> matches = new List<Match>();
@@ -79,11 +94,26 @@ namespace WebApplication.Models
             return matches;
         }
 
+        /// <summary>
+        /// Gets the Grand Final match
+        /// </summary>
+        /// <returns>A match</returns>
         public Match GrandFinal()
         {
             return new Match(services, bracket.GrandFinal);
         }
         
+        /// <summary>
+        /// Resets the bracket information back to its original state
+        /// </summary>
+        /// <returns>True if saved; false is failed.</returns>
+        public bool Reset()
+        {
+            // Fires events below
+            bracket.ResetMatches();
+
+            return services.Save();
+        }
 
         #region CRUD
         public bool Crate()
@@ -324,6 +354,7 @@ namespace WebApplication.Models
 
                 case DatabaseLib.BracketType.SINGLE:
                 case DatabaseLib.BracketType.DOUBLE:
+                case DatabaseLib.BracketType.STEP:
                     return false;
 
                 default:
@@ -352,7 +383,10 @@ namespace WebApplication.Models
                     name = "GSL Group";
                     break;
                 case DatabaseLib.BracketType.RRGROUP:
-                    name = "Round Robin Groups";
+                    name = "Round Robin Group";
+                    break;
+                case DatabaseLib.BracketType.STEP:
+                    name = "Step Ladder";
                     break;
             }
 
@@ -367,6 +401,7 @@ namespace WebApplication.Models
                 case DatabaseLib.BracketType.SINGLE:
                 case DatabaseLib.BracketType.ROUNDROBIN:
                 case DatabaseLib.BracketType.SWISS:
+                case DatabaseLib.BracketType.STEP:
                     file = "UpperBracket";
                     break;
                 case DatabaseLib.BracketType.DOUBLE:
@@ -441,11 +476,41 @@ namespace WebApplication.Models
         #endregion
 
         #region Events
+        /// <summary>
+        /// Updates the match that was given from an event
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="args">The arguments</param>
         public void OnMatchesUpdated(object sender, BracketEventArgs args)
         {
-            foreach (MatchModel match in args.UpdatedMatches)
+            foreach (MatchModel matchModel in args.UpdatedMatches)
             {
-                services.Tournament.UpdateMatch(match);
+                //MatchModel match = model.Matches.Single(x => x.MatchNumber == matchModel.MatchNumber);
+
+                //match.MatchID = matchModel.MatchID;
+                //match.BracketID = matchModel.BracketID;
+                //match.ChallengerID = matchModel.ChallengerID;
+                //match.DefenderID = matchModel.DefenderID;
+                //match.WinnerID = matchModel.WinnerID;
+
+                //match.ChallengerScore = matchModel.ChallengerScore;
+                //match.DefenderScore = matchModel.DefenderScore;
+
+                //match.MatchIndex = matchModel.MatchIndex;
+                //match.RoundIndex = matchModel.RoundIndex;
+                //match.PrevMatchIndex = matchModel.PrevMatchIndex;
+
+                //match.MatchNumber = matchModel.MatchNumber;
+                //match.PrevDefenderMatchNumber = matchModel.PrevDefenderMatchNumber;
+                //match.PrevChallengerMatchNumber = matchModel.PrevChallengerMatchNumber;
+                //match.NextMatchNumber = matchModel.NextMatchNumber;
+                //match.NextLoserMatchNumber = matchModel.NextLoserMatchNumber;
+
+                //match.MaxGames = matchModel.MaxGames;
+
+                //services.Tournament.UpdateMatch(match);
+
+                services.Tournament.UpdateMatch(matchModel);
             }
 
             foreach (int games in args.DeletedGameIDs)
@@ -456,6 +521,11 @@ namespace WebApplication.Models
             services.Save();
         }
 
+        /// <summary>
+        /// Updates the match that was given from an event
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="args">The arguments</param>
         public void OnRoundAdd(object sender, BracketEventArgs args)
         {
             foreach (MatchModel match in args.UpdatedMatches)
@@ -469,6 +539,11 @@ namespace WebApplication.Models
             }
         }
 
+        /// <summary>
+        /// Updates the match that was given from an event
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="args">The arguments</param>
         public void OnRoundDelete(object sender, BracketEventArgs args)
         {
             foreach (int games in args.DeletedGameIDs)
@@ -487,6 +562,11 @@ namespace WebApplication.Models
             }
         }
 
+        /// <summary>
+        /// Removes the games given from the event
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="args">The arguments</param>
         public void OnGamesDeleted(object sender, BracketEventArgs args)
         {
             foreach (int gameId in args.DeletedGameIDs)

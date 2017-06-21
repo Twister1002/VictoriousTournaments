@@ -72,8 +72,7 @@ namespace Tournament.Structure
 			if (NumberOfMatches > 0)
 			{
 				this.NumberOfRounds = Matches.Values
-					.Select(m => m.RoundIndex)
-					.Last();
+					.Max(m => m.RoundIndex);
 				this.IsFinished = Matches.Values.All(m => m.IsFinished);
 			}
 
@@ -148,6 +147,34 @@ namespace Tournament.Structure
 		public override void ResetMatches()
 		{
 			base.ResetMatches();
+
+			int standardRounds = MaxRounds;
+			if (0 == standardRounds)
+			{
+				standardRounds = (0 == Players.Count % 2)
+					? Players.Count - 1 : Players.Count;
+			}
+			int totalStandardMatches = standardRounds * (int)(Players.Count * 0.5);
+
+			if (NumberOfRounds > standardRounds)
+			{
+				List<Match> matchesToDelete = Matches.Values
+					.Where(m => m.RoundIndex > standardRounds)
+					.ToList();
+				List<MatchModel> modelsToDelete = new List<MatchModel>();
+				foreach (Match match in matchesToDelete)
+				{
+					modelsToDelete.Add(GetMatchModel(match));
+					Matches.Remove(match.MatchNumber);
+				}
+
+				NumberOfMatches = Matches.Count;
+				NumberOfRounds = Matches.Values
+					.Max(m => m.RoundIndex);
+
+				OnRoundDeleted(modelsToDelete);
+			}
+
 			foreach (IPlayerScore ps in Rankings)
 			{
 				ps.Rank = 1;
@@ -373,7 +400,6 @@ namespace Tournament.Structure
 		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
 		{
 			this.IsFinished = (IsFinished && GetMatch(_matchNumber).IsFinished);
-
 			return (new List<MatchModel>());
 		}
 		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)

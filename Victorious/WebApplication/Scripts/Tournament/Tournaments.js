@@ -37,48 +37,6 @@
         }
     });
 
-    // Finalize Tournament 
-    $(".tournamentFinalizeButton").on("click", function () {
-        var bracket = $(this).closest(".bracket");
-
-        var jsonData = {
-            "tournamentId": $("#Tournament").data("id"),
-            "bracketId": bracket.data("id"),
-            "roundData": {}
-        };
-
-        $.each(bracket.find(".header-rounds"), function (i, e) {
-            var roundNum = 1;
-            
-            $.each($(e).find("li"), function (ii, ee) {
-                var type = $(ee).data("type");
-                var element = $(ee).find(".bestOfMatches");
-
-                if (element.length) {
-                    if (!jsonData.roundData.hasOwnProperty(type)) {
-                        jsonData.roundData[type] = {};
-                    }
-                    jsonData.roundData[type][roundNum] = element.val();
-                    roundNum++;
-                }
-            });
-        });
-
-        $.ajax({
-            "url": "/Ajax/Tournament/Finalize",
-            "type": "POST",
-            "data": jsonData,
-            "dataType": "json",
-            "success": function (json) {
-                location.replace(json.data.redirect);
-                console.log(json);
-            },
-            "error": function (json) {
-                console.log(json);
-            }
-        });
-    });
-
     $("#Tournament .tournament-buttons.options .checkIn").on("click", function () {
         $.ajax({
             "url": "/Ajax/Tournament/CheckIn",
@@ -225,6 +183,7 @@
                 "success": function (json) {
                     if (json.status) {
                         if (json.data.permissions.Permission == 0) {
+                            tournamentChanged = true;
                             $(".TournamentInfo .bracketData").each(function (i, e) {
                                 $(e).find(".user[data-user='" + json.data.targetUser + "']").remove();
                             });

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication.Models.ViewModels
 {
-    public class TournamentViewModel
+    public class TournamentViewModel : ViewModel
     {
         [Required(ErrorMessage = "Name your tournament")]
         [DataType(DataType.Text)]

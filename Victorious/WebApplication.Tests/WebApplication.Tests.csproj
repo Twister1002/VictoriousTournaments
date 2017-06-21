@@ -110,6 +110,7 @@
     <Compile Include="Models\PlatformUnitTest.cs" />
     <Compile Include="Models\TournamentUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\HashManagerUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DatabaseLib\DatabaseLib.csproj">
