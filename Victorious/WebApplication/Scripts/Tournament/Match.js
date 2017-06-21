@@ -15,7 +15,6 @@
     $(".TournamentGames .removeGame").on("click", RemoveGame);
 
     function MouseOverEvents() {
-        //console.log("Entered: " + $(this).data("seed"));
         var userid = $(this).data("id");
         if (userid > -1) {
             $(".TournamentMatch .defender[data-id='" + userid + "'], .TournamentMatch .challenger[data-id='" + userid + "']").addClass("teamHover");
@@ -23,7 +22,6 @@
     }
 
     function MouseLeaveEvents() {
-        //console.log("Left: " + $(this).data("seed"));
         var userid = $(this).data("id");
         if (userid > -1) {
             $(".TournamentMatch .defender[data-id='" + userid + "'], .TournamentMatch .challenger[data-id='" + userid + "']").removeClass("teamHover");
@@ -237,8 +235,6 @@
 
     // Helper functions
     function UpdateMatch(matchData, $match) {
-        console.log(matchData);
-
         UpdateTournamentOptions(matchData, $match);
 
         // Update the overview of the match
