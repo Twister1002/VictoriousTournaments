@@ -148,10 +148,14 @@ namespace WebApplication.Models
 
                 if (!matches.Any(x => x.IsFinished == false))
                 {
-                    matches = bracket.GetRound(head.RoundIndex + 1);
-                    foreach (IMatch match in matches)
+                    for (int i = head.RoundIndex; i <= bracket.NumberOfRounds; i++)
                     {
-                        matchesAffected.Add(match.MatchNumber);
+                        matches = bracket.GetRound(i);
+
+                        foreach (IMatch match in matches)
+                        {
+                            matchesAffected.Add(match.MatchNumber);
+                        }
                     }
                 }
 
