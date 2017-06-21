@@ -17,6 +17,7 @@ namespace Tournament.Structure
 		//public bool IsFinished
 		//public List<IPlayer> Players
 		//public List<IPlayerScore> Rankings
+		//public int AdvancingPlayers
 		//public int MaxRounds
 		//protected Dictionary<int, Match> Matches = empty
 		//public int NumberOfRounds
