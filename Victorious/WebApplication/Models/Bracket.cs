@@ -27,7 +27,7 @@ namespace WebApplication.Models
             this.bracket = bracket;
             this.model = model;
             this.groupBracket = bracket as IGroupStage;
-            IsLocked = model.IsLocked != null ? model.IsLocked.Value : false;
+            IsLocked = model.IsLocked;
             Init();
         }
 

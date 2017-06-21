@@ -180,7 +180,7 @@ namespace WebApplication.Models
                 Model.InProgress = true;
 
                 // Update the database
-                bracketModel.Matches = bracket.GetModel().Matches;
+                bracketModel.Matches = bracket.GetModel(Model.TournamentID).Matches;
                 services.Tournament.UpdateBracket(bracketModel);
                 services.Tournament.UpdateTournament(Model);
                 return services.Save();
@@ -292,7 +292,7 @@ namespace WebApplication.Models
             services.Tournament.AddTournamentInvite(inviteModel);
             bool TournamentInviteSave = services.Save();
 
-            return services.Save();
+            return tournamentSave && TournamentInviteSave;
         }
 
         public void Retrieve(int id)

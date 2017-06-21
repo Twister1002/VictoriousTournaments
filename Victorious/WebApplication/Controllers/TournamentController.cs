@@ -201,7 +201,7 @@ namespace WebApplication.Controllers
                     else
                     {
                         // Show a success message.
-                        Session["Message"] = "We were unable to create your account.";
+                        Session["Message"] = "We were unable to create the tournament.";
                         Session["Message.Class"] = ViewError.ERROR;
                     }
                 }
