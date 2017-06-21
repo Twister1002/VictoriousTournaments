@@ -1,6 +1,5 @@
 ﻿jQuery(document).ready(function () {
     var $ = jQuery;
-
     var PlayerSlot = {
         "-1": "unspecified",
         "0": "defender",
@@ -38,7 +37,8 @@
     // Add games to the match
     $(".TournamentGames .options .add-game").on("click", function () {
         // Add a new line to the game data
-        var gameList = $(this).closest(".TournamentGames");
+        var match = $(this).closest(".TournamentMatch");
+        var gameList = match.find(".TournamentGames");
         var maxGames = gameList.data("max");
         var gamesListed = gameList.find(".list-table-body ul").length;
         var nextGameNumber = $(gameList.find(".games ul")[gamesListed - 1]).data("gamenum") + 1;
@@ -50,14 +50,8 @@
             "defender": { "score": "" }
         };
 
-        AddGameToDetails(jsonData, gameList);
-
-        if (CanAddGames(gameList)) {
-            $(this).removeClass("hide");
-        }
-        else {
-            $(this).addClass("hide");
-        }
+        AddGame(jsonData, match);
+        UpdateMatchOptions(false, match);
     });
 
     // Show the details of the match
@@ -68,7 +62,7 @@
             "bracketId": matchElem.closest(".bracket").data("id"),
             "matchId": matchElem.data("id")
         };
-
+        
         $.ajax({
             "url": "/Ajax/Match",
             "type": "POST",
@@ -83,8 +77,7 @@
                 if (json.status) {
                     $games = matchElem.find(".TournamentGames");
 
-                    MatchUpdate(json.data.match, matchElem);
-                    MatchOptionsUpdate(json.data.match, $games);
+                    UpdateMatch(json.data, matchElem);
                 }
                 else {
                     console.log(json.message);
@@ -161,18 +154,12 @@
                         return;
                     }
 
-                    $.each(json.data.matchUpdates, function (i, e) {
-                        if (match.data("id") == e.matchId) {
-                            if (e.finished) {
-                                match.find(".TournamentGames").removeClass("open");
-                            }
-                        }
+                    // Close the match if it is finished
+                    if (data.finished) {
+                        $match.find(".TournamentGames").removeClass("open");
+                    }
 
-                        matchElement = $(".TournamentMatch[data-id='" + e.matchId + "']");
-                        MatchUpdate(e, matchElement);
-                        MatchOptionsUpdate(e, matchElement.find(".TournamentGames"));
-                    });
-
+                    UpdateMatch(json.data, match);
                     UpdateStandings(jsonData.tournamentId, jsonData.bracketId);
                 }
 
@@ -205,15 +192,13 @@
             "dataType": "json",
             "success": function (json) {
                 if (json.status) {
-                    $.each(json.data, function (i, e) {
-                        MatchUpdate(e, $(".TournamentMatch[data-id='" + e.matchId + "']"));
-
-                        if (e.matchNum == match.data("matchnum")) {
-                            MatchOptionsUpdate(e, match.find(".TournamentGames"));
-                        }
-                    });
+                    //$.each(json.data, function (i, e) {
+                    //    MatchUpdate(e, $(".TournamentMatch[data-id='" + e.matchId + "']"));
+                    //});
                     
-                    match.find(".TournamentGames .games").empty();
+                    //match.find(".TournamentGames .games").empty();
+
+                    UpdateMatch(json.data, match);
                     UpdateStandings($("#Tournament").data("id"), match.closest(".bracket").data("id"));
                 }
 
@@ -225,82 +210,61 @@
         });
     });
 
-    function MatchUpdate(json, $match) {
-        overview = $match.find(".overview");
-        games = $match.find(".TournamentGames");
+    //function MatchUpdate(json, $match) {
+    //    overview = $match.find(".overview");
+    //    games = $match.find(".TournamentGames");
+    //    matchData = json.match;
 
-        // Update the Match data
-        overview.find(".defender .name").text(json.defender.name);
-        overview.find(".defender .score").text(json.defender.score);
-        overview.find(".defender").attr("data-id", json.defender.id).data("id", json.defender.id);
+    //    // Update the Match data
+    //    overview.find(".defender .name").text(json.defender.name);
+    //    overview.find(".defender .score").text(json.defender.score);
+    //    overview.find(".defender").attr("data-id", json.defender.id).data("id", json.defender.id);
 
-        overview.find(".challenger .name").text(json.challenger.name);
-        overview.find(".challenger .score").text(json.challenger.score);
-        overview.find(".challenger").attr("data-id", json.challenger.id).data("id", json.challenger.id);
+    //    overview.find(".challenger .name").text(json.challenger.name);
+    //    overview.find(".challenger .score").text(json.challenger.score);
+    //    overview.find(".challenger").attr("data-id", json.challenger.id).data("id", json.challenger.id);
 
-        // Update the Game data 
-        games.find(".defender.name").text(json.defender.name);
-        games.find(".challenger.name").text(json.challenger.name);
+    //    // Update the Game data 
+    //    games.find(".defender.name").text(json.defender.name);
+    //    games.find(".challenger.name").text(json.challenger.name);
 
-        games.find(".games").empty();
-        $.each(json.games, function (i, e) {
-            AddGameToDetails(e, games);
-        });
+    //    games.find(".games").empty();
+    //    AddGamesToMatch(json, games);
+    //    MatchOptionsUpdate(json.data.match, $games);
 
-        // Verify if the match is ready
-        if (json.ready) {
-            // Show the details button
-            $match.find(".details").removeClass("hide");
-        }
-        else {
-            $match.find(".details").addClass("hide");
-        }
-    }
+    //    // Verify if the match is ready
+    //    if (json.ready) {
+    //        // Show the details button
+    //        $match.find(".details").removeClass("hide");
+    //    }
+    //    else {
+    //        $match.find(".details").addClass("hide");
+    //    }
+    //}
 
-    // Helper method to add games to details
-    function AddGameToDetails(data, $games) {
-        html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + data.id + "' data-gamenum='" + data.gameNum + "'> ";
-        html += "<li class='column game-number'>" + data.gameNum + "</li> ";
-        html += "<li class='column defender score' data-id='"+data.defender.id+"'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li> ";
-        html += "<li class='column challenger score' data-id='" + data.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li> ";
-        html += "<li class='column'><span class='icon icon-bin removeGame'></span></li> ";
-        html += "</ul> ";
+    //function AddGamesToMatch(data, $games) {
+    //    var detailHtml = "";
 
-        $games.find(".games").append(html);
+    //    $.each(dataObject.matches, function (i, e) {
+    //        html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + e.id + "' data-gamenum='" + data.gameNum + "'> ";
+    //        html += "<li class='column game-number'>" + e.gameNum + "</li> ";
+    //        html += "<li class='column defender score' data-id='" + e.defender.id + "'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li> ";
+    //        html += "<li class='column challenger score' data-id='" + e.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li> ";
+    //        html += "<li class='column'>";
+    //        if (!dataObject.IsLocked) html += "<span class='icon icon-bin removeGame'></span>";
+    //        html += "</li> ";
+    //        html += "</ul> ";
 
-        // Register the hover events
-        $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseover").on("mouseover", MouseOverEvents);
-        $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseleave").on("mouseleave", MouseLeaveEvents);
-        $(".TournamentMatch .removeGame").off("click").on("click", RemoveGame);
-    }
+    //        detailHtml += html;
+    //    });
 
-    function CanAddGames($games) {
-        if ($games.find(".games ul").length >= $games.find(".games").data("max")) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
+    //    $games.find(".games").append(html);
 
-    function MatchOptionsUpdate(json, $games) {
-        // Verify if the users can add more games
-        if (CanAddGames($games)) {
-            $games.find(".options .add-game").removeClass("hide");
-        }
-        else {
-            $games.find(".options .add-game").addClass("hide");
-        }
-
-        // Verify the match is finished
-        if (json.finished) {
-            $games.find(".update-games").addClass("hide");
-            $games.find(".options .add-game").addClass("hide");
-        }
-        else {
-            $games.find(".update-games").removeClass("hide");
-        }
-    }
+    //    // Register the hover events
+    //    $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseover").on("mouseover", MouseOverEvents);
+    //    $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseleave").on("mouseleave", MouseLeaveEvents);
+    //    $(".TournamentMatch .removeGame").off("click").on("click", RemoveGame);
+    //}
 
     function RemoveGame() {
         if (!confirm("Are you sure you want to delete this game? It could affect future matches.")) {
@@ -325,20 +289,8 @@
             "dataType": "json",
             "success": function (json) {
                 if (json.status) {
+                    UpdateMatch(json.data, $(this).closest(".TournamentMatch"));
                     UpdateStandings($("#Tournament").data("id"), $game.closest(".bracket").data("id"));
-
-                    $.each(json.data.matches, function (i, e) {
-                        $match = $(".TournamentMatch[data-id='" + e.matchId + "']");
-                        MatchUpdate(e, $match);
-                        MatchOptionsUpdate(e, $match);
-
-                        // Update the games
-                        $games = $match.find(".TournamentGames");
-                        $games.find(".games").empty();
-                        $.each(e.games, function (ii, ee) {
-                            AddGameToDetails(ee, $games);
-                        });
-                    });
                 }
 
                 console.log(json.message);
@@ -347,5 +299,92 @@
                 console.log(json);
             }
         });
+    }
+
+    // Helper functions
+    function UpdateMatch(matchData, $match) {
+        console.log(matchData);
+
+        // Update the overview of the match
+        $.each(matchData.matches, function (i, data) {
+            // Allow users to click no details if the match is ready
+            if (data.ready) {
+                $match.find(".details").removeClass("hide");
+            }
+            else {
+                $match.find(".details").addClass("hide");
+            }
+
+            $match.find(".defender .name").text(data.defender.name);
+            $match.find(".defender .score").text(data.defender.score);
+            $match.find(".defender").attr("data-id", data.defender.id).data("id", data.defender.id);
+
+            $match.find(".challenger .name").text(data.challenger.name);
+            $match.find(".challenger .score").text(data.challenger.score);
+            $match.find(".challenger").attr("data-id", data.challenger.id).data("id", data.challenger.id);
+
+            // Update the Game data 
+            $match.find(".TournamentGames .defender.name").text(data.defender.name);
+            $match.find(".TournamentGames .challenger.name").text(data.challenger.name);
+
+            // Add the games to the match
+            UpdateGamesFromMatch(data, $match);
+            UpdateMatchOptions(matchData, $match);
+        });
+
+        // Register new events
+        $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseover").on("mouseover", MouseOverEvents);
+        $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseleave").on("mouseleave", MouseLeaveEvents);
+        $(".TournamentMatch .removeGame").off("click").on("click", RemoveGame);
+    }
+
+    function UpdateGamesFromMatch(matchInfo, $match) {
+        // Remove all the games
+        $(".TournamentGames .list-table .games").empty();
+
+        $.each(matchInfo.games, function (i, e) {
+            // Add the game
+            html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + e.id + "' data-gamenum='" + e.gameNum + "'> ";
+            html += "<li class='column game-number'>" + e.gameNum + "</li> ";
+            html += "<li class='column defender score' data-id='" + e.defender.id + "'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + e.defender.score + "' /></li> ";
+            html += "<li class='column challenger score' data-id='" + e.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + e.challenger.score + "' /></li> ";
+            html += "<li class='column'><span class='icon icon-bin removeGame'></span></li> ";
+            html += "</ul> ";
+
+            $(".TournamentGames .list-table .games").append(html);
+        });
+    }
+
+    function AddGame(data, $match) {
+        html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + data.id + "' data-gamenum='" + data.gameNum + "'> ";
+        html += "<li class='column game-number'>" + data.gameNum + "</li> ";
+        html += "<li class='column defender score' data-id='" + data.defender.id + "'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li> ";
+        html += "<li class='column challenger score' data-id='" + data.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li> ";
+        html += "<li class='column'><span class='icon icon-bin removeGame'></span></li> ";
+        html += "</ul> ";
+
+        $(".TournamentGames .list-table .games").append(html);
+    }
+
+    function UpdateMatchOptions(matchData, $match) {
+        // Can the user add more games?
+        if ($match.find(".games ul").length >= $match.find(".games").data("max")) {
+            $match.find(".TournamentGames .options .add-game").addClass("hide");
+        }
+        else {
+            $match.find(".TournamentGames .options .add-game").removeClass("hide");
+        }
+
+        if (!matchData.isLocked) {
+            $match.find(".update-games").removeClass("hide");
+        }
+        else {
+            // Remvoe the update button and the game deletion button
+            $match.find(".update-games, .TournamentGames .games .removeGame").remove();
+        }
+    }
+
+    function UpdateTournamentOptions(jsonData) {
+
     }
 });

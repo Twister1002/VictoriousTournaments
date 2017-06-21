@@ -48,38 +48,53 @@
             </li>
         </ul>
     </div>
-    @foreach (var bracket in brackets)
+    @for (int i = 0; i < brackets.Count; i++)
     {
+        var bracket = brackets[i];
+
         ViewBag.UpperDisplayRounds = bracket.RoundShowing(WebApplication.Models.BracketSection.UPPER);
         ViewBag.LowerDisplayRounds = bracket.RoundShowing(WebApplication.Models.BracketSection.LOWER);
         ViewBag.DisplayRounds = bracket.TotalDispalyRounds(ViewBag.UpperDisplayRounds, ViewBag.LowerDisplayRounds);
         ViewBag.IsFinalized = bracket.IBracket.IsFinalized;
         ViewBag.GrandFinal = bracket.IBracket.GrandFinal != null;
-        ViewBag.BracketCanModify = bracket.CanModify;
+        ViewBag.IsLocked = bracket.IsLocked;
 
         <div class="bracket" data-id="@bracket.Id">
             <ul class="list-table bracket-data">
                 <li>
-                    @if (!bracket.IBracket.IsFinalized && ViewBag.isCreator)
+                    @if (ViewBag.isCreator)
                     {
-                        if (bracket.GetPlayers().Count >= 4)
+                        if (!bracket.IBracket.IsFinalized)
                         {
-                            <div class="BracketFinalize">
-                                <button type="button" class="bracketFinalizeButton">Finalize Bracket</button>
-                            </div>
-
-                            if (bracket.IBracket.IsFinished)
+                            if (bracket.GetPlayers().Count >= 4)
+                            {
+                                <div class="BracketFinalize">
+                                    <button type="button" class="bracketFinalizeButton">Finalize Bracket</button>
+                                </div>
+                            }
+                            else
+                            {
+                                if (i == 0)
+                                {
+                                    <div class="message warning">You must have 4 or more participants in this bracket to finalize the bracket.</div>
+                                }
+                                else
+                                {
+                                    <div class="message warning">The previous bracket must be locked before continuing.</div>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (bracket.IBracket.IsFinished && !bracket.IsLocked)
                             {
                                 <div class="BracketLock">
                                     <button type="button" class="bracketLockButton">Lock Bracket</button>
                                 </div>
                             }
                         }
-                        else
-                        {
-                            <div class="message warning">You must have 4 or more participants in this bracket to finalize the bracket.</div>
-                        }
                     }
+                        
                     @{ Html.RenderPartial("Brackets/" + bracket.BracketFileName(), bracket, new ViewDataDictionary(ViewData)); }
                 </li>
             </ul>

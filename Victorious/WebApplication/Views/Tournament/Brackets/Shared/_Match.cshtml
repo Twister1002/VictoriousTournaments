@@ -38,7 +38,7 @@
     <div class="TournamentGames">
         <h2>Details</h2>
         <div class="options">
-            @if (ViewBag.isAdministrator && ViewBag.inProgress && ViewBag.BracketCanModify)
+            @if (ViewBag.isAdministrator && ViewBag.inProgress && !ViewBag.IsLocked)
             {
                 <span class="icon icon-plus add-game hide"></span>
                 <span class="icon icon-loop2 reset-match"></span>
@@ -59,7 +59,7 @@
             </li>
         </ul>
 
-        @if (ViewBag.isAdministrator && ViewBag.BracketCanModify)
+        @if (ViewBag.isAdministrator && !ViewBag.IsLocked)
         {
             <div class="updates">
                 <button type="button" class="update-games hide">Update Games</button>

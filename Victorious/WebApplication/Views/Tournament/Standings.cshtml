@@ -142,7 +142,7 @@
                     @if (ViewBag.isCreator)
                     {
                         <li class="list-table-body infoSection resetInfo">
-                            @if (bracket.CanModify) { 
+                            @if (!ViewBag.IsLocked) { 
                                 <span>
                                     Are you sure you want to reset this bracket? This can not be reverted.
                                     <br />

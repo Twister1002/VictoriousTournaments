@@ -99,13 +99,11 @@ namespace WebApplication.Models
         {
             // Get the current bracket
             Tournaments.IBracket bracket = Tourny.Brackets.Single(x => x.Id == bracketId);
-            bool canModify = Tourny.Brackets.ElementAtOrDefault(Tourny.Brackets.IndexOf(bracket) + 1)?.IsFinalized == true ? false : true;
 
             return new Bracket(
                 services,
                 bracket,
-                Model.Brackets.Single(x => x.BracketID == bracketId),
-                canModify
+                Model.Brackets.Single(x => x.BracketID == bracketId)
             );
         }
 
@@ -120,14 +118,12 @@ namespace WebApplication.Models
             {
                 Tournaments.IBracket bracket = Tourny.Brackets.ElementAt(i);
                 Tournaments.IBracket nextBracket = Tourny.Brackets.ElementAtOrDefault(i + 1);
-                bool canModify = Tourny.Brackets.ElementAtOrDefault(Tourny.Brackets.IndexOf(bracket) + 1)?.IsFinalized == true ? false : true;
 
                 brackets.Add(
                     new Bracket(
                         services,
                         bracket,
-                        Model.Brackets.Single(x => x.BracketID == bracket.Id),
-                        canModify
+                        Model.Brackets.Single(x => x.BracketID == bracket.Id)
                     )
                 );
             }
@@ -212,11 +208,21 @@ namespace WebApplication.Models
         /// Will progress the tournament and add new players to the net bracket
         /// </summary>
         /// <param name="bracketId">ID of the bracket</param>
+        /// <param name="isLocked">Lock or unlock the bracket</param>
         /// <returns>True if saved; false if not saved</returns>
-        public bool BracketFinished(int bracketId)
+        public bool LockBracket(int bracketId, bool isLocked)
         {
             Tournaments.IBracket currentBracket = Tourny.Brackets.Single(x => x.Id == bracketId);
             Tournaments.IBracket nextBracket = Tourny.Brackets.ElementAtOrDefault(Tourny.Brackets.FindIndex(x => x == currentBracket)+1);
+
+            // Make changes to the current bracket
+            if (currentBracket != null)
+            {
+                BracketModel model = Model.Brackets.Single(x => x.BracketID == bracketId);
+                model.IsLocked = isLocked;
+
+                services.Tournament.UpdateBracket(model);
+            }
 
             if (nextBracket != null)
             {
@@ -241,13 +247,10 @@ namespace WebApplication.Models
                 }
 
                 nextBracketModel.TournamentUsersBrackets = usersToProceed;
-
                 services.Tournament.UpdateBracket(nextBracketModel);
-
-                return services.Save();
             }
 
-            return false;
+            return services.Save();
         }
         #endregion
 

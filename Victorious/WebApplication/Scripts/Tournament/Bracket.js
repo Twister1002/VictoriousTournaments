@@ -41,7 +41,7 @@
             "data": jsonData,
             "dataType": "json",
             "success": function (json) {
-                location.replace(json.data.redirect);
+                location.reload();
                 console.log(json);
             },
             "error": function (json) {
@@ -50,7 +50,7 @@
         });
     });
 
-    $(".bracketLockoutButton").on("click", function () {
+    $(".bracketLockButton").on("click", function () {
         var bracket = $(this).closest(".bracket");
 
         var jsonData = {
@@ -64,7 +64,7 @@
             "data": jsonData,
             "dataType": "json",
             "success": function (json) {
-                location.replace(json.data.redirect);
+                location.reload();
                 console.log(json);
             },
             "error": function (json) {

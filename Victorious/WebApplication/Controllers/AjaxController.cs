@@ -170,20 +170,6 @@ namespace WebApplication.Controllers
 
                 if (tournament.IsAdmin(account.Model.AccountID))
                 {
-                    //List<int> matchesAffected = viewModel.MatchesAffectedList(matchNum);
-                    //List<object> matchResponse = new List<object>();
-
-                    //GameViewModel gameModel;
-                    //List<GameModel> games = viewModel.Bracket.ResetMatchScore(matchNum);
-
-                    //// Remove the games from the current match.
-                    //foreach (GameModel game in games)
-                    //{
-                    //    // Delete the games
-                    //    gameModel = new GameViewModel(game);
-                    //    gameModel.Delete();
-                    //}
-
                     List<int> matchNumsAffected = bracket.MatchesAffectedList(matchNum);
                     List<object> matchResponse = new List<object>();
 
@@ -196,7 +182,11 @@ namespace WebApplication.Controllers
 
                     status = true;
                     message = "Matches are reset";
-                    data = matchResponse;
+                    data = new
+                    {
+                        isLocked = bracket.IsLocked,
+                        matches = matchResponse
+                    };
                 }
                 else
                 {
@@ -239,7 +229,24 @@ namespace WebApplication.Controllers
         [Route("Ajax/Bracket/Lockout")]
         public JsonResult Lockout(int tournamentId, int bracketId)
         {
+            if (account.IsLoggedIn())
+            {
+                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
 
+                if (tournament.IsAdmin(account.Model.AccountID))
+                {
+                    status = tournament.LockBracket(bracketId, true);
+
+                    if (status)
+                    {
+                        message = "Bracket is not locked.";
+                    }
+                    else
+                    {
+                        message = "Bracket failed to lock.";
+                    }
+                }
+            }
             return BundleJson();
         }
         #endregion
@@ -253,13 +260,17 @@ namespace WebApplication.Controllers
             Models.Bracket bracket = tournament.GetBracket(bracketId);
             Models.Match match = bracket.GetMatchById(matchId);
 
+            List<object> matches = new List<object>();
+            matches.Add(JsonMatchResponse(match, true));
+
             if (match != null)
             {
                 status = true;
                 message = "Match was loaded.";
                 data = new
                 {
-                    match = JsonMatchResponse(match, true)
+                    isLocked = bracket.IsLocked,
+                    matches = matches
                 };
             }
 
@@ -296,7 +307,7 @@ namespace WebApplication.Controllers
                             {
                                 // We need to add this game.
                                 PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
-                                bracket.AddGame(matchNum, gameModel.DefenderScore, gameModel.ChallengerScore, winner);
+                                bracket.AddGame(matchNum, gameModel.ChallengerScore, gameModel.DefenderScore, winner);
                             }
                             else
                             {
@@ -313,16 +324,6 @@ namespace WebApplication.Controllers
                         if (status)
                         {
                             message = "Current match was updated";
-
-                            // Verify if this bracket is finished. 
-                            if (bracket.IBracket.IsFinished)
-                            {
-                                // If the tournament pushed players to the next bracket, refresh.
-                                if (tournament.BracketFinished(bracketId))
-                                {
-                                    refresh = true;
-                                }
-                            }
 
                             matchUpdates.Add(JsonMatchResponse(match, true));
                             if (match.match.NextMatchNumber != -1)
@@ -346,8 +347,9 @@ namespace WebApplication.Controllers
                         // Prepare data
                         data = new
                         {
+                            isLocked = bracket.IsLocked,
                             processed = processed,
-                            matchUpdates = matchUpdates,
+                            matches = matchUpdates,
                             refresh = refresh
                         };
                     }

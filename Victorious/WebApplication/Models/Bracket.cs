@@ -18,17 +18,16 @@ namespace WebApplication.Models
         private IGroupStage groupBracket;
         private BracketModel model;
 
-        public bool CanModify { get; private set; }
-
         public int Id { get; private set; }
+        public bool IsLocked { get; private set; }
 
-        public Bracket(IService services, IBracket bracket, BracketModel model, bool canEdit)
+        public Bracket(IService services, IBracket bracket, BracketModel model)
         {
-            this.CanModify = canEdit;
             this.services = services;
             this.bracket = bracket;
             this.model = model;
             this.groupBracket = bracket as IGroupStage;
+            IsLocked = model.IsLocked != null ? model.IsLocked.Value : false;
             Init();
         }
 
