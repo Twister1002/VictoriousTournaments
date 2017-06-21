@@ -96,7 +96,7 @@ namespace WebApplication.Models.ViewModels
         public List<int> NumberOfRounds { get; set; }
         [Display(Name = "Groups")]
         public List<int> NumberOfGroups { get; set; }
-        [Display(Name = "Number of player to advace")]
+        [Display(Name = "Number of player to advance")]
         public List<int> NumberPlayersAdvance { get; set; }
     }
 }
