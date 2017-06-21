@@ -266,9 +266,11 @@ namespace WebApplication.Models
                 return false;
             }
 
+            Model.LastEditedOn = DateTime.Now;
+            Model.LastEditedByID = account.Model.AccountID;
             Model.CreatedOn = DateTime.Now;
             Model.CreatedByID = account.Model.AccountID;
-
+            
             // Generate the Tournament Invite Codes
             Model.InviteCode = Codes.GenerateInviteCode();
 
