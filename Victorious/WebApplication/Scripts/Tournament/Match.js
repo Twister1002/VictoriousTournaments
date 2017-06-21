@@ -153,7 +153,6 @@
                     }
                     
                     UpdateMatch(json.data, match);
-                    UpdateStandings(jsonData.tournamentId, jsonData.bracketId);
                 }
 
                 console.log(json.message);
@@ -186,7 +185,6 @@
             "success": function (json) {
                 if (json.status) {
                     UpdateMatch(json.data, match);
-                    UpdateStandings($("#Tournament").data("id"), match.closest(".bracket").data("id"));
                 }
 
                 console.log(json.message);
@@ -222,7 +220,6 @@
             "success": function (json) {
                 if (json.status) {
                     UpdateMatch(json.data, match.closest(".TournamentMatch"));
-                    UpdateStandings($("#Tournament").data("id"), $game.closest(".bracket").data("id"));
                 }
 
                 console.log(json.message);
@@ -234,12 +231,19 @@
     }
 
     // Helper functions
-    function UpdateMatch(matchData, $match) {
-        UpdateTournamentOptions(matchData, $match);
+    function UpdateTournament(data, $tournament) {
 
+    }
+
+    function UpdateBracket(data, $bracket) {
+        
+    }
+
+    function UpdateMatch(matchData, $match) {
         // Update the overview of the match
         $.each(matchData.matches, function (i, data) {
-            // Allow users to click no details if the match is ready
+            $match = $(".TournamentMatch[data-id='" + data.matchId + "']");
+            // Allow users to click on details if the match is ready
             if (data.ready) {
                 $match.find(".details").removeClass("hide");
             }
@@ -268,6 +272,12 @@
         $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseover").on("mouseover", MouseOverEvents);
         $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseleave").on("mouseleave", MouseLeaveEvents);
         $(".TournamentMatch .removeGame").off("click").on("click", RemoveGame);
+
+        // Update the tournament stuff
+        UpdateTournamentOptions(matchData, $match);
+
+        // Update the standings
+        UpdateStandings($("#Tournament").data("id"), $match.closest(".bracket").data("id"));
     }
 
     function UpdateGamesFromMatch(matchInfo, $match) {
