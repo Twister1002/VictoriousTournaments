@@ -298,7 +298,7 @@ namespace WebApplication.Controllers
                         foreach (GameViewModel gameModel in games)
                         {
                             // Tie game check
-                            if (match.match.IsFinished || gameModel.ChallengerScore == gameModel.DefenderScore)
+                            if (gameModel.ChallengerScore == gameModel.DefenderScore)
                             {
                                 processed.Add(gameModel.GameNumber, false);
                                 continue;
@@ -592,7 +592,13 @@ namespace WebApplication.Controllers
                     {
                         status = true;
                         message = "Tournament was deleted.";
-                        redirect = Url.Action("Index", "Tournament");
+                        data = new
+                        {
+                            redirect = Url.Action("Index", "Tournament")
+                        };
+
+                        Session["Message"] = message;
+                        Session["Message.Class"] = ViewError.SUCCESS;
                     }
                     else
                     {
