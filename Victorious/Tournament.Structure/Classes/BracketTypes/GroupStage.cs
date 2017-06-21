@@ -27,6 +27,7 @@ namespace Tournament.Structure
 		//public int NumberOfMatches
 		//protected int MatchWinValue
 		//protected int MatchTieValue
+
 		public int NumberOfGroups
 		{ get; set; }
 

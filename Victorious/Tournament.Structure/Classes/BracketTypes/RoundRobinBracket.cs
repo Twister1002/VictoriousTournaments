@@ -1,6 +1,4 @@
-﻿// #define AUTOMATIC_TIEBREAKERS
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -165,7 +163,7 @@ namespace Tournament.Structure
 		}
 
 		/// <summary>
-		/// Resets the state of all Matches.
+		/// Resets the state of all Matches and Rankings.
 		/// Deletes all Games and sets scores to 0-0.
 		/// If tiebreakers had been added, those Matches will be deleted.
 		/// May fire MatchesModified and GamesDeleted events, if updates occur.
@@ -397,10 +395,9 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Applies effects to Rankings any time a Match is modified.
 		/// This updates match outcomes and score values for any affected players.
-		/// If the Match is not found, an exception is thrown.
 		/// </summary>
 		/// <param name="_matchNumber">Number of affected Match</param>
-		/// <param name="_games">List of Games removed (if any)</param>
+		/// <param name="_games">List of Games added/removed (if any)</param>
 		/// <param name="_isAddition">Is the result being added or removed?</param>
 		/// <param name="_oldMatch">Model of the Match before the modification</param>
 		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
