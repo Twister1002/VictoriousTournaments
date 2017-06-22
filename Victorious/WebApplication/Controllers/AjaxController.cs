@@ -299,6 +299,7 @@ namespace WebApplication.Controllers
                         foreach (GameViewModel gameModel in games)
                         {
                             PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
+                            bool containsGame = match.match.Games.Any(x => x.GameNumber == gameModel.GameNumber);
 
                             // Tie game check
                             if (gameModel.ChallengerScore == gameModel.DefenderScore)
@@ -307,7 +308,7 @@ namespace WebApplication.Controllers
                             }
 
                             // Add the game
-                            if (!match.match.Games.Any(x => x.GameNumber == gameModel.GameNumber))
+                            if (match.match.IsFinished && !containsGame)
                             {
                                 if (!bracket.AddGame(matchNum, gameModel.DefenderScore, gameModel.ChallengerScore, winner))
                                 {
@@ -316,7 +317,7 @@ namespace WebApplication.Controllers
                                 }
                             }
                             // Update the game
-                            else
+                            else if (containsGame)
                             {
                                 if (!bracket.UpdateGame(matchNum, gameModel.GameNumber, gameModel.DefenderScore, gameModel.ChallengerScore, winner))
                                 {
