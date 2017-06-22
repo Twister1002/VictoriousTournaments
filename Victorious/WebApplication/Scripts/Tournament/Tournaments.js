@@ -362,11 +362,11 @@
             }
         }
 
-        if ($("#Tournament").length == 1) {
-            if ($("#Tournament .bracketName").length > 0) {
-                $("#Tournament .bracketName")[0].click();
-            }
-        }
+        //if ($("#Tournament").length == 1) {
+        //    if ($("#Tournament .bracketName").length > 0) {
+        //        $("#Tournament .bracketName")[0].click();
+        //    }
+        //}
     })($);
 });
 
