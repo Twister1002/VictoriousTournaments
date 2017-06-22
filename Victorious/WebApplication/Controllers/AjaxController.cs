@@ -308,7 +308,7 @@ namespace WebApplication.Controllers
                             }
 
                             // Add the game
-                            if (match.match.IsFinished && !containsGame)
+                            if (!match.match.IsFinished && !containsGame)
                             {
                                 if (!bracket.AddGame(matchNum, gameModel.DefenderScore, gameModel.ChallengerScore, winner))
                                 {
@@ -391,27 +391,31 @@ namespace WebApplication.Controllers
             {
                 Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                 Models.Bracket bracket = tournament.GetBracket(bracketId);
-                //Models.Match match = bracket.GetMatchByNum(matchNum);
-                List<int> matchesAffected = bracket.MatchesAffectedList(matchNum);
-                List<object> matchesAffectedData = new List<object>();
 
-                if (bracket.RemoveGame(matchNum, gameNum))
+                if (tournament.IsAdmin(account.Model.AccountID))
                 {
-                    foreach (int matchNumber in matchesAffected)
+                    //Models.Match match = bracket.GetMatchByNum(matchNum);
+                    List<int> matchesAffected = bracket.MatchesAffectedList(matchNum);
+                    List<object> matchesAffectedData = new List<object>();
+
+                    if (bracket.RemoveGame(matchNum, gameNum))
                     {
-                        matchesAffectedData.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNum), true));
+                        foreach (int matchNumber in matchesAffected)
+                        {
+                            matchesAffectedData.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNum), true));
+                        }
+
+                        status = true;
+                        message = "Matches were updated";
+                        data = new
+                        {
+                            matches = matchesAffectedData
+                        };
                     }
-
-                    status = true;
-                    message = "Matches were updated";
-                    data = new
+                    else
                     {
-                        matches = matchesAffectedData
-                    };
-                }
-                else
-                {
-                    message = "There was an error in deleting the game";
+                        message = "There was an error in deleting the game";
+                    }
                 }
             }
 
