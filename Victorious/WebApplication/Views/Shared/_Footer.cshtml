@@ -21,5 +21,8 @@
     <div class="footer_copy">
         &copy; 2017 Victorious Tournaments. All Rights reserved
     </div>
+    @if (HttpContext.Current.IsDebuggingEnabled)
+    {
     <div class="message warning">ALPHA BUILD @WebApplication.Utility.Codes.GetVersion()</div>
+    }
 </div>
