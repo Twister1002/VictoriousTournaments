@@ -20,10 +20,13 @@ namespace Tournament.Structure
 
 		/// <summary>
 		/// Number of Game within this Match.
-		/// First game = 1
+		/// First game = 1, increments from there.
 		/// </summary>
 		int GameNumber { get; set; }
 
+		/// <summary>
+		/// Length-2 array. Default values of -1.
+		/// </summary>
 		int[] PlayerIDs { get; set; }
 
 		/// <summary>

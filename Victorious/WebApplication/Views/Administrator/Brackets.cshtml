@@ -1,0 +1,33 @@
+﻿@model WebApplication.Models.BracketType
+
+<div id="AdministratorBrackets">
+    <h2>Brackets</h2>
+    <div>
+        <ul class="list-table">
+            <li class="list-table-header">
+                <ul data-columns="2">
+                    <li class="column">Name</li>
+                    <li class="column">&nbsp;</li>
+                </ul>
+            </li>
+            <li class="list-table-body border">
+                @foreach (var bracket in Model.Brackets)
+                {
+                    <ul class="bracket" data-columns="2" data-enabled="@bracket.IsActive" data-id="@bracket.BracketTypeID">
+                        <li class="column bracketType">@bracket.TypeName</li>
+                        <li class="column bracketChange">
+                            @if (bracket.IsActive)
+                            {
+                                <span class="green icon icon-checkmark"></span>
+                            }
+                            else
+                            {
+                                <span class="red icon icon-cross"></span>
+                            }
+                        </li>
+                    </ul>
+                }
+            </li>
+        </ul>
+    </div>
+</div>

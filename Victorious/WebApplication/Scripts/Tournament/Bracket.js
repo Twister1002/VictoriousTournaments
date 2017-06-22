@@ -1,49 +1,75 @@
 ﻿jQuery(document).ready(function () {
-
-    // Show the standings
-    $(".bracket .bracket-info .options .tournament-standings").on("click", function () {
-        var elem = $(".TournamentStandings");
-
-        if (elem.hasClass("open")) {
-            // Close the side panel
-            elem.removeClass("open");
-        }
-        else {
-            // Open the side panel
-            elem.addClass("open");
-        }
+    $(".group-data .groupName").on("click", function () {
+        $(this).closest("ul").find(".groupName").removeClass("selected");
+        $(this)
+            .addClass("selected")
+            .closest(".list-table-body")
+            .find(".round[data-groupnum='" + $(this).data("groupnum") + "']").removeClass("hide")
+            .siblings().addClass("hide");
     });
 
-    $(".TournamentStandings .options .close").on("click", function () {
-        $(this).closest(".TournamentStandings").removeClass("open");
-    });
+    // Finalize Tournament 
+    $(".bracketFinalizeButton").on("click", function () {
+        var bracket = $(this).closest(".bracket");
 
-    // Reset the brackets
-    $(".bracket-info .options .tournament-reset").on("click", function () {
-        var bracketId = $(this).closest(".bracket").data("id");
+        var jsonData = {
+            "tournamentId": $("#Tournament").data("id"),
+            "bracketId": bracket.data("id"),
+            "roundData": {}
+        };
 
-        if (confirm("Are you sure you want to reset this bracket?")) {
-            $.ajax({
-                "url": "/Ajax/Bracket/Reset",
-                "type": "POST",
-                "data": { "bracketId": bracketId },
-                "dataType": "json",
-                "success": function (json) {
-                    json = JSON.parse(json);
-                    if (json.status) {
-                        window.location.replace(json.redirect);
+        $.each(bracket.find(".header-rounds"), function (i, e) {
+            var roundNum = 1;
+
+            $.each($(e).find("li"), function (ii, ee) {
+                var type = $(ee).data("type");
+                var element = $(ee).find(".bestOfMatches");
+
+                if (element.length) {
+                    if (!jsonData.roundData.hasOwnProperty(type)) {
+                        jsonData.roundData[type] = {};
                     }
-                    else {
-                        alert(json.message);
-                    }
-                },
-                "error": function (json) {
-                    console.log("Error");
+                    jsonData.roundData[type][roundNum] = element.val();
+                    roundNum++;
                 }
             });
-        }
-        else {
-            return false;
-        }
+        });
+
+        $.ajax({
+            "url": "/Ajax/Tournament/Finalize",
+            "type": "POST",
+            "data": jsonData,
+            "dataType": "json",
+            "success": function (json) {
+                location.reload();
+                console.log(json);
+            },
+            "error": function (json) {
+                console.log(json);
+            }
+        });
+    });
+
+    $(".bracketLockButton").on("click", function () {
+        var bracket = $(this).closest(".bracket");
+
+        var jsonData = {
+            "tournamentId": $("#Tournament").data("id"),
+            "bracketId": bracket.data("id")
+        };
+
+        $.ajax({
+            "url": "/Ajax/Bracket/Lockout",
+            "type": "POST",
+            "data": jsonData,
+            "dataType": "json",
+            "success": function (json) {
+                location.reload();
+                console.log(json);
+            },
+            "error": function (json) {
+                console.log(json);
+            }
+        });
     });
 });

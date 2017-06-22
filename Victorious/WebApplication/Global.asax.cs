@@ -13,6 +13,10 @@ namespace WebApplication
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+            MvcHandler.DisableMvcResponseHeader = true;
+            //Response.AddHeader("Cache-Control", "max-age=0,no-cache,no-store,must-revalidate");
+            //Response.AddHeader("Pragma", "cache");
+            //Response.AddHeader("Expires", "Tue, 01 Jan 1970 00:00:00 GMT");
         }
     }
 }

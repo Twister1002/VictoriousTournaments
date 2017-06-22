@@ -70,12 +70,16 @@
     <Build Include="TournamentUsersBrackets.sql" />
     <Build Include="TournamentInvites.sql" />
     <Build Include="Platforms.sql" />
+    <Build Include="AccountInvites.sql" />
+    <Build Include="SiteTeams.sql" />
+    <Build Include="SiteTeamMembers.sql" />
+    <Build Include="TournamentTeams.sql" />
+    <Build Include="TournamentTeamMembers.sql" />
+    <Build Include="TournamentTeamBrackets.sql" />
+    <Build Include="MailingList.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="VictoriousDatabase.refactorlog" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="VictoriousDatabase.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -84,5 +88,8 @@
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment1.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="VictoriousDatabase.publish.xml" />
   </ItemGroup>
 </Project>

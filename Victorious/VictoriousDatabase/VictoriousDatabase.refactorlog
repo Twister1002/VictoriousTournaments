@@ -126,4 +126,158 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="InviteCode" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="780d57e6-09b6-467e-a497-a25f5f2e15c8" ChangeDateTime="05/12/2017 15:30:14">
+    <Property Name="ElementName" Value="[dbo].[TournamentInvites].[Created]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CreatedDate" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4c451e88-2227-4419-bce2-bc270bdc685c" ChangeDateTime="05/12/2017 15:30:26">
+    <Property Name="ElementName" Value="[dbo].[TournamentInvites].[ExpirationDate]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="DateExpires" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="274a22b1-c972-4b6d-a309-5be7af99fc95" ChangeDateTime="05/12/2017 15:30:34">
+    <Property Name="ElementName" Value="[dbo].[TournamentInvites].[CreatedDate]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="DateCreated" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bbc58255-dbd8-42af-ab35-d5b29d664096" ChangeDateTime="05/12/2017 15:32:02">
+    <Property Name="ElementName" Value="[dbo].[TournamentInvites].[Tournament]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TournamentID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6d3c7b74-5a50-49cd-a7e9-e2bd53aa360f" ChangeDateTime="05/12/2017 15:38:35">
+    <Property Name="ElementName" Value="[dbo].[UserInvites].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UserInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="InviteCode" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a1abd188-6ba8-44c7-9a73-c22c31a808fd" ChangeDateTime="05/12/2017 15:38:48">
+    <Property Name="ElementName" Value="[dbo].[UserInvites].[InviteCode]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UserInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="UserInviteCode" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7391028c-c6cb-4f1b-971c-f4d385d9da02" ChangeDateTime="05/12/2017 15:39:39">
+    <Property Name="ElementName" Value="[dbo].[UserInvites].[CreatedBy]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UserInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CreatedByID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e14a5367-51dc-4312-ad6c-444b2e945825" ChangeDateTime="05/12/2017 16:06:42">
+    <Property Name="ElementName" Value="[dbo].[UserInvites].[CreatedByID]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UserInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SentToID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f227b244-3b64-4297-a0cf-fc9e502e84c8" ChangeDateTime="05/12/2017 16:12:56">
+    <Property Name="ElementName" Value="[dbo].[UserInvites].[SentToID]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UserInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SentToEmail" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1d996786-e96b-4aa5-b5a9-1e84abddd02b" ChangeDateTime="05/12/2017 16:17:36">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[InvitedBy]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="InvitedByID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bd3926af-8ace-497f-ba51-20eb4447d4da" ChangeDateTime="05/12/2017 16:23:36">
+    <Property Name="ElementName" Value="[dbo].[AccountInvites].[UserInviteCode]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="AccountInviteCode" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="338cf7e7-8945-43e7-9c92-bf9d1e02217f" ChangeDateTime="05/17/2017 15:12:30">
+    <Property Name="ElementName" Value="[dbo].[TournamentInvites].[InviteCode]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TournamentInviteCode" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2e0556a3-8386-4810-a1b6-8aacd3398359" ChangeDateTime="05/30/2017 14:54:14">
+    <Property Name="ElementName" Value="[dbo].[AccountInvites].[AccountInviteId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountInvites]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="AccountInviteID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f53f26b9-a3ac-4ee3-94a9-5941d52610de" ChangeDateTime="06/05/2017 15:04:57">
+    <Property Name="ElementName" Value="[dbo].[SiteTeam].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[SiteTeam]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SiteTeamID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c5c2108d-01a7-44ea-ac94-d9b559e34e2a" ChangeDateTime="06/05/2017 15:08:11">
+    <Property Name="ElementName" Value="[dbo].[SiteTeamMember].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[SiteTeamMember]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SiteTeamMemeberID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="95c2182b-9d7e-4afc-a130-215102567aa0" ChangeDateTime="06/05/2017 15:14:05">
+    <Property Name="ElementName" Value="[dbo].[TournamentTeams].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentTeams]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TournamentTeamID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="74b22468-2adf-4b2f-af0e-75155cdf2a45" ChangeDateTime="06/05/2017 15:19:16">
+    <Property Name="ElementName" Value="[dbo].[TournamentTeamMember].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentTeamMember]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TournamentTeamMemberID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9406aa70-6384-4d0f-ac09-6de540452b3c" ChangeDateTime="06/05/2017 15:25:25">
+    <Property Name="ElementName" Value="[dbo].[SiteTeamMembers].[SiteTeamMemeberID]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[SiteTeamMembers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SiteTeamMemberID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fc9b660c-2ba7-4774-a32b-45d00a573640" ChangeDateTime="06/05/2017 15:30:54">
+    <Property Name="ElementName" Value="[dbo].[TournamentTeamsBrackets].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentTeamsBrackets]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Tournament" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7a478c0b-7631-4137-b7d8-00b6921a9ada" ChangeDateTime="06/05/2017 15:32:08">
+    <Property Name="ElementName" Value="[dbo].[TournamentTeamsBrackets].[Tournament]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[TournamentTeamsBrackets]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TournamentTeamID" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="127aae8c-71d3-4972-8af4-6b76cea0e2cf" ChangeDateTime="06/14/2017 21:05:52">
+    <Property Name="ElementName" Value="[dbo].[MailingList].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[MailingList]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="EmailAddress" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e17a0072-8a2a-4be9-847d-89b6b608a982" ChangeDateTime="06/19/2017 21:10:27">
+    <Property Name="ElementName" Value="[dbo].[Brackets].[CanModify]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Brackets]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IsLocked" />
+  </Operation>
 </Operations>

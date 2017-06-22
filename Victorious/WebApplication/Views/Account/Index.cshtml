@@ -1,119 +1,27 @@
-﻿@model WebApplication.Models.AccountViewModel
+﻿@model WebApplication.Models.Account
 @{
     ViewBag.Title = "Account";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div id="Account">
-    <div class="tournaments">
-        <h2>Tournaments</h2>
-        <div class="personal">
-            <label>Managing</label>
-            <ul class="list-table">
-                <li class="list-table-header">
-                    <ul class="list-table-columns" data-columns="3">
-                        <li class="column">Name</li>
-                        <li class="column">Game</li>
-                        <li class="column">Tournament Date</li>
-                    </ul>
-                </li>
-                <li class="list-table-body">
-                    @foreach (var tournament in Model.Tournaments[WebApplication.Models.TournamentStatus.ADMIN])
-                    {
-                        <a href="/Tournament/@tournament.TournamentID">
-                            <ul class="row-clickable" data-columns="3">
-                                <li class="column">@tournament.Title</li>
-                                <li class="column">@(tournament.GameType != null ? tournament.GameType.Title : "None")</li>
-                                <li class="column">@(tournament.TournamentStartDate.ToShortDateString())</li>
-                            </ul>
-                        </a>
-                    }
-                </li>
-            </ul>
-        </div>
-        <div class="active">
-            <label>Active</label>
-            <ul class="list-table">
-                <li class="list-table-header">
-                    <ul class="list-table-columns" data-columns="2">
-                        <li class="column">Name</li>
-                        <li class="column">Game</li>
-                    </ul>
-                </li>
-                <li class="list-table-body">
-                    @foreach (var tournament in Model.Tournaments[WebApplication.Models.TournamentStatus.ACTIVE])
-                    {
-                        <a href="/Tournament/@tournament.TournamentID">
-                            <ul class="row-clickable" data-columns="2">
-                                <li class="column">@tournament.Title</li>
-                                <li class="column">GAME</li>
-                            </ul>
-                        </a>
-                    }
-                </li>
-            </ul>
-        </div>
-        <div class="upcoming">
-            <label>Upcoming</label>
-            <ul class="list-table">
-                <li class="list-table-header">
-                    <ul class="list-table-columns" data-columns="3">
-                        <li class="column">Name</li>
-                        <li class="column">Game</li>
-                        <li class="column">Tournament Date</li>
-                    </ul>
-                </li>
-                <li class="list-table-body">
-                    @foreach (var tournament in Model.Tournaments[WebApplication.Models.TournamentStatus.UPCOMING])
-                    {
-                        <a href="/Tournament/@tournament.TournamentID">
-                            <ul class="row-clickable" data-columns="3">
-                                <li class="column">@tournament.Title</li>
-                                <li class="column">GAME</li>
-                                <li class="column">@(tournament.TournamentStartDate.ToShortDateString())</li>
-                            </ul>
-                        </a>
-                    }
-                </li>
-            </ul>
-        </div>
-        <div class="past">
-            <label>Past</label>
-            <ul class="list-table">
-                <li class="list-table-header">
-                    <ul class="list-table-columns" data-columns="3">
-                        <li class="column">Name</li>
-                        <li class="column">Game</li>
-                        <li class="column">Tournament Date</li>
-                    </ul>
-                </li>
-                <li class="list-table-body">
-                    @foreach (var tournament in Model.Tournaments[WebApplication.Models.TournamentStatus.PAST])
-                    {
-                        <a href="/Tournament/@tournament.TournamentID">
-                            <ul class="row-clickable" data-columns="3">
-                                <li class="column">@tournament.Title</li>
-                                <li class="column">GAME</li>
-                                <li class="column">@(tournament.TournamentStartDate.ToShortDateString())</li>
-                            </ul>
-                        </a>
-                    }
-                </li>
-            </ul>
-        </div>
+    <div class="accountMenu">
+        <div class="menu" data-type="History">History</div>
+        <div class="menu" data-type="Update">Settings</div>
+        <div class="menu active"data-type="Tournaments">Tournaments</div>
+        <a class="menu" data-type="Loading" href="@Url.Action("Create", "Tournament")">Create Tournament</a>
+        @if (Model.IsAdministrator())
+        {
+            <a class="menu" data-type="Loading" href="@Url.Action("Index", "Administrator")">Administration</a>
+        }
+        
+        <a class="menu" data-type="Loading" href="@Url.Action("Logout", "Account")">Logout</a>
     </div>
-
-    <div class="settings">
-        <h2>Settings</h2>
-        <ul>
-            <li class="clickable-underline">@Html.ActionLink("Update Account", "Update", "Account")</li>
-            <li class="clickable-underline">@Html.ActionLink("Create Tournament", "Create", "Tournament")</li>
-            <li>View Profile</li>
-            @if (Model.Account.PermissionLevel == (int)DatabaseLib.Permission.SITE_ADMINISTRATOR)
-            {
-                <li class="clickable-underline">@Html.ActionLink("Administration", "Index", "Administrator")</li>
-            }
-            <li class="clickable-underline">@Html.ActionLink("Logout", "Logout", "Account")</li>
-        </ul>
+    <div class="sections">
+        @{ Html.RenderPartial("Sections/Settings", Model); }
+        @{ Html.RenderPartial("Sections/History", Model); }
+        @{ Html.RenderPartial("Sections/Tournaments", Model); }
+        @{ Html.RenderPartial("Sections/Update", Model.viewModel); }
+        <div id="AccountLoading">Please wait while we redirect you...</div>
     </div>
 </div>

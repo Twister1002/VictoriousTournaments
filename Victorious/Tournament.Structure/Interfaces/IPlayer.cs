@@ -16,12 +16,29 @@ namespace Tournament.Structure
 		#region Variables & Properties
 		int Id { get; }
 		string Name { get; set; }
+		string Email { get; set; }
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Creates an AccountModel of this Player.
+		/// </summary>
 		AccountModel GetAccountModel();
-		TournamentUserModel GetTournamentUserModel();
-		TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed);
+#if false
+		/// <summary>
+		/// Creates a TournamentUserModel of this Player.
+		/// </summary>
+		/// <param name="_tournamentId">ID of containing Tournament</param>
+		TournamentUserModel GetTournamentUserModel(int _tournamentId);
+#endif
+		/// <summary>
+		/// Creates a TournamentUsersBracketModel of this Player.
+		/// This Model will also contain the Player's bracketID and seed.
+		/// </summary>
+		/// <param name="_bracketId">ID of containing Bracket</param>
+		/// <param name="_seed">Player's seed-value within the Bracket</param>
+		/// <param name="_tournamentId">ID of containing Tournament</param>
+		TournamentUsersBracketModel GetTournamentUsersBracketModel(int _bracketId, int _seed, int _tournamentId);
 		#endregion
 	}
 }

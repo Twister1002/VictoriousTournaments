@@ -12,22 +12,20 @@ namespace Tournament.Structure
 	{
 		#region Variables & Properties
 		string Title { get; set; }
-		string Description { get; set; }
 		List<IPlayer> Players { get; }
 		List<IBracket> Brackets { get; }
 		float PrizePool { get; set; }
-		bool IsPublic { get; set; }
 		#endregion
 
 		#region Methods
 		/// <summary>
-		/// Gets the number of Players in the tournament.
+		/// Get the number of Players in the tournament.
 		/// </summary>
 		/// <returns>Players.Count</returns>
 		int NumberOfPlayers();
 
 		/// <summary>
-		/// Clears and sets a new list of Players.
+		/// Clear and set a new list of Players.
 		/// </summary>
 		/// <param name="_players">New list of Player-type objects</param>
 		void SetNewPlayerlist(List<IPlayer> _players);
@@ -36,10 +34,9 @@ namespace Tournament.Structure
 		/// Advance Players from one Bracket to another.
 		/// Players will be seeded by their final Ranking.
 		/// </summary>
-		/// <param name="_initialBracketIndex">Finished Bracket (0-indexed)</param>
-		/// <param name="_newBracketIndex">New Bracket (0-indexed)</param>
-		/// <param name="_numberOfPlayers">How many Players to advance (0=all)</param>
-		void AdvancePlayersByRanking(int _initialBracketIndex, int _newBracketIndex, int _numberOfPlayers = 0);
+		/// <param name="_firstBracket">Finished Bracket</param>
+		/// <param name="_secondBracket">New Bracket</param>
+		void AdvancePlayersByRanking(IBracket _firstBracket, IBracket _secondBracket);
 
 		/// <summary>
 		/// Add a Player to this Tournament.
@@ -48,7 +45,7 @@ namespace Tournament.Structure
 		void AddPlayer(IPlayer _player);
 
 		/// <summary>
-		/// Replaces a player/slot in the playerlist.
+		/// Replace a player/slot in the playerlist.
 		/// Also replaces old Player in any brackets.
 		/// </summary>
 		/// <param name="_player">Player-type object to add.</param>
@@ -56,20 +53,20 @@ namespace Tournament.Structure
 		void ReplacePlayer(IPlayer _player, int _index);
 
 		/// <summary>
-		/// Removes a Player from the tournament.
+		/// Remove a Player from the tournament.
 		/// Also removes from all brackets.
 		/// </summary>
 		/// <param name="_playerId">ID of Player to remove</param>
 		void RemovePlayer(int _playerId);
 
 		/// <summary>
-		/// Clears the tournament's player list.
+		/// Clear the tournament's player list.
 		/// Also clears all bracket playerlists.
 		/// </summary>
 		void ResetPlayers();
 
 		/// <summary>
-		/// Gets the number of Brackets in the tournament.
+		/// Get the number of Brackets in the tournament.
 		/// </summary>
 		/// <returns>Number of Brackets</returns>
 		int NumberOfBrackets();
@@ -121,6 +118,13 @@ namespace Tournament.Structure
 #endif
 
 		/// <summary>
+		/// Adds a new Stepladder bracket to the tournament.
+		/// </summary>
+		/// <param name="_playerList">List of Players for the Bracket</param>
+		/// <param name="_maxGamesPerMatch">Length of each Match</param>
+		void AddStepladderBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1);
+
+		/// <summary>
 		/// Adds a new Round Robin stage to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the stage</param>
@@ -136,10 +140,11 @@ namespace Tournament.Structure
 		/// Adds a new Swiss bracket to the tournament.
 		/// </summary>
 		/// <param name="_playerList">List of Players for the stage</param>
+		/// <param name="_pairingMethod">Method of pairing players within each round</param>
 		/// <param name="_maxGamesPerMatch">Length of each Match</param>
 		/// <param name="_numRounds">Limit of rounds for the stage
 		/// 0 = no limit (default)</param>
-		void AddSwissBracket(List<IPlayer> _playerList, int _maxGamesPerMatch = 1, int _numRounds = 0);
+		void AddSwissBracket(List<IPlayer> _playerList, PairingMethod _pairingMethod = PairingMethod.Slide, int _maxGamesPerMatch = 1, int _numRounds = 0);
 
 		/// <summary>
 		/// Adds a new Round Robin Group Stage to the tournament.

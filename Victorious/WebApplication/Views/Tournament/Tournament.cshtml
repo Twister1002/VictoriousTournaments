@@ -1,82 +1,120 @@
-﻿@model WebApplication.Models.TournamentViewModel
+﻿@model WebApplication.Models.Tournament
 
 @{
     ViewBag.Title = "Tournament";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    bool registrationStarted = (DateTime)Model.RegistrationStartDate <= DateTime.Now;
-    bool tournamentStarted = (DateTime)Model.TournamentStartDate <= DateTime.Now;
-    bool registrationEnded = (DateTime)Model.RegistrationEndDate <= DateTime.Now;
+    bool registrationStarted = (DateTime)Model.Model.RegistrationStartDate <= DateTime.Now;
+    bool tournamentStarted = (DateTime)Model.Model.TournamentStartDate <= DateTime.Now;
+    bool registrationEnded = (DateTime)Model.Model.RegistrationEndDate <= DateTime.Now;
+    bool bracketSelected = false;
 
     ViewBag.TournamentId = Model.Model.TournamentID;
     ViewBag.UserId = Session["User.UserId"] != null ? Session["User.UserId"] : -1;
-    ViewBag.isAdministrator = Model.IsAdministrator(ViewBag.UserId);
+    ViewBag.isAdministrator = Model.IsAdmin(ViewBag.UserId);
     ViewBag.isCreator = Model.IsCreator(ViewBag.UserId);
+    ViewBag.inProgress = Model.Model.InProgress;
+
+    var brackets = Model.GetBrackets();
 }
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
     <div class="content-header">
-        <h2 class="tournamentTitle">Tournament - @Model.Model.Title</h2>
-        <div class="tournament-buttons">
+        <h2 class="tournamentTitle"><span class="icon icon-menu tournamentData"></span> @Model.Model.Title</h2>
+        <div class="tournament-buttons options">
             @if (ViewBag.isAdministrator)
             {
-                <a href="@Url.Action("Update", "Tournament", new { tournamentId = Model.Model.TournamentID })"><span class="icon icon-pencil"></span></a>
+                <span class="icon icon-pencil tournament-update"></span>
                 <span class="icon icon-cross tournament-delete"></span>
+            }
+            @if (Model.Model.InProgress)
+            {
+                if (Model.IsParticipent(ViewBag.UserId) && ViewBag.UserId != -1 && !Model.isAccountCheckedIn(ViewBag.UserId))
+                {
+                    <button class="checkIn">CheckIn</button>
+                }
             }
         </div>
         <h3 class="gameTitle">@Model.Model.GameType.Title</h3>
     </div>
-    @for (int i = 0; i < Model.Tourny.Brackets.Count; i++)
-    {
-        var Bracket = new WebApplication.Models.BracketViewModel(Model.Tourny.Brackets[i]);
-        String bracketName = "";
-
-        <div class="bracket" data-id="@Bracket.Bracket.Id" data-bracketnum="@i">
-            <div class="bracket-info">
-                @switch (Bracket.Bracket.BracketType)
-                {
-                    case DatabaseLib.BracketType.SINGLE:
-                        bracketName = "Single";
-                        break;
-                    case DatabaseLib.BracketType.DOUBLE:
-                        bracketName = "Double";
-                        break;
-                    case DatabaseLib.BracketType.ROUNDROBIN:
-                        bracketName = "RoundRobin";
-                        break;
-                    case DatabaseLib.BracketType.SWISS:
-                        bracketName = "Swiss";
-                        break;
-                    default:
-                        bracketName = null;
-                        break;
-                }
-
-                <h3 class="name">@bracketName</h3>
-                <div class="options">
-                    @if (Bracket.Bracket.IsFinalized)
+    <div class="bracketNames">
+        <ul class="list-table">
+            <li class="list-table-body">
+                <ul data-columns="@brackets.Count">
+                    @foreach (var bracket in brackets)
                     {
-                        if (ViewBag.isCreator)
+                        <li class="column bracketName @(!bracket.IsLocked && !bracketSelected ? "selected" : "")" data-bracket="@bracket.Id">@bracket.BracketName()</li>
+
+                        if (!bracket.IsLocked)
                         {
-                            <span class="icon icon-loop2 tournament-reset"></span>
+                            bracketSelected = true;
                         }
-
-                        <span class="icon icon-trophy tournament-standings"></span>
                     }
-                </div>
-            </div>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    @{ 
+        bracketSelected = false;
+    }
+    @for (int i = 0; i < brackets.Count; i++)
+    {
+        var bracket = brackets[i];
+
+        ViewBag.UpperDisplayRounds = bracket.RoundShowing(WebApplication.Models.BracketSection.UPPER);
+        ViewBag.LowerDisplayRounds = bracket.RoundShowing(WebApplication.Models.BracketSection.LOWER);
+        ViewBag.DisplayRounds = bracket.TotalDispalyRounds(ViewBag.UpperDisplayRounds, ViewBag.LowerDisplayRounds);
+        ViewBag.IsFinalized = bracket.IBracket.IsFinalized;
+        ViewBag.GrandFinal = bracket.IBracket.GrandFinal != null;
+        ViewBag.IsLocked = bracket.IsLocked;
+
+        <div class="bracket @(!bracket.IsLocked && !bracketSelected ? "selected" : "")" data-id="@bracket.Id">
             <ul class="list-table bracket-data">
-                @{
-                    if (!Bracket.Bracket.IsFinalized && ViewBag.isCreator)
-                    {
-                        Html.RenderPartial("Administrator/_Finalize");
-                    }
+                <li>
+                    <div class="options">
+                        @if (ViewBag.isCreator)
+                        {
+                            if (!bracket.IBracket.IsFinalized)
+                            {
+                                if (bracket.GetPlayers().Count >= 4)
+                                {
+                                    <div class="BracketFinalize">
+                                        <button type="button" class="bracketFinalizeButton">Finalize Bracket</button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    if (i == 0)
+                                    {
+                                        <div class="message warning">You must have 4 or more participants in this bracket to finalize the bracket.</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="message warning">The previous bracket must be locked before continuing.</div>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (!bracket.IsLocked)
+                                {
+                                    <div class="BracketLock @(bracket.IBracket.IsFinished ? "" : "hide")">
+                                        <button type="button" class="bracketLockButton">Lock Bracket</button>
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
 
-                    Html.RenderPartial("Brackets/Shared/_Header", Bracket, new ViewDataDictionary(ViewData));
-                    Html.RenderPartial("Brackets/" + bracketName, Bracket, new ViewDataDictionary(ViewData));
-                    Html.RenderPartial("Brackets/Shared/_Standings", Bracket);
-                }
+                    @{ Html.RenderPartial("Brackets/" + bracket.BracketFileName(), bracket, new ViewDataDictionary(ViewData)); }
+                </li>
             </ul>
         </div>
+
+        if (!bracket.IsLocked)
+        {
+            bracketSelected = true;
+        }
     }
+    @{ Html.RenderPartial("Standings", Model, new ViewDataDictionary(ViewData)); }
 </div>

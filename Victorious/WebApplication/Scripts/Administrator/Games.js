@@ -13,7 +13,7 @@
     function addEvent() {
         var jsonData = {
             "function": "add",
-            "title": $("#AdministratorGames .form .gameTitle .field").val()
+            "Title": $("#AdministratorGames .form .gameTitle .field").val()
         };
 
         GameUpdate(jsonData);
@@ -22,8 +22,7 @@
     function deleteEvent() {
         var jsonData = {
             "function": "delete",
-            "title": $(this).siblings(".gameTitle").text(),
-            "gameid": $(this).closest(".game").data("gameid")
+            "GameID": $(this).closest(".game").data("gameid")
         };
 
         GameUpdate(jsonData);
@@ -33,20 +32,18 @@
         $.ajax({
             "url": "/Ajax/Administrator/Games",
             "type": "POST",
-            "data": { "jsonData": JSON.stringify(jsonData) },
+            "data": jsonData,
             "dataType": "json",
             "beforeSend": function() {
                 $("#AdministratorGames .gameDelete").off("click");
                 $("#AdministratorGames .GameAddButton").attr("disabled", true);
             },
             "success": function (json) {
-                json = JSON.parse(json);
-
                 if (json.status) {
                     var table = $("#AdministratorGames .list-table-body");
                     table.empty();
 
-                    $.each(json.data, function (i, e) {
+                    $.each(json.data.games, function (i, e) {
                         html = "<ul class='game' data-columns='2' data-gameid='" + e.GameTypeID + "'>";
                         html += "<li class='column gameTitle'>" + e.Title + "</li>";
                         html += "<li class='column gameDelete'><span class='icon icon-cross'></span></li>";
@@ -61,8 +58,6 @@
                 console.log(json.message);
             },
             "error": function (json) {
-                json = JSON.parse(json);
-
                 console.log("Failure");
                 console.log(json);
             },

@@ -15,11 +15,16 @@ namespace Tournament.Structure
 		int Id { get; }
 		string Name { get; }
 
-		[System.Obsolete("use MatchScore&GameScore instead", false)]
-		int Score { get; set; }
-		int MatchScore { get; set; }
-		int GameScore { get; set; }
-		int PointsScore { get; set; }
+		int Wins { get; }
+		int W { get; }
+		int Ties { get; }
+		int T { get; }
+		int Losses { get; }
+		int L { get; }
+
+		int GameScore { get; }
+		int OpponentsScore { get; }
+		int PointsScore { get; }
 
 		/// <summary>
 		/// In the case of a "ranged" rank, returns the minimum.
@@ -30,16 +35,55 @@ namespace Tournament.Structure
 
 		#region Methods
 		/// <summary>
-		/// Add score values to (or subtract from) this PlayerScore.
+		/// Get an array of [W, L, T], ordered by Records enum.
 		/// </summary>
-		/// <param name="_matchScore">Match score change</param>
-		/// <param name="_gameScore">Game score change</param>
-		/// <param name="_pointsScore">Point score change</param>
-		/// <param name="_addition">Add or subtract previous values</param>
-		void AddToScore(int _matchScore, int _gameScore, int _pointsScore, bool _addition);
+		/// <returns>int[3] array showing [W, L, T]</returns>
+		int[] GetRecord();
 
 		/// <summary>
-		/// Reset this object's Score values: match, game, and point scores
+		/// Replace the player's information.
+		/// </summary>
+		/// <param name="_id">New player ID</param>
+		/// <param name="_name">New player name</param>
+		void ReplacePlayerData(int _id, string _name);
+
+		/// <summary>
+		/// Add/subtract outcome of one Match to this PlayerScore.
+		/// </summary>
+		/// <param name="_outcome">Win, Loss, or Tie</param>
+		/// <param name="_isAddition">Add or subtract these values</param>
+		void AddMatchOutcome(Outcome _outcome, bool _isAddition);
+
+		/// <summary>
+		/// Add/subtract to the Score values of this PlayerScore.
+		/// </summary>
+		/// <param name="_gamesChange">Game wins/losses</param>
+		/// <param name="_pointsChange">Points scored</param>
+		/// <param name="_isAddition">Add or subtract these values</param>
+		void UpdateScores(int _gamesChange, int _pointsChange, bool _isAddition);
+
+		/// <summary>
+		/// Add to the OpponentsScore value of this PlayerScore.
+		/// </summary>
+		/// <param name="_scoreChange">Amount to add</param>
+		void AddToOpponentsScore(int _scoreChange);
+
+		/// <summary>
+		/// Get a score representative of this player's W/L record.
+		/// </summary>
+		/// <param name="_matchWinValue">Value of each Win (def: 2)</param>
+		/// <param name="_matchTieValue">Value of each Tie (def: 1)</param>
+		/// <param name="_matchLossValue">Value of each Loss (def: 0)</param>
+		/// <returns>Score</returns>
+		int CalculateScore(int _matchWinValue, int _matchTieValue, int _matchLossValue);
+
+		/// <summary>
+		/// Set OpponentsScore = 0.
+		/// </summary>
+		void ResetOpponentsScore();
+
+		/// <summary>
+		/// Reset this object's W/L Record & score values.
 		/// </summary>
 		void ResetScore();
 		#endregion

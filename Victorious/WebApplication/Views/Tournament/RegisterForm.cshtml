@@ -1,4 +1,4 @@
-﻿@model WebApplication.Models.TournamentRegistrationFields
+﻿@model WebApplication.Models.ViewModels.TournamentRegisterViewModel
 
 @{
     ViewBag.Title = "TournamentRegistration";
@@ -13,26 +13,33 @@
     </div>
     <p>
         @if (Model.AccountID > 0)
+        {
+            if (ViewBag.CanRegister)
             {
                 if (ViewBag.isRegistered)
                 {
                     using (Html.BeginForm("Deregister", "Tournament", FormMethod.Post))
                     {
                     @Html.TextBoxFor(x => x.TournamentID, new { @readonly = "readonly", @hidden = "hidden" })
-                    @Html.TextBoxFor(x => x.AccountID, new { @readonly = "readonly",@hidden = "hidden" })
+                    @Html.TextBoxFor(x => x.AccountID, new { @readonly = "readonly", @hidden = "hidden" })
                     @Html.TextBoxFor(x => x.Name, new { @readonly = "readonly", @hidden = "hidden" })
                     <button type="submit">Deregister for tournament</button>
+                    }
                 }
-            }
-            else
-            {
-                using (Html.BeginForm("Register", "Tournament", FormMethod.Post))
+                else
                 {
+                    using (Html.BeginForm("Register", "Tournament", FormMethod.Post))
+                    {
                     @Html.TextBoxFor(x => x.TournamentID, new { @readonly = "readonly", @hidden = "hidden" })
                     @Html.TextBoxFor(x => x.AccountID, new { @readonly = "readonly", @hidden = "hidden" })
                     @Html.TextBoxFor(x => x.Name, new { @readonly = "readonly", @hidden = "hidden" })
                     <button type="submit">Register for tournament</button>
+                    }
                 }
+            }
+            else
+            {
+                <div class="message success">Hold tight, the tournament is being finalized and you can not change your status in this tournament.</div>
             }
         }
         else

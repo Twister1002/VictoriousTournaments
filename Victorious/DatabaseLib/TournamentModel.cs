@@ -19,6 +19,8 @@ namespace DatabaseLib
         {
             this.Brackets = new HashSet<BracketModel>();
             this.TournamentUsers = new HashSet<TournamentUserModel>();
+            this.TournamentInvites = new HashSet<TournamentInviteModel>();
+            this.TournamentTeams = new HashSet<TournamentTeamModel>();
     		OnInit();
         }
     
@@ -33,24 +35,29 @@ namespace DatabaseLib
         public int LastEditedByID { get; set; }
         public Nullable<decimal> EntryFee { get; set; }
         public decimal PrizePurse { get; set; }
-        public bool IsPublic { get; set; }
         public System.DateTime RegistrationStartDate { get; set; }
         public System.DateTime RegistrationEndDate { get; set; }
         public System.DateTime TournamentStartDate { get; set; }
         public System.DateTime TournamentEndDate { get; set; }
         public System.DateTime CheckInBegins { get; set; }
         public System.DateTime CheckInEnds { get; set; }
+        public int PlatformID { get; set; }
         public bool InProgress { get; set; }
         public string InviteCode { get; set; }
-        public int PlatformID { get; set; }
+        public bool PublicRegistration { get; set; }
+        public bool PublicViewing { get; set; }
     	
     	partial void OnInit();
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BracketModel> Brackets { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentUserModel> TournamentUsers { get; set; }
         public virtual GameTypeModel GameType { get; set; }
         public virtual PlatformModel Platform { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TournamentUserModel> TournamentUsers { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TournamentInviteModel> TournamentInvites { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TournamentTeamModel> TournamentTeams { get; set; }
     }
 }

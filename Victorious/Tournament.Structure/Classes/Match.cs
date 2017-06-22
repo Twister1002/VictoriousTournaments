@@ -8,6 +8,11 @@ using DatabaseLib;
 
 namespace Tournament.Structure
 {
+	/// <summary>
+	/// Matches combine, in different combinations, to form Brackets.
+	/// Similarly, Match objects are always associated with a containing Bracket,
+	/// and contain information such as the two competing Players, a List of Games, and score.
+	/// </summary>
 	public class Match : IMatch
 	{
 		#region Variables & Properties
@@ -28,6 +33,8 @@ namespace Tournament.Structure
 		public List<IGame> Games
 		{ get; private set; }
 		public int[] Score
+		{ get; private set; }
+		public int GroupNumber
 		{ get; private set; }
 		public int RoundIndex
 		{ get; private set; }
@@ -58,6 +65,7 @@ namespace Tournament.Structure
 			Games = new List<IGame>();
 			Score = new int[2] { 0, 0 };
 
+			GroupNumber = -1;
 			RoundIndex = -1;
 			MatchIndex = -1;
 			MatchNumber = -1;
@@ -65,6 +73,7 @@ namespace Tournament.Structure
 			NextMatchNumber = -1;
 			NextLoserMatchNumber = -1;
 		}
+		[System.Obsolete("Copy Ctor is out-of-date: update before using.", true)]
 		public Match(IMatch _match)
 		{
 			if (null == _match)
@@ -75,9 +84,10 @@ namespace Tournament.Structure
 			this.Id = _match.Id;
 			this.IsReady = _match.IsReady;
 			this.IsFinished = _match.IsFinished;
-			this.IsManualWin = _match.IsManualWin;
+			this.IsManualWin = _match.IsManualWin; // NOTE : This needs fixing.
 			this.MaxGames = _match.MaxGames;
 			this.WinnerSlot = _match.WinnerSlot;
+			this.GroupNumber = _match.GroupNumber;
 			this.RoundIndex = _match.RoundIndex;
 			this.MatchIndex = _match.MatchIndex;
 			this.MatchNumber = _match.MatchNumber;
@@ -89,15 +99,7 @@ namespace Tournament.Structure
 			this.PreviousMatchNumbers = new int[2];
 			for (int i = 0; i < 2; ++i)
 			{
-				if (_match.Players[i] is User)
-				{
-					this.Players[i] = new User(_match.Players[i] as User);
-				}
-				else if (_match.Players[i] is Team)
-				{
-					this.Players[i] = new Team(_match.Players[i] as Team);
-				}
-
+				this.Players[i] = _match.Players[i];
 				//this.Score[i] = _match.Score[i];
 				this.PreviousMatchNumbers[i] = _match.PreviousMatchNumbers[i];
 			}
@@ -111,83 +113,22 @@ namespace Tournament.Structure
 		}
 		public Match(MatchModel _model)
 		{
-			if (null == _model)
-			{
-				throw new ArgumentNullException("_model");
-			}
-
-			this.Id = _model.MatchID;
-			this.MaxGames = (null == _model.MaxGames)
-				? 1 : (int)(_model.MaxGames);
-			int winsNeeded = MaxGames / 2 + 1;
-
-			Players = new IPlayer[2];
-			Players[(int)PlayerSlot.Defender] = (null == _model.Defender)
-				? null : new User(_model.Defender);
-			Players[(int)PlayerSlot.Challenger] = (null == _model.Challenger)
-				? null : new User(_model.Challenger);
-			IsReady = (null == Players[0] || null == Players[1])
-				? false : true;
-
-			Games = new List<IGame>();
-			Score = new int[2] { 0, 0 };
-			foreach (GameModel model in _model.Games.OrderBy(m => m.GameNumber))
-			{
-				this.AddGame(new Game(model));
-			}
-			if (Score[0] > winsNeeded || Score[1] > winsNeeded)
-			{
-				throw new ScoreException
-					("Score cannot be higher than the match allows!");
-			}
-			WinnerSlot = PlayerSlot.unspecified;
-			if (Score[(int)PlayerSlot.Defender] == winsNeeded)
-			{
-				WinnerSlot = PlayerSlot.Defender;
-			}
-			else if (Score[(int)PlayerSlot.Challenger] == winsNeeded)
-			{
-				WinnerSlot = PlayerSlot.Challenger;
-			}
-			IsFinished = (PlayerSlot.unspecified == WinnerSlot)
-				? false : true;
-
-#if false
-			// Check for (and set) a manual win:
-			this.IsManualWin = _m.IsManualWin;
-			if (IsManualWin)
-			{
-				this.WinnerSlot = (_m.DefenderID == _m.WinnerID)
-					? PlayerSlot.Defender : PlayerSlot.Challenger;
-				Score[(int)PlayerSlot.Defender] = 0;
-				Score[(int)PlayerSlot.Challenger] = 0;
-				Score[(int)WinnerSlot] = -1;
-				IsFinished = true;
-			}
-#endif
-
-			RoundIndex = (int)(_model.RoundIndex);
-			MatchIndex = (int)(_model.MatchIndex);
-			MatchNumber = _model.MatchNumber;
-			NextMatchNumber = (int)(_model.NextMatchNumber);
-			NextLoserMatchNumber = (int)(_model.NextLoserMatchNumber);
-
-			PreviousMatchNumbers = new int[2] { -1, -1 };
-			PreviousMatchNumbers[(int)PlayerSlot.Defender] =
-				(null == _model.PrevDefenderMatchNumber)
-				? -1 : (int)(_model.PrevDefenderMatchNumber);
-			PreviousMatchNumbers[(int)PlayerSlot.Challenger] =
-				(null == _model.PrevChallengerMatchNumber)
-				? -1 : (int)(_model.PrevChallengerMatchNumber);
+			this.SetFromModel(_model);
 		}
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Creates a Model of this Match's current state.
+		/// Any contained objects are also converted into Models.
+		/// </summary>
+		/// <returns>Matching MatchModel</returns>
 		public MatchModel GetModel()
 		{
 			MatchModel model = new MatchModel();
 
 			model.MatchID = this.Id;
+			model.GroupNumber = this.GroupNumber;
 			model.RoundIndex = this.RoundIndex;
 			model.MatchIndex = this.MatchIndex;
 			model.MatchNumber = this.MatchNumber;
@@ -197,38 +138,103 @@ namespace Tournament.Structure
 			model.PrevChallengerMatchNumber = this.PreviousMatchNumbers[(int)PlayerSlot.Challenger];
 			model.MaxGames = this.MaxGames;
 
-			model.ChallengerID = (null != Players[(int)PlayerSlot.Challenger])
-				? Players[(int)PlayerSlot.Challenger].Id : -1;
-			model.DefenderID = (null != Players[(int)PlayerSlot.Defender])
-				? Players[(int)PlayerSlot.Defender].Id : -1;
+			model.ChallengerID = Players[(int)PlayerSlot.Challenger]?.Id
+				?? -1;
+			model.DefenderID = Players[(int)PlayerSlot.Defender]?.Id
+				?? -1;
 			model.WinnerID = (PlayerSlot.unspecified == WinnerSlot)
-				? (int)this.WinnerSlot
-				: Players[(int)WinnerSlot].Id;
+				? -1 : Players[(int)WinnerSlot].Id;
+#if false
+			// Create and add PlayerModel objects if applicable:
+			model.Defender = Players[(int)PlayerSlot.Defender]?.GetTournamentUserModel();
+			model.Challenger = Players[(int)PlayerSlot.Challenger]?.GetTournamentUserModel();
+#endif
+
 			model.ChallengerScore = this.Score[(int)PlayerSlot.Challenger];
 			model.DefenderScore = this.Score[(int)PlayerSlot.Defender];
-
-			model.Games = new List<GameModel>();
+			//model.Games = new List<GameModel>();
 			foreach (IGame game in this.Games)
 			{
-				GameModel gm = new GameModel();
-				gm.GameID = game.Id;
-				gm.ChallengerID = game.PlayerIDs[(int)PlayerSlot.Challenger];
-				gm.DefenderID = game.PlayerIDs[(int)PlayerSlot.Defender];
-				gm.WinnerID = (PlayerSlot.unspecified == game.WinnerSlot)
-					? (int)(game.WinnerSlot) : game.PlayerIDs[(int)(game.WinnerSlot)];
-				gm.MatchID = this.Id;
-				gm.GameNumber = game.GameNumber;
-				gm.ChallengerScore = game.Score[(int)PlayerSlot.Challenger];
-				gm.DefenderScore = game.Score[(int)PlayerSlot.Defender];
-
-				model.Games.Add(gm);
+				model.Games.Add(GetGameModel(game));
 			}
 
 			return model;
 		}
 
+		/// <summary>
+		/// Sets this object's values from a related MatchModel.
+		/// Convert's any null values into appropriate defaults.
+		/// Note: passing an unrealistic MatchModel can cause impossible situations.
+		/// </summary>
+		/// <param name="_model">MatchModel with data</param>
+		public void SetFromModel(MatchModel _model)
+		{
+			if (null == _model)
+			{
+				throw new ArgumentNullException("_model");
+			}
+
+			this.Id = _model.MatchID;
+			this.MaxGames = _model.MaxGames.GetValueOrDefault(1);
+			this.WinnerSlot = PlayerSlot.unspecified;
+
+			// Copy Players:
+			this.Players = new IPlayer[2];
+			Players[(int)PlayerSlot.Defender] = (null == _model.Defender)
+				? null : new Player(_model.Defender);
+			Players[(int)PlayerSlot.Challenger] = (null == _model.Challenger)
+				? null : new Player(_model.Challenger);
+			// Match is "Ready" if both player slots are filled
+			this.IsReady = (null != Players[0] && null != Players[1]);
+
+			this.Games = new List<IGame>();
+			this.Score = new int[2] { 0, 0 };
+			this.IsManualWin = false;
+			if (_model.IsManualWin)
+			{
+				// If match has a manually set winner,
+				// call the SetWinner method.
+				// This prevents any Games from affecting the Score.
+				PlayerSlot winnerSlot = (_model.WinnerID == _model.DefenderID)
+					? PlayerSlot.Defender : PlayerSlot.Challenger;
+				SetWinner(winnerSlot);
+			}
+
+			foreach (GameModel gameModel in _model.Games.OrderBy(m => m.GameNumber))
+			{
+				// Adding Games with the AddGame method handles things for us.
+				// Data like score and finish status will auto update.
+				AddGame(gameModel);
+			}
+
+			this.GroupNumber = _model.GroupNumber.GetValueOrDefault(-1);
+			this.RoundIndex = _model.RoundIndex.GetValueOrDefault(-1);
+			this.MatchIndex = _model.MatchIndex.GetValueOrDefault(-1);
+			this.MatchNumber = _model.MatchNumber;
+			this.NextMatchNumber = _model.NextMatchNumber.GetValueOrDefault(-1);
+			this.NextLoserMatchNumber = _model.NextLoserMatchNumber.GetValueOrDefault(-1);
+
+			this.PreviousMatchNumbers = new int[2];
+			PreviousMatchNumbers[(int)PlayerSlot.Defender] =
+				_model.PrevDefenderMatchNumber.GetValueOrDefault(-1);
+			PreviousMatchNumbers[(int)PlayerSlot.Challenger] =
+				_model.PrevChallengerMatchNumber.GetValueOrDefault(-1);
+		}
+
+		#region Player Methods
+		/// <summary>
+		/// Adds a Player to the Match, in the specified slot.
+		/// If no PlayerSlot is given, the Player is added to the first empty slot.
+		/// If the specified slot is full or invalid, an exception is thrown.
+		/// </summary>
+		/// <param name="_player">Player to add</param>
+		/// <param name="_slot">Slot to fill</param>
 		public void AddPlayer(IPlayer _player, PlayerSlot _slot = PlayerSlot.unspecified)
 		{
+			if (null == _player)
+			{
+				throw new ArgumentNullException("_player");
+			}
 			if (_slot != PlayerSlot.unspecified &&
 				_slot != PlayerSlot.Defender &&
 				_slot != PlayerSlot.Challenger)
@@ -236,8 +242,8 @@ namespace Tournament.Structure
 				throw new InvalidSlotException
 					("PlayerSlot must be -1, 0, or 1!");
 			}
-			if ((null != Players[0] && Players[0].Id == _player.Id) ||
-				(null != Players[1] && Players[1].Id == _player.Id))
+			if (Players[0]?.Id == _player.Id ||
+				Players[1]?.Id == _player.Id)
 			{
 				throw new DuplicateObjectException
 					("Match already contains this Player!");
@@ -249,12 +255,12 @@ namespace Tournament.Structure
 				{
 					if (null == Players[i])
 					{
+						// The given slot is empty.
+						// Add the Player:
 						Players[i] = _player;
-
-						if (null != Players[0] && null != Players[1])
-						{
-							IsReady = true;
-						}
+						// Check Match readiness (two players present):
+						IsReady = (null != Players[0] && null != Players[1]);
+						// Return successfully
 						return;
 					}
 				}
@@ -263,28 +269,37 @@ namespace Tournament.Structure
 			throw new SlotFullException
 				("Match cannot add Player; there is already a Player in this Slot!");
 		}
+
+		/// <summary>
+		/// Removes a Player from this Match and replaces with a new Player.
+		/// If the Player-to-replace is not present, an exception is thrown.
+		/// </summary>
+		/// <param name="_newPlayer">Player to add</param>
+		/// <param name="_oldPlayerId">ID of Player to remove</param>
 		public void ReplacePlayer(IPlayer _newPlayer, int _oldPlayerId)
 		{
 			if (null == _newPlayer)
 			{
 				throw new ArgumentNullException("_newPlayer");
 			}
-
-			if (null != Players[(int)PlayerSlot.Defender] &&
-				_oldPlayerId == Players[(int)PlayerSlot.Defender].Id)
+			
+			// Check (and replace if found) Defender slot:
+			if (Players[(int)PlayerSlot.Defender]?.Id == _oldPlayerId)
 			{
 				Players[(int)PlayerSlot.Defender] = _newPlayer;
 				foreach (IGame game in Games)
 				{
+					// Replace removed player in all Games for this Match:
 					game.PlayerIDs[(int)PlayerSlot.Defender] = _newPlayer.Id;
 				}
 			}
-			else if (null != Players[(int)PlayerSlot.Challenger] &&
-				_oldPlayerId == Players[(int)PlayerSlot.Challenger].Id)
+			// else, Check (and replace if found) Challenger slot:
+			else if (Players[(int)PlayerSlot.Challenger]?.Id == _oldPlayerId)
 			{
 				Players[(int)PlayerSlot.Challenger] = _newPlayer;
 				foreach (IGame game in Games)
 				{
+					// Replace removed player in all Games for this Match:
 					game.PlayerIDs[(int)PlayerSlot.Challenger] = _newPlayer.Id;
 				}
 			}
@@ -294,14 +309,24 @@ namespace Tournament.Structure
 					("Player not found in this Match!");
 			}
 		}
+
+		/// <summary>
+		/// Removes a Player from this Match. Sets playerslot to null.
+		/// This also resets the Match's state. (score, games, etc.)
+		/// If the Player is not present, an exception is thrown.
+		/// </summary>
+		/// <param name="_playerId">ID of Player to remove</param>
 		public void RemovePlayer(int _playerId)
 		{
+			// Check both slots:
 			for (int i = 0; i < 2; ++i)
 			{
-				if (null != Players[i] && Players[i].Id == _playerId)
+				if (Players[i]?.Id == _playerId)
 				{
+					// Player found. Set slot to empty:
 					Players[i] = null;
 
+					// Reset the match (score, games, readiness, etc.):
 					ResetScore();
 					IsReady = false;
 					return;
@@ -311,77 +336,86 @@ namespace Tournament.Structure
 			throw new PlayerNotFoundException
 				("Player not found in this Match!");
 		}
+
+		/// <summary>
+		/// Removes both Players.
+		/// This also resets the Match's state. (score, games, etc.)
+		/// </summary>
 		public void ResetPlayers()
 		{
 			if (null == Players)
 			{
 				Players = new IPlayer[2];
 			}
+			// Clear both playerslots:
 			Players[0] = Players[1] = null;
 
+			// Reset the Match (score, readiness, etc.):
 			ResetScore();
 			IsReady = false;
 		}
+		#endregion
 
+		#region Game & Score Methods
+		/// <summary>
+		/// Adds a Game to this Match. (adds to Games list)
+		/// Also updates score and finished status.
+		/// If the Match is finished or not ready, an exception is thrown.
+		/// If the Game has invalid data (such as negative score), an exception is thrown.
+		/// </summary>
+		/// <param name="_defenderScore">Playerslot 0's score</param>
+		/// <param name="_challengerScore">Playerslot 1's score</param>
+		/// <param name="_winnerSlot">Game winner</param>
+		/// <returns>Model of the added Game</returns>
 		public GameModel AddGame(int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			if (!IsReady)
-			{
-				throw new InactiveMatchException
-					("Cannot add games to an inactive match!");
-			}
-			if (IsFinished && !IsManualWin)
-			{
-				throw new InactiveMatchException
-					("Cannot add games to a finished match!");
-			}
-			if (PlayerSlot.unspecified == _winnerSlot)
-			{
-				throw new NotImplementedException
-					("No ties allowed / enter a winner slot!");
-			}
-			if (_defenderScore < 0 || _challengerScore < 0)
-			{
-				throw new ScoreException
-					("Score cannot be negative!");
-			}
-
+			// Find the lowest (positive) Game Number we can add.
+			// Check existing games, and get the first unassigned number:
+			List<int> gameNumbers = Games.Select(g => g.GameNumber).ToList();
 			int gameNum = 1;
-			// Find the lowest (positive) Game Number we can add:
-			while (Games.Select(g => g.GameNumber).ToList().Contains(gameNum))
+			while (gameNumbers.Contains(gameNum))
 			{
 				++gameNum;
 			}
+
+			// Create a new Game with the game number and this Match's ID:
 			IGame game = new Game(this.Id, gameNum);
+			// Add Game's data (players and score):
 			for (int i = 0; i < 2; ++i)
 			{
-				game.PlayerIDs[i] = this.Players[i].Id;
+				game.PlayerIDs[i] = this.Players[i]?.Id ?? -1;
 			}
 			game.Score[(int)PlayerSlot.Defender] = _defenderScore;
 			game.Score[(int)PlayerSlot.Challenger] = _challengerScore;
 			game.WinnerSlot = _winnerSlot;
 
-			if (!IsFinished)
+			// Use the private helper method to do the actual work.
+			// This method will add the game and update the Match data:
+			return AddGame(game);
+		}
+
+		/// <summary>
+		/// Adds a Game to this Match. (adds to Games list)
+		/// Also updates score and finished status.
+		/// If the Match is finished or not ready, an exception is thrown.
+		/// If the Game has invalid data (such as negative score), an exception is thrown.
+		/// </summary>
+		/// <param name="_gameModel">Model of Game to add</param>
+		/// <returns>Model of the added Game</returns>
+		public GameModel AddGame(GameModel _gameModel)
+		{
+			if (null == _gameModel)
 			{
-				if (PlayerSlot.Defender == _winnerSlot ||
-					PlayerSlot.Challenger == _winnerSlot)
-				{
-					AddWin(game.WinnerSlot);
-				}
+				throw new ArgumentNullException("_gameModel");
 			}
 
-			Games.Add(game);
-			Games.Sort((first, second) => first.GameNumber.CompareTo(second.GameNumber));
-			return game.GetModel();
+			// Use the private helper method to do the actual work.
+			// This method will add the game and update the Match data:
+			return AddGame(new Game(_gameModel));
 		}
 #if false
 		public GameModel UpdateGame(int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
 		{
-			if (_gameNumber < 1)
-			{
-				throw new InvalidIndexException
-					("Game Number must be positive!");
-			}
 			if (PlayerSlot.unspecified == _winnerSlot)
 			{
 				throw new NotImplementedException
@@ -393,36 +427,38 @@ namespace Tournament.Structure
 					("Score cannot be negative!");
 			}
 
-			for (int g = 0; g < Games.Count; ++g)
+			int gameIndex = Games.FindIndex(g => g.GameNumber == _gameNumber);
+			if (gameIndex < 0)
 			{
-				if (Games[g].GameNumber == _gameNumber)
+				throw new GameNotFoundException
+					("Game not found; Game Number may be invalid!");
+			}
+
+			// Subtract the Game's current winner:
+			SubtractWin(Games[gameIndex].WinnerSlot);
+			// Update the Game's data:
+			Games[gameIndex].Score[(int)PlayerSlot.Defender] = _defenderScore;
+			Games[gameIndex].Score[(int)PlayerSlot.Challenger] = _challengerScore;
+			Games[gameIndex].WinnerSlot = _winnerSlot;
+			// Add the Game's new winner:
+			if (!IsFinished)
+			{
+				if (PlayerSlot.Defender == _winnerSlot ||
+					PlayerSlot.Challenger == _winnerSlot)
 				{
-					RemoveGameNumber(g);
-
-					IGame game = new Game(this.Id, _gameNumber);
-					for (int i = 0; i < 2; ++i)
-					{
-						game.PlayerIDs[i] = this.Players[i].Id;
-					}
-					game.Score[(int)PlayerSlot.Defender] = _defenderScore;
-					game.Score[(int)PlayerSlot.Challenger] = _challengerScore;
-					game.WinnerSlot = _winnerSlot;
-
-					if (PlayerSlot.Defender == _winnerSlot ||
-						PlayerSlot.Challenger == _winnerSlot)
-					{
-						AddWin(game.WinnerSlot);
-					}
-					Games.Add(game);
-					Games.Sort((first, second) => first.GameNumber.CompareTo(second.GameNumber));
-					return (game.GetModel());
+					AddWin(_winnerSlot);
 				}
 			}
 
-			throw new GameNotFoundException
-				("Game not found; Game Number may be invalid!");
+			return GetGameModel(Games[gameIndex]);
 		}
 #endif
+		/// <summary>
+		/// Removes the last Game of this Match.
+		/// Also updates the Match's score and status.
+		/// If there are no Games, an exception is thrown.
+		/// </summary>
+		/// <returns>Model of removed Game</returns>
 		public GameModel RemoveLastGame()
 		{
 			int index = Games.Count - 1;
@@ -432,19 +468,35 @@ namespace Tournament.Structure
 					("No Games to remove!");
 			}
 
+			// Refer to this method's logic, which handles updating the Match state:
 			return (RemoveGameNumber(Games[index].GameNumber));
 		}
+
+		/// <summary>
+		/// Removes a specific Game from this Match.
+		/// Also updates the Match's score and status.
+		/// If the Game is not found, an exception is thrown.
+		/// </summary>
+		/// <param name="_gameNumber">Number of Game to remove</param>
+		/// <returns>Model of removed Game</returns>
 		public GameModel RemoveGameNumber(int _gameNumber)
 		{
+			// Search Games for one that matches the given GameNumber:
 			for (int index = 0; index < Games.Count; ++index)
 			{
 				if (Games[index].GameNumber == _gameNumber)
 				{
-					GameModel removedGame = Games[index].GetModel();
+					// Save a Model of this Game (to return later):
+					GameModel removedGame = GetGameModel(Games[index]);
+
+					// If this match has a manual winner, we remove the game without updating score.
 					if (!IsManualWin)
 					{
+						// Calling SubtractWin() will update the Match's score & status:
 						SubtractWin(Games[index].WinnerSlot);
 					}
+
+					// Now remove the Game and return:
 					Games.RemoveAt(index);
 					return removedGame;
 				}
@@ -453,6 +505,14 @@ namespace Tournament.Structure
 			throw new GameNotFoundException
 				("Game not found; Game Number may be invalid!");
 		}
+
+		/// <summary>
+		/// Manually sets a winner for this Match, regardless of any Games played.
+		/// This can be used to signify a forfeit or win-by-default.
+		/// If the Match is already finished or not ready, an exception is thrown.
+		/// If an invalid slot is given, an exception is thrown.
+		/// </summary>
+		/// <param name="_winnerSlot">Slot of winning Player</param>
 		public void SetWinner(PlayerSlot _winnerSlot)
 		{
 			if (!IsReady)
@@ -466,6 +526,9 @@ namespace Tournament.Structure
 					("Can't set winner! Reset match first.");
 			}
 
+			// Update the score: value of -1 signifies an auto-win.
+			// In the Bracket itself, this value is translated to a win,
+			// but needs to be distinct for display purposes.
 			if (PlayerSlot.Defender == _winnerSlot)
 			{
 				Score[(int)PlayerSlot.Defender] = -1;
@@ -486,6 +549,13 @@ namespace Tournament.Structure
 			IsFinished = true;
 			IsManualWin = true;
 		}
+
+		/// <summary>
+		/// Resets this Match's score and finished status.
+		/// Manually set winners are also reversed.
+		/// All Games are removed.
+		/// </summary>
+		/// <returns>Models (list) of all removed Games</returns>
 		public List<GameModel> ResetScore()
 		{
 			if (null == Score)
@@ -500,12 +570,21 @@ namespace Tournament.Structure
 			List<GameModel> modelList = new List<GameModel>();
 			foreach (IGame game in Games)
 			{
-				modelList.Add(game.GetModel());
+				modelList.Add(GetGameModel(game));
 			}
 			Games.Clear();
 			return modelList;
 		}
+		#endregion
 
+		#region Mutators
+		/// <summary>
+		/// Sets maximum amount of Games that can be played for this Match.
+		/// Ex: A "best of 3" has 3 max games.
+		/// If the given value is invalid (negative) or the Match is already finished,
+		/// an exception is thrown.
+		/// </summary>
+		/// <param name="_numberOfGames">Max Games</param>
 		public void SetMaxGames(int _numberOfGames)
 		{
 			if (IsFinished)
@@ -521,6 +600,36 @@ namespace Tournament.Structure
 
 			MaxGames = _numberOfGames;
 		}
+
+		/// <summary>
+		/// Sets the group number for this Match.
+		/// This is only needed for Group Stage-type brackets.
+		/// If this has already been set, an exception is thrown.
+		/// If an invalid (negative) index is given, an exception is thrown.
+		/// </summary>
+		/// <param name="_groupNumber">Group number</param>
+		public void SetGroupNumber(int _groupNumber)
+		{
+			if (GroupNumber > 0)
+			{
+				throw new AlreadyAssignedException
+					("Group Number is already set!");
+			}
+			if (_groupNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Group Number cannot be less than 1!");
+			}
+
+			GroupNumber = _groupNumber;
+		}
+
+		/// <summary>
+		/// Sets the round number for this Match.
+		/// If this has already been set, an exception is thrown.
+		/// If an invalid (negative) index is given, an exception is thrown.
+		/// </summary>
+		/// <param name="_index">Round number</param>
 		public void SetRoundIndex(int _index)
 		{
 			if (RoundIndex > -1)
@@ -536,6 +645,13 @@ namespace Tournament.Structure
 
 			RoundIndex = _index;
 		}
+
+		/// <summary>
+		/// Sets the match index (within the round) for this Match.
+		/// If this has already been set, an exception is thrown.
+		/// If an invalid (negative) index is given, an exception is thrown.
+		/// </summary>
+		/// <param name="_index">New match index</param>
 		public void SetMatchIndex(int _index)
 		{
 			if (MatchIndex > -1)
@@ -551,6 +667,13 @@ namespace Tournament.Structure
 
 			MatchIndex = _index;
 		}
+
+		/// <summary>
+		/// Sets the match number (within the bracket) for this Match.
+		/// If this has already been set, an exception is thrown.
+		/// If an invalid (negative) number is given, an exception is thrown.
+		/// </summary>
+		/// <param name="_number">New match number</param>
 		public void SetMatchNumber(int _number)
 		{
 			if (MatchNumber > -1)
@@ -566,6 +689,15 @@ namespace Tournament.Structure
 
 			MatchNumber = _number;
 		}
+
+		/// <summary>
+		/// Adds a reference (MatchNumber) to a previous Match: Where this Match's Players came from.
+		/// Each Match can hold up to two of these previous match numbers.
+		/// If two match numbers have already been added, an exception is thrown.
+		/// If an invalid (negative) match number is given, an exception is thrown.
+		/// </summary>
+		/// <param name="_number">Number of previous match</param>
+		/// <param name="_slot">Which playerslot is coming from that Match</param>
 		public void AddPreviousMatchNumber(int _number, PlayerSlot _slot = PlayerSlot.unspecified)
 		{
 			if (_number < 1)
@@ -574,6 +706,8 @@ namespace Tournament.Structure
 					("Match Number cannot be less than 1!");
 			}
 
+			// Previous Match Numbers are stored in a 2-length array.
+			// Make sure the correct slot (given as _slot) is not already assigned before doing so:
 			if ((PlayerSlot.unspecified == _slot || PlayerSlot.Defender == _slot)
 				&& PreviousMatchNumbers[(int)PlayerSlot.Defender] < 0)
 			{
@@ -590,6 +724,13 @@ namespace Tournament.Structure
 					("Previous Match Numbers are already set!");
 			}
 		}
+
+		/// <summary>
+		/// Set a reference (MatchNumber) to the Match this WINNER will advance to.
+		/// If this is already set, an exception is thrown.
+		/// If an invalid (negative) match number is given, an exception is thrown.
+		/// </summary>
+		/// <param name="_number">Number of next Match</param>
 		public void SetNextMatchNumber(int _number)
 		{
 			if (NextMatchNumber > -1)
@@ -605,6 +746,14 @@ namespace Tournament.Structure
 
 			NextMatchNumber = _number;
 		}
+
+		/// <summary>
+		/// Set a reference (MatchNumber) to the Match this LOSER will advance to.
+		/// This only applies to double-elimination-style brackets.
+		/// If this is already set, an exception is thrown.
+		/// If an invalid (negative) match number is given, an exception is thrown.
+		/// </summary>
+		/// <param name="_number">Number of next Match</param>
 		public void SetNextLoserMatchNumber(int _number)
 		{
 			if (NextLoserMatchNumber > -1)
@@ -621,33 +770,91 @@ namespace Tournament.Structure
 			NextLoserMatchNumber = _number;
 		}
 		#endregion
+		#endregion
 
 		#region Private Methods
-		private void AddGame(IGame _game)
+		/// <summary>
+		/// Creates a GameModel of the given Game.
+		/// This Model includes the appropriate Match ID.
+		/// </summary>
+		/// <param name="_game">Game-type object</param>
+		/// <returns>Model of given Game</returns>
+		private GameModel GetGameModel(IGame _game)
 		{
 			if (null == _game)
 			{
 				throw new ArgumentNullException("_game");
 			}
-#if false
-            _game.MatchId = this.Id;
-			_game.GameNumber = (_game.GameNumber > 0)
-				? _game.GameNumber : (Games.Count + 1);
-			_game.PlayerIDs[(int)PlayerSlot.Defender] = this.Players[(int)PlayerSlot.Defender].Id;
-			_game.PlayerIDs[(int)PlayerSlot.Challenger] = this.Players[(int)PlayerSlot.Challenger].Id;
 
-            foreach (IGame game in Games)
+			GameModel gameModel = _game.GetModel();
+			gameModel.MatchID = this.Id;
+			return gameModel;
+		}
+
+		/// <summary>
+		/// Helper method, handles logic for adding a Game to this Match.
+		/// Adds the Game to the list, updates score and finished status.
+		/// Also sorts the Games list by GameNumber.
+		/// If the Match is finished or not ready, an exception is thrown.
+		/// If the new GameNumber is already present, an exception is thrown.
+		/// If the Game has invalid (negative) score, an exception is thrown.
+		/// </summary>
+		/// <param name="_game">Game to add</param>
+		/// <returns>Model of added Game</returns>
+		private GameModel AddGame(IGame _game)
+		{
+			if (!IsReady)
 			{
-				if (game.Id == _game.Id || game.GameNumber == _game.GameNumber)
+				throw new InactiveMatchException
+					("Cannot add games to an inactive match!");
+			}
+			if (IsFinished && !IsManualWin)
+			{
+				throw new InactiveMatchException
+					("Cannot add games to a finished match!");
+			}
+			if (PlayerSlot.unspecified == _game.WinnerSlot)
+			{
+				throw new NotImplementedException
+					("No tie games allowed / enter a winner slot!");
+			}
+			if (_game.Score[0] < 0 || _game.Score[1] < 0)
+			{
+				throw new ScoreException
+					("Score cannot be negative!");
+			}
+			if (Games.Any(g => g.GameNumber == _game.GameNumber))
+			{
+				throw new DuplicateObjectException
+					("Match already contains duplicate game data!");
+			}
+
+			// If the Match is a "Manual Win," Games can still be added,
+			// though the score will NOT be updated.
+			if (!IsFinished)
+			{
+				if (PlayerSlot.Defender == _game.WinnerSlot ||
+					PlayerSlot.Challenger == _game.WinnerSlot)
 				{
-					throw new DuplicateObjectException
-						("New game cannot match an existing game!");
+					// The AddWin method handles the logic of updating the Match.
+					// Call this to update the score and match status:
+					AddWin(_game.WinnerSlot);
 				}
 			}
-#endif
-            AddWin(_game.WinnerSlot);
+
+			// Add the new Game to the list and sort it, then return a Model:
 			Games.Add(_game);
+			Games.Sort((first, second) => first.GameNumber.CompareTo(second.GameNumber));
+			return GetGameModel(_game);
 		}
+
+		/// <summary>
+		/// Adds a "win" to this Match.
+		/// This updates the score and finished status.
+		/// If the Match is already finished or not ready, an exception is thrown.
+		/// If the winning slot is inalid, an exception is thrown.
+		/// </summary>
+		/// <param name="_slot">Playerslot to add a win to</param>
 		private void AddWin(PlayerSlot _slot)
 		{
 			if (IsFinished)
@@ -662,7 +869,7 @@ namespace Tournament.Structure
 			}
 			if (PlayerSlot.unspecified == _slot)
 			{
-				// Adding a tie: do nothing to Score
+				// "Adding" a tie: do nothing to Score
 				return;
 			}
 			if (_slot != PlayerSlot.Defender &&
@@ -674,10 +881,11 @@ namespace Tournament.Structure
 
 			Score[(int)_slot] += 1;
 
+			// Use MaxGames to calculate how many wins are needed to finish the Match:
 			int winsNeeded = MaxGames / 2 + 1;
 			if (Score[(int)_slot] >= winsNeeded)
 			{
-				// One player has enough game-wins to win the match
+				// The new winner has enough game-wins to win the match
 				WinnerSlot = _slot;
 				IsFinished = true;
 			}
@@ -688,6 +896,14 @@ namespace Tournament.Structure
 				IsFinished = true;
 			}
 		}
+
+		/// <summary>
+		/// Subtracts a "win" from this Match.
+		/// This updates the score and finished status.
+		/// If the Match is not yet ready, an exception is thrown.
+		/// If this subtraction would lower score under 0, an exception is thrown.
+		/// </summary>
+		/// <param name="_slot">Playerslot to subtract a win from</param>
 		private void SubtractWin(PlayerSlot _slot)
 		{
 			if (!IsReady)
@@ -697,7 +913,7 @@ namespace Tournament.Structure
 			}
 			if (PlayerSlot.unspecified == _slot)
 			{
-				// Removing a tie: do nothing to Score
+				// "Removing" a tie: do nothing to Score
 				return;
 			}
 			if (_slot != PlayerSlot.Defender &&
@@ -712,12 +928,15 @@ namespace Tournament.Structure
 					("Score is already 0; can't subtract wins!");
 			}
 
+			// If the given slot is the Match winner, the Match will be reactivated.
+			// Remove the winner and reset IsFinished:
 			if (WinnerSlot == _slot)
 			{
 				IsFinished = false;
 				WinnerSlot = PlayerSlot.unspecified;
 			}
 
+			// Now we can subtract the point:
 			Score[(int)_slot] -= 1;
 		}
 		#endregion

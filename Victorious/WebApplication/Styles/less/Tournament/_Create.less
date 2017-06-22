@@ -1,7 +1,33 @@
-﻿#TournamentCreate {
+﻿#TournamentEdit {
     .section {
-        li {
-            padding: .5em 0em;
+        &.form-section {
+            .icon.hide {
+                display: none;
+            }
+
+            li {
+                padding: .5em 0em;
+
+                .datepicker, .timepicker {
+                    width: 7em;
+                }
+
+                &.hide {
+                    display: none;
+                }
+            }
+
+            .input-validation-error {
+                background-color: @alert-red;
+
+                option {
+                    color: @white;
+                }
+            }
+
+            .field-validation-error {
+                display: none;
+            }
         }
     }
 }

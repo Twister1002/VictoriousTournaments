@@ -1,6 +1,5 @@
 ﻿jQuery(document).ready(function () {
     var $ = jQuery;
-
     var PlayerSlot = {
         "-1": "unspecified",
         "0": "defender",
@@ -9,6 +8,7 @@
         "defender": 0,
         "challenger": 1,
     }
+    var origGameModel = "";
 
     // Mouse Events
     $(".TournamentMatch .defender, .TournamentMatch .challenger").on("mouseover", MouseOverEvents);
@@ -16,7 +16,6 @@
     $(".TournamentGames .removeGame").on("click", RemoveGame);
 
     function MouseOverEvents() {
-        //console.log("Entered: " + $(this).data("seed"));
         var userid = $(this).data("id");
         if (userid > -1) {
             $(".TournamentMatch .defender[data-id='" + userid + "'], .TournamentMatch .challenger[data-id='" + userid + "']").addClass("teamHover");
@@ -24,7 +23,6 @@
     }
 
     function MouseLeaveEvents() {
-        //console.log("Left: " + $(this).data("seed"));
         var userid = $(this).data("id");
         if (userid > -1) {
             $(".TournamentMatch .defender[data-id='" + userid + "'], .TournamentMatch .challenger[data-id='" + userid + "']").removeClass("teamHover");
@@ -38,63 +36,53 @@
     // Add games to the match
     $(".TournamentGames .options .add-game").on("click", function () {
         // Add a new line to the game data
-        var gameList = $(this).closest(".TournamentGames");
+        var match = $(this).closest(".TournamentMatch");
+        var gameList = match.find(".TournamentGames");
         var maxGames = gameList.data("max");
         var gamesListed = gameList.find(".list-table-body ul").length;
         var nextGameNumber = $(gameList.find(".games ul")[gamesListed - 1]).data("gamenum") + 1;
 
         jsonData = {
+            "id": -1,
             "gameNum": (isNaN(nextGameNumber) ? 1 : nextGameNumber),
             "challenger": { "score": "" },
             "defender": { "score": "" }
         };
 
-        AddGameToDetails(jsonData, gameList);
-
-        if (CanAddGames(gameList)) {
-            $(this).removeClass("hide");
-        }
-        else {
-            $(this).addClass("hide");
-        }
+        AddGame(jsonData, match);
+        UpdateMatchOptions(false, match);
     });
 
     // Show the details of the match
     $(".TournamentMatch .details").on("click", function () {
         var matchElem = $(this).closest(".TournamentMatch");
         var jsonData = {
-            "matchId": $(matchElem).data("id")
+            "tournamentId": $("#Tournament").data("id"),
+            "bracketId": matchElem.closest(".bracket").data("id"),
+            "matchId": matchElem.data("id")
         };
-
+        
         $.ajax({
             "url": "/Ajax/Match",
             "type": "POST",
-            "data": { "jsonData": JSON.stringify(jsonData) },
+            "data": jsonData,
             "dataType": "json",
             "beforeSend": function () {
-                matchElem.find(".TournamentGames").addClass("open");
+                $(".TournamentInfo, .TournamentGames").removeClass("open");
+                matchElem.find(".TournamentGames").addClass("open")
                 matchElem.find(".TournamentGames .list-table-body").empty();
             },
             "success": function (json) {
-                json = JSON.parse(json);
-
                 if (json.status) {
-                    console.log(json);
                     $games = matchElem.find(".TournamentGames");
 
-                    // Add the currently fetched games
-                    $.each(json.data.games, function (i, e) {
-                        AddGameToDetails(e, matchElem.find(".TournamentGames"));
-                    });
-                    MatchUpdate(json.data, matchElem);
-                    MatchOptionsUpdate(json.data, $games);
+                    UpdateMatch(json.data, matchElem);
                 }
                 else {
                     console.log(json.message);
                 }
             },
             "error": function (json) {
-                json = JSON.parse(json);
                 console.log(json);
                 matchElem.find(".TournamentGames").removeClass("open");
             },
@@ -109,33 +97,37 @@
         var games = match.find(".games ul");
         var gameData = new Array();
         var validated = true;
+        var regex = /^[0-9]+$/;
 
         // Validate the games fields
         // For every game
         $.each(games, function (i, e) {
             // For every game's row
-            defenderScore = $(e).find(".defender-score").val();
-            challengerScore = $(e).find(".challenger-score").val();
+            defender = $(e).find(".defender-score")
+            challenger = $(e).find(".challenger-score")
 
-            defenderScoreValid = $.isNumeric(defenderScore) || Math.floor(defenderScore) != defenderScore;
-            challengerScoreValue = $.isNumeric(challengerScore) || Math.floor(challengerScore) != challengerScore;
+            defenderScoreValid = regex.test(defender.val());
+            challengerScoreValue = regex.test(challenger.val());
 
-            if (!defenderScoreValid || !challengerScoreValue) {
-                $(e).find(".score").addClass("invalid");
+            if (!defenderScoreValid) {
+                defender.closest(".score").addClass("invalid");
+                validated = false;
             }
             else {
-                $(e).find(".score").removeClass("invalid");
+                defender.closest(".score").removeClass("invalid");
             }
+
+            if (!challengerScoreValue) {
+                challenger.closest(".score").addClass("invalid");
+                validated = false;
+            }
+            else {
+                challenger.closest(".score").removeClass("invalid");
+            }
+
         });
 
         if (!validated) return;
-
-        var jsonData = {
-            "matchId": match.data("id"),
-            "matchNum": match.data("matchnum"),
-            "bracketNum": $(this).closest(".bracket").data("bracketnum"),
-            "tournamentId": $("#Tournament").data("id"),
-        }
 
         // Get all the game data
         $.each(games, function (i, e) {
@@ -146,47 +138,36 @@
             });
         });
 
+        var jsonData = {
+            "matchId": match.data("id"),
+            "matchNum": match.data("matchnum"),
+            "bracketId": $(this).closest(".bracket").data("id"),
+            "tournamentId": $("#Tournament").data("id"),
+            "games": gameData
+        }
+
         $.ajax({
             "url": "/Ajax/Match/Update",
             "type": "POST",
-            "data": { "jsonIds": JSON.stringify(jsonData), "games": gameData },
+            "data": jsonData,
             "dataType": "json",
             "beforeSend": function () {
                 match.find(".TournamentGames .update-games").attr("disabled", true);
             },
             "success": function (json) {
-                json = JSON.parse(json);
-
                 if (json.status) {
-                    console.log(json.message);
                     var matchElement = null;
 
-                    // Close the match details if the match is finished.
-                    if (json.data.currentMatch.finished) {
-                        match.find(".TournamentGames").removeClass("open");
+                    // Check if there is a refresh
+                    if (json.data.refresh) {
+                        window.location.reload();
+                        return;
                     }
-
-                    if (json.data.currentMatch) {
-                        matchElement = $(".TournamentMatch[data-id='" + json.data.currentMatch.matchId + "']");
-                        MatchUpdate(json.data.currentMatch, matchElement);
-                        MatchOptionsUpdate(json.data.currentMatch, matchElement.find(".TournamentGames"));
-                    }
-                    if (json.data.winnerMatch) {
-                        matchElement = $(".TournamentMatch[data-id='" + json.data.winnerMatch.matchId + "']");
-                        MatchUpdate(json.data.winnerMatch, matchElement);
-                    }
-                    if (json.data.loserMatch) {
-                        matchElement = $(".TournamentMatch[data-id='" + json.data.loserMatch.matchId + "']");
-                        MatchUpdate(json.data.loserMatch, matchElement);
-                    }
-
-                    UpdateStandings(jsonData.tournamentId, jsonData.bracketNum);
-                }
-                else {
-                    console.log("Error in updating");
+                    
+                    UpdateMatch(json.data, match, true);
                 }
 
-                console.log(json);
+                console.log(json.message);
             },
             "error": function (json) {
                 console.log(json);
@@ -198,6 +179,10 @@
     });
 
     $(".TournamentGames .options .reset-match").on("click", function () {
+        if (!confirm("Are you sure you want to reset this match? It could affect future matches.")) {
+            return;
+        }
+
         var match = $(this).closest(".TournamentMatch");
         var jsonData = {
             "bracketId": $(this).closest(".bracket").data("id"),
@@ -207,21 +192,11 @@
         $.ajax({
             "url": "/Ajax/Bracket/MatchReset",
             "type": "post",
-            "data": { "bracketId": $(this).closest(".bracket").data("id"), "matchNum": match.data("matchnum") },
+            "data": { "tournamentId": $("#Tournament").data("id"), "bracketId": $(this).closest(".bracket").data("id"), "matchNum": match.data("matchnum") },
             "dataType": "json",
             "success": function (json) {
-                json = JSON.parse(json);
-
                 if (json.status) {
-                    $.each(json.data, function (i, e) {
-                        MatchUpdate(e, $(".TournamentMatch[data-id='" + e.matchId + "']"));
-
-                        if (e.matchNum == match.data("matchnum")) {
-                            MatchOptionsUpdate(e, match.find(".TournamentGames"));
-                        }
-                    });
-                    
-                    match.find(".TournamentGames .games").empty();
+                    UpdateMatch(json.data, match);
                 }
 
                 console.log(json.message);
@@ -232,159 +207,194 @@
         });
     });
 
-    function MatchUpdate(json, $match) {
-        overview = $match.find(".overview");
-        games = $match.find(".TournamentGames");
-
-        // Update the Match data
-        overview.find(".defender .name").text(json.defender.name);
-        overview.find(".defender .score").text(json.defender.score);
-        overview.find(".defender").attr("data-id", json.defender.id).data("id", json.defender.id);
-
-        overview.find(".challenger .name").text(json.challenger.name);
-        overview.find(".challenger .score").text(json.challenger.score);
-        overview.find(".challenger").attr("data-id", json.challenger.id).data("id", json.challenger.id);
-
-        // Update the Game data 
-        games.find(".defender.name").text(json.defender.name);
-        games.find(".challengername").text(json.challenger.name);
-
-        // Verify if the match is ready
-        if (json.ready) {
-            // Show the details button
-            $match.find(".details").removeClass("hide");
-        }
-        else {
-            $match.find(".details").addClass("hide");
-        }
-    }
-
-    // Helper method to add games to details
-    function AddGameToDetails(data, $games) {
-        html = "<ul data-columns='4' data-gameid='"+data.id+"' data-gamenum='"+data.gameNum+"'> ";
-        html += "<li class='column game-number'>Game " + data.gameNum + "</li> ";
-        html += "<li class='column defender score' data-id='"+data.defender.id+"'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li> ";
-        html += "<li class='column challenger score' data-id='" + data.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li> ";
-        html += "<li class='column'><span class='icon icon-cross removeGame'></span></li> ";
-        html += "</ul> ";
-
-        $games.find(".games").append(html);
-
-        // Register the hover events
-        $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseover").on("mouseover", MouseOverEvents);
-        $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseleave").on("mouseleave", MouseLeaveEvents);
-        $(".TournamentMatch .removeGame").off("click").on("click", RemoveGame);
-    }
-
-    function CanAddGames($games) {
-        if ($games.find(".games ul").length >= $games.find(".games").data("max")) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
-
-    function MatchOptionsUpdate(json, $games) {
-        // Verify if the users can add more games
-        if (CanAddGames($games)) {
-            $games.find(".options .add-game").removeClass("hide");
-        }
-        else {
-            $games.find(".options .add-game").addClass("hide");
-        }
-
-        // Verify the match is finished
-        if (json.finished) {
-            $games.find(".update-games").addClass("hide");
-        }
-        else {
-            $games.find(".update-games").removeClass("hide");
-        }
-    }
-
     function RemoveGame() {
+        var match = $(this).closest(".TournamentMatch");
         var $game = $(this).closest("ul");
 
+        if ($game.data("gameid") == -1) {
+            $game.remove();
+
+            UpdateMatchOptions({ "isLocked": false }, match);
+
+            return;
+        }
+
+        if (!confirm("Are you sure you want to delete this game? It could affect future matches.")) {
+            return;
+        }
+
         var jsonData = {
+            "tournamentId": $("#Tournament").data("id"),
             "bracketId": $game.closest(".bracket").data("id"),
-            "matchId": $game.closest(".TournamentMatch").data("id"),
+            //"matchId": $game.closest(".TournamentMatch").data("id"),
             "matchNum": $game.closest(".TournamentMatch").data("matchnum"),
-            "gameId": $game.data("gameid"),
-            "gameNum": $game.data("gamenum"),
+            //"gameId": $game.data("gameid"),
+            "gameNum": $game.data("gamenum")
         };
 
         $.ajax({
             "url": "/Ajax/Match/RemoveGame",
             "type": "post",
-            "data": { "jsonData": JSON.stringify(jsonData) },
+            "data": jsonData,
             "dataType": "json",
-            "beforeSend": function () {
-
-            },
             "success": function (json) {
-                json = JSON.parse(json);
-                console.log(json);
-
                 if (json.status) {
-                    $.each(json.data, function (i, e) {
-                        $match = $(".TournamentMatch[data-id='" + e.matchId + "']");
-                        MatchUpdate(e, $match);
-                        MatchOptionsUpdate(e, $match);
-                    });
+                    UpdateMatch(json.data, match.closest(".TournamentMatch"));
+                }
 
-                    UpdateStandings($("#Tournament").data("id"), $game.closest(".bracket").data("bracketnum"));
-                }
-                else {
-                    console.log(json.message);
-                }
+                console.log(json.message);
             },
             "error": function (json) {
                 console.log(json);
-            },
-            "complete": function () {
-
             }
         });
     }
 
-    function UpdateStandings(tournyId, bracket) {
-        jsonData = {
-            "tournamentId": tournyId,
-            "bracketNum": bracket
-        };
+    // Helper functions
+    function UpdateTournament(data, $tournament) {
 
-        $.ajax({
-            "url": "/Ajax/Bracket/Standings",
-            "type": "POST",
-            "data": { "jsonData": JSON.stringify(jsonData) },
-            "dataType": "json",
-            "beforeSend": function () {
+    }
 
-            },
-            "success": function (json) {
-                json = JSON.parse(json);
-                var standings = $(".TournamentStandings .standings .list-table-body");
-                if (json.status) {
-                    standings.empty();
+    function UpdateBracket(data, $bracket) {
+        
+    }
 
-                    $.each(json.data.ranks, function (i, e) {
-                        html = "<ul class='position' data-columns='3'>";
-                        html += "<li class='column rank'>" + e.Rank + "</li>";
-                        html += "<li class='column name'>" + e.Name + "</li>";
-                        if (e.Score != -1) html += "<li class='column score'>" + (e.Score > -1 ? e.Score : "") + "</li>";
-                        html += "</ul>";
-
-                        standings.append(html);
-                    });
-                }
-            },
-            "error": function (json) {
-                console.log(json);
-            },
-            "complete": function () {
-
+    function UpdateMatch(matchData, $match, autoclose) {
+        // Update the overview of the match
+        $.each(matchData.matches, function (i, data) {
+            $match = $(".TournamentMatch[data-id='" + data.matchId + "']");
+            // Allow users to click on details if the match is ready
+            if (data.ready) {
+                $match.find(".details").removeClass("hide");
             }
+            else {
+                $match.find(".details").addClass("hide");
+            }
+
+            $match.find(".defender .name").text(data.defender.name);
+            $match.find(".defender .score").text(data.defender.score);
+            $match.find(".defender").attr("data-id", data.defender.id).data("id", data.defender.id);
+
+            $match.find(".challenger .name").text(data.challenger.name);
+            $match.find(".challenger .score").text(data.challenger.score);
+            $match.find(".challenger").attr("data-id", data.challenger.id).data("id", data.challenger.id);
+
+            // Update the Game data 
+            $match.find(".TournamentGames .defender.name").text(data.defender.name);
+            $match.find(".TournamentGames .challenger.name").text(data.challenger.name);
+
+            // Is the original match finished? 
+            if (data.matchId == $match.data("id") && autoclose) {
+                if (data.finished) {
+                    $match.find(".TournamentGames").removeClass("open");
+                }
+            }
+
+            // Add the games to the match
+            UpdateGamesFromMatch(data, $match);
+            UpdateMatchOptions(matchData, $match);
+        });
+
+        // Register new events
+        $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseover").on("mouseover", MouseOverEvents);
+        $(".TournamentMatch .defender, .TournamentMatch .challenger").off("mouseleave").on("mouseleave", MouseLeaveEvents);
+        $(".TournamentMatch .removeGame").off("click").on("click", RemoveGame);
+
+        // Update the tournament stuff
+        UpdateTournamentOptions(matchData, $match);
+
+        // Update the standings
+        UpdateStandings($("#Tournament").data("id"), $match.closest(".bracket").data("id"));
+    }
+
+    function UpdateGamesFromMatch(matchInfo, $match) {
+        // Remove all the games
+        $match.find(".TournamentGames .list-table .games").empty();
+
+        $.each(matchInfo.games, function (i, e) {
+            var gameId = /\[\%Game\.Id\%\]/g;
+            var gameNum = /\[\%Game\.GameNum\%\]/g;
+            var defenderId = /\[\%Defender\.Id\%\]/g;
+            var challengerId = /\[\%Challenger\.Id\%\]/g;
+            var defenderScore = /\[\%Defender\.Score\%\]/g;
+            var challengerScore = /\[\%Challenger\.Score\%\]/g;
+
+            var gameModel = origGameModel;
+            gameModel = gameModel.replace(gameId, e.id);
+            gameModel = gameModel.replace(gameNum, e.gameNum);
+            gameModel = gameModel.replace(defenderId, e.defender.id);
+            gameModel = gameModel.replace(challengerId, e.challenger.id);
+            gameModel = gameModel.replace(defenderScore, e.defender.score);
+            gameModel = gameModel.replace(challengerScore, e.challenger.score);
+
+            //// Add the game
+            //html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + e.id + "' data-gamenum='" + e.gameNum + "'> ";
+            //html += "<li class='column game-number'>" + e.gameNum + "</li> ";
+            //html += "<li class='column defender score' data-id='" + e.defender.id + "'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + e.defender.score + "' /></li> ";
+            //html += "<li class='column challenger score' data-id='" + e.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + e.challenger.score + "' /></li> ";
+            //html += "<li class='column'><span class='icon icon-bin removeGame'></span></li> ";
+            //html += "</ul> ";
+
+            $match.find(".TournamentGames .list-table .games").append(unescape(gameModel));
         });
     }
+
+    function AddGame(data, $match) {
+        var gameId = /\[\%Game\.Id\%\]/g;
+        var gameNum = /\[\%Game\.GameNum\%\]/g;
+        var defenderId = /\[\%Defender\.Id\%\]/g;
+        var challengerId = /\[\%Challenger\.Id\%\]/g;
+        var defenderScore = /\[\%Defender\.Score\%\]/g;
+        var challengerScore = /\[\%Challenger\.Score\%\]/g;
+
+        var gameModel = origGameModel;
+        gameModel = gameModel.replace(gameId, data.id);
+        gameModel = gameModel.replace(gameNum, data.gameNum);
+        gameModel = gameModel.replace(defenderId, data.defender.id);
+        gameModel = gameModel.replace(challengerId, data.challenger.id);
+        gameModel = gameModel.replace(defenderScore, data.defender.score);
+        gameModel = gameModel.replace(challengerScore, data.challenger.score);
+
+        $(".TournamentGames .list-table .games").append(gameModel);
+
+        $(".TournamentMatch .removeGame").off("click").on("click", RemoveGame);
+    }
+
+    function UpdateMatchOptions(matchData, $match) {
+        // Can the user add more games?
+        if ($match.find(".games ul").length >= $match.find(".games").data("max")) {
+            $match.find(".TournamentGames .options .add-game").addClass("hide");
+        }
+        else {
+            $match.find(".TournamentGames .options .add-game").removeClass("hide");
+        }
+
+        if (!matchData.isLocked) {
+            $match.find(".update-games").removeClass("hide");
+        }
+        else {
+            // Remvoe the update button and the game deletion button
+            $match.find(".update-games, .TournamentGames .games .removeGame").remove();
+        }
+    }
+
+    function UpdateTournamentOptions(data, $inBracket) {
+        if (data.bracketFinished) {
+            $inBracket.closest(".bracket").find(".options .BracketLock").removeClass("hide");
+        }
+        else {
+            $inBracket.closest(".bracket").find(".options .BracketLock").addClass("hide");
+        }
+    }
+
+    (function ($) {
+        var tournamentGames = $(".TournamentGames");
+        if (tournamentGames.length > 0) {
+            // Copy over the original gameDetail
+            origGameModel = $(tournamentGames[0]).find(".gameDetail.original").removeClass("original")[0].outerHTML;
+
+            // Delete all the original gameDetails 
+            tournamentGames.find(".gameDetail.original").remove();
+        }
+    })($);
 });

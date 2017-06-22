@@ -40,6 +40,14 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SendGrid, Version=9.4.1.0, Culture=neutral, PublicKeyToken=4f047e93159395ca, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sendgrid.9.4.1\lib\net452\SendGrid.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -53,28 +61,51 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountInviteModel.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="AccountModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="MailingList.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Services\EmailService.cs" />
+    <Compile Include="Repositories\AccountRepository.cs" />
     <Compile Include="BracketModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\BracketRepository.cs" />
     <Compile Include="BracketTypeModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\BracketTypeRepository.cs" />
     <Compile Include="C__RefactorLog.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="DbInterface.cs" />
+    <Compile Include="DatabaseRepository.cs" />
     <Compile Include="GameModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\GameRepository.cs" />
     <Compile Include="GameTypeModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\GameTypeRepository.cs" />
+    <Compile Include="Interfaces\IAccountRepository.cs" />
+    <Compile Include="Interfaces\IBracketRepository.cs" />
+    <Compile Include="Interfaces\IBracketTypeRepository.cs" />
+    <Compile Include="Interfaces\IGameRepository.cs" />
+    <Compile Include="Interfaces\IGameTypeRepository.cs" />
+    <Compile Include="Interfaces\IMatchRepository.cs" />
+    <Compile Include="Interfaces\IPlatformRepository.cs" />
+    <Compile Include="Interfaces\ITournamentRepository.cs" />
+    <Compile Include="Interfaces\IUnitOfWork.cs" />
+    <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="MatchModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\MatchRepository.cs" />
     <Compile Include="Model.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -94,11 +125,33 @@
     <Compile Include="PlatformModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\PlatformRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository.cs" />
+    <Compile Include="Services\AccountService.cs" />
+    <Compile Include="Services\TeamService.cs" />
+    <Compile Include="Services\TournamentService.cs" />
+    <Compile Include="Services\TypeService.cs" />
+    <Compile Include="SiteTeamMemberModel.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SiteTeamModel.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="TournamentInviteModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="TournamentModel.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Repositories\TournamentRepository.cs" />
+    <Compile Include="TournamentTeamBracketModel.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TournamentTeamMemberModel.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TournamentTeamModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="TournamentUserModel.cs">
@@ -107,6 +160,8 @@
     <Compile Include="TournamentUsersBracketModel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="UnitOfWork.cs" />
+    <Compile Include="VictoriousContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="Model.edmx">
@@ -115,7 +170,9 @@
     </EntityDeploy>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.Config" />
+    <None Include="App.Config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Model.edmx.diagram">
       <DependentUpon>Model.edmx</DependentUpon>
     </None>
@@ -123,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
+    <Content Include="EmailSubstitutions.txt" />
     <Content Include="Model.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>Model.edmx</DependentUpon>

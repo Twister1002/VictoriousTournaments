@@ -8,9 +8,7 @@
     }
 
     .matchNum {
-        &:before {
-            content: "Match ";
-        }
+
     }
 
     .teamHover {
@@ -28,12 +26,17 @@
                     font-style:italic;
                 }
             }
-
+            height:1.25em;
             white-space:nowrap;
             position: relative;
             padding: .1em;
             overflow: hidden;
 
+            .name {
+                padding-left:.25em;
+                margin-right: 1em;
+                overflow: hidden;
+            }
             .score {
                 position: absolute;
                 right: 0em;

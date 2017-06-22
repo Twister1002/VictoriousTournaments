@@ -1,12 +1,12 @@
-﻿@model WebApplication.Models.MatchViewModel
+﻿@model WebApplication.Models.Match
 
 @{ 
     String isGrandFinal = ViewBag.isGrandFinal == true ? "grand-final" : "";
     ViewBag.isGrandFinal = null;
 }
 
-<div class="TournamentMatch @(isGrandFinal)" data-id="@Model.Model.MatchID" data-matchnum="@Model.Model.MatchNumber">
-    <label class="matchNum">@Model.Model.MatchNumber</label>
+<div class="TournamentMatch @(isGrandFinal)" data-id="@Model.match.Id" data-matchnum="@Model.match.MatchNumber">
+    <label class="matchNum">Match @Model.match.MatchNumber</label>
 
     <div class="overview">
         <div class="defender" data-id="@Model.Defender.Id">
@@ -33,35 +33,51 @@
         </div>
     </div>
 
-    <div class="details @(Model.Match.IsReady ? "" : "hide") clickable clickable-underline">Details</div>
+    <div class="details @(Model.match.IsReady && ViewBag.IsFinalized ? "" : "hide") clickable clickable-underline">Details</div>
 
     <div class="TournamentGames">
-        <h2>Match @Model.Match.MatchNumber Games</h2>
+        <h2>Details</h2>
         <div class="options">
-            <span class="icon icon-cross close"></span>
-            @if (ViewBag.isAdministrator)
+            @if (ViewBag.isAdministrator && ViewBag.inProgress && !ViewBag.IsLocked)
             {
-                <span class="icon icon-loop2 reset-match"></span>
                 <span class="icon icon-plus add-game hide"></span>
+                <span class="icon icon-loop2 reset-match"></span>
             }
+            <span class="icon icon-cross close"></span>
         </div>
         <ul class="list-table">
             <li class="list-table-header">
                 <ul data-columns="4">
-                    <li class="column"> </li>
+                    <li class="column">Game</li>
                     <li class="column defender name" data-id="@Model.Defender.Id">@Model.Defender.Name</li>
                     <li class="column challenger name" data-id="@Model.Challenger.Id">@Model.Challenger.Name</li>
                     <li class="column">Options</li>
                 </ul>
             </li>
-            <li class="list-table-body games" data-max="@Model.Match.MaxGames">
-
+            <li class="list-table-body games" data-max="@Model.match.MaxGames">
+                <ul class="form gameDetail original" data-columns="4" data-gameid="[%Game.Id%]" data-gamenum="[%Game.GameNum%]">
+                    <li class="column game-number">[%Game.GameNum%]</li>
+                    <li class="column defender score" data-id="[%Defender.Id%]">
+                        <input type="text" class="defender-score" name="defender-score" maxlength="3" value="[%Defender.Score%]" />
+                    </li>
+                    <li class="column challenger score" data-id="[%Challenger.Id%]">
+                        <input type="text" class="challenger-score" name="challenger-score" maxlength="3" value="[%Challenger.Score%]" />
+                    </li>
+                    <li class="column">
+                    @if (ViewBag.IsAdministrator)
+                    {
+                        <span class='icon icon-bin removeGame'></span>
+                    }
+                    </li>
+                </ul>
             </li>
         </ul>
 
-        @if (ViewBag.isAdministrator)
+        @if (ViewBag.isAdministrator && !ViewBag.IsLocked)
         {
-            <button type="button" class="update-games hide">Update Games</button>
+            <div class="updates">
+                <button type="button" class="update-games hide">Update Games</button>
+            </div>
         }
     </div>
 </div>

@@ -19,48 +19,84 @@
         }
     }
 
-    /*.match-edit-module {
-        &.open {
+    .options {
+        > span {
+            padding: .25em;
+        }
+    }
+
+    .bracketNames {
+        /*width: 100%;*/
+
+        .list-table {
+            min-height: 0em;
+            padding: 1em 0em;
+
+            .bracketName {
+                text-align: center;
+                padding: .5em 0em;
+                .isSelected;
+                .notSelected;
+                .hover;
+            }
+        }
+    }
+
+    .bracket {
+        display: none;
+
+        &.selected {
             display: block;
+            background-color: inherit;
         }
 
-        display: none;
-        position: absolute;
-        top: 0em;
-        width: 100%;
-        opacity: .9;
-        background-color: green;
-        height: 100%;
-
-        .module-content {
-            padding: 1em;
-
-            .editHeader {
-                h2 {
-                    display: inline-block;
-                }
-
-                .options {
-                    display: inline-block;
-                }
-            }
+        .bracket-data {
+            position: relative;
 
             .options {
-                .add-game {
-                    &.hide {
-                        display: none;
-                    }
-                    display: inline-block;
+                .hide {
+                    display:none;
                 }
             }
 
-            .overview {
-                display: none;
+            .bracket-header {
+                width: 100%;
+                padding-bottom: 1em;
+
+                .column {
+                    text-align: center;
+                }
+
+                #bestOfMatches {
+                    width: inherit;
+                }
             }
 
-            .TournamentGame {
-                display: block;
+            .group-data {
+                width: 100%;
+                min-height: 2em;
+
+                .groupName {
+                    padding: .5em;
+                    .notSelected;
+                    .isSelected;
+                    .hover;
+                }
             }
-        }*/
-    /*}*/
+
+            .round {
+                position: relative;
+
+                &.hide {
+                    display: none;
+                }
+
+                li {
+                    position: relative;
+                    vertical-align: middle;
+                    height: 100%;
+                }
+            }
+        }
+    }
 }

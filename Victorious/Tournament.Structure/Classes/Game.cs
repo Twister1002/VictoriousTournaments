@@ -8,6 +8,11 @@ using DatabaseLib;
 
 namespace Tournament.Structure
 {
+	/// <summary>
+	/// Each Match outcome is determined by one or more Game objects.
+	/// Games are always associated with a containing Match,
+	/// and contain information such as Player ID's and score.
+	/// </summary>
 	public class Game : IGame
 	{
 		#region Variables & Properties
@@ -40,7 +45,9 @@ namespace Tournament.Structure
 			Id = -1;
 			MatchId = _matchId;
 			GameNumber = _gameNumber;
+			WinnerSlot = _winnerSlot;
 
+			// ID values default to -1, indicating "no player" (an error)
 			PlayerIDs = new int[2] { -1, -1 };
 			Score = new int[2] { 0, 0 };
 			for (int i = 0; i < 2; ++i)
@@ -48,14 +55,24 @@ namespace Tournament.Structure
 				PlayerIDs[i] = _playerIDs[i];
 				Score[i] = _score[i];
 			}
-			WinnerSlot = _winnerSlot;
 		}
 		public Game(int _matchId, int _gameNumber)
-			: this(_matchId, _gameNumber, new int[2], PlayerSlot.unspecified, new int[2])
+			: this(
+				  _matchId, // associated Match ID
+				  _gameNumber, // Game Number (should be incremental)
+				  new int[2] { -1, -1 }, // Player ID's
+				  PlayerSlot.unspecified, // Winner Slot
+				  new int[2] // Score
+				  )
 		{ }
 		public Game()
-			: this(-1, 0)
-		{ }
+			: this(
+				  -1, // Match ID
+				  0 // Game Number
+				  )
+		{
+			// The provided values for the default constructor (-1, 0) should NEVER be kept.
+		}
 		public Game(GameModel _model)
 		{
 			if (null == _model)
@@ -64,11 +81,13 @@ namespace Tournament.Structure
 			}
 
 			this.Id = _model.GameID;
-			this.MatchId = (int)(_model.MatchID);
+			this.MatchId = _model.MatchID.GetValueOrDefault(-1);
 			this.GameNumber = _model.GameNumber;
 
 			this.PlayerIDs = new int[2] { _model.DefenderID, _model.ChallengerID };
 			this.Score = new int[2] { _model.DefenderScore, _model.ChallengerScore };
+
+			// Translate the Model's "WinnerID int" to our "WinnerSlot PlayerSlot":
 			if (_model.WinnerID == PlayerIDs[(int)PlayerSlot.Defender])
 			{
 				this.WinnerSlot = PlayerSlot.Defender;
@@ -85,6 +104,10 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Creates a Model of this Game's current state.
+		/// </summary>
+		/// <returns>Matching GameModel</returns>
 		public GameModel GetModel()
 		{
 			GameModel model = new GameModel();

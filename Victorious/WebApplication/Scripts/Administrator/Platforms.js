@@ -13,7 +13,7 @@
     function AddPlatform() {
         var jsonData = {
             "Platform": $platform.find(".options .platformTitle").val(),
-            "action": "add"
+            "function": "add"
         };
 
         PlatformChange(jsonData);
@@ -22,7 +22,7 @@
     function RemovePlatform() {
         var jsonData = {
             "PlatformId": $(this).closest("ul").data("id"),
-            "action": "delete"
+            "function": "delete"
         };
 
         PlatformChange(jsonData);
@@ -32,20 +32,19 @@
         $.ajax({
             "url": "/Ajax/Administrator/Platform",
             "type": "post",
-            "data": { "jsonData": JSON.stringify(jsonData) },
+            "data": jsonData,
             "dataType": "json",
             "beforeSend": function () {
                 $platform.find(".options .AddPlatform").attr("disabled", true);
                 $platform.find(".options .platformTitle").attr("disabled", true);
             },
             "success": function (json) {
-                json = JSON.parse(json);
                 console.log(json);
 
                 var $table = $("#AdministratorPlatforms .list-table-body");
                 $table.empty();
 
-                $.each(json.platforms, function (i, e) {
+                $.each(json.data.platforms, function (i, e) {
                     html = "<ul class='platform' data-columns='2' data-id='" + e.PlatformID + "'>";
                     html += "<li class='column'>" + e.PlatformName + "</li>";
                     html += "<li class='column'><span class='icon icon-cross removePlatform'></span></li>";

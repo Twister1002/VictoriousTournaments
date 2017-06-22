@@ -1,66 +1,60 @@
-﻿
-@{ 
-    // Set necessarry global data
-    ViewBag.isLoggedIn = Session["User.UserId"] != null ? true : false;
-    ViewBag.Name = Session["User.Name"] != null ? Session["User.Name"] : "Guest";
-}
-
-<!DOCTYPE html5>
-<html>
+﻿<!DOCTYPE html5>
+<html lang="en-us" dir="ltr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="content-language" content="en" />
+
     <title>Tournament Platform</title>
-    <script type="text/javascript" src="~/Scripts/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/scripts.js"></script>
-    <script type="text/javascript" src="~/Scripts/Tournament/Search.js"></script>
-    <script type="text/javascript" src="~/Scripts/Tournament/Tournaments.js"></script>
-    <script type="text/javascript" src="~/Scripts/Tournament/Edit.js"></script>
-    <script type="text/javascript" src="~/Scripts/Tournament/Bracket.js"></script>
-    <script type="text/javascript" src="~/Scripts/Tournament/Match.js"></script>
-    <script type="text/javascript" src="~/Scripts/Administrator/Games.js"></script>
-    <script type="text/javascript" src="~/Scripts/Administrator/Platforms.js"></script>
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-timepicker/jquery.ui.timepicker.js"></script>
+    @if (HttpContext.Current.IsDebuggingEnabled)
+    {
+        <script type="text/javascript" src="~/Scripts/global.js"></script>
+        <script type="text/javascript" src="~/Scripts/Tournament/Tournaments.js"></script>
+        <script type="text/javascript" src="~/Scripts/Tournament/Bracket.js"></script>
+        <script type="text/javascript" src="~/Scripts/Tournament/Search.js"></script>
+        <script type="text/javascript" src="~/Scripts/Tournament/Match.js"></script>
+        <script type="text/javascript" src="~/Scripts/Tournament/Create.js"></script>
+
+        <script type="text/javascript" src="~/Scripts/Administrator/Games.js"></script>
+        <script type="text/javascript" src="~/Scripts/Administrator/Platforms.js"></script>
+        <script type="text/javascript" src="~/Scripts/Administrator/Brackets.js"></script>
+
+        <script type="text/javascript" src="~/Scripts/Account/index.js"></script>
+    }
+    else
+    {
+        <script type="text/javascript" src="~/Scripts/scripts.min.js"></script>
+    }
+
     <link href="https://fonts.googleapis.com/css?family=Arimo|Francois+One|Kanit|Quattrocento|Signika" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery-ui.min.css" />
-    <link rel="stylesheet" type="text/css" href="~/Styles/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="~/Styles/css/style.min.css" />
 </head>
 <body>
-    <div class="dev-bp"></div>
+    @if (HttpContext.Current.IsDebuggingEnabled)
+    {
+        <div class="dev-bp"></div>
+    }
     @Html.Partial("_Nav", new ViewDataDictionary(ViewData))
-
-    @if (Session["Message"] != null)
-    {
-        var messageClass = WebApplication.Models.ViewModel.ViewError.WARNING;
-        if (Session["Message.Class"] != null) { messageClass = (WebApplication.Models.ViewModel.ViewError)Session["Message.Class"]; }
-        <div class="message @Model.errorClassNames[(int)messageClass]">
-            @Html.Raw((String)Session["Message"])
-        </div>
-
-        Session.Remove("Message");
-    }
-
-    @if (Model.error != WebApplication.Models.ViewModel.ViewError.NONE)
-    {
-        <div class="message @Model.errorClassNames[(int)Model.error]">
-            @Html.Raw(Model.message)
-            <br />
-            @if (Model.dbException != null)
-            {
-                <h2>Exception Message</h2>
-                @Model.dbException.Message <br />
-                <h2>Inner Message</h2>
-                @Model.dbException.InnerException <br />
-            }
-        </div>
-    }
-
     <div id="content">
+        @if (Session["Message"] != null)
+        {
+            var messageClass = WebApplication.Models.ViewError.WARNING;
+            if (Session["Message.Class"] != null) { messageClass = (WebApplication.Models.ViewError)Session["Message.Class"]; }
+            <div class="message @WebApplication.Models.Model.errorClassNames[(int)messageClass]">
+                @Html.Raw((String)Session["Message"])
+                <span class="icon icon-cross right closeMessage"></span>
+            </div>
+
+            Session.Remove("Message");
+        }
+        @if (Model is WebApplication.Models.ViewModels.ViewModel && Model.e != null)
+        {
+            <div class="message error">@Model.e.ToString()</div>
+        }
         @RenderBody()
     </div>
-    <footer>
-        <p>
-            Copyright &copy; Full Sail Software Development
-        </p>
-        <div class="message warning">ALPHA BUILD @WebApplication.Utility.Codes.GetVersion()</div>
-    </footer>
+    <footer>@{ Html.RenderPartial("_Footer"); }</footer>
 </body>
 </html>

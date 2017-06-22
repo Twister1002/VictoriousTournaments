@@ -1,6 +1,5 @@
 ﻿@import "Tournament/_Tournament.less";
 @import "Tournament/_Create.less";
-@import "Tournament/_Edit.less";
 @import "Tournament/_Search.less";
 @import "Tournament/_Standings.less";
 @import "Tournament/_Bracket.less";
@@ -12,11 +11,15 @@
         .section {
             &.form-section {
                 li {
-                    width: 35%;
+                    width: 48%;
                     display: inline-block;
 
                     input, select {
                         width: 90%;
+
+                        &.datepicker, &.timepicker {
+                            width: 48%;
+                        }
                     }
                 }
             }
@@ -31,7 +34,7 @@
         }
     }
 
-    #TournamentStandings {
+    .TournamentInfo {
         width: 75%;
     }
 }
@@ -43,18 +46,37 @@
                 li {
                     input, select {
                         width: 80%;
-                    }
 
-                    > input[type='checkbox'] {
+                        &.datepicker, &.timepicker {
+                            width: 30%;
+                        }
                     }
                 }
             }
         }
     }
+
+    #Tournament {
+        .options {
+            > span {
+                padding: 0em .25em;
+            }
+        }
+
+        .TournamentInfo {
+            width: 60%;
+        }
+    }
 }
 
 @media screen and (min-width: @@b3) {
+    .TournamentInfo {
+        width: 40%;
+    }
 }
 
 @media screen and (min-width: @@b4) {
+    .TournamentInfo {
+        width: 33%;
+    }
 }

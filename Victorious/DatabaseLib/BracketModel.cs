@@ -17,26 +17,30 @@ namespace DatabaseLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public BracketModel()
         {
-            this.Matches = new HashSet<MatchModel>();
             this.TournamentUsersBrackets = new HashSet<TournamentUsersBracketModel>();
+            this.Matches = new HashSet<MatchModel>();
+            this.TournamentTeamBrackets = new HashSet<TournamentTeamBracketModel>();
     		OnInit();
         }
     
         public int BracketID { get; set; }
-        public string BracketTitle { get; set; }
         public int BracketTypeID { get; set; }
         public bool Finalized { get; set; }
         public int NumberOfGroups { get; set; }
         public Nullable<int> TournamentID { get; set; }
         public int MaxRounds { get; set; }
+        public int NumberPlayersAdvance { get; set; }
+        public bool IsLocked { get; set; }
     	
     	partial void OnInit();
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MatchModel> Matches { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
-        public virtual TournamentModel Tournament { get; set; }
         public virtual BracketTypeModel BracketType { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MatchModel> Matches { get; set; }
+        public virtual TournamentModel Tournament { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TournamentTeamBracketModel> TournamentTeamBrackets { get; set; }
     }
 }

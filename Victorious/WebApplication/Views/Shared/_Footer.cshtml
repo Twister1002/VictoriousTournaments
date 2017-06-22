@@ -1,0 +1,28 @@
+﻿<div id="footer">
+    <div class="footer_social">
+        <span class="icon icon-facebook"></span>
+        <span class="icon icon-twitter"></span>
+    </div>
+    <div class="footer_information">
+        @Html.ActionLink("FAQ", "FAQ", "Home")
+        @Html.ActionLink("Blog", "Blog", "Home")
+        @Html.ActionLink("About", "About", "Home")
+        @Html.ActionLink("Contact", "Contact", "Home")
+        @Html.ActionLink("Tournaments", "Index", "Tournament")
+        @Html.ActionLink("Tournament Rules", "Rules", "Home")
+    </div>
+    @*<div class="footer_subscribe">
+        <label>Subscribe to Victorious and receive updates to our platform</label>
+        @using (Html.BeginForm("Home", "Home", FormMethod.Post))
+        {
+            <input type="text" name="email" placeholder="Email" />
+        }
+    </div>*@
+    <div class="footer_copy">
+        &copy; 2017 Victorious Tournaments. All Rights reserved
+    </div>
+    @*@if (HttpContext.Current.IsDebuggingEnabled)
+    {
+    <div class="message warning">BETA BUILD @WebApplication.Utility.Codes.GetVersion()</div>
+    }*@
+</div>

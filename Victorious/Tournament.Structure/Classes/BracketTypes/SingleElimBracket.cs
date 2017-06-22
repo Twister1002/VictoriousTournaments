@@ -8,21 +8,26 @@ using DatabaseLib;
 
 namespace Tournament.Structure
 {
-	public class SingleElimBracket : Bracket
+	public class SingleElimBracket : KnockoutBracket
 	{
 		#region Variables & Properties
-		// inherits int Id
-		// inherits BracketType BracketType
-		// inherits bool IsFinalized
-		// inherits bool IsFinished
-		// inherits List<IPlayer> Players
-		// inherits List<IPlayerScore> Rankings
-		// inherits Dictionary<int, IMatch> Matches
-		// inherits int NumberOfRounds
-		// inherits Dictionary<int, IMatch> LowerMatches (null)
-		// inherits int NumberOfLowerRounds (0)
-		// inherits IMatch GrandFinal (null)
-		// inherits int NumberOfMatches
+		//public int Id
+		//public BracketType BracketType
+		//public bool IsFinalized
+		//public bool IsFinished
+		//public List<IPlayer> Players
+		//public List<IPlayerScore> Rankings
+		//public int AdvancingPlayers
+		//public int MaxRounds = 0
+		//protected Dictionary<int, Match> Matches
+		//public int NumberOfRounds
+		//protected Dictionary<int, Match> LowerMatches = empty
+		//public int NumberOfLowerRounds = 0
+		//protected Match grandFinal = null
+		//public IMatch GrandFinal = null
+		//public int NumberOfMatches
+		//protected int MatchWinValue = 0
+		//protected int MatchTieValue = 0
 		#endregion
 
 		#region Ctors
@@ -33,145 +38,109 @@ namespace Tournament.Structure
 				throw new ArgumentNullException("_players");
 			}
 
-			Players = new List<IPlayer>();
-			if (_players.Count > 0)
-			{
-				if (_players[0] is User)
-				{
-					foreach (IPlayer p in _players)
-					{
-						Players.Add(new User(p as User));
-					}
-				}
-				else if (_players[0] is Team)
-				{
-					foreach (IPlayer p in _players)
-					{
-						Players.Add(new Team(p as Team));
-					}
-				}
-				else
-				{
-					Players = _players;
-				}
-			}
-
+			Players = _players;
 			Id = 0;
 			BracketType = BracketType.SINGLE;
-			ResetBracket();
+
 			CreateBracket(_maxGamesPerMatch);
 		}
-#if false
-		public SingleElimBracket(int _numPlayers)
-		{
-			Players = new List<IPlayer>();
-			for (int i = 0; i < _numPlayers; ++i)
-			{
-				Players.Add(new User());
-			}
-
-			BracketType = BracketTypeModel.BracketType.SINGLE;
-			ResetBracket();
-			CreateBracket();
-		}
-#endif
 		public SingleElimBracket()
 			: this(new List<IPlayer>())
 		{ }
 		public SingleElimBracket(BracketModel _model)
 		{
-			if (null == _model)
-			{
-				throw new NullReferenceException
-					("Bracket Model cannot be null!");
-			}
-			
-			this.Id = _model.BracketID;
-			this.BracketType = BracketType.SINGLE;
-			this.IsFinalized = _model.Finalized;
+			// Call a helper method to copy the bracket status fields,
+			// and to load the playerlist:
+			SetDataFromModel(_model);
 
-			List<TournamentUserModel> userModels = _model.TournamentUsersBrackets
-				.OrderBy(tubm => tubm.Seed)
-				.Select(tubm => tubm.TournamentUser)
-				.ToList();
-			this.Players = new List<IPlayer>();
-			foreach (TournamentUserModel model in userModels)
+			/*
+			 * Since this method is extended in child classes,
+			 * we may be loading a lower bracket.
+			 * We need to add a couple checks here to make sure
+			 * we don't accidentally load lower bracket Matches
+			 * into our upper bracket.
+			 */
+			int totalUBMatches = Players.Count - 1;
+			if (_model.Matches.Count > 0)
 			{
-				Players.Add(new User(model));
-			}
-
-			ResetBracket();
-			int totalMatches = Players.Count - 1;
-
-			this.Matches = new Dictionary<int, IMatch>();
-			foreach (MatchModel mm in _model.Matches)
-			{
-				IMatch match = new Match(mm);
-				if (match.RoundIndex > NumberOfRounds)
+				foreach (MatchModel mm in _model.Matches.OrderBy(m => m.MatchNumber))
 				{
-					this.NumberOfRounds = match.RoundIndex;
+					if (mm.MatchNumber <= totalUBMatches)
+					{
+						Matches.Add(mm.MatchNumber, new Match(mm));
+					}
+					else
+					{
+						// Match doesn't belong in upper bracket, so we're done:
+						break;
+					}
 				}
-				Matches.Add(match.MatchNumber, match);
-
-				++NumberOfMatches;
-				if (NumberOfMatches >= totalMatches)
-				{
-					break;
-				}
+				this.NumberOfMatches = Matches.Count;
+				this.NumberOfRounds = Matches.Values
+					.Max(m => m.RoundIndex);
 			}
 
-			this.Rankings = new List<IPlayerScore>();
 			if (BracketType.SINGLE == BracketType)
 			{
-				UpdateRankings();
-				if (Matches[NumberOfMatches].IsFinished)
+				RecalculateRankings();
+
+				if (this.IsFinalized && false == Validate())
 				{
-					// Add Finals winner to Rankings:
-					IPlayer winningPlayer = Matches[NumberOfMatches]
-						.Players[(int)Matches[NumberOfMatches].WinnerSlot];
-					Rankings.Add(new PlayerScore(winningPlayer.Id, winningPlayer.Name, -1, 1));
-					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
-					this.IsFinished = true;
+					throw new BracketValidationException
+						("Bracket is Finalized but not Valid!");
 				}
 			}
 		}
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Uses the playerlist to generate the bracket structure & Matches.
+		/// This creates & populates all the Match objects, and ties them together.
+		/// If any Matches already exist, they will be deleted first.
+		/// If there are <2 players, nothing will be made.
+		/// This method is extended in child classes: Double-Elim and GSL brackets.
+		/// </summary>
+		/// <param name="_gamesPerMatch">Max games for every Match</param>
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
-			ResetBracket();
-			if (_gamesPerMatch < 1)
-			{
-				throw new BracketException
-					("Games Per Match must be greater than 0!");
-			}
-			else if (_gamesPerMatch % 2 == 0)
-			{
-				throw new BracketException
-					("Games/Match must be odd in an elimination bracket!");
-			}
+			// First, clear any existing Matches and results:
+			ResetBracketData();
 			if (Players.Count < 2)
 			{
 				return;
 			}
 
 			#region Create the Bracket
+			/*
+			 * Process: to achieve the correct number of Matches in any Bracket
+			 * (even an abnormally sized one; say, for 11 players),
+			 * we start at the final match. Then we move backward,
+			 * making twice as many Matches for each new round,
+			 * until we hit the correct number of Matches.
+			 * If the first round has a weird number of Matches,
+			 * we'll know our Bracket is abnormally sized and we can deal with it.
+			*/
+
+			// totalMatches is the number of Matches we'll create:
 			int totalMatches = Players.Count - 1;
 			int numMatches = 0;
-			List<List<IMatch>> roundList = new List<List<IMatch>>();
+			
+			// roundList is how we'll temporarily create & store Matches.
+			// This is a list of rounds (each round is a list of Matches).
+			// Rounds are ordered back-to-front: first is the final match.
+			List<List<Match>> roundList = new List<List<Match>>();
 
-			// Create the Matches
+			// Create the Matches, round-by-round:
 			for (int r = 0; numMatches < totalMatches; ++r)
 			{
-				roundList.Add(new List<IMatch>());
+				roundList.Add(new List<Match>());
 				for (int i = 0;
 					i < Math.Pow(2, r) && numMatches < totalMatches;
 					++i, ++numMatches)
 				{
-					// Add new matchups per round
-					// (rounds[0] is the final match)
-					IMatch m = new Match();
+					// Add new Matches per round:
+					Match m = new Match();
 					m.SetMaxGames(_gamesPerMatch);
 					roundList[r].Add(m);
 				}
@@ -181,7 +150,7 @@ namespace Tournament.Structure
 			int matchNum = 1;
 			for (int r = roundList.Count - 1; r >= 0; --r)
 			{
-				foreach (IMatch match in roundList[r])
+				foreach (Match match in roundList[r])
 				{
 					match.SetMatchNumber(matchNum++);
 				}
@@ -192,24 +161,36 @@ namespace Tournament.Structure
 			{
 				if (roundList[r + 1].Count == (roundList[r].Count * 2))
 				{
-					// "Normal" rounds: twice as many matchups
+					// "Normal" rounds: twice as many Matches
+					// (example: 4 Matches -> 8 Matches)
 					for (int m = 0; m < roundList[r].Count; ++m)
 					{
+						// Assign prev/next matchup numbers
 						int currNum = roundList[r][m].MatchNumber;
 
-						// Assign prev/next matchup numbers
+						// [r][3] <-> [r+1][6]
 						roundList[r][m].AddPreviousMatchNumber(roundList[r + 1][m * 2].MatchNumber);
 						roundList[r + 1][m * 2].SetNextMatchNumber(currNum);
 
+						// [r][3] <-> [r+1][7]
 						roundList[r][m].AddPreviousMatchNumber(roundList[r + 1][m * 2 + 1].MatchNumber);
 						roundList[r + 1][m * 2 + 1].SetNextMatchNumber(currNum);
 					}
 				}
-				// Else: round is abnormal. Ignore it for now (we'll handle it later)
+				// Else: round is abnormal. Ignore it for now (we'll handle it later).
 			}
 			#endregion
 
 			#region Assign the Players
+			/*
+			 * In a correctly seeded bracket, high seeds are split apart.
+			 * For instance, the 1 and 2 seeds will each have their own bracket "branch."
+			 * The solution to accomplishing this is to assign seeds
+			 * to the FINAL round. From there, we move them backward one round.
+			 * We fill the Matches in that round (with seeds 3 & 4), then repeat.
+			 * If this is done all the way to the first round, our seeds are correctly split.
+			*/
+
 			// Assign top two seeds to final match
 			int pIndex = 0;
 			roundList[0][0].AddPlayer(Players[pIndex++]);
@@ -217,14 +198,13 @@ namespace Tournament.Structure
 
 			for (int r = 0; r + 1 < roundList.Count; ++r)
 			{
-				// We're shifting back one player for each match in the prev round
+				// We're shifting back one player for each Match in the prev round
 				int prevRoundMatches = roundList[r + 1].Count;
 
 				if ((roundList[r].Count * 2) > prevRoundMatches)
 				{
 					// Abnormal round ahead: we need to allocate prevMatchIndexes
 					// to correctly distribute bye seeds
-
 					int prevMatchNumber = 1;
 
 					for (int m = 0; m < roundList[r].Count; ++m)
@@ -267,25 +247,32 @@ namespace Tournament.Structure
 
 				for (int m = 0; m < roundList[r].Count; ++m)
 				{
-					// For each match, shift/reassign all teams to the prev bracket level
+					// For each match, shift/reassign all Players to the prev bracket level
 					// If prev level is abnormal, only shift 1 (or 0) teams
 					foreach (int n in roundList[r][m].PreviousMatchNumbers)
 					{
 						if (n > 0)
 						{
+							// ReassignPlayers() handles the task of moving Players.
+							// Any Players to be moved from this Match will be removed.
+							// Then, using the match number references,
+							// those Players will be added to the correct Matches.
 							ReassignPlayers(roundList[r][m], roundList[r + 1]);
 							break;
 						}
 					}
 				}
 
+				// Now that the correct Players have been shifted back,
+				// we need to fill in the rest of this round's Player slots
+				// from our master playerlist.
 				for (int prePlayers = pIndex - 1; prePlayers >= 0; --prePlayers)
 				{
 					for (int m = 0; m < prevRoundMatches; ++m)
 					{
 						if (roundList[r + 1][m].Players.Contains(Players[prePlayers]))
 						{
-							// Add prev round's teams (according to seed) from the master list
+							// Add prev round's Players (according to seed) from the master list.
 							roundList[r + 1][m].AddPlayer(Players[pIndex++]);
 							break;
 						}
@@ -295,7 +282,12 @@ namespace Tournament.Structure
 			#endregion
 
 			#region Set Bracket Member Variables
-			// Move bracket data to member variables (Matches dictionary)
+			/* 
+			 * Now we've generated our Bracket.
+			 * Time to move the Matches from the double array
+			 * into an easily accessible Dictionary for storage.
+			 * While we do this, we'll update their data: Round and Match indexes.
+			*/
 			NumberOfRounds = roundList.Count;
 			for (int r = 0; r < roundList.Count; ++r)
 			{
@@ -309,204 +301,33 @@ namespace Tournament.Structure
 			NumberOfMatches = Matches.Count;
 			#endregion
 		}
-
-#if false
-		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
-		{
-			GameModel gameModel = GetMatch(_matchNumber).AddGame(_defenderScore, _challengerScore, _winnerSlot);
-			AddWinEffects(_matchNumber, _winnerSlot);
-			return gameModel;
-		}
-#endif
-#if false
-		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
-		{
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-			if (!match.Games.Exists(g => g.GameNumber == _gameNumber))
-			{
-				throw new GameNotFoundException
-					("Game not found; Game Number may be invalid!");
-			}
-
-			bool needToUpdateRankings = false;
-			if (match.IsFinished &&
-				match.WinnerSlot != _winnerSlot)
-			{
-				needToUpdateRankings = true;
-				// Remove advanced players from future matches:
-				RemovePlayerFromFutureMatches
-					(nextWinnerNumber, ref match.Players[(int)(match.WinnerSlot)]);
-			}
-
-			GameModel gameModel = GetMatch(_matchNumber).UpdateGame(_gameNumber, _defenderScore, _challengerScore, _winnerSlot);
-
-			if (needToUpdateRankings)
-			{
-				IsFinished = false;
-				UpdateRankings();
-			}
-
-			ApplyWinEffects(_matchNumber, _winnerSlot);
-			return gameModel;
-		}
-		public override void RemoveLastGame(int _matchNumber)
-		{
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-			bool needToUpdateRankings = false;
-
-			if (match.IsFinished)
-			{
-				needToUpdateRankings = true;
-				// Remove advanced players from future matches:
-				RemovePlayerFromFutureMatches
-					(nextWinnerNumber, ref match.Players[(int)(match.WinnerSlot)]);
-			}
-
-			// Remove the game and update rankings:
-			GetMatch(_matchNumber).RemoveLastGame();
-			if (needToUpdateRankings)
-			{
-				IsFinished = false;
-				UpdateRankings();
-			}
-		}
-		public override void ResetMatchScore(int _matchNumber)
-		{
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-			bool needToUpdateRankings = false;
-
-			if (match.IsFinished)
-			{
-				needToUpdateRankings = true;
-				// Remove advanced players from future matches:
-				RemovePlayerFromFutureMatches
-					(match.NextMatchNumber, ref match.Players[(int)match.WinnerSlot]);
-			}
-
-			// Reset score and update rankings:
-			GetMatch(_matchNumber).ResetScore();
-			if (needToUpdateRankings)
-			{
-				IsFinished = false;
-				UpdateRankings();
-			}
-		}
-#endif
-
-		public override void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
-		{
-			if (0 == _maxGamesPerMatch % 2)
-			{
-				throw new ScoreException
-					("Games/Match must be ODD in an elimination bracket!");
-			}
-			base.SetMaxGamesForWholeRound(_round, _maxGamesPerMatch);
-		}
-
-		public override void ResetMatches()
-		{
-			base.ResetMatches();
-			Rankings.Clear();
-		}
 		#endregion
 
 		#region Private Methods
-		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, PlayerSlot _formerMatchWinnerSlot, bool _resetManualWin = false)
+		/// <summary>
+		/// Finds an eliminated player's rank for a single-elim bracket.
+		/// </summary>
+		/// <param name="_matchNumber">Number of finished Match</param>
+		/// <returns>Player's rank</returns>
+		protected override int CalculateRank(int _matchNumber)
 		{
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
-			if (_isAddition)
-			{
-				if (match.IsFinished)
-				{
-					// Add losing player to Rankings:
-					PlayerSlot loserSlot = (PlayerSlot.Defender == match.WinnerSlot)
-						? PlayerSlot.Challenger
-						: PlayerSlot.Defender;
-					int rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
-#if false
-					if (null != LowerMatches && LowerMatches.ContainsKey(_matchNumber))
-					{
-						rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
-					}
-					else if (null != Matches && Matches.ContainsKey(_matchNumber))
-					{
-						rank = (int)(Math.Pow(2, NumberOfRounds - 1) + 1);
-					}
-					else if (null != GrandFinal && GrandFinal.MatchNumber == _matchNumber)
-					{
-						rank = 2;
-					}
-#endif
-					Rankings.Add(new PlayerScore
-						(match.Players[(int)loserSlot].Id, match.Players[(int)loserSlot].Name, -1, rank));
-					if (nextWinnerNumber < 0)
-					{
-						// Finals match: Add winner to Rankings:
-						Rankings.Add(new PlayerScore
-							(match.Players[(int)(match.WinnerSlot)].Id,
-							match.Players[(int)(match.WinnerSlot)].Name, -1, 1));
-						IsFinished = true;
-					}
-					Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
-				}
-			}
-			else if (match.WinnerSlot != _formerMatchWinnerSlot)
-			{
-				UpdateRankings();
-			}
-		}
-		protected override void ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
-		{
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
-			if (match.IsFinished)
-			{
-				if (nextWinnerNumber > 0)
-				{
-					// Advance the winning player:
-					IMatch nextMatch = GetMatch(nextWinnerNumber);
-					for (int i = 0; i < nextMatch.PreviousMatchNumbers.Length; ++i)
-					{
-						if (_matchNumber == nextMatch.PreviousMatchNumbers[i])
-						{
-							GetMatch(nextWinnerNumber).AddPlayer
-								(match.Players[(int)(match.WinnerSlot)], (PlayerSlot)i);
-							break;
-						}
-					}
-				}
-			}
-		}
-		protected override void ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
-		{
-			int nextWinnerNumber;
-			int nextLoserNumber;
-			IMatch match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
-
-			if (match.WinnerSlot != _formerMatchWinnerSlot)
-			{
-				this.IsFinished = (IsFinished && match.IsFinished);
-				// Remove advanced players from future matches:
-				RemovePlayerFromFutureMatches
-					(nextWinnerNumber, match.Players[(int)_formerMatchWinnerSlot].Id);
-			}
+			int round = GetInternalMatch(_matchNumber).RoundIndex;
+			return Convert.ToInt32(Math.Pow(2, NumberOfRounds - round) + 1);
 		}
 
-		private void ReassignPlayers(IMatch _currMatch, List<IMatch> _prevRound)
+		/// <summary>
+		/// Takes the Players from the given Match
+		/// and reassigns them to the correct Matches in the previous round.
+		/// This is used during bracket generation to correctly split up seeds.
+		/// If the Players do not have a previous Match to move to, they remain.
+		/// Otherwise, they are removed from the given Match.
+		/// </summary>
+		/// <param name="_currMatch">Match to move Players out of</param>
+		/// <param name="_prevRound">Previous round: to move Players into</param>
+		private void ReassignPlayers(Match _currMatch, List<Match> _prevRound)
 		{
 			if (null == _currMatch ||
-				null == _prevRound || 0 == _prevRound.Count)
+				0 == (_prevRound?.Count ?? 0))
 			{
 				throw new NullReferenceException
 					("NULL error in calling ReassignPlayers()...");
@@ -517,82 +338,31 @@ namespace Tournament.Structure
 			{
 				if (n < 0)
 				{
+					// If a PreviousMatchNumber is -1, that Player will stay here.
 					--playersToMove;
 				}
 			}
-			foreach (IMatch match in _prevRound)
+			foreach (Match match in _prevRound)
 			{
+				// Check previous round Matches to find the correct one(s):
 				for (int i = 0; i < _currMatch.PreviousMatchNumbers.Length; ++i)
 				{
 					if (match.MatchNumber == _currMatch.PreviousMatchNumbers[i])
 					{
+						// Add the Player to the found Match:
 						match.AddPlayer(_currMatch.Players[i]);
+						// Remove the Player from the given Match:
 						_currMatch.RemovePlayer(_currMatch.Players[i].Id);
+
 						--playersToMove;
 					}
 				}
+
 				if (0 == playersToMove)
 				{
 					break;
 				}
 			}
-		}
-
-		protected virtual void RemovePlayerFromFutureMatches(int _matchNumber, int _playerId)
-		{
-			if (_matchNumber < 1 || _playerId == -1)
-			{
-				return;
-			}
-			if (!Matches.ContainsKey(_matchNumber))
-			{
-				throw new MatchNotFoundException
-					("Invalid match number called by recursive method!");
-			}
-
-			IMatch match = GetMatch(_matchNumber);
-			if (match.Players
-				.Where(p => p != null)
-				.Any(p => p.Id == _playerId))
-			{
-				if (match.IsFinished)
-				{
-					// Remove any advanced Players from future Matches:
-					RemovePlayerFromFutureMatches(match.NextMatchNumber, match.Players[(int)(match.WinnerSlot)].Id);
-				}
-
-				Matches[_matchNumber].RemovePlayer(_playerId);
-			}
-		}
-
-		protected override void UpdateRankings()
-		{
-			Rankings.Clear();
-
-			foreach (IMatch match in Matches.Values)
-			{
-				if (match.IsFinished)
-				{
-					// Add losing Player to the Rankings:
-					int rank = (int)(Math.Pow(2, (NumberOfRounds - match.RoundIndex)) + 1);
-					IPlayer losingPlayer = match.Players[
-						(PlayerSlot.Defender == match.WinnerSlot)
-						? (int)PlayerSlot.Challenger
-						: (int)PlayerSlot.Defender];
-					Rankings.Add(new PlayerScore(losingPlayer.Id, losingPlayer.Name, -1, rank));
-				}
-			}
-
-			Rankings.Sort((first, second) => first.Rank.CompareTo(second.Rank));
-		}
-
-		protected IMatch GetMatchData(int _matchNumber, out int _nextMatchNumber, out int _nextLoserMatchNumber)
-		{
-			IMatch m = GetMatch(_matchNumber);
-			_nextMatchNumber = m.NextMatchNumber;
-			_nextLoserMatchNumber = m.NextLoserMatchNumber;
-
-			return m;
 		}
 		#endregion
 	}

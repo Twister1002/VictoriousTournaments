@@ -1,4 +1,4 @@
-﻿@model WebApplication.Models.AdministratorViewModel
+﻿@model WebApplication.Models.Admin
 
 @{
     ViewBag.Title = "Index";
@@ -8,9 +8,12 @@
 <div id="Administrator">
     <h2>Admin Menu</h2>
     <div class="section">
-        @{ Html.RenderPartial("Games", Model.LoadGameTypes()); }
+        @{ Html.RenderPartial("Games", Model.gameType); }
     </div>
     <div class="section">
-        @{ Html.RenderPartial("Platforms", Model.LoadPlatformTypes()); }
+        @{ Html.RenderPartial("Platforms", Model.platformTypes); }
+    </div>
+    <div class="section">
+        @{ Html.RenderPartial("Brackets", Model.bracketTypes); }
     </div>
 </div>

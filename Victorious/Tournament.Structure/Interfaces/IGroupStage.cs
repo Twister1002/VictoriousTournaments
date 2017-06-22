@@ -14,12 +14,19 @@ namespace Tournament.Structure
 
 		#region Public Methods
 		/// <summary>
-		/// Get one of this stage's groups.
-		/// Should only be used for access/display, not editing.
+		/// Get the Rankings list for a particular group.
 		/// </summary>
 		/// <param name="_groupNumber">1-indexed</param>
-		/// <returns>Bracket-type object; the specified group</returns>
-		IBracket GetGroup(int _groupNumber);
+		/// <returns>List of IPlayerScore ranking objects</returns>
+		List<IPlayerScore> GetGroupRanking(int _groupNumber);
+
+		/// <summary>
+		/// Get all Matches in specified round, from specified group.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <param name="_round">1-indexed</param>
+		/// <returns>List of Matches in the round</returns>
+		List<IMatch> GetRound(int _groupNumber, int _round);
 		#endregion
 	}
 }

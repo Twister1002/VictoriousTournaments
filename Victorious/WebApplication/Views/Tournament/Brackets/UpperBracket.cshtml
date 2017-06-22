@@ -1,0 +1,27 @@
+﻿@model WebApplication.Models.Bracket
+
+@{
+    ViewBag.Section = WebApplication.Models.BracketSection.UPPER;
+    ViewBag.RoundShowing = ViewBag.UpperDisplayRounds;
+    ViewBag.Class = "upper";
+    int roundNum = 1;
+
+    Html.RenderPartial("Brackets/Shared/_Header", Model, new ViewDataDictionary(ViewData));
+}
+<li class="list-table-body">
+    <ul class="round @(ViewBag.GrandFinal ? "border" : "")" data-columns="@ViewBag.DisplayRounds">
+        @foreach (bool display in ViewBag.UpperDisplayRounds)
+        {
+            <li class="column">
+                @if (display)
+                {
+                    foreach (var match in Model.GetRound(roundNum, WebApplication.Models.BracketSection.UPPER))
+                    {
+                        Html.RenderPartial("Brackets/Shared/_Match", match, new ViewDataDictionary(ViewData));
+                    }
+                    roundNum++;
+                }
+            </li>
+        }
+    </ul>
+</li>

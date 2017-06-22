@@ -1,0 +1,164 @@
+﻿@model WebApplication.Models.Tournament
+
+@{
+    bool isFirstBracket = true;
+    var brackets = Model.GetBrackets();
+}
+
+<div class="TournamentInfo">
+    <span class="icon icon-cross close"></span>
+    <div class="details" data-columns="@brackets.Count">
+        @foreach (var bracket in brackets)
+        {
+            <div class="bracketNum column" data-bracket="@bracket.Id">@bracket.BracketName()</div>
+        }
+        @foreach (var bracket in brackets)
+        {
+            <div class="bracketData" data-bracket="@bracket.Id" data-id="@bracket.Id">
+                <ul class="list-table">
+                    <li class="list-table-header">
+                        <ul data-columns="@(ViewBag.isCreator ? 3 : 2)">
+                            <li class="column selection info" data-show="playerInfo">Players</li>
+                            <li class="column selection info" data-show="standingInfo">Standings</li>
+                            @if (ViewBag.isCreator)
+                            {
+                                <li class="column selection info" data-show="resetInfo">Reset</li>
+                            }
+                        </ul>
+                    </li>
+
+                    <li class="list-table-body infoSection playerInfo">
+                        <ul class="header" data-columns="@(Model.IsAdmin(ViewBag.UserId) ? 5 : 2)">
+                            <li class="column">Name</li>
+                            <li class="column">Status</li>
+                            @if (ViewBag.isAdministrator)
+                            {
+                                <li class="column">Seed</li>
+                                <li class="column">Present</li>
+                                <li class="column">Actions</li>
+                            }
+                        </ul>
+                        <div class="bracketPlayers">
+                            @foreach (var player in bracket.GetPlayers())
+                            {
+                                var person = Model.GetUserModel(player.TournamentUserID);
+
+                                Dictionary<String, int> data = Model.PermissionAction(ViewBag.UserId, person.TournamentUserID, "default");
+
+                                <ul class="data user form" data-user="@person.TournamentUserID" data-columns="@(ViewBag.isAdministrator ? 5 : 2)">
+                                    <li class="column name">@person.Name</li>
+                                    <li class="column permission">@person.PermissionLevel</li>
+                                    @if (ViewBag.isAdministrator)
+                                    {
+                                        String colorCode = Model.isUserCheckedIn(person.TournamentUserID) ? "green" : "red";
+                                        if (Model.IsUserCreator(person.TournamentUserID))
+                                        {
+                                            colorCode = "";
+                                        }
+                                        <li class="column seed">
+                                            @if (!Model.IsUserAdministrator(person.TournamentUserID))
+                                            {
+                                                <input type="text" name="seedVal" maxlength="2" value="@Model.GetUserSeed(bracket.Id, person.TournamentUserID)" />
+                                            }
+                                        </li>
+                                        <li class="column">
+                                            <span class="icon icon-checkmark @colorCode checkIn"></span>
+                                        </li>
+                                        <li class="column actions">
+                                            @if (!Model.Model.InProgress)
+                                            {
+                                                if (data["Promote"] == 1)
+                                                {
+                                                    <button class="promote">Promote</button>
+                                                }
+                                                if (data["Demote"] == 1)
+                                                {
+                                                    <button class="demote">Demote</button>
+                                                }
+                                                if (data["Remove"] == 1)
+                                                {
+                                                    <button class="demote">Remove</button>
+                                                }
+                                            }
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+
+                        @if (!Model.Model.InProgress && ViewBag.isAdministrator && isFirstBracket)
+                        {
+                            <div class="adminSettings">
+                                <div class="options">
+                                    <button class="randomSeeds">Randomize Seeds</button>
+                                    <button class="updateSeeds">Update Seeds</button>
+                                </div>
+                                <div class="userAddData">
+                                    <ul class="form" data-columns="3">
+                                        <li class="column name"><input type="text" name="name" maxlength="50" placeholder="Name/Email" /></li>
+                                        <li class="column">Not Saved</li>
+                                        <li class="column"><button class="addUserButton">Add User</button></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+
+                    </li>
+
+
+                    <li class="list-table-header infoSection standingInfo">
+                        <ul class="header" data-columns="3">
+                            <li class="column">Rank</li>
+                            <li class="column">Name</li>
+                            @if (!bracket.UsePoints())
+                            {
+                                <li class="column score"></li>
+                            }
+                            else
+                            {
+                                <li class="column score">Score</li>
+                            }
+                        </ul>
+                        @if (bracket.IBracket.Rankings != null)
+                        {
+                            foreach (var rank in bracket.IBracket.Rankings)
+                            {
+                                <ul class="data" data-columns="3">
+                                    <li class="column rank">@rank.Rank</li>
+                                    <li class="column name">@rank.Name</li>
+                                    @if (!bracket.UsePoints())
+                                    {
+                                        <li class="column score"></li>
+                                    }
+                                    else
+                                    {
+                                        <li class="column score">@rank.Wins - @rank.Losses - @rank.Ties</li>
+                                    }
+                                </ul>
+                            }
+                        }
+                    </li>
+
+                    @if (ViewBag.isCreator)
+                    {
+                        <li class="list-table-body infoSection resetInfo">
+                            @if (!ViewBag.IsLocked) { 
+                                <span>
+                                    Are you sure you want to reset this bracket? This can not be reverted.
+                                    <br />
+                                    <button type="button" class="reset-bracket">Reset</button>
+                                </span>
+                            }
+                            else
+                            {
+                                <span>This bracket can not be reset.</span>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            isFirstBracket = false;
+        }
+    </div>
+</div>

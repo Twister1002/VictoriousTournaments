@@ -1,31 +1,74 @@
-﻿using System;
+﻿using DatabaseLib;
+using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
+using Tournaments = Tournament.Structure;
 using Tournament.Structure;
 using WebApplication.Models;
+using WebApplication.Utility;
 
 namespace WebApplication.Controllers
 {
     public abstract class VictoriousController : Controller
     {
-        protected AccountViewModel account;
+        protected Account account;
+        protected IUnitOfWork work;
+        protected Service service;
         Dictionary<String, object> jsonResponse;
+
+        protected override void Initialize(RequestContext requestContext)
+        {
+            base.Initialize(requestContext);
+            LoadAccount(requestContext.HttpContext.Session);
+        }
 
         public VictoriousController()
         {
             jsonResponse = new Dictionary<String, object>();
-            account = new AccountViewModel();
+            work = new UnitOfWork();
+            service = new Service(work);
         }
 
-        public void LoadAccount(HttpSessionStateBase session)
+        protected override void Dispose(bool disposing)
+        {
+            work.Dispose();
+        }
+
+        public void LoadAccount(HttpSessionStateBase Session)
         {
             if (Session != null)
             {
                 if (Session["User.UserId"] != null)
                 {
-                    account = new AccountViewModel((int)Session["User.UserId"]);
+                    account = new Account(service, (int)Session["User.UserId"]);
                 }
+                else
+                {
+                    account = new Account(service, -1);
+                }
+            }
+            else
+            {
+                account = null;
+            }
+
+            // Set some Viewbag data
+            ViewBag.IsLoggedin = account.IsLoggedIn();
+            ViewBag.Username = account.GetUsername();
+        }
+
+        [Obsolete("Use Account.IsLoggedIn()")]
+        public bool IsLoggedIn()
+        {
+            if (account != null && account.Model.AccountID > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -43,57 +86,6 @@ namespace WebApplication.Controllers
                 id = player.Id,
                 name = player.Name,
                 score = score
-            };
-        }
-
-        protected object JsonMatchResponse(IMatch match, bool includeGames)
-        {
-            List<object> gameData = new List<object>();
-            IPlayer challenger = match.Players[(int)PlayerSlot.Challenger] != null ?
-                match.Players[(int)PlayerSlot.Challenger] :
-                new User() { Name = "From Match "+match.PreviousMatchNumbers[(int)PlayerSlot.Challenger] };
-
-            IPlayer defender = match.Players[(int)PlayerSlot.Defender] != null ?
-                match.Players[(int)PlayerSlot.Defender] :
-                new User() { Name = "From Match " + match.PreviousMatchNumbers[(int)PlayerSlot.Defender] };
-            
-            if (includeGames)
-            {
-                foreach (IGame game in match.Games)
-                {
-                    gameData.Add(JsonGameResponse(game));
-                }
-            }
-
-            return new
-            {
-                matchId = match.Id,
-                matchNum = match.MatchNumber,
-                ready = match.IsReady,
-                finished = match.IsFinished,
-                challenger = JsonPlayerDataResponse(challenger, match.Score[(int)PlayerSlot.Challenger]),
-                defender = JsonPlayerDataResponse(defender, match.Score[(int)PlayerSlot.Defender]),
-                games = gameData
-            };
-        }
-
-        protected object JsonGameResponse(IGame game)
-        {
-            return new
-            {
-                id = game.Id,
-                gameNum = game.GameNumber,
-                matchId = game.MatchId,
-                challenger = new
-                {
-                    id = game.PlayerIDs[(int)PlayerSlot.Challenger],
-                    score = game.Score[(int)PlayerSlot.Challenger]
-                },
-                defender = new
-                {
-                    id = game.PlayerIDs[(int)PlayerSlot.Defender],
-                    score = game.Score[(int)PlayerSlot.Defender]
-                }
             };
         }
     }
