@@ -8,6 +8,7 @@
         "defender": 0,
         "challenger": 1,
     }
+    var origGameModel = "";
 
     // Mouse Events
     $(".TournamentMatch .defender, .TournamentMatch .challenger").on("mouseover", MouseOverEvents);
@@ -303,15 +304,30 @@
         $match.find(".TournamentGames .list-table .games").empty();
 
         $.each(matchInfo.games, function (i, e) {
-            // Add the game
-            html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + e.id + "' data-gamenum='" + e.gameNum + "'> ";
-            html += "<li class='column game-number'>" + e.gameNum + "</li> ";
-            html += "<li class='column defender score' data-id='" + e.defender.id + "'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + e.defender.score + "' /></li> ";
-            html += "<li class='column challenger score' data-id='" + e.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + e.challenger.score + "' /></li> ";
-            html += "<li class='column'><span class='icon icon-bin removeGame'></span></li> ";
-            html += "</ul> ";
+            var gameId = /\[\%Game\.Id\%\]/g;
+            var gameNum = /\[\%Game\.GameNum\%\]/g;
+            var defenderId = /\[\%Defender\.Id\%\]/g;
+            var challengerId = /\[\%Challenger\.Id\%\]/g;
+            var defenderScore = /\[\%Defender\.Score\%\]/g;
+            var challengerScore = /\[\%Challenger\.Score\%\]/g;
 
-            $match.find(".TournamentGames .list-table .games").append(html);
+            var gameModel = origGameModel;
+            gameModel = gameModel.replace(gameId, e.id);
+            gameModel = gameModel.replace(gameNum, e.gameNum);
+            gameModel = gameModel.replace(defenderId, e.defender.id);
+            gameModel = gameModel.replace(challengerId, e.challenger.id);
+            gameModel = gameModel.replace(defenderScore, e.defender.score);
+            gameModel = gameModel.replace(challengerScore, e.challenger.score);
+
+            //// Add the game
+            //html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + e.id + "' data-gamenum='" + e.gameNum + "'> ";
+            //html += "<li class='column game-number'>" + e.gameNum + "</li> ";
+            //html += "<li class='column defender score' data-id='" + e.defender.id + "'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + e.defender.score + "' /></li> ";
+            //html += "<li class='column challenger score' data-id='" + e.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + e.challenger.score + "' /></li> ";
+            //html += "<li class='column'><span class='icon icon-bin removeGame'></span></li> ";
+            //html += "</ul> ";
+
+            $match.find(".TournamentGames .list-table .games").append(unescape(gameModel));
         });
     }
 
@@ -352,4 +368,15 @@
             $inBracket.closest(".bracket").find(".options .BracketLock").addClass("hide");
         }
     }
+
+    (function ($) {
+        var tournamentGames = $(".TournamentGames");
+        if (tournamentGames.length > 0) {
+            // Copy over the original gameDetail
+            origGameModel = $(tournamentGames[0]).find(".gameDetail.original").removeClass("original")[0].outerHTML;
+
+            // Delete all the original gameDetails 
+            tournamentGames.find(".gameDetail.original").remove();
+        }
+    })($);
 });

@@ -463,8 +463,9 @@ namespace WebApplication.Models
 			}
 
 			// Pass updated seeds to IBracket, which will fix any invalid values:
-			Tourny.Brackets.First()
-				.SetNewPlayerlist(Model.Brackets.First().TournamentUsersBrackets);
+			Tourny.Brackets.Single(x=>x.Id == bracketId)
+				.SetNewPlayerlist(Model.Brackets.Single(x => x.BracketID == bracketId)
+                .TournamentUsersBrackets);
 
 			// Give correct values to all user seeds in the first BracketModel.
 			// This prevents two users having the same seed and being randomly sorted.
