@@ -291,30 +291,38 @@ namespace WebApplication.Controllers
                     Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                     Models.Bracket bracket = tournament.GetBracket(bracketId);
                     Models.Match match = bracket.GetMatchByNum(matchNum);
+                    bool validUpdate = true;
 
                     if (tournament.IsAdmin(account.Model.AccountID))
                     {
-                        Dictionary<int, bool> processed = new Dictionary<int, bool>();
-
                         // Verify these matches exists
                         foreach (GameViewModel gameModel in games)
                         {
+                            PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
+
                             // Tie game check
                             if (gameModel.ChallengerScore == gameModel.DefenderScore)
                             {
-                                processed.Add(gameModel.GameNumber, false);
                                 continue;
                             }
 
+                            // Add the game
                             if (!match.match.Games.Any(x => x.GameNumber == gameModel.GameNumber))
                             {
-                                // We need to add this game.
-                                PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
-                                bracket.AddGame(matchNum, gameModel.ChallengerScore, gameModel.DefenderScore, winner);
+                                if (!bracket.AddGame(matchNum, gameModel.DefenderScore, gameModel.ChallengerScore, winner))
+                                {
+                                    validUpdate = false;
+                                    break;
+                                }
                             }
+                            // Update the game
                             else
                             {
-                                processed.Add(gameModel.GameNumber, false);
+                                if (!bracket.UpdateGame(matchNum, gameModel.GameNumber, gameModel.DefenderScore, gameModel.ChallengerScore, winner))
+                                {
+                                    validUpdate = false;
+                                    break;
+                                }
                             }
                         }
 
@@ -352,7 +360,6 @@ namespace WebApplication.Controllers
                         {
                             bracketFinished = bracket.IBracket.IsFinished,
                             isLocked = bracket.IsLocked,
-                            processed = processed,
                             matches = matchUpdates,
                             refresh = refresh
                         };
