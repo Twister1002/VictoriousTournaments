@@ -492,13 +492,17 @@ namespace WebApplication.Models
         /// <returns>True if saved; false if failed</returns>
         public bool UpdateGame(int matchNum, int gameNum, int DScore, int CScore, PlayerSlot winner)
         {
-            GameModel gameOrig = bracket.GetMatch(matchNum).Games.Single(x => x.GameNumber == gameNum).GetModel();
-            GameModel game = bracket.UpdateGame(matchNum, gameNum, DScore, CScore, winner);
+			GameModel gameOrig = model.Matches.Single(x => x.MatchNumber == matchNum).Games.Single(x => x.GameNumber == gameNum);
 
             // Add the game to the database since the UpdateGame will fire an event that will delete that game from the database
             if (gameOrig.DefenderScore != DScore || gameOrig.ChallengerScore != CScore)
             {
-                services.Tournament.AddGame(game);
+				GameModel updatedGame = bracket.UpdateGame(matchNum, gameNum, DScore, CScore, winner);
+				gameOrig.DefenderScore = updatedGame.DefenderScore;
+				gameOrig.ChallengerScore = updatedGame.ChallengerScore;
+				gameOrig.WinnerID = updatedGame.WinnerID;
+
+				services.Tournament.UpdateGame(gameOrig);
             }
             
 

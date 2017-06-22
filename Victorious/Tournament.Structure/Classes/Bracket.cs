@@ -670,7 +670,7 @@ namespace Tournament.Structure
 
 				// Remove (and save) the current/old Game from the Match.
 				// This will affect the Bracket as if that Game had not been entered:
-				GameModel removedGame = RemoveGameNumber(_matchNumber, _gameNumber);
+				GameModel removedGame = RemoveGameNumber(_matchNumber, _gameNumber, true);
 				oldMatchModel = GetMatchModel(match);
 
 				// Update the Rankings according to this state:
