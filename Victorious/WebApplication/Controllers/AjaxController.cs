@@ -402,14 +402,16 @@ namespace WebApplication.Controllers
                     {
                         foreach (int matchNumber in matchesAffected)
                         {
-                            matchesAffectedData.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNum), true));
+                            matchesAffectedData.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNumber), true));
                         }
 
                         status = true;
                         message = "Matches were updated";
                         data = new
                         {
-                            matches = matchesAffectedData
+                            bracketFinished = bracket.IBracket.IsFinished,
+                            isLocked = bracket.IsLocked,
+                            matches = matchesAffectedData,
                         };
                     }
                     else
