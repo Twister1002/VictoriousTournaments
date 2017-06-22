@@ -731,13 +731,15 @@ namespace Tournament.Structure
 		/// Remove a specified Game from a Match.
 		/// Applies necessary affects to other, related Matches.
 		/// Updates scores and Rankings accordingly.
+		/// _updateInstead determines whether to notify the DB to delete the game.
 		/// May fire events: MatchesModified, GamesDeleted.
 		/// If Match or Game is not found, an exception is thrown.
 		/// </summary>
 		/// <param name="_matchNumber">Match to alter</param>
 		/// <param name="_gameNumber">Game to remove</param>
+		/// <param name="_updateInstead">false if removing the game, true if updating</param>
 		/// <returns>Model of removed Game</returns>
-		public GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
+		public GameModel RemoveGameNumber(int _matchNumber, int _gameNumber, bool _updateInstead = false)
 		{
 			Match match = GetInternalMatch(_matchNumber);
 			MatchModel oldMatchModel = GetMatchModel(match);
@@ -751,8 +753,19 @@ namespace Tournament.Structure
 
 			// Fire Event with any Matches that changed:
 			alteredMatches.Add(GetMatchModel(match));
-			OnMatchesModified(new BracketEventArgs
-				(alteredMatches, modelList.Select(g => g.GameID).ToList()));
+			BracketEventArgs args = null;
+			if (_updateInstead)
+			{
+				args = new BracketEventArgs(alteredMatches);
+
+			}
+			else
+			{
+				args = new BracketEventArgs
+					(alteredMatches, modelList.Select(g => g.GameID).ToList());
+			}
+			OnMatchesModified(args);
+
 			// Return a Model of the removed Game:
 			return modelList[0];
 		}
