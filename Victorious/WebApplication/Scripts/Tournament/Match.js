@@ -208,12 +208,20 @@
     });
 
     function RemoveGame() {
-        if (!confirm("Are you sure you want to delete this game? It could affect future matches.")) {
+        var match = $(this).closest(".TournamentMatch");
+        var $game = $(this).closest("ul");
+
+        if ($game.data("gameid") == -1) {
+            $game.remove();
+
+            UpdateMatchOptions({ "isLocked": false }, match);
+
             return;
         }
 
-        var match = $(this).closest(".TournamentMatch");
-        var $game = $(this).closest("ul");
+        if (!confirm("Are you sure you want to delete this game? It could affect future matches.")) {
+            return;
+        }
 
         var jsonData = {
             "tournamentId": $("#Tournament").data("id"),
@@ -332,14 +340,24 @@
     }
 
     function AddGame(data, $match) {
-        html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + data.id + "' data-gamenum='" + data.gameNum + "'> ";
-        html += "<li class='column game-number'>" + data.gameNum + "</li> ";
-        html += "<li class='column defender score' data-id='" + data.defender.id + "'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li> ";
-        html += "<li class='column challenger score' data-id='" + data.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li> ";
-        html += "<li class='column'><span class='icon icon-bin removeGame'></span></li> ";
-        html += "</ul> ";
+        var gameId = /\[\%Game\.Id\%\]/g;
+        var gameNum = /\[\%Game\.GameNum\%\]/g;
+        var defenderId = /\[\%Defender\.Id\%\]/g;
+        var challengerId = /\[\%Challenger\.Id\%\]/g;
+        var defenderScore = /\[\%Defender\.Score\%\]/g;
+        var challengerScore = /\[\%Challenger\.Score\%\]/g;
 
-        $(".TournamentGames .list-table .games").append(html);
+        var gameModel = origGameModel;
+        gameModel = gameModel.replace(gameId, data.id);
+        gameModel = gameModel.replace(gameNum, data.gameNum);
+        gameModel = gameModel.replace(defenderId, data.defender.id);
+        gameModel = gameModel.replace(challengerId, data.challenger.id);
+        gameModel = gameModel.replace(defenderScore, data.defender.score);
+        gameModel = gameModel.replace(challengerScore, data.challenger.score);
+
+        $(".TournamentGames .list-table .games").append(gameModel);
+
+        $(".TournamentMatch .removeGame").off("click").on("click", RemoveGame);
     }
 
     function UpdateMatchOptions(matchData, $match) {
