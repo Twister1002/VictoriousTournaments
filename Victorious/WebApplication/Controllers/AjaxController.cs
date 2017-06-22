@@ -215,6 +215,8 @@ namespace WebApplication.Controllers
             }
             else
             {
+                status = true;
+                message = "Standings Acquired";
                 data = new
                 {
                     ranks = bracket.IBracket.Rankings,
