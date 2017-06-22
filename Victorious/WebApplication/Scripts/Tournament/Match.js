@@ -96,23 +96,34 @@
         var games = match.find(".games ul");
         var gameData = new Array();
         var validated = true;
+        var regex = /^[0-9]+$/;
 
         // Validate the games fields
         // For every game
         $.each(games, function (i, e) {
             // For every game's row
-            defenderScore = $(e).find(".defender-score").val();
-            challengerScore = $(e).find(".challenger-score").val();
+            defender = $(e).find(".defender-score")
+            challenger = $(e).find(".challenger-score")
 
-            defenderScoreValid = $.isNumeric(defenderScore) || Math.floor(defenderScore) != defenderScore;
-            challengerScoreValue = $.isNumeric(challengerScore) || Math.floor(challengerScore) != challengerScore;
+            defenderScoreValid = regex.test(defender.val());
+            challengerScoreValue = regex.test(challenger.val());
 
-            if (!defenderScoreValid || !challengerScoreValue) {
-                $(e).find(".score").addClass("invalid");
+            if (!defenderScoreValid) {
+                defender.closest(".score").addClass("invalid");
+                validated = false;
             }
             else {
-                $(e).find(".score").removeClass("invalid");
+                defender.closest(".score").removeClass("invalid");
             }
+
+            if (!challengerScoreValue) {
+                challenger.closest(".score").addClass("invalid");
+                validated = false;
+            }
+            else {
+                challenger.closest(".score").removeClass("invalid");
+            }
+
         });
 
         if (!validated) return;
