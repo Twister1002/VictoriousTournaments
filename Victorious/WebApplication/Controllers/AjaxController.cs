@@ -331,28 +331,18 @@ namespace WebApplication.Controllers
                         status = bracket.UpdateMatch(bracket.IBracket.GetMatchModel(matchNum));
                         match = bracket.GetMatchByNum(matchNum);
                         bool refresh = bracket.roundsModified;
+
+                        List<int> matchesAffected = bracket.MatchesAffectedList(matchNum);
                         List<object> matchUpdates = new List<object>();
 
                         if (status)
                         {
                             message = "Current match was updated";
 
-                            matchUpdates.Add(JsonMatchResponse(match, true));
-                            if (match.match.NextMatchNumber != -1)
-                                matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(match.match.NextMatchNumber), false));
-                            if (match.match.NextLoserMatchNumber != -1)
-                                matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(match.match.NextLoserMatchNumber), false));
-                            if (bracket.IBracket.BracketType ==  DatabaseLib.BracketType.SWISS)
+                            // Creates objects for all matches affected, including the match you're currently on
+                            foreach (int matchNumAffected in matchesAffected)
                             {
-                                List<IMatch> roundMatches = bracket.IBracket.GetRound(match.match.RoundIndex);
-                                // We need to verify and check if this round is finished
-                                if (!roundMatches.Any(x => x.IsFinished == false))
-                                {
-                                    foreach (Models.Match iMatch in bracket.GetRound(match.match.RoundIndex + 1, BracketSection.UPPER))
-                                    {
-                                        matchUpdates.Add(JsonMatchResponse(iMatch, false));
-                                    }
-                                }
+                                matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNumAffected), false));
                             }
                         }
 
