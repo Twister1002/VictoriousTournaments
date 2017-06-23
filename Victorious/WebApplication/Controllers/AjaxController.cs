@@ -331,17 +331,14 @@ namespace WebApplication.Controllers
                         status = bracket.UpdateMatch(bracket.IBracket.GetMatchModel(matchNum));
                         match = bracket.GetMatchByNum(matchNum);
                         bool refresh = bracket.roundsModified;
+
+                        List<int> matchesAffected = bracket.MatchesAffectedList(matchNum);
                         List<object> matchUpdates = new List<object>();
 
                         if (status)
                         {
                             message = "Current match was updated";
 
-                            matchUpdates.Add(JsonMatchResponse(match, true));
-                            if (match.match.NextMatchNumber != -1)
-                                matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(match.match.NextMatchNumber), false));
-                            if (match.match.NextLoserMatchNumber != -1)
-                                matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(match.match.NextLoserMatchNumber), false));
                             if (bracket.IBracket.BracketType ==  DatabaseLib.BracketType.SWISS)
                             {
                                 List<IMatch> roundMatches = bracket.IBracket.GetRound(match.match.RoundIndex);
@@ -352,6 +349,13 @@ namespace WebApplication.Controllers
                                     {
                                         matchUpdates.Add(JsonMatchResponse(iMatch, false));
                                     }
+                                }
+                            }
+                            else
+                            {
+                                foreach (int matchNumAffected in matchesAffected)
+                                {
+                                    matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNumAffected), false));
                                 }
                             }
                         }
