@@ -339,24 +339,10 @@ namespace WebApplication.Controllers
                         {
                             message = "Current match was updated";
 
-                            if (bracket.IBracket.BracketType ==  DatabaseLib.BracketType.SWISS)
+                            // Creates objects for all matches affected, including the match you're currently on
+                            foreach (int matchNumAffected in matchesAffected)
                             {
-                                List<IMatch> roundMatches = bracket.IBracket.GetRound(match.match.RoundIndex);
-                                // We need to verify and check if this round is finished
-                                if (!roundMatches.Any(x => x.IsFinished == false))
-                                {
-                                    foreach (Models.Match iMatch in bracket.GetRound(match.match.RoundIndex + 1, BracketSection.UPPER))
-                                    {
-                                        matchUpdates.Add(JsonMatchResponse(iMatch, false));
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                foreach (int matchNumAffected in matchesAffected)
-                                {
-                                    matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNumAffected), false));
-                                }
+                                matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNumAffected), false));
                             }
                         }
 
