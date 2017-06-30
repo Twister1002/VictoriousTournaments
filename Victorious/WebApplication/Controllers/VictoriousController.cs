@@ -26,8 +26,12 @@ namespace WebApplication.Controllers
 
         public VictoriousController()
         {
+#if DEBUG
+            work = new UnitOfWork("Debug");
+#elif !DBUG
+            work = new UnitOfWork("Production");
+#endif
             jsonResponse = new Dictionary<String, object>();
-            work = new UnitOfWork();
             service = new Service(work);
         }
 
