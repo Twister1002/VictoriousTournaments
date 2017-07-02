@@ -4,5 +4,57 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>FAQ</h2>
-
+<div id="faq">
+    <h2>FAQ</h2>
+    <ul class="section">
+        <li class="question">
+            <label>What is Victorious Tournaments?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                Victorious Tournaments is a website for aiding in the management of tournaments
+                for all communities including: esports and traditional sports. The platform allows
+                users to create tournaments that allow players to enter the tournament themselves,
+                so you can get back to the more important things in your community.
+            </div>
+        </li>
+        <li class="question">
+            <label>How can I create a tournament?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                You will need to have an @Html.ActionLink("account", "Login", "Account") in order to
+                create a tournament at this time. Once logged into your account, there is a link in
+                the account panel that will allow you to create a tournament. You can also use the menu
+                dropdown to get you there faster.
+            </div>
+        </li>
+        <li class="question">
+            <label>How can users register to my tournament?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                There are 2 requirements to verify before being able to allow users to join your
+                tournament.
+                <p>
+                    <ol>
+                        <li>
+                            Make sure you have public registration turned on or send your friend the
+                            invitation link.
+                        </li>
+                        <li>
+                            Make sure your tournament's registration dates has began and not passed.<br />
+                            e.g If today is 01/01/2017 8AM verify that the Registration start date and time on
+                            or before 01/01/2017 8AM and make sure the end date and time is after 01/01/2017 8AM.
+                        </li>
+                    </ol>
+                </p>
+            </div>
+        </li>
+        <li class="question">
+            <label>Does everyone in my tournament need to register an account?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                Simply answered, no.
+                <p>
+                    However, if those players are regulars in your tournaments, it would be better for them
+                    to have their own accounts so they could join your future tournaments. This can cut down
+                    on your tournament preperation.
+                </p>
+            </div>
+        </li>
+    </ul>
+</div>

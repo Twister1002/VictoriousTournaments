@@ -53,10 +53,16 @@ namespace WebApplication.Controllers
             if (ModelState.IsValid)
             {
                 Contact model = new Contact(service);
-                model.SendEmail();
-
-                Session["Message"] = "Your message is now pending to be sent";
-                Session["Message.Class"] = ViewError.SUCCESS;
+                if (model.SendEmail())
+                {
+                    Session["Message"] = "Your message is now pending to be sent";
+                    Session["Message.Class"] = ViewError.SUCCESS;
+                }
+                else
+                {
+                    Session["Message"] = "Your message could not be sent. Please try again later.";
+                    Session["Message.Class"] = ViewError.ERROR;
+                }
             }
             else
             {

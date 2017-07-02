@@ -21,9 +21,9 @@ namespace WebApplication.Models
             SetupViewModel();
         }
 
-        public void SendEmail()
+        public bool SendEmail()
         {
-
+            return false;
         }
         
         public void SetupViewModel()

@@ -1,0 +1,45 @@
+﻿#faq {
+    width: 100%;
+
+    .question {
+        position: relative;
+        width: 100%;
+        
+        
+        > label {
+            position: relative;
+            padding: 1em 1.5em 1em 1em;
+            .hover;
+            background-color: @blue-option;
+
+            > span {
+                position: absolute;
+                right: .50em;
+                width: 1em;
+                height: 1em;
+            }
+        }
+
+        > div.answer {
+            display: none;
+            padding: 1em 1.5em 1em 1em;
+
+            &.selected {
+                display: block;
+            }
+        }
+    }
+
+    @media screen and (min-width: @@b1) {
+    }
+
+    @media screen and (min-width: @@b2) {
+        width: 75%;
+    }
+
+    @media screen and (min-width: @@b3) {
+    }
+
+    @media screen and (min-width: @@b4) {
+    }
+}
