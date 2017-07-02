@@ -111,6 +111,7 @@
     <Content Include="lib\jquery-ui\jquery-ui.min.js" />
     <Content Include="lib\jquery\dist\jquery.min.js" />
     <Content Include="Scripts\Account\index.js" />
+    <Content Include="Scripts\Home\faq.js" />
     <Content Include="Scripts\scripts.min.js" />
     <Content Include="Scripts\Tournament\Bracket.js" />
     <Content Include="Scripts\Tournament\Create.js" />
@@ -156,6 +157,7 @@
     <Compile Include="Models\Admin.cs" />
     <Compile Include="Models\Bracket.cs" />
     <Compile Include="Models\BracketType.cs" />
+    <Compile Include="Models\Contact.cs" />
     <Compile Include="Models\GameType.cs" />
     <Compile Include="Models\Home.cs" />
     <Compile Include="Models\Match.cs" />
@@ -166,6 +168,7 @@
     <Compile Include="Models\ViewModels\AdminViewModel.cs" />
     <Compile Include="Models\ViewModels\BracketTypeViewModel.cs" />
     <Compile Include="Models\ViewModels\BracketViewModel.cs" />
+    <Compile Include="Models\ViewModels\ContactViewModel.cs" />
     <Compile Include="Models\ViewModels\GameTypeViewModel.cs" />
     <Compile Include="Models\ViewModels\GameViewModel.cs" />
     <Compile Include="Models\ViewModels\PlatformViewModel.cs" />
@@ -236,6 +239,13 @@
     <Content Include="Views\Tournament\Brackets\GSLGroup.cshtml" />
     <Content Include="Views\Tournament\Brackets\UpperBracket.cshtml" />
     <Content Include="Views\Tournament\Brackets\LowerBracket.cshtml" />
+    <Content Include="Styles\less\Home\_Contact.less" />
+    <Content Include="Styles\less\Home.less" />
+    <Content Include="Styles\less\Home\_faq.less" />
+    <Content Include="Styles\less\Home\_Rules.less" />
+    <Content Include="Styles\less\Home\_About.less" />
+    <Content Include="Views\Home\Blog.cshtml" />
+    <Content Include="Styles\less\Home\_Blog.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

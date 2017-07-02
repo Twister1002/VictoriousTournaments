@@ -35,7 +35,7 @@ gulp.task("js-clean", function() {
 });
 
 gulp.task("less-clean", function () {
-    return del(["Styles/css/styles.min.less"]);
+    return del(["Styles/css/style.min.less"]);
 });
 
 gulp.task("js", ["js-clean"], function () {

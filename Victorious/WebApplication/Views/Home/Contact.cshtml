@@ -1,9 +1,46 @@
-﻿@model WebApplication.Models.Home
+﻿@model WebApplication.Models.ViewModels.ContactViewModel
 @{
     ViewBag.Title = "Contact";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div id="Contact">
-         
+    <h2>Contact us</h2>
+    <div class="form">
+        @using (Html.BeginForm("Contact", "Home", FormMethod.Post))
+        {
+            <ul class="singleCol">
+                <li>
+                    @Html.LabelFor(x => x.Email)
+                    @Html.TextBoxFor(x => x.Email)
+                    @Html.ValidationMessageFor(x => x.Email)
+                </li>
+            </ul>
+            <ul class="multicolumn" data-columns="2">
+                <li class="column">
+                    @Html.LabelFor(x => x.Name)
+                    @Html.TextBoxFor(x => x.Name)
+                    @Html.ValidationMessageFor(x => x.Name)
+                </li>
+                <li class="column">
+                    @Html.LabelFor(x => x.Subject)
+                    @Html.TextBoxFor(x => x.Subject)
+                    @Html.ValidationMessageFor(x => x.Subject)
+                </li>
+            </ul>
+            <ul class="singleCol">
+                <li>
+                    @Html.LabelFor(x => x.Body)
+                    @Html.TextAreaFor(x => x.Body)
+                    @Html.ValidationMessageFor(x => x.Body)
+                </li>
+            </ul>
+            <ul class="singleCol">
+                <li>
+                    Our mail server is currently not working. Please wait while we fix this.
+                    @*<button type="submit">Send information</button>*@
+                </li>
+            </ul>
+        }
+    </div>
 </div>

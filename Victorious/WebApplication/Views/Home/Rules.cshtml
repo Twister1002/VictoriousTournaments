@@ -4,5 +4,15 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Rules</h2>
+<div id="Rules">
+    <h2>Rules</h2>
+    <ol>
+        <li>Creators / Administrators of tournaments are not allowed to participate in the tournament.</li>
+        <li>Always follow the rules for the tournament you are hosting.</li>
+    </ol>
 
+    <div class="disclaimer">
+        If any tournament administrators are breaking the above rules, please 
+        @Html.ActionLink("contact us", "Contact", "Home", null, new { @class="clickable-underline" }) so we may take the approiate actions.
+    </div>
+</div>

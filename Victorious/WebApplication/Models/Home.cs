@@ -12,6 +12,7 @@ namespace WebApplication.Models
     {
         public Home(IService service) : base(service)
         {
+
         }
     }
 }

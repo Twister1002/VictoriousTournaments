@@ -1,14 +1,21 @@
 ﻿form {
-    input[type="text"], input[type="password"], select {
+    input[type="text"], input[type="password"], select, textarea {
         border: 0em;
         border-bottom: .1em solid @white;
         padding: .5em 0em .5em 1em;
-        background-color: inherit;
+        background-color: @color-primary-0;
         color: @white;
+        display: block;
         .placeholder(@white);
 
         option {
             color: @black;
+        }
+    }
+
+    input, select, textarea {
+        &.input-validation-error {
+            background-color: @alert-red;
         }
     }
 
