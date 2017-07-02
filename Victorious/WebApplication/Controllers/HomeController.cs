@@ -28,7 +28,8 @@ namespace WebApplication.Controllers
         {
             Session["Message"] = "The blog is currently not working.";
             Session["Message.Class"] = ViewError.ERROR;
-            return RedirectToAction("Index");
+
+            return RedirectToAction("Index", "Home");
         }
 
         [Route("About")]
@@ -77,6 +78,9 @@ namespace WebApplication.Controllers
         public ActionResult Rules()
         {
             Home model = new Home(service);
+            Session["Message"] = "We're currenly working up the basic details for the tournaments. More details will come shortly";
+            Session["Message.Class"] = ViewError.NONE;
+
             return View("Rules", model);
         }
     }
