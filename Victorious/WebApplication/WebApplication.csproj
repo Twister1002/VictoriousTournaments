@@ -156,6 +156,7 @@
     <Compile Include="Models\Admin.cs" />
     <Compile Include="Models\Bracket.cs" />
     <Compile Include="Models\BracketType.cs" />
+    <Compile Include="Models\Contact.cs" />
     <Compile Include="Models\GameType.cs" />
     <Compile Include="Models\Home.cs" />
     <Compile Include="Models\Match.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Models\ViewModels\AdminViewModel.cs" />
     <Compile Include="Models\ViewModels\BracketTypeViewModel.cs" />
     <Compile Include="Models\ViewModels\BracketViewModel.cs" />
+    <Compile Include="Models\ViewModels\ContactViewModel.cs" />
     <Compile Include="Models\ViewModels\GameTypeViewModel.cs" />
     <Compile Include="Models\ViewModels\GameViewModel.cs" />
     <Compile Include="Models\ViewModels\PlatformViewModel.cs" />
@@ -236,6 +238,7 @@
     <Content Include="Views\Tournament\Brackets\GSLGroup.cshtml" />
     <Content Include="Views\Tournament\Brackets\UpperBracket.cshtml" />
     <Content Include="Views\Tournament\Brackets\LowerBracket.cshtml" />
+    <Content Include="Styles\less\Home\_Contact.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using WebApplication.Models;
+using WebApplication.Models.ViewModels;
 
 namespace WebApplication.Controllers
 {
@@ -40,8 +41,30 @@ namespace WebApplication.Controllers
         [Route("Contact")]
         public ActionResult Contact()
         {
-            Home model = new Home(service);
-            return View("Contact", model);
+            Contact model = new Contact(service);
+
+            return View("Contact", model.viewModel);
+        }
+
+        [HttpPost]
+        [Route("Contact")]
+        public ActionResult Contact(ContactViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                Contact model = new Contact(service);
+                model.SendEmail();
+
+                Session["Message"] = "Your message is now pending to be sent";
+                Session["Message.Class"] = ViewError.SUCCESS;
+            }
+            else
+            {
+                Session["Message"] = "Please fix the errors below";
+                Session["Message.Class"] = ViewError.ERROR;
+            }
+
+            return View("Contact", viewModel);
         }
 
         [Route("Rules")]
