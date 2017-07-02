@@ -1,31 +1,34 @@
 ﻿#faq {
     width: 100%;
 
-    .question {
-        position: relative;
-        width: 100%;
-        
-        
-        > label {
+    .section {
+        padding: 1em;
+        .question {
             position: relative;
-            padding: 1em 1.5em 1em 1em;
-            .hover;
-            background-color: @blue-option;
+            width: 100%;
 
-            > span {
-                position: absolute;
-                right: .50em;
-                width: 1em;
-                height: 1em;
+
+            > label {
+                position: relative;
+                padding: 1em 1.5em 1em 1em;
+                .hover;
+                background-color: @blue-option;
+
+                > span {
+                    position: absolute;
+                    right: .50em;
+                    width: 1em;
+                    height: 1em;
+                }
             }
-        }
 
-        > div.answer {
-            display: none;
-            padding: 1em 1.5em 1em 1em;
+            > div.answer {
+                display: none;
+                padding: 1em 1.5em 1em 1em;
 
-            &.selected {
-                display: block;
+                &.selected {
+                    display: block;
+                }
             }
         }
     }
