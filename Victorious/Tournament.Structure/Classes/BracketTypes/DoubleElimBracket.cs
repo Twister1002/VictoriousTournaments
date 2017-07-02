@@ -318,7 +318,7 @@ namespace Tournament.Structure
 			{
 				// Standard case: lower bracket match.
 				Match match = GetInternalMatch(_matchNumber);
-				rank = NumberOfMatches - GetLowerRound(match.RoundIndex)[0].MatchNumber + 2;
+				rank = NumberOfMatches - GetLowerRound(match.RoundIndex).Last().MatchNumber + 2;
 			}
 			else if (Matches?.ContainsKey(_matchNumber) ?? false)
 			{
