@@ -243,6 +243,7 @@
     <Content Include="Styles\less\Home.less" />
     <Content Include="Styles\less\Home\_faq.less" />
     <Content Include="Styles\less\Home\_Rules.less" />
+    <Content Include="Styles\less\Home\_About.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

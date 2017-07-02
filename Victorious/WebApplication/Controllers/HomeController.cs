@@ -43,6 +43,9 @@ namespace WebApplication.Controllers
         public ActionResult Contact()
         {
             Contact model = new Contact(service);
+            Session["Message"] = "Our mail server is currently not working. Please wait while we fix this.";
+            Session["Message.Class"] = ViewError.NONE;
+            
 
             return View("Contact", model.viewModel);
         }
@@ -61,7 +64,7 @@ namespace WebApplication.Controllers
                 }
                 else
                 {
-                    Session["Message"] = "Your message could not be sent. Please try again later.";
+                    Session["Message"] = "Our mail server is currently not working. Please wait while we fix this.";
                     Session["Message.Class"] = ViewError.ERROR;
                 }
             }
