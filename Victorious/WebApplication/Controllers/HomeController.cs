@@ -26,16 +26,17 @@ namespace WebApplication.Controllers
         [Route("Blog")]
         public ActionResult Blog()
         {
-            Session["Message"] = "The blog is currently not working.";
-            Session["Message.Class"] = ViewError.ERROR;
+            Home model = new Home(service);
+            Session["Message"] = "Our blog is currently not setup yet.";
+            Session["Message.Class"] = ViewError.NONE;
 
-            return RedirectToAction("Index", "Home");
+            return View("Blog", model);
         }
 
         [Route("About")]
         public ActionResult About()
         {
-            Home model = new Home(service);
+            Home model = new Home(service); 
             return View("About", model);
         }
 
