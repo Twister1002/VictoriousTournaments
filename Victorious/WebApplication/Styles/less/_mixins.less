@@ -18,3 +18,21 @@
         }
     }
 }
+
+.placeholder(@color) {
+    &::-webkit-input-placeholder {
+        color: darken(@color, 15%);
+    }
+
+    &::-moz-placeholder {
+        color: darken(@color, 15%);
+    }
+
+    &:-ms-input-placeholder {
+        color: darken(@color, 15%);
+    }
+
+    &:-moz-placeholder {
+        color: darken(@color, 15%);
+    }
+}

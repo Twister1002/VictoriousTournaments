@@ -9,7 +9,7 @@
         .placeholder(@white);
 
         option {
-            color: @black;
+            color: @white;
         }
     }
 
@@ -29,23 +29,5 @@
 
     .required {
         color: red;
-    }
-}
-
-.placeholder(@color) {
-    &::-webkit-input-placeholder {
-        color: darken(@color, 15%);
-    }
-
-    &::-moz-placeholder {
-        color: darken(@color, 15%);
-    }
-
-    &:-ms-input-placeholder {
-        color: darken(@color, 15%);
-    }
-
-    &:-moz-placeholder {
-        color: darken(@color, 15%);
     }
 }
