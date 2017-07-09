@@ -63,19 +63,6 @@ namespace WebApplication.Controllers
             ViewBag.Username = account.GetUsername();
         }
 
-        [Obsolete("Use Account.IsLoggedIn()")]
-        public bool IsLoggedIn()
-        {
-            if (account != null && account.Model.AccountID > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public int ConvertToInt(String x)
         {
             int i = -1;

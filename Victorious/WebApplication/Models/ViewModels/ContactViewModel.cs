@@ -6,7 +6,7 @@ using System.Web;
 
 namespace WebApplication.Models.ViewModels
 {
-    public class ContactViewModel
+    public class ContactViewModel : ViewModel
     {
 
         [DataType("Text")]

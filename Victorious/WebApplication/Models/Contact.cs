@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Web;
 using WebApplication.Interfaces;
 using WebApplication.Models.ViewModels;
@@ -21,9 +22,25 @@ namespace WebApplication.Models
             SetupViewModel();
         }
 
-        public bool SendEmail()
+        public bool SendEmail(ContactViewModel viewModel)
         {
-            return false;
+            //SmtpClient googleServer = new SmtpClient("smtp.gmail.com", 587);
+            //googleServer.Credentials = new System.Net.NetworkCredential("victorous", "password");
+#if DEBUG
+            //googleServer.EnableSsl = false;
+#else
+            googleServer.EnableSsl = true;
+#endif
+
+            //MailMessage mail = new MailMessage();
+            //mail.From = new MailAddress(viewModel.Email, viewModel.Name);
+            //mail.To.Add("victorioustournaments@gmail.com");
+            //mail.Subject = viewModel.Subject;
+            //mail.Body = viewModel.Body;
+
+            //googleServer.Send(mail);
+
+            return true;
         }
         
         public void SetupViewModel()
