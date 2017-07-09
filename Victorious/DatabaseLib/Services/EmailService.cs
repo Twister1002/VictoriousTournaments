@@ -32,12 +32,11 @@ namespace DatabaseLib
         //    return msg;
         //}
 
-        private async Task<Response> GetTemplate(string id)
-        {
-            return await client.RequestAsync(SendGridClient.Method.GET, "templates" + id);
-
-        }
-
+        /// <summary>
+        /// Sends an account invite via email.
+        /// </summary>
+        /// <param name="invite"> AccountInvite object that contains the info needed to fill out the email template. </param>
+        /// <returns></returns>
         public bool SendAccountInviteEmail(AccountInviteModel invite)
         {
             try
@@ -83,7 +82,14 @@ namespace DatabaseLib
             return true;
         }
 
-        public bool SendTournamentInviteEmail(TournamentInviteModel invite, string url, List<string> recepiantEmails)
+        /// <summary>
+        /// Sends a tournament invite to specified recipieants.
+        /// </summary>
+        /// <param name="invite"> The TournamentInvite that contains the data needed to fill out the email template. </param>
+        /// <param name="url"> The URL of the tournament that people are being inbited to. </param>
+        /// <param name="recepiantEmails"> A List of email addresses that will receive the email. </param>
+        /// <returns> Returns true if the email is sent, elese returns false. </returns>
+        public bool SendTournamentInviteEmail(TournamentInviteModel invite, string url, List<string> recipientEmails)
         {
             try
             {
@@ -111,7 +117,7 @@ namespace DatabaseLib
                 msg.AddSubstitutions(substitutions);
 
                 var recepiants = new List<EmailAddress>();
-                foreach (var recepiant in recepiantEmails)
+                foreach (var recepiant in recipientEmails)
                 {
                     recepiants.Add(new EmailAddress(recepiant));
                 }
@@ -128,6 +134,12 @@ namespace DatabaseLib
             return true;
         }
 
+        /// <summary>
+        /// Sends a verification email to ensure the email the user entered at account creation is valid.
+        /// </summary>
+        /// <param name="userEmail"> The user's email address. </param>
+        /// <param name="verificationCode"> The code to include in the email. </param>
+        /// <returns> Returns true if the email is sent, else returns false. </returns>
         public bool SendVerificationEmail(string userEmail, string verificationCode)
         {
             try
@@ -159,11 +171,19 @@ namespace DatabaseLib
 
         #region MailingList
 
+        /// <summary>
+        /// Adds an email address to the mailing list. 
+        /// </summary>
+        /// <param name="email"> The email address to be added. </param>
         public void AddEmailToMailingList(string email)
         {
             unitOfWork.MailingListRepo.Add(new MailingList() { EmailAddress = email });
         }
 
+        /// <summary>
+        /// Retreives the entire mailing list.
+        /// </summary>
+        /// <returns> Returns a List of strings. </returns>
         public List<string> GetMailingList()
         {
             List<string> mailingList = new List<string>();
@@ -174,12 +194,22 @@ namespace DatabaseLib
             return mailingList;
         }
 
+        /// <summary>
+        /// Removes an email from the mailing list.
+        /// </summary>
+        /// <param name="email"> The email address to be removed. </param>
         public void RemoveEmailFromMailingList(string email)
         {
             MailingList emailToDelete = unitOfWork.MailingListRepo.GetSingle(x => x.EmailAddress == email);
             unitOfWork.MailingListRepo.DeleteEntity(emailToDelete);
         }
 
+        /// <summary>
+        /// Sends an email to all addresses on the mailing list.
+        /// </summary>
+        /// <param name="subject"> The subject of the email. </param>
+        /// <param name="message"> The main body of the email. </param>
+        /// <returns> Returns true if the email is sent, else returns false. </returns>
         public bool SendEmailToMailingList(string subject, string message)
         {
             try
@@ -222,11 +252,12 @@ namespace DatabaseLib
 
         #endregion
 
-        private void Send(SendGridMessage email)
-        {
-
-        }
-
+        /// <summary>
+        /// Executes the sending of the email.
+        /// </summary>
+        /// <param name="client"> The SendGridClient that allows api access. </param>
+        /// <param name="msg"> The SendGridMessage that is being sent. </param>
+        /// <returns></returns>
         private static async Task Execute(SendGridClient client, SendGridMessage msg)
         {
 

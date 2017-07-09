@@ -104,7 +104,6 @@ namespace DatabaseLib
             context.Set<TEntity>().AddOrUpdate(entity);
         }
 
-
         public IQueryable<TEntity> GetWhere(Expression<Func<TEntity, bool>> predicate)
         {
             return DbSet.Where(predicate);

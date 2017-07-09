@@ -10,6 +10,11 @@ using System.Data.Entity.Validation;
 
 namespace DatabaseLib
 {
+    /// <summary>
+    /// This class contains the database context and all repositories for CRUD of database objects.
+    /// These repositories are utilized in the service classes.
+    /// There should only be one instance of this class in existance at any time, to avoid conflicts within the context.
+    /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
         private VictoriousEntities context = new VictoriousEntities();
@@ -34,6 +39,11 @@ namespace DatabaseLib
 
         Exception exception;
 
+        /// <summary>
+        /// Constructor for the UnitOfWork class. 
+        /// </summary>
+        /// <param name="name"> Optional string for the name of the connection string used to connect to the database. </param>
+        /// <param name="context"> Optional EF DbContext that allows the context to be instantiated outside the UnitOfWork. </param>
         public UnitOfWork(string name = null, VictoriousEntities context = null)
         {
             if (name != null)
@@ -48,6 +58,11 @@ namespace DatabaseLib
             //this.context.Configuration.AutoDetectChangesEnabled = false;
         }
 
+        /// <summary>
+        /// Saves changes to modified enties to the database.
+        /// </summary>
+        /// <returns> Returns true if save succeeds, else returns false. </returns>
+        /// <remarks> If any part of the update fails, the entire update is aborted. </remarks>
         public bool Save()
         {
             try
@@ -62,6 +77,10 @@ namespace DatabaseLib
             return true;
         }
 
+        /// <summary>
+        /// Disposes of the current context and regenerats it.
+        /// </summary>
+        /// <remarks> Any unsaeved changes to the context will be lost. </remarks>
         public void Refresh()
         {
             context.Dispose();
