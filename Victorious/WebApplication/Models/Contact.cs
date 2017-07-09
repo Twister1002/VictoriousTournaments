@@ -24,21 +24,17 @@ namespace WebApplication.Models
 
         public bool SendEmail(ContactViewModel viewModel)
         {
-            //SmtpClient googleServer = new SmtpClient("smtp.gmail.com", 587);
-            //googleServer.Credentials = new System.Net.NetworkCredential("victorous", "password");
-#if DEBUG
-            //googleServer.EnableSsl = false;
-#else
+            SmtpClient googleServer = new SmtpClient("smtp.gmail.com", 587);
+            googleServer.Credentials = new System.Net.NetworkCredential("victorioustournaments@gmail.com", "V1ct0rious T0urnam3nts");
             googleServer.EnableSsl = true;
-#endif
 
-            //MailMessage mail = new MailMessage();
-            //mail.From = new MailAddress(viewModel.Email, viewModel.Name);
-            //mail.To.Add("victorioustournaments@gmail.com");
-            //mail.Subject = viewModel.Subject;
-            //mail.Body = viewModel.Body;
+            MailMessage mail = new MailMessage();
+            mail.From = new MailAddress(viewModel.Email, viewModel.Name);
+            mail.To.Add("victorioustournaments@gmail.com");
+            mail.Subject = viewModel.Subject;
+            mail.Body = viewModel.Body;
 
-            //googleServer.Send(mail);
+            googleServer.Send(mail);
 
             return true;
         }

@@ -59,6 +59,8 @@ namespace WebApplication.Controllers
                 {
                     Session["Message"] = "Your message has been sent. We'll get back to you when we can!";
                     Session["Message.Class"] = ViewError.SUCCESS;
+
+                    return RedirectToAction("Index");
                 }
                 else
                 {
