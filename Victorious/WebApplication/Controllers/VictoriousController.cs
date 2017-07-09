@@ -28,7 +28,7 @@ namespace WebApplication.Controllers
         {
 #if DEBUG
             work = new UnitOfWork("Debug");
-#elif !DBUG
+#else
             work = new UnitOfWork("Production");
 #endif
             jsonResponse = new Dictionary<String, object>();
