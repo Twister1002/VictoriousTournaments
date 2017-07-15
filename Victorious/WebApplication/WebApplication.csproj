@@ -246,6 +246,7 @@
     <Content Include="Styles\less\Home\_About.less" />
     <Content Include="Views\Home\Blog.cshtml" />
     <Content Include="Styles\less\Home\_Blog.less" />
+    <Content Include="Styles\less\_switch.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

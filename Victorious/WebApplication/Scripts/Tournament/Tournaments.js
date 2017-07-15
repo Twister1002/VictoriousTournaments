@@ -1,12 +1,6 @@
 ﻿jQuery(document).ready(function () {
     var $ = jQuery;
     var tournamentChanged = false;
-    var permissionDictionary = {
-        100: "Creator",
-        101: "Admin",
-        102: "Participant",
-        0: "None"
-    };
 
     // Redirect to update
     $(".tournament-update").on("click", function () {
@@ -93,17 +87,6 @@
     $(".TournamentInfo .bracketNum").on("click", BracketNumberSelected);
     // Tournament Infomation
     $(".TournamentInfo .selection.info").on("click", InfoSelected);
-    // Check a user in
-    $(".TournamentInfo .playerInfo .checkIn").on("click", CheckUserIn);
-    // Permission Buttions
-    $(".TournamentInfo .playerInfo .user .promote, .TournamentInfo .playerInfo .user .demote").on("click", PermissionAction);
-    // Add a player to the tournament by button or hitting enter.
-    $(".TournamentInfo .playerInfo .userAddData .addUserButton").on("click", function () { AddUserToTournament(this); });
-    $(".TournamentInfo .playerInfo .userAddData .name").on("keydown", function (e) {
-        if (e.keyCode == 13) {
-            AddUserToTournament(this);
-        }
-    });
     // Reset the brackets
     $(".TournamentInfo .resetInfo .reset-bracket").on("click", ResetBracket);
     //Seeds
@@ -124,159 +107,6 @@
 
         $(this).addClass("selected").siblings().removeClass("selected");
         bracket.find("." + info).addClass("show").siblings().removeClass("show");
-    }
-
-    function CheckUserIn() {
-        var $this = $(this);
-
-        $.ajax({
-            "url": "/Ajax/Tournament/CheckIn",
-            "type": "post",
-            "data": { "tournamentId": $("#Tournament").data("id"), "tournamentUserId": $(this).closest(".data").data("user") },
-            "dataType": "json",
-            "beforeSend": function () {
-                $this.off("click");
-            },
-            "success": function (json) {
-                if (json.status) {
-                    $(".TournamentInfo .bracketData").each(function (i, e) {
-                        $(e).find(".user[data-user='" + json.data.targetUser + "'] .checkIn")
-                            .removeClass("green red")
-                            .addClass(json.data.isCheckedIn ? "green" : "red");
-                    });
-                }
-
-                console.log(json.message);
-            },
-            "error": function (json) {
-                console.log(json);
-            },
-            "complete": function () {
-                $this.on("click", CheckUserIn)
-            }
-        });
-    }
-
-    function PermissionAction(e, action) {
-        userElement = $(this).closest(".user");
-        jsonData = {
-            "tournamentId": $("#Tournament").data("id"),
-            "targetUser": userElement.data("user"),
-            "action": action ? action : $(this).attr("class")
-        }
-
-        if (jsonData.targetUser == -1) {
-            userElement.remove();
-        }
-        else {
-            $.ajax({
-                "url": "/Ajax/Tournament/PermissionChange",
-                "type": "POST",
-                "data": jsonData,
-                "dataType": "json",
-                "beforeSend": function () {
-                    // Prevent buttons from being clicked again
-                    userElement.find(".actions").find("button").attr("disabled", true);
-                    userElement.find(".promote").off("click");
-                    userElement.find(".demote").off("click");
-                },
-                "success": function (json) {
-                    if (json.status) {
-                        if (json.data.permissions.Permission == 0) {
-                            tournamentChanged = true;
-                            $(".TournamentInfo .bracketData").each(function (i, e) {
-                                $(e).find(".user[data-user='" + json.data.targetUser + "']").remove();
-                            });
-                        }
-                        else {
-                            var actions = userElement.find(".actions");
-                            actions.html(PermissionButtons(json.data.permissions));
-
-                            userElement.find(".permission").text(permissionDictionary[json.data.permissions.Permission]);
-                            userElement.find(".checkedIn").removeClass("red green").addClass(json.data.isCheckedIn ? "green" : "red");
-                        }
-                    }
-
-                    console.log(json);
-                },
-                "error": function (json) {
-                    alert(json.message);
-                },
-                "complete": function () {
-                    userElement.find(".promote, .demote").on("click", PermissionAction);
-                    userElement.find(".actions").find("button").attr("disabled", false);
-                }
-            });
-        }
-    }
-
-    function PermissionButtons(actions) {
-        html = "";
-        demoteButton = " <button class='demote'>Demote</button> ";
-        promoteButton = " <button class='promote'>Promote</button> ";
-        removeButton = " <button class='remove'>Remove</button> ";
-
-        if (actions.Promote) html += promoteButton;
-        if (actions.Demote) html += demoteButton;
-        if (actions.Remove) html += removeButton;
-
-        return html;
-    }
-
-    function AddUserToTournament(e) {
-        $this = e ? $(e) : $(this);
-        var row = $this.closest(".userAddData");
-
-        if (row.find(".name input").val().length < 1) {
-            return false;
-        }
-
-        var jsonData = {
-            "tournamentId": $("#Tournament").data("id"),
-            "name": row.find(".name input").val(),
-            "bracketId": row.closest(".bracketData").data("id")
-        };
-
-        $.ajax({
-            "url": "/Ajax/Tournament/Register",
-            "type": "post",
-            "data": jsonData,
-            "dataType": "json",
-            "beforeSend": function () {
-                row.find(".addUserButton").attr("disabled", true);
-                row.find(".name input").attr("disabled", true);
-            },
-            "success": function (json) {
-                if (json.status) {
-                    html = "<ul class='data user form' data-user='" + json.data.user.TournamentUserId + "' data-columns='5'> ";
-                    html += "<li class='column name'>" + json.data.user.Name + "</li> ";
-                    html += "<li class='column permission'>" + permissionDictionary[json.data.user.Permission] + "</li> ";
-                    html += "<li class='column seed'><input type='text' name='seedVal' maxlength='2' value='"+json.data.user.Seed+"'/></li>";
-                    html += "<li class='column'><span class='icon icon-checkmark red'></span></li> ";
-                    html += "<li class='column actions'>"+PermissionButtons(json.data.actions)+"</li> ";
-                    html += "</ul> ";
-
-                    $(".TournamentInfo .bracketData:first .bracketPlayers").append(html);
-
-                    //row.closest(".infoSection").find(".user:last").after(html);
-                    row.find(".name input").val('');
-                    
-                    $(".TournamentInfo .user .actions .remove").off("click");
-                    $(".TournamentInfo .user .actions .remove").on("click", PermissionAction);
-                }
-
-                tournamentChanged = true;
-                console.log(json.message);
-            },
-            "error": function (json) {
-                console.log(json);
-            },
-            "complete": function () {
-                row.find(".addUserButton").attr("disabled", false);
-                row.find(".name input").attr("disabled", false);
-                row.find(".name input").focus();
-            }
-        });
     }
 
     function RandomizeSeeds() {
@@ -347,12 +177,6 @@
 
     (function ($) {
         if ($(".TournamentInfo").length == 1) {
-            // Load everyone's permission level
-            var permission = $(".TournamentInfo .playerInfo .user .permission");
-            $.each(permission, function (i, e) {
-                $(e).text(permissionDictionary[$(e).text()]);
-            });
-
             if ($(".TournamentInfo .bracketNum").length > 0) {
                 // Always auto select the first bracket
                 $(".TournamentInfo .bracketNum")[0].click();

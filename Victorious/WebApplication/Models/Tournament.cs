@@ -711,7 +711,30 @@ namespace WebApplication.Models
 				return false;
 			}
 		}
-		#endregion
+        #endregion
+        
+        public static String GetPermissionsName(TournamentUserModel user)
+        {
+            String name = "";
+
+            switch ((Permission)user.PermissionLevel)
+            {
+                case Permission.NONE:
+                    name = "None";
+                    break;
+                case Permission.TOURNAMENT_STANDARD:
+                    name = "Participant";
+                    break;
+                case Permission.TOURNAMENT_ADMINISTRATOR:
+                    name = "Admin";
+                    break;
+                case Permission.TOURNAMENT_CREATOR:
+                    name = "Creator";
+                    break;
+            }
+
+            return name;
+        }
 
 		public Dictionary<String, int> PermissionAction(int accountId, int tournamentUserId, String action)
 		{
@@ -821,8 +844,7 @@ namespace WebApplication.Models
 		public bool isAccountCheckedIn(int accountId)
 		{
 			TournamentUserModel userModel = Model.TournamentUsers.SingleOrDefault(x => x.AccountID == accountId);
-			bool checkedIn = userModel.IsCheckedIn != null ? (bool)userModel.IsCheckedIn : false;
-			return checkedIn;
+			return userModel.IsCheckedIn;
 		}
 
 		public bool isUserCheckedIn(int tournamentUserId)
@@ -832,8 +854,8 @@ namespace WebApplication.Models
 
 			if (userModel != null)
 			{
-				checkedIn = userModel.IsCheckedIn != null ? (bool)userModel.IsCheckedIn : false;
-			}
+                checkedIn = userModel.IsCheckedIn;
+            }
 			return checkedIn;
 		}
 
@@ -972,7 +994,8 @@ namespace WebApplication.Models
 			viewModel.BracketTypes = services.Type.GetAllBracketTypes().Where(x => x.IsActive == true).ToList();
 			viewModel.GameTypes = services.Type.GetAllGameTypes();
 			viewModel.PlatformTypes = services.Type.GetAllPlatforms();
-			viewModel.PublicViewing = true;
+            viewModel.Participants = services.Tournament.GetAllUsersInTournament(Model.TournamentID);
+            viewModel.PublicViewing = true;
 			viewModel.BracketData = new List<BracketViewModel>();
 			viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
 			viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
@@ -996,6 +1019,7 @@ namespace WebApplication.Models
 			viewModel.BracketTypes = services.Type.GetAllBracketTypes().Where(x => x.IsActive == true).ToList();
 			viewModel.GameTypes = services.Type.GetAllGameTypes();
 			viewModel.PlatformTypes = services.Type.GetAllPlatforms();
+            viewModel.Participants = services.Tournament.GetAllUsersInTournament(Model.TournamentID);
 			viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
 			viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
 			viewModel.NumberPlayersAdvance = Enumerable.Range(4, 20).ToList();
@@ -1030,6 +1054,15 @@ namespace WebApplication.Models
 			Model.CheckInBegins = viewModel.CheckinStartDate + viewModel.CheckinStartTime.TimeOfDay;
 			Model.CheckInEnds = viewModel.CheckinEndDate + viewModel.CheckinEndTime.TimeOfDay;
 
+            if (viewModel.Participants != null)
+            {
+                foreach (TournamentUserModel userForm in viewModel.Participants)
+                {
+                    TournamentUserModel user = Model.TournamentUsers.Single(x => x.TournamentUserID == userForm.TournamentUserID);
+                    user.IsCheckedIn = userForm.IsCheckedIn;
+                }
+            }
+
 			if (viewModel.BracketData != null)
 			{
 				if (viewModel.BracketData.Count <= maxBrackets)
@@ -1058,6 +1091,7 @@ namespace WebApplication.Models
 			viewModel.PlatformTypeID = Model.PlatformID;
 			viewModel.PublicViewing = Model.PublicViewing;
 			viewModel.PublicRegistration = Model.PublicRegistration;
+            viewModel.Participants = Model.TournamentUsers.ToList();
 
 			// Dates
 			viewModel.RegistrationStartDate = Model.RegistrationStartDate;

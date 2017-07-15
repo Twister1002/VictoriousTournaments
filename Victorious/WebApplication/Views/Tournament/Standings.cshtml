@@ -1,7 +1,6 @@
 ﻿@model WebApplication.Models.Tournament
 
 @{
-    bool isFirstBracket = true;
     var brackets = Model.GetBrackets();
 }
 
@@ -43,66 +42,26 @@
                             {
                                 var person = Model.GetUserModel(player.TournamentUserID);
 
-                                Dictionary<String, int> data = Model.PermissionAction(ViewBag.UserId, person.TournamentUserID, "default");
-
-                                <ul class="data user form" data-user="@person.TournamentUserID" data-columns="@(ViewBag.isAdministrator ? 5 : 2)">
+                                <ul class="data user form" data-user="@person.TournamentUserID" data-columns="2">
                                     <li class="column name">@person.Name</li>
-                                    <li class="column permission">@person.PermissionLevel</li>
                                     @if (ViewBag.isAdministrator)
                                     {
-                                        String colorCode = Model.isUserCheckedIn(person.TournamentUserID) ? "green" : "red";
-                                        if (Model.IsUserCreator(person.TournamentUserID))
-                                        {
-                                            colorCode = "";
-                                        }
                                         <li class="column seed">
                                             @if (!Model.IsUserAdministrator(person.TournamentUserID))
                                             {
                                                 <input type="text" name="seedVal" maxlength="2" value="@Model.GetUserSeed(bracket.Id, person.TournamentUserID)" />
                                             }
                                         </li>
-                                        <li class="column">
-                                            <span class="icon icon-checkmark @colorCode checkIn"></span>
-                                        </li>
-                                        <li class="column actions">
-                                            @if (!Model.Model.InProgress)
-                                            {
-                                                if (data["Promote"] == 1)
-                                                {
-                                                    <button class="promote">Promote</button>
-                                                }
-                                                if (data["Demote"] == 1)
-                                                {
-                                                    <button class="demote">Demote</button>
-                                                }
-                                                if (data["Remove"] == 1)
-                                                {
-                                                    <button class="demote">Remove</button>
-                                                }
-                                            }
+                                    }
+                                    else
+                                    {
+                                        <li class="column seed">
+                                            @Model.GetUserSeed(bracket.Id, person.TournamentUserID)
                                         </li>
                                     }
                                 </ul>
                             }
                         </div>
-
-                        @if (!Model.Model.InProgress && ViewBag.isAdministrator && isFirstBracket)
-                        {
-                            <div class="adminSettings">
-                                <div class="options">
-                                    <button class="randomSeeds">Randomize Seeds</button>
-                                    <button class="updateSeeds">Update Seeds</button>
-                                </div>
-                                <div class="userAddData">
-                                    <ul class="form" data-columns="3">
-                                        <li class="column name"><input type="text" name="name" maxlength="50" placeholder="Name/Email" /></li>
-                                        <li class="column">Not Saved</li>
-                                        <li class="column"><button class="addUserButton">Add User</button></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        }
-
                     </li>
 
 
@@ -157,8 +116,6 @@
                     }
                 </ul>
             </div>
-
-            isFirstBracket = false;
         }
     </div>
 </div>
