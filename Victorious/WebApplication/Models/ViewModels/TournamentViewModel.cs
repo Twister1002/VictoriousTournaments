@@ -88,6 +88,7 @@ namespace WebApplication.Models.ViewModels
 
         // UserInTournament
         public List<TournamentUserModel> Participants { get; set; }
+        public Dictionary<int, String> Permissions { get; set; }
 
 
         // Bracket stuff

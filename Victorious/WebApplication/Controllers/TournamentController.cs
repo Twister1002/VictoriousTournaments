@@ -53,6 +53,7 @@ namespace WebApplication.Controllers
             else
             {
                 Models.Tournament tournament = new Models.Tournament(service, -1);
+                tournament.SetupViewModel(account);
                 ViewBag.Create = true;
                 ViewBag.CanEdit = tournament.CanEdit();
                 ViewBag.InProgress = tournament.Model.InProgress;
@@ -72,21 +73,22 @@ namespace WebApplication.Controllers
         {
             if (account.IsLoggedIn())
             {
-                Models.Tournament tourny = new Models.Tournament(service, tournamentId);
-                if (tourny.IsAdmin(account.Model.AccountID))
+                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
+                if (tournament.IsAdmin(account.Model.AccountID))
                 {
                     ViewBag.Create = false;
-                    ViewBag.CanEdit = tourny.CanEdit();
-                    ViewBag.InProgress = tourny.Model.InProgress;
-                    tourny.SetFields();
-                    return View("Create", tourny.viewModel);
+                    ViewBag.CanEdit = tournament.CanEdit();
+                    ViewBag.InProgress = tournament.Model.InProgress;
+                    tournament.SetupViewModel(account);
+                    tournament.SetFields();
+                    return View("Create", tournament.viewModel);
                 }
                 else
                 {
                     Session["Message"] = "You do not have permission to do that.";
                     Session["Message.Class"] = ViewError.ERROR;
 
-                    return RedirectToAction("Tournament", "Tournament", new { guid = tourny.Model.TournamentID });
+                    return RedirectToAction("Tournament", "Tournament", new { guid = tournament.Model.TournamentID });
                 }
             }
             else

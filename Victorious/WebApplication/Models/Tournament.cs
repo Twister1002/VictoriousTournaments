@@ -580,19 +580,27 @@ namespace WebApplication.Models
 
 			return services.Save();
 		}
-		#endregion
+        #endregion
 
-		#region RemoveUsers
-		/// <summary>
-		/// Removes a user by the user's accuontID
-		/// </summary>
-		/// <param name="accountId">ID of user's accuont</param>
-		/// <returns>True if saved; false is not</returns>
-		public bool RemoveUser(int accountId)
+        #region RemoveUsers
+        public bool RemoveUser(TournamentUserModel user)
+        {
+            RemoveUserFromBracket(user);
+            services.Tournament.DeleteTournamentUser(user.TournamentUserID);
+            return services.Save();
+        }
+
+        /// <summary>
+        /// Removes a user by the user's accuontID
+        /// </summary>
+        /// <param name="accountId">ID of user's accuont</param>
+        /// <returns>True if saved; false is not</returns>
+        public bool RemoveUser(int accountId)
 		{
 			TournamentUserModel user = Model.TournamentUsers.First(x => x.AccountID == accountId);
 
-			services.Tournament.DeleteTournamentUser(user.TournamentUserID);
+            RemoveUserFromBracket(user);
+            services.Tournament.DeleteTournamentUser(user.TournamentUserID);
 			return services.Save();
 		}
 
@@ -605,9 +613,27 @@ namespace WebApplication.Models
 		{
 			TournamentUserModel user = Model.TournamentUsers.First(x => x.Name == username);
 
+            RemoveUserFromBracket(user);
 			services.Tournament.DeleteTournamentUser(user.TournamentUserID);
 			return services.Save();
 		}
+
+        public bool RemoveUserFromBracket(TournamentUserModel user)
+        {
+            // Get the first bracket
+            BracketModel bracket = Model.Brackets.ElementAt(0);
+
+            bracket.TournamentUsersBrackets.Remove(
+                bracket.TournamentUsersBrackets.Single(x =>
+                    x.BracketID == bracket.BracketID &&
+                    x.TournamentID == Model.TournamentID &&
+                    x.TournamentUserID == user.TournamentUserID
+                )
+            );
+
+            return services.Save();
+        }
+
 		#endregion
 
 		#region Permissions
@@ -736,147 +762,86 @@ namespace WebApplication.Models
             return name;
         }
 
-		public Dictionary<String, int> PermissionAction(int accountId, int tournamentUserId, String action)
-		{
-			TournamentUserModel targetAccount = Model.TournamentUsers.First(x => x.TournamentUserID == tournamentUserId);
-			bool accountIsAdmin = IsAdmin(accountId);
-			bool accountIsCreator = IsCreator(accountId);
+        public static String GetPermissionsName(Permission permission)
+        {
+            String name = "";
 
-			Dictionary<String, int> permissionActions = new Dictionary<string, int>();
-			permissionActions.Add("Demote", 0);
-			permissionActions.Add("Promote", 0);
-			permissionActions.Add("Remove", 0);
-			permissionActions.Add("Permission", -1);
-
-			switch (action)
-			{
-				case "promote":
-					switch ((Permission)targetAccount.PermissionLevel)
-					{
-						case Permission.TOURNAMENT_STANDARD:
-							if (accountIsCreator)
-							{
-								targetAccount.PermissionLevel = (int)Permission.TOURNAMENT_ADMINISTRATOR;
-								services.Tournament.UpdateTournamentUser(targetAccount);
-								permissionActions["Demote"] = 1;
-							}
-							break;
-						case Permission.TOURNAMENT_ADMINISTRATOR:
-							break;
-						case Permission.TOURNAMENT_CREATOR:
-							break;
-					}
-					break;
-				case "remove":
-				case "demote":
-					switch ((Permission)targetAccount.PermissionLevel)
-					{
-						case Permission.TOURNAMENT_STANDARD:
-							if (accountIsAdmin)
-							{
-								targetAccount.PermissionLevel = (int)Permission.NONE;
-								services.Tournament.DeleteTournamentUser(targetAccount.TournamentUserID);
-							}
-							break;
-						case Permission.TOURNAMENT_ADMINISTRATOR:
-							if (accountIsCreator)
-							{
-								targetAccount.PermissionLevel = (int)Permission.TOURNAMENT_STANDARD;
-								services.Tournament.UpdateTournamentUser(targetAccount);
-								permissionActions["Remove"] = 1;
-								permissionActions["Promote"] = 1;
-							}
-							break;
-						case Permission.TOURNAMENT_CREATOR:
-							break;
-					}
-					break;
-				default:
-					switch ((Permission)targetAccount.PermissionLevel)
-					{
-						case Permission.TOURNAMENT_STANDARD:
-							if (targetAccount.AccountID != null)
-							{
-								if (accountIsCreator)
-								{
-									permissionActions["Remove"] = 1;
-									permissionActions["Promote"] = 1;
-								}
-								else if (accountIsAdmin)
-								{
-									permissionActions["Remove"] = 1;
-								}
-							}
-							else
-							{
-								if (accountIsAdmin || accountIsCreator)
-								{
-									permissionActions["Remove"] = 1;
-								}
-							}
-							break;
-						case Permission.TOURNAMENT_ADMINISTRATOR:
-							if (accountIsCreator)
-							{
-								permissionActions["Demote"] = 1;
-							}
-							break;
-						case Permission.TOURNAMENT_CREATOR:
-							break;
-					}
-					break;
-			}
-
-			permissionActions["Permission"] = targetAccount.PermissionLevel != null ? (int)targetAccount.PermissionLevel : -1;
-
-			if (services.Save())
-			{
-				return permissionActions;
-			}
-			else
-			{
-				return null;
-			}
-		}
-		#endregion
-
-		#region Check-ins
-		public bool isAccountCheckedIn(int accountId)
-		{
-			TournamentUserModel userModel = Model.TournamentUsers.SingleOrDefault(x => x.AccountID == accountId);
-			return userModel.IsCheckedIn;
-		}
-
-		public bool isUserCheckedIn(int tournamentUserId)
-		{
-			bool checkedIn = false;
-			TournamentUserModel userModel = Model.TournamentUsers.SingleOrDefault(x => x.TournamentUserID == tournamentUserId);
-
-			if (userModel != null)
-			{
-                checkedIn = userModel.IsCheckedIn;
+            switch (permission)
+            {
+                case Permission.NONE:
+                    name = "None";
+                    break;
+                case Permission.TOURNAMENT_STANDARD:
+                    name = "Participant";
+                    break;
+                case Permission.TOURNAMENT_ADMINISTRATOR:
+                    name = "Admin";
+                    break;
+                case Permission.TOURNAMENT_CREATOR:
+                    name = "Creator";
+                    break;
             }
-			return checkedIn;
-		}
 
-		public bool CheckAccountIn(int accountId)
+            return name;
+        }
+
+        public Dictionary<int, bool> GetPermissionActionInts(int authorityID)
 		{
-			TournamentUserModel userModel = Model.TournamentUsers.SingleOrDefault(x => x.AccountID == accountId);
+            Dictionary<int, bool> permissionActions = new Dictionary<int, bool>();
+            permissionActions.Add((int)Permission.TOURNAMENT_ADMINISTRATOR, false);
+            permissionActions.Add((int)Permission.TOURNAMENT_STANDARD, false);
+            permissionActions.Add((int)Permission.NONE, false);
+            
+            switch (GetAccountPermission(authorityID))
+            {
+                case Permission.TOURNAMENT_CREATOR:
+                    permissionActions[(int)Permission.TOURNAMENT_ADMINISTRATOR] = true;
+                    permissionActions[(int)Permission.TOURNAMENT_STANDARD] = true;
+                    permissionActions[(int)Permission.NONE] = true;
+                    break;
+                case Permission.TOURNAMENT_ADMINISTRATOR:
+                    permissionActions[(int)Permission.TOURNAMENT_STANDARD] = true;
+                    permissionActions[(int)Permission.NONE] = true;
+                    break;
+            }
 
-			services.Tournament.CheckUserIn(userModel.TournamentUserID);
-			return services.Save();
+            return permissionActions;
 		}
 
-		public bool CheckUserIn(int tournamentUserId)
-		{
-			TournamentUserModel userModel = Model.TournamentUsers.SingleOrDefault(x => x.TournamentUserID == tournamentUserId);
+        public Dictionary<int, String> GetPermissionActionStrings(int authorityID)
+        {
+            Dictionary<int, String> permissionActions = new Dictionary<int, String>();
 
-			services.Tournament.CheckUserIn(userModel.TournamentUserID);
-			return services.Save();
-		}
-		#endregion
+            switch (GetAccountPermission(authorityID))
+            {
+                case Permission.TOURNAMENT_CREATOR:
+                    permissionActions.Add((int)Permission.TOURNAMENT_ADMINISTRATOR, "Admin");
+                    permissionActions.Add((int)Permission.TOURNAMENT_STANDARD, "Participant");
+                    permissionActions.Add((int)Permission.NONE, "None");
+                    break;
+                case Permission.TOURNAMENT_ADMINISTRATOR:
+                    permissionActions.Add((int)Permission.TOURNAMENT_STANDARD, "Participant");
+                    permissionActions.Add((int)Permission.NONE, "None");
+                    break;
+            }
+
+            return permissionActions;
+        }
+        #endregion
 
 		#region Helper
+
+        /// <summary>
+        /// Checks if the user has previously been checked in to the tournament
+        /// </summary>
+        /// <param name="account">The account ID</param>
+        /// <returns></returns>
+        public bool IsAccountCheckedIn(int accountId)
+        {
+            TournamentUserModel user = Model.TournamentUsers.Single(x => x.AccountID == accountId);
+            return user.IsCheckedIn;
+        }
+
 		/// <summary>
 		/// Returns a list of users that are registered to this tournament.
 		/// </summary>
@@ -963,6 +928,9 @@ namespace WebApplication.Models
 			}
 		}
 
+        /// <summary>
+        /// Fixes the objects in the match level 
+        /// </summary>
 		private void MatchObjectFix()
 		{
 			foreach (BracketModel bracket in Model.Brackets)
@@ -996,7 +964,8 @@ namespace WebApplication.Models
 			viewModel.PlatformTypes = services.Type.GetAllPlatforms();
             viewModel.Participants = services.Tournament.GetAllUsersInTournament(Model.TournamentID);
             viewModel.PublicViewing = true;
-			viewModel.BracketData = new List<BracketViewModel>();
+            viewModel.Permissions = new Dictionary<int, String>();
+            viewModel.BracketData = new List<BracketViewModel>();
 			viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
 			viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
 			viewModel.NumberPlayersAdvance = Enumerable.Range(4, 20).ToList();
@@ -1009,17 +978,21 @@ namespace WebApplication.Models
 			viewModel.CheckinEndDate = DateTime.Now.AddDays(2);
 		}
 
-		/// <summary>
-		/// Helper method to set the default data for a view model passed in.
-		/// </summary>
-		/// <param name="viewModel">The model to set default data</param>
-		public void SetupViewModel(TournamentViewModel viewModel)
+        public void SetupViewModel(Account account)
+        {
+            viewModel.Permissions = GetPermissionActionStrings(account.Model.AccountID);
+        }
+
+        /// <summary>
+        /// Helper method to set the default data for a view model passed in.
+        /// </summary>
+        /// <param name="viewModel">The model to set default data</param>
+        public void SetupViewModel(TournamentViewModel viewModel)
 		{
 			// Set the field's original data
 			viewModel.BracketTypes = services.Type.GetAllBracketTypes().Where(x => x.IsActive == true).ToList();
 			viewModel.GameTypes = services.Type.GetAllGameTypes();
 			viewModel.PlatformTypes = services.Type.GetAllPlatforms();
-            viewModel.Participants = services.Tournament.GetAllUsersInTournament(Model.TournamentID);
 			viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
 			viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
 			viewModel.NumberPlayersAdvance = Enumerable.Range(4, 20).ToList();
@@ -1054,12 +1027,26 @@ namespace WebApplication.Models
 			Model.CheckInBegins = viewModel.CheckinStartDate + viewModel.CheckinStartTime.TimeOfDay;
 			Model.CheckInEnds = viewModel.CheckinEndDate + viewModel.CheckinEndTime.TimeOfDay;
 
+            // Update and change users in this tournament
             if (viewModel.Participants != null)
             {
                 foreach (TournamentUserModel userForm in viewModel.Participants)
                 {
                     TournamentUserModel user = Model.TournamentUsers.Single(x => x.TournamentUserID == userForm.TournamentUserID);
                     user.IsCheckedIn = userForm.IsCheckedIn;
+
+                    if (userForm.PermissionLevel != null)
+                    {
+                        if (userForm.PermissionLevel == (int)Permission.NONE)
+                        {
+                            // Remove from the bracket and from the roster if there is no accountid
+                            RemoveUser(user);
+                        }
+                        else
+                        {
+                            user.PermissionLevel = userForm.PermissionLevel;
+                        }
+                    }
                 }
             }
 

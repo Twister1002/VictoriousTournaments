@@ -27,15 +27,9 @@
                     </li>
 
                     <li class="list-table-body infoSection playerInfo">
-                        <ul class="header" data-columns="@(Model.IsAdmin(ViewBag.UserId) ? 5 : 2)">
+                        <ul class="header" data-columns="2">
                             <li class="column">Name</li>
-                            <li class="column">Status</li>
-                            @if (ViewBag.isAdministrator)
-                            {
-                                <li class="column">Seed</li>
-                                <li class="column">Present</li>
-                                <li class="column">Actions</li>
-                            }
+                            <li class="column">Seed</li>
                         </ul>
                         <div class="bracketPlayers">
                             @foreach (var player in bracket.GetPlayers())
@@ -61,7 +55,16 @@
                                     }
                                 </ul>
                             }
-                        </div>
+
+                            @if (!Model.Model.InProgress && ViewBag.isAdministrator)
+                            {
+                                <div class="adminSettings">
+                                    <div class="options">
+                                        <button class="randomSeeds">Randomize Seeds</button>
+                                        <button class="updateSeeds">Update Seeds</button>
+                                    </div>
+                                </div>
+                            }
                     </li>
 
 

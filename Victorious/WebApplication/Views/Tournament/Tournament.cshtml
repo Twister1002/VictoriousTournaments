@@ -29,7 +29,7 @@
             }
             @if (Model.Model.InProgress)
             {
-                if (Model.IsParticipent(ViewBag.UserId) && ViewBag.UserId != -1 && !Model.isAccountCheckedIn(ViewBag.UserId))
+                if (Model.IsParticipent(ViewBag.UserId) && ViewBag.UserId != -1 && !Model.IsAccountCheckedIn(ViewBag.UserId))
                 {
                     <button class="checkIn">CheckIn</button>
                 }

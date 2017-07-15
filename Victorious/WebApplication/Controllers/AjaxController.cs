@@ -416,6 +416,11 @@ namespace WebApplication.Controllers
         #endregion
 
         #region Tournament
+        /// <summary>
+        /// Searches based on the information provided.
+        /// </summary>
+        /// <param name="searchBy">Seralized Json data to parse and search by</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Ajax/Tournament/Search")]
         public JsonResult AjaxSearch(String searchBy)
@@ -444,81 +449,6 @@ namespace WebApplication.Controllers
                 };
             }
 
-            return BundleJson();
-        }
-
-        [HttpPost]
-        [Route("Ajax/Tournament/Register")]
-        public JsonResult NoAccountRegister(int tournamentId, String name, int bracketId)
-        {
-            if (account.IsLoggedIn())
-            {
-                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
-                
-                // Is an Administrator registering a user?
-                if (tournament.IsAdmin(account.Model.AccountID))
-                {
-                    TournamentUserModel model = tournament.AddUser(name);
-                    data = new
-                    {
-                        user = new
-                        {
-                            Name = model.Name,
-                            Permission = model.PermissionLevel,
-                            TournamentUserId = model.TournamentUserID,
-                            Seed = tournament.GetUserSeed(bracketId, model.TournamentUserID)
-                        },
-                        actions = tournament.PermissionAction(account.Model.AccountID, model.TournamentUserID, "default")
-                    };
-                    if (data != null) status = true;
-                    message = "User was " + (status ? "" : "not") + " added successfully";
-                }
-                else
-                {
-                    message = "You are not allowed to register a user.";
-                }
-            }
-            else
-            {
-                message = "You need to login first.";
-            }
-
-            return BundleJson();
-        }
-
-        [HttpPost]
-        [Route("Ajax/Tournament/CheckIn")]
-        public JsonResult CheckIn(int tournamentId, int tournamentUserId = -1)
-        {
-            Models.Tournament tournament = new Models.Tournament(service, tournamentId);
-            
-
-            if (tournament.IsAdmin(account.Model.AccountID))
-            {
-                // Check if a userId was provided first before checking an account
-                if (tournamentUserId != -1)
-                {
-                    // An admin is checking in a user
-                    status = tournament.CheckUserIn(tournamentUserId);
-                    message = "User is " + (status ? "" : "not") + " checked in";
-                }
-                else if (account.IsLoggedIn())
-                {
-                    // A user with an account is checking in.
-                    status = tournament.CheckAccountIn(account.Model.AccountID);
-                    message = "Account is " + (status ? "" : "not") + " checked in";
-                }
-            }
-            else
-            {
-                message = "You can not do this.";
-            }
-
-            data = new
-            {
-                isCheckedIn = tournament.isUserCheckedIn(tournamentUserId),
-                targetUser = tournamentUserId
-            };
             return BundleJson();
         }
 
@@ -628,47 +558,6 @@ namespace WebApplication.Controllers
         }
 
         /// <summary>
-        /// This will change the permissions of a user in the tournament.
-        /// </summary>
-        /// <param name="tournamentId">The ID of the tournament</param>
-        /// <param name="targetUser">The ID of the user to change permissions</param>
-        /// <param name="action">The action requested to perform</param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("Ajax/Tournament/PermissionChange")]
-        public JsonResult PermissionChange(int tournamentId, int targetUser, String action)
-        {
-            if (account.IsLoggedIn())
-            {
-                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
-
-                Dictionary<String, int> permissionChange = tournament.PermissionAction(account.Model.AccountID, targetUser, action);
-                if (permissionChange == null)
-                {
-                    status = false;
-                    message = "An unexpected error occured";
-                }
-                else
-                {
-                    data = new
-                    {
-                        permissions = permissionChange,
-                        isCheckedIn = tournament.isUserCheckedIn(targetUser),
-                        targetUser = targetUser
-                    };
-                    message = "Permissions are updated";
-                    status = true;
-                }
-            }
-            else
-            {
-                message = "You must be logged in to do this action";
-            }
-
-            return BundleJson();
-        }
-
-        /// <summary>
         /// This will seed the users in the tournament 
         /// </summary>
         /// <param name="tournamentId">The ID of the tournament</param>
@@ -704,6 +593,12 @@ namespace WebApplication.Controllers
         #endregion
 
         #region Helpers
+        /// <summary>
+        /// Creates an object of the match data to bundle up.
+        /// </summary>
+        /// <param name="match">The Match object to use</param>
+        /// <param name="includeGames">Are the games necessarry to know?</param>
+        /// <returns>An bundled object of data about the match</returns>
         protected object JsonMatchResponse(Models.Match match, bool includeGames)
         {
             List<object> gameData = new List<object>();
@@ -731,6 +626,11 @@ namespace WebApplication.Controllers
             };
         }
 
+        /// <summary>
+        /// Bundles all the game data together
+        /// </summary>
+        /// <param name="game">The specific game to bundle</param>
+        /// <returns>An object of the game</returns>
         protected object JsonGameResponse(IGame game)
         {
             return new
