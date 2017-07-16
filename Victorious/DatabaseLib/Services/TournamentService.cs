@@ -129,16 +129,19 @@ namespace DatabaseLib.Services
 
                         sqlparams.Add(new SqlParameter("@" + data.Key, val));
                     }
-                    else if (data.Key == "Title")
-                    {
-                        query += data.Key + " LIKE @" + data.Key;
-                        sqlparams.Add(new SqlParameter("@" + data.Key, "%" + val + "%"));
-                    }
                     else
                     {
-                        query += data.Key + " = @" + data.Key;
-                        sqlparams.Add(new SqlParameter("@" + data.Key, val));
-
+                        int intVal = 0;
+                        if (int.TryParse(val, out intVal))
+                        {
+                            query += data.Key + " = @" + data.Key;
+                            sqlparams.Add(new SqlParameter("@" + data.Key, intVal));
+                        }
+                        else
+                        {
+                            query += data.Key + " LIKE @" + data.Key;
+                            sqlparams.Add(new SqlParameter("@" + data.Key, "%" + val + "%"));
+                        }
                     }
                 }
                 query += " ORDER BY TournamentStartDate ASC";
