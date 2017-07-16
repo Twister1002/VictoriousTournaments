@@ -7,7 +7,7 @@
       <Diagram DiagramId="140c09bfe994490da52abb1b6f930a88" Name="Diagram1" ZoomLevel="72" DisplayType="true" ShowGrid="false">
         <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketModel" PointX="10" PointY="7.875" Width="2.375" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketTypeModel" PointX="13.5" PointY="10.5" Width="2.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUserModel" PointX="13.375" PointY="3.75" Width="2.375" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUserModel" PointX="13.375" PointY="3.75" Width="2.375" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUsersBracketModel" PointX="13.5" PointY="7.875" Width="2.375" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments" ></AssociationConnector>
         <AssociationConnector Association="VictoriousDatabaseModel.FK_UserBrackets_TournamentUsers" />
