@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -10,6 +11,7 @@ namespace DatabaseLib
     public interface IRepository <TEntity> : IDisposable where TEntity : class
     {
         IQueryable<TEntity> GetAll();
+        List<TEntity> Get(String query, List<SqlParameter> sqlParams);
         IQueryable<TEntity> GetWhere(Expression<Func<TEntity, bool>> predicate);
         TEntity GetSingle(Expression<Func<TEntity, bool>> predicate);
         TEntity Get(int id);
