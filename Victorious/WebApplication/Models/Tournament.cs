@@ -367,80 +367,6 @@ namespace WebApplication.Models
 			return services.Save();
 		}
 
-		public void UpdateBrackets()
-		{
-			int updates = Math.Max(viewModel.BracketData.Count, Model.Brackets.Count);
-			List<BracketModel> updatedBrackets = new List<BracketModel>();
-
-			for (int i = 0; i < updates; i++)
-			{
-				BracketViewModel newBracket = viewModel.BracketData.ElementAtOrDefault(i);
-				BracketModel bracketModel = Model.Brackets.ElementAtOrDefault(i);
-				//List<TournamentUsersBracketModel> users = new List<TournamentUsersBracketModel>();
-
-				if (newBracket != null)
-				{
-					if (bracketModel != null)
-					{
-						// We just need to update the data
-						bracketModel.BracketTypeID = newBracket.BracketTypeID;
-						bracketModel.MaxRounds = newBracket.NumberOfRounds;
-						bracketModel.NumberOfGroups = newBracket.NumberOfGroups;
-						bracketModel.NumberPlayersAdvance = newBracket.NumberPlayersAdvance;
-
-						updatedBrackets.Add(bracketModel);
-						//services.Tournament.UpdateBracket(bracketModel);
-					}
-					else if (bracketModel == null)
-					{
-						// We need to add this bracket
-						bracketModel = new BracketModel()
-						{
-							MaxRounds = newBracket.NumberOfRounds,
-							BracketTypeID = newBracket.BracketTypeID,
-							NumberOfGroups = newBracket.NumberOfGroups,
-							NumberPlayersAdvance = newBracket.NumberPlayersAdvance,
-							Finalized = false,
-							TournamentID = Model.TournamentID
-						};
-
-						updatedBrackets.Add(bracketModel);
-						//services.Tournament.AddBracket(bracketModel);
-					}
-				}
-			}
-
-			Model.Brackets = updatedBrackets;
-		}
-
-		private void UpdatePlayers()
-		{
-			foreach (BracketModel bracketModel in Model.Brackets)
-			{
-				// Update the Players
-				if (bracketModel.TournamentUsersBrackets.Count != Model.TournamentUsers.Where(x => IsUserParticipant(x.TournamentUserID)).Count())
-				{
-					for (int j = 0; j < Model.TournamentUsers.Count; j++)
-					{
-						TournamentUserModel user = Model.TournamentUsers.ElementAt(j);
-						TournamentUsersBracketModel model = new TournamentUsersBracketModel()
-						{
-							TournamentUserID = user.TournamentUserID,
-							BracketID = bracketModel.BracketID,
-							TournamentID = Model.TournamentID,
-							Seed = j + 1
-						};
-						//bracketModel.TournamentUsersBrackets.Add(model);
-
-						if (!IsUserAdministrator(user.TournamentUserID))
-						{
-							services.Tournament.AddTournamentUsersBracket(model);
-						}
-					}
-				}
-			}
-		}
-
 		public void UpdateSeeds(Dictionary<String, int> players, int bracketId)
 		{
 			foreach (KeyValuePair<String, int> player in players)
@@ -507,34 +433,35 @@ namespace WebApplication.Models
 
         #region AddUsers
         /// <summary>
-        /// Adds a user to the tournament
+        /// Adds a user to the tournament roster
         /// </summary>
-        /// <param name="name">The name of the user</param>
-        /// <returns>The user model of the created user</returns>
-        public TournamentUserModel AddUser(String name)
-		{
-			bool isEmail = false;
-			TournamentUserModel userModel = null;
+        /// <param name="userModel">The model of the user to add</param>
+        /// <returns>True if saved; false if not.</returns>
+        public bool AddUser(TournamentUserModel userModel)
+        {
+            // Verify if the user exists or not.
+            if (!UserExistsInRoster(userModel.TournamentUserID))
+            {
+                userModel.TournamentID = Model.TournamentID;
+                services.Tournament.AddTournamentUser(userModel);
+                AddUserToTournament(userModel);
+            }
 
-			if (!isEmail)
-			{
-				userModel = new TournamentUserModel()
-				{
-					Name = name,
-					PermissionLevel = (int)Permission.TOURNAMENT_STANDARD,
-					TournamentID = Model.TournamentID
-				};
-			}
+            return services.Save();
+        }
 
-			return AddUserToTournament(userModel) ? userModel : null;
-		}
-
-		public bool AddUser(Account account, Permission permission)
+        /// <summary>
+        /// Adds a user to the tournament roster
+        /// </summary>
+        /// <param name="account">The Account object of the user joining</param>
+        /// <param name="permission">The permission level of the user</param>
+        /// <returns>True if the user was added and saved; false is not.</returns>
+        public bool AddUser(Account account, Permission permission)
 		{
 			// Verify this user doesn't exist in the tournament
-			if (!Model.TournamentUsers.Any(x => x.AccountID == account.Model.AccountID))
+			if (!AccountExistsInRoster(account.Model.AccountID))
 			{
-				TournamentUserModel tournamentUserModel = new TournamentUserModel()
+				TournamentUserModel userModel = new TournamentUserModel()
 				{
 					AccountID = account.Model.AccountID,
 					Name = account.Model.Username,
@@ -542,7 +469,10 @@ namespace WebApplication.Models
 					TournamentID = Model.TournamentID
 				};
 
-				return AddUserToTournament(tournamentUserModel);
+                // Add the user to the tournament
+                services.Tournament.AddTournamentUser(userModel);
+                AddUserToTournament(userModel);
+                return services.Save();
 			}
 			else
 			{
@@ -551,15 +481,12 @@ namespace WebApplication.Models
 		}
 
 		/// <summary>
-		/// Adds a user to the tournament of the first bracket.
+		/// Verifies and adds the user to the bracket if eligiable.
 		/// </summary>
 		/// <param name="model">The user model to be added to the tournament</param>
 		/// <returns>True if saved; false if save failed</returns>
-		private bool AddUserToTournament(TournamentUserModel model)
+		private void AddUserToTournament(TournamentUserModel model)
 		{
-			// Add the user to the tournament
-			services.Tournament.AddTournamentUser(model);
-
 			if (model.PermissionLevel == (int)Permission.TOURNAMENT_STANDARD)
 			{
 				// Add user to the beginning bracket
@@ -567,22 +494,32 @@ namespace WebApplication.Models
 				int? seedData = bracket.TournamentUsersBrackets.Max(x => x.Seed);
 				int seed = seedData != null ? seedData.Value + 1 : 1;
 
-				TournamentUsersBracketModel bracketUser = new TournamentUsersBracketModel()
-				{
-					TournamentID = Model.TournamentID,
-					TournamentUserID = model.TournamentUserID,
-					Seed = seed,
-					BracketID = bracket.BracketID
-				};
+                if (!bracket.TournamentUsersBrackets.Any(x=>
+                    x.BracketID == bracket.BracketID &&
+                    x.TournamentID == Model.TournamentID &&
+                    x.TournamentUserID == model.TournamentUserID
+                ))
+                {
+                    TournamentUsersBracketModel bracketUser = new TournamentUsersBracketModel()
+                    {
+                        TournamentID = Model.TournamentID,
+                        TournamentUserID = model.TournamentUserID,
+                        Seed = seed,
+                        BracketID = bracket.BracketID
+                    };
 
-				services.Tournament.AddTournamentUsersBracket(bracketUser);
+                    services.Tournament.AddTournamentUsersBracket(bracketUser);
+                }
 			}
-
-			return services.Save();
 		}
         #endregion
 
         #region RemoveUsers
+        /// <summary>
+        /// Removes a user by the model provided
+        /// </summary>
+        /// <param name="user">The model of the user</param>
+        /// <returns>True if saved; false if failed</returns>
         public bool RemoveUser(TournamentUserModel user)
         {
             RemoveUserFromBracket(user);
@@ -604,34 +541,21 @@ namespace WebApplication.Models
 			return services.Save();
 		}
 
-		/// <summary>
-		/// Removes a user by the name 
-		/// </summary>
-		/// <param name="username">The name of the user to remove</param>
-		/// <returns>True if saved; false is not</returns>
-		public bool RemoveUser(String username)
-		{
-			TournamentUserModel user = Model.TournamentUsers.First(x => x.Name == username);
-
-            RemoveUserFromBracket(user);
-			services.Tournament.DeleteTournamentUser(user.TournamentUserID);
-			return services.Save();
-		}
-
-        public bool RemoveUserFromBracket(TournamentUserModel user)
+        private void RemoveUserFromBracket(TournamentUserModel user)
         {
-            // Get the first bracket
             BracketModel bracket = Model.Brackets.ElementAt(0);
 
-            bracket.TournamentUsersBrackets.Remove(
-                bracket.TournamentUsersBrackets.Single(x =>
+            // Verify if the user exists in the bracket
+            if (bracket.TournamentUsersBrackets.Any(
+                    x =>
                     x.BracketID == bracket.BracketID &&
                     x.TournamentID == Model.TournamentID &&
                     x.TournamentUserID == user.TournamentUserID
                 )
-            );
-
-            return services.Save();
+            )
+            {
+                services.Tournament.DeleteTournamentUsersBracket(user.TournamentUserID, bracket.BracketID);
+            }
         }
 
 		#endregion
@@ -829,7 +753,26 @@ namespace WebApplication.Models
         }
         #endregion
 
-		#region Helper
+        #region Helper
+        /// <summary>
+        /// Checks if the userID exists in the tournament.
+        /// </summary>
+        /// <param name="tournamentUserId">the ID of the user</param>
+        /// <returns>True if exists; false if not.</returns>
+        public bool UserExistsInRoster(int tournamentUserId)
+        {
+            return Model.TournamentUsers.Any(x => x.TournamentUserID == tournamentUserId);
+        }
+
+        /// <summary>
+        /// Checks if the account exists in the tournament.
+        /// </summary>
+        /// <param name="accountId">the ID of the account</param>
+        /// <returns>True if exists; false if not.</returns>
+        public bool AccountExistsInRoster(int accountId)
+        {
+            return Model.TournamentUsers.Any(x => x.AccountID == accountId);
+        }
 
         /// <summary>
         /// Checks if the user has previously been checked in to the tournament
@@ -948,13 +891,59 @@ namespace WebApplication.Models
 				}
 			}
 		}
-		#endregion
 
-		#region ViewModel
-		/// <summary>
-		/// This will setup the base of the viewmodel without the Model's information
-		/// </summary>
-		public void SetupViewModel()
+        public void UpdateBrackets()
+        {
+            int updates = Math.Max(viewModel.BracketData.Count, Model.Brackets.Count);
+            List<BracketModel> updatedBrackets = new List<BracketModel>();
+
+            for (int i = 0; i < updates; i++)
+            {
+                BracketViewModel newBracket = viewModel.BracketData.ElementAtOrDefault(i);
+                BracketModel bracketModel = Model.Brackets.ElementAtOrDefault(i);
+                //List<TournamentUsersBracketModel> users = new List<TournamentUsersBracketModel>();
+
+                if (newBracket != null)
+                {
+                    if (bracketModel != null)
+                    {
+                        // We just need to update the data
+                        bracketModel.BracketTypeID = newBracket.BracketTypeID;
+                        bracketModel.MaxRounds = newBracket.NumberOfRounds;
+                        bracketModel.NumberOfGroups = newBracket.NumberOfGroups;
+                        bracketModel.NumberPlayersAdvance = newBracket.NumberPlayersAdvance;
+
+                        updatedBrackets.Add(bracketModel);
+                        //services.Tournament.UpdateBracket(bracketModel);
+                    }
+                    else if (bracketModel == null)
+                    {
+                        // We need to add this bracket
+                        bracketModel = new BracketModel()
+                        {
+                            MaxRounds = newBracket.NumberOfRounds,
+                            BracketTypeID = newBracket.BracketTypeID,
+                            NumberOfGroups = newBracket.NumberOfGroups,
+                            NumberPlayersAdvance = newBracket.NumberPlayersAdvance,
+                            Finalized = false,
+                            TournamentID = Model.TournamentID
+                        };
+
+                        updatedBrackets.Add(bracketModel);
+                        //services.Tournament.AddBracket(bracketModel);
+                    }
+                }
+            }
+
+            Model.Brackets = updatedBrackets;
+        }
+        #endregion
+
+        #region ViewModel
+        /// <summary>
+        /// This will setup the base of the viewmodel without the Model's information
+        /// </summary>
+        public void SetupViewModel()
 		{
 			viewModel = new TournamentViewModel();
 
@@ -1030,30 +1019,44 @@ namespace WebApplication.Models
             // Update and change users in this tournament
             if (viewModel.Participants != null)
             {
-                foreach (TournamentUserModel userForm in viewModel.Participants)
+                foreach (TournamentUserModel userVM in viewModel.Participants)
                 {
-                    TournamentUserModel user = Model.TournamentUsers.SingleOrDefault(x => x.TournamentUserID == userForm.TournamentUserID);
+                    TournamentUserModel user = Model.TournamentUsers.SingleOrDefault(x => x.TournamentUserID == userVM.TournamentUserID);
+
                     if (user != null)
                     {
-                        user.IsCheckedIn = userForm.IsCheckedIn;
-
-                        if (userForm.PermissionLevel != null)
+                        // Update the user's information
+                        user.IsCheckedIn = userVM.IsCheckedIn;
+                        if (userVM.PermissionLevel != null)
                         {
-                            if (userForm.PermissionLevel == (int)Permission.NONE)
-                            {
-                                // Remove from the bracket and from the roster if there is no accountid
+                            user.PermissionLevel = userVM.PermissionLevel;
+                        }
+
+                        // Check every user's new permission level
+                        switch (GetUserPermission(userVM.TournamentUserID))
+                        {
+                            case Permission.TOURNAMENT_CREATOR:
+                                // Verify this user is not in the bracket (Should only ever be 1)
+                                // A user should never be added at the level
+                                break;
+                            case Permission.TOURNAMENT_ADMINISTRATOR:
+                                // Verify this user is not in the bracket
+                                RemoveUserFromBracket(user);
+                                break;
+                            case Permission.TOURNAMENT_STANDARD:
+                                // Verify this user is in the bracket
+                                AddUserToTournament(user);
+                                break;
+                            case Permission.NONE:
+                                // Remove this user.
                                 RemoveUser(user);
-                            }
-                            else
-                            {
-                                user.PermissionLevel = userForm.PermissionLevel;
-                            }
+                                break;
                         }
                     }
                     else
                     {
-                        userForm.TournamentID = Model.TournamentID;
-                        AddUserToTournament(userForm);
+                        // Create the new user for this tournament roster
+                        AddUser(userVM);
                     }
                 }
             }
