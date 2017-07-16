@@ -11,7 +11,7 @@
             <ul class="options form" data-columns="6">
                 <li class="column">@Html.TextBoxFor(x => x.viewModel.Title, Model.viewModel.Title, new { @class = "field title", placeholder = "Search By Title" })</li>
                 <li class="column">@Html.DropDownListFor(x => x.viewModel.GameTypeID, new SelectList(Model.viewModel.GameTypes, "GameTypeID", "Title"), "---Game---", new { @class = "field gameType" })</li>
-                <li class="column">@Html.DropDownListFor(t => t.viewModel.PlatformTypeID, new SelectList(Model.viewModel.PlatformTypes, "PlatformID", "PlatformName"), "---Platform---", new { @class = "field platformType" })</li>
+                <li class="column">@Html.DropDownListFor(t => t.viewModel.PlatformID, new SelectList(Model.viewModel.PlatformTypes, "PlatformID", "PlatformName"), "---Platform---", new { @class = "field platformType" })</li>
                 <li class="column"><input type="text" name="startDate" class="field startDate datepicker" placeholder="Range Start" readonly="readonly"/></li>
                 <li class="column"><input type="text" name="endDate" class="field endDate datepicker" placeholder="Range End" readonly="readonly"/></li>
                 <li class="column">

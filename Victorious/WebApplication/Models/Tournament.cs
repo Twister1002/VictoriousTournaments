@@ -49,7 +49,7 @@ namespace WebApplication.Models
 			List<String> safeParamList = new List<String>() {
 				"Title",
 				"GameTypeID",
-				"PlatformTypeID",
+				"PlatformID",
 				"PublicViewing",
 				"PublicRegistration",
 				"TournamentStartDate",
@@ -1004,7 +1004,7 @@ namespace WebApplication.Models
 			Model.Title = viewModel.Title;
 			Model.Description = viewModel.Description;
 			Model.GameTypeID = viewModel.GameTypeID;
-			Model.PlatformID = viewModel.PlatformTypeID;
+			Model.PlatformID = viewModel.PlatformID;
 			Model.PublicViewing = viewModel.PublicViewing;
 			Model.PublicRegistration = viewModel.PublicRegistration;
 
@@ -1086,7 +1086,7 @@ namespace WebApplication.Models
 			viewModel.Title = Model.Title;
 			viewModel.Description = Model.Description;
 			viewModel.GameTypeID = Model.GameTypeID;
-			viewModel.PlatformTypeID = Model.PlatformID;
+			viewModel.PlatformID = Model.PlatformID;
 			viewModel.PublicViewing = Model.PublicViewing;
 			viewModel.PublicRegistration = Model.PublicRegistration;
             viewModel.Participants = Model.TournamentUsers.ToList();

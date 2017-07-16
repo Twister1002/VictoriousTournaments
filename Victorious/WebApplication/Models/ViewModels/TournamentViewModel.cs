@@ -79,7 +79,7 @@ namespace WebApplication.Models.ViewModels
 
         [Display(Name = "Platform")]
         [Required(ErrorMessage = "Choose a platform")]
-        public int PlatformTypeID { get; set; }
+        public int PlatformID { get; set; }
 
         [Display(Name = "Public Viewing")]
         public bool PublicViewing { get; set; }

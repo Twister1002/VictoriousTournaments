@@ -202,7 +202,6 @@
     <Content Include="Styles\less\_list-table.less" />
     <Content Include="Styles\less\_icons.less" />
     <Content Include="Views\Tournament\Create.cshtml" />
-    <Content Include="Views\Tournament\Delete.cshtml" />
     <Content Include="Styles\less\Tournament\_Tournament.less" />
     <Content Include="Styles\less\Tournament\_Create.less" />
     <Content Include="Styles\less\Tournament\_Search.less" />

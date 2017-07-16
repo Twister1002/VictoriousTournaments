@@ -38,9 +38,9 @@
                     @Html.ValidationMessageFor(t => t.GameTypeID)
                 </li>
                 <li>
-                    @Html.LabelFor(t => t.PlatformTypeID)
-                    @Html.DropDownListFor(t => t.PlatformTypeID, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---", attributes)
-                    @Html.ValidationMessageFor(t => t.PlatformTypeID)
+                    @Html.LabelFor(t => t.PlatformID)
+                    @Html.DropDownListFor(t => t.PlatformID, new SelectList(Model.PlatformTypes, "PlatformID", "PlatformName"), "---Select Platform---", attributes)
+                    @Html.ValidationMessageFor(t => t.PlatformID)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.PublicViewing)
