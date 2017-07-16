@@ -711,7 +711,7 @@
           <Property Name="PermissionLevel" Type="Int32" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="InviteCode" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="IsCheckedIn" Type="Boolean" />
+          <Property Name="IsCheckedIn" Type="Boolean" Nullable="false" DefaultValue="False" />
           <Property Name="CheckInTime" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" FromRole="TournamentUserModel" ToRole="Tournament" />
         </EntityType>
