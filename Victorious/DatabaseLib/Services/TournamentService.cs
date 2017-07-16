@@ -99,88 +99,61 @@ namespace DatabaseLib.Services
         public List<TournamentModel> FindTournaments(Dictionary<string, string> searchParams, int returnCount = 25)
         {
             List<TournamentModel> tournaments = new List<TournamentModel>();
-
-            using (VictoriousEntities context = new VictoriousEntities())
+            
+            try
             {
-                context.TournamentModels.Include(x => x.Brackets)
-                     .Include(x => x.GameType)
-                     .Include(x => x.Platform)
-                     .Include(x => x.TournamentUsers)
-                     .Include(x => x.TournamentInvites)
-                     .Load();
-                try
+                List<SqlParameter> sqlparams = new List<SqlParameter>();
+                string query = string.Empty;
+                query = "SELECT TOP(" + returnCount + ")* FROM Tournaments WHERE PublicViewing = 1 ";
+                foreach (KeyValuePair<String, String> data in searchParams)
                 {
-                    List<SqlParameter> sqlparams = new List<SqlParameter>();
-                    string query = string.Empty;
-                    query = "SELECT TOP(" + returnCount + ")* FROM Tournaments WHERE PublicViewing = 1 ";
-                    foreach (KeyValuePair<String, String> data in searchParams)
-                    {
-                        if (query != String.Empty) query += " AND ";
-                        string val = data.Value;
+                    if (query != String.Empty) query += " AND ";
+                    string val = data.Value;
                       
-                        if (data.Key == "TournamentStartDate" || data.Key == "RegistrationStartDate")
-                        {
-                            val = DateTime.Parse(val).ToShortDateString();
-                            query += data.Key + " >= @" + data.Key;
-                            sqlparams.Add(new SqlParameter("@" + data.Key, val));
-                        }
-                        else if (data.Key == "TournamentEndDate" || data.Key == "RegistrationEndDate")
-                        {
-                            val = DateTime.Parse(val).ToShortDateString();
-                            query += data.Key +  " <= @" + data.Key;
-                            sqlparams.Add(new SqlParameter("@" + data.Key, val));
-                        }
-                        else if (data.Key == "CreatedOn")
-                        {
-                            val = DateTime.Parse(val).ToShortDateString();
-                            query += "datediff(day," + data.Key + ", " + "@" + data.Key + ") = 0 ";
-
-                            sqlparams.Add(new SqlParameter("@" + data.Key, val));
-                        }
-                        //if (data.Key == "TournamentStartDate" || data.Key == "TournamentEndDate" || data.Key == "RegistrationStartDate" ||
-                        //    data.Key == "RegistrationEndDate" || data.Key == "CreatedOn")
-                        //{
-                        //    val = DateTime.Parse(val).ToShortDateString();
-                        //    query += "datediff(day," + data.Key + ", " + "@" + data.Key + ") = 0 ";
-
-                        //    sqlparams.Add(new SqlParameter("@" + data.Key, val));
-
-                        //}
-                        else if (data.Key == "Title")
-                        {
-                            query += data.Key + " LIKE @" + data.Key;
-                            sqlparams.Add(new SqlParameter("@" + data.Key, "%" + val + "%"));
-                        }
-                        else
-                        {
-                            query += data.Key + " = @" + data.Key;
-                            sqlparams.Add(new SqlParameter("@" + data.Key, val));
-
-                        }
+                    if (data.Key == "TournamentStartDate" || data.Key == "RegistrationStartDate")
+                    {
+                        val = DateTime.Parse(val).ToShortDateString();
+                        query += data.Key + " >= @" + data.Key;
+                        sqlparams.Add(new SqlParameter("@" + data.Key, val));
                     }
-                    query += " ORDER BY TournamentStartDate ASC";
+                    else if (data.Key == "TournamentEndDate" || data.Key == "RegistrationEndDate")
+                    {
+                        val = DateTime.Parse(val).ToShortDateString();
+                        query += data.Key +  " <= @" + data.Key;
+                        sqlparams.Add(new SqlParameter("@" + data.Key, val));
+                    }
+                    else if (data.Key == "CreatedOn")
+                    {
+                        val = DateTime.Parse(val).ToShortDateString();
+                        query += "datediff(day," + data.Key + ", " + "@" + data.Key + ") = 0 ";
 
-                    tournaments = context.TournamentModels.SqlQuery(query, sqlparams.ToArray()).ToList();
-                    query = string.Empty;
+                        sqlparams.Add(new SqlParameter("@" + data.Key, val));
+                    }
+                    else if (data.Key == "Title")
+                    {
+                        query += data.Key + " LIKE @" + data.Key;
+                        sqlparams.Add(new SqlParameter("@" + data.Key, "%" + val + "%"));
+                    }
+                    else
+                    {
+                        query += data.Key + " = @" + data.Key;
+                        sqlparams.Add(new SqlParameter("@" + data.Key, val));
 
-                    //if (tournaments.Count == 0)
-                    //{
-                    //    query = "SELECT TOP(25)* FROM Tournaments WHERE IsPublic = 1 ORDER BY TournamentStartDate ASC";
-                    //    tournaments = context.TournamentModels.SqlQuery(query).ToList();
-                    //}
-
-
+                    }
                 }
-                catch (Exception ex)
-                {
-                    //interfaceException = ex;
-                    //WriteException(ex);
-                    unitOfWork.SetException(ex);
-                    tournaments.Clear();
-                }
+                query += " ORDER BY TournamentStartDate ASC";
+
+                tournaments = unitOfWork.TournamentRepo.Get(query, sqlparams);
             }
-            return tournaments;
+            catch (Exception ex)
+            {
+                //interfaceException = ex;
+                //WriteException(ex);
+                unitOfWork.SetException(ex);
+                tournaments.Clear();
+            }
 
+            return tournaments;
         }
 
 
