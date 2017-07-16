@@ -116,7 +116,6 @@
     <Content Include="Scripts\Tournament\Bracket.js" />
     <Content Include="Scripts\Tournament\Create.js" />
     <Content Include="Styles\css\jquery.timepicker.css" />
-    <Content Include="Content\Site.css" />
     <Content Include="Global.asax" />
     <Content Include="gulpfile.js" />
     <Content Include="package.json" />
