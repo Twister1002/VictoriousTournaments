@@ -503,15 +503,15 @@ namespace WebApplication.Models
 
 			services.Save();
 		}
-		#endregion
+        #endregion
 
-		#region AddUsers
-		/// <summary>
-		/// Adds a user to the tournament
-		/// </summary>
-		/// <param name="name">The name of the user</param>
-		/// <returns>The user model of the created user</returns>
-		public TournamentUserModel AddUser(String name)
+        #region AddUsers
+        /// <summary>
+        /// Adds a user to the tournament
+        /// </summary>
+        /// <param name="name">The name of the user</param>
+        /// <returns>The user model of the created user</returns>
+        public TournamentUserModel AddUser(String name)
 		{
 			bool isEmail = false;
 			TournamentUserModel userModel = null;
@@ -1032,20 +1032,28 @@ namespace WebApplication.Models
             {
                 foreach (TournamentUserModel userForm in viewModel.Participants)
                 {
-                    TournamentUserModel user = Model.TournamentUsers.Single(x => x.TournamentUserID == userForm.TournamentUserID);
-                    user.IsCheckedIn = userForm.IsCheckedIn;
-
-                    if (userForm.PermissionLevel != null)
+                    TournamentUserModel user = Model.TournamentUsers.SingleOrDefault(x => x.TournamentUserID == userForm.TournamentUserID);
+                    if (user != null)
                     {
-                        if (userForm.PermissionLevel == (int)Permission.NONE)
+                        user.IsCheckedIn = userForm.IsCheckedIn;
+
+                        if (userForm.PermissionLevel != null)
                         {
-                            // Remove from the bracket and from the roster if there is no accountid
-                            RemoveUser(user);
+                            if (userForm.PermissionLevel == (int)Permission.NONE)
+                            {
+                                // Remove from the bracket and from the roster if there is no accountid
+                                RemoveUser(user);
+                            }
+                            else
+                            {
+                                user.PermissionLevel = userForm.PermissionLevel;
+                            }
                         }
-                        else
-                        {
-                            user.PermissionLevel = userForm.PermissionLevel;
-                        }
+                    }
+                    else
+                    {
+                        userForm.TournamentID = Model.TournamentID;
+                        AddUserToTournament(userForm);
                     }
                 }
             }

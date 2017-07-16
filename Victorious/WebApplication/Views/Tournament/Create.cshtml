@@ -154,7 +154,7 @@
             </ul>
         </div>
         <div class="section userSection">
-            <h2>Registered Participants <span class="icon icon-plus"></span></h2>
+            <h2>Registered Participants <span class="icon icon-plus addUser"></span></h2>
             <ul class="list-table">
                 <li class="list-table-header">
                     <ul data-columns="3">
@@ -167,9 +167,9 @@
                     @for (int i = 0; i < Model.Participants.Count; i++)
                     {
                         var user = Model.Participants[i];
-                        @Html.Hidden("Participants[" + i + "].TournamentUserID", user.TournamentUserID)
 
-                        <ul data-columns="3">
+                        <ul data-columns="3" class="user">
+                            @Html.Hidden("Participants[" + i + "].TournamentUserID", user.TournamentUserID)
                             <li class="column">@user.Name</li>
                             <li class="column">
                                 @if (user.PermissionLevel == (int)DatabaseLib.Permission.TOURNAMENT_CREATOR)
@@ -189,6 +189,19 @@
                             </li>
                         </ul>
                     }
+                    <ul data-columns="3" class="hide userOrig">
+                        <li class="column">@Html.TextBox("Participants[%n%].Name", "", attributes)</li>
+                        <li class="column">
+                            @Html.DropDownList("Participants[%n%].PermissionLevel", new SelectList(Model.Permissions, "Key", "Value", (int)DatabaseLib.Permission.TOURNAMENT_STANDARD), attributes)
+                        </li>
+
+                        <li class="column">
+                            <label class="switch">
+                                @Html.CheckBox("Participants[%n%].IsCheckedIn", false, attributes)
+                                <span class="slider round"></span>
+                            </label>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </div>

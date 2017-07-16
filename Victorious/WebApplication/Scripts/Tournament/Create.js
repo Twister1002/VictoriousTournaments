@@ -17,9 +17,11 @@
     var bracketInfo;
     var bracketsCreated = 0;
     var maxBrackets = 2;
+    var userInfo;
 
     $("#TournamentEdit .bracketSection .type select").on("change", BracketInfoChange);
     $("#TournamentEdit .addBracket").on("click", AddBracket);
+    $("#TournamentEdit .addUser").on("click", AddUser);
     
     function AddBracket() {
         var newBracket = bracketInfo.replace(/%n%/g, $("#TournamentEdit .brackets").length);
@@ -40,6 +42,12 @@
         }
 
         LimitBrackets();
+    }
+
+    function AddUser() {
+        var newBracket = userInfo.replace(/%n%/g, $("#TournamentEdit .userInfo .user").length);
+
+        $("#TournamentEdit .userInfo").append("<ul data-columns='3' class='user'>" + newBracket + "</ul>");
     }
 
     function BracketInfoChange() {
@@ -81,6 +89,10 @@
             }
 
             LimitBrackets();
+
+            // Save the original player data
+            userInfo = $("#TournamentEdit .userSection .userOrig").removeClass("hide").html();
+            $("#TournamentEdit .userSection .userOrig").remove();
         }
     })($);
 });
