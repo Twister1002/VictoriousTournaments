@@ -60,7 +60,6 @@ namespace WebApplication.Models
 
 			searchData = searchData.Where(k => safeParamList.Contains(k.Key) && k.Value != String.Empty).ToDictionary(k => k.Key, k => k.Value);
 
-			searchData.Add("PublicViewing", "true");
 			if (searchData.Keys.Contains("startDate"))
 			{
 				searchData.Add("TournamentStartDate", searchData["startDate"]);
