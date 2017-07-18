@@ -176,6 +176,34 @@ namespace Tournament.Structure
 #endif
 		#region Accessors
 		/// <summary>
+		/// Returns the number of (upper bracket) rounds
+		/// in the specified group.
+		/// If group number is negative, an exception is thrown.
+		/// If group number is too high, returns 0.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <returns>Number of rounds</returns>
+		public int NumberOfRoundsInGroup(int _groupNumber)
+		{
+			if (_groupNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Group number cannot be less than 1!");
+			}
+
+			List<int> roundNums = Matches.Values
+				.Where(m => m.GroupNumber == _groupNumber)
+				.Select(m => m.RoundIndex).ToList();
+
+			if (roundNums.Any())
+			{
+				return roundNums.Max();
+			}
+			// Else: (_groupNumber is too high)
+			return 0;
+		}
+
+		/// <summary>
 		/// Creates a Model of this Bracket's current state.
 		/// Any contained objects (Players, Matches) are also converted into Models.
 		/// </summary>
@@ -231,6 +259,38 @@ namespace Tournament.Structure
 			return GetRound(_round)
 				.Where(m => m.GroupNumber == _groupNumber)
 				.ToList();
+		}
+
+		/// <summary>
+		/// Sets the max number of games per match for one round,
+		/// in the specified group.
+		/// If Max Games is invalid, an exception is thrown.
+		/// If the group number is <1, an exception is thrown.
+		/// If the round number is <1, an exception is thrown.
+		/// If any matches are already finished, an exception is thrown.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <param name="_round">1-indexed</param>
+		/// <param name="_maxGamesPerMatch">How many Games each Match may last</param>
+		public virtual void SetMaxGamesForWholeRound(int _groupNumber, int _round, int _maxGamesPerMatch)
+		{
+			if (_maxGamesPerMatch < 1)
+			{
+				throw new ScoreException
+					("Games per match cannot be less than 1!");
+			}
+
+			List<IMatch> round = GetRound(_groupNumber, _round);
+			if (round.Any(m => m.IsFinished))
+			{
+				throw new InactiveMatchException
+					("One or more matches in this round is already finished!");
+			}
+
+			foreach (Match match in round)
+			{
+				match.SetMaxGames(_maxGamesPerMatch);
+			}
 		}
 		#endregion
 		#endregion

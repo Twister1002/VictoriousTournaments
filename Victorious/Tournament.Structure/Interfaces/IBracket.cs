@@ -306,14 +306,14 @@ namespace Tournament.Structure
 		/// <summary>
 		/// Set the max number of Games PER MATCH for one round.
 		/// </summary>
-		/// <param name="_roundIndex">Round of Matches to modify</param>
+		/// <param name="_round">Round of Matches to modify</param>
 		/// <param name="_maxGamesPerMatch">How many Games each Match may last</param>
 		void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch);
 
 		/// <summary>
 		/// Set the max number of Games PER MATCH for one lower round.
 		/// </summary>
-		/// <param name="_roundIndex">Round (lower bracket) of Matches to modify</param>
+		/// <param name="_round">Round (lower bracket) of Matches to modify</param>
 		/// <param name="_maxGamesPerMatch">How many Games each Match may last</param>
 		void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch);
 		#endregion
