@@ -191,10 +191,16 @@ namespace Tournament.Structure
 					("Group number cannot be less than 1!");
 			}
 
-			return Matches.Values
+			List<int> roundNums = Matches.Values
 				.Where(m => m.GroupNumber == _groupNumber)
-				.Select(m => m.RoundIndex)
-				.Max();
+				.Select(m => m.RoundIndex).ToList();
+
+			if (roundNums.Any())
+			{
+				return roundNums.Max();
+			}
+			// Else: (_groupNumber is too high)
+			return 0;
 		}
 
 		/// <summary>
@@ -259,6 +265,8 @@ namespace Tournament.Structure
 		/// Sets the max number of games per match for one round,
 		/// in the specified group.
 		/// If Max Games is invalid, an exception is thrown.
+		/// If the group number is <1, an exception is thrown.
+		/// If the round number is <1, an exception is thrown.
 		/// If any matches are already finished, an exception is thrown.
 		/// </summary>
 		/// <param name="_groupNumber">1-indexed</param>
