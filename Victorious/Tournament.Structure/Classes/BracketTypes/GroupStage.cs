@@ -262,6 +262,28 @@ namespace Tournament.Structure
 		}
 
 		/// <summary>
+		/// Gets all Matches in a specified round, from the given group.
+		/// If the group number is <1, an exception is thrown.
+		/// If the round number is <1, an exception is thrown.
+		/// If either is otherwise out-of-range, an empty list is returned.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <param name="_round">1-indexed</param>
+		/// <returns>Sorted list of IMatches in the given group's round</returns>
+		public List<IMatch> GetLowerRound(int _groupNumber, int _round)
+		{
+			if (_groupNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Group number cannot be less than 1!");
+			}
+
+			return GetLowerRound(_round)
+				.Where(m => m.GroupNumber == _groupNumber)
+				.ToList();
+		}
+
+		/// <summary>
 		/// Sets the max number of games per match for one round,
 		/// in the specified group.
 		/// If Max Games is invalid, an exception is thrown.
@@ -281,6 +303,38 @@ namespace Tournament.Structure
 			}
 
 			List<IMatch> round = GetRound(_groupNumber, _round);
+			if (round.Any(m => m.IsFinished))
+			{
+				throw new InactiveMatchException
+					("One or more matches in this round is already finished!");
+			}
+
+			foreach (Match match in round)
+			{
+				match.SetMaxGames(_maxGamesPerMatch);
+			}
+		}
+
+		/// <summary>
+		/// Sets the max number of games per match for one round,
+		/// in the specified group.
+		/// If Max Games is invalid, an exception is thrown.
+		/// If the group number is <1, an exception is thrown.
+		/// If the round number is <1, an exception is thrown.
+		/// If any matches are already finished, an exception is thrown.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <param name="_round">1-indexed</param>
+		/// <param name="_maxGamesPerMatch">How many Games each Match may last</param>
+		public virtual void SetMaxGamesForWholeLowerRound(int _groupNumber, int _round, int _maxGamesPerMatch)
+		{
+			if (_maxGamesPerMatch < 1)
+			{
+				throw new ScoreException
+					("Games per match cannot be less than 1!");
+			}
+
+			List<IMatch> round = GetLowerRound(_groupNumber, _round);
 			if (round.Any(m => m.IsFinished))
 			{
 				throw new InactiveMatchException

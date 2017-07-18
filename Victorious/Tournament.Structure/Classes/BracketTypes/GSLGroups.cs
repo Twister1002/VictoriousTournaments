@@ -241,35 +241,144 @@ namespace Tournament.Structure
 		#region Public Methods
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
+			// First, clear any existing Matches and results:
 			ResetBracketData();
-
-			for (int b = 0; b < NumberOfGroups; ++b)
+			if (NumberOfGroups < 2 ||
+				(Players.Count != NumberOfGroups * 4 &&
+				Players.Count != NumberOfGroups * 8))
 			{
-				List<IPlayer> pList = new List<IPlayer>();
-				for (int p = 0; (p + b) < Players.Count; p += NumberOfGroups)
-				{
-					pList.Add(Players[p + b]);
-				}
-
-				//Groups.Add(new GSLBracket(pList, _gamesPerMatch));
+				return;
 			}
-			//SubscribeToGroupEvents();
 
-			//foreach (IBracket group in Groups)
-			//{
-			//	NumberOfMatches += group.NumberOfMatches;
-			//	NumberOfRounds = Math.Max(this.NumberOfRounds, group.NumberOfRounds);
-			//}
+			// DividePlayersIntoGroups() uses our chosen method to separate the playerlist:
+			List<List<IPlayer>> playerGroups = DividePlayersIntoGroups();
+			GroupRankings.Capacity = NumberOfGroups;
+
+			List<IBracket> groups = new List<IBracket>();
+			for (int g = 0; g < playerGroups.Count; ++g)
+			{
+				// For each group, generate a full GSL bracket:
+				groups.Add(new GSLBracket(playerGroups[g], _gamesPerMatch));
+			}
+
+			/*
+			 * So now we've generated all of our Matches.
+			 * We want to copy them into our main Bracket, but there's a problem:
+			 * each internal bracket numbers their Matches from 1.
+			 * We need unique MatchNumbers, so we go through and create
+			 * new "copy" Matches, but with those unique MatchNumbers we need.
+			*/
+
+			// For every group...
+			for (int g = 0; g < groups.Count; ++g)
+			{
+				// For every Match within that group...
+				for (int m = 1; m <= groups[g].NumberOfMatches; ++m)
+				{
+					++NumberOfMatches;
+					IMatch currMatch = groups[g].GetMatch(m);
+
+					// Copy/create a new Match:
+					Match match = new Match();
+					// Set the basic match data:
+					match.SetMaxGames(currMatch.MaxGames);
+					match.SetRoundIndex(currMatch.RoundIndex);
+					match.SetMatchIndex(currMatch.MatchIndex);
+					match.SetMatchNumber(NumberOfMatches);
+					match.SetGroupNumber(g + 1);
+					match.AddPlayer(currMatch.Players[(int)PlayerSlot.Defender]);
+					match.AddPlayer(currMatch.Players[(int)PlayerSlot.Challenger]);
+
+					// Set the match progression data.
+					// First, apply the offset to NextLoserMatchNumber (only if applicable):
+					match.SetNextLoserMatchNumber((-1 == currMatch.NextLoserMatchNumber) ? -1
+						: (currMatch.NextLoserMatchNumber - currMatch.MatchNumber + match.MatchNumber));
+					// Due to a GSL quirk, there is no grand final, but upper&lower finals still point there.
+					// We can use this opportunity to remove that false pointer.
+					// (for other matches, apply the same MatchNumber offset):
+					match.SetNextMatchNumber((currMatch.NextMatchNumber > groups[g].NumberOfMatches) ? -1
+						: (currMatch.NextMatchNumber - currMatch.MatchNumber + match.MatchNumber));
+
+					if (match.NextLoserMatchNumber > -1)
+					{
+						// Any match that progresses the loser goes to upper bracket:
+						Matches.Add(match.MatchNumber, match);
+					}
+					else
+					{
+						// Otherwise, add it to the lower bracket:
+						LowerMatches.Add(match.MatchNumber, match);
+					}
+				}
+			}
+
+			NumberOfRounds = Matches.Values
+				.Max(m => m.RoundIndex);
+			NumberOfLowerRounds = LowerMatches.Values
+				.Max(m => m.RoundIndex);
+		}
+
+		public override void ResetMatches()
+		{
+			base.ResetMatches();
+
+			// Also clear each Rankings list:
+			foreach (List<IPlayerScore> group in GroupRankings)
+			{
+				group.Clear();
+			}
+			Rankings.Clear();
 		}
 
 		public override bool CheckForTies()
 		{
 			return false;
 		}
+
 		public override bool GenerateTiebreakers()
 		{
 			throw new NotImplementedException
 				("Not applicable for knockout brackets!");
+		}
+
+		public override void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
+		{
+			if (0 == _maxGamesPerMatch % 2)
+			{
+				throw new ScoreException
+					("Games per Match must be ODD in an elimination bracket!");
+			}
+			base.SetMaxGamesForWholeRound(_round, _maxGamesPerMatch);
+		}
+
+		public override void SetMaxGamesForWholeRound(int _groupNumber, int _round, int _maxGamesPerMatch)
+		{
+			if (0 == _maxGamesPerMatch % 2)
+			{
+				throw new ScoreException
+					("Games per Match must be ODD in an elimination bracket!");
+			}
+			base.SetMaxGamesForWholeRound(_groupNumber, _round, _maxGamesPerMatch);
+		}
+
+		public override void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch)
+		{
+			if (0 == _maxGamesPerMatch % 2)
+			{
+				throw new ScoreException
+					("Games per Match must be ODD in an elimination bracket!");
+			}
+			base.SetMaxGamesForWholeLowerRound(_round, _maxGamesPerMatch);
+		}
+
+		public override void SetMaxGamesForWholeLowerRound(int _groupNumber, int _round, int _maxGamesPerMatch)
+		{
+			if (0 == _maxGamesPerMatch % 2)
+			{
+				throw new ScoreException
+					("Games per Match must be ODD in an elimination bracket!");
+			}
+			base.SetMaxGamesForWholeLowerRound(_groupNumber, _round, _maxGamesPerMatch);
 		}
 		#endregion
 
