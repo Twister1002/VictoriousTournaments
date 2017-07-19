@@ -574,6 +574,22 @@ namespace Tournament.Structure
 			}
 		}
 
+		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		{
+			// All the progression logic is handled by KnockoutBracket's parent method:
+			List<MatchModel> alteredMatches = base.ApplyWinEffects(_matchNumber, _slot);
+
+			// The base method can erroneously set the whole bracket as finished.
+			// Check for that, and fix if necessary:
+			if (this.IsFinished &&
+				LowerMatches.Values.Any(m => !m.IsFinished))
+			{
+				this.IsFinished = false;
+			}
+
+			return alteredMatches;
+		}
+
 		protected override void RecalculateRankings()
 		{
 			if (null == Rankings)
