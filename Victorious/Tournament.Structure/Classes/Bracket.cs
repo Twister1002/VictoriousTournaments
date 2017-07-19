@@ -1237,6 +1237,34 @@ namespace Tournament.Structure
 				? compare
 				: GetPlayerSeed(first.Id).CompareTo(GetPlayerSeed(second.Id));
 		}
+
+		/// <summary>
+		/// Divides the players into the specified number of groups.
+		/// This can be used to determine how to create the brackets
+		/// or the sub-rankings.
+		/// If the type of group-forming is to be changed,
+		/// simply modify this method.
+		/// </summary>
+		/// <returns>List of groups (each of which is a list of players)</returns>
+		protected List<List<IPlayer>> DividePlayersIntoGroups(int _numberOfGroups)
+		{
+			List<List<IPlayer>> groups = new List<List<IPlayer>>();
+			groups.Capacity = _numberOfGroups;
+			for (int i = 0; i < _numberOfGroups; ++i)
+			{
+				groups.Add(new List<IPlayer>());
+			}
+
+			for (int g = 0; g < _numberOfGroups; ++g)
+			{
+				for (int p = 0; (p + g) < Players.Count; p += _numberOfGroups)
+				{
+					groups[g].Add(Players[p + g]);
+				}
+			}
+
+			return groups;
+		}
 		#endregion
 	}
 }

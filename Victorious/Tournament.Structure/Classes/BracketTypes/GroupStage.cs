@@ -203,6 +203,26 @@ namespace Tournament.Structure
 			return 0;
 		}
 
+		public int NumberOfLowerRoundsInGroup(int _groupNumber)
+		{
+			if (_groupNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Group number cannot be less than 1!");
+			}
+
+			List<int> roundNums = Matches.Values
+				.Where(m => m.GroupNumber == _groupNumber)
+				.Select(m => m.RoundIndex).ToList();
+
+			if (roundNums.Any())
+			{
+				return roundNums.Max();
+			}
+			// Else: (_groupNumber is too high)
+			return 0;
+		}
+		
 		/// <summary>
 		/// Creates a Model of this Bracket's current state.
 		/// Any contained objects (Players, Matches) are also converted into Models.
@@ -282,7 +302,8 @@ namespace Tournament.Structure
 				.Where(m => m.GroupNumber == _groupNumber)
 				.ToList();
 		}
-
+		#endregion
+		#region Mutators
 		/// <summary>
 		/// Sets the max number of games per match for one round,
 		/// in the specified group.
@@ -294,7 +315,7 @@ namespace Tournament.Structure
 		/// <param name="_groupNumber">1-indexed</param>
 		/// <param name="_round">1-indexed</param>
 		/// <param name="_maxGamesPerMatch">How many Games each Match may last</param>
-		public virtual void SetMaxGamesForWholeRound(int _groupNumber, int _round, int _maxGamesPerMatch)
+		public void SetMaxGamesForWholeRound(int _groupNumber, int _round, int _maxGamesPerMatch)
 		{
 			if (_maxGamesPerMatch < 1)
 			{
@@ -326,7 +347,7 @@ namespace Tournament.Structure
 		/// <param name="_groupNumber">1-indexed</param>
 		/// <param name="_round">1-indexed</param>
 		/// <param name="_maxGamesPerMatch">How many Games each Match may last</param>
-		public virtual void SetMaxGamesForWholeLowerRound(int _groupNumber, int _round, int _maxGamesPerMatch)
+		public void SetMaxGamesForWholeLowerRound(int _groupNumber, int _round, int _maxGamesPerMatch)
 		{
 			if (_maxGamesPerMatch < 1)
 			{
@@ -347,37 +368,6 @@ namespace Tournament.Structure
 			}
 		}
 		#endregion
-		#endregion
-
-		#region Private Methods
-		/// <summary>
-		/// Takes the playerlist and NumberOfGroups,
-		/// and divides (or re-divides) the players into the correct groups.
-		/// This can be used to determine how to create the brackets
-		/// or the sub-rankings.
-		/// If the type of group-forming is to be changed,
-		/// simply modify this method.
-		/// </summary>
-		/// <returns>List of groups (each of which is a list of players)</returns>
-		protected List<List<IPlayer>> DividePlayersIntoGroups()
-		{
-			List<List<IPlayer>> groups = new List<List<IPlayer>>();
-			groups.Capacity = NumberOfGroups;
-			for (int i = 0; i < NumberOfGroups; ++i)
-			{
-				groups.Add(new List<IPlayer>());
-			}
-
-			for (int g = 0; g < NumberOfGroups; ++g)
-			{
-				for (int p = 0; (p + g) < Players.Count; p += NumberOfGroups)
-				{
-					groups[g].Add(Players[p + g]);
-				}
-			}
-
-			return groups;
-		}
 		#endregion
 	}
 }

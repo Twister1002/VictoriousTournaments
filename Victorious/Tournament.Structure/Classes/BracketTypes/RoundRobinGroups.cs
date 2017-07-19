@@ -79,7 +79,7 @@ namespace Tournament.Structure
 			}
 
 			// DividePlayersIntoGroups() uses our chosen method to separate the playerlist:
-			List<List<IPlayer>> playerGroups = DividePlayersIntoGroups();
+			List<List<IPlayer>> playerGroups = DividePlayersIntoGroups(NumberOfGroups);
 			GroupRankings.Capacity = NumberOfGroups;
 
 			List<IBracket> groups = new List<IBracket>();
@@ -381,7 +381,7 @@ namespace Tournament.Structure
 			}
 
 			// "Recreate" the groups:
-			List<List<IPlayer>> playerGroups = DividePlayersIntoGroups();
+			List<List<IPlayer>> playerGroups = DividePlayersIntoGroups(NumberOfGroups);
 			for (int g = 0; g < playerGroups.Count; ++g)
 			{
 				// Use these groups to remake the GroupRankings:

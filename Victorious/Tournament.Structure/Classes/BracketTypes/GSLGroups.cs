@@ -8,7 +8,7 @@ using DatabaseLib;
 
 namespace Tournament.Structure
 {
-	public class GSLGroups : GroupStage
+	public class GSLGroups : DoubleElimBracket, IGroupStage
 	{
 		private class GSLBracket : DoubleElimBracket
 		{
@@ -211,7 +211,12 @@ namespace Tournament.Structure
 		//protected int MatchWinValue
 		//protected int MatchTieValue
 		//protected List<IBracket> Groups
-		//public int NumberOfGroups
+
+		public int NumberOfGroups
+		{ get; set; }
+
+		protected List<List<IPlayerScore>> GroupRankings
+		{ get; set; }
 		#endregion
 
 		#region Ctors
@@ -239,19 +244,36 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		public override bool Validate()
+		{
+			if (false == base.Validate())
+			{
+				return false;
+			}
+
+			if (NumberOfGroups < 2 ||
+				(Players.Count != NumberOfGroups * 4/* &&
+				 Players.Count != NumberOfGroups * 8*/))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			// First, clear any existing Matches and results:
 			ResetBracketData();
 			if (NumberOfGroups < 2 ||
-				(Players.Count != NumberOfGroups * 4 &&
-				Players.Count != NumberOfGroups * 8))
+				(Players.Count != NumberOfGroups * 4/* &&
+				 Players.Count != NumberOfGroups * 8*/))
 			{
 				return;
 			}
 
 			// DividePlayersIntoGroups() uses our chosen method to separate the playerlist:
-			List<List<IPlayer>> playerGroups = DividePlayersIntoGroups();
+			List<List<IPlayer>> playerGroups = DividePlayersIntoGroups(NumberOfGroups);
 			GroupRankings.Capacity = NumberOfGroups;
 
 			List<IBracket> groups = new List<IBracket>();
@@ -299,7 +321,7 @@ namespace Tournament.Structure
 					match.SetNextMatchNumber((currMatch.NextMatchNumber > groups[g].NumberOfMatches) ? -1
 						: (currMatch.NextMatchNumber - currMatch.MatchNumber + match.MatchNumber));
 
-					if (match.NextLoserMatchNumber > -1)
+					if (match.NextLoserMatchNumber > 0)
 					{
 						// Any match that progresses the loser goes to upper bracket:
 						Matches.Add(match.MatchNumber, match);
@@ -341,68 +363,277 @@ namespace Tournament.Structure
 				("Not applicable for knockout brackets!");
 		}
 
-		public override void SetMaxGamesForWholeRound(int _round, int _maxGamesPerMatch)
+		public override void ReplacePlayer(IPlayer _player, int _index)
 		{
-			if (0 == _maxGamesPerMatch % 2)
+			int? oldPlayerId = Players[_index]?.Id;
+
+			base.ReplacePlayer(_player, _index);
+
+			// After replacing the old player,
+			// we also need to find & replace him in the group-specific Rankings:
+			foreach (List<IPlayerScore> groupRanks in GroupRankings)
 			{
-				throw new ScoreException
-					("Games per Match must be ODD in an elimination bracket!");
+				int i = groupRanks.FindIndex(r => r.Id == oldPlayerId.Value);
+				if (i > -1)
+				{
+					// The player will always only be in one group.
+					// After we find it, replace him and break out.
+					groupRanks[i].ReplacePlayerData(_player.Id, _player.Name);
+					break;
+				}
 			}
-			base.SetMaxGamesForWholeRound(_round, _maxGamesPerMatch);
 		}
 
-		public override void SetMaxGamesForWholeRound(int _groupNumber, int _round, int _maxGamesPerMatch)
+		#region Accessors
+		public int NumberOfRoundsInGroup(int _groupNumber)
 		{
-			if (0 == _maxGamesPerMatch % 2)
+			if (_groupNumber < 1)
 			{
-				throw new ScoreException
-					("Games per Match must be ODD in an elimination bracket!");
+				throw new InvalidIndexException
+					("Group number cannot be less than 1!");
 			}
-			base.SetMaxGamesForWholeRound(_groupNumber, _round, _maxGamesPerMatch);
+
+			List<int> roundNums = Matches.Values
+				.Where(m => m.GroupNumber == _groupNumber)
+				.Select(m => m.RoundIndex).ToList();
+
+			if (roundNums.Any())
+			{
+				return roundNums.Max();
+			}
+			// Else: (_groupNumber is too high)
+			return 0;
 		}
 
-		public override void SetMaxGamesForWholeLowerRound(int _round, int _maxGamesPerMatch)
+		public int NumberOfLowerRoundsInGroup(int _groupNumber)
 		{
-			if (0 == _maxGamesPerMatch % 2)
+			if (_groupNumber < 1)
 			{
-				throw new ScoreException
-					("Games per Match must be ODD in an elimination bracket!");
+				throw new InvalidIndexException
+					("Group number cannot be less than 1!");
 			}
-			base.SetMaxGamesForWholeLowerRound(_round, _maxGamesPerMatch);
+
+			List<int> roundNums = Matches.Values
+				.Where(m => m.GroupNumber == _groupNumber)
+				.Select(m => m.RoundIndex).ToList();
+
+			if (roundNums.Any())
+			{
+				return roundNums.Max();
+			}
+			// Else: (_groupNumber is too high)
+			return 0;
 		}
 
-		public override void SetMaxGamesForWholeLowerRound(int _groupNumber, int _round, int _maxGamesPerMatch)
+		public override BracketModel GetModel(int _tournamentID)
 		{
+			BracketModel model = base.GetModel(_tournamentID);
+			model.NumberOfGroups = this.NumberOfGroups;
+
+			return model;
+		}
+
+		public List<IPlayerScore> GetGroupRanking(int _groupNumber)
+		{
+			if (_groupNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Group number cannot be less than 1!");
+			}
+			if (_groupNumber > NumberOfGroups)
+			{
+				return new List<IPlayerScore>();
+			}
+
+			return GroupRankings[_groupNumber - 1];
+		}
+
+		public List<IMatch> GetRound(int _groupNumber, int _round)
+		{
+			if (_groupNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Group number cannot be less than 1!");
+			}
+
+			return GetRound(_round)
+				.Where(m => m.GroupNumber == _groupNumber)
+				.ToList();
+		}
+
+		public List<IMatch> GetLowerRound(int _groupNumber, int _round)
+		{
+			if (_groupNumber < 1)
+			{
+				throw new InvalidIndexException
+					("Group number cannot be less than 1!");
+			}
+
+			return GetLowerRound(_round)
+				.Where(m => m.GroupNumber == _groupNumber)
+				.ToList();
+		}
+		#endregion
+		#region Mutators
+		public void SetMaxGamesForWholeRound(int _groupNumber, int _round, int _maxGamesPerMatch)
+		{
+			if (_maxGamesPerMatch < 1)
+			{
+				throw new ScoreException
+					("Games per match cannot be less than 1!");
+			}
 			if (0 == _maxGamesPerMatch % 2)
 			{
 				throw new ScoreException
 					("Games per Match must be ODD in an elimination bracket!");
 			}
-			base.SetMaxGamesForWholeLowerRound(_groupNumber, _round, _maxGamesPerMatch);
+
+			List<IMatch> round = GetRound(_groupNumber, _round);
+			if (round.Any(m => m.IsFinished))
+			{
+				throw new InactiveMatchException
+					("One or more matches in this round is already finished!");
+			}
+
+			foreach (Match match in round)
+			{
+				match.SetMaxGames(_maxGamesPerMatch);
+			}
 		}
+
+		public void SetMaxGamesForWholeLowerRound(int _groupNumber, int _round, int _maxGamesPerMatch)
+		{
+			if (_maxGamesPerMatch < 1)
+			{
+				throw new ScoreException
+					("Games per match cannot be less than 1!");
+			}
+			if (0 == _maxGamesPerMatch % 2)
+			{
+				throw new ScoreException
+					("Games per Match must be ODD in an elimination bracket!");
+			}
+
+			List<IMatch> round = GetLowerRound(_groupNumber, _round);
+			if (round.Any(m => m.IsFinished))
+			{
+				throw new InactiveMatchException
+					("One or more matches in this round is already finished!");
+			}
+
+			foreach (Match match in round)
+			{
+				match.SetMaxGames(_maxGamesPerMatch);
+			}
+		}
+		#endregion
 		#endregion
 
 		#region Private Methods
-		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
+		protected override void SetDataFromModel(BracketModel _model)
 		{
-			throw new NotImplementedException();
-		}
-		protected override List<MatchModel> ApplyGameRemovalEffects(int _matchNumber, List<GameModel> _games, PlayerSlot _formerMatchWinnerSlot)
-		{
-			throw new NotImplementedException();
-		}
-		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
-		{
-			throw new NotImplementedException();
+			// Call the base (Bracket) method to set common data and playerlist:
+			base.SetDataFromModel(_model);
+			this.NumberOfGroups = _model.NumberOfGroups;
+
+			if (_model.Matches.Count > 0)
+			{
+				foreach (MatchModel matchModel in _model.Matches)
+				{
+					// Convert each MatchModel to a Match:
+					Match m = new Match(matchModel);
+
+					// Add the Match to the appropriate dictionary:
+					if (m.NextLoserMatchNumber > 0)
+					{
+						Matches.Add(m.MatchNumber, m);
+					}
+					else
+					{
+						LowerMatches.Add(m.MatchNumber, m);
+					}
+				}
+
+				// Set the Bracket properties:
+				this.NumberOfMatches = Matches.Count + LowerMatches.Count;
+				this.NumberOfRounds = Matches.Values
+					.Max(m => m.RoundIndex);
+				this.NumberOfLowerRounds = LowerMatches.Values
+					.Max(m => m.RoundIndex);
+				this.IsFinished = LowerMatches.Values
+					.All(m => m.IsFinished);
+			}
+
+			// Go through the Matches to recalculate the current Rankings:
+			RecalculateRankings();
+
+			if (this.IsFinalized && false == Validate())
+			{
+				throw new BracketValidationException
+					("Bracket is Finalized but not Valid!");
+			}
 		}
 
 		protected override void RecalculateRankings()
 		{
-			throw new NotImplementedException();
-		}
-		protected override void UpdateRankings()
-		{
-			throw new NotImplementedException();
+			if (null == Rankings)
+			{
+				Rankings = new List<IPlayerScore>();
+			}
+			Rankings.Clear();
+			if (null == GroupRankings)
+			{
+				GroupRankings = new List<List<IPlayerScore>>();
+				GroupRankings.Capacity = NumberOfGroups;
+			}
+			GroupRankings.Clear();
+
+			for (int n = 1; n <= NumberOfMatches; ++n)
+			{
+				Match match = GetInternalMatch(n);
+
+				if (match.IsFinished)
+				{
+					if (match.NextLoserMatchNumber < 0)
+					{
+						// Add losing Player to the Rankings:
+						int rank = CalculateRank(match.MatchNumber);
+						IPlayer losingPlayer = match.Players[
+							(PlayerSlot.Defender == match.WinnerSlot)
+							? (int)PlayerSlot.Challenger
+							: (int)PlayerSlot.Defender];
+						IPlayerScore ps = new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank);
+
+						Rankings.Add(ps);
+						GroupRankings[match.GroupNumber - 1].Add(ps);
+					}
+
+					if (match.NextMatchNumber < 0)
+					{
+						// Add winning Player to the Rankings:
+						// (rank=1 from upper bracket, rank=2 from lower bracket)
+						int rank = (Matches.ContainsKey(match.MatchNumber)) ? 1 : 2;
+						IPlayer winningPlayer = match.Players[(int)match.WinnerSlot];
+						IPlayerScore ps = new PlayerScore(winningPlayer.Id, winningPlayer.Name, rank);
+
+						Rankings.Add(ps);
+						GroupRankings[match.GroupNumber - 1].Add(ps);
+					}
+				}
+			}
+
+			// Sort the Rankings by player rank:
+			// (tied ranks are ordered by seed)
+			Rankings.Sort(SortRankingRanks);
+			foreach (List<IPlayerScore> group in GroupRankings)
+			{
+				group.Sort(SortRankingRanks);
+			}
+
+			if (LowerMatches.Values.All(m => m.IsFinished))
+			{
+				this.IsFinished = true;
+			}
 		}
 		#endregion
 	}
