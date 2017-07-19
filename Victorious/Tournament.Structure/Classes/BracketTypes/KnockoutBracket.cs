@@ -127,6 +127,12 @@ namespace Tournament.Structure
 						}
 					}
 				}
+				else
+				{
+					// If the winner can't advance, this is the final match.
+					// The Bracket is finished:
+					this.IsFinished = true;
+				}
 
 				// Check if the loser has a Match to advance to:
 				if (nextLoserNumber > 0)
@@ -250,8 +256,6 @@ namespace Tournament.Structure
 							(match.Players[(int)(match.WinnerSlot)].Id,
 							match.Players[(int)(match.WinnerSlot)].Name,
 							1));
-						// Set the Bracket as finished:
-						IsFinished = true;
 					}
 
 					// This sorts the list by player rank.

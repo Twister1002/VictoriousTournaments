@@ -690,6 +690,14 @@ namespace Tournament.Structure
 				// Apply the "new" Game's affects to the rest of the Bracket:
 				UpdateScore(_matchNumber, alteredGames, true, oldMatchModel);
 				alteredMatches.AddRange(ApplyWinEffects(_matchNumber, _winnerSlot));
+
+				// Check the Bracket's finish-status:
+				if ((GrandFinal?.IsFinished ?? true) &&
+					(LowerMatches?.Values.All(m => m.IsFinished) ?? true) &&
+					(Matches.Values.All(m => m.IsFinished)))
+				{
+					this.IsFinished = true;
+				}
 			}
 
 			// Fire Event with any changed Matches:
