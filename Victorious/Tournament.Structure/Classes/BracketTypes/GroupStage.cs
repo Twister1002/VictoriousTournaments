@@ -97,83 +97,7 @@ namespace Tournament.Structure
 			}
 		}
 		#endregion
-#if false
-		#region Match & Game Methods
-		public override GameModel AddGame(int _matchNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
-		{
-			int groupIndex;
-			int fixedMatchNumber = _matchNumber;
-			GetMatchData(ref fixedMatchNumber, out groupIndex);
 
-			GameModel gameModel = Groups[groupIndex].AddGame(fixedMatchNumber, _defenderScore, _challengerScore, _winnerSlot);
-			//UpdateScore(_matchNumber, gameModel, true);
-			RecalculateRankings();
-			ApplyWinEffects(_matchNumber, _winnerSlot);
-			return gameModel;
-		}
-		public override GameModel UpdateGame(int _matchNumber, int _gameNumber, int _defenderScore, int _challengerScore, PlayerSlot _winnerSlot)
-		{
-			int groupIndex;
-			int fixedMatchNumber = _matchNumber;
-			GetMatchData(ref fixedMatchNumber, out groupIndex);
-
-			GameModel gameModel = Groups[groupIndex].UpdateGame(fixedMatchNumber, _gameNumber, _defenderScore, _challengerScore, _winnerSlot);
-			RecalculateRankings();
-			ApplyWinEffects(_matchNumber, _winnerSlot);
-			return gameModel;
-		}
-
-		public override GameModel RemoveLastGame(int _matchNumber)
-		{
-			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
-			int groupIndex;
-			int fixedMatchNumber = _matchNumber;
-			GetMatchData(ref fixedMatchNumber, out groupIndex);
-
-			GameModel gameModel = Groups[groupIndex].RemoveLastGame(fixedMatchNumber);
-			ApplyGameRemovalEffects(_matchNumber, new List<GameModel>() { gameModel }, matchWinnerSlot);
-			//UpdateScore(fixedMatchNumber, new List<GameModel>() { gameModel }, false, matchWinnerSlot);
-			RecalculateRankings();
-			return gameModel;
-		}
-		public override GameModel RemoveGameNumber(int _matchNumber, int _gameNumber)
-		{
-			PlayerSlot matchWinnerSlot = GetMatch(_matchNumber).WinnerSlot;
-			int groupIndex;
-			int fixedMatchNumber = _matchNumber;
-			GetMatchData(ref fixedMatchNumber, out groupIndex);
-
-			GameModel gameModel = Groups[groupIndex].RemoveGameNumber(fixedMatchNumber, _gameNumber);
-			ApplyGameRemovalEffects(_matchNumber, new List<GameModel>() { gameModel }, matchWinnerSlot);
-			//UpdateScore(fixedMatchNumber, new List<GameModel>() { gameModel }, false, matchWinnerSlot);
-			RecalculateRankings();
-			return gameModel;
-		}
-
-		public override void SetMatchWinner(int _matchNumber, PlayerSlot _winnerSlot)
-		{
-			int groupIndex;
-			int fixedMatchNumber = _matchNumber;
-			GetMatchData(ref fixedMatchNumber, out groupIndex);
-
-			Groups[groupIndex].SetMatchWinner(fixedMatchNumber, _winnerSlot);
-			RecalculateRankings();
-			ApplyWinEffects(_matchNumber, _winnerSlot);
-		}
-
-		public override List<GameModel> ResetMatchScore(int _matchNumber)
-		{
-			int groupIndex;
-			GetMatchData(ref _matchNumber, out groupIndex);
-			bool wasFinished = GetMatch(_matchNumber).IsFinished;
-
-			List<GameModel> modelList = Groups[groupIndex].ResetMatchScore(_matchNumber);
-			UpdateFinishStatus();
-			RecalculateRankings();
-			return modelList;
-		}
-		#endregion
-#endif
 		#region Accessors
 		/// <summary>
 		/// Returns the number of (upper bracket) rounds
@@ -210,8 +134,8 @@ namespace Tournament.Structure
 				throw new InvalidIndexException
 					("Group number cannot be less than 1!");
 			}
-
-			List<int> roundNums = Matches.Values
+#if false
+			List<int> roundNums = LowerMatches.Values
 				.Where(m => m.GroupNumber == _groupNumber)
 				.Select(m => m.RoundIndex).ToList();
 
@@ -219,6 +143,7 @@ namespace Tournament.Structure
 			{
 				return roundNums.Max();
 			}
+#endif
 			// Else: (_groupNumber is too high)
 			return 0;
 		}
@@ -260,7 +185,7 @@ namespace Tournament.Structure
 		}
 
 		/// <summary>
-		/// Gets all Matches in a specified round, from the given group.
+		/// Gets all Matches in a specified UPPER round, from the given group.
 		/// If the group number is <1, an exception is thrown.
 		/// If the round number is <1, an exception is thrown.
 		/// If either is otherwise out-of-range, an empty list is returned.
@@ -282,7 +207,7 @@ namespace Tournament.Structure
 		}
 
 		/// <summary>
-		/// Gets all Matches in a specified round, from the given group.
+		/// Gets all Matches in a specified LOWER round, from the given group.
 		/// If the group number is <1, an exception is thrown.
 		/// If the round number is <1, an exception is thrown.
 		/// If either is otherwise out-of-range, an empty list is returned.
@@ -297,10 +222,12 @@ namespace Tournament.Structure
 				throw new InvalidIndexException
 					("Group number cannot be less than 1!");
 			}
-
+#if false
 			return GetLowerRound(_round)
 				.Where(m => m.GroupNumber == _groupNumber)
 				.ToList();
+#endif
+			return new List<IMatch>();
 		}
 		#endregion
 		#region Mutators
@@ -354,7 +281,7 @@ namespace Tournament.Structure
 				throw new ScoreException
 					("Games per match cannot be less than 1!");
 			}
-
+#if false
 			List<IMatch> round = GetLowerRound(_groupNumber, _round);
 			if (round.Any(m => m.IsFinished))
 			{
@@ -366,6 +293,7 @@ namespace Tournament.Structure
 			{
 				match.SetMaxGames(_maxGamesPerMatch);
 			}
+#endif
 		}
 		#endregion
 		#endregion

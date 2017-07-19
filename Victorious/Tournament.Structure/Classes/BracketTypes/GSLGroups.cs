@@ -27,10 +27,9 @@ namespace Tournament.Structure
 			//protected Match grandFinal = null
 			//public IMatch GrandFinal = null
 			//public int NumberOfMatches
-			//protected int MatchWinValue = 0
-			//protected int MatchTieValue = 0
+			//protected int MatchWinValue
+			//protected int MatchTieValue
 			//protected List<IBracket> Groups = empty
-			//public int NumberOfGroups = 0
 			#endregion
 
 			#region Ctors
@@ -47,6 +46,16 @@ namespace Tournament.Structure
 			#endregion
 
 			#region Public Methods
+			/// <summary>
+			/// Uses the playerlist to generate the bracket structure & matchups.
+			/// This creates & populates all the Match objects.
+			/// </summary>
+			/// <remarks>
+			/// This particular method override deletes the Grand Finals match,
+			/// which was created by the parent class.
+			/// GSL does not use a Grand Final.
+			/// </remarks>
+			/// <param name="_gamesPerMatch">Max games for every Match</param>
 			public override void CreateBracket(int _gamesPerMatch = 1)
 			{
 				base.CreateBracket(_gamesPerMatch);
@@ -78,6 +87,12 @@ namespace Tournament.Structure
 		public int NumberOfGroups
 		{ get; set; }
 
+		/// <summary>
+		/// A list of PlayerScores for each group.
+		/// Each group is sorted.
+		/// Each PlayerScore is a copied reference from the main Rankings.
+		/// These can be referenced with GetGroupRanking().
+		/// </summary>
 		protected List<List<IPlayerScore>> GroupRankings
 		{ get; set; }
 		#endregion
@@ -107,6 +122,11 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Verifies this bracket's status is legal.
+		/// This is called before allowing play to begin.
+		/// </summary>
+		/// <returns>true if okay, false if errors</returns>
 		public override bool Validate()
 		{
 			if (false == base.Validate())
@@ -124,6 +144,14 @@ namespace Tournament.Structure
 			return true;
 		}
 
+		/// <summary>
+		/// Uses the playerlist to generate the bracket structure & matchups.
+		/// This creates & populates all the Match objects.
+		/// If any Matches already exist, they will be deleted first.
+		/// If there are <2 players, nothing will be made.
+		/// If there are not 4 players per group, nothing will be made.
+		/// </summary>
+		/// <param name="_gamesPerMatch">Max games for every Match</param>
 		public override void CreateBracket(int _gamesPerMatch = 1)
 		{
 			// First, clear any existing Matches and results:
@@ -203,6 +231,13 @@ namespace Tournament.Structure
 				.Max(m => m.RoundIndex);
 		}
 
+		/// <summary>
+		/// Resets the state of all Matches and bracket progression.
+		/// Deletes all Games and sets scores to 0-0.
+		/// Removes Players from Matches they had advanced to.
+		/// Clears Rankings lists.
+		/// May fire MatchesModified and GamesDeleted events, if updates occur.
+		/// </summary>
 		public override void ResetMatches()
 		{
 			base.ResetMatches();
@@ -215,17 +250,18 @@ namespace Tournament.Structure
 			Rankings.Clear();
 		}
 
-		public override bool CheckForTies()
-		{
-			return false;
-		}
-
-		public override bool GenerateTiebreakers()
-		{
-			throw new NotImplementedException
-				("Not applicable for knockout brackets!");
-		}
-
+		#region Player Methods
+		/// <summary>
+		/// Removes a Player from the playerlist,
+		/// and replaces him with a given Player.
+		/// The new Player inherits the old's seed value.
+		/// The removed Player is replaced in all groups, Matches, Games, & Rankings
+		/// by the new Player.
+		/// May fire MatchesModified event, if updates happen.
+		/// If the Player-to-replace's index is invalid, an exception is thrown.
+		/// </summary>
+		/// <param name="_player">Player to add</param>
+		/// <param name="_index">Index (in playerlist) of Player to remove</param>
 		public override void ReplacePlayer(IPlayer _player, int _index)
 		{
 			int? oldPlayerId = Players[_index]?.Id;
@@ -246,8 +282,17 @@ namespace Tournament.Structure
 				}
 			}
 		}
+		#endregion
 
 		#region Accessors
+		/// <summary>
+		/// Returns the number of UPPER bracket rounds
+		/// in the specified group.
+		/// If group number is negative, an exception is thrown.
+		/// If group number is too high, returns 0.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <returns>Number of rounds</returns>
 		public int NumberOfRoundsInGroup(int _groupNumber)
 		{
 			if (_groupNumber < 1)
@@ -268,6 +313,14 @@ namespace Tournament.Structure
 			return 0;
 		}
 
+		/// <summary>
+		/// Returns the number of LOWER bracket rounds
+		/// in the specified group.
+		/// If group number is negative, an exception is thrown.
+		/// If group number is too high, returns 0.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <returns>Number of rounds</returns>
 		public int NumberOfLowerRoundsInGroup(int _groupNumber)
 		{
 			if (_groupNumber < 1)
@@ -276,7 +329,7 @@ namespace Tournament.Structure
 					("Group number cannot be less than 1!");
 			}
 
-			List<int> roundNums = Matches.Values
+			List<int> roundNums = LowerMatches.Values
 				.Where(m => m.GroupNumber == _groupNumber)
 				.Select(m => m.RoundIndex).ToList();
 
@@ -288,6 +341,12 @@ namespace Tournament.Structure
 			return 0;
 		}
 
+		/// <summary>
+		/// Creates a Model of this Bracket's current state.
+		/// Any contained objects (Players, Matches) are also converted into Models.
+		/// </summary>
+		/// <param name="_tournamentID">ID of containing Tournament</param>
+		/// <returns>Matching BracketModel</returns>
 		public override BracketModel GetModel(int _tournamentID)
 		{
 			BracketModel model = base.GetModel(_tournamentID);
@@ -296,6 +355,13 @@ namespace Tournament.Structure
 			return model;
 		}
 
+		/// <summary>
+		/// Gets the ordered Rankings list for the given group.
+		/// If the given group number is <1, an exception is thrown.
+		/// If the group number is out of range, an empty list is returned.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <returns>Sorted list of IPlayerScore rankings objects</returns>
 		public List<IPlayerScore> GetGroupRanking(int _groupNumber)
 		{
 			if (_groupNumber < 1)
@@ -311,6 +377,15 @@ namespace Tournament.Structure
 			return GroupRankings[_groupNumber - 1];
 		}
 
+		/// <summary>
+		/// Gets all Matches in a specified UPPER round, from the given group.
+		/// If the group number is <1, an exception is thrown.
+		/// If the round number is <1, an exception is thrown.
+		/// If either is otherwise out-of-range, an empty list is returned.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <param name="_round">1-indexed</param>
+		/// <returns>Sorted list of IMatches in the given group's round</returns>
 		public List<IMatch> GetRound(int _groupNumber, int _round)
 		{
 			if (_groupNumber < 1)
@@ -324,6 +399,15 @@ namespace Tournament.Structure
 				.ToList();
 		}
 
+		/// <summary>
+		/// Gets all Matches in a specified LOWER round, from the given group.
+		/// If the group number is <1, an exception is thrown.
+		/// If the round number is <1, an exception is thrown.
+		/// If either is otherwise out-of-range, an empty list is returned.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <param name="_round">1-indexed</param>
+		/// <returns>Sorted list of IMatches in the given group's round</returns>
 		public List<IMatch> GetLowerRound(int _groupNumber, int _round)
 		{
 			if (_groupNumber < 1)
@@ -338,6 +422,17 @@ namespace Tournament.Structure
 		}
 		#endregion
 		#region Mutators
+		/// <summary>
+		/// Sets the max number of games per match for one UPPER round,
+		/// in the specified group.
+		/// If Max Games is invalid, an exception is thrown.
+		/// If the group number is <1, an exception is thrown.
+		/// If the round number is <1, an exception is thrown.
+		/// If any matches are already finished, an exception is thrown.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <param name="_round">1-indexed</param>
+		/// <param name="_maxGamesPerMatch">How many Games each Match may last</param>
 		public void SetMaxGamesForWholeRound(int _groupNumber, int _round, int _maxGamesPerMatch)
 		{
 			if (_maxGamesPerMatch < 1)
@@ -364,6 +459,17 @@ namespace Tournament.Structure
 			}
 		}
 
+		/// <summary>
+		/// Sets the max number of games per match for one LOWER round,
+		/// in the specified group.
+		/// If Max Games is invalid, an exception is thrown.
+		/// If the group number is <1, an exception is thrown.
+		/// If the round number is <1, an exception is thrown.
+		/// If any matches are already finished, an exception is thrown.
+		/// </summary>
+		/// <param name="_groupNumber">1-indexed</param>
+		/// <param name="_round">1-indexed</param>
+		/// <param name="_maxGamesPerMatch">How many Games each Match may last</param>
 		public void SetMaxGamesForWholeLowerRound(int _groupNumber, int _round, int _maxGamesPerMatch)
 		{
 			if (_maxGamesPerMatch < 1)
@@ -393,6 +499,11 @@ namespace Tournament.Structure
 		#endregion
 
 		#region Private Methods
+		/// <summary>
+		/// Sets this Bracket's main data from a related BracketModel.
+		/// Data affected includes most fields, as well as the playerlist.
+		/// </summary>
+		/// <param name="_model">Related BracketModel</param>
 		protected override void SetDataFromModel(BracketModel _model)
 		{
 			// Call the base (Bracket) method to set common data and playerlist:
@@ -437,6 +548,35 @@ namespace Tournament.Structure
 			}
 		}
 
+		/// <summary>
+		/// Resets the Bracket.
+		/// Affects Matches, Rankings, and bracket status.
+		/// Also clears group-specific Rankings lists.
+		/// </summary>
+		protected override void ResetBracketData()
+		{
+			base.ResetBracketData();
+
+			if (null == GroupRankings)
+			{
+				GroupRankings = new List<List<IPlayerScore>>();
+				GroupRankings.Capacity = NumberOfGroups;
+			}
+			GroupRankings.Clear();
+		}
+
+		/// <summary>
+		/// Processes the effects of adding a "game win" to a Match.
+		/// If the Match ends, the winner and loser advance,
+		/// so long as they have legal next matches to advance to.
+		/// </summary>
+		/// <remarks>
+		/// This particular override method checks and sets
+		/// the Bracket's status (finished or not).
+		/// </remarks>
+		/// <param name="_matchNumber">Number of Match initially affected</param>
+		/// <param name="_slot">Slot of game winner: Defender or Challenger</param>
+		/// <returns>List of Models of Matches that are changed</returns>
 		protected override List<MatchModel> ApplyWinEffects(int _matchNumber, PlayerSlot _slot)
 		{
 			// All the progression logic is handled by KnockoutBracket's parent method:
@@ -453,6 +593,13 @@ namespace Tournament.Structure
 			return alteredMatches;
 		}
 
+		/// <summary>
+		/// Clears the Rankings, and recalculates them from the Matches list.
+		/// Finds every eliminated player, calculates his rank, and adds him to the Rankings.
+		/// Sorts the Rankings.
+		/// If no players have been eliminated, the Rankings will be an empty list.
+		/// Does the same with each group's internal Rankings.
+		/// </summary>
 		protected override void RecalculateRankings()
 		{
 			if (null == Rankings)
