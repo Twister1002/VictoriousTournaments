@@ -172,6 +172,7 @@ namespace Tournament.Structure
 			{
 				// For each group, generate a full GSL bracket:
 				groups.Add(new GSLBracket(playerGroups[g], _gamesPerMatch));
+				GroupRankings.Add(new List<IPlayerScore>());
 			}
 
 			/*
@@ -199,18 +200,40 @@ namespace Tournament.Structure
 					match.SetMatchIndex(currMatch.MatchIndex);
 					match.SetMatchNumber(NumberOfMatches);
 					match.SetGroupNumber(g + 1);
-					match.AddPlayer(currMatch.Players[(int)PlayerSlot.Defender]);
-					match.AddPlayer(currMatch.Players[(int)PlayerSlot.Challenger]);
+
+					// (Re)assign the Players:
+					if (null != currMatch.Players[(int)PlayerSlot.Defender])
+					{
+						match.AddPlayer(currMatch.Players[(int)PlayerSlot.Defender]);
+					}
+					if (null != currMatch.Players[(int)PlayerSlot.Challenger])
+					{
+						match.AddPlayer(currMatch.Players[(int)PlayerSlot.Challenger]);
+					}
 
 					// Set the match progression data.
 					// First, apply the offset to NextLoserMatchNumber (only if applicable):
-					match.SetNextLoserMatchNumber((-1 == currMatch.NextLoserMatchNumber) ? -1
-						: (currMatch.NextLoserMatchNumber - currMatch.MatchNumber + match.MatchNumber));
+					if (currMatch.NextLoserMatchNumber > 0)
+					{
+						match.SetNextLoserMatchNumber
+							(currMatch.NextLoserMatchNumber - currMatch.MatchNumber + match.MatchNumber);
+					}
 					// Due to a GSL quirk, there is no grand final, but upper&lower finals still point there.
 					// We can use this opportunity to remove that false pointer.
 					// (for other matches, apply the same MatchNumber offset):
-					match.SetNextMatchNumber((currMatch.NextMatchNumber > groups[g].NumberOfMatches) ? -1
-						: (currMatch.NextMatchNumber - currMatch.MatchNumber + match.MatchNumber));
+					if (currMatch.NextMatchNumber <= groups[g].NumberOfMatches)
+					{
+						match.SetNextMatchNumber
+							(currMatch.NextMatchNumber - currMatch.MatchNumber + match.MatchNumber);
+					}
+					for (int i = 0; i < currMatch.PreviousMatchNumbers.Length; ++i)
+					{
+						if (currMatch.PreviousMatchNumbers[i] > 0)
+						{
+							match.AddPreviousMatchNumber
+								(currMatch.PreviousMatchNumbers[i] - currMatch.MatchNumber + match.MatchNumber);
+						}
+					}
 
 					if (match.NextLoserMatchNumber > 0)
 					{
@@ -593,6 +616,85 @@ namespace Tournament.Structure
 			return alteredMatches;
 		}
 
+		protected override void UpdateScore(int _matchNumber, List<GameModel> _games, bool _isAddition, MatchModel _oldMatch)
+		{
+			if (_isAddition &&
+				_oldMatch.WinnerID.GetValueOrDefault(-1) < 0)
+			{
+				int nextWinnerNumber;
+				int nextLoserNumber;
+				Match match = GetMatchData(_matchNumber, out nextWinnerNumber, out nextLoserNumber);
+
+				if (match.IsFinished)
+				{
+					int rank = 0;
+					bool updated = false;
+
+					if (nextLoserNumber < 0)
+					{
+						rank = CalculateRank(_matchNumber);
+						IPlayer losingPlayer = match.Players[
+							(PlayerSlot.Defender == match.WinnerSlot)
+							? (int)PlayerSlot.Defender
+							: (int)PlayerSlot.Challenger];
+						IPlayerScore ps = new PlayerScore(losingPlayer.Id, losingPlayer.Name, rank);
+
+						Rankings.Add(ps);
+						GroupRankings[match.GroupNumber - 1].Add(ps);
+						updated = true;
+					}
+					if (nextWinnerNumber < 0)
+					{
+						rank = CalculateWinnerRank(_matchNumber);
+						IPlayer winningPlayer = match.Players[(int)match.WinnerSlot];
+						IPlayerScore ps = new PlayerScore(winningPlayer.Id, winningPlayer.Name, rank);
+
+						Rankings.Add(ps);
+						GroupRankings[match.GroupNumber - 1].Add(ps);
+						updated = true;
+					}
+
+					if (updated)
+					{
+						Rankings.Sort(SortRankingRanks);
+						GroupRankings[match.GroupNumber - 1].Sort(SortRankingRanks);
+					}
+				}
+			}
+		}
+
+		protected override int CalculateRank(int _matchNumber)
+		{
+			int rank = 0;
+
+			if (LowerMatches?.ContainsKey(_matchNumber) ?? false)
+			{
+				// Standard case: lower bracket match.
+				Match match = GetInternalMatch(_matchNumber);
+				int lastGroupMatch = GetLowerRound(match.GroupNumber, NumberOfLowerRoundsInGroup(match.GroupNumber)).Last().MatchNumber;
+				rank = lastGroupMatch - GetLowerRound(match.GroupNumber, match.RoundIndex).Last().MatchNumber + 3;
+			}
+			else
+			{
+				throw new NotImplementedException
+					("If GSLBrackets still only accept 4 players, this should never hit!");
+			}
+
+			return rank;
+		}
+
+		private int CalculateWinnerRank(int _matchNumber)
+		{
+			int rank = 1;
+
+			if (LowerMatches?.ContainsKey(_matchNumber) ?? false)
+			{
+				rank = 2;
+			}
+
+			return rank;
+		}
+
 		/// <summary>
 		/// Clears the Rankings, and recalculates them from the Matches list.
 		/// Finds every eliminated player, calculates his rank, and adds him to the Rankings.
@@ -638,7 +740,7 @@ namespace Tournament.Structure
 					{
 						// Add winning Player to the Rankings:
 						// (rank=1 from upper bracket, rank=2 from lower bracket)
-						int rank = (Matches.ContainsKey(match.MatchNumber)) ? 1 : 2;
+						int rank = CalculateWinnerRank(match.MatchNumber);
 						IPlayer winningPlayer = match.Players[(int)match.WinnerSlot];
 						IPlayerScore ps = new PlayerScore(winningPlayer.Id, winningPlayer.Name, rank);
 
