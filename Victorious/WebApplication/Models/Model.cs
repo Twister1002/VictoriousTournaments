@@ -20,19 +20,19 @@ namespace WebApplication.Models
         FINAL
     }
 
-    public struct RoundHeader
-    {
-        public int roundNum;
-        public int bestOf;
-        public String title;
-    }
-
     public enum ViewError
     {
         NONE,
         SUCCESS,
         WARNING,
         ERROR
+    }
+
+    public struct RoundHeader
+    {
+        public int roundNum;
+        public int bestOf;
+        public String title;
     }
 
     public abstract class Model
@@ -45,10 +45,30 @@ namespace WebApplication.Models
         };
 
         protected IService services;
+        protected String message;
+        protected ViewError error;
 
         public Model(IService service)
         {
             services = service;
+            message = String.Empty;
+            error = ViewError.NONE;
+        }
+
+        public void SetMessage(String message, ViewError error)
+        {
+            this.message = message;
+            this.error = error;
+        }
+
+        public String GetMessage()
+        {
+            return message;
+        }
+
+        public ViewError GetErrorType()
+        {
+            return error;
         }
     }
 }

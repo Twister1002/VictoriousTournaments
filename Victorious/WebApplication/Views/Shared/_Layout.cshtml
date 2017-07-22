@@ -55,6 +55,11 @@
         {
             <div class="message error">@Model.e.ToString()</div>
         }
+        else if (Model is WebApplication.Models.Model && Model.GetMessage() != String.Empty)
+        {
+            <div class="message @WebApplication.Models.Model.errorClassNames[(int)Model.error]">@Model.GetMessage()</div>
+        }
+
         @RenderBody()
     </div>
     <footer>@{ Html.RenderPartial("_Footer"); }</footer>

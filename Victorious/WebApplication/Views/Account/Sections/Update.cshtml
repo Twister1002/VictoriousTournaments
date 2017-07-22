@@ -9,7 +9,7 @@
     @using (Html.BeginForm("Update", "Account", FormMethod.Post))
     {
         <div class="section">
-            @Html.TextBoxFor(m => m.Username, new { @hidden = "hidden", @required = "required", @readonly = "readonly" })
+            @Html.HiddenFor(m => m.Username, new { @hidden = "hidden", @required = "required", @readonly = "readonly" })
             <ul>
                 <li>
                     @Html.LabelFor(m => m.Email)
