@@ -231,7 +231,6 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Rules.cshtml" />
     <Content Include="Views\Account\Sections\Update.cshtml" />
-    <Content Include="Views\Account\Sections\Settings.cshtml" />
     <Content Include="Views\Account\Sections\Tournaments.cshtml" />
     <Content Include="Views\Account\Sections\History.cshtml" />
     <Content Include="Views\Tournament\Brackets\RoundRobinGroup.cshtml" />
@@ -250,6 +249,7 @@
     <Content Include="Views\Error\NotFound.cshtml" />
     <Content Include="Views\Error\Forbidden.cshtml" />
     <Content Include="Views\Error\AccessDenied.cshtml" />
+    <Content Include="Views\Account\Sections\Subscriptions.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

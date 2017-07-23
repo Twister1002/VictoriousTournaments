@@ -137,8 +137,14 @@ namespace WebApplication.Models
         /// <returns>True if updated; false if not.</returns>
         public bool Update(AccountViewModel viewModel)
         {
-            if (HashManager.ValidatePassword(viewModel.Password, Model.Password))
+            if (HashManager.ValidatePassword(viewModel.CurrentPassword, Model.Password))
             {
+                if (viewModel.Password != viewModel.PasswordVerify)
+                {
+                    viewModel.e = new Exception("Your new password is not the same.");
+                    return false;
+                }
+
                 ApplyChanges(viewModel);
                 services.Account.UpdateAccount(Model);
                 return services.Save();
@@ -205,6 +211,13 @@ namespace WebApplication.Models
             Model.Email         = viewModel.Email != String.Empty ? viewModel.Email : String.Empty;
             Model.FirstName     = viewModel.FirstName != String.Empty ? viewModel.FirstName : String.Empty;
             Model.LastName      = viewModel.LastName != String.Empty ? viewModel.LastName : String.Empty;
+
+            // Check to see if we can cange the password
+            if (viewModel.Password == viewModel.PasswordVerify && !String.IsNullOrEmpty(viewModel.Password))
+            {
+                Model.Salt = HashManager.GetSalt();
+                Model.Password = HashManager.HashPassword(viewModel.Password, Model.Salt);
+            }
         }
 
         public void SetFields()

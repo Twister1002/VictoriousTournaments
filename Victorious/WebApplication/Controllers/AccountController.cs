@@ -133,34 +133,23 @@ namespace WebApplication.Controllers
         [Route("Account/Update")]
         public ActionResult Update(AccountViewModel viewModel)
         {
-            if (account.IsLoggedIn())
+            // Require the logged in account and the username to match to continue
+            if (account.IsLoggedIn() && viewModel.Username == account.GetUsername())
             {
-                //// Verify the user being updated is legitly the user logged in
-                //if (viewModel.AccountId == account.Model.AccountID)
-                //{
-                    if (account.Update(viewModel))
-                    {
-                        Session["User.Name"] = viewModel.FirstName;
-                        Session["Message"] = "Your account was successfully updated.";
-                        Session["Message.Class"] = ViewError.SUCCESS;
+                if (account.Update(viewModel))
+                {
+                    Session["User.Name"] = viewModel.FirstName;
+                    Session["Message"] = "Your account was successfully updated.";
+                    Session["Message.Class"] = ViewError.SUCCESS;
 
-                        return RedirectToAction("Index", "Account");
-                    }
-                    else
-                    {
-                        // There was an error updating the account
-                        Session["Message"] = "There was an error updating your account.";
-                        Session["Message.Class"] = ViewError.ERROR;
-                    }
-                //}
-                //else
-                //{
-                //    // Log the user out as I feel this is a hacking attempt
-                //    Session.RemoveAll();
-                //    Session["Message"] = "Unfortunately, we're unable to update your account. Please login and try again.";
-                //    Session["Message.Class"] = ViewError.ERROR;
-                //    return RedirectToAction("Login", "Account");
-                //}
+                    return RedirectToAction("Index", "Account");
+                }
+                else
+                {
+                    // There was an error updating the account
+                    Session["Message"] = "There was an error updating your account.";
+                    Session["Message.Class"] = ViewError.ERROR;
+                }
             }
             else
             {

@@ -40,5 +40,16 @@ namespace WebApplication.Models.ViewModels
         [StringLength(AccountModel.PasswordLength)]
         [Display(Name = "Verify Password")]
         public string PasswordVerify { get; set; }
+
+        [DataType(DataType.Password)]
+        [StringLength(AccountModel.PasswordLength)]
+        [Display(Name = "Current Password")]
+        public string CurrentPassword { get; set; }
+
+
+        // Email subscriptions
+        [Display(Name = "Content Updates")]
+        public bool EmailMajorUpdates { get; set; }
+        
     }
 }

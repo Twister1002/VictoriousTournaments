@@ -1,20 +1,14 @@
 ﻿@model WebApplication.Models.ViewModels.AccountViewModel
 
-@{
-
-}
-
 <div id="AccountUpdate">
     <h2>Update Account</h2>
     @using (Html.BeginForm("Update", "Account", FormMethod.Post))
     {
+        @Html.HiddenFor(m => m.Username, new { @hidden = "hidden", @required = "required", @readonly = "readonly" })
+
         <div class="section">
-            @Html.HiddenFor(m => m.Username, new { @hidden = "hidden", @required = "required", @readonly = "readonly" })
+            <h3>About you</h3>
             <ul>
-                <li>
-                    @Html.LabelFor(m => m.Email)
-                    @Html.TextBoxFor(m => m.Email, new { @placeholder = "Email", @required = "required" })
-                </li>
                 <li>
                     @Html.LabelFor(m => m.FirstName)
                     @Html.TextBoxFor(m => m.FirstName, new { @placeholder = "First Name", @required = "required" })
@@ -24,8 +18,39 @@
                     @Html.TextBoxFor(m => m.LastName, new { @placeholder = "Last Name", @required = "required" })
                 </li>
                 <li>
-                    @Html.LabelFor(m => m.Password)
-                    @Html.PasswordFor(m => m.Password, new { @placeholder = "Password", @required = "required" })
+                    @Html.LabelFor(m => m.Email)
+                    @Html.TextBoxFor(m => m.Email, new { @placeholder = "Email", @required = "required" })
+                </li>
+            </ul>
+        </div>
+        <div class="section">
+            <h3>Password Update</h3>
+            <ul>
+                <li>
+                    @Html.LabelFor(x => x.Password)
+                    @Html.PasswordFor(x => x.Password, new { @placeholder = "New Password" })
+                </li>
+                <li>
+                    @Html.LabelFor(x => x.PasswordVerify)
+                    @Html.PasswordFor(x => x.PasswordVerify, new { @placeholder = "Verify New Password" })
+                </li>
+            </ul>
+        </div>
+        <div class="section">
+            <h3>Email Subscriptions</h3>
+            <ul>
+                <li>
+                    @Html.LabelFor(x=>x.EmailMajorUpdates)
+                    @Html.CheckBoxFor(x=>x.EmailMajorUpdates)
+                </li>
+            </ul>
+        </div>
+        <div class="section">
+            <h3>Authorization</h3>
+            <ul>
+                <li>
+                    @Html.LabelFor(x=>x.CurrentPassword)
+                    @Html.PasswordFor(x => x.CurrentPassword, new { @placeholder = "Password", @required = "required" })
                 </li>
             </ul>
         </div>

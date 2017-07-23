@@ -6,9 +6,10 @@
 
 <div id="Account">
     <div class="accountMenu">
+        <div class="menu active" data-type="Update">Account</div>
         <div class="menu" data-type="History">History</div>
-        <div class="menu" data-type="Update">Settings</div>
-        <div class="menu active"data-type="Tournaments">Tournaments</div>
+        <div class="menu" data-type="Tournaments">Tournaments</div>
+        @*<div class="menu" data-type="Subscriptions">Subscriptions</div>*@
         <a class="menu" data-type="Loading" href="@Url.Action("Create", "Tournament")">Create Tournament</a>
         @if (Model.IsAdministrator())
         {
@@ -18,10 +19,10 @@
         <a class="menu" data-type="Loading" href="@Url.Action("Logout", "Account")">Logout</a>
     </div>
     <div class="sections">
-        @{ Html.RenderPartial("Sections/Settings", Model); }
         @{ Html.RenderPartial("Sections/History", Model); }
         @{ Html.RenderPartial("Sections/Tournaments", Model); }
         @{ Html.RenderPartial("Sections/Update", Model.viewModel); }
+        @{ Html.RenderPartial("Sections/Subscriptions", Model); }
         <div id="AccountLoading">Please wait while we redirect you...</div>
     </div>
 </div>
