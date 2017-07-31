@@ -79,6 +79,16 @@ namespace WebApplication.Models
             }
         }
 
+        public void ForgotPassword(AccountViewModel viewModel)
+        {
+
+        }
+
+        public void ForgotUsername(AccountViewModel viewModel)
+        {
+
+        }
+
         #region CRUD
         /// <summary>
         /// Creates the user to the database

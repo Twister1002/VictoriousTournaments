@@ -250,6 +250,7 @@
     <Content Include="Views\Error\Forbidden.cshtml" />
     <Content Include="Views\Error\AccessDenied.cshtml" />
     <Content Include="Views\Account\Sections\Subscriptions.cshtml" />
+    <Content Include="Views\Account\Forgot.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -161,5 +161,33 @@ namespace WebApplication.Controllers
 
             return View("Update", viewModel);
         }
+
+        [HttpGet]
+        [Route("Account/Forgot")]
+        public ActionResult Forgot()
+        {
+            if (!account.IsLoggedIn())
+            {
+                return View("Forgot", account.viewModel);
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        [Route("Account/Forgot")]
+        public ActionResult Forgot(AccountViewModel viewModel)
+        {
+            if (!account.IsLoggedIn())
+            {
+                return View("Forgot", account.viewModel);
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+        }
     }
 }

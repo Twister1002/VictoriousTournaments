@@ -1,0 +1,45 @@
+﻿@model WebApplication.Models.ViewModels.AccountViewModel
+
+@{
+    ViewBag.Title = "ForgotPassword";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div id="AccountForgot">
+    <div class="section">
+        <h2>Forgot your username?</h2>
+        @using (Html.BeginForm("Forgot", "Account", FormMethod.Post))
+        {
+            <div class="section">
+                <ul>
+                    <li>
+                        @Html.LabelFor(x => x.Email)
+                        @Html.TextBoxFor(x => x.Email, new { @placeholder = "Email" })
+                    </li>
+                </ul>
+            </div>
+            <div class="section">
+                <input type="submit" name="submit" />
+            </div>
+        }
+    </div>
+    <div class="section">
+        <h2>Forgot your password?</h2>
+        @using (Html.BeginForm("Forgot", "Account", FormMethod.Post))
+        {
+            <div class="section">
+                <ul>
+                    <li>
+                        @Html.LabelFor(x => x.Username)
+                        @Html.TextBoxFor(x => x.Username, new { @placeholder = "Username" })
+                    </li>
+                </ul>
+            </div>
+            <div class="section">
+                <input type="submit" name="submit" />
+            </div>
+        }
+
+    </div>
+</div>
