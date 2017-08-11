@@ -79,14 +79,21 @@ namespace WebApplication.Models
             }
         }
 
-        public void ForgotPassword(AccountViewModel viewModel)
+        public bool Forgot(AccountViewModel viewModel)
         {
+            if (viewModel.Email != String.Empty || viewModel.Username != String.Empty)
+            {
+                // Send an email to the user about their username
+                if (services.Account.AccountEmailExists(viewModel.Email))
+                {
+                    AccountModel account = services.Account.GetAccount(viewModel.Email);
 
-        }
-
-        public void ForgotUsername(AccountViewModel viewModel)
-        {
-
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
 
         #region CRUD

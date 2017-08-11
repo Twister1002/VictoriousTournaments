@@ -8,7 +8,7 @@
     <h2>Login</h2>
     @using (Html.BeginForm("Login", "Account", FormMethod.Post))
     {
-        <div class="section" >
+        <div class="section">
             <ul>
                 <li>
                     @Html.LabelFor(m => m.Username)
@@ -20,12 +20,19 @@
                 </li>
             </ul>
         </div>
-        <div class="login">
+        <div class="section">
             <input type="submit" value="Login" />
+        </div>
+
+        <div class="section socialmedia">
+            <a class="button facebook">Login With Facebook</a>
         </div>
     }
 
     <div class="section">
         Don't have an account? @Html.ActionLink("Register here!", "Register", "Account", null, new { @class = "clickable-underline" })
+    </div>
+    <div class="section">
+        Forgot your password? @Html.ActionLink("Click here", "Forgot", "Account", null, new { @class = "clickable-underline" })
     </div>
 </div>

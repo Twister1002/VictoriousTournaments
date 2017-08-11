@@ -10,7 +10,6 @@
             text-align: center;
             display: block;
             padding: .5em;
-
             .hover;
 
             &.active {
@@ -36,6 +35,7 @@
             &#AccountTournaments {
                 ul.list-table {
                     padding-bottom: 2em;
+
                     li.list-table-body {
                         ul {
                             padding: .5em 0em;
@@ -68,9 +68,33 @@
 }
 
 
-#AccountRegister, #AccountUpdate {
+#AccountRegister {
 }
 
+#AccountUpdate {
+}
+
+#AccountForgot {
+    .section {
+        width: 100%;
+    }
+}
+
+#AccountLogin {
+    .socialmedia {
+        width: 100%;
+
+        .facebook {
+            background-color: @color-primary-1;
+            color: @white;
+            width: 50%;
+
+            &:hover {
+                background-color: lighten(@color-primary-1, 20%);
+            }
+        }
+    }
+}
 
 @media screen and (min-width: @@b1) {
     #AccountRegister, #AccountUpdate {
@@ -104,6 +128,25 @@
             display: inline-block;
             width: 79%;
             vertical-align: top;
+        }
+    }
+
+    #AccountRegister {
+        margin: auto;
+        width: 47em;
+    }
+
+    #AccountLogin {
+        width: 50%;
+        margin: auto;
+
+        .section {
+            padding: .5em 1em;
+
+            li {
+                display: inline-block;
+                padding: 0em 1em 0em 0em;
+            }
         }
     }
 }

@@ -51,14 +51,14 @@ namespace DatabaseLib.Services
         /// Retrieves a single Account from the database. 
         /// This function is designed to be used when the user is logging in to check their account info.
         /// </summary>
-        /// <param name="username"> The username of the user that is logging in. </param>
+        /// <param name="userOrEmail">The username or the email associated with the account</param>
         /// <returns> Returns an AccountModel, or null if an exception is thrown. </returns>
         /// <remarks> If an Account with a matching username is not found, an ObjectNotFoundException will be thrown. </remarks>
-        public AccountModel GetAccount(string username)
+        public AccountModel GetAccount(string userOrEmail)
         {
             try
             {
-                return unitOfWork.AccountRepo.GetSingle(u => u.Username == username);
+                return unitOfWork.AccountRepo.GetSingle(u => u.Username == userOrEmail || u.Email == userOrEmail);
             }
             catch (Exception ex)
             {

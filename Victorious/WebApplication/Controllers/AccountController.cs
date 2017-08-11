@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using WebApplication.Models;
 using WebApplication.Models.ViewModels;
 
@@ -182,6 +183,8 @@ namespace WebApplication.Controllers
         {
             if (!account.IsLoggedIn())
             {
+                account.Forgot(viewModel);
+
                 return View("Forgot", account.viewModel);
             }
             else
