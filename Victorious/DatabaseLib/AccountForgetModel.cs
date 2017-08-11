@@ -14,21 +14,14 @@ namespace DatabaseLib
     
     public partial class AccountForgetModel
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public AccountForgetModel()
-        {
-            this.IsUsed = false;
-    		OnInit();
-        }
-    
         public int AccountForgetID { get; set; }
         public int AccountID { get; set; }
         public string Token { get; set; }
-        public System.DateTime RequestedDate { get; set; }
-        public bool IsUsed { get; set; }
+        public System.DateTime DateIssued { get; set; }
+        public Nullable<System.DateTime> DateUsed { get; set; }
     	
     	partial void OnInit();
     
-        public virtual AccountModel AccountModel { get; set; }
+        public virtual AccountModel Account { get; set; }
     }
 }

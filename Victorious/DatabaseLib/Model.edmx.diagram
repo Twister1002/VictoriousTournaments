@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="140c09bfe994490da52abb1b6f930a88" Name="Diagram1" ZoomLevel="72" DisplayType="true" ShowGrid="false">
+      <Diagram DiagramId="140c09bfe994490da52abb1b6f930a88" Name="Diagram1" ZoomLevel="57" DisplayType="true" ShowGrid="false">
         <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketModel" PointX="10" PointY="7.875" Width="2.375" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketTypeModel" PointX="13.5" PointY="10.5" Width="2.375" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUserModel" PointX="13.375" PointY="3.75" Width="2.375" IsExpanded="true" />
@@ -47,6 +47,9 @@
         <EntityTypeShape EntityType="VictoriousDatabaseModel.MailingList" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountForgetModel" Width="2.5" PointX="3.75" PointY="10.75" />
         <AssociationConnector Association="VictoriousDatabaseModel.AccountModelAccountForgetModel" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_AccountForgetModel_AccountModel" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountForgetModel" Width="1.5" PointX="3.875" PointY="11.75" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_AccountForget_ToTable_AccountModel" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

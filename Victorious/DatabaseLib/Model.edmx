@@ -11,6 +11,16 @@
           </Key>
           <Property Name="OperationKey" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
+        <EntityType Name="AccountForget">
+          <Key>
+            <PropertyRef Name="AccountForgetID" />
+          </Key>
+          <Property Name="AccountForgetID" Type="int" Nullable="false" />
+          <Property Name="AccountID" Type="int" Nullable="false" />
+          <Property Name="Token" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="DateIssued" Type="datetime" Nullable="false" />
+          <Property Name="DateUsed" Type="datetime" />
+        </EntityType>
         <EntityType Name="AccountInvites">
           <Key>
             <PropertyRef Name="AccountInviteCode" />
@@ -218,7 +228,7 @@
           <Property Name="PermissionLevel" Type="int" />
           <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="InviteCode" Type="nvarchar" MaxLength="255" />
-          <Property Name="IsCheckedIn" Type="bit" />
+          <Property Name="IsCheckedIn" Type="bit" Nullable="false" />
           <Property Name="CheckInTime" Type="datetime" />
         </EntityType>
         <EntityType Name="TournamentUsersBrackets">
@@ -231,6 +241,18 @@
           <Property Name="Seed" Type="int" />
           <Property Name="TournamentID" Type="int" Nullable="false" />
         </EntityType>
+        <Association Name="FK_AccountForget_ToTable_AccountModel">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="1" />
+          <End Role="AccountForget" Type="Self.AccountForget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="AccountForget">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Brackets_BracketTypes">
           <End Role="BracketTypes" Type="Self.BracketTypes" Multiplicity="1" />
           <End Role="Brackets" Type="Self.Brackets" Multiplicity="*" />
@@ -469,6 +491,7 @@
         </Association>
         <EntityContainer Name="VictoriousDatabaseModelStoreContainer">
           <EntitySet Name="__RefactorLog" EntityType="Self.__RefactorLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AccountForget" EntityType="Self.AccountForget" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AccountInvites" EntityType="Self.AccountInvites" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Accounts" EntityType="Self.Accounts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Brackets" EntityType="Self.Brackets" Schema="dbo" store:Type="Tables" />
@@ -487,6 +510,10 @@
           <EntitySet Name="TournamentTeams" EntityType="Self.TournamentTeams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TournamentUsers" EntityType="Self.TournamentUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TournamentUsersBrackets" EntityType="Self.TournamentUsersBrackets" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_AccountForget_ToTable_AccountModel" Association="Self.FK_AccountForget_ToTable_AccountModel">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="AccountForget" EntitySet="AccountForget" />
+          </AssociationSet>
           <AssociationSet Name="FK_Brackets_BracketTypes" Association="Self.FK_Brackets_BracketTypes">
             <End Role="BracketTypes" EntitySet="BracketTypes" />
             <End Role="Brackets" EntitySet="Brackets" />
@@ -698,6 +725,11 @@
             <End Role="TournamentTeamMember" EntitySet="TournamentTeamMemberModels" />
           </AssociationSet>
           <EntitySet Name="MailingLists" EntityType="VictoriousDatabaseModel.MailingList" />
+          <EntitySet Name="AccountForgetModels" EntityType="VictoriousDatabaseModel.AccountForgetModel" />
+          <AssociationSet Name="FK_AccountForget_ToTable_AccountModel" Association="VictoriousDatabaseModel.FK_AccountForget_ToTable_AccountModel">
+            <End Role="AccountModel" EntitySet="AccountModels" />
+            <End Role="AccountForget" EntitySet="AccountForgetModels" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="TournamentUserModel">
           <Key>
@@ -810,6 +842,7 @@
           <NavigationProperty Name="SiteTeamMembers" Relationship="VictoriousDatabaseModel.FK_SiteTeamMembers_Accounts_AccountID" FromRole="AccountModel" ToRole="SiteTeamMember" />
           <Property Name="Salt" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ReceiveTournamentUpdates" Type="Boolean" />
+          <NavigationProperty Name="AccountForgets" Relationship="VictoriousDatabaseModel.FK_AccountForget_ToTable_AccountModel" FromRole="AccountModel" ToRole="AccountForget" />
         </EntityType>
         <EntityType Name="MatchModel">
           <Key>
@@ -1167,6 +1200,29 @@
           </Key>
           <Property Name="EmailAddress" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="AccountForgetModel">
+          <Key>
+            <PropertyRef Name="AccountForgetID" />
+          </Key>
+          <Property Name="AccountForgetID" Type="Int32" Nullable="false" />
+          <Property Name="AccountID" Type="Int32" Nullable="false" />
+          <Property Name="Token" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="DateIssued" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DateUsed" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Account" Relationship="VictoriousDatabaseModel.FK_AccountForget_ToTable_AccountModel" FromRole="AccountForget" ToRole="AccountModel" />
+        </EntityType>
+        <Association Name="FK_AccountForget_ToTable_AccountModel">
+          <End Type="VictoriousDatabaseModel.AccountModel" Role="AccountModel" Multiplicity="1" />
+          <End Type="VictoriousDatabaseModel.AccountForgetModel" Role="AccountForget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AccountModel">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="AccountForget">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1413,6 +1469,17 @@
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.MailingList">
               <MappingFragment StoreEntitySet="MailingList">
                 <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AccountForgetModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.AccountForgetModel">
+              <MappingFragment StoreEntitySet="AccountForget">
+                <ScalarProperty Name="DateUsed" ColumnName="DateUsed" />
+                <ScalarProperty Name="DateIssued" ColumnName="DateIssued" />
+                <ScalarProperty Name="Token" ColumnName="Token" />
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+                <ScalarProperty Name="AccountForgetID" ColumnName="AccountForgetID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
