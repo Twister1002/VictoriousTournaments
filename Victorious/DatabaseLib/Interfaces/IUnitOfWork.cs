@@ -10,6 +10,7 @@ namespace DatabaseLib
     {
         IRepository<AccountInviteModel> AccountInviteRepo { get; }
         IRepository<AccountModel> AccountRepo { get; }
+        IRepository<AccountForgetModel> AccountForgetRepo { get; }
         IRepository<BracketModel> BracketRepo { get; }
         IRepository<BracketTypeModel> BracketTypeRepo { get; }
         IRepository<GameModel> GameRepo { get; }

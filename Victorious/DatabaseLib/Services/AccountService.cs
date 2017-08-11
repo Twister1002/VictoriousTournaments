@@ -237,5 +237,36 @@ namespace DatabaseLib.Services
         }
 
         #endregion
+
+        #region AccountForget
+        public void AddAccountForget(AccountForgetModel model)
+        {
+            unitOfWork.AccountForgetRepo.Add(model);
+        }
+        
+        public AccountForgetModel Get(String token)
+        {
+            try
+            {
+                return unitOfWork.AccountForgetRepo.GetSingle(x => x.Token == token);
+            }
+            catch(Exception e)
+            {
+                unitOfWork.SetException(e);
+                return null;
+            }
+        }
+
+        public void UpdateAccountForget(AccountForgetModel model)
+        {
+            unitOfWork.AccountForgetRepo.Update(model);
+        }
+
+        public void DeleteAccountForget(int accountForgetID)
+        {
+            AccountForgetModel accountForget = unitOfWork.AccountForgetRepo.GetSingle(x => x.AccountForgetID == accountForgetID);
+            unitOfWork.AccountForgetRepo.DeleteEntity(accountForget);
+        }
+        #endregion
     }
 }

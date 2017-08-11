@@ -164,9 +164,7 @@ namespace DatabaseLib
         {
             try
             {
-
                 AccountModel account = context.AccountModels.Find(accountId);
-                account.LastLogin = DateTime.Now;
                 context.SaveChanges();
             }
             catch (Exception ex)

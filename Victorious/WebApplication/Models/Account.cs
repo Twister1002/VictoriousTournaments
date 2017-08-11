@@ -79,6 +79,12 @@ namespace WebApplication.Models
             }
         }
 
+        /// <summary>
+        /// This will send an email to the user depending on the request for the username or password.
+        /// A token will be created for the user to click on
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
         public bool Forgot(AccountViewModel viewModel)
         {
             if (viewModel.Email != String.Empty || viewModel.Username != String.Empty)

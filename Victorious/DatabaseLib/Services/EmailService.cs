@@ -11,6 +11,7 @@ using System.IO;
 
 namespace DatabaseLib
 {
+    [Obsolete]
     public class EmailService
     {
         IUnitOfWork unitOfWork;

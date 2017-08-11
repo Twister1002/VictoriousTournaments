@@ -27,7 +27,5 @@ namespace DatabaseLib
         DbError AccountEmailExists(string email);
 
         List<TournamentModel> GetTournamentsForAccount(int accountId);
-
-
     }
 }

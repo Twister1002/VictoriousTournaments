@@ -20,7 +20,7 @@
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Matches_Brackets" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Games_Matches" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.GameTypeModel" Width="2.375" PointX="6.75" PointY="1.125" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountInviteModel" Width="2.375" PointX="0.5" PointY="15" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountInviteModel" Width="2.375" PointX="0.625" PointY="15.75" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentModel" Width="2.375" PointX="10.125" PointY="0.5" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_Brackets_Tournaments" />
@@ -45,6 +45,8 @@
         <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamMember_TournamentTeams_TournamentTeamID" ManuallyRouted="false" >
         </AssociationConnector>
         <EntityTypeShape EntityType="VictoriousDatabaseModel.MailingList" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountForgetModel" Width="2.5" PointX="3.75" PointY="10.75" />
+        <AssociationConnector Association="VictoriousDatabaseModel.AccountModelAccountForgetModel" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

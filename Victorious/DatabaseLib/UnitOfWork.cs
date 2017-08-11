@@ -12,6 +12,7 @@ namespace DatabaseLib
         private VictoriousEntities context = new VictoriousEntities();
         IRepository<AccountInviteModel> accountInviteRepo;
         IRepository<AccountModel> accountRepo;
+        IRepository<AccountForgetModel> accountForgetRepo;
         IRepository<BracketModel> bracketRepo;
         IRepository<BracketTypeModel> bracketTypeRepo;
         IRepository<GameModel> gameRepo;
@@ -110,6 +111,18 @@ namespace DatabaseLib
                     this.accountInviteRepo = new Repository<AccountInviteModel>(context);
                 }
                 return accountInviteRepo;
+            }
+        }
+
+        public IRepository<AccountForgetModel> AccountForgetRepo
+        {
+            get
+            {
+                if (this.accountForgetRepo == null)
+                {
+                    this.accountForgetRepo = new Repository<AccountForgetModel>(context);
+                }
+                return AccountForgetRepo;
             }
         }
 
