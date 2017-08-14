@@ -185,12 +185,28 @@ namespace WebApplication.Controllers
             {
                 account.Forgot(viewModel);
 
-                return View("Forgot", account.viewModel);
+                return View("Forgot", viewModel);
             }
             else
             {
                 return RedirectToAction("Index");
             }
+        }
+
+        [HttpGet]
+        [Route("Account/Retrieve/{token?}")]
+        public ActionResult Retrieve(String token)
+        {
+            AccountRetrieveViewModel viewModel = new AccountRetrieveViewModel();
+
+            return View("Retrieve", viewModel);
+        }
+
+        [HttpPost]
+        [Route("Account/Retrieve")]
+        public ActionResult Retrieve(AccountRetrieveViewModel viewModel)
+        {
+            return View("Retrieve", viewModel);
         }
     }
 }

@@ -30,8 +30,8 @@ namespace DatabaseLib
         public string Username { get; set; }
         public string Password { get; set; }
         public string PhoneNumber { get; set; }
-        public Nullable<System.DateTime> CreatedOn { get; set; }
-        public Nullable<System.DateTime> LastLogin { get; set; }
+        public System.DateTime CreatedOn { get; set; }
+        public System.DateTime LastLogin { get; set; }
         public int PermissionLevel { get; set; }
         public string InviteCode { get; set; }
         public Nullable<int> InvitedByID { get; set; }

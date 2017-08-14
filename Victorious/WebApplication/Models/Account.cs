@@ -87,13 +87,53 @@ namespace WebApplication.Models
         /// <returns></returns>
         public bool Forgot(AccountViewModel viewModel)
         {
-            if (viewModel.Email != String.Empty || viewModel.Username != String.Empty)
+            AccountModel account = null;
+
+            if (viewModel.Email != String.Empty)
             {
                 // Send an email to the user about their username
                 if (services.Account.AccountEmailExists(viewModel.Email))
                 {
-                    AccountModel account = services.Account.GetAccount(viewModel.Email);
+                    account = services.Account.GetAccount(viewModel.Email);
+                }
+            }
+            else if (viewModel.Username != String.Empty)
+            {
+                if (services.Account.AccountUsernameExists(viewModel.Username))
+                {
+                    account = services.Account.GetAccount(viewModel.Email);
+                }
+            }
 
+            // The account is a real account. Create a token and let the user know it was successful.
+            if (account != null)
+            {
+                EmailUtility email = new EmailUtility();
+                AccountForgetModel forgetModel = new AccountForgetModel()
+                {
+                    AccountID = account.AccountID,
+                    DateIssued = DateTime.Now,
+                    Token = Utility.Codes.GenerateInviteCode(30)
+                };
+
+                services.Account.AddForgetModel(forgetModel);
+
+                if (services.Save())
+                {
+                    if (email.EmailForgottenPassword(account, forgetModel))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        viewModel.e = email.e;
+                        return false;
+                    }
+                }
+                else
+                {
+                    viewModel.e = services.GetException();
+                    return false;
                 }
             }
             else

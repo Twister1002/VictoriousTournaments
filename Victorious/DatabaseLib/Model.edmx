@@ -15,7 +15,7 @@
           <Key>
             <PropertyRef Name="AccountForgetID" />
           </Key>
-          <Property Name="AccountForgetID" Type="int" Nullable="false" />
+          <Property Name="AccountForgetID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AccountID" Type="int" Nullable="false" />
           <Property Name="Token" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="DateIssued" Type="datetime" Nullable="false" />
@@ -38,18 +38,18 @@
             <PropertyRef Name="AccountID" />
           </Key>
           <Property Name="AccountID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="FirstName" Type="nvarchar" MaxLength="50" />
-          <Property Name="LastName" Type="nvarchar" MaxLength="50" />
-          <Property Name="Email" Type="nvarchar" MaxLength="50" />
-          <Property Name="Username" Type="nvarchar" MaxLength="50" />
-          <Property Name="Password" Type="nvarchar" MaxLength="255" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="PhoneNumber" Type="nchar" MaxLength="15" />
-          <Property Name="CreatedOn" Type="datetime" />
-          <Property Name="LastLogin" Type="datetime" />
+          <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+          <Property Name="LastLogin" Type="datetime" Nullable="false" />
           <Property Name="PermissionLevel" Type="int" Nullable="false" />
           <Property Name="InviteCode" Type="nvarchar" MaxLength="256" />
           <Property Name="InvitedByID" Type="int" />
-          <Property Name="Salt" Type="nvarchar(max)" />
+          <Property Name="Salt" Type="nvarchar(max)" Nullable="false" />
           <Property Name="ReceiveTournamentUpdates" Type="bit" />
         </EntityType>
         <EntityType Name="Brackets">
@@ -827,20 +827,20 @@
             <PropertyRef Name="AccountID" />
           </Key>
           <Property Name="AccountID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="PhoneNumber" Type="String" MaxLength="15" FixedLength="true" Unicode="true" />
-          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
-          <Property Name="LastLogin" Type="DateTime" Precision="3" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" Nullable="false" />
+          <Property Name="LastLogin" Type="DateTime" Precision="3" Nullable="false" />
           <Property Name="PermissionLevel" Type="Int32" Nullable="false" />
           <Property Name="InviteCode" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="InvitedByID" Type="Int32" />
           <NavigationProperty Name="AccountInvites" Relationship="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy" FromRole="AccountModel" ToRole="AccountInvite" />
           <NavigationProperty Name="SiteTeamMembers" Relationship="VictoriousDatabaseModel.FK_SiteTeamMembers_Accounts_AccountID" FromRole="AccountModel" ToRole="SiteTeamMember" />
-          <Property Name="Salt" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Salt" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="ReceiveTournamentUpdates" Type="Boolean" />
           <NavigationProperty Name="AccountForgets" Relationship="VictoriousDatabaseModel.FK_AccountForget_ToTable_AccountModel" FromRole="AccountModel" ToRole="AccountForget" />
         </EntityType>

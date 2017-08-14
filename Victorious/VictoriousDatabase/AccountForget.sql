@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[AccountForget]
 (
-	[AccountForgetID] INT NOT NULL PRIMARY KEY, 
+	[AccountForgetID] INT NOT NULL PRIMARY KEY IDENTITY, 
     [AccountID] INT NOT NULL, 
     [Token] VARCHAR(100) NOT NULL, 
     [DateIssued] DATETIME NOT NULL, 

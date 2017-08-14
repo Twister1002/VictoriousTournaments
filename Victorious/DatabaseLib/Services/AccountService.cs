@@ -239,12 +239,12 @@ namespace DatabaseLib.Services
         #endregion
 
         #region AccountForget
-        public void AddAccountForget(AccountForgetModel model)
+        public void AddForgetModel(AccountForgetModel model)
         {
             unitOfWork.AccountForgetRepo.Add(model);
         }
         
-        public AccountForgetModel Get(String token)
+        public AccountForgetModel GetForgetModel(String token)
         {
             try
             {
@@ -257,12 +257,12 @@ namespace DatabaseLib.Services
             }
         }
 
-        public void UpdateAccountForget(AccountForgetModel model)
+        public void UpdateForgetModel(AccountForgetModel model)
         {
             unitOfWork.AccountForgetRepo.Update(model);
         }
 
-        public void DeleteAccountForget(int accountForgetID)
+        public void DeleteForgetModel(int accountForgetID)
         {
             AccountForgetModel accountForget = unitOfWork.AccountForgetRepo.GetSingle(x => x.AccountForgetID == accountForgetID);
             unitOfWork.AccountForgetRepo.DeleteEntity(accountForget);

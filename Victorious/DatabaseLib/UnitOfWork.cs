@@ -122,7 +122,7 @@ namespace DatabaseLib
                 {
                     this.accountForgetRepo = new Repository<AccountForgetModel>(context);
                 }
-                return AccountForgetRepo;
+                return accountForgetRepo;
             }
         }
 

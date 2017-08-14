@@ -48,7 +48,6 @@
         <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountForgetModel" Width="2.5" PointX="3.75" PointY="10.75" />
         <AssociationConnector Association="VictoriousDatabaseModel.AccountModelAccountForgetModel" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_AccountForgetModel_AccountModel" />
-        <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountForgetModel" Width="1.5" PointX="3.875" PointY="11.75" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_AccountForget_ToTable_AccountModel" />
         </Diagram>
     </edmx:Diagrams>
