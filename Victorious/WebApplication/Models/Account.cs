@@ -89,7 +89,7 @@ namespace WebApplication.Models
         {
             AccountModel account = null;
 
-            if (viewModel.Email != String.Empty)
+            if (viewModel.Email != String.Empty && viewModel.Email != null)
             {
                 // Send an email to the user about their username
                 if (services.Account.AccountEmailExists(viewModel.Email))
@@ -97,11 +97,11 @@ namespace WebApplication.Models
                     account = services.Account.GetAccount(viewModel.Email);
                 }
             }
-            else if (viewModel.Username != String.Empty)
+            else if (viewModel.Username != String.Empty && viewModel.Username != null)
             {
                 if (services.Account.AccountUsernameExists(viewModel.Username))
                 {
-                    account = services.Account.GetAccount(viewModel.Email);
+                    account = services.Account.GetAccount(viewModel.Username);
                 }
             }
 

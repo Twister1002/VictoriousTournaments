@@ -18,7 +18,7 @@ namespace WebApplication.Utility
         public EmailUtility()
         {
             googleServer = new SmtpClient("smtp.gmail.com", 587);
-            googleServer.Credentials = new System.Net.NetworkCredential("victorioustournaments@gmail.com", "V1ct0rious T0urnam3nts");
+            googleServer.Credentials = new System.Net.NetworkCredential("victorioustournaments@gmail.com", "V!ct0ri0us T0urNam3nts");
             googleServer.EnableSsl = true;
 
             mail = new MailMessage();

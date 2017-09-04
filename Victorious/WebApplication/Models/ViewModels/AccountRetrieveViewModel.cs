@@ -7,5 +7,6 @@ namespace WebApplication.Models.ViewModels
 {
     public class AccountRetrieveViewModel : ViewModel
     {
+        public String Token { get; set; }
     }
 }

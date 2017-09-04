@@ -194,19 +194,20 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet]
-        [Route("Account/Retrieve/{token?}")]
-        public ActionResult Retrieve(String token)
+        [Route("Account/Forgot/{token}")]
+        public ActionResult Forgot(String token)
         {
             AccountRetrieveViewModel viewModel = new AccountRetrieveViewModel();
+            viewModel.Token = token;
 
             return View("Retrieve", viewModel);
         }
 
         [HttpPost]
-        [Route("Account/Retrieve")]
-        public ActionResult Retrieve(AccountRetrieveViewModel viewModel)
+        [Route("Account/Forgot")]
+        public ActionResult Forgot(AccountRetrieveViewModel viewModel)
         {
-            return View("Retrieve", viewModel);
+            return View("Forgot", viewModel);
         }
     }
 }

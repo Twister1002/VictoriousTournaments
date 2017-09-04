@@ -6,6 +6,14 @@
 }
 
 <div id="AccountRetrieve">
-    Seems like you are needing assistance to get your account back... Lets figure this out.
+    <h2>Account Retrieval</h2>
+    <div class="section">
+        <p>Hey there, let's reset that password!</p>
+        @using (Html.BeginForm("Forgot", "Account", FormMethod.Post))
+        {
+            @Html.HiddenFor(x => x.Token)
+            <input type="submit" value="submit" />
+        }
+    </div>
 </div>
 
