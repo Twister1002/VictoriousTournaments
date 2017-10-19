@@ -16,13 +16,11 @@ namespace DatabaseLib
     {
         public int AccountInviteID { get; set; }
         public string AccountInviteCode { get; set; }
-        public string SentToEmail { get; set; }
         public int SentByID { get; set; }
+        public string SentToEmail { get; set; }
         public System.DateTime DateCreated { get; set; }
         public System.DateTime DateExpires { get; set; }
         public bool IsExpired { get; set; }
-    	
-    	partial void OnInit();
     
         public virtual AccountModel Account { get; set; }
     }

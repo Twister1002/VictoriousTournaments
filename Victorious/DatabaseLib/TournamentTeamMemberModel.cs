@@ -17,8 +17,6 @@ namespace DatabaseLib
         public int TournamentTeamMemberID { get; set; }
         public int TournamentTeamID { get; set; }
         public int SiteTeamMemberID { get; set; }
-    	
-    	partial void OnInit();
     
         public virtual SiteTeamMemberModel SiteTeamMember { get; set; }
         public virtual TournamentTeamModel TournamentTeam { get; set; }

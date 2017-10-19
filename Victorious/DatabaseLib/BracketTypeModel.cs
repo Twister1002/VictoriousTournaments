@@ -17,17 +17,16 @@ namespace DatabaseLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public BracketTypeModel()
         {
-            this.IsActive = true;
             this.Brackets = new HashSet<BracketModel>();
     		OnInit();
         }
     
+    	partial void OnInit();
+    
         public int BracketTypeID { get; set; }
         public string TypeName { get; set; }
-        public DatabaseLib.BracketType Type { get; set; }
+        public int Type { get; set; }
         public bool IsActive { get; set; }
-    	
-    	partial void OnInit();
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BracketModel> Brackets { get; set; }

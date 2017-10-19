@@ -21,10 +21,10 @@ namespace DatabaseLib
     		OnInit();
         }
     
+    	partial void OnInit();
+    
         public int PlatformID { get; set; }
         public string PlatformName { get; set; }
-    	
-    	partial void OnInit();
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentModel> Tournaments { get; set; }

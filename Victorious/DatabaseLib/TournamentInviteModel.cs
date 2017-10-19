@@ -21,8 +21,6 @@ namespace DatabaseLib
         public bool IsExpired { get; set; }
         public System.DateTime DateCreated { get; set; }
         public int NumberOfUses { get; set; }
-    	
-    	partial void OnInit();
     
         public virtual TournamentModel Tournament { get; set; }
     }

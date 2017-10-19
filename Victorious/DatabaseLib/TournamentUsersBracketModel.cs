@@ -18,8 +18,6 @@ namespace DatabaseLib
         public int BracketID { get; set; }
         public Nullable<int> Seed { get; set; }
         public int TournamentID { get; set; }
-    	
-    	partial void OnInit();
     
         public virtual BracketModel Bracket { get; set; }
         public virtual TournamentUserModel TournamentUser { get; set; }

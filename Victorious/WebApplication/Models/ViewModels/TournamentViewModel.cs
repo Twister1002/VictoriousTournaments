@@ -75,7 +75,7 @@ namespace WebApplication.Models.ViewModels
 
         [Display(Name = "Game")]
         [Required(ErrorMessage = "Select a game")]
-        public int? GameTypeID { get; set; }
+        public int GameTypeID { get; set; }
 
         [Display(Name = "Platform")]
         [Required(ErrorMessage = "Choose a platform")]

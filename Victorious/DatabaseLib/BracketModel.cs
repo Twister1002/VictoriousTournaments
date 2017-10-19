@@ -17,11 +17,13 @@ namespace DatabaseLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public BracketModel()
         {
-            this.TournamentUsersBrackets = new HashSet<TournamentUsersBracketModel>();
             this.Matches = new HashSet<MatchModel>();
             this.TournamentTeamBrackets = new HashSet<TournamentTeamBracketModel>();
+            this.TournamentUsersBrackets = new HashSet<TournamentUsersBracketModel>();
     		OnInit();
         }
+    
+    	partial void OnInit();
     
         public int BracketID { get; set; }
         public int BracketTypeID { get; set; }
@@ -31,16 +33,14 @@ namespace DatabaseLib
         public int MaxRounds { get; set; }
         public int NumberPlayersAdvance { get; set; }
         public bool IsLocked { get; set; }
-    	
-    	partial void OnInit();
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
         public virtual BracketTypeModel BracketType { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MatchModel> Matches { get; set; }
         public virtual TournamentModel Tournament { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MatchModel> Matches { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentTeamBracketModel> TournamentTeamBrackets { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
     }
 }

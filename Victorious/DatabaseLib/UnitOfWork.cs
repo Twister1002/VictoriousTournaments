@@ -9,7 +9,7 @@ namespace DatabaseLib
     /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
-        private VictoriousEntities context = new VictoriousEntities();
+        private VictoriousEntities context;
         IRepository<AccountInviteModel> accountInviteRepo;
         IRepository<AccountModel> accountRepo;
         IRepository<BracketModel> bracketRepo;
@@ -27,7 +27,7 @@ namespace DatabaseLib
         IRepository<TournamentTeamBracketModel> tournamentTeamBracketRepo;
         IRepository<SiteTeamModel> siteTeamRepo;
         IRepository<SiteTeamMemberModel> siteTeamMemberRepo;
-        IRepository<MailingList> mailingListRepo;
+        IRepository<MailingListModel> mailingListRepo;
 
         Exception exception;
 
@@ -293,13 +293,13 @@ namespace DatabaseLib
             }
         }
 
-        public IRepository<MailingList> MailingListRepo
+        public IRepository<MailingListModel> MailingListRepo
         {
             get
             {
                 if (this.mailingListRepo == null)
                 {
-                    this.mailingListRepo = new Repository<MailingList>(context);
+                    this.mailingListRepo = new Repository<MailingListModel>(context);
                 }
                 return mailingListRepo;
             }

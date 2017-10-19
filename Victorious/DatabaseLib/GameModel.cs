@@ -22,8 +22,6 @@ namespace DatabaseLib
         public int GameNumber { get; set; }
         public int ChallengerScore { get; set; }
         public int DefenderScore { get; set; }
-    	
-    	partial void OnInit();
     
         public virtual MatchModel Match { get; set; }
     }

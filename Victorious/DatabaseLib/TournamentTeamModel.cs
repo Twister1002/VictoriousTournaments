@@ -22,13 +22,13 @@ namespace DatabaseLib
     		OnInit();
         }
     
-        public int TournamentTeamID { get; private set; }
+    	partial void OnInit();
+    
+        public int TournamentTeamID { get; set; }
         public int TournamentID { get; set; }
         public int SiteTeamID { get; set; }
         public int CreatedByID { get; set; }
         public string TeamName { get; set; }
-    	
-    	partial void OnInit();
     
         public virtual SiteTeamModel SiteTeam { get; set; }
         public virtual TournamentModel Tournament { get; set; }

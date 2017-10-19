@@ -12,7 +12,7 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class MailingList
+    public partial class MailingListModel
     {
         public string EmailAddress { get; set; }
     }
