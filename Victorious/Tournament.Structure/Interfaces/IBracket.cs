@@ -229,8 +229,9 @@ namespace Tournament.Structure
 		/// </summary>
 		/// <param name="_matchNumber">Number of Match to modify</param>
 		/// <param name="_gameNumber">Number of Game to delete</param>
+		/// <param name="_updateInstead">true if updating the game, false if removing</param>
 		/// <returns>Model of removed Game</returns>
-		GameModel RemoveGameNumber(int _matchNumber, int _gameNumber);
+		GameModel RemoveGameNumber(int _matchNumber, int _gameNumber, bool _updateInstead = false);
 
 		/// <summary>
 		/// Manually set a winner for specified Match.

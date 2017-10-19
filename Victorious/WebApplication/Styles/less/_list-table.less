@@ -44,24 +44,3 @@
         }
     }
 }
-
-.columnSet(@value) {
-    column-count: @value;
-    -moz-column-count: @value;
-    -webkit-column-count: @value;
-}
-
-.columnwidth(@value) {
-    width: (1/@value) * 94%;
-}
-
-.grid(@max, @index: 1) when (@index <= @max) {
-    .grid(@max, (@index + 1));
-
-    &[data-columns="@{index}"] {
-        .column {
-            display: inline-block;
-            .columnwidth(@index);
-        }
-    }
-}

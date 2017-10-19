@@ -7,6 +7,7 @@
     bool registrationStarted = (DateTime)Model.Model.RegistrationStartDate <= DateTime.Now;
     bool tournamentStarted = (DateTime)Model.Model.TournamentStartDate <= DateTime.Now;
     bool registrationEnded = (DateTime)Model.Model.RegistrationEndDate <= DateTime.Now;
+    bool bracketSelected = false;
 
     ViewBag.TournamentId = Model.Model.TournamentID;
     ViewBag.UserId = Session["User.UserId"] != null ? Session["User.UserId"] : -1;
@@ -42,12 +43,20 @@
                 <ul data-columns="@brackets.Count">
                     @foreach (var bracket in brackets)
                     {
-                        <li class="column bracketName" data-bracket="@bracket.Id">@bracket.BracketName()</li>
+                        <li class="column bracketName @(!bracket.IsLocked && !bracketSelected ? "selected" : "")" data-bracket="@bracket.Id">@bracket.BracketName()</li>
+
+                        if (!bracket.IsLocked)
+                        {
+                            bracketSelected = true;
+                        }
                     }
                 </ul>
             </li>
         </ul>
     </div>
+    @{ 
+        bracketSelected = false;
+    }
     @for (int i = 0; i < brackets.Count; i++)
     {
         var bracket = brackets[i];
@@ -59,7 +68,7 @@
         ViewBag.GrandFinal = bracket.IBracket.GrandFinal != null;
         ViewBag.IsLocked = bracket.IsLocked;
 
-        <div class="bracket" data-id="@bracket.Id">
+        <div class="bracket @(!bracket.IsLocked && !bracketSelected ? "selected" : "")" data-id="@bracket.Id">
             <ul class="list-table bracket-data">
                 <li>
                     <div class="options">
@@ -101,6 +110,11 @@
                 </li>
             </ul>
         </div>
-                        }
+
+        if (!bracket.IsLocked)
+        {
+            bracketSelected = true;
+        }
+    }
     @{ Html.RenderPartial("Standings", Model, new ViewDataDictionary(ViewData)); }
 </div>

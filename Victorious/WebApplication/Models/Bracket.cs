@@ -111,6 +111,11 @@ namespace WebApplication.Models
             // Fires events below
             bracket.ResetMatches();
 
+            //model.Finalized = false;
+            //model.Matches = new List<MatchModel>();
+
+            //services.Tournament.UpdateBracket(model);
+
             return services.Save();
         }
 
@@ -148,10 +153,14 @@ namespace WebApplication.Models
 
                 if (!matches.Any(x => x.IsFinished == false))
                 {
-                    matches = bracket.GetRound(head.RoundIndex + 1);
-                    foreach (IMatch match in matches)
+                    for (int i = head.RoundIndex; i <= bracket.NumberOfRounds; i++)
                     {
-                        matchesAffected.Add(match.MatchNumber);
+                        matches = bracket.GetRound(i);
+
+                        foreach (IMatch match in matches)
+                        {
+                            matchesAffected.Add(match.MatchNumber);
+                        }
                     }
                 }
 
@@ -454,7 +463,15 @@ namespace WebApplication.Models
             return true;
         }
 
-        public bool AddGame(int matchNum, int CScore, int DScore, PlayerSlot winner)
+        /// <summary>
+        /// Adds the game and saves to the database
+        /// </summary>
+        /// <param name="matchNum">Match Number</param>
+        /// <param name="DScore">Defender Score</param>
+        /// <param name="CScore">Challenger Score</param>
+        /// <param name="winner">The winner of the game</param>
+        /// <returns>True if saved; false if failed</returns>
+        public bool AddGame(int matchNum, int DScore, int CScore, PlayerSlot winner)
         {
             GameModel game = bracket.AddGame(matchNum, DScore, CScore, winner);
 
@@ -464,6 +481,40 @@ namespace WebApplication.Models
             return services.Save();
         }
 
+        /// <summary>
+        /// Updates the game and saves to the database
+        /// </summary>
+        /// <param name="matchNum">Match Number</param>
+        /// <param name="gameNum">Game Number</param>
+        /// <param name="DScore">Defender Score</param>
+        /// <param name="CScore">Challenger Score</param>
+        /// <param name="winner">The winner of the game</param>
+        /// <returns>True if saved; false if failed</returns>
+        public bool UpdateGame(int matchNum, int gameNum, int DScore, int CScore, PlayerSlot winner)
+        {
+			GameModel gameOrig = model.Matches.Single(x => x.MatchNumber == matchNum).Games.Single(x => x.GameNumber == gameNum);
+
+            // Add the game to the database since the UpdateGame will fire an event that will delete that game from the database
+            if (gameOrig.DefenderScore != DScore || gameOrig.ChallengerScore != CScore)
+            {
+				GameModel updatedGame = bracket.UpdateGame(matchNum, gameNum, DScore, CScore, winner);
+				gameOrig.DefenderScore = updatedGame.DefenderScore;
+				gameOrig.ChallengerScore = updatedGame.ChallengerScore;
+				gameOrig.WinnerID = updatedGame.WinnerID;
+
+				services.Tournament.UpdateGame(gameOrig);
+            }
+            
+
+            return services.Save();
+        }
+
+        /// <summary>
+        /// Removes the game from the database
+        /// </summary>
+        /// <param name="matchNum">The Match Number</param>
+        /// <param name="gameNum">The Game Number</param>
+        /// <returns></returns>
         public bool RemoveGame(int matchNum, int gameNum)
         {
             GameModel game = bracket.RemoveGameNumber(matchNum, gameNum);

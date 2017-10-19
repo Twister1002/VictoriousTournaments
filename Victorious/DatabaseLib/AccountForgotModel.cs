@@ -12,8 +12,14 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class C__RefactorLog
+    public partial class AccountForgotModel
     {
-        public System.Guid OperationKey { get; set; }
+        public int AccountForgetID { get; set; }
+        public int AccountID { get; set; }
+        public string Token { get; set; }
+        public System.DateTime DateIssued { get; set; }
+        public Nullable<System.DateTime> DateUsed { get; set; }
+    
+        public virtual AccountModel Account { get; set; }
     }
 }

@@ -4,5 +4,118 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>FAQ</h2>
-
+<div id="faq">
+    <h2>FAQ</h2>
+    <ul class="section">
+        <li class="question">
+            <label>What is Victorious Tournaments?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                Victorious Tournaments is a website for aiding in the management of tournaments
+                for all communities including: esports and traditional sports. The platform allows
+                users to create tournaments that allow players to enter the tournament themselves,
+                so you can get back to the more important things in your community.
+            </div>
+        </li>
+        <li class="question">
+            <label>How can I create a tournament?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                You will need to have an @Html.ActionLink("account", "Login", "Account", null, new { @class = "clickable-underline" }) in order to
+                create a tournament at this time. Once logged into your account, there is a link in
+                the account panel that will allow you to create a tournament. You can also use the menu
+                dropdown to get you there faster.
+            </div>
+        </li>
+        <li class="question">
+            <label>How can users register to my tournament?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                There are 2 requirements to verify before being able to allow users to join your
+                tournament.
+                <p>
+                    <ol>
+                        <li>
+                            Make sure you have public registration turned on or send your friend the
+                            invitation link.
+                        </li>
+                        <li>
+                            Make sure your tournament's registration dates has began and not passed.<br />
+                            e.g If today is 01/01/2017 8AM verify that the Registration start date and time on
+                            or before 01/01/2017 8AM and make sure the end date and time is after 01/01/2017 8AM.
+                        </li>
+                    </ol>
+                </p>
+            </div>
+        </li>
+        <li class="question">
+            <label>Does everyone in my tournament need to register an account?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                Simply answered, no.
+                <p>
+                    However, if those players are regulars in your tournaments, it would be better for them
+                    to have their own accounts so they could join your future tournaments. This can cut down
+                    on your tournament preperation.
+                </p>
+            </div>
+        </li>
+        <li class="question">
+            <label>What brackets are available?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                We have a multitude of brackets available including:
+                <ol>
+                    <li>Single Elimination</li>
+                    <li>Double Elimination</li>
+                    <li>Round Robin</li>
+                    <li>Swiss</li>
+                    <li>GSL-Style</li>
+                    <li>Step Ladder</li>
+                </ol>
+            </div>
+        </li>
+    </ul>
+    <ul class="section">
+        <li class="question">
+            <label>What is a Single Elimination Bracket?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                A Single Elimination is where 2 teams / players compete to move forward to the next round. 
+                The bracket ends when the final round has been played, which will determine the winner of the 
+                bracket / tournament.
+            </div>
+        </li>
+        <li class="question">
+            <label>What is a Double Elimination Bracket?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                A Double Elimination is where 2 teams / players compete to move forward to the next round.
+                However, the bracket is split between an upper section and the lower section. If a team / player
+                loses a round, they will be moved from the upper section to the bottom section, if eligable. This
+                allows for the team / player another chance to win the bracket / tournament.
+            </div>
+        </li>
+        <li class="question">
+            <label>What is a Round Robin Bracket?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                A Round Robin allows all players / teams to play against each other at least once regardless of seeding
+                / placements. This could take a while to finish the tournament.
+            </div>
+        </li>
+        <li class="question">
+            <label>What is a Swiss Bracket?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                A Swiss bracket, similar to round robin bracket, will allow the chance to face other teams / players.
+                Not all rounds are complete as it requires information from every round to be processed before creating 
+                the next round. This allows for equal ranks to play against each other.
+            </div>
+        </li>
+        <li class="question">
+            <label>What is a GSL-Style Bracket?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                More information coming soon!
+            </div>
+        </li>
+        <li class="question">
+            <label>What is a Step Ladder Bracket?<span class="icon icon-plus showInfo"></span></label>
+            <div class="answer">
+                A Step Ladder bracket, similar to a Single Elimination, lets the players / teams in the highest seed 
+                to be faced in later rounds.
+            </div>
+        </li>
+    </ul>
+</div>

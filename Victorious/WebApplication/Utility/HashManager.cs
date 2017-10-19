@@ -9,8 +9,8 @@ namespace WebApplication.Utility
 {
     public class HashManager
     {
-        public const int SaltByteSize = 15;
-        public const int HashByteSize = 15; // to match the size of the PBKDF2-HMAC-SHA-1 hash 
+        public const int SaltByteSize = 32;
+        public const int HashByteSize = 32; // to match the size of the PBKDF2-HMAC-SHA-1 hash 
         public const int Pbkdf2Iterations = 1000;
         public const int IterationIndex = 0;
         public const int SaltIndex = 1;

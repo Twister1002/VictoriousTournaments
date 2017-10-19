@@ -215,6 +215,8 @@ namespace WebApplication.Controllers
             }
             else
             {
+                status = true;
+                message = "Standings Acquired";
                 data = new
                 {
                     ranks = bracket.IBracket.Rankings,
@@ -289,30 +291,39 @@ namespace WebApplication.Controllers
                     Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                     Models.Bracket bracket = tournament.GetBracket(bracketId);
                     Models.Match match = bracket.GetMatchByNum(matchNum);
+                    bool validUpdate = true;
 
                     if (tournament.IsAdmin(account.Model.AccountID))
                     {
-                        Dictionary<int, bool> processed = new Dictionary<int, bool>();
-
                         // Verify these matches exists
                         foreach (GameViewModel gameModel in games)
                         {
+                            PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
+                            bool containsGame = match.match.Games.Any(x => x.GameNumber == gameModel.GameNumber);
+
                             // Tie game check
-                            if (match.match.IsFinished || gameModel.ChallengerScore == gameModel.DefenderScore)
+                            if (gameModel.ChallengerScore == gameModel.DefenderScore)
                             {
-                                processed.Add(gameModel.GameNumber, false);
                                 continue;
                             }
 
-                            if (!match.match.Games.Any(x => x.GameNumber == gameModel.GameNumber))
+                            // Add the game
+                            if (!match.match.IsFinished && !containsGame)
                             {
-                                // We need to add this game.
-                                PlayerSlot winner = gameModel.DefenderScore > gameModel.ChallengerScore ? PlayerSlot.Defender : PlayerSlot.Challenger;
-                                bracket.AddGame(matchNum, gameModel.ChallengerScore, gameModel.DefenderScore, winner);
+                                if (!bracket.AddGame(matchNum, gameModel.DefenderScore, gameModel.ChallengerScore, winner))
+                                {
+                                    validUpdate = false;
+                                    break;
+                                }
                             }
-                            else
+                            // Update the game
+                            else if (containsGame)
                             {
-                                processed.Add(gameModel.GameNumber, false);
+                                if (!bracket.UpdateGame(matchNum, gameModel.GameNumber, gameModel.DefenderScore, gameModel.ChallengerScore, winner))
+                                {
+                                    validUpdate = false;
+                                    break;
+                                }
                             }
                         }
 
@@ -320,28 +331,18 @@ namespace WebApplication.Controllers
                         status = bracket.UpdateMatch(bracket.IBracket.GetMatchModel(matchNum));
                         match = bracket.GetMatchByNum(matchNum);
                         bool refresh = bracket.roundsModified;
+
+                        List<int> matchesAffected = bracket.MatchesAffectedList(matchNum);
                         List<object> matchUpdates = new List<object>();
 
                         if (status)
                         {
                             message = "Current match was updated";
 
-                            matchUpdates.Add(JsonMatchResponse(match, true));
-                            if (match.match.NextMatchNumber != -1)
-                                matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(match.match.NextMatchNumber), false));
-                            if (match.match.NextLoserMatchNumber != -1)
-                                matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(match.match.NextLoserMatchNumber), false));
-                            if (bracket.IBracket.BracketType ==  DatabaseLib.BracketType.SWISS)
+                            // Creates objects for all matches affected, including the match you're currently on
+                            foreach (int matchNumAffected in matchesAffected)
                             {
-                                List<IMatch> roundMatches = bracket.IBracket.GetRound(match.match.RoundIndex);
-                                // We need to verify and check if this round is finished
-                                if (!roundMatches.Any(x => x.IsFinished == false))
-                                {
-                                    foreach (Models.Match iMatch in bracket.GetRound(match.match.RoundIndex + 1, BracketSection.UPPER))
-                                    {
-                                        matchUpdates.Add(JsonMatchResponse(iMatch, false));
-                                    }
-                                }
+                                matchUpdates.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNumAffected), false));
                             }
                         }
 
@@ -350,7 +351,6 @@ namespace WebApplication.Controllers
                         {
                             bracketFinished = bracket.IBracket.IsFinished,
                             isLocked = bracket.IsLocked,
-                            processed = processed,
                             matches = matchUpdates,
                             refresh = refresh
                         };
@@ -381,27 +381,33 @@ namespace WebApplication.Controllers
             {
                 Models.Tournament tournament = new Models.Tournament(service, tournamentId);
                 Models.Bracket bracket = tournament.GetBracket(bracketId);
-                //Models.Match match = bracket.GetMatchByNum(matchNum);
-                List<int> matchesAffected = bracket.MatchesAffectedList(matchNum);
-                List<object> matchesAffectedData = new List<object>();
 
-                if (bracket.RemoveGame(matchNum, gameNum))
+                if (tournament.IsAdmin(account.Model.AccountID))
                 {
-                    foreach (int matchNumber in matchesAffected)
+                    //Models.Match match = bracket.GetMatchByNum(matchNum);
+                    List<int> matchesAffected = bracket.MatchesAffectedList(matchNum);
+                    List<object> matchesAffectedData = new List<object>();
+
+                    if (bracket.RemoveGame(matchNum, gameNum))
                     {
-                        matchesAffectedData.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNum), true));
+                        foreach (int matchNumber in matchesAffected)
+                        {
+                            matchesAffectedData.Add(JsonMatchResponse(bracket.GetMatchByNum(matchNumber), true));
+                        }
+
+                        status = true;
+                        message = "Matches were updated";
+                        data = new
+                        {
+                            bracketFinished = bracket.IBracket.IsFinished,
+                            isLocked = bracket.IsLocked,
+                            matches = matchesAffectedData,
+                        };
                     }
-
-                    status = true;
-                    message = "Matches were updated";
-                    data = new
+                    else
                     {
-                        matches = matchesAffectedData
-                    };
-                }
-                else
-                {
-                    message = "There was an error in deleting the game";
+                        message = "There was an error in deleting the game";
+                    }
                 }
             }
 
@@ -592,7 +598,13 @@ namespace WebApplication.Controllers
                     {
                         status = true;
                         message = "Tournament was deleted.";
-                        redirect = Url.Action("Index", "Tournament");
+                        data = new
+                        {
+                            redirect = Url.Action("Index", "Tournament")
+                        };
+
+                        Session["Message"] = message;
+                        Session["Message.Class"] = ViewError.SUCCESS;
                     }
                     else
                     {

@@ -21,6 +21,8 @@ namespace DatabaseLib
     		OnInit();
         }
     
+    	partial void OnInit();
+    
         public int MatchID { get; set; }
         public int ChallengerID { get; set; }
         public int DefenderID { get; set; }
@@ -42,8 +44,6 @@ namespace DatabaseLib
         public Nullable<int> BracketID { get; set; }
         public bool IsManualWin { get; set; }
         public Nullable<int> GroupNumber { get; set; }
-    	
-    	partial void OnInit();
     
         public virtual BracketModel Bracket { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

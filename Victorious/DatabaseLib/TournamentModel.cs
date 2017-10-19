@@ -18,14 +18,16 @@ namespace DatabaseLib
         public TournamentModel()
         {
             this.Brackets = new HashSet<BracketModel>();
-            this.TournamentUsers = new HashSet<TournamentUserModel>();
             this.TournamentInvites = new HashSet<TournamentInviteModel>();
             this.TournamentTeams = new HashSet<TournamentTeamModel>();
+            this.TournamentUsers = new HashSet<TournamentUserModel>();
     		OnInit();
         }
     
+    	partial void OnInit();
+    
         public int TournamentID { get; set; }
-        public Nullable<int> GameTypeID { get; set; }
+        public int GameTypeID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public System.DateTime CreatedOn { get; set; }
@@ -46,18 +48,16 @@ namespace DatabaseLib
         public string InviteCode { get; set; }
         public bool PublicRegistration { get; set; }
         public bool PublicViewing { get; set; }
-    	
-    	partial void OnInit();
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BracketModel> Brackets { get; set; }
         public virtual GameTypeModel GameType { get; set; }
         public virtual PlatformModel Platform { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentUserModel> TournamentUsers { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentInviteModel> TournamentInvites { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentTeamModel> TournamentTeams { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TournamentUserModel> TournamentUsers { get; set; }
     }
 }

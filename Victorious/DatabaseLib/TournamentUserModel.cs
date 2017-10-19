@@ -22,6 +22,8 @@ namespace DatabaseLib
     		OnInit();
         }
     
+    	partial void OnInit();
+    
         public int TournamentUserID { get; set; }
         public Nullable<int> AccountID { get; set; }
         public Nullable<int> UniformNumber { get; set; }
@@ -31,11 +33,9 @@ namespace DatabaseLib
         public string InviteCode { get; set; }
         public bool IsCheckedIn { get; set; }
         public Nullable<System.DateTime> CheckInTime { get; set; }
-    	
-    	partial void OnInit();
     
+        public virtual TournamentModel Tournament { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
-        public virtual TournamentModel Tournament { get; set; }
     }
 }

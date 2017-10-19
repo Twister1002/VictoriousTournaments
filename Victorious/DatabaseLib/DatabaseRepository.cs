@@ -78,39 +78,6 @@ namespace DatabaseLib
                 .Load();
 
             context.Configuration.ProxyCreationEnabled = false;
-
-            //if (context.BracketTypeModels.Find(1) == null)
-            //{
-            //    context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 1, Type = BracketType.SINGLE, TypeName = "Single Elimination" });
-            //    context.SaveChanges();
-            //}
-            //if (context.BracketTypeModels.Find(2) == null)
-            //{
-            //    context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 2, Type = BracketType.DOUBLE, TypeName = "Double Elimination" });
-            //    context.SaveChanges();
-            //}
-            //if (context.BracketTypeModels.Find(3) == null)
-            //{
-            //    context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 3, Type = BracketType.ROUNDROBIN, TypeName = "Round Robin" });
-            //    context.SaveChanges();
-            //}
-            //if (context.BracketTypeModels.Find(4) == null)
-            //{
-            //    context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 4, Type = BracketType.RRGROUP, TypeName = "RR Group" });
-            //    context.SaveChanges();
-            //}
-            //if (context.BracketTypeModels.Find(5) == null)
-            //{
-            //    context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 5, Type = BracketType.GSLGROUP, TypeName = "GSL Group" });
-            //    context.SaveChanges();
-            //}
-            //if (context.BracketTypeModels.Find(6) == null)
-            //{
-            //    context.BracketTypeModels.Add(new BracketTypeModel() { BracketTypeID = 6, Type = BracketType.SWISS, TypeName = "Swiss" });
-            //    context.SaveChanges();
-            //}
-
-
         }
 
         #region Accounts

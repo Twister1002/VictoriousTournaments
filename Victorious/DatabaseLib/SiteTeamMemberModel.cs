@@ -21,12 +21,12 @@ namespace DatabaseLib
     		OnInit();
         }
     
-        public int SiteTeamMemberID { get; private set; }
+    	partial void OnInit();
+    
+        public int SiteTeamMemberID { get; set; }
         public int AccountID { get; set; }
         public int SiteTeamID { get; set; }
-        public DatabaseLib.Permission Role { get; set; }
-    	
-    	partial void OnInit();
+        public int Role { get; set; }
     
         public virtual AccountModel Account { get; set; }
         public virtual SiteTeamModel SiteTeam { get; set; }

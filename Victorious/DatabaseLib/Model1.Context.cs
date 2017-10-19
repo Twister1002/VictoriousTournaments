@@ -25,24 +25,24 @@ namespace DatabaseLib
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<C__RefactorLog> C__RefactorLog { get; set; }
+        public virtual DbSet<AccountForgotModel> AccountForgotModels { get; set; }
+        public virtual DbSet<AccountInviteModel> AccountInviteModels { get; set; }
+        public virtual DbSet<AccountModel> AccountModels { get; set; }
         public virtual DbSet<BracketModel> BracketModels { get; set; }
         public virtual DbSet<BracketTypeModel> BracketTypeModels { get; set; }
-        public virtual DbSet<TournamentUserModel> TournamentUserModels { get; set; }
-        public virtual DbSet<TournamentUsersBracketModel> TournamentUsersBracketModels { get; set; }
         public virtual DbSet<GameModel> GameModels { get; set; }
-        public virtual DbSet<PlatformModel> PlatformModels { get; set; }
-        public virtual DbSet<AccountModel> AccountModels { get; set; }
-        public virtual DbSet<MatchModel> MatchModels { get; set; }
         public virtual DbSet<GameTypeModel> GameTypeModels { get; set; }
-        public virtual DbSet<AccountInviteModel> AccountInviteModels { get; set; }
-        public virtual DbSet<TournamentModel> TournamentModels { get; set; }
-        public virtual DbSet<TournamentInviteModel> TournamentInviteModels { get; set; }
+        public virtual DbSet<MailingListModel> MailingListModels { get; set; }
+        public virtual DbSet<MatchModel> MatchModels { get; set; }
+        public virtual DbSet<PlatformModel> PlatformModels { get; set; }
         public virtual DbSet<SiteTeamMemberModel> SiteTeamMemberModels { get; set; }
         public virtual DbSet<SiteTeamModel> SiteTeamModels { get; set; }
+        public virtual DbSet<TournamentInviteModel> TournamentInviteModels { get; set; }
+        public virtual DbSet<TournamentModel> TournamentModels { get; set; }
         public virtual DbSet<TournamentTeamBracketModel> TournamentTeamBracketModels { get; set; }
-        public virtual DbSet<TournamentTeamModel> TournamentTeamModels { get; set; }
         public virtual DbSet<TournamentTeamMemberModel> TournamentTeamMemberModels { get; set; }
-        public virtual DbSet<MailingList> MailingLists { get; set; }
+        public virtual DbSet<TournamentTeamModel> TournamentTeamModels { get; set; }
+        public virtual DbSet<TournamentUserModel> TournamentUserModels { get; set; }
+        public virtual DbSet<TournamentUsersBracketModel> TournamentUsersBracketModels { get; set; }
     }
 }

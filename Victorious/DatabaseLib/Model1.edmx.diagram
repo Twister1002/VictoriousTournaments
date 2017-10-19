@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="4cf8ac6fde40409d98341a02c1ea08b7" Name="Diagram1" ZoomLevel="93">
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountForgotModel" Width="1.5" PointX="8.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountInviteModel" Width="1.5" PointX="8.25" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountModel" Width="1.5" PointX="6" PointY="3.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketModel" Width="1.5" PointX="5.25" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.BracketTypeModel" Width="1.5" PointX="3" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.GameModel" Width="1.5" PointX="9.75" PointY="17.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.GameTypeModel" Width="1.5" PointX="0.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.MailingListModel" Width="1.5" PointX="0.75" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.MatchModel" Width="1.5" PointX="7.5" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.PlatformModel" Width="1.5" PointX="0.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.SiteTeamMemberModel" Width="1.5" PointX="8.25" PointY="4.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.SiteTeamModel" Width="1.5" PointX="6" PointY="8.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentInviteModel" Width="1.5" PointX="5.25" PointY="16.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentModel" Width="1.5" PointX="3" PointY="10.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentTeamBracketModel" Width="1.5" PointX="10.5" PointY="12.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentTeamMemberModel" Width="1.5" PointX="10.5" PointY="9.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentTeamModel" Width="1.5" PointX="8.25" PointY="12.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUserModel" Width="1.5" PointX="5.25" PointY="23.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentUsersBracketModel" Width="1.5" PointX="10.5" PointY="21" IsExpanded="true" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_AccountForget_ToTable_AccountModel" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_SiteTeamMembers_Accounts_AccountID" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_Brackets_BracketTypes" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_Brackets_Tournaments" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_Matches_Brackets" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamsBrackets_Brackets_BracketID" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_UsersBrackets_Tournaments" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_Games_Matches" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_Tournaments_GameTypes" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_Tournaments_Platforms" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_SiteTeamMembers_SiteTeams_SiteTeamID" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamMember_SiteTeamMembers_SiteTeamMemberID" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeams_SiteTeams_SiteTeamID" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentInvites_Tournaments_TournamentID" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_SiteTeamMembers_Tournaments_TournamentID" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentUser_Tournaments" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamsBrackets_TournamentTeam_TournamentTeamID" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamMember_TournamentTeams_TournamentTeamID" ManuallyRouted="false" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_UserBrackets_TournamentUsers" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -1,26 +1,20 @@
-﻿.list-table-spacing(@max) {
-    .list-table-spacing-loop(@i) when (@i > 0) {
-        .list-table-spacing-loop(@i) {
-            &:first-child:nth-last-child(@{i}),
-            &:first-child:nth-last-child(@{i}) ~ & {
-                width: 1 / @i;
-            }
-        }
-    }
-
-    .list-table-spacing-loop(@max);
+﻿.columnSet(@value) {
+    column-count: @value;
+    -moz-column-count: @value;
+    -webkit-column-count: @value;
 }
 
-.size-calc(@a) when (@a > 0) {
-    width: 1 / @a;
-    background-color: @white;
+.columnwidth(@value) {
+    width: ((1/@value) * 94%);
 }
 
-.setColumnWidth(@columns) when (@columns > 0) {
-    & > li {
-        &:before {
-            content: "Hello";
+.grid(@max, @index: 1) when (@index <= @max) {
+    .grid(@max, (@index + 1));
+
+    &[data-columns="@{index}"] {
+        .column {
+            display: inline-block;
+            .columnwidth(@index);
         }
-        width: (1 / @columns)%;
     }
 }

@@ -365,15 +365,20 @@ namespace Tournament.Structure
 			base.SetDataFromModel(_model);
 			this.NumberOfGroups = _model.NumberOfGroups;
 
-			foreach (MatchModel matchModel in _model.Matches)
+			if (_model.Matches.Count > 0)
 			{
-				// Convert each MatchModel to a Match, and add:
-				Matches.Add(matchModel.MatchNumber, new Match(matchModel));
+				foreach (MatchModel matchModel in _model.Matches)
+				{
+					// Convert each MatchModel to a Match, and add:
+					Matches.Add(matchModel.MatchNumber, new Match(matchModel));
+				}
+
+				this.NumberOfMatches = Matches.Count;
+				this.NumberOfRounds = Matches.Values
+					.Max(m => m.RoundIndex);
+				this.IsFinished = Matches.Values
+					.All(m => m.IsFinished);
 			}
-			this.NumberOfRounds = Matches.Values
-				.Max(m => m.RoundIndex);
-			this.IsFinished = Matches.Values
-				.All(m => m.IsFinished);
 
 			// "Recreate" the groups:
 			List<List<IPlayer>> playerGroups = DividePlayersIntoGroups();

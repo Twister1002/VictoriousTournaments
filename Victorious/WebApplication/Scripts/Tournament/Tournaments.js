@@ -16,7 +16,7 @@
     // Tournament Deletion
     $(".tournament-delete").on("click", function () {
 
-        if (confirm("Are you sure you want to delete this tournament? This can no be reverted.")) {
+        if (confirm("Are you sure you want to delete this tournament? This can not be reverted.")) {
             $.ajax({
                 "url": "/Ajax/Tournament/Delete",
                 "type": "POST",
@@ -24,7 +24,7 @@
                 "dataType": "json",
                 "success": function (json) {
                     if (json.status) {
-                        window.location.replace(json.redirect);
+                        window.location = json.data.redirect;
                     }
                     else {
                         alert(json.message);
@@ -363,8 +363,10 @@
         }
 
         if ($("#Tournament").length == 1) {
-            if ($("#Tournament .bracketName").length > 0) {
-                $("#Tournament .bracketName")[0].click();
+            if ($("#Tournament .bracketName.selected").length == 0) {
+                if ($("#Tournament .bracketName").length > 0) {
+                    $("#Tournament .bracketName")[0].click();
+                }
             }
         }
     })($);

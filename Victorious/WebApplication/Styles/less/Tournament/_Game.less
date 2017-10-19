@@ -33,7 +33,6 @@
             }
         }
     }
-
     /* OVERRIDE */
     ul.list-table {
         li.list-table-header, li.list-table-body {
@@ -46,31 +45,22 @@
                 }
 
                 &.form {
-                    input {
-                        padding: .25em .5em;
+                    .score {
+                        input {
+                            padding: .25em .5em;
+                            text-align: center;
+                        }
+
+                        &.invalid {
+                            input {
+                                background-color: @alert-red;
+                                color: @white;
+                            }
+                        }
                     }
                 }
 
                 .grid(4);
-            }
-        }
-    }
-
-    .score {
-        input {
-            width: 2.5em;
-            text-align: center;
-
-            &.invalid {
-                background-color: @alert-red;
-                color: @white;
-            }
-        }
-
-        &.no-edit {
-            input {
-                background-color: inherit;
-                border: none;
             }
         }
     }

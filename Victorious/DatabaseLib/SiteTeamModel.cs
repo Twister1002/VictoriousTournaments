@@ -18,20 +18,20 @@ namespace DatabaseLib
         public SiteTeamModel()
         {
             this.SiteTeamMembers = new HashSet<SiteTeamMemberModel>();
-            this.TournamentTeams = new HashSet<TournamentTeamModel>();
+            this.TournamentTeamMembers = new HashSet<TournamentTeamModel>();
     		OnInit();
         }
     
-        public int SiteTeamID { get; private set; }
+    	partial void OnInit();
+    
+        public int SiteTeamID { get; set; }
         public string TeamName { get; set; }
         public System.DateTime DateCreated { get; set; }
         public int CreatedByID { get; set; }
-    	
-    	partial void OnInit();
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SiteTeamMemberModel> SiteTeamMembers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TournamentTeamModel> TournamentTeams { get; set; }
+        public virtual ICollection<TournamentTeamModel> TournamentTeamMembers { get; set; }
     }
 }

@@ -8,6 +8,7 @@
         "defender": 0,
         "challenger": 1,
     }
+    var origGameModel = "";
 
     // Mouse Events
     $(".TournamentMatch .defender, .TournamentMatch .challenger").on("mouseover", MouseOverEvents);
@@ -96,23 +97,34 @@
         var games = match.find(".games ul");
         var gameData = new Array();
         var validated = true;
+        var regex = /^[0-9]+$/;
 
         // Validate the games fields
         // For every game
         $.each(games, function (i, e) {
             // For every game's row
-            defenderScore = $(e).find(".defender-score").val();
-            challengerScore = $(e).find(".challenger-score").val();
+            defender = $(e).find(".defender-score")
+            challenger = $(e).find(".challenger-score")
 
-            defenderScoreValid = $.isNumeric(defenderScore) || Math.floor(defenderScore) != defenderScore;
-            challengerScoreValue = $.isNumeric(challengerScore) || Math.floor(challengerScore) != challengerScore;
+            defenderScoreValid = regex.test(defender.val());
+            challengerScoreValue = regex.test(challenger.val());
 
-            if (!defenderScoreValid || !challengerScoreValue) {
-                $(e).find(".score").addClass("invalid");
+            if (!defenderScoreValid) {
+                defender.closest(".score").addClass("invalid");
+                validated = false;
             }
             else {
-                $(e).find(".score").removeClass("invalid");
+                defender.closest(".score").removeClass("invalid");
             }
+
+            if (!challengerScoreValue) {
+                challenger.closest(".score").addClass("invalid");
+                validated = false;
+            }
+            else {
+                challenger.closest(".score").removeClass("invalid");
+            }
+
         });
 
         if (!validated) return;
@@ -152,7 +164,7 @@
                         return;
                     }
                     
-                    UpdateMatch(json.data, match);
+                    UpdateMatch(json.data, match, true);
                 }
 
                 console.log(json.message);
@@ -196,12 +208,20 @@
     });
 
     function RemoveGame() {
-        if (!confirm("Are you sure you want to delete this game? It could affect future matches.")) {
+        var match = $(this).closest(".TournamentMatch");
+        var $game = $(this).closest("ul");
+
+        if ($game.data("gameid") == -1) {
+            $game.remove();
+
+            UpdateMatchOptions({ "isLocked": false }, match);
+
             return;
         }
 
-        var match = $(this).closest(".TournamentMatch");
-        var $game = $(this).closest("ul");
+        if (!confirm("Are you sure you want to delete this game? It could affect future matches.")) {
+            return;
+        }
 
         var jsonData = {
             "tournamentId": $("#Tournament").data("id"),
@@ -239,7 +259,7 @@
         
     }
 
-    function UpdateMatch(matchData, $match) {
+    function UpdateMatch(matchData, $match, autoclose) {
         // Update the overview of the match
         $.each(matchData.matches, function (i, data) {
             $match = $(".TournamentMatch[data-id='" + data.matchId + "']");
@@ -263,6 +283,13 @@
             $match.find(".TournamentGames .defender.name").text(data.defender.name);
             $match.find(".TournamentGames .challenger.name").text(data.challenger.name);
 
+            // Is the original match finished? 
+            if (data.matchId == $match.data("id") && autoclose) {
+                if (data.finished) {
+                    $match.find(".TournamentGames").removeClass("open");
+                }
+            }
+
             // Add the games to the match
             UpdateGamesFromMatch(data, $match);
             UpdateMatchOptions(matchData, $match);
@@ -282,30 +309,55 @@
 
     function UpdateGamesFromMatch(matchInfo, $match) {
         // Remove all the games
-        $(".TournamentGames .list-table .games").empty();
+        $match.find(".TournamentGames .list-table .games").empty();
 
         $.each(matchInfo.games, function (i, e) {
-            // Add the game
-            html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + e.id + "' data-gamenum='" + e.gameNum + "'> ";
-            html += "<li class='column game-number'>" + e.gameNum + "</li> ";
-            html += "<li class='column defender score' data-id='" + e.defender.id + "'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + e.defender.score + "' /></li> ";
-            html += "<li class='column challenger score' data-id='" + e.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + e.challenger.score + "' /></li> ";
-            html += "<li class='column'><span class='icon icon-bin removeGame'></span></li> ";
-            html += "</ul> ";
+            var gameId = /\[\%Game\.Id\%\]/g;
+            var gameNum = /\[\%Game\.GameNum\%\]/g;
+            var defenderId = /\[\%Defender\.Id\%\]/g;
+            var challengerId = /\[\%Challenger\.Id\%\]/g;
+            var defenderScore = /\[\%Defender\.Score\%\]/g;
+            var challengerScore = /\[\%Challenger\.Score\%\]/g;
 
-            $(".TournamentGames .list-table .games").append(html);
+            var gameModel = origGameModel;
+            gameModel = gameModel.replace(gameId, e.id);
+            gameModel = gameModel.replace(gameNum, e.gameNum);
+            gameModel = gameModel.replace(defenderId, e.defender.id);
+            gameModel = gameModel.replace(challengerId, e.challenger.id);
+            gameModel = gameModel.replace(defenderScore, e.defender.score);
+            gameModel = gameModel.replace(challengerScore, e.challenger.score);
+
+            //// Add the game
+            //html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + e.id + "' data-gamenum='" + e.gameNum + "'> ";
+            //html += "<li class='column game-number'>" + e.gameNum + "</li> ";
+            //html += "<li class='column defender score' data-id='" + e.defender.id + "'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + e.defender.score + "' /></li> ";
+            //html += "<li class='column challenger score' data-id='" + e.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + e.challenger.score + "' /></li> ";
+            //html += "<li class='column'><span class='icon icon-bin removeGame'></span></li> ";
+            //html += "</ul> ";
+
+            $match.find(".TournamentGames .list-table .games").append(unescape(gameModel));
         });
     }
 
     function AddGame(data, $match) {
-        html = "<ul class='form gameDetail' data-columns='4' data-gameid='" + data.id + "' data-gamenum='" + data.gameNum + "'> ";
-        html += "<li class='column game-number'>" + data.gameNum + "</li> ";
-        html += "<li class='column defender score' data-id='" + data.defender.id + "'><input type='text' class='defender-score' name='defender-score' maxlength='3' value='" + data.defender.score + "' /></li> ";
-        html += "<li class='column challenger score' data-id='" + data.challenger.id + "'><input type='text' class='challenger-score' name='challenger-score' maxlength='3' value='" + data.challenger.score + "' /></li> ";
-        html += "<li class='column'><span class='icon icon-bin removeGame'></span></li> ";
-        html += "</ul> ";
+        var gameId = /\[\%Game\.Id\%\]/g;
+        var gameNum = /\[\%Game\.GameNum\%\]/g;
+        var defenderId = /\[\%Defender\.Id\%\]/g;
+        var challengerId = /\[\%Challenger\.Id\%\]/g;
+        var defenderScore = /\[\%Defender\.Score\%\]/g;
+        var challengerScore = /\[\%Challenger\.Score\%\]/g;
 
-        $(".TournamentGames .list-table .games").append(html);
+        var gameModel = origGameModel;
+        gameModel = gameModel.replace(gameId, data.id);
+        gameModel = gameModel.replace(gameNum, data.gameNum);
+        gameModel = gameModel.replace(defenderId, data.defender.id);
+        gameModel = gameModel.replace(challengerId, data.challenger.id);
+        gameModel = gameModel.replace(defenderScore, data.defender.score);
+        gameModel = gameModel.replace(challengerScore, data.challenger.score);
+
+        $(".TournamentGames .list-table .games").append(gameModel);
+
+        $(".TournamentMatch .removeGame").off("click").on("click", RemoveGame);
     }
 
     function UpdateMatchOptions(matchData, $match) {
@@ -326,12 +378,23 @@
         }
     }
 
-    function UpdateTournamentOptions(jsonData, $inBracket) {
-        if (jsonData.bracketFinished) {
+    function UpdateTournamentOptions(data, $inBracket) {
+        if (data.bracketFinished) {
             $inBracket.closest(".bracket").find(".options .BracketLock").removeClass("hide");
         }
         else {
             $inBracket.closest(".bracket").find(".options .BracketLock").addClass("hide");
         }
     }
+
+    (function ($) {
+        var tournamentGames = $(".TournamentGames");
+        if (tournamentGames.length > 0) {
+            // Copy over the original gameDetail
+            origGameModel = $(tournamentGames[0]).find(".gameDetail.original").removeClass("original")[0].outerHTML;
+
+            // Delete all the original gameDetails 
+            tournamentGames.find(".gameDetail.original").remove();
+        }
+    })($);
 });
