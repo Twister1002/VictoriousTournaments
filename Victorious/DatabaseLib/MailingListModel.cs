@@ -12,13 +12,8 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class tournamentteammembers
+    public partial class MailingListModel
     {
-        public int TournamentTeamMemberID { get; set; }
-        public int TournamentTeamID { get; set; }
-        public int SiteTeamMemberID { get; set; }
-    
-        public virtual siteteammembers siteteammembers { get; set; }
-        public virtual tournamentteams tournamentteams { get; set; }
+        public string EmailAddress { get; set; }
     }
 }

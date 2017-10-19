@@ -12,13 +12,16 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class matches
+    public partial class MatchModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public matches()
+        public MatchModel()
         {
-            this.games = new HashSet<games>();
+            this.Games = new HashSet<GameModel>();
+    		OnInit();
         }
+    
+    	partial void OnInit();
     
         public int MatchID { get; set; }
         public int ChallengerID { get; set; }
@@ -42,8 +45,8 @@ namespace DatabaseLib
         public bool IsManualWin { get; set; }
         public Nullable<int> GroupNumber { get; set; }
     
-        public virtual brackets brackets { get; set; }
+        public virtual BracketModel Bracket { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<games> games { get; set; }
+        public virtual ICollection<GameModel> Games { get; set; }
     }
 }

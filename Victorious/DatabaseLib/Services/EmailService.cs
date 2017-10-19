@@ -161,7 +161,7 @@ namespace DatabaseLib
 
         public void AddEmailToMailingList(string email)
         {
-            unitOfWork.MailingListRepo.Add(new MailingList() { EmailAddress = email });
+            unitOfWork.MailingListRepo.Add(new MailingListModel() { EmailAddress = email });
         }
 
         public List<string> GetMailingList()
@@ -176,7 +176,7 @@ namespace DatabaseLib
 
         public void RemoveEmailFromMailingList(string email)
         {
-            MailingList emailToDelete = unitOfWork.MailingListRepo.GetSingle(x => x.EmailAddress == email);
+            MailingListModel emailToDelete = unitOfWork.MailingListRepo.GetSingle(x => x.EmailAddress == email);
             unitOfWork.MailingListRepo.DeleteEntity(emailToDelete);
         }
 

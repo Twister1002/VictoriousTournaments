@@ -12,13 +12,14 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class tournamentteambrackets
+    public partial class TournamentUsersBracketModel
     {
-        public int TournamentTeamID { get; set; }
+        public int TournamentUserID { get; set; }
         public int BracketID { get; set; }
-        public int Seed { get; set; }
+        public Nullable<int> Seed { get; set; }
+        public int TournamentID { get; set; }
     
-        public virtual brackets brackets { get; set; }
-        public virtual tournamentteams tournamentteams { get; set; }
+        public virtual BracketModel Bracket { get; set; }
+        public virtual TournamentUserModel TournamentUser { get; set; }
     }
 }

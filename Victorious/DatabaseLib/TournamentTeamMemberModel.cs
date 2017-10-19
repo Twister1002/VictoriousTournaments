@@ -12,16 +12,13 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class tournamentinvites
+    public partial class TournamentTeamMemberModel
     {
-        public int TournamentInviteID { get; set; }
-        public string TournamentInviteCode { get; set; }
-        public int TournamentID { get; set; }
-        public Nullable<System.DateTime> DateExpires { get; set; }
-        public bool IsExpired { get; set; }
-        public System.DateTime DateCreated { get; set; }
-        public int NumberOfUses { get; set; }
+        public int TournamentTeamMemberID { get; set; }
+        public int TournamentTeamID { get; set; }
+        public int SiteTeamMemberID { get; set; }
     
-        public virtual tournaments tournaments { get; set; }
+        public virtual SiteTeamMemberModel SiteTeamMember { get; set; }
+        public virtual TournamentTeamModel TournamentTeam { get; set; }
     }
 }

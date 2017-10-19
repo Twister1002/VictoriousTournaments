@@ -12,7 +12,7 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class games
+    public partial class GameModel
     {
         public int GameID { get; set; }
         public int ChallengerID { get; set; }
@@ -23,6 +23,6 @@ namespace DatabaseLib
         public int ChallengerScore { get; set; }
         public int DefenderScore { get; set; }
     
-        public virtual matches matches { get; set; }
+        public virtual MatchModel Match { get; set; }
     }
 }

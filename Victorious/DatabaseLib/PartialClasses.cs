@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
-using System.Data.Entity.Core.Objects.DataClasses;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.SqlClient;
-using System.Data.Entity.Utilities;
-using System.Data.Entity.SqlServer;
 
 
 namespace DatabaseLib
@@ -47,22 +38,14 @@ namespace DatabaseLib
         {
             return this.FirstName + ' ' + this.LastName;
         }
-
-
-        //internal string FullName
-        //{
-        //   get { return this.FirstName + ' ' + this.LastName; }
-        //}
-
-
     }
 
     public partial class AccountInviteModel
     {
-        partial void OnInit()
-        {
+        //partial void OnInit()
+        //{
 
-        }
+        //}
 
         internal string FullName()
         {
@@ -124,10 +107,10 @@ namespace DatabaseLib
 
     public partial class GameModel
     {
-        partial void OnInit()
-        {
+        //partial void OnInit()
+        //{
 
-        }
+        //}
     }
 
     /// <summary>
@@ -151,7 +134,7 @@ namespace DatabaseLib
     /// <summary>
     /// Member of a SiteTeam.
     /// </summary>
-    public partial class SiteTeamMember
+    public partial class SiteTeamMemberModel
     {
 
     }

@@ -12,8 +12,16 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class mailinglist
+    public partial class TournamentInviteModel
     {
-        public string EmailAddress { get; set; }
+        public int TournamentInviteID { get; set; }
+        public string TournamentInviteCode { get; set; }
+        public int TournamentID { get; set; }
+        public Nullable<System.DateTime> DateExpires { get; set; }
+        public bool IsExpired { get; set; }
+        public System.DateTime DateCreated { get; set; }
+        public int NumberOfUses { get; set; }
+    
+        public virtual TournamentModel Tournament { get; set; }
     }
 }

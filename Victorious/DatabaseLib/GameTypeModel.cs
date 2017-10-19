@@ -12,20 +12,21 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class brackettypes
+    public partial class GameTypeModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public brackettypes()
+        public GameTypeModel()
         {
-            this.brackets = new HashSet<brackets>();
+            this.Tournaments = new HashSet<TournamentModel>();
+    		OnInit();
         }
     
-        public int BracketTypeID { get; set; }
-        public string TypeName { get; set; }
-        public int Type { get; set; }
-        public bool IsActive { get; set; }
+    	partial void OnInit();
+    
+        public int GameTypeID { get; set; }
+        public string Title { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<brackets> brackets { get; set; }
+        public virtual ICollection<TournamentModel> Tournaments { get; set; }
     }
 }

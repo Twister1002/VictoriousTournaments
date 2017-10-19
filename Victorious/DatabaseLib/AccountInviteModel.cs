@@ -12,7 +12,7 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class accountinvites
+    public partial class AccountInviteModel
     {
         public int AccountInviteID { get; set; }
         public string AccountInviteCode { get; set; }
@@ -22,6 +22,6 @@ namespace DatabaseLib
         public System.DateTime DateExpires { get; set; }
         public bool IsExpired { get; set; }
     
-        public virtual accounts accounts { get; set; }
+        public virtual AccountModel Account { get; set; }
     }
 }

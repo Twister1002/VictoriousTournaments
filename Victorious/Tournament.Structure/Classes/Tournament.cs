@@ -310,7 +310,7 @@ namespace Tournament.Structure
 			}
 
 			IBracket ret = null;
-			switch (_model.BracketType.Type)
+			switch ((BracketType)_model.BracketType.Type)
 			{
 				case (BracketType.SINGLE):
 					ret = new SingleElimBracket(_model);

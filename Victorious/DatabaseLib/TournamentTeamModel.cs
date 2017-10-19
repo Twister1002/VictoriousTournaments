@@ -12,14 +12,17 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class tournamentteams
+    public partial class TournamentTeamModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public tournamentteams()
+        public TournamentTeamModel()
         {
-            this.tournamentteambrackets = new HashSet<tournamentteambrackets>();
-            this.tournamentteammembers = new HashSet<tournamentteammembers>();
+            this.TournamentTeamBrackets = new HashSet<TournamentTeamBracketModel>();
+            this.TournamentTeamMembers = new HashSet<TournamentTeamMemberModel>();
+    		OnInit();
         }
+    
+    	partial void OnInit();
     
         public int TournamentTeamID { get; set; }
         public int TournamentID { get; set; }
@@ -27,11 +30,11 @@ namespace DatabaseLib
         public int CreatedByID { get; set; }
         public string TeamName { get; set; }
     
-        public virtual siteteams siteteams { get; set; }
-        public virtual tournaments tournaments { get; set; }
+        public virtual SiteTeamModel SiteTeam { get; set; }
+        public virtual TournamentModel Tournament { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tournamentteambrackets> tournamentteambrackets { get; set; }
+        public virtual ICollection<TournamentTeamBracketModel> TournamentTeamBrackets { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tournamentteammembers> tournamentteammembers { get; set; }
+        public virtual ICollection<TournamentTeamMemberModel> TournamentTeamMembers { get; set; }
     }
 }

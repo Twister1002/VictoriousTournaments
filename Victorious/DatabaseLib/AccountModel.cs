@@ -12,15 +12,18 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class accounts
+    public partial class AccountModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public accounts()
+        public AccountModel()
         {
-            this.accountforget = new HashSet<accountforget>();
-            this.accountinvites = new HashSet<accountinvites>();
-            this.siteteammembers = new HashSet<siteteammembers>();
+            this.AccountForgets = new HashSet<AccountForgotModel>();
+            this.AccountInvites = new HashSet<AccountInviteModel>();
+            this.SiteTeamMembers = new HashSet<SiteTeamMemberModel>();
+    		OnInit();
         }
+    
+    	partial void OnInit();
     
         public int AccountID { get; set; }
         public string FirstName { get; set; }
@@ -38,10 +41,10 @@ namespace DatabaseLib
         public Nullable<bool> ReceiveTournamentUpdates { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<accountforget> accountforget { get; set; }
+        public virtual ICollection<AccountForgotModel> AccountForgets { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<accountinvites> accountinvites { get; set; }
+        public virtual ICollection<AccountInviteModel> AccountInvites { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<siteteammembers> siteteammembers { get; set; }
+        public virtual ICollection<SiteTeamMemberModel> SiteTeamMembers { get; set; }
     }
 }

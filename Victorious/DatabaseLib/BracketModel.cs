@@ -12,15 +12,18 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class brackets
+    public partial class BracketModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public brackets()
+        public BracketModel()
         {
-            this.matches = new HashSet<matches>();
-            this.tournamentteambrackets = new HashSet<tournamentteambrackets>();
-            this.tournamentusersbrackets = new HashSet<tournamentusersbrackets>();
+            this.Matches = new HashSet<MatchModel>();
+            this.TournamentTeamBrackets = new HashSet<TournamentTeamBracketModel>();
+            this.TournamentUsersBrackets = new HashSet<TournamentUsersBracketModel>();
+    		OnInit();
         }
+    
+    	partial void OnInit();
     
         public int BracketID { get; set; }
         public int BracketTypeID { get; set; }
@@ -31,13 +34,13 @@ namespace DatabaseLib
         public int NumberPlayersAdvance { get; set; }
         public bool IsLocked { get; set; }
     
-        public virtual brackettypes brackettypes { get; set; }
-        public virtual tournaments tournaments { get; set; }
+        public virtual BracketTypeModel BracketType { get; set; }
+        public virtual TournamentModel Tournament { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<matches> matches { get; set; }
+        public virtual ICollection<MatchModel> Matches { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tournamentteambrackets> tournamentteambrackets { get; set; }
+        public virtual ICollection<TournamentTeamBracketModel> TournamentTeamBrackets { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tournamentusersbrackets> tournamentusersbrackets { get; set; }
+        public virtual ICollection<TournamentUsersBracketModel> TournamentUsersBrackets { get; set; }
     }
 }

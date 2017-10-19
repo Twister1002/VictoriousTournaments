@@ -12,23 +12,21 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class siteteams
+    public partial class PlatformModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public siteteams()
+        public PlatformModel()
         {
-            this.siteteammembers = new HashSet<siteteammembers>();
-            this.tournamentteams = new HashSet<tournamentteams>();
+            this.Tournaments = new HashSet<TournamentModel>();
+    		OnInit();
         }
     
-        public int SiteTeamID { get; set; }
-        public string TeamName { get; set; }
-        public System.DateTime DateCreated { get; set; }
-        public int CreatedByID { get; set; }
+    	partial void OnInit();
+    
+        public int PlatformID { get; set; }
+        public string PlatformName { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<siteteammembers> siteteammembers { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tournamentteams> tournamentteams { get; set; }
+        public virtual ICollection<TournamentModel> Tournaments { get; set; }
     }
 }

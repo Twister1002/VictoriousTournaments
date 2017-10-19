@@ -12,19 +12,22 @@ namespace DatabaseLib
     using System;
     using System.Collections.Generic;
     
-    public partial class tournaments
+    public partial class TournamentModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public tournaments()
+        public TournamentModel()
         {
-            this.brackets = new HashSet<brackets>();
-            this.tournamentinvites = new HashSet<tournamentinvites>();
-            this.tournamentteams = new HashSet<tournamentteams>();
-            this.tournamentusers = new HashSet<tournamentusers>();
+            this.Brackets = new HashSet<BracketModel>();
+            this.TournamentInvites = new HashSet<TournamentInviteModel>();
+            this.TournamentTeams = new HashSet<TournamentTeamModel>();
+            this.TournamentUsers = new HashSet<TournamentUserModel>();
+    		OnInit();
         }
     
+    	partial void OnInit();
+    
         public int TournamentID { get; set; }
-        public Nullable<int> GameTypeID { get; set; }
+        public int GameTypeID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public System.DateTime CreatedOn { get; set; }
@@ -47,14 +50,14 @@ namespace DatabaseLib
         public bool PublicViewing { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<brackets> brackets { get; set; }
-        public virtual gametypes gametypes { get; set; }
-        public virtual platforms platforms { get; set; }
+        public virtual ICollection<BracketModel> Brackets { get; set; }
+        public virtual GameTypeModel GameType { get; set; }
+        public virtual PlatformModel Platform { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tournamentinvites> tournamentinvites { get; set; }
+        public virtual ICollection<TournamentInviteModel> TournamentInvites { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tournamentteams> tournamentteams { get; set; }
+        public virtual ICollection<TournamentTeamModel> TournamentTeams { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tournamentusers> tournamentusers { get; set; }
+        public virtual ICollection<TournamentUserModel> TournamentUsers { get; set; }
     }
 }

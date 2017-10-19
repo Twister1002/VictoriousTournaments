@@ -887,7 +887,7 @@ namespace Tournament.Structure
 			// Convert the BracketType to relevant model, and add it:
 			model.BracketType = new BracketTypeModel();
 			model.BracketType.BracketTypeID = model.BracketTypeID;
-			model.BracketType.Type = this.BracketType;
+			model.BracketType.Type = (int)this.BracketType;
 			model.BracketType.TypeName = this.BracketType.ToString("f");
 
 			// Convert all Players to Models, and add them:
@@ -1079,7 +1079,7 @@ namespace Tournament.Structure
 			}
 
 			this.Id = _model.BracketID;
-			this.BracketType = _model.BracketType.Type;
+			this.BracketType = (BracketType)_model.BracketType.Type;
 			this.IsFinalized = _model.Finalized;
 			this.AdvancingPlayers = _model.NumberPlayersAdvance;
 			this.MaxRounds = _model.MaxRounds;
