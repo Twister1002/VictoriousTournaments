@@ -4,7 +4,7 @@ namespace DatabaseLib
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private VictoriousEntities context = new VictoriousEntities();
+        private VictoriousEntities context;
         IRepository<AccountInviteModel> accountInviteRepo;
         IRepository<AccountModel> accountRepo;
         IRepository<BracketModel> bracketRepo;
