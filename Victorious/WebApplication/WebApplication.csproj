@@ -142,7 +142,6 @@
     <Content Include="Scripts\Tournament\Search.js" />
     <Content Include="Scripts\Tournament\Tournaments.js" />
     <Content Include="Styles\css\main.min.css" />
-    <Content Include="Styles\css\style.min.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
