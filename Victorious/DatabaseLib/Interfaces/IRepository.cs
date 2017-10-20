@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace DatabaseLib
     public interface IRepository <TEntity> : IDisposable where TEntity : class
     {
         IQueryable<TEntity> GetAll();
-        List<TEntity> Get(String query, List<SqlParameter> sqlParams);
+        List<TEntity> Get(String query, List<MySqlParameter> sqlParams);
         IQueryable<TEntity> GetWhere(Expression<Func<TEntity, bool>> predicate);
         TEntity GetSingle(Expression<Func<TEntity, bool>> predicate);
         TEntity Get(int id);

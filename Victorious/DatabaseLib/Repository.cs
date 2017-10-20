@@ -1,6 +1,8 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using System.Data.SqlClient;
 using System.Linq;
@@ -85,9 +87,11 @@ namespace DatabaseLib
             return dbSet.Find(id);
         }
 
-        public List<TEntity> Get(String query, List<SqlParameter> sqlParams)
+        public List<TEntity> Get(String query, List<MySqlParameter> sqlParams)
         {
-            return dbSet.SqlQuery(query, sqlParams.ToArray()).ToList();
+            DbSqlQuery<TEntity> formattedQuery = dbSet.SqlQuery(query, (object[])sqlParams.ToArray());
+
+            return formattedQuery.ToList();
         }
 
         /// <summary>
