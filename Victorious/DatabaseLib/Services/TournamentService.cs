@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Data.Entity;
 using System.Data.Sql;
-
+using MySql.Data.MySqlClient;
 
 namespace DatabaseLib.Services
 {
@@ -102,49 +102,51 @@ namespace DatabaseLib.Services
             
             try
             {
-                List<SqlParameter> sqlparams = new List<SqlParameter>();
+                List<MySqlParameter> sqlparams = new List<MySqlParameter>();
                 string query = string.Empty;
-                query = "SELECT TOP(" + returnCount + ")* FROM Tournaments WHERE PublicViewing = 1 ";
+                query = "SELECT * FROM Tournaments WHERE PublicViewing = 1 ";
+
                 foreach (KeyValuePair<String, String> data in searchParams)
                 {
                     if (query != String.Empty) query += " AND ";
                     string val = data.Value;
+                    String varInfo = "@p" + sqlparams.Count();
                       
                     if (data.Key == "TournamentStartDate" || data.Key == "RegistrationStartDate")
                     {
                         val = DateTime.Parse(val).ToShortDateString();
-                        query += data.Key + " >= @" + data.Key;
-                        sqlparams.Add(new SqlParameter("@" + data.Key, val));
+                        query += data.Key + " >= " + varInfo;
+                        sqlparams.Add(new MySqlParameter(varInfo, val));
                     }
                     else if (data.Key == "TournamentEndDate" || data.Key == "RegistrationEndDate")
                     {
                         val = DateTime.Parse(val).ToShortDateString();
-                        query += data.Key +  " <= @" + data.Key;
-                        sqlparams.Add(new SqlParameter("@" + data.Key, val));
+                        query += data.Key +  " <= " + varInfo;
+                        sqlparams.Add(new MySqlParameter(varInfo, val));
                     }
                     else if (data.Key == "CreatedOn")
                     {
                         val = DateTime.Parse(val).ToShortDateString();
-                        query += "datediff(day," + data.Key + ", " + "@" + data.Key + ") = 0 ";
+                        query += "datediff(day," + data.Key + ", " + varInfo + ") = 0 ";
 
-                        sqlparams.Add(new SqlParameter("@" + data.Key, val));
+                        sqlparams.Add(new MySqlParameter(varInfo, val));
                     }
                     else
                     {
                         int intVal = 0;
                         if (int.TryParse(val, out intVal))
                         {
-                            query += data.Key + " = @" + data.Key;
-                            sqlparams.Add(new SqlParameter("@" + data.Key, intVal));
+                            query += data.Key + " = " + varInfo;
+                            sqlparams.Add(new MySqlParameter(varInfo, intVal));
                         }
                         else
                         {
-                            query += data.Key + " LIKE @" + data.Key;
-                            sqlparams.Add(new SqlParameter("@" + data.Key, "%" + val + "%"));
+                            query += data.Key + " LIKE " + varInfo;
+                            sqlparams.Add(new MySqlParameter(varInfo, "%" + val + "%"));
                         }
                     }
                 }
-                query += " ORDER BY TournamentStartDate ASC";
+                query += " ORDER BY TournamentStartDate ASC LIMIT " + returnCount;
 
                 tournaments = unitOfWork.TournamentRepo.Get(query, sqlparams);
             }
