@@ -107,7 +107,7 @@ namespace WebApplication.Models
                 Model.CreatedOn = DateTime.Now;
                 Model.InviteCode = Codes.GenerateInviteCode();
 
-                bool usernameExists = services.Account.AccountEmailExists(viewModel.Username);
+                bool usernameExists = services.Account.AccountUsernameExists(viewModel.Username);
                 bool emailExists = services.Account.AccountEmailExists(viewModel.Email);
                 bool passwordsMatch = viewModel.Password == viewModel.PasswordVerify;
 

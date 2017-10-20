@@ -76,10 +76,6 @@ namespace WebApplication.Models
 					searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
 				}
 			}
-            else
-            {
-                searchData.Add("TournamentEndDate", DateTime.Now.ToShortTimeString());
-            }
 
 			searched = services.Tournament.FindTournaments(searchData);
 		}
