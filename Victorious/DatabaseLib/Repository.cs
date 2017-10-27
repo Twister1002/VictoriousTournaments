@@ -24,7 +24,7 @@ namespace DatabaseLib
         private DbSet<TEntity> dbSet;
         public DbSet<TEntity> DbSet
         {
-            get { return DbSet; }
+            get { return dbSet; }
         }
 
         /// <summary>

@@ -70,6 +70,56 @@ namespace DatabaseLib.Services
         }
 
         /// <summary>
+        /// Gathers all the games that have some kind of tournament associated with them.
+        /// </summary>
+        /// <returns>A list of games with the amount of tournaments</returns>
+        public List<KeyValuePair<GameTypeModel, int>> GetAllGamesWithTournaments()
+        {
+            List<KeyValuePair<GameTypeModel, int>> tournaments = new List<KeyValuePair<GameTypeModel, int>>();
+            try
+            {
+                List<GameTypeModel> allGames = unitOfWork.GameTypeRepo.GetAll().ToList();
+
+                foreach (GameTypeModel game in allGames)
+                {
+                    int tournamentsWithGame = unitOfWork.TournamentRepo.GetWhere(x => x.GameTypeID == game.GameTypeID).Count();
+
+                    if (tournamentsWithGame > 0)
+                    {
+                        tournaments.Add(new KeyValuePair<GameTypeModel, int>(game, tournamentsWithGame));
+                    }
+                }
+
+                return tournaments;
+            }
+            catch(Exception ex)
+            {
+                unitOfWork.SetException(ex);
+                return tournaments;
+            }
+        }
+
+        /// <summary>
+        /// Gets all the tournaments by a specific game
+        /// </summary>
+        /// <returns>All tournaments related to the game</returns>
+        public List<TournamentModel> GetAllTournamentsByGame(int GameTypeId)
+        {
+            List<TournamentModel> tournaments = new List<TournamentModel>();
+
+            try
+            {
+                tournaments = unitOfWork.TournamentRepo.GetWhere(x => x.GameTypeID == GameTypeId).ToList();
+            }
+            catch(Exception ex)
+            {
+                unitOfWork.SetException(ex);
+            }
+
+            return tournaments;
+        }
+
+        /// <summary>
         /// Updates a single Tournament.
         /// </summary>
         /// <param name="tournament"> The Tournament that is being updated. </param>

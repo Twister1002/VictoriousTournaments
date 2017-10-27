@@ -14,6 +14,7 @@ namespace DatabaseLib
         DbError UpdateTournament(TournamentModel tournament);
         DbError DeleteTournament(int tournamentId);
         IList<TournamentUserModel> GetAllUsersInTournament(int tournamentId);
+        List<KeyValuePair<GameTypeModel, int>> GetAllTournamentsByGame();
         void Save();
     }
 }

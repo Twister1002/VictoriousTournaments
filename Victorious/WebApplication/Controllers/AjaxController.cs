@@ -452,6 +452,22 @@ namespace WebApplication.Controllers
             return BundleJson();
         }
 
+        [HttpPost]
+        [Route("Ajax/Tournament/Games")]
+        public JsonResult TournamentGames()
+        {
+
+            return BundleJson();
+        }
+
+        [HttpPost]
+        [Route("Ajax/Tournament/Games/Available")]
+        public JsonResult TournamentsAvailable(int gameId)
+        {
+
+            return BundleJson();
+        }
+
         /// <summary>
         /// This is an ajax call that will finalize the tournament's selected bracket
         /// </summary>

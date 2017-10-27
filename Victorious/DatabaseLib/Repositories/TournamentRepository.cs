@@ -95,6 +95,27 @@ namespace DatabaseLib
             return tournaments;
         }
 
+        /// <summary>
+        /// Gathers all the games and counts how many tournaments are available for that game
+        /// </summary>
+        /// <returns>A list of all games and how many tournaments are available</returns>
+        public List<KeyValuePair<GameTypeModel, int>> GetAllTournamentsByGame()
+        {
+            List<KeyValuePair<GameTypeModel, int>> available = new List<KeyValuePair<GameTypeModel, int>>();
+
+            // Get all games
+            List<GameTypeModel> games = context.GameTypeModels.ToList();
+
+            foreach (GameTypeModel game in games)
+            {
+                int gameTournaments = context.TournamentModels.GroupBy(x => x.GameTypeID == game.GameTypeID).Count();
+                available.Add(new KeyValuePair<GameTypeModel, int>(game, gameTournaments));
+            }
+
+            return available;
+
+        }
+
         public TournamentModel GetTournament(int tournamentId)
         {
             TournamentModel tournament = new TournamentModel();

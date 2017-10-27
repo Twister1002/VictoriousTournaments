@@ -89,6 +89,16 @@ namespace WebApplication.Models
 			return Tourny;
 		}
 
+        public List<KeyValuePair<GameTypeModel, int>> GetAllGamesWithTournaments()
+        {
+            return this.services.Tournament.GetAllGamesWithTournaments();
+        }
+
+        public List<TournamentModel> GetTournamentsByGame(int gameId)
+        {
+            return this.services.Tournament.GetAllTournamentsByGame(gameId);
+        }
+
 		#region Bracket
 		/// <summary>
 		/// Gets the bracket from the loaded tournament.

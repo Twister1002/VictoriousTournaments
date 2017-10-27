@@ -5,54 +5,22 @@
 }
 
 <div id="TournamentSearch">
-    <h2>Find A Tournament</h2>
-    <ul class="list-table">
-        <li class="list-table-header">
-            <ul class="options form" data-columns="6">
-                <li class="column">@Html.TextBoxFor(x => x.viewModel.Title, Model.viewModel.Title, new { @class = "field title", placeholder = "Search By Title" })</li>
-                <li class="column">@Html.DropDownListFor(x => x.viewModel.GameTypeID, new SelectList(Model.viewModel.GameTypes, "GameTypeID", "Title"), "---Game---", new { @class = "field gameType" })</li>
-                <li class="column">@Html.DropDownListFor(t => t.viewModel.PlatformID, new SelectList(Model.viewModel.PlatformTypes, "PlatformID", "PlatformName"), "---Platform---", new { @class = "field platformType" })</li>
-                <li class="column"><input type="text" name="startDate" class="field startDate datepicker" placeholder="Range Start" readonly="readonly"/></li>
-                <li class="column"><input type="text" name="endDate" class="field endDate datepicker" placeholder="Range End" readonly="readonly"/></li>
-                <li class="column">
-                    <button type="button" class="searchButton">Search</button>
-                    <button type="button" class="clearButton">Reset</button>
-                </li>
-            </ul>
-        </li>
-        <li class="list-table-header">
-            <ul class="border list-table-columns" data-columns="5">
-                <li class="column">Title</li>
-                <li class="column">Game</li>
-                <li class="column">Platform</li>
-                <li class="column">Start Date</li>
-                <li class="column">Registration</li>
-            </ul>
-        </li>
-        <li class="list-table-body">
-            @if (Model.searched.Count > 0)
+    <h2>Select A Game</h2>
+    <div class="games">
+        @{
+            List<KeyValuePair<DatabaseLib.GameTypeModel, int>> games = Model.GetAllGamesWithTournaments();
+
+            foreach (KeyValuePair<DatabaseLib.GameTypeModel, int> game in games)
             {
-                foreach (var tournyModel in Model.searched)
-                {
-                    <a class="column" href="/Tournament/@tournyModel.TournamentID">
-                        <ul class="column-clickable" data-columns="5">
-                            <li class="column">@tournyModel.Title</li>
-                            <li class="column">@(tournyModel.GameType != null ? tournyModel.GameType.Title : "None")</li>
-                            <li class="column">@(tournyModel.Platform != null ? tournyModel.Platform.PlatformName : "None")</li>
-                            <li class="column">@(tournyModel.TournamentStartDate.ToShortDateString())</li>
-                            <li class="column">@(tournyModel.PublicRegistration ? "Public" : "Private")</li>
-                        </ul>
-                    </a>
-                }
+                <div class="game">
+                    <img src="" alt="@game.Key.Title" />
+                    <div class="info">
+                        <div class="title">@game.Key.Title</div>
+                        <div class="tornaments">@game.Value</div>
+                    </div>
+                </div>
             }
-            else
-            {
-                <ul class="list-table-columns" data-columns="1">
-                    <li>
-                        No tournaments found.
-                    </li>
-                </ul>
-            }
-        </li>
-    </ul>
+        }
+    </div>
+    <div class="available-tournaments"></div>
 </div>
