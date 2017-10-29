@@ -1,0 +1,27 @@
+﻿#GameSearch {
+    .games {
+        .flexbox();
+        flex-wrap: wrap;
+        flex-direction: row;
+        width: 100%;
+
+        .game {
+            position: relative;
+            flex: 0 0 auto;
+            width: 33%;
+            margin: 1em 0;
+            background-color: blue;
+            align-self: flex-start;
+            text-align: center;
+
+            .game-img {
+                width: 100%;
+
+                img {
+                    width: 100%;
+                    max-height: 20em;
+                }
+            }
+        }
+    }
+}

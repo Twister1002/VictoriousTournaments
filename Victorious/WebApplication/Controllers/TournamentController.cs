@@ -28,13 +28,22 @@ namespace WebApplication.Controllers
         /// <param name="searchBy">Params sent to be used to search</param>
         /// <returns>The search.cshtml page that will display the tournaments</returns>
         [HttpGet]
-        [Route("Tournament/Search")]
-        public ActionResult Search(Dictionary<String, String> searchBy)
+        [Route("Tournament/Games")]
+        public ActionResult GameSearch(Dictionary<String, String> searchBy)
         {
             Models.Tournament model = new Models.Tournament(service, -1);
-            model.Search(searchBy);
 
-            return View("Search", model);
+            return View("GameSearch", model);
+        }
+
+        [HttpGet]
+        [Route("Tournament/Game/{gameTypeId}")]
+        public ActionResult TournamentsInGame(int gameTypeId)
+        {
+            Models.Tournament model = new Models.Tournament(service, -1);
+            ViewBag.GameType = this.work.GameTypeRepo.Get(gameTypeId);
+
+            return View("GameTournaments", model);
         }
         
         /// <summary>
@@ -170,8 +179,8 @@ namespace WebApplication.Controllers
                 Session["Message.Class"] = ViewError.WARNING;
             }
 
-
-            return RedirectToAction("Search", "Tournament");
+            // Only if the tournament is not viewable, we should return them back to the game tournament selection
+            return RedirectToAction("TournamentsInGame", "Tournament", new { gameTypeId = tourny.Model.GameTypeID });
         }
 
         /// <summary>

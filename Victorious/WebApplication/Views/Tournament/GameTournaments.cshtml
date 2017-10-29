@@ -1,0 +1,50 @@
+﻿@model WebApplication.Models.Tournament
+
+@{
+    ViewBag.Title = "GameTournaments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var tournaments = Model.GetTournamentsByGameType(ViewBag.GameType.GameTypeID);
+}
+
+<div id="GameTournaments">
+    <h2>@ViewBag.GameType.Title Tournaments</h2>
+    <ul class="list-table">
+        <li class="list-table-header">
+            <ul class="options form" data-columns="5">
+                <li class="column">@Html.TextBoxFor(x => x.viewModel.Title, Model.viewModel.Title, new { @class = "field title", placeholder = "Search By Title" })</li>
+                <li class="column">@Html.DropDownListFor(t => t.viewModel.PlatformID, new SelectList(Model.viewModel.PlatformTypes, "PlatformID", "PlatformName"), "---Platform---", new { @class = "field platformType" })</li>
+                <li class="column"><input type="text" name="startDate" class="field startDate datepicker" placeholder="Range Start" readonly="readonly" /></li>
+                <li class="column"><input type="text" name="endDate" class="field endDate datepicker" placeholder="Range End" readonly="readonly" /></li>
+                <li class="column">
+                    <button type="button" class="searchButton">Search</button>
+                    <button type="button" class="clearButton">Reset</button>
+                </li>
+            </ul>
+        </li>
+        <li class="list-table-header">
+            <ul class="border list-table-columns" data-columns="4">
+                <li class="column">Title</li>
+                <li class="column">Platform</li>
+                <li class="column">Start Date</li>
+                <li class="column">Registration</li>
+            </ul>
+        </li>
+        <li class="list-table-body">
+            @if (tournaments.Count > 0)
+            {
+                foreach (var tournament in tournaments)
+                {
+                    <a class="column" href="/Tournament/@tournament.TournamentID">
+                        <ul class="column-clickable" data-columns="4">
+                            <li class="column">@tournament.Title</li>
+                            <li class="column">@(tournament.Platform != null ? tournament.Platform.PlatformName : "None")</li>
+                            <li class="column">@(tournament.TournamentStartDate.ToShortDateString())</li>
+                            <li class="column">@(tournament.PublicRegistration ? "Public" : "Private")</li>
+                        </ul>
+                    </a>
+                }
+            }
+         </li>
+    </ul>
+</div>
+

@@ -1,0 +1,27 @@
+﻿@model WebApplication.Models.Tournament
+@{
+    ViewBag.Title = "Games";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<KeyValuePair<DatabaseLib.GameTypeModel, int>> games = Model.GetAllGamesWithTournaments();
+}
+
+<div id="GameSearch">
+    <h2>Select A Game</h2>
+    <div class="games">
+        @foreach (KeyValuePair<DatabaseLib.GameTypeModel, int> game in games)
+        {
+            <div class="game">
+                <div class="gameInfo">
+                    <div class="game-img">
+                        <a href="@Url.Action("TournamentsInGame", "Tournament", new { gameTypeId = game.Key.GameTypeID })">
+                            <img src="" alt="@game.Key.Title" />
+                        </a>
+                    </div>
+                    <div class="info">
+                        <div class="title">@Html.ActionLink(game.Key.Title, "TournamentsInGame", "Tournament", new { gameId = game.Key.GameTypeID } )</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

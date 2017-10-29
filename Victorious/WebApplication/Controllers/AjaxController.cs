@@ -423,13 +423,13 @@ namespace WebApplication.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("Ajax/Tournament/Search")]
-        public JsonResult AjaxSearch(String searchBy)
+        public JsonResult AjaxSearch(int gameId)
         {
             List<object> dataReturned = new List<object>();
             Models.Tournament tournament = new Models.Tournament(service, -1);
-            tournament.Search(JsonConvert.DeserializeObject<Dictionary<String, String>>(searchBy));
+            List<TournamentModel> tournaments = tournament.GetTournamentsByGameType(gameId);
 
-            foreach (TournamentModel tourny in tournament.searched)
+            foreach (TournamentModel tourny in tournaments)
             {
                 dataReturned.Add(new
                 {
@@ -443,10 +443,10 @@ namespace WebApplication.Controllers
                     link = Url.Action("Tournament", "Tournament", new { guid = tourny.TournamentID })
                 });
 
-                data = new
-                {
-                    search = dataReturned
-                };
+                data = dataReturned;
+
+                message = "Tornaments found";
+                status = true;
             }
 
             return BundleJson();

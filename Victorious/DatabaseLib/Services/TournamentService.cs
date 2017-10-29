@@ -103,7 +103,7 @@ namespace DatabaseLib.Services
         /// Gets all the tournaments by a specific game
         /// </summary>
         /// <returns>All tournaments related to the game</returns>
-        public List<TournamentModel> GetAllTournamentsByGame(int GameTypeId)
+        public List<TournamentModel> GetAllTournamentsByGameType(int GameTypeId)
         {
             List<TournamentModel> tournaments = new List<TournamentModel>();
 

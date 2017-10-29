@@ -16,7 +16,6 @@ namespace WebApplication.Models
 		private Tournaments.ITournament Tourny;
 		public TournamentViewModel viewModel { get; private set; }
 		public TournamentModel Model { get; private set; }
-		public List<TournamentModel> searched { get; private set; }
 
 		public Tournament(IService service, int id) : base(service)
 		{
@@ -30,54 +29,8 @@ namespace WebApplication.Models
 
 			// Create the tournament
 			Tourny = new Tournaments.Tournament(Model);
-
-			searched = new List<TournamentModel>();
+            
 			SetupViewModel();
-		}
-
-		/// <summary>
-		/// Gathers the information from the user and searches all tournaments on data given
-		/// </summary>
-		/// <param name="searchData">Key value pairs of information to search for.</param>
-		public void Search(Dictionary<String, String> searchData)
-		{
-			if (searchData == null)
-			{
-				searchData = new Dictionary<String, String>();
-			}
-
-			List<String> safeParamList = new List<String>() {
-				"Title",
-				"GameTypeID",
-				"PlatformID",
-				"PublicViewing",
-				"PublicRegistration",
-				"TournamentStartDate",
-				"TournamentEndDate",
-				"RegistrationStartDate",
-				"RegistrationEndDate"
-			};
-
-			searchData = searchData.Where(k => safeParamList.Contains(k.Key) && k.Value != String.Empty).ToDictionary(k => k.Key, k => k.Value);
-
-			if (searchData.Keys.Contains("startDate"))
-			{
-				searchData.Add("TournamentStartDate", searchData["startDate"]);
-				searchData.Add("RegistrationStartDate", searchData["startDate"]);
-
-				if (searchData.Keys.Contains("endDate"))
-				{
-					searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
-					searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
-				}
-				else
-				{
-					searchData.Add("TournamentEndDate", DateTime.Now.ToShortDateString());
-					searchData.Add("RegistrationEndDate", DateTime.Now.ToShortDateString());
-				}
-			}
-
-			searched = services.Tournament.FindTournaments(searchData);
 		}
 
 		/// <summary>
@@ -94,9 +47,9 @@ namespace WebApplication.Models
             return this.services.Tournament.GetAllGamesWithTournaments();
         }
 
-        public List<TournamentModel> GetTournamentsByGame(int gameId)
+        public List<TournamentModel> GetTournamentsByGameType(int gameId)
         {
-            return this.services.Tournament.GetAllTournamentsByGame(gameId);
+            return this.services.Tournament.GetAllTournamentsByGameType(gameId);
         }
 
 		#region Bracket

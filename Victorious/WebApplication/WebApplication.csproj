@@ -139,7 +139,6 @@
     <Content Include="Scripts\Administrator\Platforms.js" />
     <Content Include="Scripts\global.js" />
     <Content Include="Scripts\Tournament\Match.js" />
-    <Content Include="Scripts\Tournament\Search.js" />
     <Content Include="Scripts\Tournament\Tournaments.js" />
     <Content Include="Styles\css\main.min.css" />
     <Content Include="Web.config">
@@ -200,7 +199,7 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Index.cshtml" />
     <Content Include="Views\Tournament\Tournament.cshtml" />
-    <Content Include="Views\Tournament\Search.cshtml" />
+    <Content Include="Views\Tournament\GameSearch.cshtml" />
     <Content Include="Styles\less\Tournament.less" />
     <Content Include="Styles\less\_forms.less" />
     <Content Include="Styles\less\Account.less" />
@@ -212,7 +211,7 @@
     <Content Include="Views\Tournament\Create.cshtml" />
     <Content Include="Styles\less\Tournament\_Tournament.less" />
     <Content Include="Styles\less\Tournament\_Create.less" />
-    <Content Include="Styles\less\Tournament\_Search.less" />
+    <Content Include="Styles\less\Tournament\_GameSearch.less" />
     <Content Include="Views\Administrator\Index.cshtml" />
     <Content Include="Styles\less\Tournament\_Standings.less" />
     <Content Include="Views\Administrator\Games.cshtml" />
@@ -258,6 +257,8 @@
     <Content Include="Views\Error\AccessDenied.cshtml" />
     <Content Include="Views\Account\Sections\Subscriptions.cshtml" />
     <Content Include="Views\Account\Forgot.cshtml" />
+    <Content Include="Views\Tournament\GameTournaments.cshtml" />
+    <Content Include="Styles\less\Tournament\_GameTournaments.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
