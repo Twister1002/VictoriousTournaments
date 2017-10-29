@@ -17,7 +17,6 @@ namespace DatabaseLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public TournamentUserModel()
         {
-            this.IsCheckedIn = false;
             this.TournamentUsersBrackets = new HashSet<TournamentUsersBracketModel>();
     		OnInit();
         }

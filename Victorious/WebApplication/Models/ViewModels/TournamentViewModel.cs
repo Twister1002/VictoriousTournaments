@@ -86,6 +86,9 @@ namespace WebApplication.Models.ViewModels
         [Display(Name = "Public Registation")]
         public bool PublicRegistration { get; set; }
 
+        [Display(Name ="Tournament Rules")]
+        public String TournamentRules { get; set; }
+
         // UserInTournament
         public List<TournamentUserModel> Participants { get; set; }
         public Dictionary<int, String> Permissions { get; set; }

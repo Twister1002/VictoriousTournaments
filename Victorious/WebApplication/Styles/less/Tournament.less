@@ -14,14 +14,18 @@
                 li {
                     width: 48%;
                     display: inline-block;
+                }
 
-                    input, select {
-                        width: 90%;
+                input, select, textarea {
+                    width: 90%;
 
-                        &.datepicker, &.timepicker {
-                            width: 48%;
-                        }
+                    &.datepicker, &.timepicker {
+                        width: 48%;
                     }
+                }
+
+                textarea {
+                    min-height: 10em;
                 }
             }
         }
@@ -44,13 +48,11 @@
     #TournamentCreate, #TournamentEdit {
         .section {
             &.form-section {
-                li {
-                    input, select {
-                        width: 80%;
+                input, select {
+                    width: 80%;
 
-                        &.datepicker, &.timepicker {
-                            width: 30%;
-                        }
+                    &.datepicker, &.timepicker {
+                        width: 30%;
                     }
                 }
             }

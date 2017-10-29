@@ -1031,6 +1031,7 @@ namespace WebApplication.Models
 			Model.PlatformID = viewModel.PlatformID;
 			Model.PublicViewing = viewModel.PublicViewing;
 			Model.PublicRegistration = viewModel.PublicRegistration;
+            Model.Rules = viewModel.TournamentRules;
 
 			// Adding Dates and Times
 			Model.RegistrationStartDate = viewModel.RegistrationStartDate + viewModel.RegistrationStartTime.TimeOfDay;
@@ -1069,6 +1070,7 @@ namespace WebApplication.Models
 			viewModel.PublicViewing = Model.PublicViewing;
 			viewModel.PublicRegistration = Model.PublicRegistration;
             viewModel.Participants = Model.TournamentUsers.ToList();
+            viewModel.TournamentRules = Model.Rules;
 
 			// Dates
 			viewModel.RegistrationStartDate = Model.RegistrationStartDate;

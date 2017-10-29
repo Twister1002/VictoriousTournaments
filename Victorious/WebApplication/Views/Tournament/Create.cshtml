@@ -2,8 +2,7 @@
 @{
     ViewBag.Title = "Update";
     Layout = "~/Views/Shared/_Layout.cshtml";
-
-    int userId = Session["User.UserId"] != null ? (int)Session["User.UserId"] : -1;
+    
     object attributes = new { };
     object dateAttributes = new { @class = "datepicker" };
     object timeAttributes = new { @class = "timepicker" };
@@ -14,8 +13,8 @@
     attributes = new { disabled = "disabled", @readonly = "readonly" };
     dateAttributes = new { @class = "datepicker", disabled = "disabled", @readonly = "readonly" };
     timeAttributes = new { @class = "timepicker", disabled = "disabled", @readonly = "readonly" };
-
 }
+
 <div id="TournamentEdit">
     @using (Html.BeginForm(ViewBag.Create ? "Create" : "Update", "Tournament", FormMethod.Post))
     {
@@ -190,7 +189,7 @@
                         </ul>
                     }
                     <ul data-columns="3" class="hide userOrig">
-                        <li class="column">@Html.TextBox("Participants[%n%].Name", "", attributes)</li>
+                        <li class="column">@Html.TextBox("Participants[%n%].Name", "", new { placeholder = "Name" })</li>
                         <li class="column">
                             @Html.DropDownList("Participants[%n%].PermissionLevel", new SelectList(Model.Permissions, "Key", "Value", (int)DatabaseLib.Permission.TOURNAMENT_STANDARD), attributes)
                         </li>
@@ -204,6 +203,10 @@
                     </ul>
                 </li>
             </ul>
+        </div>
+        <div class="section form-section rules">
+            <h2>Tournament Specific Rules</h2>
+            @Html.TextAreaFor(x => x.TournamentRules)
         </div>
         <div class="section">
             @if (!ViewBag.InProgress)
