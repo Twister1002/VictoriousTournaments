@@ -178,7 +178,6 @@
     <Compile Include="Models\ViewModels\GameTypeViewModel.cs" />
     <Compile Include="Models\ViewModels\GameViewModel.cs" />
     <Compile Include="Models\ViewModels\PlatformViewModel.cs" />
-    <Compile Include="Models\ViewModels\TournamentRegisterViewModel.cs" />
     <Compile Include="Models\ViewModels\TournamentViewModel.cs" />
     <Compile Include="Models\ViewModels\ViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

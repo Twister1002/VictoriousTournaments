@@ -1,39 +1,48 @@
-﻿@model WebApplication.Models.ViewModels.TournamentRegisterViewModel
+﻿@model WebApplication.Models.Tournament
 
 @{
     ViewBag.Title = "TournamentRegistration";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="TournamentRegister">
-    <h2>@ViewBag.Tournament.Title</h2>
-    <h3 class="gameTitle">@ViewBag.Tournament.GameType.Title</h3>
-    <div class="description">
-        @ViewBag.Tournament.Description
-    </div>
+<div id="TournamentRegister">
+    <h2>@Model.Model.Title</h2>
+    <h3 class="gameTitle">@Model.Model.GameType.Title on @Model.Model.Platform.PlatformName</h3>
+    <div>Tournament Starts at @Model.Model.TournamentStartDate</div>
+    <div>@Model.Model.Description</div>
     <p>
-        @if (Model.AccountID > 0)
+        @if (ViewBag.isLoggedIn)
         {
             if (ViewBag.CanRegister)
             {
                 if (ViewBag.isRegistered)
                 {
-                    using (Html.BeginForm("Deregister", "Tournament", FormMethod.Post))
+                    using (Html.BeginForm("Deregister", "Tournament", new { tournamentId = Model.Model.TournamentID }, FormMethod.Post, null))
                     {
-                    @Html.TextBoxFor(x => x.TournamentID, new { @readonly = "readonly", @hidden = "hidden" })
-                    @Html.TextBoxFor(x => x.AccountID, new { @readonly = "readonly", @hidden = "hidden" })
-                    @Html.TextBoxFor(x => x.Name, new { @readonly = "readonly", @hidden = "hidden" })
-                    <button type="submit">Deregister for tournament</button>
+                        <div class="message warning">
+                            By removing yourself from this tournament you will not longer be able to participate in this tournament.
+                        </div>
+                        <button type="submit">Deregister for tournament</button>
                     }
                 }
                 else
                 {
-                    using (Html.BeginForm("Register", "Tournament", FormMethod.Post))
+                    using (Html.BeginForm("Register", "Tournament", new { tournamentId = Model.Model.TournamentID }, FormMethod.Post, null))
                     {
-                    @Html.TextBoxFor(x => x.TournamentID, new { @readonly = "readonly", @hidden = "hidden" })
-                    @Html.TextBoxFor(x => x.AccountID, new { @readonly = "readonly", @hidden = "hidden" })
-                    @Html.TextBoxFor(x => x.Name, new { @readonly = "readonly", @hidden = "hidden" })
-                    <button type="submit">Register for tournament</button>
+                        <div class="section form-section">
+                            <div class="rules">
+                                @Html.LabelFor(x => x.Model.Rules, "Tournament Rules")
+                                @Html.TextAreaFor(x => x.Model.Rules, new { @readonly = "readonly" })
+                            </div>
+                            <div class="info">
+                                <div class="terms">
+                                    @Html.CheckBox("Terms", false)
+                                    @Html.Label("Terms", "Accept Terms")
+                                </div>
+
+                                <button type="submit">Register for tournament</button>
+                            </div>
+                        </div>
                     }
                 }
             }
