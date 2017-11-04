@@ -123,6 +123,7 @@
     <Content Include="Scripts\scripts.min.js" />
     <Content Include="Scripts\Tournament\Bracket.js" />
     <Content Include="Scripts\Tournament\Create.js" />
+    <Content Include="Scripts\Tournament\Register.js" />
     <Content Include="Styles\css\jquery.timepicker.css" />
     <Content Include="Global.asax" />
     <Content Include="gulpfile.js" />
@@ -258,6 +259,7 @@
     <Content Include="Views\Account\Forgot.cshtml" />
     <Content Include="Views\Tournament\GameTournaments.cshtml" />
     <Content Include="Styles\less\Tournament\_GameTournaments.less" />
+    <Content Include="Styles\less\Tournament\_Register.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
