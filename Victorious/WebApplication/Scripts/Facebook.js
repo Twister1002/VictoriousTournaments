@@ -17,3 +17,23 @@
     js.src = "https://connect.facebook.net/en_US/sdk.js";
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
+
+$(document).ready(function ($) {
+    $(".facebook-login-button").on("click", function () {
+        FB.login(function (response) {
+            switch (response.status) {
+                case "connected":
+                    console.log("User is logged in");
+                    break;
+                case "not_authorized":
+                    console.log("User has not authorized this yet.");
+                    break;
+                case "unknown":
+                    console.log("User is not logged in.");
+                    break;
+                default:
+                    break;
+            }
+        }, { "scope": "public_profile, email" });
+    });
+});

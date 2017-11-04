@@ -10,7 +10,6 @@
             text-align: center;
             display: block;
             padding: .5em;
-
             .hover;
 
             &.active {
@@ -36,6 +35,7 @@
             &#AccountTournaments {
                 ul.list-table {
                     padding-bottom: 2em;
+
                     li.list-table-body {
                         ul {
                             padding: .5em 0em;
@@ -64,6 +64,28 @@
             &#AccountSettings {
             }
         }
+    }
+}
+
+#AccountLogin {
+    position: relative;
+    width: 80%;
+    max-width: 50em;
+    margin: 0 auto;
+
+    .loginTypes {
+        .flexbox();
+        padding: 1em 0;
+
+        > * {
+            flex: 1 0 50%;
+
+            &.social-media-login {
+                border-left: 2px solid @grey;
+                text-align: right;
+            }
+        }
+
     }
 }
 

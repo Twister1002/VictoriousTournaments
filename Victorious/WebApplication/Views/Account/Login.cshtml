@@ -6,24 +6,35 @@
 
 <div id="AccountLogin">
     <h2>Login</h2>
-    @using (Html.BeginForm("Login", "Account", FormMethod.Post))
-    {
-        <div class="section" >
-            <ul>
-                <li>
-                    @Html.LabelFor(m => m.Username)
-                    @Html.TextBoxFor(m => m.Username, null, new { @placeholder = "Username", @required = "required" })
-                </li>
-                <li>
-                    @Html.LabelFor(m => m.Password)
-                    @Html.PasswordFor(m => m.Password, new { @placeholder = "Password", @required = "required" })
-                </li>
-            </ul>
+    <div class="loginTypes">
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+        {
+            <div class="section">
+                <ul>
+                    <li>
+                        @Html.LabelFor(m => m.Username)
+                        @Html.TextBoxFor(m => m.Username, null, new { @placeholder = "Username", @required = "required" })
+                    </li>
+                    <li>
+                        @Html.LabelFor(m => m.Password)
+                        @Html.PasswordFor(m => m.Password, new { @placeholder = "Password", @required = "required" })
+                    </li>
+                </ul>
+            </div>
+            <div class="login">
+                <input type="submit" value="Login" />
+            </div>
+        }
+        <div class="social-media-login">
+            <h3>Social Meida Login</h3>
+            <div class="facebook">
+                <button type="button" class="facebook-login-button">
+                    <span class="icon icon-facebook"></span>
+                    Login With Facebook
+                </button>
+            </div>
         </div>
-        <div class="login">
-            <input type="submit" value="Login" />
-        </div>
-    }
+    </div>
 
     <div class="section">
         Don't have an account? @Html.ActionLink("Register here!", "Register", "Account", null, new { @class = "clickable-underline" })
