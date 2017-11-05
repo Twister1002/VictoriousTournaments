@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="4cf8ac6fde40409d98341a02c1ea08b7" Name="Diagram1" ZoomLevel="93">
+      <Diagram DiagramId="4cf8ac6fde40409d98341a02c1ea08b7" Name="Diagram1" ZoomLevel="78">
         <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountForgotModel" Width="1.5" PointX="8.25" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountInviteModel" Width="1.5" PointX="8.25" PointY="7.625" IsExpanded="true" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountModel" Width="1.5" PointX="6" PointY="3.375" IsExpanded="true" />
@@ -44,7 +44,11 @@
         <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamsBrackets_TournamentTeam_TournamentTeamID" ManuallyRouted="false" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_TournamentTeamMember_TournamentTeams_TournamentTeamID" ManuallyRouted="false" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_UserBrackets_TournamentUsers" ManuallyRouted="false" />
-      </Diagram>
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountSocialModel" Width="1.5" PointX="11.25" PointY="4.5" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.SocialProviderModel" Width="1.5" PointX="9" PointY="24.875" />
+        <AssociationConnector Association="VictoriousDatabaseModel.FK_Account_AccountID" />
+        <AssociationConnector Association="VictoriousDatabaseModel.account_social_provider" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

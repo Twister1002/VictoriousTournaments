@@ -53,6 +53,14 @@ namespace DatabaseLib
         }
     }
 
+    public partial class AccountSocialModel
+    {
+        public enum SocialProviders
+        {
+            FACEBOOK
+        }
+    }
+
     public partial class TournamentInviteModel
     {
         //partial void OnInit()
@@ -155,5 +163,4 @@ namespace DatabaseLib
     {
         
     }
-
 }

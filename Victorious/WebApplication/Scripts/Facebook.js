@@ -23,7 +23,9 @@ $(document).ready(function ($) {
         FB.login(function (response) {
             switch (response.status) {
                 case "connected":
-                    console.log("User is logged in");
+                    $("#AccountLogin #SocialID").val(response.authResponse.userID);
+                    $("#AccountLogin #ProviderID").val($("#AccountLogin #Providers option:contains('Facebook')").val());
+                    $("#AccountLogin form").submit();
                     break;
                 case "not_authorized":
                     console.log("User has not authorized this yet.");

@@ -1,11 +1,14 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Microsoft.Owin.Security.Facebook;
 using WebApplication.Models;
 using WebApplication.Models.ViewModels;
 
 namespace WebApplication.Controllers
 {
     public class AccountController : VictoriousController
-    {
+    { 
         [Route("Account/Logout")]
         public ActionResult Logout()
         {
@@ -37,6 +40,7 @@ namespace WebApplication.Controllers
             }
             else
             {
+                account.SetupViewModel();
                 return View("Login", account.viewModel);
             }
         }
@@ -47,8 +51,8 @@ namespace WebApplication.Controllers
         {
             if (!ModelState.IsValid)
             {
-                Session["Message"] = "Please enter in the required fields.";
-                Session["Message.Class"] = ViewError.ERROR;
+                viewModel.message = "Please enter in the required fields.";
+                viewModel.errorType = ViewError.ERROR;
             }
             else
             {
@@ -56,12 +60,6 @@ namespace WebApplication.Controllers
                 {
                     Session["User.UserId"] = account.Model.AccountID;
                     return RedirectToAction("Index", "Account");
-                }
-                else
-                {
-                    Session["Message"] = "The username or password is invalid.";
-                    Session["Message.Class"] = ViewError.WARNING;
-                    viewModel.e = service.e;
                 }
             }
 

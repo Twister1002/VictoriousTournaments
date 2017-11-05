@@ -153,5 +153,11 @@ namespace DatabaseLib.Services
 
         #endregion
 
+        #region AccountProvider 
+        public List<SocialProviderModel> SocialProviders()
+        {
+            return unitOfWork.SocialProviderRepo.GetAll().ToList();
+        }
+        #endregion
     }
 }

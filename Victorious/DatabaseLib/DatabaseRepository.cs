@@ -52,6 +52,9 @@ namespace DatabaseLib
             context.Configuration.LazyLoadingEnabled = false;
             context.Configuration.ProxyCreationEnabled = false;
             connectionStringName = name;
+            context.AccountSocialModels
+                .Include(x => x.Account)
+                .Load();
             context.TournamentModels
                .Include(x => x.Brackets)
                .Load();

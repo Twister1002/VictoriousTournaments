@@ -55,8 +55,51 @@ namespace WebApplication.Models
                     {
                         Model.LastLogin = DateTime.Now;
                         services.Account.UpdateAccount(Model);
+
+                        viewModel.errorType = ViewError.NONE;
+                        viewModel.message = String.Empty;
+
                         return services.Save();
                     }
+                    else
+                    {
+                        viewModel.message = "Username or password is incorrect.";
+                        viewModel.errorType = ViewError.ERROR;
+                    }
+                }
+                else
+                {
+                    viewModel.message = "Username or password is incorrect.";
+                    viewModel.errorType = ViewError.ERROR;
+                }
+
+                if (viewModel.ProviderID != 0 && viewModel.SocialID != String.Empty)
+                {
+                    // This must be a social login. Lets find it.
+                    AccountSocialModel socialModel = services.Account.GetAccountSocialProvider(viewModel.SocialID, viewModel.ProviderID);
+                    if (socialModel != null)
+                    {
+                        // Grab the accountID referenced and load the model and return true. 
+                        // No need to validate the password as they were verified through social media
+
+                        Model = socialModel.Account;
+
+                        viewModel.errorType = ViewError.NONE;
+                        viewModel.message = String.Empty;
+
+                        return true;
+                    }
+                    else
+                    {
+                        // We could register the person...
+                        viewModel.message = "There is no account linked with this social media profile.";
+                        viewModel.errorType = ViewError.ERROR;
+                    }
+                }
+                else
+                {
+                    viewModel.message = "There has been an unexpected error. Please try again.";
+                    viewModel.errorType = ViewError.ERROR;
                 }
             }
 
@@ -212,7 +255,7 @@ namespace WebApplication.Models
         #region ViewModel
         public void SetupViewModel()
         {
-
+            viewModel.Providers = services.Type.SocialProviders();
         }
         
         public void ApplyChanges(AccountViewModel viewModel)

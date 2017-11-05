@@ -51,9 +51,16 @@
 
             Session.Remove("Message");
         }
-        @if (Model is WebApplication.Models.ViewModels.ViewModel && Model.e != null)
+        @if (Model is WebApplication.Models.ViewModels.ViewModel)
         {
-            <div class="message error">@Model.e.ToString()</div>
+            if (Model.e != null)
+            {
+                <div class="message error">@Model.e.ToString()</div>
+            }
+            else if (Model.message != String.Empty || Model.errorType != null)
+            {
+                <div class="message @WebApplication.Models.Model.errorClassNames[(int)Model.errorType]">@Model.message</div>
+            }
         }
         else if (Model is WebApplication.Models.Model && Model.GetMessage() != String.Empty)
         {

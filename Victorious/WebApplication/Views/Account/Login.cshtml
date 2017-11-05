@@ -9,6 +9,10 @@
     <div class="loginTypes">
         @using (Html.BeginForm("Login", "Account", FormMethod.Post))
         {
+            @Html.HiddenFor(x => x.SocialID)
+            @Html.HiddenFor(x => x.ProviderID)
+            @Html.DropDownListFor(x => x.Providers, new SelectList(Model.Providers, "SocialProviderID", "Provider", 0), "No Provider", new { @class = "hidden" })
+
             <div class="section">
                 <ul>
                     <li>

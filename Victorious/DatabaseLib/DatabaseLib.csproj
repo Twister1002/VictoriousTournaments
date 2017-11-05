@@ -78,6 +78,9 @@
     <Compile Include="AccountModel.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="AccountSocialModel.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="BracketModel.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -145,6 +148,9 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="SiteTeamModel.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SocialProviderModel.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="TournamentInviteModel.cs">

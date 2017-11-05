@@ -1,4 +1,5 @@
 ﻿using DatabaseLib;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication.Models.ViewModels
@@ -46,10 +47,12 @@ namespace WebApplication.Models.ViewModels
         [Display(Name = "Current Password")]
         public string CurrentPassword { get; set; }
 
-
         // Email subscriptions
         [Display(Name = "Content Updates")]
         public bool EmailMajorUpdates { get; set; }
-        
+
+        public string SocialID { get; set; }
+        public int ProviderID { get; set; }
+        public List<SocialProviderModel> Providers { get; set; }
     }
 }

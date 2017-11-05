@@ -237,5 +237,43 @@ namespace DatabaseLib.Services
         }
 
         #endregion
+
+        #region AccountSocial
+        public void AddAccountSocialProvider(AccountSocialModel social)
+        {
+            unitOfWork.AccountSocialRepo.Add(social);
+        }
+
+        public void DeleteAccountSocialProider(AccountSocialModel social)
+        {
+            unitOfWork.AccountSocialRepo.Delete(social.AccountSocialID);
+        }
+
+        public AccountSocialModel GetAccountSocialProvider(String socialAccountID, int provider)
+        {
+            try
+            {
+                return unitOfWork.AccountSocialRepo.GetSingle(x => x.SocialProviderID == provider && x.SocialAccountID == socialAccountID);
+            }
+            catch(Exception e)
+            {
+                unitOfWork.SetException(e);
+                return null;
+            }
+        }
+
+        public List<AccountSocialModel> GetAllLinkedSocialProviders(AccountModel account)
+        {
+            try
+            {
+                return unitOfWork.AccountSocialRepo.GetWhere(x => x.AccountID == account.AccountID).ToList();
+            }
+            catch (Exception e)
+            {
+                unitOfWork.SetException(e);
+                return new List<AccountSocialModel>();
+            }
+        }
+        #endregion
     }
 }

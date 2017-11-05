@@ -9,6 +9,7 @@ namespace DatabaseLib
     public interface IUnitOfWork : IDisposable
     {
         IRepository<AccountInviteModel> AccountInviteRepo { get; }
+        IRepository<AccountSocialModel> AccountSocialRepo { get; }
         IRepository<AccountModel> AccountRepo { get; }
         IRepository<BracketModel> BracketRepo { get; }
         IRepository<BracketTypeModel> BracketTypeRepo { get; }
@@ -26,6 +27,7 @@ namespace DatabaseLib
         IRepository<SiteTeamModel> SiteTeamRepo { get; }
         IRepository<SiteTeamMemberModel> SiteTeamMemberRepo { get; }
         IRepository<MailingListModel> MailingListRepo { get; }
+        IRepository<SocialProviderModel> SocialProviderRepo { get; }
 
         void Refresh();
 

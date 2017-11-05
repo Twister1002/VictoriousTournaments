@@ -46,6 +46,15 @@
           <Property Name="Salt" Type="longtext" Nullable="false" />
           <Property Name="ReceiveTournamentUpdates" Type="bool" />
         </EntityType>
+        <EntityType Name="accountsocial">
+          <Key>
+            <PropertyRef Name="AccountSocialID" />
+          </Key>
+          <Property Name="AccountSocialID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AccountID" Type="int" Nullable="false" />
+          <Property Name="SocialAccountID" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="SocialProviderID" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="brackets">
           <Key>
             <PropertyRef Name="BracketID" />
@@ -145,6 +154,13 @@
           <Property Name="DateCreated" Type="datetime" Precision="6" Nullable="false" />
           <Property Name="CreatedByID" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="socialproviders">
+          <Key>
+            <PropertyRef Name="SocialProviderID" />
+          </Key>
+          <Property Name="SocialProviderID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Provider" Type="varchar" MaxLength="255" Nullable="false" />
+        </EntityType>
         <EntityType Name="tournamentinvites">
           <Key>
             <PropertyRef Name="TournamentInviteCode" />
@@ -236,6 +252,30 @@
           <Property Name="Seed" Type="int" />
           <Property Name="TournamentID" Type="int" Nullable="false" />
         </EntityType>
+        <Association Name="account_social_provider">
+          <End Role="socialproviders" Type="Self.socialproviders" Multiplicity="1" />
+          <End Role="accountsocial" Type="Self.accountsocial" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="socialproviders">
+              <PropertyRef Name="SocialProviderID" />
+            </Principal>
+            <Dependent Role="accountsocial">
+              <PropertyRef Name="SocialProviderID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Account_AccountID">
+          <End Role="accounts" Type="Self.accounts" Multiplicity="1" />
+          <End Role="accountsocial" Type="Self.accountsocial" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="accounts">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="accountsocial">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_AccountForget_ToTable_AccountModel">
           <End Role="accounts" Type="Self.accounts" Multiplicity="1" />
           <End Role="accountforget" Type="Self.accountforget" Multiplicity="*" />
@@ -488,6 +528,7 @@
           <EntitySet Name="accountforget" EntityType="Self.accountforget" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="accountinvites" EntityType="Self.accountinvites" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="accounts" EntityType="Self.accounts" Schema="victoriousdatabase" store:Type="Tables" />
+          <EntitySet Name="accountsocial" EntityType="Self.accountsocial" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="brackets" EntityType="Self.brackets" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="brackettypes" EntityType="Self.brackettypes" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="games" EntityType="Self.games" Schema="victoriousdatabase" store:Type="Tables" />
@@ -497,6 +538,7 @@
           <EntitySet Name="platforms" EntityType="Self.platforms" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="siteteammembers" EntityType="Self.siteteammembers" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="siteteams" EntityType="Self.siteteams" Schema="victoriousdatabase" store:Type="Tables" />
+          <EntitySet Name="socialproviders" EntityType="Self.socialproviders" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="tournamentinvites" EntityType="Self.tournamentinvites" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="tournaments" EntityType="Self.tournaments" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="tournamentteambrackets" EntityType="Self.tournamentteambrackets" Schema="victoriousdatabase" store:Type="Tables" />
@@ -504,6 +546,14 @@
           <EntitySet Name="tournamentteams" EntityType="Self.tournamentteams" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="tournamentusers" EntityType="Self.tournamentusers" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="tournamentusersbrackets" EntityType="Self.tournamentusersbrackets" Schema="victoriousdatabase" store:Type="Tables" />
+          <AssociationSet Name="account_social_provider" Association="Self.account_social_provider">
+            <End Role="socialproviders" EntitySet="socialproviders" />
+            <End Role="accountsocial" EntitySet="accountsocial" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Account_AccountID" Association="Self.FK_Account_AccountID">
+            <End Role="accounts" EntitySet="accounts" />
+            <End Role="accountsocial" EntitySet="accountsocial" />
+          </AssociationSet>
           <AssociationSet Name="FK_AccountForget_ToTable_AccountModel" Association="Self.FK_AccountForget_ToTable_AccountModel">
             <End Role="accounts" EntitySet="accounts" />
             <End Role="accountforget" EntitySet="accountforget" />
@@ -634,6 +684,7 @@
           <NavigationProperty Name="AccountForgets" Relationship="Self.FK_AccountForget_ToTable_AccountModel" FromRole="accounts" ToRole="accountforget" />
           <NavigationProperty Name="AccountInvites" Relationship="Self.FK_UserInvites_Accounts_SentBy" FromRole="accounts" ToRole="accountinvites" />
           <NavigationProperty Name="SiteTeamMembers" Relationship="Self.FK_SiteTeamMembers_Accounts_AccountID" FromRole="accounts" ToRole="siteteammembers" />
+          <NavigationProperty Name="accountsocials" Relationship="VictoriousDatabaseModel.FK_Account_AccountID" FromRole="AccountModel" ToRole="accountsocial" />
         </EntityType>
         <EntityType Name="BracketModel">
           <Key>
@@ -1208,8 +1259,61 @@
             <End Role="tournamentusers" EntitySet="TournamentUserModels" />
             <End Role="tournamentusersbrackets" EntitySet="TournamentUsersBracketModels" />
           </AssociationSet>
-        </EntityContainer>
-      </Schema>
+          <EntitySet Name="AccountSocialModels" EntityType="VictoriousDatabaseModel.AccountSocialModel" />
+          <EntitySet Name="SocialProviderModels" EntityType="VictoriousDatabaseModel.SocialProviderModel" />
+          <AssociationSet Name="FK_Account_AccountID" Association="VictoriousDatabaseModel.FK_Account_AccountID">
+            <End Role="AccountModel" EntitySet="AccountModels" />
+            <End Role="accountsocial" EntitySet="AccountSocialModels" />
+          </AssociationSet>
+          <AssociationSet Name="account_social_provider" Association="VictoriousDatabaseModel.account_social_provider">
+            <End Role="socialprovider" EntitySet="SocialProviderModels" />
+            <End Role="accountsocial" EntitySet="AccountSocialModels" />
+          </AssociationSet>
+          </EntityContainer>
+        <EntityType Name="AccountSocialModel">
+          <Key>
+            <PropertyRef Name="AccountSocialID" />
+          </Key>
+          <Property Name="AccountSocialID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AccountID" Type="Int32" Nullable="false" />
+          <Property Name="SocialAccountID" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="SocialProviderID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Account" Relationship="VictoriousDatabaseModel.FK_Account_AccountID" FromRole="accountsocial" ToRole="AccountModel" />
+          <NavigationProperty Name="SocialProvider" Relationship="VictoriousDatabaseModel.account_social_provider" FromRole="accountsocial" ToRole="socialprovider" />
+        </EntityType>
+        <EntityType Name="SocialProviderModel">
+          <Key>
+            <PropertyRef Name="SocialProviderID" />
+          </Key>
+          <Property Name="SocialProviderID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Provider" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="AccountSocial" Relationship="VictoriousDatabaseModel.account_social_provider" FromRole="socialprovider" ToRole="accountsocial" />
+        </EntityType>
+        <Association Name="FK_Account_AccountID">
+          <End Type="VictoriousDatabaseModel.AccountModel" Role="AccountModel" Multiplicity="1" />
+          <End Type="VictoriousDatabaseModel.AccountSocialModel" Role="accountsocial" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AccountModel">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="accountsocial">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="account_social_provider">
+          <End Type="VictoriousDatabaseModel.SocialProviderModel" Role="socialprovider" Multiplicity="1" />
+          <End Type="VictoriousDatabaseModel.AccountSocialModel" Role="accountsocial" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="socialprovider">
+              <PropertyRef Name="SocialProviderID" />
+            </Principal>
+            <Dependent Role="accountsocial">
+              <PropertyRef Name="SocialProviderID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -1460,6 +1564,24 @@
                 <ScalarProperty Name="BracketID" ColumnName="BracketID" />
                 <ScalarProperty Name="Seed" ColumnName="Seed" />
                 <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AccountSocialModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.AccountSocialModel">
+              <MappingFragment StoreEntitySet="accountsocial">
+                <ScalarProperty Name="SocialProviderID" ColumnName="SocialProviderID" />
+                <ScalarProperty Name="SocialAccountID" ColumnName="SocialAccountID" />
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+                <ScalarProperty Name="AccountSocialID" ColumnName="AccountSocialID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SocialProviderModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.SocialProviderModel">
+              <MappingFragment StoreEntitySet="socialproviders">
+                <ScalarProperty Name="Provider" ColumnName="Provider" />
+                <ScalarProperty Name="SocialProviderID" ColumnName="SocialProviderID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

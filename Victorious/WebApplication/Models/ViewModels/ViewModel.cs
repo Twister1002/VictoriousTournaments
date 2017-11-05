@@ -9,5 +9,7 @@ namespace WebApplication.Models.ViewModels
     public class ViewModel
     {
         public Exception e;
+        public String message;
+        public ViewError errorType;
     }
 }

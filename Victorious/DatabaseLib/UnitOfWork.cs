@@ -11,6 +11,7 @@ namespace DatabaseLib
     {
         private VictoriousEntities context;
         IRepository<AccountInviteModel> accountInviteRepo;
+        IRepository<AccountSocialModel> accountSocialRepo;
         IRepository<AccountModel> accountRepo;
         IRepository<BracketModel> bracketRepo;
         IRepository<BracketTypeModel> bracketTypeRepo;
@@ -28,6 +29,7 @@ namespace DatabaseLib
         IRepository<SiteTeamModel> siteTeamRepo;
         IRepository<SiteTeamMemberModel> siteTeamMemberRepo;
         IRepository<MailingListModel> mailingListRepo;
+        IRepository<SocialProviderModel> socialProviderRepo;
 
         Exception exception;
 
@@ -110,6 +112,18 @@ namespace DatabaseLib
                     this.accountInviteRepo = new Repository<AccountInviteModel>(context);
                 }
                 return accountInviteRepo;
+            }
+        }
+
+        public IRepository<AccountSocialModel> AccountSocialRepo
+        {
+            get
+            {
+                if (this.accountSocialRepo == null)
+                {
+                    this.accountSocialRepo = new Repository<AccountSocialModel>(context);
+                }
+                return accountSocialRepo;
             }
         }
 
@@ -302,6 +316,18 @@ namespace DatabaseLib
                     this.mailingListRepo = new Repository<MailingListModel>(context);
                 }
                 return mailingListRepo;
+            }
+        }
+
+        public IRepository<SocialProviderModel> SocialProviderRepo
+        {
+            get
+            {
+                if (this.socialProviderRepo == null)
+                {
+                    this.socialProviderRepo = new Repository<SocialProviderModel>(context);
+                }
+                return socialProviderRepo;
             }
         }
 

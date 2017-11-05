@@ -44,5 +44,7 @@ namespace DatabaseLib
         public virtual DbSet<TournamentTeamModel> TournamentTeamModels { get; set; }
         public virtual DbSet<TournamentUserModel> TournamentUserModels { get; set; }
         public virtual DbSet<TournamentUsersBracketModel> TournamentUsersBracketModels { get; set; }
+        public virtual DbSet<AccountSocialModel> AccountSocialModels { get; set; }
+        public virtual DbSet<SocialProviderModel> SocialProviderModels { get; set; }
     }
 }
