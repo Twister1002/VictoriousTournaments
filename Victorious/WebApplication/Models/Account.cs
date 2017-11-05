@@ -33,6 +33,7 @@ namespace WebApplication.Models
 
             // ViewModel
             viewModel = new AccountViewModel();
+            SetupViewModel();
             SetFields();
 
             LoadAccountTournaments();
@@ -73,7 +74,7 @@ namespace WebApplication.Models
                     viewModel.errorType = ViewError.ERROR;
                 }
 
-                if (viewModel.ProviderID != 0 && viewModel.SocialID != String.Empty)
+                if (Model == null && viewModel.ProviderID != 0 && viewModel.SocialID != String.Empty)
                 {
                     // This must be a social login. Lets find it.
                     AccountSocialModel socialModel = services.Account.GetAccountSocialProvider(viewModel.SocialID, viewModel.ProviderID);
@@ -87,7 +88,10 @@ namespace WebApplication.Models
                         viewModel.errorType = ViewError.NONE;
                         viewModel.message = String.Empty;
 
-                        return true;
+                        Model.LastLogin = DateTime.Now;
+                        services.Account.UpdateAccount(Model);
+
+                        return services.Save();
                     }
                     else
                     {
@@ -130,6 +134,26 @@ namespace WebApplication.Models
         public void ForgotUsername(AccountViewModel viewModel)
         {
 
+        }
+
+        public bool SocialAccount(bool addSocial, int provider, Dictionary<String, String> socialInfo)
+        {
+            if (addSocial)
+            {
+                AccountSocialModel socialModel = new AccountSocialModel()
+                {
+                    AccountID = Model.AccountID,
+                    SocialProviderID = provider,
+                    SocialAccountID = socialInfo["userID"]
+                };
+                services.Account.AddAccountSocialProvider(socialModel);
+            }
+            else
+            {
+                services.Account.DeleteAccountSocialProider(Model.AccountSocials.Single(x => x.AccountID == Model.AccountID && x.SocialProviderID == provider));
+            }
+
+            return services.Save();
         }
 
         #region CRUD
@@ -256,6 +280,7 @@ namespace WebApplication.Models
         public void SetupViewModel()
         {
             viewModel.Providers = services.Type.SocialProviders();
+            viewModel.LinkedProviders = Model.AccountSocials.ToList();
         }
         
         public void ApplyChanges(AccountViewModel viewModel)

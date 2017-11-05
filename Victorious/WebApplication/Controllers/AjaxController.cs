@@ -9,6 +9,7 @@ using Tournaments = Tournament.Structure;
 using Tournament.Structure;
 using WebApplication.Models;
 using WebApplication.Models.ViewModels;
+using Json;
 
 namespace WebApplication.Controllers
 {
@@ -40,6 +41,45 @@ namespace WebApplication.Controllers
                 data = data
             });
         }
+
+        #region Account
+        [HttpPost]
+        [Route("Ajax/Account/SocialLinks")]
+        public JsonResult AccountSocialLinks()
+        {
+            status = true;
+            message = "Social Links was acquired.";
+            data = account.Model.AccountSocials;
+
+            return BundleJson();
+        }
+
+        [HttpPost]
+        [Route("Ajax/Account/SocialLink/Modify")]
+        public JsonResult ModifySocialLinks(bool addConnection, int provider, String socialObject)
+        {
+            if (account.IsLoggedIn())
+            {
+                Dictionary<String, String> socialInfo = JsonConvert.DeserializeObject<Dictionary<String, String>>(socialObject);
+
+                status = account.SocialAccount(addConnection, provider, socialInfo);
+                if (status)
+                {
+                    message = (addConnection ? "Added" : "Removed" )+" Social sucessfully.";
+                }
+                else
+                {
+                    message = "There was an error " + (addConnection ? "un " : "") + "linking your account. Try again later.";
+                }
+            }
+            else
+            {
+                message = "You must login to do this.";
+            }
+
+            return BundleJson();
+        }
+        #endregion
 
         #region Administrator
         [HttpPost]

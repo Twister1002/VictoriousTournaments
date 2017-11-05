@@ -47,6 +47,7 @@ namespace WebApplication.Controllers
                 if (Session["User.UserId"] != null)
                 {
                     account = new Account(service, (int)Session["User.UserId"]);
+
                 }
                 else
                 {

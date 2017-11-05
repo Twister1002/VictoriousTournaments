@@ -1,7 +1,7 @@
 ﻿  window.fbAsyncInit = function() {
       FB.init({
           appId      : '307736699633852',
-          cookie     : true,
+          cookie     : false,
           xfbml      : true,
           version    : 'v2.10'
       });
@@ -19,7 +19,7 @@
 }(document, 'script', 'facebook-jssdk'));
 
 $(document).ready(function ($) {
-    $(".facebook-login-button").on("click", function () {
+    $("#AccountLogin .facebook-social-button").on("click", function () {
         FB.login(function (response) {
             switch (response.status) {
                 case "connected":
@@ -36,6 +36,6 @@ $(document).ready(function ($) {
                 default:
                     break;
             }
-        }, { "scope": "public_profile, email" });
+        });
     });
 });

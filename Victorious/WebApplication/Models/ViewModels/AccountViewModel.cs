@@ -54,5 +54,6 @@ namespace WebApplication.Models.ViewModels
         public string SocialID { get; set; }
         public int ProviderID { get; set; }
         public List<SocialProviderModel> Providers { get; set; }
+        public List<AccountSocialModel> LinkedProviders { get; set; }
     }
 }

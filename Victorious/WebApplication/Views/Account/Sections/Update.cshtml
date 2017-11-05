@@ -1,5 +1,7 @@
 ﻿@model WebApplication.Models.ViewModels.AccountViewModel
-
+@{
+    bool facebook = Model.LinkedProviders.SingleOrDefault(x => x.SocialProviderID == (int)DatabaseLib.AccountSocialModel.SocialProviders.FACEBOOK) != null;
+}
 <div id="AccountUpdate">
     <h2>Update Account</h2>
     @using (Html.BeginForm("Update", "Account", FormMethod.Post))
@@ -36,12 +38,22 @@
                 </li>
             </ul>
         </div>
+        <div class="section social-media">
+            <h3>Linked Accounts</h3>
+            <div class="social-connection" data-social="@((int)DatabaseLib.AccountSocialModel.SocialProviders.FACEBOOK)">
+                <button type="button" class="facebook facebook-social-button" value="@(facebook ? "remove" : "add")">
+                    <span class="icon icon-facebook"></span>
+                    <span class="prefix">@(facebook ? "Disconnect" : "Link with")</span>
+                    Facebook
+                </button>
+            </div>
+        </div>
         <div class="section">
             <h3>Email Subscriptions</h3>
             <ul>
                 <li>
-                    @Html.LabelFor(x=>x.EmailMajorUpdates)
-                    @Html.CheckBoxFor(x=>x.EmailMajorUpdates)
+                    @Html.LabelFor(x => x.EmailMajorUpdates)
+                    @Html.CheckBoxFor(x => x.EmailMajorUpdates)
                 </li>
             </ul>
         </div>
@@ -49,7 +61,7 @@
             <h3>Authorization</h3>
             <ul>
                 <li>
-                    @Html.LabelFor(x=>x.CurrentPassword)
+                    @Html.LabelFor(x => x.CurrentPassword)
                     @Html.PasswordFor(x => x.CurrentPassword, new { @placeholder = "Password", @required = "required" })
                 </li>
             </ul>

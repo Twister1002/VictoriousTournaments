@@ -8,7 +8,7 @@ using WebApplication.Models.ViewModels;
 namespace WebApplication.Controllers
 {
     public class AccountController : VictoriousController
-    { 
+    {
         [Route("Account/Logout")]
         public ActionResult Logout()
         {

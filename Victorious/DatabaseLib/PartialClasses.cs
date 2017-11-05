@@ -57,7 +57,7 @@ namespace DatabaseLib
     {
         public enum SocialProviders
         {
-            FACEBOOK
+            FACEBOOK = 1
         }
     }
 

@@ -684,7 +684,7 @@
           <NavigationProperty Name="AccountForgets" Relationship="Self.FK_AccountForget_ToTable_AccountModel" FromRole="accounts" ToRole="accountforget" />
           <NavigationProperty Name="AccountInvites" Relationship="Self.FK_UserInvites_Accounts_SentBy" FromRole="accounts" ToRole="accountinvites" />
           <NavigationProperty Name="SiteTeamMembers" Relationship="Self.FK_SiteTeamMembers_Accounts_AccountID" FromRole="accounts" ToRole="siteteammembers" />
-          <NavigationProperty Name="accountsocials" Relationship="VictoriousDatabaseModel.FK_Account_AccountID" FromRole="AccountModel" ToRole="accountsocial" />
+          <NavigationProperty Name="AccountSocials" Relationship="VictoriousDatabaseModel.FK_Account_AccountID" FromRole="AccountModel" ToRole="accountsocial" />
         </EntityType>
         <EntityType Name="BracketModel">
           <Key>
