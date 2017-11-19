@@ -52,6 +52,7 @@ namespace WebApplication.Models.ViewModels
         public bool EmailMajorUpdates { get; set; }
 
         public string SocialID { get; set; }
+        public string AccessToken { get; set; }
         public int ProviderID { get; set; }
         public List<SocialProviderModel> Providers { get; set; }
         public List<AccountSocialModel> LinkedProviders { get; set; }

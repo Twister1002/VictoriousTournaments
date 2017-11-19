@@ -84,29 +84,38 @@
         > * {
             flex: 1 0 50%;
 
-            &.social-media-login {
+            &.social-media {
                 border-left: 2px solid @grey;
                 text-align: right;
             }
         }
-
     }
 }
 
 
-#AccountRegister, #AccountUpdate {
+#AccountRegister {
+    .create-options {
+        .flexbox();
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .hidden { 
+        display: none;
+    }
 }
 
 
 @media screen and (min-width: @@b1) {
     #AccountRegister, #AccountUpdate {
         .section {
-            li {
-                width: 35%;
-                display: inline-block;
+            ul {
+                .flexbox();
+                flex-direction: row;
+                flex-wrap: wrap;
 
-                input {
-                    width: 90%;
+                li {
+                    flex: 1 0 50%;
                 }
             }
         }
@@ -130,6 +139,24 @@
             display: inline-block;
             width: 79%;
             vertical-align: top;
+        }
+    }
+
+    #AccountRegister {
+        max-width: 50em;
+        margin: 0 auto;
+        .create-options {
+            .section {
+                width: 70%;
+
+                li {
+                    width: 50%;
+                }
+            }
+
+            .social-media {
+                width: 30%;
+            }
         }
     }
 }

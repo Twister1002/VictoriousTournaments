@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Tournaments = Tournament.Structure;
 using Tournament.Structure;
 using WebApplication.Models;
 using WebApplication.Models.ViewModels;

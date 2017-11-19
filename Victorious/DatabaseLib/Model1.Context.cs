@@ -27,7 +27,6 @@ namespace DatabaseLib
     
         public virtual DbSet<AccountForgotModel> AccountForgotModels { get; set; }
         public virtual DbSet<AccountInviteModel> AccountInviteModels { get; set; }
-        public virtual DbSet<AccountModel> AccountModels { get; set; }
         public virtual DbSet<BracketModel> BracketModels { get; set; }
         public virtual DbSet<BracketTypeModel> BracketTypeModels { get; set; }
         public virtual DbSet<GameModel> GameModels { get; set; }
@@ -44,7 +43,8 @@ namespace DatabaseLib
         public virtual DbSet<TournamentTeamModel> TournamentTeamModels { get; set; }
         public virtual DbSet<TournamentUserModel> TournamentUserModels { get; set; }
         public virtual DbSet<TournamentUsersBracketModel> TournamentUsersBracketModels { get; set; }
-        public virtual DbSet<AccountSocialModel> AccountSocialModels { get; set; }
         public virtual DbSet<SocialProviderModel> SocialProviderModels { get; set; }
+        public virtual DbSet<AccountSocialModel> AccountSocialModels { get; set; }
+        public virtual DbSet<AccountModel> AccountModels { get; set; }
     }
 }

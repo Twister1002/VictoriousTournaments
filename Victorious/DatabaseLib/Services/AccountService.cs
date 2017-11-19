@@ -249,11 +249,11 @@ namespace DatabaseLib.Services
             unitOfWork.AccountSocialRepo.Delete(social.AccountSocialID);
         }
 
-        public AccountSocialModel GetAccountSocialProvider(String socialAccountID, int provider)
+        public AccountSocialModel GetAccountSocialProvider(String socialID, int provider)
         {
             try
             {
-                return unitOfWork.AccountSocialRepo.GetSingle(x => x.SocialProviderID == provider && x.SocialAccountID == socialAccountID);
+                return unitOfWork.AccountSocialRepo.GetSingle(x => x.ProviderID == provider && x.SocialID == socialID);
             }
             catch(Exception e)
             {

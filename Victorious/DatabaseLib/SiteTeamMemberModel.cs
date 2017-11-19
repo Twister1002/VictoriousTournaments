@@ -28,9 +28,9 @@ namespace DatabaseLib
         public int SiteTeamID { get; set; }
         public int Role { get; set; }
     
-        public virtual AccountModel Account { get; set; }
         public virtual SiteTeamModel SiteTeam { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentTeamMemberModel> TournamentTeamMembers { get; set; }
+        public virtual AccountModel Account { get; set; }
     }
 }

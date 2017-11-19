@@ -4,6 +4,8 @@ using System.Web.Mvc;
 using Microsoft.Owin.Security.Facebook;
 using WebApplication.Models;
 using WebApplication.Models.ViewModels;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace WebApplication.Controllers
 {
@@ -83,10 +85,10 @@ namespace WebApplication.Controllers
         [Route("Account/Register")]
         public ActionResult Register(AccountViewModel viewModel)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid && viewModel.ProviderID == 0)
             {
-                Session["Message"] = "Please enter in the required fields.";
-                Session["Message.ClasS"] = ViewError.ERROR;
+                viewModel.message = "Please enter in the required fields.";
+                viewModel.errorType = ViewError.ERROR;
 
                 return View(viewModel);
             }
@@ -95,17 +97,13 @@ namespace WebApplication.Controllers
                 if (account.Create(viewModel))
                 {
                     // User Registraion was successful
-                    Session["Message"] = "Registration was successful. Please login to continue.";
-                    Session["Message.Class"] = ViewError.SUCCESS;
+                    viewModel.message = "Registration was successful. Please login to continue.";
+                    viewModel.errorType = ViewError.SUCCESS;
 
                     return RedirectToAction("Login", "Account");
                 }
                 else
                 {
-                    Session["Message"] = "We were unable to register your account. Please try again";
-                    Session["Message.Class"] = ViewError.ERROR;
-                    viewModel.e = service.e;
-
                     return View("Register", viewModel);
                 }
             }

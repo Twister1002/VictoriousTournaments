@@ -8,33 +8,49 @@
     <h2>Account Registration</h2>
     @using (Html.BeginForm("RegisterUser", "Account", FormMethod.Post))
     {
-        <div class="section">
-            <ul>
-                <li>
-                    @Html.LabelFor(m => m.Username)
-                    @Html.TextBoxFor(m => m.Username, null, new { @placeholder = "Username", @required="required" })
-                </li>
-                <li>
-                    @Html.LabelFor(m => m.Email)
-                    @Html.TextBoxFor(m => m.Email, null, new { @placeholder = "Email", @required = "required" })
-                </li>
-                <li>
-                    @Html.LabelFor(m => m.FirstName)
-                    @Html.TextBoxFor(m => m.FirstName, null, new { @placeholder = "First Name", @required = "required" })
-                </li>
-                <li>
-                    @Html.LabelFor(m => m.LastName)
-                    @Html.TextBoxFor(m => m.LastName, null, new { @placeholder = "Last Name", @required = "required" })
-                </li>
-                <li>
-                    @Html.LabelFor(m => m.Password)
-                    @Html.PasswordFor(m => m.Password, new { @placeholder = "Password", @required = "required" })
-                </li>
-                <li>
-                    @Html.LabelFor(m => m.PasswordVerify)
-                    @Html.PasswordFor(m => m.PasswordVerify, new { @placeholder = "Verify Password", @required = "required" })
-                </li>
-            </ul>
+        @Html.HiddenFor(x => x.SocialID, new { value = String.Empty })
+        @Html.HiddenFor(x => x.ProviderID, new { value = String.Empty })
+        @Html.DropDownListFor(x => x.Providers, new SelectList(Model.Providers, "SocialProviderID", "Provider", 0), "No Provider", new { @class = "hidden" })
+        @Html.HiddenFor(x => x.AccessToken, new { value = String.Empty })
+
+        <div class="create-options">
+            <div class="section">
+                <ul>
+                    <li>
+                        @Html.LabelFor(m => m.Username)
+                        @Html.TextBoxFor(m => m.Username, null, new { @placeholder = "Username"})
+                    </li>
+                    <li>
+                        @Html.LabelFor(m => m.Email)
+                        @Html.TextBoxFor(m => m.Email, null, new { @placeholder = "Email"})
+                    </li>
+                    <li>
+                        @Html.LabelFor(m => m.FirstName)
+                        @Html.TextBoxFor(m => m.FirstName, null, new { @placeholder = "First Name" })
+                    </li>
+                    <li>
+                        @Html.LabelFor(m => m.LastName)
+                        @Html.TextBoxFor(m => m.LastName, null, new { @placeholder = "Last Name" })
+                    </li>
+                    <li>
+                        @Html.LabelFor(m => m.Password)
+                        @Html.PasswordFor(m => m.Password, new { @placeholder = "Password"})
+                    </li>
+                    <li>
+                        @Html.LabelFor(m => m.PasswordVerify)
+                        @Html.PasswordFor(m => m.PasswordVerify, new { @placeholder = "Verify Password"})
+                    </li>
+                </ul>
+            </div>
+            <div class="social-media">
+                <h3>Register by Social Media</h3>
+                <div class="social-connect">
+                    <button type="button" class="facebook-social-button">
+                        <span class="icon icon-facebook"></span>
+                        Register with Facebook
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="section">
             <input type="submit" value="Register" />

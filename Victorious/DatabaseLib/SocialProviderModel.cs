@@ -14,19 +14,7 @@ namespace DatabaseLib
     
     public partial class SocialProviderModel
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public SocialProviderModel()
-        {
-            this.AccountSocial = new HashSet<AccountSocialModel>();
-    		OnInit();
-        }
-    
-    	partial void OnInit();
-    
         public int SocialProviderID { get; set; }
         public string Provider { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AccountSocialModel> AccountSocial { get; set; }
     }
 }

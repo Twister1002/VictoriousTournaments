@@ -143,14 +143,14 @@ namespace WebApplication.Models
                 AccountSocialModel socialModel = new AccountSocialModel()
                 {
                     AccountID = Model.AccountID,
-                    SocialProviderID = provider,
-                    SocialAccountID = socialInfo["userID"]
+                    ProviderID = provider,
+                    SocialID = socialInfo["userID"]
                 };
                 services.Account.AddAccountSocialProvider(socialModel);
             }
             else
             {
-                services.Account.DeleteAccountSocialProider(Model.AccountSocials.Single(x => x.AccountID == Model.AccountID && x.SocialProviderID == provider));
+                services.Account.DeleteAccountSocialProider(Model.AccountSocials.Single(x => x.AccountID == Model.AccountID && x.ProviderID == provider));
             }
 
             return services.Save();
@@ -166,29 +166,74 @@ namespace WebApplication.Models
         {
             if (viewModel != null)
             {
-                ApplyChanges(viewModel);
+                bool usernameExists = false;
+                bool emailExists = false;
+                bool passwordsMatch = false;
 
-                // Verify we can create the user
-                Model.Salt = HashManager.GetSalt();
-                Model.Password = HashManager.HashPassword(viewModel.Password, Model.Salt);
-                Model.CreatedOn = DateTime.Now;
-                Model.InviteCode = Codes.GenerateInviteCode();
-
-                bool usernameExists = services.Account.AccountUsernameExists(viewModel.Username);
-                bool emailExists = services.Account.AccountEmailExists(viewModel.Email);
-                bool passwordsMatch = viewModel.Password == viewModel.PasswordVerify;
-
-
-                if (!usernameExists && !emailExists && passwordsMatch)
+                if (!String.IsNullOrEmpty(viewModel.AccessToken))
                 {
-                    services.Account.AddAccount(Model);
-                    return services.Save();
+                    switch (viewModel.ProviderID)
+                    {
+                        case (int)AccountSocialModel.SocialProviders.FACEBOOK:
+                            // We need to grab the email
+                            services.FBClient.AccessToken = viewModel.AccessToken;
+                            Dictionary<String, String> data = services.FBClient.Get<Dictionary<String, String>>("/me", new { fields = "email,first_name,last_name" });
+                            viewModel.Email = data["email"];
+                            Model.FirstName = data["first_name"];
+                            Model.LastName = data["last_name"];
+                            passwordsMatch = true;
+                            break;
+                    }
                 }
                 else
                 {
-                    return false;
+                    usernameExists = services.Account.AccountUsernameExists(viewModel.Username);
+                    passwordsMatch = viewModel.Password == viewModel.PasswordVerify && IsPasswordValid(viewModel.Password);
+                }
+        
+                // We need to check for email address regardless of any process.
+                emailExists = services.Account.AccountEmailExists(viewModel.Email);
+                
+                // Verify we can create the user
+                if (!usernameExists && !emailExists && passwordsMatch)
+                {
+                    ApplyChanges(viewModel);
+                    Model.CreatedOn = DateTime.Now;
+                    Model.InviteCode = Codes.GenerateInviteCode();
+
+                    services.Account.AddAccount(Model);
+                    if (services.Save())
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        viewModel.message = "We were unable to register your account due to an error. Please try again.";
+                    }
+                }
+                else
+                {
+                    if (emailExists)
+                    {
+                        viewModel.message = "An account with this email all ready exists. Please login instead.";
+                    }
+                    else if (!passwordsMatch)
+                    {
+                        viewModel.message = "The password you provided was not valid or the same";
+                    }
+                    else
+                    {
+                        viewModel.message = "We were unable to register your account. Please try again.";
+                    }
                 }
             }
+
+            viewModel.errorType = ViewError.ERROR;
+            viewModel.Providers = this.viewModel.Providers;
+            viewModel.ProviderID = 0;
+            viewModel.Email = null;
+            viewModel.AccessToken = null;
+            viewModel.SocialID = null;
 
             return false;
         }
@@ -270,9 +315,30 @@ namespace WebApplication.Models
             }
         }
 
+        /// <summary>
+        /// Gets the string of the username for the user.
+        /// </summary>
+        /// <returns></returns>
         public String GetUsername()
         {
             return Model.Username != null ? Model.Username : "Guest";
+        }
+
+        /// <summary>
+        /// Creates rules that the password must possess in order to change passwords.
+        /// </summary>
+        /// <param name="pass">The password to validate</param>
+        /// <returns>True or false if it meets the requirements</returns>
+        public bool IsPasswordValid(String pass)
+        {
+            if (String.IsNullOrEmpty(pass) || pass.Length < 6)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
         #endregion
 
@@ -285,13 +351,13 @@ namespace WebApplication.Models
         
         public void ApplyChanges(AccountViewModel viewModel)
         {
-            Model.Username      = viewModel.Username;
+            //Model.Username      = viewModel.Username;
             Model.Email         = viewModel.Email != String.Empty ? viewModel.Email : String.Empty;
-            Model.FirstName     = viewModel.FirstName != String.Empty ? viewModel.FirstName : String.Empty;
-            Model.LastName      = viewModel.LastName != String.Empty ? viewModel.LastName : String.Empty;
+            //Model.FirstName     = viewModel.FirstName != String.Empty ? viewModel.FirstName : String.Empty;
+            //Model.LastName      = viewModel.LastName != String.Empty ? viewModel.LastName : String.Empty;
 
             // Check to see if we can cange the password
-            if (viewModel.Password == viewModel.PasswordVerify && !String.IsNullOrEmpty(viewModel.Password))
+            if (IsPasswordValid(viewModel.Password) && viewModel.Password == viewModel.PasswordVerify)
             {
                 Model.Salt = HashManager.GetSalt();
                 Model.Password = HashManager.HashPassword(viewModel.Password, Model.Salt);

@@ -16,10 +16,10 @@ namespace DatabaseLib
     {
         public int AccountSocialID { get; set; }
         public int AccountID { get; set; }
-        public string SocialAccountID { get; set; }
-        public int SocialProviderID { get; set; }
+        public string SocialID { get; set; }
+        public int ProviderID { get; set; }
+        public int Email { get; set; }
     
         public virtual AccountModel Account { get; set; }
-        public virtual SocialProviderModel SocialProvider { get; set; }
     }
 }

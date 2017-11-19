@@ -1,4 +1,5 @@
 ﻿using DatabaseLib.Services;
+using Facebook;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace WebApplication.Interfaces
         AccountService Account { get; }
         TournamentService Tournament { get; }
         TypeService Type { get; }
+        FacebookClient FBClient { get; }
         Exception GetException();
         bool Save();
     }
