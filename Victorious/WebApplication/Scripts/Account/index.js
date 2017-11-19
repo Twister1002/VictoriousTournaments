@@ -22,7 +22,7 @@
                         data = {
                             "addConnection": button.val() == "add",
                             "provider": button.closest(".social-connection").data("social"),
-                            "socialObject": JSON.stringify(response.authResponse)
+                            "token": response.authResponse.accessToken
                         };
 
                         $.ajax({
@@ -45,6 +45,12 @@
                                         button.val("add");
                                         button.find(".prefix").text("Link with");
                                     }
+                                }
+                                else {
+                                    button.closest(".social-media").prepend("<div class='message social-media-notice " + (json.status ? "success" : "error") + "'>" + json.message + "</div>");
+                                    setTimeout(function () {
+                                        button.closest(".social-media").find(".social-media-notice").fadeOut(1000);
+                                    }, 5000);
                                 }
                             },
                             "error": function (json) {

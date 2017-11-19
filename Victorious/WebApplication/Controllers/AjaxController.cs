@@ -55,20 +55,18 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [Route("Ajax/Account/SocialLink/Modify")]
-        public JsonResult ModifySocialLinks(bool addConnection, int provider, String socialObject)
+        public JsonResult ModifySocialLinks(bool addConnection, int provider, String token)
         {
             if (account.IsLoggedIn())
             {
-                Dictionary<String, String> socialInfo = JsonConvert.DeserializeObject<Dictionary<String, String>>(socialObject);
-
-                status = account.SocialAccount(addConnection, provider, socialInfo);
+                status = account.ModifySocialAccount(addConnection, provider, account.GetSocialAcountInfo(token, (AccountSocialModel.SocialProviders)provider));
                 if (status)
                 {
                     message = (addConnection ? "Added" : "Removed" )+" Social sucessfully.";
                 }
                 else
                 {
-                    message = "There was an error " + (addConnection ? "un " : "") + "linking your account. Try again later.";
+                    message = account.viewModel.message;
                 }
             }
             else

@@ -144,7 +144,7 @@ namespace WebApplication.Models
 
         }
 
-        public bool SocialAccount(bool addSocial, int provider, Dictionary<String, String> socialInfo)
+        public bool ModifySocialAccount(bool addSocial, int provider, Dictionary<String, String> socialInfo)
         {
             if (addSocial)
             {
@@ -159,10 +159,54 @@ namespace WebApplication.Models
             }
             else
             {
-                services.Account.DeleteAccountSocialProider(Model.AccountSocials.Single(x => x.AccountID == Model.AccountID && x.ProviderID == provider));
+                if (Model.AccountSocials.Count == 1 && String.IsNullOrEmpty(Model.Password))
+                {
+                    viewModel.message = "To disconnect your social account, you must first create a password.";
+                    viewModel.errorType = ViewError.ERROR;
+                    return false;
+                }
+                else
+                {
+                    services.Account.DeleteAccountSocialProider(Model.AccountSocials.Single(x => x.AccountID == Model.AccountID && x.ProviderID == provider));
+                }
+                
             }
 
-            return services.Save();
+            if (services.Save())
+            {
+                if (addSocial)
+                {
+                    viewModel.message = "Your social account has been linked.";
+                }
+                else
+                {
+                    viewModel.message = "Your social account has been unlinked.";
+                }
+
+                viewModel.errorType = ViewError.SUCCESS;
+                return true;
+            }
+            else
+            {
+                viewModel.message = "There was an error in unlinking your account.";
+                viewModel.errorType = ViewError.ERROR;
+                return false;
+            }
+        }
+
+        public Dictionary<String, String> GetSocialAcountInfo(String token, AccountSocialModel.SocialProviders provider)
+        {
+            Dictionary<String, String> data = new Dictionary<string, string>();
+
+            switch (provider)
+            {
+                case AccountSocialModel.SocialProviders.FACEBOOK:
+                    services.FBClient.AccessToken = token;
+                    data = services.FBClient.Get<Dictionary<String, String>>("/me", new { fields = "id,email,first_name,last_name" });
+                    break;
+            }
+
+            return data;
         }
 
         #region CRUD
@@ -186,8 +230,8 @@ namespace WebApplication.Models
                     {
                         case (int)AccountSocialModel.SocialProviders.FACEBOOK:
                             // We need to grab the email
-                            services.FBClient.AccessToken = viewModel.AccessToken;
-                            socialData = services.FBClient.Get<Dictionary<String, String>>("/me", new { fields = "id,email,first_name,last_name" });
+                            socialData = GetSocialAcountInfo(viewModel.AccessToken, AccountSocialModel.SocialProviders.FACEBOOK);
+
                             viewModel.Email = socialData["email"];
                             Model.FirstName = socialData["first_name"];
                             Model.LastName = socialData["last_name"];
@@ -216,7 +260,7 @@ namespace WebApplication.Models
                     {
                         if (socialData != null && viewModel.ProviderID != 0 && !String.IsNullOrEmpty(viewModel.AccessToken))
                         {
-                            SocialAccount(true, viewModel.ProviderID, socialData);
+                            ModifySocialAccount(true, viewModel.ProviderID, socialData);
                         }
                         return true;
                     }
