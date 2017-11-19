@@ -54,7 +54,7 @@
           <Property Name="AccountID" Type="int" Nullable="false" />
           <Property Name="SocialID" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="ProviderID" Type="int" Nullable="false" />
-          <Property Name="Email" Type="int" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="255" Nullable="false" />
         </EntityType>
         <EntityType Name="brackets">
           <Key>
@@ -1173,7 +1173,6 @@
             <End Role="tournamentusersbrackets" EntitySet="TournamentUsersBracketModels" />
           </AssociationSet>
           <EntitySet Name="SocialProviderModels" EntityType="VictoriousDatabaseModel.SocialProviderModel" />
-          <EntitySet Name="AccountSocialModels" EntityType="VictoriousDatabaseModel.AccountSocialModel" />
           <EntitySet Name="AccountModels" EntityType="VictoriousDatabaseModel.AccountModel" />
           <AssociationSet Name="FK_AccountForget_ToTable_AccountModel" Association="VictoriousDatabaseModel.FK_AccountForget_ToTable_AccountModel">
             <End Role="account" EntitySet="AccountModels" />
@@ -1183,13 +1182,14 @@
             <End Role="account" EntitySet="AccountModels" />
             <End Role="AccountInviteModel" EntitySet="AccountInviteModels" />
           </AssociationSet>
-          <AssociationSet Name="FK_AccountID_Account" Association="VictoriousDatabaseModel.FK_AccountID_Account">
-            <End Role="account" EntitySet="AccountModels" />
-            <End Role="AccountSocialModel" EntitySet="AccountSocialModels" />
-          </AssociationSet>
           <AssociationSet Name="FK_SiteTeamMembers_Accounts_AccountID" Association="VictoriousDatabaseModel.FK_SiteTeamMembers_Accounts_AccountID">
             <End Role="account" EntitySet="AccountModels" />
             <End Role="SiteTeamMemberModel" EntitySet="SiteTeamMemberModels" />
+          </AssociationSet>
+          <EntitySet Name="AccountSocialModels" EntityType="VictoriousDatabaseModel.AccountSocialModel" />
+          <AssociationSet Name="FK_AccountID_Account" Association="VictoriousDatabaseModel.FK_AccountID_Account">
+            <End Role="AccountModel" EntitySet="AccountModels" />
+            <End Role="accountsocial" EntitySet="AccountSocialModels" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="SocialProviderModel">
@@ -1198,17 +1198,6 @@
           </Key>
           <Property Name="SocialProviderID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Provider" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="AccountSocialModel">
-          <Key>
-            <PropertyRef Name="AccountSocialID" />
-          </Key>
-          <Property Name="AccountSocialID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="AccountID" Type="Int32" Nullable="false" />
-          <Property Name="SocialID" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="ProviderID" Type="Int32" Nullable="false" />
-          <Property Name="Email" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Account" Relationship="VictoriousDatabaseModel.FK_AccountID_Account" FromRole="AccountSocialModel" ToRole="account" />
         </EntityType>
         <EntityType Name="AccountModel">
           <Key>
@@ -1230,8 +1219,8 @@
           <Property Name="ReceiveTournamentUpdates" Type="Boolean" />
           <NavigationProperty Name="AccountForgets" Relationship="VictoriousDatabaseModel.FK_AccountForget_ToTable_AccountModel" FromRole="account" ToRole="AccountForgotModel" />
           <NavigationProperty Name="AccountInvites" Relationship="VictoriousDatabaseModel.FK_UserInvites_Accounts_SentBy" FromRole="account" ToRole="AccountInviteModel" />
-          <NavigationProperty Name="AccountSocials" Relationship="VictoriousDatabaseModel.FK_AccountID_Account" FromRole="account" ToRole="AccountSocialModel" />
           <NavigationProperty Name="SiteTeamMembers" Relationship="VictoriousDatabaseModel.FK_SiteTeamMembers_Accounts_AccountID" FromRole="account" ToRole="SiteTeamMemberModel" />
+          <NavigationProperty Name="AccountSocials" Relationship="VictoriousDatabaseModel.FK_AccountID_Account" FromRole="AccountModel" ToRole="accountsocial" />
         </EntityType>
         <Association Name="FK_AccountForget_ToTable_AccountModel">
           <End Type="VictoriousDatabaseModel.AccountModel" Role="account" Multiplicity="1" />
@@ -1257,18 +1246,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_AccountID_Account">
-          <End Type="VictoriousDatabaseModel.AccountModel" Role="account" Multiplicity="1" />
-          <End Type="VictoriousDatabaseModel.AccountSocialModel" Role="AccountSocialModel" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="account">
-              <PropertyRef Name="AccountID" />
-            </Principal>
-            <Dependent Role="AccountSocialModel">
-              <PropertyRef Name="AccountID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_SiteTeamMembers_Accounts_AccountID">
           <End Type="VictoriousDatabaseModel.AccountModel" Role="account" Multiplicity="1" />
           <End Type="VictoriousDatabaseModel.SiteTeamMemberModel" Role="SiteTeamMemberModel" Multiplicity="*" />
@@ -1277,6 +1254,29 @@
               <PropertyRef Name="AccountID" />
             </Principal>
             <Dependent Role="SiteTeamMemberModel">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="AccountSocialModel">
+          <Key>
+            <PropertyRef Name="AccountSocialID" />
+          </Key>
+          <Property Name="AccountSocialID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AccountID" Type="Int32" Nullable="false" />
+          <Property Name="SocialID" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ProviderID" Type="Int32" Nullable="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Account" Relationship="VictoriousDatabaseModel.FK_AccountID_Account" FromRole="accountsocial" ToRole="AccountModel" />
+        </EntityType>
+        <Association Name="FK_AccountID_Account">
+          <End Type="VictoriousDatabaseModel.AccountModel" Role="AccountModel" Multiplicity="1" />
+          <End Type="VictoriousDatabaseModel.AccountSocialModel" Role="accountsocial" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AccountModel">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="accountsocial">
               <PropertyRef Name="AccountID" />
             </Dependent>
           </ReferentialConstraint>
@@ -1523,17 +1523,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="AccountSocialModels">
-            <EntityTypeMapping TypeName="VictoriousDatabaseModel.AccountSocialModel">
-              <MappingFragment StoreEntitySet="accountsocials">
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="ProviderID" ColumnName="ProviderID" />
-                <ScalarProperty Name="SocialID" ColumnName="SocialID" />
-                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
-                <ScalarProperty Name="AccountSocialID" ColumnName="AccountSocialID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="AccountModels">
             <EntityTypeMapping TypeName="VictoriousDatabaseModel.AccountModel">
               <MappingFragment StoreEntitySet="accounts">
@@ -1551,6 +1540,17 @@
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AccountSocialModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.AccountSocialModel">
+              <MappingFragment StoreEntitySet="accountsocials">
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="ProviderID" ColumnName="ProviderID" />
+                <ScalarProperty Name="SocialID" ColumnName="SocialID" />
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+                <ScalarProperty Name="AccountSocialID" ColumnName="AccountSocialID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

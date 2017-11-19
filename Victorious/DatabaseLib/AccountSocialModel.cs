@@ -18,7 +18,7 @@ namespace DatabaseLib
         public int AccountID { get; set; }
         public string SocialID { get; set; }
         public int ProviderID { get; set; }
-        public int Email { get; set; }
+        public string Email { get; set; }
     
         public virtual AccountModel Account { get; set; }
     }

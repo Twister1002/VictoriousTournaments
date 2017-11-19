@@ -49,7 +49,15 @@ namespace WebApplication.Models
             if (viewModel != null)
             {
                 // Acquire the account in question
-                Model = services.Account.GetAccount(viewModel.Username);
+                if (!String.IsNullOrEmpty(viewModel.Username))
+                {
+                    Model = services.Account.GetAccount(viewModel.Username);
+                }
+                else
+                {
+                    Model = null;
+                }
+
                 if (Model != null)
                 {
                     if (HashManager.ValidatePassword(viewModel.Password, Model.Password))
@@ -74,7 +82,7 @@ namespace WebApplication.Models
                     viewModel.errorType = ViewError.ERROR;
                 }
 
-                if (Model == null && viewModel.ProviderID != 0 && viewModel.SocialID != String.Empty)
+                if (Model == null && viewModel.ProviderID != 0 && !String.IsNullOrEmpty(viewModel.SocialID))
                 {
                     // This must be a social login. Lets find it.
                     AccountSocialModel socialModel = services.Account.GetAccountSocialProvider(viewModel.SocialID, viewModel.ProviderID);
@@ -144,7 +152,8 @@ namespace WebApplication.Models
                 {
                     AccountID = Model.AccountID,
                     ProviderID = provider,
-                    SocialID = socialInfo["userID"]
+                    SocialID = socialInfo["id"],
+                    Email = Model.Email
                 };
                 services.Account.AddAccountSocialProvider(socialModel);
             }
@@ -169,6 +178,7 @@ namespace WebApplication.Models
                 bool usernameExists = false;
                 bool emailExists = false;
                 bool passwordsMatch = false;
+                Dictionary<String, String> socialData = null;
 
                 if (!String.IsNullOrEmpty(viewModel.AccessToken))
                 {
@@ -177,10 +187,10 @@ namespace WebApplication.Models
                         case (int)AccountSocialModel.SocialProviders.FACEBOOK:
                             // We need to grab the email
                             services.FBClient.AccessToken = viewModel.AccessToken;
-                            Dictionary<String, String> data = services.FBClient.Get<Dictionary<String, String>>("/me", new { fields = "email,first_name,last_name" });
-                            viewModel.Email = data["email"];
-                            Model.FirstName = data["first_name"];
-                            Model.LastName = data["last_name"];
+                            socialData = services.FBClient.Get<Dictionary<String, String>>("/me", new { fields = "id,email,first_name,last_name" });
+                            viewModel.Email = socialData["email"];
+                            Model.FirstName = socialData["first_name"];
+                            Model.LastName = socialData["last_name"];
                             passwordsMatch = true;
                             break;
                     }
@@ -204,6 +214,10 @@ namespace WebApplication.Models
                     services.Account.AddAccount(Model);
                     if (services.Save())
                     {
+                        if (socialData != null && viewModel.ProviderID != 0 && !String.IsNullOrEmpty(viewModel.AccessToken))
+                        {
+                            SocialAccount(true, viewModel.ProviderID, socialData);
+                        }
                         return true;
                     }
                     else

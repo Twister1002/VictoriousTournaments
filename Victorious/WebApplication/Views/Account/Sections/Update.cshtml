@@ -1,6 +1,6 @@
 ﻿@model WebApplication.Models.ViewModels.AccountViewModel
 @{
-    bool facebook = Model.LinkedProviders.SingleOrDefault(x => x.SocialProviderID == (int)DatabaseLib.AccountSocialModel.SocialProviders.FACEBOOK) != null;
+    bool facebook = Model.LinkedProviders.SingleOrDefault(x => x.ProviderID == (int)DatabaseLib.AccountSocialModel.SocialProviders.FACEBOOK) != null;
 }
 <div id="AccountUpdate">
     <h2>Update Account</h2>
