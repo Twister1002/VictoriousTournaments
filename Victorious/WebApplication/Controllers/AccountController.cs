@@ -146,7 +146,7 @@ namespace WebApplication.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            account.SetMessage(account.viewModel.message, account.viewModel.errorType);
+            account.SetMessage(viewModel.message, viewModel.errorType);
             return View("Index", account);
         }
 
