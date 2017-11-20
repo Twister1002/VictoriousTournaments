@@ -130,21 +130,12 @@ namespace WebApplication.Controllers
         public ActionResult Update(AccountViewModel viewModel)
         {
             // Require the logged in account and the username to match to continue
-            if (account.IsLoggedIn() && viewModel.Username == account.GetUsername())
+            if (account.IsLoggedIn())
             {
                 if (account.Update(viewModel))
                 {
                     Session["User.Name"] = viewModel.FirstName;
-                    Session["Message"] = "Your account was successfully updated.";
-                    Session["Message.Class"] = ViewError.SUCCESS;
-
                     return RedirectToAction("Index", "Account");
-                }
-                else
-                {
-                    // There was an error updating the account
-                    Session["Message"] = "There was an error updating your account.";
-                    Session["Message.Class"] = ViewError.ERROR;
                 }
             }
             else
@@ -155,7 +146,8 @@ namespace WebApplication.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            return View("Update", viewModel);
+            account.SetMessage(account.viewModel.message, account.viewModel.errorType);
+            return View("Index", account);
         }
 
         [HttpGet]

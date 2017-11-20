@@ -317,17 +317,51 @@ namespace WebApplication.Models
         /// <returns>True if updated; false if not.</returns>
         public bool Update(AccountViewModel viewModel)
         {
-            if (HashManager.ValidatePassword(viewModel.CurrentPassword, Model.Password))
+            if (!String.IsNullOrEmpty(Model.Password))
             {
-                if (viewModel.Password != viewModel.PasswordVerify)
+                if (!String.IsNullOrEmpty(viewModel.CurrentPassword))
                 {
-                    viewModel.e = new Exception("Your new password is not the same.");
+                    if (!HashManager.ValidatePassword(viewModel.CurrentPassword, Model.Password) || viewModel.Password != viewModel.PasswordVerify)
+                    {
+                        viewModel.message = "Your new password did not correctly validate.";
+                        viewModel.errorType = ViewError.WARNING;
+                        return false;
+                    }
+                    else
+                    {
+                        ApplyChanges(viewModel);
+                        services.Account.UpdateAccount(Model);
+                    }
+                }
+                else
+                {
+                    viewModel.message = "To update your account, you need to provide your current password.";
+                    viewModel.errorType = ViewError.WARNING;
                     return false;
                 }
-
+            }
+            else
+            {
+                // This is to assume the user created the account via Social media.
                 ApplyChanges(viewModel);
                 services.Account.UpdateAccount(Model);
-                return services.Save();
+            }
+
+            if (services.Save())
+            {
+                if (String.IsNullOrEmpty(viewModel.message))
+                {
+                    viewModel.message = "Your account was updated successfully.";
+                    viewModel.errorType = ViewError.SUCCESS;
+                }
+
+                return true;
+            }
+            else
+            {
+                viewModel.message = "Your account was no updated due to an error. Please try again.";
+                viewModel.errorType = ViewError.ERROR;
+                return false;
             }
 
             return false;
@@ -409,16 +443,23 @@ namespace WebApplication.Models
         
         public void ApplyChanges(AccountViewModel viewModel)
         {
-            //Model.Username      = viewModel.Username;
-            Model.Email         = viewModel.Email != String.Empty ? viewModel.Email : String.Empty;
-            //Model.FirstName     = viewModel.FirstName != String.Empty ? viewModel.FirstName : String.Empty;
-            //Model.LastName      = viewModel.LastName != String.Empty ? viewModel.LastName : String.Empty;
+            Model.Email = viewModel.Email != String.Empty ? viewModel.Email : String.Empty;
+            Model.FirstName = viewModel.FirstName != String.Empty ? viewModel.FirstName : String.Empty;
+            Model.LastName = viewModel.LastName != String.Empty ? viewModel.LastName : String.Empty;
 
-            // Check to see if we can cange the password
-            if (IsPasswordValid(viewModel.Password) && viewModel.Password == viewModel.PasswordVerify)
+            if (!String.IsNullOrEmpty(viewModel.Password))
             {
-                Model.Salt = HashManager.GetSalt();
-                Model.Password = HashManager.HashPassword(viewModel.Password, Model.Salt);
+                // Check to see if we can cange the password
+                if (IsPasswordValid(viewModel.Password) && viewModel.Password == viewModel.PasswordVerify)
+                {
+                    Model.Salt = HashManager.GetSalt();
+                    Model.Password = HashManager.HashPassword(viewModel.Password, Model.Salt);
+                }
+                else
+                {
+                    viewModel.message = "Your password doesn't meet the minimum requirements.";
+                    viewModel.errorType = ViewError.WARNING;
+                }
             }
         }
 

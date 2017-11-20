@@ -65,7 +65,7 @@
         }
         else if (Model is WebApplication.Models.Model && Model.GetMessage() != String.Empty)
         {
-            <div class="message @WebApplication.Models.Model.errorClassNames[(int)Model.error]">@Model.GetMessage()</div>
+            <div class="message @WebApplication.Models.Model.errorClassNames[(int)Model.GetErrorType()]">@Model.GetMessage()</div>
         }
 
         @RenderBody()
