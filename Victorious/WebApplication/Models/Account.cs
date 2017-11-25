@@ -148,14 +148,26 @@ namespace WebApplication.Models
         {
             if (addSocial)
             {
-                AccountSocialModel socialModel = new AccountSocialModel()
+                // Verify that the account hasn't been added to another account.
+                AccountSocialModel socialModel = services.Account.GetAccountSocialProvider(socialInfo["id"], provider);
+
+                if (socialModel == null)
                 {
-                    AccountID = Model.AccountID,
-                    ProviderID = provider,
-                    SocialID = socialInfo["id"],
-                    Email = Model.Email
-                };
-                services.Account.AddAccountSocialProvider(socialModel);
+                    socialModel = new AccountSocialModel()
+                    {
+                        AccountID = Model.AccountID,
+                        ProviderID = provider,
+                        SocialID = socialInfo["id"],
+                        Email = Model.Email
+                    };
+                    services.Account.AddAccountSocialProvider(socialModel);
+                }
+                else
+                {
+                    viewModel.message = "The current social account is all ready linked to another account.";
+                    viewModel.errorType = ViewError.WARNING;
+                    return false;
+                }
             }
             else
             {
