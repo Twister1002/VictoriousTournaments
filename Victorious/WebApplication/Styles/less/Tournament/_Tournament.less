@@ -4,26 +4,64 @@
 
     .content-header {
         width: 100%;
+        position: relative;
 
-        .options {
-            font-size: 1.5em;
-            
-            > span {
-                padding: 0 .25em;
-            }
-            display: inline-block;
+        span {
+            font-size: 1.25em;
+            padding: 0 .25em;
         }
 
         .tournamentTitle {
-            font-size: 2em;
+            font-size: 1.75em;
             display: inline-block;
             margin-bottom: 0em;
             padding: 0em;
         }
+
+        .social-media {
+            .icon {
+                font-size: 1.25em;
+            }
+        }
     }
 
-    .social-media {
-      
+    #TournamentBroadcasts {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: @black;
+        display: none;
+
+        .options {
+            position: relative;
+            text-align: right;
+            font-size: 1.5em;
+            padding: .25em;
+        }
+
+        .background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .broadcasts {
+            .flexbox();
+            flex-flow: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            overflow: hidden;
+
+            iframe {
+                padding: .5em .5em;
+                flex: 1 0 calc(50% - 2em);
+                height: 18em;
+            }
+        }
     }
 
     .gameTitle {
@@ -31,8 +69,6 @@
     }
 
     .bracketNames {
-        /*width: 100%;*/
-
         .list-table {
             min-height: 0em;
             padding: 1em 0em;

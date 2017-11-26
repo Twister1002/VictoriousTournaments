@@ -66,6 +66,14 @@
         window.open("https://twitter.com/intent/tweet?text="+text+"&url="+url+"&hashtags=victorioustournaments", "_blank", "height=400,width=800");
     });
 
+    $("#Tournament .social-media .twitch").on("click", function () {
+        $("#TournamentBroadcasts").show();
+    });
+
+    $("#TournamentBroadcasts .icon.close").on("click", function () {
+        $("#TournamentBroadcasts").hide();
+    });
+
     // Tournament Bracket Selections
     $("#Tournament .bracketNames .bracketName").on("click", function () {
         $(this).addClass("selected").siblings().removeClass("selected");

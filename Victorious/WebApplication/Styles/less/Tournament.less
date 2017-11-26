@@ -31,14 +31,6 @@
         }
     }
 
-    #Tournament {
-        .content-header {
-            h2, .tournament-buttons {
-                display: inline-block;
-            }
-        }
-    }
-
     .TournamentInfo {
         width: 75%;
     }
@@ -71,6 +63,25 @@
 
         .TournamentInfo {
             width: 60%;
+        }
+
+        .content-header {
+            .flexbox();
+
+            > div {
+                position: relative;
+                flex: 1 1 50%;
+                align-self: center;
+            }
+
+            .social-media {
+                align-content: flex-end;
+                text-align: right;
+
+                > button, label {
+                    background-color: blue;
+                }
+            }
         }
     }
 }

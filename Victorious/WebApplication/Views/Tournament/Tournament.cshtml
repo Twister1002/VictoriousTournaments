@@ -28,7 +28,7 @@
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
     <div class="content-header">
-        <div class="tournament-buttons options">
+        <div class="info">
             <span class="icon icon-menu tournamentData"></span>
 
             @if (ViewBag.isAdministrator)
@@ -44,19 +44,23 @@
                     <button class="checkIn">CheckIn</button>
                 }
             }
+            <h2 class="tournamentTitle">@Model.Model.Title</h2>
+            <h3 class="gameTitle">@Model.Model.GameType.Title</h3>
         </div>
-        <h2 class="tournamentTitle">@Model.Model.Title</h2>
-        <h3 class="gameTitle">@Model.Model.GameType.Title</h3>
+
+        <div class="social-media">
+            <button class="facebook-social-button">
+                <span class="icon icon-facebook"></span> Share
+            </button>
+            <button class="twitter-social-button">
+                <span class="icon icon-twitter"></span> Share
+            </button>
+            <button class="twitch">
+                <span class="icon icon-twitch"></span> View Broadcasts
+            </button>
+        </div>
     </div>
     
-    <div class="social-media">
-        <button class="facebook-social-button">
-            <span class="icon icon-facebook"></span> Share
-        </button>
-        <button class="button twitter-social-button">
-            <span class="icon icon-twitter"></span> Share
-        </button>
-    </div>
     <div class="bracketNames">
         <ul class="list-table">
             <li class="list-table-body">
@@ -137,4 +141,5 @@
                             }
                         }
     @{ Html.RenderPartial("Standings", Model, new ViewDataDictionary(ViewData)); }
+    @{ Html.RenderPartial("Broadcasts", Model); }
 </div>

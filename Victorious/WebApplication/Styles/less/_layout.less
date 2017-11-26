@@ -1,6 +1,7 @@
 ﻿html {
     padding: 0em;
     margin: 0em;
+    .boxSizing(border-box);
 }
 
 body {
@@ -54,20 +55,26 @@ a.clickable-underline, .clickable-underline {
     cursor: pointer;
 }
 
-button, a.button {
+button, .button {
     cursor: pointer;
+    display: inline-block;
+    border: 0;
+    margin: 0;
+    padding: 1em;
+    
 
     &.facebook-social-button {
         background-color: @facebook;
-        border: 0;
-        padding: 1em;
         color: @white;
     }
 
     &.twitter-social-button {
         background-color: @twitter;
-        border: 0;
-        padding: 1em;
+        color: @white;
+    }
+
+    &.twitch {
+        background-color: @twitch;
         color: @white;
     }
 }
@@ -81,7 +88,7 @@ ul, li {
 
 label {
     display: block;
-    padding: .25em 0em .25em 0em;
+    padding: .25em 0em;
 }
 
 .message {
