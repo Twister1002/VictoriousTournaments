@@ -53,9 +53,8 @@
     $("#Tournament .social-media .facebook-social-button").on("click", function () {
         // Open window to display facebook sharing
         FB.ui({
-            "method": "feed",
-            "link": location.href,
-            "caption": "Come watch this tournament " + $("#Tournament .content-header .tournamentTitle").text()
+            "method": "share",
+            "link": location.href
         }, function (response) {
             console.log(response);
         });
