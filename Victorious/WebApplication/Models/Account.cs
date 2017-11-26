@@ -438,7 +438,22 @@ namespace WebApplication.Models
         /// <returns></returns>
         public String GetUsername()
         {
-            return Model.Username != null ? Model.Username : "Guest";
+            String name;
+
+            if (!String.IsNullOrEmpty(Model.Username))
+            {
+                name = Model.Username;
+            }
+            else if (!String.IsNullOrEmpty(Model.FirstName))
+            {
+                name = Model.FirstName;
+            }
+            else
+            {
+                name = "Guest";
+            }
+
+            return name;
         }
 
         /// <summary>
