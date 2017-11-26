@@ -21,10 +21,12 @@ namespace WebApplication.Controllers
         // GET: Account
         [Route("Account")]
         [Route("Account/Index")]
+        [Route("Account/Update")]
         public ActionResult Index()
         {
             if (account.IsLoggedIn())
             {
+                account.SetFields();
                 return View("Index", account);
             }
             else
@@ -109,22 +111,6 @@ namespace WebApplication.Controllers
             }
         }
 
-        [Route("Account/Update")]
-        public ActionResult Update()
-        {
-            if (account.IsLoggedIn())
-            {
-                account.SetFields();
-                return View("Update", account.viewModel);
-            }
-            else
-            {
-                Session["Message"] = "You need you login to update your account.";
-                Session["Message.Class"] = ViewError.WARNING;
-                return RedirectToAction("Login", "Account");
-            }
-        }
-
         [HttpPost]
         [Route("Account/Update")]
         public ActionResult Update(AccountViewModel viewModel)
@@ -149,6 +135,9 @@ namespace WebApplication.Controllers
             }
 
             account.SetMessage(viewModel.message, viewModel.errorType);
+            account.SetFields();
+            ModelState.Clear();
+            
             return View("Index", account);
         }
 

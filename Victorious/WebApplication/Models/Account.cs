@@ -487,7 +487,7 @@ namespace WebApplication.Models
             Model.LastName = viewModel.LastName != String.Empty ? viewModel.LastName : String.Empty;
 
             // Verify that the email is not all ready an existing email.
-            if (viewModel.Email != String.Empty && services.Account.AccountEmailExists(viewModel.Email))
+            if (viewModel.Email != String.Empty && !services.Account.AccountEmailExists(viewModel.Email))
             {
                 Model.Email = viewModel.Email != String.Empty ? viewModel.Email : String.Empty;
             }
