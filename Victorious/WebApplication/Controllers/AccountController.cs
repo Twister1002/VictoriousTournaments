@@ -135,7 +135,9 @@ namespace WebApplication.Controllers
                 if (account.Update(viewModel))
                 {
                     Session["User.Name"] = viewModel.FirstName;
-                    return RedirectToAction("Index", "Account");
+                    account.SetMessage(viewModel.message, viewModel.errorType);
+
+                    return View("Index", account);
                 }
             }
             else

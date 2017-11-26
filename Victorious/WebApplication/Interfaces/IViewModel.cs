@@ -15,7 +15,7 @@ namespace WebApplication.Interfaces
         /// Applies the changes from the submitted model to the Model
         /// </summary>
         /// <param name="viewModel">The model from the submitted form</param>
-        void ApplyChanges(T viewModel);
+        bool ApplyChanges(T viewModel);
         /// <summary>
         /// Sets the fields from the Model to the viewModel.
         /// </summary>

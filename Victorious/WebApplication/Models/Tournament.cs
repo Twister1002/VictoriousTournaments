@@ -1022,7 +1022,7 @@ namespace WebApplication.Models
 		/// This will apply the changes from the viewModel to the model for saving
 		/// </summary>
 		/// <param name="viewModel">Saves all data from the viewModel to the Model</param>
-		public void ApplyChanges(TournamentViewModel viewModel)
+		public bool ApplyChanges(TournamentViewModel viewModel)
 		{
 			// Tournament Stuff
 			Model.Title = viewModel.Title;
@@ -1050,12 +1050,16 @@ namespace WebApplication.Models
 
 					// Add the bracket data
 					UpdateBrackets();
+                    return true;
 				}
 				else
 				{
 					viewModel.e = new Exception("You may only have " + maxBrackets + " or less brackets.");
+                    return false;
 				}
 			}
+
+            return false;
 		}
 
 		/// <summary>

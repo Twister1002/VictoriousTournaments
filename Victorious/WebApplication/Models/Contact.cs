@@ -56,9 +56,9 @@ namespace WebApplication.Models
             
         }
 
-        public void ApplyChanges(ContactViewModel viewModel)
+        public bool ApplyChanges(ContactViewModel viewModel)
         {
-            
+            return true;
         }
     }
 }

@@ -329,10 +329,13 @@ namespace WebApplication.Models
         /// <returns>True if updated; false if not.</returns>
         public bool Update(AccountViewModel viewModel)
         {
+            // Verify the account has a password
             if (!String.IsNullOrEmpty(Model.Password))
             {
+                // Does the model being sent have a password?
                 if (!String.IsNullOrEmpty(viewModel.CurrentPassword))
                 {
+                    // Verify the password is correct.
                     if (!HashManager.ValidatePassword(viewModel.CurrentPassword, Model.Password) || viewModel.Password != viewModel.PasswordVerify)
                     {
                         viewModel.message = "Your new password did not correctly validate.";
@@ -341,8 +344,16 @@ namespace WebApplication.Models
                     }
                     else
                     {
-                        ApplyChanges(viewModel);
-                        services.Account.UpdateAccount(Model);
+                        // Apply the account changes
+                        if (ApplyChanges(viewModel))
+                        {
+                            // Update the account
+                            services.Account.UpdateAccount(Model);
+                        }
+                        else
+                        {
+                            return false;
+                        }
                     }
                 }
                 else
@@ -352,11 +363,15 @@ namespace WebApplication.Models
                     return false;
                 }
             }
+            // If the model doesn't have a password, we need to just update the infromation
+            // because the account was registered by social media.
             else
             {
                 // This is to assume the user created the account via Social media.
-                ApplyChanges(viewModel);
-                services.Account.UpdateAccount(Model);
+                if (ApplyChanges(viewModel))
+                {
+                    services.Account.UpdateAccount(Model);
+                }
             }
 
             if (services.Save())
@@ -375,8 +390,6 @@ namespace WebApplication.Models
                 viewModel.errorType = ViewError.ERROR;
                 return false;
             }
-
-            return false;
         }
 
         public bool Delete(int id)
@@ -453,11 +466,22 @@ namespace WebApplication.Models
             viewModel.LinkedProviders = Model.AccountSocials.ToList();
         }
         
-        public void ApplyChanges(AccountViewModel viewModel)
+        public bool ApplyChanges(AccountViewModel viewModel)
         {
-            Model.Email = viewModel.Email != String.Empty ? viewModel.Email : String.Empty;
             Model.FirstName = viewModel.FirstName != String.Empty ? viewModel.FirstName : String.Empty;
             Model.LastName = viewModel.LastName != String.Empty ? viewModel.LastName : String.Empty;
+
+            // Verify that the email is not all ready an existing email.
+            if (viewModel.Email != String.Empty && services.Account.AccountEmailExists(viewModel.Email))
+            {
+                Model.Email = viewModel.Email != String.Empty ? viewModel.Email : String.Empty;
+            }
+            else
+            {
+                viewModel.message += "The email " + viewModel.Email + " is currently registered to another account.";
+                viewModel.errorType = ViewError.ERROR;
+                return false;
+            }
 
             if (!String.IsNullOrEmpty(viewModel.Password))
             {
@@ -471,8 +495,11 @@ namespace WebApplication.Models
                 {
                     viewModel.message = "Your password doesn't meet the minimum requirements.";
                     viewModel.errorType = ViewError.WARNING;
+                    return false;
                 }
             }
+
+            return true;
         }
 
         public void SetFields()
