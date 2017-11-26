@@ -54,16 +54,24 @@ a.clickable-underline, .clickable-underline {
     cursor: pointer;
 }
 
-.social-media {
-    button {
-        &.facebook-social-button {
-            background-color: @facebook;
-            border: 0;
-            padding: 1em;
-            color: @white;
-        }
+button, a.button {
+    cursor: pointer;
+
+    &.facebook-social-button {
+        background-color: @facebook;
+        border: 0;
+        padding: 1em;
+        color: @white;
+    }
+
+    &.twitter-social-button {
+        background-color: @twitter;
+        border: 0;
+        padding: 1em;
+        color: @white;
     }
 }
+
 
 ul, li {
     list-style-type: none;

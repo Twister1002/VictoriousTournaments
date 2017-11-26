@@ -20,13 +20,15 @@
 
 <div id="Tournament" data-id="@Model.Model.TournamentID">
     <div class="content-header">
-        <h2 class="tournamentTitle"><span class="icon icon-menu tournamentData"></span> @Model.Model.Title</h2>
         <div class="tournament-buttons options">
+            <span class="icon icon-menu tournamentData"></span>
+
             @if (ViewBag.isAdministrator)
             {
                 <span class="icon icon-pencil tournament-update"></span>
                 <span class="icon icon-cross tournament-delete"></span>
             }
+
             @if (Model.Model.InProgress)
             {
                 if (Model.IsParticipent(ViewBag.UserId) && ViewBag.UserId != -1 && !Model.IsAccountCheckedIn(ViewBag.UserId))
@@ -35,7 +37,17 @@
                 }
             }
         </div>
+        <h2 class="tournamentTitle">@Model.Model.Title</h2>
         <h3 class="gameTitle">@Model.Model.GameType.Title</h3>
+    </div>
+    
+    <div class="social-media">
+        <button class="facebook-social-button">
+            <span class="icon icon-facebook"></span> Share
+        </button>
+        <button class="button twitter-social-button">
+            <span class="icon icon-twitter"></span> Share
+        </button>
     </div>
     <div class="bracketNames">
         <ul class="list-table">
@@ -54,7 +66,7 @@
             </li>
         </ul>
     </div>
-    @{ 
+    @{
         bracketSelected = false;
     }
     @for (int i = 0; i < brackets.Count; i++)
@@ -111,10 +123,10 @@
             </ul>
         </div>
 
-        if (!bracket.IsLocked)
-        {
-            bracketSelected = true;
-        }
-    }
+                            if (!bracket.IsLocked)
+                            {
+                                bracketSelected = true;
+                            }
+                        }
     @{ Html.RenderPartial("Standings", Model, new ViewDataDictionary(ViewData)); }
 </div>

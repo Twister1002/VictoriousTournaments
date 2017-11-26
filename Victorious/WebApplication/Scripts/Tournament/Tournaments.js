@@ -50,6 +50,23 @@
         });
     });
 
+    $("#Tournament .social-media .facebook-social-button").on("click", function () {
+        // Open window to display facebook sharing
+        FB.ui({
+            "method": "feed",
+            "link": location.href,
+            "caption": "Come watch this tournament " + $("#Tournament .content-header .tournamentTitle").text()
+        }, function (response) {
+            console.log(response);
+        });
+    });
+
+    $("#Tournament .social-media .twitter-social-button").on("click", function () {
+        text = encodeURI("Come watch this tournament " + $("#Tournament .content-header .tournamentTitle").text());
+        url = encodeURI(location.href);
+        window.open("https://twitter.com/intent/tweet?text="+text+"&url="+url+"&hashtags=victorioustournaments", "_blank", "height=400,width=800");
+    });
+
     // Tournament Bracket Selections
     $("#Tournament .bracketNames .bracketName").on("click", function () {
         $(this).addClass("selected").siblings().removeClass("selected");
