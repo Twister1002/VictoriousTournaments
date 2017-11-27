@@ -715,6 +715,10 @@ namespace WebApplication.Models
         }
         #endregion
 
+        #region Broadcasters
+        
+        #endregion
+
         #region Helper
         /// <summary>
         /// Checks if the userID exists in the tournament.
@@ -976,6 +980,7 @@ namespace WebApplication.Models
 			viewModel.GameTypes = services.Type.GetAllGameTypes();
 			viewModel.PlatformTypes = services.Type.GetAllPlatforms();
             viewModel.Participants = services.Tournament.GetAllUsersInTournament(Model.TournamentID);
+            viewModel.Broadcasters = Model.TournamentBroadcasters.ToList();
             viewModel.PublicViewing = true;
             viewModel.Permissions = new Dictionary<int, String>();
             viewModel.BracketData = new List<BracketViewModel>();

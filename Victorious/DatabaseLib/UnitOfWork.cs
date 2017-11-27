@@ -26,10 +26,12 @@ namespace DatabaseLib
         IRepository<TournamentTeamModel> tournamentTeamRepo;
         IRepository<TournamentTeamMemberModel> tournamentTeamMemberRepo;
         IRepository<TournamentTeamBracketModel> tournamentTeamBracketRepo;
+        IRepository<TournamentBroadcasterModel> tournamentBroadcasterRepo;
         IRepository<SiteTeamModel> siteTeamRepo;
         IRepository<SiteTeamMemberModel> siteTeamMemberRepo;
         IRepository<MailingListModel> mailingListRepo;
         IRepository<SocialProviderModel> socialProviderRepo;
+        IRepository<BroadcastServiceModel> broadcastServiceRepo;
 
         Exception exception;
 
@@ -283,6 +285,18 @@ namespace DatabaseLib
             }
         }
 
+        public IRepository<TournamentBroadcasterModel> TournamentBroadcasterRepo
+        {
+            get
+            {
+                if (this.tournamentBroadcasterRepo == null)
+                {
+                    this.tournamentBroadcasterRepo = new Repository<TournamentBroadcasterModel>(context);
+                }
+                return tournamentBroadcasterRepo;
+            }
+        }
+
         public IRepository<SiteTeamModel> SiteTeamRepo
         {
             get
@@ -328,6 +342,18 @@ namespace DatabaseLib
                     this.socialProviderRepo = new Repository<SocialProviderModel>(context);
                 }
                 return socialProviderRepo;
+            }
+        }
+
+        public IRepository<BroadcastServiceModel> BroadcastServiceRepo
+        {
+            get
+            {
+                if (this.broadcastServiceRepo == null)
+                {
+                    this.broadcastServiceRepo = new Repository<BroadcastServiceModel>(context);
+                }
+                return broadcastServiceRepo;
             }
         }
 

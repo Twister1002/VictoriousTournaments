@@ -47,6 +47,10 @@
         <AssociationConnector Association="VictoriousDatabaseModel.FK_SiteTeamMembers_Accounts_AccountID" />
         <EntityTypeShape EntityType="VictoriousDatabaseModel.AccountSocialModel" Width="1.5" PointX="5.75" PointY="2.5" />
         <AssociationConnector Association="VictoriousDatabaseModel.FK_AccountID_Account" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.BroadcastServiceModel" Width="1.5" PointX="9.625" PointY="27.875" />
+        <EntityTypeShape EntityType="VictoriousDatabaseModel.TournamentBroadcasterModel" Width="1.5" PointX="11.875" PointY="6.5" />
+        <AssociationConnector Association="VictoriousDatabaseModel.fk_BroadcastServices_ServiceID" />
+        <AssociationConnector Association="VictoriousDatabaseModel.fk_Tournaments_TournamentID" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

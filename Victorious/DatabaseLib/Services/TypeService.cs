@@ -159,5 +159,12 @@ namespace DatabaseLib.Services
             return unitOfWork.SocialProviderRepo.GetAll().ToList();
         }
         #endregion
+
+        #region BroadcastServices
+        public List<BroadcastServiceModel> BroadcastServices()
+        {
+            return unitOfWork.BroadcastServiceRepo.GetAll().ToList();
+        }
+        #endregion
     }
 }

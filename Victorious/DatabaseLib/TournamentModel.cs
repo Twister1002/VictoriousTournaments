@@ -21,6 +21,7 @@ namespace DatabaseLib
             this.TournamentInvites = new HashSet<TournamentInviteModel>();
             this.TournamentTeams = new HashSet<TournamentTeamModel>();
             this.TournamentUsers = new HashSet<TournamentUserModel>();
+            this.TournamentBroadcasters = new HashSet<TournamentBroadcasterModel>();
     		OnInit();
         }
     
@@ -60,5 +61,7 @@ namespace DatabaseLib
         public virtual ICollection<TournamentTeamModel> TournamentTeams { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TournamentUserModel> TournamentUsers { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TournamentBroadcasterModel> TournamentBroadcasters { get; set; }
     }
 }

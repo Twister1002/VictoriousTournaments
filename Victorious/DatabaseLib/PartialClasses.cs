@@ -163,4 +163,40 @@ namespace DatabaseLib
     {
         
     }
+
+    /// <summary>
+    /// Ties in with the tournament to display broadcasters with a tournament.
+    /// </summary>
+    public partial class TournamentBroadcasterModel
+    {
+
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public partial class BroadcastServiceModel
+    {
+        public enum BroadcastServices
+        {
+            TWITCH = 1
+        }
+
+        public String GetUri()
+        {
+            String uri = "";
+
+            switch (this.ServiceID)
+            {
+                case (int)BroadcastServices.TWITCH:
+                    uri = "https://player.twitch.tv/?channel={NAME}&autoplay=false";
+                    break;
+                default:
+                    uri = "";
+                    break;
+            }
+
+            return uri;
+        }
+    }
 }

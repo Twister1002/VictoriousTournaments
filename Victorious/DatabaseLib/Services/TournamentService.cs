@@ -690,5 +690,55 @@ namespace DatabaseLib.Services
 
         #endregion
 
+
+        #region Broadcasters
+        public void AddBroadcaster(TournamentBroadcasterModel broadcaster)
+        {
+            unitOfWork.TournamentBroadcasterRepo.Add(broadcaster);
+        }
+
+        public void DeleteBroadcaster(int broadcasterID)
+        {
+            unitOfWork.TournamentBroadcasterRepo.Delete(broadcasterID);
+        }
+
+        public void DeleteBroadcaster(TournamentBroadcasterModel broadcaster)
+        {
+            unitOfWork.TournamentBroadcasterRepo.Delete(broadcaster.BroadcasterID);
+        }
+
+        public void UpdateBroadcaster(TournamentBroadcasterModel broadcaster)
+        {
+            unitOfWork.TournamentBroadcasterRepo.Update(broadcaster);
+        }
+
+        public TournamentBroadcasterModel GetBroadcaster(TournamentModel tournament, int broadcasterID)
+        {
+            try
+            {
+                return unitOfWork.TournamentBroadcasterRepo.GetSingle(x => x.TournamentID == tournament.TournamentID && x.BroadcasterID == broadcasterID);
+            }
+
+            catch (Exception ex)
+            {
+                unitOfWork.SetException(ex);
+                return null;
+            }
+        }
+
+        public TournamentBroadcasterModel GetBroadcaster(TournamentModel tournament, String broadcasterName)
+        {
+            try
+            {
+                return unitOfWork.TournamentBroadcasterRepo.GetSingle(x => x.TournamentID == tournament.TournamentID && x.BroadcasterName == broadcasterName);
+            }
+            catch (Exception ex)
+            {
+                unitOfWork.SetException(ex);
+                return null;
+            }
+        }
+        #endregion
+
     }
 }

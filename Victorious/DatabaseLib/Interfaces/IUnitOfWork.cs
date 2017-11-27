@@ -24,10 +24,13 @@ namespace DatabaseLib
         IRepository<TournamentTeamModel> TournamentTeamRepo { get; }
         IRepository<TournamentTeamMemberModel> TournamentTeamMemberRepo { get; }
         IRepository<TournamentTeamBracketModel> TournamentTeamBracketRepo { get; }
+        IRepository<TournamentBroadcasterModel> TournamentBroadcasterRepo { get; }
         IRepository<SiteTeamModel> SiteTeamRepo { get; }
         IRepository<SiteTeamMemberModel> SiteTeamMemberRepo { get; }
         IRepository<MailingListModel> MailingListRepo { get; }
         IRepository<SocialProviderModel> SocialProviderRepo { get; }
+        IRepository<BroadcastServiceModel> BroadcastServiceRepo { get; }
+
 
         void Refresh();
 

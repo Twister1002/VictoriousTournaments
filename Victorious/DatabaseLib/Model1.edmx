@@ -78,6 +78,13 @@
           <Property Name="Type" Type="int" Nullable="false" />
           <Property Name="IsActive" Type="bool" Nullable="false" />
         </EntityType>
+        <EntityType Name="broadcastservices">
+          <Key>
+            <PropertyRef Name="ServiceID" />
+          </Key>
+          <Property Name="ServiceID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ServiceName" Type="varchar" MaxLength="255" Nullable="false" />
+        </EntityType>
         <EntityType Name="games">
           <Key>
             <PropertyRef Name="GameID" />
@@ -161,6 +168,15 @@
           </Key>
           <Property Name="SocialProviderID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Provider" Type="varchar" MaxLength="255" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tournamentbroadcasters">
+          <Key>
+            <PropertyRef Name="BroadcasterID" />
+          </Key>
+          <Property Name="BroadcasterID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TournamentID" Type="int" Nullable="false" />
+          <Property Name="ServiceID" Type="int" Nullable="false" />
+          <Property Name="BroadcasterName" Type="text" Nullable="false" />
         </EntityType>
         <EntityType Name="tournamentinvites">
           <Key>
@@ -301,6 +317,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="fk_BroadcastServices_ServiceID">
+          <End Role="broadcastservices" Type="Self.broadcastservices" Multiplicity="1" />
+          <End Role="tournamentbroadcasters" Type="Self.tournamentbroadcasters" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="broadcastservices">
+              <PropertyRef Name="ServiceID" />
+            </Principal>
+            <Dependent Role="tournamentbroadcasters">
+              <PropertyRef Name="ServiceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Games_Matches">
           <End Role="matches" Type="Self.matches" Multiplicity="0..1" />
           <End Role="games" Type="Self.games" Multiplicity="*" />
@@ -394,6 +422,18 @@
             </Principal>
             <Dependent Role="tournaments">
               <PropertyRef Name="PlatformID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_Tournaments_TournamentID">
+          <End Role="tournaments" Type="Self.tournaments" Multiplicity="1" />
+          <End Role="tournamentbroadcasters" Type="Self.tournamentbroadcasters" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tournaments">
+              <PropertyRef Name="TournamentID" />
+            </Principal>
+            <Dependent Role="tournamentbroadcasters">
+              <PropertyRef Name="TournamentID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -520,6 +560,7 @@
           <EntitySet Name="accountsocials" EntityType="Self.accountsocials" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="brackets" EntityType="Self.brackets" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="brackettypes" EntityType="Self.brackettypes" Schema="victoriousdatabase" store:Type="Tables" />
+          <EntitySet Name="broadcastservices" EntityType="Self.broadcastservices" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="games" EntityType="Self.games" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="gametypes" EntityType="Self.gametypes" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="mailinglist" EntityType="Self.mailinglist" Schema="victoriousdatabase" store:Type="Tables" />
@@ -528,6 +569,7 @@
           <EntitySet Name="siteteammembers" EntityType="Self.siteteammembers" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="siteteams" EntityType="Self.siteteams" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="socialproviders" EntityType="Self.socialproviders" Schema="victoriousdatabase" store:Type="Tables" />
+          <EntitySet Name="tournamentbroadcasters" EntityType="Self.tournamentbroadcasters" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="tournamentinvites" EntityType="Self.tournamentinvites" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="tournaments" EntityType="Self.tournaments" Schema="victoriousdatabase" store:Type="Tables" />
           <EntitySet Name="tournamentteambrackets" EntityType="Self.tournamentteambrackets" Schema="victoriousdatabase" store:Type="Tables" />
@@ -550,6 +592,10 @@
           <AssociationSet Name="FK_Brackets_Tournaments" Association="Self.FK_Brackets_Tournaments">
             <End Role="tournaments" EntitySet="tournaments" />
             <End Role="brackets" EntitySet="brackets" />
+          </AssociationSet>
+          <AssociationSet Name="fk_BroadcastServices_ServiceID" Association="Self.fk_BroadcastServices_ServiceID">
+            <End Role="broadcastservices" EntitySet="broadcastservices" />
+            <End Role="tournamentbroadcasters" EntitySet="tournamentbroadcasters" />
           </AssociationSet>
           <AssociationSet Name="FK_Games_Matches" Association="Self.FK_Games_Matches">
             <End Role="matches" EntitySet="matches" />
@@ -582,6 +628,10 @@
           <AssociationSet Name="FK_Tournaments_Platforms" Association="Self.FK_Tournaments_Platforms">
             <End Role="platforms" EntitySet="platforms" />
             <End Role="tournaments" EntitySet="tournaments" />
+          </AssociationSet>
+          <AssociationSet Name="fk_Tournaments_TournamentID" Association="Self.fk_Tournaments_TournamentID">
+            <End Role="tournaments" EntitySet="tournaments" />
+            <End Role="tournamentbroadcasters" EntitySet="tournamentbroadcasters" />
           </AssociationSet>
           <AssociationSet Name="FK_TournamentTeamMember_SiteTeamMembers_SiteTeamMemberID" Association="Self.FK_TournamentTeamMember_SiteTeamMembers_SiteTeamMemberID">
             <End Role="siteteammembers" EntitySet="siteteammembers" />
@@ -809,6 +859,7 @@
           <NavigationProperty Name="TournamentTeams" Relationship="Self.FK_SiteTeamMembers_Tournaments_TournamentID" FromRole="tournaments" ToRole="tournamentteams" />
           <NavigationProperty Name="TournamentUsers" Relationship="Self.FK_TournamentUser_Tournaments" FromRole="tournaments" ToRole="tournamentusers" />
           <Property Name="Rules" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="TournamentBroadcasters" Relationship="VictoriousDatabaseModel.fk_Tournaments_TournamentID" FromRole="TournamentModel" ToRole="tournamentbroadcaster" />
         </EntityType>
         <EntityType Name="TournamentTeamBracketModel">
           <Key>
@@ -1191,6 +1242,16 @@
             <End Role="AccountModel" EntitySet="AccountModels" />
             <End Role="accountsocial" EntitySet="AccountSocialModels" />
           </AssociationSet>
+          <EntitySet Name="BroadcastServiceModels" EntityType="VictoriousDatabaseModel.BroadcastServiceModel" />
+          <EntitySet Name="TournamentBroadcasterModels" EntityType="VictoriousDatabaseModel.TournamentBroadcasterModel" />
+          <AssociationSet Name="fk_BroadcastServices_ServiceID" Association="VictoriousDatabaseModel.fk_BroadcastServices_ServiceID">
+            <End Role="broadcastservice" EntitySet="BroadcastServiceModels" />
+            <End Role="tournamentbroadcaster" EntitySet="TournamentBroadcasterModels" />
+          </AssociationSet>
+          <AssociationSet Name="fk_Tournaments_TournamentID" Association="VictoriousDatabaseModel.fk_Tournaments_TournamentID">
+            <End Role="TournamentModel" EntitySet="TournamentModels" />
+            <End Role="tournamentbroadcaster" EntitySet="TournamentBroadcasterModels" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="SocialProviderModel">
           <Key>
@@ -1278,6 +1339,49 @@
             </Principal>
             <Dependent Role="accountsocial">
               <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="BroadcastServiceModel">
+          <Key>
+            <PropertyRef Name="ServiceID" />
+          </Key>
+          <Property Name="ServiceID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ServiceName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="TournamentBroadcasters" Relationship="VictoriousDatabaseModel.fk_BroadcastServices_ServiceID" FromRole="broadcastservice" ToRole="tournamentbroadcaster" />
+        </EntityType>
+        <EntityType Name="TournamentBroadcasterModel">
+          <Key>
+            <PropertyRef Name="BroadcasterID" />
+          </Key>
+          <Property Name="BroadcasterID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TournamentID" Type="Int32" Nullable="false" />
+          <Property Name="ServiceID" Type="Int32" Nullable="false" />
+          <Property Name="BroadcasterName" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="BroadcastService" Relationship="VictoriousDatabaseModel.fk_BroadcastServices_ServiceID" FromRole="tournamentbroadcaster" ToRole="broadcastservice" />
+          <NavigationProperty Name="Tournament" Relationship="VictoriousDatabaseModel.fk_Tournaments_TournamentID" FromRole="tournamentbroadcaster" ToRole="TournamentModel" />
+        </EntityType>
+        <Association Name="fk_BroadcastServices_ServiceID">
+          <End Type="VictoriousDatabaseModel.BroadcastServiceModel" Role="broadcastservice" Multiplicity="1" />
+          <End Type="VictoriousDatabaseModel.TournamentBroadcasterModel" Role="tournamentbroadcaster" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="broadcastservice">
+              <PropertyRef Name="ServiceID" />
+            </Principal>
+            <Dependent Role="tournamentbroadcaster">
+              <PropertyRef Name="ServiceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_Tournaments_TournamentID">
+          <End Type="VictoriousDatabaseModel.TournamentModel" Role="TournamentModel" Multiplicity="1" />
+          <End Type="VictoriousDatabaseModel.TournamentBroadcasterModel" Role="tournamentbroadcaster" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TournamentModel">
+              <PropertyRef Name="TournamentID" />
+            </Principal>
+            <Dependent Role="tournamentbroadcaster">
+              <PropertyRef Name="TournamentID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1551,6 +1655,24 @@
                 <ScalarProperty Name="SocialID" ColumnName="SocialID" />
                 <ScalarProperty Name="AccountID" ColumnName="AccountID" />
                 <ScalarProperty Name="AccountSocialID" ColumnName="AccountSocialID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BroadcastServiceModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.BroadcastServiceModel">
+              <MappingFragment StoreEntitySet="broadcastservices">
+                <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />
+                <ScalarProperty Name="ServiceID" ColumnName="ServiceID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TournamentBroadcasterModels">
+            <EntityTypeMapping TypeName="VictoriousDatabaseModel.TournamentBroadcasterModel">
+              <MappingFragment StoreEntitySet="tournamentbroadcasters">
+                <ScalarProperty Name="BroadcasterName" ColumnName="BroadcasterName" />
+                <ScalarProperty Name="ServiceID" ColumnName="ServiceID" />
+                <ScalarProperty Name="TournamentID" ColumnName="TournamentID" />
+                <ScalarProperty Name="BroadcasterID" ColumnName="BroadcasterID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

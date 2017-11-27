@@ -204,6 +204,25 @@
                 </li>
             </ul>
         </div>
+        <div class="section broadcaster-section">
+            <ul class="list-table">
+                <li class="list-table-header">
+                    <ul data-columns="2">
+                        <li class="column">Broadcaster Name</li>
+                        <li class="column">Broadcast Service</li>
+                    </ul>
+                </li>
+                <li class="list-table-body">
+                    @foreach (var broadcaster in Model.Broadcasters)
+                    {
+                        <ul data-columns="2" class="broadcaster">
+                            <li class="column">@broadcaster.BroadcasterName</li>
+                            <li class="column">@broadcaster.BroadcastService.ServiceName</li>
+                        </ul>
+                    }
+                </li>
+            </ul>
+            </div>
         <div class="section form-section rules">
             <h2>Tournament Specific Rules</h2>
             @Html.TextAreaFor(x => x.TournamentRules)

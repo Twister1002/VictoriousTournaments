@@ -105,5 +105,9 @@ namespace WebApplication.Models.ViewModels
         public List<int> NumberOfGroups { get; set; }
         [Display(Name = "Number of player to advance")]
         public List<int> NumberPlayersAdvance { get; set; }
+
+        // Broadcaster Data
+        public List<TournamentBroadcasterModel> Broadcasters { get; set; }
+
     }
 }
