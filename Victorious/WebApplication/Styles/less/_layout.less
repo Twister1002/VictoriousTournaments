@@ -79,6 +79,33 @@ button, .button {
     }
 }
 
+input, select, textarea {
+    border: 0em;
+    border-bottom: .1em solid @white;
+    padding: .5em 0em .5em 1em;
+    background-color: inherit;
+    color: @white;
+    width: 92%;
+    .placeholder(@white);
+
+    &.input-validation-error {
+        background-color: @alert-red;
+    }
+}
+
+input[type="text"], input[type="password"], select, textarea {
+    border: 0em;
+    border-bottom: .1em solid @white;
+    padding: .5em 0em .5em 1em;
+    background-color: @color-primary-0;
+    color: @white;
+    display: block;
+    .placeholder(@white);
+
+    option {
+        color: @white;
+    }
+}
 
 ul, li {
     list-style-type: none;

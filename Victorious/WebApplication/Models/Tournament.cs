@@ -262,20 +262,25 @@ namespace WebApplication.Models
 
 		public bool Update(TournamentViewModel viewModel, int accountId)
 		{
-			bool changesApplied = ApplyChanges(viewModel);
-            bool bracketsUpdated = UpdateBrackets(viewModel);
+            // Only edit this information IF the tournament hasn't begun
+            if (!Model.InProgress)
+            {
+                bool changesApplied = ApplyChanges(viewModel);
+                bool bracketsUpdated = UpdateBrackets(viewModel);
+
+                // Exit the create if we detect there is an exception in the viewModel.
+                if (!changesApplied || !bracketsUpdated)
+                {
+                    viewModel.message = "There was an error in saving your tournament. Please try again";
+                    viewModel.errorType = ViewError.ERROR;
+                    SetupViewModel(viewModel);
+                    return false;
+                }
+            }
+
             UpdatePlayers(viewModel);
             UpdateBroadcasters(viewModel);
-
-            // Exit the create if we detect there is an exception in the viewModel.
-            if (!changesApplied || !bracketsUpdated)
-			{
-                viewModel.message = "There was an error in saving your tournament. Please try again";
-                viewModel.errorType = ViewError.ERROR;
-                SetupViewModel(viewModel);
-                return false;
-			}
-
+            
 			Model.LastEditedByID = accountId;
 			Model.LastEditedOn = DateTime.Now;
 
@@ -918,52 +923,43 @@ namespace WebApplication.Models
         /// <param name="viewModel">The viewmodel of data that needs to be copied</param>
         public bool UpdateBrackets(TournamentViewModel viewModel)
         {
-            if (viewModel.BracketData != null)
+            if (viewModel.Brackets != null)
             {
-                if (viewModel.BracketData.Count <= maxBrackets)
+                if (viewModel.Brackets.Count <= maxBrackets)
                 {
-                    int updates = Math.Max(viewModel.BracketData.Count, Model.Brackets.Count);
-                    List<BracketModel> updatedBrackets = new List<BracketModel>();
-
-                    for (int i = 0; i < updates; i++)
+                    // Lets loop through all data from the viewModel for the most up-to-date information
+                    for (int i = 0; i < viewModel.Brackets.Count; i++)
                     {
-                        BracketViewModel newBracket = viewModel.BracketData.ElementAtOrDefault(i);
+                        BracketModel newBracketData = viewModel.Brackets.ElementAtOrDefault(i);
                         BracketModel bracketModel = Model.Brackets.ElementAtOrDefault(i);
-                        //List<TournamentUsersBracketModel> users = new List<TournamentUsersBracketModel>();
-
-                        if (newBracket != null)
+                        
+                        if (bracketModel != null)
                         {
-                            if (bracketModel != null)
-                            {
-                                // We just need to update the data
-                                bracketModel.BracketTypeID = newBracket.BracketTypeID;
-                                bracketModel.MaxRounds = newBracket.NumberOfRounds;
-                                bracketModel.NumberOfGroups = newBracket.NumberOfGroups;
-                                bracketModel.NumberPlayersAdvance = newBracket.NumberPlayersAdvance;
-
-                                updatedBrackets.Add(bracketModel);
-                                //services.Tournament.UpdateBracket(bracketModel);
-                            }
-                            else if (bracketModel == null)
-                            {
-                                // We need to add this bracket
-                                bracketModel = new BracketModel()
-                                {
-                                    MaxRounds = newBracket.NumberOfRounds,
-                                    BracketTypeID = newBracket.BracketTypeID,
-                                    NumberOfGroups = newBracket.NumberOfGroups,
-                                    NumberPlayersAdvance = newBracket.NumberPlayersAdvance,
-                                    Finalized = false,
-                                    TournamentID = Model.TournamentID
-                                };
-
-                                updatedBrackets.Add(bracketModel);
-                                //services.Tournament.AddBracket(bracketModel);
-                            }
+                            // We just need to update the data
+                            bracketModel.BracketTypeID = newBracketData.BracketTypeID;
+                            bracketModel.MaxRounds = newBracketData.MaxRounds;
+                            bracketModel.NumberOfGroups = newBracketData.NumberOfGroups;
+                            bracketModel.NumberPlayersAdvance = newBracketData.NumberPlayersAdvance;
+                            bracketModel.Finalized = false;
+                                
+                            services.Tournament.UpdateBracket(bracketModel);
+                        }
+                        else if (bracketModel == null)
+                        {
+                            // We need to add this bracket
+                            bracketModel = newBracketData;
+                            bracketModel.Finalized = false;
+                            bracketModel.TournamentID = Model.TournamentID;
+                                
+                            services.Tournament.AddBracket(bracketModel);
                         }
                     }
 
-                    Model.Brackets = updatedBrackets;
+                    for (int i = viewModel.Brackets.Count; i < Model.Brackets.Count; i++)
+                    {
+                        services.Tournament.DeleteBracket(Model.Brackets.ElementAt(i));
+                    }
+                    
                     return true;
                 }
                 else
@@ -992,6 +988,37 @@ namespace WebApplication.Models
                     
                     if (user != null)
                     {
+                        // Only update this information if the user has not been updated.
+                        if (!Model.InProgress)
+                        {
+                            if (userVM.PermissionLevel != null)
+                            {
+                                user.PermissionLevel = userVM.PermissionLevel;
+                            }
+
+                            // Check every user's new permission level
+                            switch (GetUserPermission(userVM.TournamentUserID))
+                            {
+                                case Permission.TOURNAMENT_CREATOR:
+                                    // Verify this user is not in the bracket (Should only ever be 1)
+                                    // A user should never be added at the level
+                                    break;
+                                case Permission.TOURNAMENT_ADMINISTRATOR:
+                                    // Verify this user is not in the bracket
+                                    RemoveUserFromBracket(user);
+                                    break;
+                                case Permission.TOURNAMENT_STANDARD:
+                                    // Verify this user is in the bracket
+                                    AddUserToTournament(user);
+                                    break;
+                                case Permission.NONE:
+                                    // Remove this user.
+                                    RemoveUser(user);
+                                    break;
+                            }
+                        }
+
+                        // Allow updates to any user checkin's by the admin.
                         // Update the user's information if the user is checked in and doesn't have a time
                         if ((userVM.IsCheckedIn || user.IsCheckedIn) && !user.CheckInTime.HasValue)
                         {
@@ -1003,34 +1030,10 @@ namespace WebApplication.Models
                             user.IsCheckedIn = false;
                             user.CheckInTime = null;
                         }
-                        
-                        if (userVM.PermissionLevel != null)
-                        {
-                            user.PermissionLevel = userVM.PermissionLevel;
-                        }
-
-                        // Check every user's new permission level
-                        switch (GetUserPermission(userVM.TournamentUserID))
-                        {
-                            case Permission.TOURNAMENT_CREATOR:
-                                // Verify this user is not in the bracket (Should only ever be 1)
-                                // A user should never be added at the level
-                                break;
-                            case Permission.TOURNAMENT_ADMINISTRATOR:
-                                // Verify this user is not in the bracket
-                                RemoveUserFromBracket(user);
-                                break;
-                            case Permission.TOURNAMENT_STANDARD:
-                                // Verify this user is in the bracket
-                                AddUserToTournament(user);
-                                break;
-                            case Permission.NONE:
-                                // Remove this user.
-                                RemoveUser(user);
-                                break;
-                        }
                     }
-                    else
+
+                    // Only add a new user if the model is NOT in progress
+                    else if (user == null && !Model.InProgress)
                     {
                         // Create the new user for this tournament roster
                         if (userVM.IsCheckedIn) {
@@ -1092,7 +1095,7 @@ namespace WebApplication.Models
                 this.viewModel.Participants = services.Tournament.GetAllUsersInTournament(Model.TournamentID);
                 this.viewModel.Broadcasters = Model.TournamentBroadcasters.ToList();
                 this.viewModel.Permissions = new Dictionary<int, String>();
-                this.viewModel.BracketData = new List<BracketViewModel>();
+                this.viewModel.Brackets = new List<BracketModel>();
                 this.viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
                 this.viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
                 this.viewModel.NumberPlayersAdvance = Enumerable.Range(4, 20).ToList();
@@ -1155,33 +1158,28 @@ namespace WebApplication.Models
             viewModel.Participants = Model.TournamentUsers.ToList();
             viewModel.TournamentRules = Model.Rules;
 
-			// Dates
-			viewModel.RegistrationStartDate = Model.RegistrationStartDate;
-			viewModel.RegistrationEndDate = Model.RegistrationEndDate;
-			viewModel.TournamentStartDate = Model.TournamentStartDate;
-			viewModel.TournamentEndDate = Model.TournamentEndDate;
-			viewModel.CheckinStartDate = Model.CheckInBegins;
-			viewModel.CheckinEndDate = Model.CheckInEnds;
+            // Dates
+            if (Model.TournamentID != 0)
+            {
+                viewModel.RegistrationStartDate = Model.RegistrationStartDate;
+                viewModel.RegistrationEndDate = Model.RegistrationEndDate;
+                viewModel.TournamentStartDate = Model.TournamentStartDate;
+                viewModel.TournamentEndDate = Model.TournamentEndDate;
+                viewModel.CheckinStartDate = Model.CheckInBegins;
+                viewModel.CheckinEndDate = Model.CheckInEnds;
 
-			// Times
-			viewModel.RegistrationStartTime = Model.RegistrationStartDate;
-			viewModel.RegistrationEndTime = Model.RegistrationEndDate;
-			viewModel.TournamentStartTime = Model.TournamentStartDate;
-			viewModel.TournamentEndTime = Model.TournamentEndDate;
-			viewModel.CheckinStartTime = Model.CheckInBegins;
-			viewModel.CheckinEndTime = Model.CheckInEnds;
+                // Times
 
-			// Bracket data
-			foreach (BracketModel bracket in Model.Brackets)
-			{
-				viewModel.BracketData.Add(new BracketViewModel()
-				{
-					BracketTypeID = bracket.BracketTypeID,
-					NumberOfRounds = bracket.MaxRounds,
-					NumberOfGroups = bracket.NumberOfGroups,
-					NumberPlayersAdvance = bracket.NumberPlayersAdvance
-				});
-			}
+                viewModel.RegistrationStartTime = Model.RegistrationStartDate;
+                viewModel.RegistrationEndTime = Model.RegistrationEndDate;
+                viewModel.TournamentStartTime = Model.TournamentStartDate;
+                viewModel.TournamentEndTime = Model.TournamentEndDate;
+                viewModel.CheckinStartTime = Model.CheckInBegins;
+                viewModel.CheckinEndTime = Model.CheckInEnds;
+            }
+
+            // Bracket data
+            viewModel.Brackets = Model.Brackets.ToList();
 		}
 		#endregion
 	}

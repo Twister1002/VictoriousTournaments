@@ -20,7 +20,7 @@
     @using (Html.BeginForm(ViewBag.Create ? "Create" : "Update", "Tournament", FormMethod.Post))
     {
         <div class="section form-section">
-            <h2>Basic Information</h2>
+            <h2>Tournament Information</h2>
             <ul>
                 <li>
                     @Html.LabelFor(t => t.Title)
@@ -44,74 +44,20 @@
                 </li>
                 <li>
                     @Html.LabelFor(t => t.PublicViewing)
-                    @Html.CheckBoxFor(t => t.PublicViewing, attributes)
+                    
+                    <label class="switch">
+                        @Html.CheckBoxFor(t => t.PublicViewing, attributes)
+                        <span class="slider round"></span>
+                    </label>
                     @Html.ValidationMessageFor(t => t.PublicViewing)
                 </li>
                 <li>
                     @Html.LabelFor(t => t.PublicRegistration)
-                    @Html.CheckBoxFor(t => t.PublicRegistration, attributes)
-                    @Html.ValidationMessageFor(t => t.PublicRegistration)
-                </li>
-            </ul>
-        </div>
-        <div class="section bracket-section">
-            <h2>
-                Brackets
-                @if (!ViewBag.InProgress)
-                {
-                    <span class="icon icon-plus addBracket"></span>
-                }
-            </h2>
-            <div class="info">
-            @for (int i = 0; i < Model.BracketData.Count; i++)
-            {
-                var bracketData = Model.BracketData[i];
-
-                <ul class="bracket">
-                    <li class="type">
-                        @Html.LabelFor(t => t.BracketTypes)
-                        @Html.DropDownList("BracketData[" + i + "].BracketTypeID", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName", bracketData.BracketTypeID), "---Select Bracket---", attributes)
-                        @Html.ValidationMessageFor(t => t.BracketTypes)
-                    </li>
-                    <li class="advance-players hide">
-                        @Html.LabelFor(t => t.NumberPlayersAdvance)
-                        @Html.DropDownList("BracketData[" + i + "].NumberPlayersAdvance", new SelectList(Model.NumberPlayersAdvance, bracketData.NumberPlayersAdvance), "---Advance Players---", attributes)
-                    </li>
-                    <li class="round-select hide">
-                        @Html.LabelFor(t => t.NumberOfRounds)
-                        @Html.DropDownList("BracketData[" + i + "].NumberOfRounds", new SelectList(Model.NumberOfRounds, bracketData.NumberOfRounds), "---Rounds---", attributes)
-                    </li>
-                    <li class="group-select hide">
-                        @Html.LabelFor(t => t.NumberOfGroups)
-                        @Html.DropDownList("BracketData[" + i + "].NumberOfGroups", new SelectList(Model.NumberOfGroups, bracketData.NumberOfGroups), "---Groups---", attributes)
-                    </li>
-                    <li class="column options">
-                        <span class="icon icon-cross remove"></span>
-                    </li>
-                </ul>
-            }
-                </div>
-            
-            <ul class="bracket hide orig">
-                <li class="type column">
-                    @Html.LabelFor(t => t.BracketTypes)
-                    @Html.DropDownList("BracketData[%n%].BracketTypeID", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---", attributes)
-                    @Html.ValidationMessageFor(t => t.BracketTypes)
-                </li>
-                <li class="advance-players hide column">
-                    @Html.LabelFor(t => t.NumberPlayersAdvance)
-                    @Html.DropDownList("BracketData[%n%].NumberPlayersAdvance", new SelectList(Model.NumberPlayersAdvance, 0), attributes)
-                </li>
-                <li class="round-select hide column">
-                    @Html.LabelFor(t => t.NumberOfRounds)
-                    @Html.DropDownList("BracketData[%n%].NumberOfRounds", new SelectList(Model.NumberOfRounds, 0), attributes)
-                </li>
-                <li class="group-select hide column">
-                    @Html.LabelFor(t => t.NumberOfGroups)
-                    @Html.DropDownList("BracketData[%n%].NumberOfGroups", new SelectList(Model.NumberOfGroups, 0), attributes)
-                </li>
-                <li class="column options">
-                    <span class="icon icon-cross remove"></span>
+                    <label class="switch">
+                        @Html.CheckBoxFor(t => t.PublicRegistration, attributes)
+                        <span class="slider round"></span>
+                    </label>
+                    @Html.ValidationMessageFor(t => t.PublicViewing)
                 </li>
             </ul>
         </div>
@@ -162,8 +108,84 @@
                 </li>
             </ul>
         </div>
+        <div class="section form-section rules">
+            <h2>Tournament Specific Rules</h2>
+            @Html.TextAreaFor(x => x.TournamentRules, attributes)
+        </div>
+        <div class="section bracket-section">
+            <h2>
+                Brackets
+                @if (ViewBag.CanEdit)
+                {
+                    <span class="icon icon-plus addBracket"></span>
+                }
+            </h2>
+            <div class="info">
+                @for (int i = 0; i < Model.Brackets.Count; i++)
+                {
+                    var bracket = Model.Brackets[i];
+
+                    <ul class="bracket">
+                        <li class="type">
+                            @Html.LabelFor(t => t.BracketTypes)
+                            @Html.DropDownList("Brackets[" + i + "].BracketTypeID", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName", bracket.BracketTypeID), "---Select Bracket---", attributes)
+                            @Html.ValidationMessageFor(t => t.BracketTypes)
+                        </li>
+                        <li class="advance-players hide">
+                            @Html.LabelFor(t => t.NumberPlayersAdvance)
+                            @Html.DropDownList("Brackets[" + i + "].NumberPlayersAdvance", new SelectList(Model.NumberPlayersAdvance, bracket.NumberPlayersAdvance), "---Advance Players---", attributes)
+                        </li>
+                        <li class="round-select hide">
+                            @Html.LabelFor(t => t.NumberOfRounds)
+                            @Html.DropDownList("Brackets[" + i + "].NumberOfRounds", new SelectList(Model.NumberOfRounds, bracket.MaxRounds), "---Rounds---", attributes)
+                        </li>
+                        <li class="group-select hide">
+                            @Html.LabelFor(t => t.NumberOfGroups)
+                            @Html.DropDownList("Brackets[" + i + "].NumberOfGroups", new SelectList(Model.NumberOfGroups, bracket.NumberOfGroups), "---Groups---", attributes)
+                        </li>
+                        @if (ViewBag.CanEdit)
+                        {
+                            <li class="column options">
+                                <span class="icon icon-cross remove"></span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+            
+            <ul class="bracket hide orig">
+                <li class="type column">
+                    @Html.LabelFor(t => t.BracketTypes)
+                    @Html.DropDownList("Brackets[%n%].BracketTypeID", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---", attributes)
+                    @Html.ValidationMessageFor(t => t.BracketTypes)
+                </li>
+                <li class="advance-players hide column">
+                    @Html.LabelFor(t => t.NumberPlayersAdvance)
+                    @Html.DropDownList("Brackets[%n%].NumberPlayersAdvance", new SelectList(Model.NumberPlayersAdvance, 0), attributes)
+                </li>
+                <li class="round-select hide column">
+                    @Html.LabelFor(t => t.NumberOfRounds)
+                    @Html.DropDownList("Brackets[%n%].NumberOfRounds", new SelectList(Model.NumberOfRounds, 0), attributes)
+                </li>
+                <li class="group-select hide column">
+                    @Html.LabelFor(t => t.NumberOfGroups)
+                    @Html.DropDownList("Brackets[%n%].NumberOfGroups", new SelectList(Model.NumberOfGroups, 0), attributes)
+                </li>
+                @if (ViewBag.CanEdit)
+                {
+                    <li class="column options">
+                        <span class="icon icon-cross remove"></span>
+                    </li>
+                }
+            </ul>
+        </div>
         <div class="section user-section">
-            <h2>Registered Participants <span class="icon icon-plus addUser"></span></h2>
+            <h2>Registered Participants 
+            @if (ViewBag.CanEdit)
+            {
+                <span class="icon icon-plus addUser"></span>
+            }
+            </h2>
             <ul class="list-table">
                 <li class="list-table-header">
                     <ul data-columns="3">
@@ -192,7 +214,7 @@
                             </li>
                             <li class="column">
                                 <label class="switch">
-                                    @Html.CheckBox("Participants[" + i + "].IsCheckedIn", user.IsCheckedIn, attributes)
+                                    @Html.CheckBox("Participants[" + i + "].IsCheckedIn", user.IsCheckedIn)
                                     <span class="slider round"></span>
                                 </label>
                             </li>
@@ -206,7 +228,7 @@
 
                         <li class="column">
                             <label class="switch">
-                                @Html.CheckBox("Participants[%n%].IsCheckedIn", false, attributes)
+                                @Html.CheckBox("Participants[%n%].IsCheckedIn", false)
                                 <span class="slider round"></span>
                             </label>
                         </li>
@@ -255,16 +277,9 @@
                     </ul>
                 </li>
             </ul>
-            </div>
-        <div class="section form-section rules">
-            <h2>Tournament Specific Rules</h2>
-            @Html.TextAreaFor(x => x.TournamentRules, attributes)
         </div>
         <div class="section">
-            @if (!ViewBag.InProgress)
-            {
-                <button type="submit">Accept Changes</button>
-            }
+            <button type="submit">Accept Changes</button>
         </div>
     }
 </div>

@@ -466,6 +466,11 @@ namespace DatabaseLib.Services
             unitOfWork.BracketRepo.Delete(bracketId);
         }
 
+        public void DeleteBracket(BracketModel bracket)
+        {
+            unitOfWork.BracketRepo.Delete(bracket.BracketID);
+        }
+
         #endregion
 
 

@@ -61,9 +61,9 @@
     }
 
     function AddUser() {
-        var newBracket = userInfo.replace(/%n%/g, $("#TournamentEdit .userInfo .user").length);
+        var newBracket = userInfo.replace(/%n%/g, $("#TournamentEdit .user-section .user").length);
 
-        $("#TournamentEdit .userInfo").append("<ul data-columns='3' class='user'>" + newBracket + "</ul>");
+        $("#TournamentEdit .user-section .info").append("<ul data-columns='3' class='user'>" + newBracket + "</ul>");
     }
 
     function AddBroadcaster() {

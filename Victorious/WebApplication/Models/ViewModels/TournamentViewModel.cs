@@ -71,8 +71,6 @@ namespace WebApplication.Models.ViewModels
         public List<GameTypeModel> GameTypes { get; set; }
         public List<PlatformModel> PlatformTypes { get; set; }
 
-        public List<BracketViewModel> BracketData { get; set; }
-
         [Display(Name = "Game")]
         [Required(ErrorMessage = "Select a game")]
         public int GameTypeID { get; set; }
@@ -95,10 +93,13 @@ namespace WebApplication.Models.ViewModels
 
 
         // Bracket stuff
-        [Display(Name = "Best Of ")]
-        public int BestOfMatches { get; set; }
+        //public List<BracketViewModel> BracketData { get; set; }
+        public List<BracketModel> Brackets { get; set; }
         [Display(Name = "Bracket Type")]
         public List<BracketTypeModel> BracketTypes { get; set; }
+
+        [Display(Name = "Best Of ")]
+        public int BestOfMatches { get; set; }
         [Display(Name = "Rounds")]
         public List<int> NumberOfRounds { get; set; }
         [Display(Name = "Groups")]
