@@ -732,6 +732,12 @@ namespace WebApplication.Models
         {
             foreach (TournamentBroadcasterModel broadcaster in viewModel.Broadcasters)
             {
+                // We dont wanna bother if we dont have the correct data for this.
+                if (String.IsNullOrEmpty(broadcaster.BroadcasterName) || broadcaster.ServiceID == 0)
+                {
+                    continue;
+                }
+
                 broadcaster.TournamentID = Model.TournamentID;
                 TournamentBroadcasterModel broadcasterModel = Model.TournamentBroadcasters.SingleOrDefault(x => x.BroadcasterName.ToLower() == broadcaster.BroadcasterName.ToLower() && x.ServiceID == broadcaster.ServiceID);
 
@@ -751,10 +757,7 @@ namespace WebApplication.Models
                 }
                 else
                 {
-                    if (broadcaster.BroadcasterName != null && broadcaster.ServiceID != 0)
-                    {
-                        services.Tournament.AddBroadcaster(broadcaster);
-                    }
+                    services.Tournament.AddBroadcaster(broadcaster);
                 }
             }
 
