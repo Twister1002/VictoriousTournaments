@@ -39,7 +39,7 @@ namespace WebApplication.Utility
             }
             else
             {
-                //e = work.getException();
+                e = work.GetException();
                 work.Refresh();
                 return false;
             }

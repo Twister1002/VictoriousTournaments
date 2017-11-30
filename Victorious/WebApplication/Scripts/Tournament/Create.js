@@ -15,6 +15,7 @@
         },
     };
     var bracketInfo;
+    var broadcasterInfo;
     var bracketsCreated = 0;
     var maxBrackets = 2;
     var userInfo;
@@ -22,6 +23,8 @@
     $("#TournamentEdit .bracketSection .type select").on("change", BracketInfoChange);
     $("#TournamentEdit .addBracket").on("click", AddBracket);
     $("#TournamentEdit .addUser").on("click", AddUser);
+    $("#TournamentEdit .add-broadcaster").on("click", AddBroadcaster);
+    $("#TournamentEdit .broadcaster-section .remove-broadcaster").on("click", RemoveBroadcaster);
     
     function AddBracket() {
         var newBracket = bracketInfo.replace(/%n%/g, $("#TournamentEdit .brackets").length);
@@ -50,6 +53,23 @@
         $("#TournamentEdit .userInfo").append("<ul data-columns='3' class='user'>" + newBracket + "</ul>");
     }
 
+    function AddBroadcaster() {
+        var broadcaster = broadcasterInfo.replace(/%n%/g, $("#TournamentEdit .broadcaster-section .broadcaster").length);
+        $("#TournamentEdit .broadcaster-section .info").append("<ul data-columns='3' class='broadcaster'>" + broadcaster + "</ul>");
+
+        $("#TournamentEdit .broadcaster-section .broadcaster .remove-broadcaster").off("click").on("click", RemoveBroadcaster);
+    }
+
+    function RemoveBroadcaster() {
+        $(this).closest(".broadcaster").remove();
+
+        // Has to refactor all elements in this to fix errors with linking and array data
+        $("#TournamentEdit .broadcaster-section .broadcaster").each(function (i, e) {
+            $(e).find("li input").attr("name", $(e).find("li input").attr("name").replace(/[1234567890]/g, i));
+            $(e).find("li select").attr("name", $(e).find("li select").attr("name").replace(/[1234567890]/g, i));
+        });
+    }
+
     function BracketInfoChange() {
         var bracketData = $(this).closest(".brackets");
         var info = BracketTypesDictionary[$(this).val()];
@@ -76,9 +96,13 @@
 
     (function ($) {
         if ($("#TournamentEdit").length == 1) {
-            // Remove the bracket selection and save it.
+            // Save the original data
             bracketInfo = $("#TournamentEdit .bracketSection .bracketOrig").removeClass("hide").html();
+            broadcasterInfo =  $("#TournamentEdit .broadcaster-section .orig").removeClass("hide").html();
+
+            // Delete the displayed data.
             $("#TournamentEdit .bracketSection .bracketOrig").remove();
+            $("#TournamentEdit .broadcaster-section .orig").remove();
 
             // Trigger all the fields
             $("#TournamentEdit .bracketSection .brackets .type select").trigger("change");

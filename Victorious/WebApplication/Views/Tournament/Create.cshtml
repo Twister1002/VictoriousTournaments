@@ -2,17 +2,18 @@
 @{
     ViewBag.Title = "Update";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    
+
     object attributes = new { };
     object dateAttributes = new { @class = "datepicker" };
     object timeAttributes = new { @class = "timepicker" };
-}
-@if (!ViewBag.CanEdit)
-{
-    <div class="message warning">No changes can be made to this tournament.</div>
-    attributes = new { disabled = "disabled", @readonly = "readonly" };
-    dateAttributes = new { @class = "datepicker", disabled = "disabled", @readonly = "readonly" };
-    timeAttributes = new { @class = "timepicker", disabled = "disabled", @readonly = "readonly" };
+
+    if (!ViewBag.CanEdit)
+    {
+        <div class="message warning">No changes can be made to this tournament.</div>
+        attributes = new { disabled = "disabled", @readonly = "readonly" };
+        dateAttributes = new { @class = "datepicker", disabled = "disabled", @readonly = "readonly" };
+        timeAttributes = new { @class = "timepicker", disabled = "disabled", @readonly = "readonly" };
+    }
 }
 
 <div id="TournamentEdit">
@@ -205,27 +206,50 @@
             </ul>
         </div>
         <div class="section broadcaster-section">
+            <h2>Broadcasters <span class="icon icon-plus add-broadcaster"></span></h2>
             <ul class="list-table">
                 <li class="list-table-header">
-                    <ul data-columns="2">
+                    <ul data-columns="3">
                         <li class="column">Broadcaster Name</li>
                         <li class="column">Broadcast Service</li>
+                        <li class="column">&nbsp;</li>
                     </ul>
                 </li>
-                <li class="list-table-body">
-                    @foreach (var broadcaster in Model.Broadcasters)
+                <li class="list-table-body info">
+                    @for(int i = 0; i < Model.Broadcasters.Count; i++)
                     {
-                        <ul data-columns="2" class="broadcaster">
-                            <li class="column">@broadcaster.BroadcasterName</li>
-                            <li class="column">@broadcaster.BroadcastService.ServiceName</li>
+                        var brodcaster = Model.Broadcasters[i];
+
+                        <ul data-columns="3" class="broadcaster">
+                            <li class="column">
+                                @Html.TextBox("Broadcasters[" + i + "].BroadcasterName", brodcaster.BroadcasterName)
+                            </li>
+                            <li class="column">
+                                @Html.DropDownList("Broadcasters[" + i + "].ServiceID", new SelectList(Model.BroadcastServices, "ServiceID", "ServiceName", brodcaster.ServiceID), "Select Service")
+                            </li>
+                            <li class="column">
+                                <span class="icon icon-cross remove-broadcaster"></span>
+                            </li>
                         </ul>
                     }
+
+                    <ul data-columns="3" class="hide orig">
+                        <li class="column">
+                            @Html.TextBox("Broadcasters[%n%].BroadcasterName")
+                        </li>
+                        <li class="column">
+                            @Html.DropDownList("Broadcasters[%n%].ServiceID", new SelectList(Model.BroadcastServices, "ServiceID", "ServiceName"), "Select Service")
+                        </li>
+                        <li class="column">
+                            <span class="icon icon-cross remove-broadcaster"></span>
+                        </li>
+                    </ul>
                 </li>
             </ul>
             </div>
         <div class="section form-section rules">
             <h2>Tournament Specific Rules</h2>
-            @Html.TextAreaFor(x => x.TournamentRules)
+            @Html.TextAreaFor(x => x.TournamentRules, attributes)
         </div>
         <div class="section">
             @if (!ViewBag.InProgress)

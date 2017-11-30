@@ -108,6 +108,7 @@ namespace WebApplication.Models.ViewModels
 
         // Broadcaster Data
         public List<TournamentBroadcasterModel> Broadcasters { get; set; }
+        public List<BroadcastServiceModel> BroadcastServices { get; set; }
 
     }
 }

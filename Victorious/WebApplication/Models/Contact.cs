@@ -46,9 +46,12 @@ namespace WebApplication.Models
             }
         }
         
-        public void SetupViewModel()
+        public void SetupViewModel(ContactViewModel viewModel = null)
         {
-            viewModel = new ContactViewModel();
+            if (this.viewModel == null)
+            {
+                viewModel = new ContactViewModel();
+            }
         }
 
         public void SetFields()

@@ -41,6 +41,7 @@
         <div class="dev-bp"></div>
     }
     @Html.Partial("_Nav", new ViewDataDictionary(ViewData))
+
     <div id="content">
         @if (Session["Message"] != null)
         {
@@ -55,14 +56,17 @@
         }
         @if (Model is WebApplication.Models.ViewModels.ViewModel)
         {
-            if (Model.e != null)
-            {
-                <div class="message error">@Model.e.ToString()</div>
-            }
-            else if (Model.message != String.Empty || Model.errorType != null)
-            {
-                <div class="message @WebApplication.Models.Model.errorClassNames[(int)Model.errorType]">@Model.message</div>
-            }
+            <div class="message @WebApplication.Models.Model.errorClassNames[(int)Model.errorType]">
+                @if (Model.message != String.Empty || Model.errorType != null)
+                {
+                    <span>@Model.message</span>
+                }
+
+                @if (Model.e != null)
+                {
+                    <span>@Model.e.ToString()</span>
+                }
+            </div>
         }
         else if (Model is WebApplication.Models.Model && Model.GetMessage() != String.Empty)
         {

@@ -156,14 +156,30 @@ namespace DatabaseLib.Services
         #region AccountProvider 
         public List<SocialProviderModel> SocialProviders()
         {
-            return unitOfWork.SocialProviderRepo.GetAll().ToList();
+            try
+            {
+                return unitOfWork.SocialProviderRepo.GetAll().ToList();
+            }
+            catch (Exception e)
+            {
+                unitOfWork.SetException(e);
+                return new List<SocialProviderModel>();
+            }
         }
         #endregion
 
         #region BroadcastServices
         public List<BroadcastServiceModel> BroadcastServices()
         {
-            return unitOfWork.BroadcastServiceRepo.GetAll().ToList();
+            try
+            {
+                return unitOfWork.BroadcastServiceRepo.GetAll().ToList();
+            }
+            catch (Exception e)
+            {
+                unitOfWork.SetException(e);
+                return new List<BroadcastServiceModel>();
+            }
         }
         #endregion
     }

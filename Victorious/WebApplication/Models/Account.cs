@@ -475,8 +475,13 @@ namespace WebApplication.Models
         #endregion
 
         #region ViewModel
-        public void SetupViewModel()
+        public void SetupViewModel(AccountViewModel accViewModel = null)
         {
+            if (this.viewModel == null)
+            {
+                viewModel = new AccountViewModel();
+            }
+
             viewModel.Providers = services.Type.SocialProviders();
             viewModel.LinkedProviders = Model.AccountSocials.ToList();
         }
