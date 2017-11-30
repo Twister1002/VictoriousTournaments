@@ -223,7 +223,7 @@ namespace WebApplication.Models
 		public bool Create(TournamentViewModel viewModel, Account account)
 		{
             // Were the changes applied correctly?
-			if (ApplyChanges(viewModel))
+			if (!ApplyChanges(viewModel))
             {
                 // Set the viewModel's data to be returned.
                 SetupViewModel();
