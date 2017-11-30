@@ -307,15 +307,12 @@
     <Content Include="Views\Account\Forgot.cshtml" />
     <Content Include="Views\Tournament\GameTournaments.cshtml" />
     <Content Include="Styles\less\Tournament\_GameTournaments.less" />
-<<<<<<< HEAD
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <Content Include="Views\Tournament\Broadcasts.cshtml" />
-=======
     <Content Include="Styles\less\Tournament\_Register.less" />
->>>>>>> feature/TournamentSettings
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
