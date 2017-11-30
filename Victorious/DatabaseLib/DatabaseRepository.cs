@@ -57,6 +57,7 @@ namespace DatabaseLib
                 .Load();
             context.TournamentModels
                .Include(x => x.Brackets)
+               .Include(x => x.TournamentUsers)
                .Include(x => x.TournamentBroadcasters)
                .Load();
             context.BracketModels
@@ -78,6 +79,7 @@ namespace DatabaseLib
             context.GameModels
                 .Load();
             context.TournamentUsersBracketModels
+                .Include(x => x.TournamentUser)
                 .Include(x => x.TournamentUser)
                 .Load();
 

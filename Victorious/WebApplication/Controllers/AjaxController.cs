@@ -618,40 +618,6 @@ namespace WebApplication.Controllers
         /// <param name="players">A list of players to update the seeds.</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("Ajax/Tournament/SeedChange")]
-        public JsonResult SeedChange(int tournamentId, int bracketId, Dictionary<String, int> players)
-        {
-            if (account.IsLoggedIn())
-            {
-                Models.Tournament tournament = new Models.Tournament(service, tournamentId);
-
-                if (tournament.IsAdmin(account.Model.AccountID))
-                {
-                    tournament.UpdateSeeds(players, bracketId);
-                    status = true;
-                    message = "Seeds are updated";
-                }
-                else
-                {
-                    message = "An error occured. Please try again later";
-                }
-            }
-            else
-            {
-                message = "You must login first";
-            }
-
-            return BundleJson();
-        }
-
-        /// <summary>
-        /// This will seed the users in the tournament 
-        /// </summary>
-        /// <param name="tournamentId">The ID of the tournament</param>
-        /// <param name="bracketId">The ID of the bracket</param>
-        /// <param name="players">A list of players to update the seeds.</param>
-        /// <returns></returns>
-        [HttpPost]
         [Route("Ajax/Tournament/CheckIn")]
         public JsonResult UserCheckIn(int tournamentId)
         {

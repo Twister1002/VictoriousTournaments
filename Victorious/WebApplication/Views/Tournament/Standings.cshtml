@@ -17,7 +17,6 @@
                 <ul class="list-table">
                     <li class="list-table-header">
                         <ul data-columns="@(ViewBag.isCreator ? 3 : 2)">
-                            <li class="column selection info" data-show="playerInfo">Players</li>
                             <li class="column selection info" data-show="standingInfo">Standings</li>
                             @if (ViewBag.isCreator)
                             {
@@ -25,48 +24,6 @@
                             }
                         </ul>
                     </li>
-
-                    <li class="list-table-body infoSection playerInfo">
-                        <ul class="header" data-columns="2">
-                            <li class="column">Name</li>
-                            <li class="column">Seed</li>
-                        </ul>
-                        <div class="bracketPlayers">
-                            @foreach (var player in bracket.GetPlayers())
-                            {
-                                var person = Model.GetUserModel(player.TournamentUserID);
-
-                                <ul class="data user form" data-user="@person.TournamentUserID" data-columns="2">
-                                    <li class="column name">@person.Name</li>
-                                    @if (ViewBag.isAdministrator)
-                                    {
-                                        <li class="column seed">
-                                            @if (!Model.IsUserAdministrator(person.TournamentUserID))
-                                            {
-                                                <input type="text" name="seedVal" maxlength="2" value="@Model.GetUserSeed(bracket.Id, person.TournamentUserID)" />
-                                            }
-                                        </li>
-                                    }
-                                    else
-                                    {
-                                        <li class="column seed">
-                                            @Model.GetUserSeed(bracket.Id, person.TournamentUserID)
-                                        </li>
-                                    }
-                                </ul>
-                            }
-
-                            @if (!Model.Model.InProgress && ViewBag.isAdministrator)
-                            {
-                                <div class="adminSettings">
-                                    <div class="options">
-                                        <button class="randomSeeds">Randomize Seeds</button>
-                                        <button class="updateSeeds">Update Seeds</button>
-                                    </div>
-                                </div>
-                            }
-                    </li>
-
 
                     <li class="list-table-header infoSection standingInfo">
                         <ul class="header" data-columns="3">

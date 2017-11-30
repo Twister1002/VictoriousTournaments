@@ -113,9 +113,6 @@
     $(".TournamentInfo .selection.info").on("click", InfoSelected);
     // Reset the brackets
     $(".TournamentInfo .resetInfo .reset-bracket").on("click", ResetBracket);
-    //Seeds
-    $(".TournamentInfo .playerInfo .adminSettings .randomSeeds").on("click", RandomizeSeeds);
-    $(".TournamentInfo .playerInfo .adminSettings .updateSeeds").on("click", SaveSeeds);
 
     function BracketNumberSelected() {
         var bracketId = $(this).data("bracket");
@@ -131,52 +128,6 @@
 
         $(this).addClass("selected").siblings().removeClass("selected");
         bracket.find("." + info).addClass("show").siblings().removeClass("show");
-    }
-
-    function RandomizeSeeds() {
-        var users = $(this).closest(".playerInfo").find(".user input").toArray();
-        var random = [];
-
-        while (users.length != 0) {
-            var randomIndex = Math.floor(Math.random() * users.length);
-            random.push(users[randomIndex]);
-            users.splice(randomIndex, 1);
-        }
-
-        $.each(random, function (i, e) {
-            $(e).val(i + 1);
-        });
-    }
-
-    function SaveSeeds() {
-        var jsonData = {
-            "tournamentId": $("#Tournament").data("id"),
-            "bracketId": $(this).closest(".bracketData").data("id"),
-            "players": {}
-        };
-
-        // Load all the players into an object
-        $(this).closest(".playerInfo").find(".user").each(function (i, e) {
-            if ($(e).find(".seed input").length == 1) {
-                jsonData.players[$(e).data("user")] = $(e).find(".seed input").val();
-            }
-        });
-
-        $.ajax({
-            "url": "/Ajax/Tournament/SeedChange",
-            "type": "POST",
-            "data": jsonData,
-            "dataType": "json",
-            "success": function (json) {
-                if (json.status) {
-                    tournamentChanged = true;
-                }
-                console.log(json.message);
-            },
-            "error": function (json) {
-                console.log("Error");
-            }
-        });
     }
 
     function ResetBracket() {

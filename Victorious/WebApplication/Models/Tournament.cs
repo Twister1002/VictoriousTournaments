@@ -345,55 +345,6 @@ namespace WebApplication.Models
 			return services.Save();
 		}
 
-		public void UpdateSeeds(Dictionary<String, int> players, int bracketId)
-		{
-			foreach (KeyValuePair<String, int> player in players)
-			{
-				TournamentUsersBracketModel user = Model.Brackets.Single(x => x.BracketID == bracketId)
-					.TournamentUsersBrackets.SingleOrDefault(z => z.TournamentUserID == int.Parse(player.Key));
-				if (user != null)
-				{
-					user.Seed = player.Value;
-					services.Tournament.UpdateTournamentUsersBracket(user);
-				}
-				else
-				{
-					user = new TournamentUsersBracketModel()
-					{
-						Seed = player.Value,
-						TournamentUserID = int.Parse(player.Key),
-						TournamentID = Model.TournamentID,
-						BracketID = bracketId
-					};
-
-					services.Tournament.AddTournamentUsersBracket(user);
-				}
-			}
-
-			// Pass updated seeds to IBracket, which will fix any invalid values:
-			Tourny.Brackets.Single(x=>x.Id == bracketId)
-				.SetNewPlayerlist(Model.Brackets.Single(x => x.BracketID == bracketId)
-                .TournamentUsersBrackets);
-
-			// Give correct values to all user seeds in the first BracketModel.
-			// This prevents two users having the same seed and being randomly sorted.
-			BracketModel bracketModel = Model.Brackets.First();
-			foreach (TournamentUsersBracketModel userModel in bracketModel.TournamentUsersBrackets)
-			{
-				int newPlayerSeed = Tourny.Brackets
-					.Single(b => b.Id == bracketModel.BracketID)
-					.GetPlayerSeed(userModel.TournamentUserID);
-
-				if (newPlayerSeed != userModel.Seed)
-				{
-					userModel.Seed = newPlayerSeed;
-					services.Tournament.UpdateTournamentUsersBracket(userModel);
-				}
-			}
-
-			services.Save();
-		}
-
         public bool CheckUserIn(int tournamentUserId)
         {
             services.Tournament.CheckUserIn(tournamentUserId);
@@ -417,7 +368,7 @@ namespace WebApplication.Models
 
         #region AddUsers
         /// <summary>
-        /// Adds a user to the tournament roster
+        /// A user was created for the tournament
         /// </summary>
         /// <param name="userModel">The model of the user to add</param>
         /// <returns>True if saved; false if not.</returns>
@@ -428,14 +379,14 @@ namespace WebApplication.Models
             {
                 userModel.TournamentID = Model.TournamentID;
                 services.Tournament.AddTournamentUser(userModel);
-                AddUserToTournament(userModel);
+                AddUserToTournament(userModel, userModel.TournamentUsersBrackets.ElementAt(0).Seed);
             }
 
             return services.Save();
         }
 
         /// <summary>
-        /// Adds a user to the tournament roster
+        /// A user has joined the tournament on their own.
         /// </summary>
         /// <param name="account">The Account object of the user joining</param>
         /// <param name="permission">The permission level of the user</param>
@@ -464,12 +415,13 @@ namespace WebApplication.Models
 			}
 		}
 
-		/// <summary>
-		/// Verifies and adds the user to the bracket if eligiable.
-		/// </summary>
-		/// <param name="model">The user model to be added to the tournament</param>
-		/// <returns>True if saved; false if save failed</returns>
-		private void AddUserToTournament(TournamentUserModel model)
+        /// <summary>
+        /// Verifies and adds the user to the bracket if eligiable.
+        /// </summary>
+        /// <param name="model">The user model to be added to the tournament</param>
+        /// <param name="seed">The seed of a user joining the tournament, or auto placed</param>
+        /// <returns>True if saved; false if save failed</returns>
+        private void AddUserToTournament(TournamentUserModel model, int? seed = -1)
 		{
             if (model.PermissionLevel == (int)Permission.TOURNAMENT_STANDARD)
             {
@@ -478,8 +430,10 @@ namespace WebApplication.Models
 
                 if (bracket != null)
                 {
-                    int? seedData = bracket.TournamentUsersBrackets.Max(x => x.Seed);
-                    int seed = seedData != null ? seedData.Value + 1 : 1;
+                    if (seed == -1)
+                    {
+                        seed = bracket.TournamentUsersBrackets.Max(x => x.Seed);
+                    }
 
                     if (!bracket.TournamentUsersBrackets.Any(x =>
                         x.BracketID == bracket.BracketID &&
@@ -491,11 +445,17 @@ namespace WebApplication.Models
                         {
                             TournamentID = Model.TournamentID,
                             TournamentUserID = model.TournamentUserID,
-                            Seed = seed,
+                            Seed = seed.Value,
                             BracketID = bracket.BracketID
                         };
 
                         services.Tournament.AddTournamentUsersBracket(bracketUser);
+                    }
+                    else
+                    {
+                        // The user was all ready created. We just need to update their seed.
+                        model.TournamentUsersBrackets.ElementAt(0).Seed = seed;
+                        services.Tournament.UpdateTournamentUsersBracket(model.TournamentUsersBrackets.ElementAt(0));
                     }
                 }
 			}
@@ -1029,7 +989,7 @@ namespace WebApplication.Models
                                     break;
                                 case Permission.TOURNAMENT_STANDARD:
                                     // Verify this user is in the bracket
-                                    AddUserToTournament(user);
+                                    AddUserToTournament(user, userVM.TournamentUsersBrackets.ElementAt(0).Seed);
                                     break;
                                 case Permission.NONE:
                                     // Remove this user.

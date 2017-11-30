@@ -20,6 +20,7 @@
     var userInfo;
 
     $("#TournamentEdit .bracket-section .type select").on("change", BracketInfoChange);
+    $("#TournamentEdit .user-section .random-seeds").on("click", RandomizeSeeds);
 
     $("#TournamentEdit .addBracket").on("click", AddBracket);
     $("#TournamentEdit .addUser").on("click", AddUser);
@@ -27,7 +28,7 @@
 
     $("#TournamentEdit .remove").on("click", RemoveBracket);
     $("#TournamentEdit .broadcaster-section .remove").on("click", RemoveBroadcaster);
-    
+
     function AddBracket() {
         var newBracket = bracketInfo.replace(/%n%/g, $("#TournamentEdit .bracket-section .info").length);
         $("#TournamentEdit .bracket-section .info").append("<ul class='bracket'>" + newBracket + "</ul>");
@@ -117,6 +118,22 @@
         else {
             $("#TournamentEdit .bracket-section .advance-players").addClass("hide");
         }
+    }
+
+    // Randomizes seeds for the user.
+    function RandomizeSeeds() {
+        var users = $("#TournamentEdit .user-section .user[data-participating='1']").toArray();
+        var shuffled = [];
+
+        while (users.length != 0) {
+            var randomIndex = Math.floor(Math.random() * users.length);
+            shuffled.push(users[randomIndex]);
+            users.splice(randomIndex, 1);
+        }
+
+        $.each(shuffled, function (i, e) {
+            $(e).find("input[name*='Seed']").val(i + 1);
+        });
     }
 
     (function ($) {

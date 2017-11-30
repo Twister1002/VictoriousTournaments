@@ -188,7 +188,8 @@
             </h2>
             <ul class="list-table">
                 <li class="list-table-header">
-                    <ul data-columns="3">
+                    <ul data-columns="4">
+                        <li class="column">Seed <span class="icon icon-shuffle random-seeds"></span></li>
                         <li class="column">Name</li>
                         <li class="column">Level</li>
                         <li class="column">Checked In</li>
@@ -199,8 +200,18 @@
                     {
                         var user = Model.Participants[i];
 
-                        <ul data-columns="3" class="user">
+                        <ul data-columns="3" class="user" data-participating="@(user.PermissionLevel == (int)DatabaseLib.Permission.TOURNAMENT_STANDARD ? 1 : 0)">
                             @Html.Hidden("Participants[" + i + "].TournamentUserID", user.TournamentUserID)
+                            <li class="column">
+                                @if (user.TournamentUsersBrackets.ElementAtOrDefault(0) != null)
+                                {
+                                    @Html.TextBox("Participants[" + i + "].TournamentUsersBrackets[0].Seed", user.TournamentUsersBrackets.ElementAt(0).Seed)
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </li>
                             <li class="column">
                                 @if (user.AccountID == null)
                                 {
