@@ -393,6 +393,26 @@ namespace WebApplication.Models
 
 			services.Save();
 		}
+
+        public bool CheckUserIn(int tournamentUserId)
+        {
+            services.Tournament.CheckUserIn(tournamentUserId);
+
+            return services.Save();
+        }
+
+        public bool CheckUserIn(Account account)
+        {
+            TournamentUserModel user = Model.TournamentUsers.SingleOrDefault(x => x.AccountID == account.Model.AccountID);
+
+            if (user != null)
+            {
+                services.Tournament.CheckUserIn(user.TournamentUserID);
+                return services.Save();
+            }
+
+            return false;            
+        }
         #endregion
 
         #region AddUsers

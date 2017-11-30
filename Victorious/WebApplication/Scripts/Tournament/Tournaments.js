@@ -31,7 +31,7 @@
         }
     });
 
-    $("#Tournament .tournament-buttons.options .checkIn").on("click", function () {
+    $("#Tournament .checkIn").on("click", function () {
         $.ajax({
             "url": "/Ajax/Tournament/CheckIn",
             "type": "post",
@@ -39,7 +39,7 @@
             "dataType": "json",
             "success": function (json) {
                 if (json.status) {
-                    $("#Tournament .tournament-buttons.options .checkIn").remove();
+                    $("#Tournament .checkIn").remove();
                 }
 
                 console.log(json.message);
