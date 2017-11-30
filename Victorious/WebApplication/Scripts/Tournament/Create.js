@@ -2,16 +2,16 @@
     var $ = jQuery;
     var BracketTypesDictionary = {
         "3": {
-            "show": ".roundSelect",
-            "hide": ".groupSelect"
+            "show": ".round-select",
+            "hide": ".group-select"
         },
         "6": {
-            "show": ".roundSelect",
-            "hide": ".groupSelect"
+            "show": ".round-select",
+            "hide": ".group-select"
         },
         "4": {
-            "show": ".groupSelect",
-            "hide": ".roundSelect"
+            "show": ".group-select",
+            "hide": ".round-select"
         },
     };
     var bracketInfo;
@@ -20,28 +20,28 @@
     var maxBrackets = 2;
     var userInfo;
 
-    $("#TournamentEdit .bracketSection .type select").on("change", BracketInfoChange);
+    $("#TournamentEdit .bracket-section .type select").on("change", BracketInfoChange);
     $("#TournamentEdit .addBracket").on("click", AddBracket);
     $("#TournamentEdit .addUser").on("click", AddUser);
     $("#TournamentEdit .add-broadcaster").on("click", AddBroadcaster);
     $("#TournamentEdit .broadcaster-section .remove-broadcaster").on("click", RemoveBroadcaster);
     
     function AddBracket() {
-        var newBracket = bracketInfo.replace(/%n%/g, $("#TournamentEdit .brackets").length);
-        $("#TournamentEdit .bracketSection").append("<ul class='brackets'>" + newBracket + "</ul>");
+        var newBracket = bracketInfo.replace(/%n%/g, $("#TournamentEdit .bracket-section .info").length);
+        $("#TournamentEdit .bracket-section .info").append("<ul class='bracket'>" + newBracket + "</ul>");
 
         bracketsCreated++;
 
         //Reset all the events 
-        $("#TournamentEdit .bracketSection .type select").off("change");
-        $("#TournamentEdit .bracketSection .type select").on("change", BracketInfoChange);
+        $("#TournamentEdit .bracket-section .type select").off("change");
+        $("#TournamentEdit .bracket-section .type select").on("change", BracketInfoChange);
 
         // Display the new field only if there is multiple brackets
         if (bracketsCreated > 1) {
-            $("#TournamentEdit .bracketSection .advancePlayers").not(":last").removeClass("hide");
+            $("#TournamentEdit .bracket-section .advance-players").not(":last").removeClass("hide");
         }
         else {
-            $("#TournamentEdit .bracketSection .advancePlayers").addClass("hide");
+            $("#TournamentEdit .bracket-section .advance-players").addClass("hide");
         }
 
         LimitBrackets();
@@ -71,7 +71,7 @@
     }
 
     function BracketInfoChange() {
-        var bracketData = $(this).closest(".brackets");
+        var bracketData = $(this).closest(".bracket");
         var info = BracketTypesDictionary[$(this).val()];
 
         if (info) {
@@ -80,36 +80,36 @@
             bracketData.find(info.hide).addClass("hide").find("select").val(0);
         }
         else {
-            bracketData.find(".roundSelect").addClass("hide").val(0);
-            bracketData.find(".groupSelect").addClass("hide").val(0);
+            bracketData.find(".round-select").addClass("hide").val(0);
+            bracketData.find(".group-select").addClass("hide").val(0);
         }
     }
 
     // This function will limit the brackets in the tournament
     function LimitBrackets() {
-        $("#TournamentEdit .bracketSection .addBracket").off("click").addClass("hide");
+        $("#TournamentEdit .bracket-section .addBracket").off("click").addClass("hide");
 
         if ($("#TournamentEdit .brackets").length < maxBrackets) {
-            $("#TournamentEdit .bracketSection .addBracket").on("click", AddBracket).removeClass("hide");
+            $("#TournamentEdit .bracket-section .addBracket").on("click", AddBracket).removeClass("hide");
         }
     }
 
     (function ($) {
         if ($("#TournamentEdit").length == 1) {
             // Save the original data
-            bracketInfo = $("#TournamentEdit .bracketSection .bracketOrig").removeClass("hide").html();
+            bracketInfo = $("#TournamentEdit .bracket-section .orig").removeClass("hide").html();
             broadcasterInfo =  $("#TournamentEdit .broadcaster-section .orig").removeClass("hide").html();
 
             // Delete the displayed data.
-            $("#TournamentEdit .bracketSection .bracketOrig").remove();
+            $("#TournamentEdit .bracket-section .orig").remove();
             $("#TournamentEdit .broadcaster-section .orig").remove();
 
             // Trigger all the fields
-            $("#TournamentEdit .bracketSection .brackets .type select").trigger("change");
+            $("#TournamentEdit .bracket-section .bracket select").trigger("change");
 
             // Show the Advance Players if more than one bracket
-            if ($("#TournamentEdit .bracketSection .brackets").length > 1) {
-                $("#TournamentEdit .bracketSection .advancePlayers").not(":last").removeClass("hide");
+            if ($("#TournamentEdit .bracket-section .info").length > 1) {
+                $("#TournamentEdit .bracket-section .advance-players").not(":last").removeClass("hide");
             }
 
             LimitBrackets();

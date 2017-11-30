@@ -54,7 +54,7 @@
                 </li>
             </ul>
         </div>
-        <div class="section form-section bracketSection">
+        <div class="section bracket-section">
             <h2>
                 Brackets
                 @if (!ViewBag.InProgress)
@@ -62,45 +62,49 @@
                     <span class="icon icon-plus addBracket"></span>
                 }
             </h2>
-            @for (int i = 0; i < Model.BracketData.Count; i++)
-            {
-                var bracketData = Model.BracketData[i];
+            <ul class="list-table">
+                <li class="list-table-body info">
+                    @for (int i = 0; i < Model.BracketData.Count; i++)
+                    {
+                        var bracketData = Model.BracketData[i];
 
-                <ul class="brackets">
-                    <li class="type">
-                        @Html.LabelFor(t => t.BracketTypes)
-                        @Html.DropDownList("BracketData[" + i + "].BracketTypeID", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName", bracketData.BracketTypeID), "---Select Bracket---", attributes)
-                        @Html.ValidationMessageFor(t => t.BracketTypes)
-                    </li>
-                    <li class="advancePlayers hide">
-                        @Html.LabelFor(t => t.NumberPlayersAdvance)
-                        @Html.DropDownList("BracketData[" + i + "].NumberPlayersAdvance", new SelectList(Model.NumberPlayersAdvance, bracketData.NumberPlayersAdvance), "---Advance Players---", attributes)
-                    </li>
-                    <li class="roundSelect hide">
-                        @Html.LabelFor(t => t.NumberOfRounds)
-                        @Html.DropDownList("BracketData[" + i + "].NumberOfRounds", new SelectList(Model.NumberOfRounds, bracketData.NumberOfRounds), "---Rounds---", attributes)
-                    </li>
-                    <li class="groupSelect hide">
-                        @Html.LabelFor(t => t.NumberOfGroups)
-                        @Html.DropDownList("BracketData[" + i + "].NumberOfGroups", new SelectList(Model.NumberOfGroups, bracketData.NumberOfGroups), "---Groups---", attributes)
-                    </li>
-                </ul>
-            }
-            <ul class="hide bracketOrig">
-                <li class="type">
+                        <ul class="bracket" data-columns="4">
+                            <li class="type column">
+                                @Html.LabelFor(t => t.BracketTypes)
+                                @Html.DropDownList("BracketData[" + i + "].BracketTypeID", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName", bracketData.BracketTypeID), "---Select Bracket---", attributes)
+                                @Html.ValidationMessageFor(t => t.BracketTypes)
+                            </li>
+                            <li class="advance-players hide column">
+                                @Html.LabelFor(t => t.NumberPlayersAdvance)
+                                @Html.DropDownList("BracketData[" + i + "].NumberPlayersAdvance", new SelectList(Model.NumberPlayersAdvance, bracketData.NumberPlayersAdvance), "---Advance Players---", attributes)
+                            </li>
+                            <li class="round-select hide column">
+                                @Html.LabelFor(t => t.NumberOfRounds)
+                                @Html.DropDownList("BracketData[" + i + "].NumberOfRounds", new SelectList(Model.NumberOfRounds, bracketData.NumberOfRounds), "---Rounds---", attributes)
+                            </li>
+                            <li class="group-select hide column">
+                                @Html.LabelFor(t => t.NumberOfGroups)
+                                @Html.DropDownList("BracketData[" + i + "].NumberOfGroups", new SelectList(Model.NumberOfGroups, bracketData.NumberOfGroups), "---Groups---", attributes)
+                            </li>
+                        </ul>
+                    }
+                </li>
+            </ul>
+            <ul class="bracket hide orig">
+                <li class="type column">
                     @Html.LabelFor(t => t.BracketTypes)
                     @Html.DropDownList("BracketData[%n%].BracketTypeID", new SelectList(Model.BracketTypes, "BracketTypeID", "TypeName"), "---Select Bracket---", attributes)
                     @Html.ValidationMessageFor(t => t.BracketTypes)
                 </li>
-                <li class="advancePlayers hide">
+                <li class="advancePlayers hide column">
                     @Html.LabelFor(t => t.NumberPlayersAdvance)
                     @Html.DropDownList("BracketData[%n%].NumberPlayersAdvance", new SelectList(Model.NumberPlayersAdvance, 0), attributes)
                 </li>
-                <li class="roundSelect hide">
+                <li class="roundSelect hide column">
                     @Html.LabelFor(t => t.NumberOfRounds)
                     @Html.DropDownList("BracketData[%n%].NumberOfRounds", new SelectList(Model.NumberOfRounds, 0), attributes)
                 </li>
-                <li class="groupSelect hide">
+                <li class="groupSelect hide column">
                     @Html.LabelFor(t => t.NumberOfGroups)
                     @Html.DropDownList("BracketData[%n%].NumberOfGroups", new SelectList(Model.NumberOfGroups, 0), attributes)
                 </li>

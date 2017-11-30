@@ -103,7 +103,7 @@ namespace WebApplication.Models.ViewModels
         public List<int> NumberOfRounds { get; set; }
         [Display(Name = "Groups")]
         public List<int> NumberOfGroups { get; set; }
-        [Display(Name = "Number of player to advance")]
+        [Display(Name = "Players To Advance")]
         public List<int> NumberPlayersAdvance { get; set; }
 
         // Broadcaster Data
