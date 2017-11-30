@@ -163,6 +163,7 @@
     <Content Include="Scripts\scripts.min.js" />
     <Content Include="Scripts\Tournament\Bracket.js" />
     <Content Include="Scripts\Tournament\Create.js" />
+    <Content Include="Scripts\Tournament\Register.js" />
     <Content Include="Styles\css\jquery.timepicker.css" />
     <Content Include="Global.asax" />
     <Content Include="gulpfile.js" />
@@ -220,7 +221,6 @@
     <Compile Include="Models\ViewModels\GameTypeViewModel.cs" />
     <Compile Include="Models\ViewModels\GameViewModel.cs" />
     <Compile Include="Models\ViewModels\PlatformViewModel.cs" />
-    <Compile Include="Models\ViewModels\TournamentRegisterViewModel.cs" />
     <Compile Include="Models\ViewModels\TournamentViewModel.cs" />
     <Compile Include="Models\ViewModels\ViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -307,11 +307,15 @@
     <Content Include="Views\Account\Forgot.cshtml" />
     <Content Include="Views\Tournament\GameTournaments.cshtml" />
     <Content Include="Styles\less\Tournament\_GameTournaments.less" />
+<<<<<<< HEAD
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <Content Include="Views\Tournament\Broadcasts.cshtml" />
+=======
+    <Content Include="Styles\less\Tournament\_Register.less" />
+>>>>>>> feature/TournamentSettings
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

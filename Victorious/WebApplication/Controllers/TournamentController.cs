@@ -138,19 +138,13 @@ namespace WebApplication.Controllers
                     // Verify if the user has an invite code or the invite code is valid
                     if (tourny.Model.PublicRegistration || tourny.Model.InviteCode == inviteCode)
                     {
-                        TournamentRegisterViewModel fields = new TournamentRegisterViewModel()
-                        {
-                            AccountID = account.Model.AccountID,
-                            TournamentID = tourny.Model.TournamentID
-                        };
-
                         // Allow the tournament registration to be shown
-                        ViewBag.Tournament = tourny.Model;
+                        ViewBag.isLoggedIn = account.IsLoggedIn();
                         ViewBag.isRegistered = tourny.isRegistered(account.Model.AccountID);
                         ViewBag.CanRegister = tourny.CanRegister();
 
 
-                        return View("RegisterForm", fields);
+                        return View("RegisterForm", tourny);
                     }
                     else
                     {
@@ -281,31 +275,40 @@ namespace WebApplication.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("Tournament/Register")]
-        public ActionResult Register(TournamentRegisterViewModel userData)
+        public ActionResult Register(int tournamentId)
         {
-            if (userData.AccountID == account.Model.AccountID)
-            {
-                Models.Tournament viewModel = new Models.Tournament(service, userData.TournamentID);
+            Models.Tournament model = new Models.Tournament(service, tournamentId);
 
-                if (viewModel.AddUser(account, Permission.TOURNAMENT_STANDARD))
+            if (model != null)
+            {
+                if (account.IsLoggedIn())
                 {
-                    Session["Message"] = "You have been registered to this tournament";
-                    Session["Message.Class"] = ViewError.SUCCESS;
+                    if (model.AddUser(account, Permission.TOURNAMENT_STANDARD))
+                    {
+                        Session["Message"] = "You have been registered to this tournament";
+                        Session["Message.Class"] = ViewError.SUCCESS;
+                    }
+                    else
+                    {
+                        Session["Message"] = "There was an error and was unable to add you to this tournament";
+                        Session["Message.Class"] = ViewError.ERROR;
+                    }
                 }
                 else
                 {
-                    Session["Message"] = "We were unable to add you to the tournament";
+                    Session["Message"] = "You must be loggedin to register for this tournament";
                     Session["Message.Class"] = ViewError.ERROR;
+                    return RedirectToAction("Login", "Account");
                 }
             }
             else
             {
-                Session["Message"] = "You must login to register for this tournament";
+                Session["Message"] = "This tournament does not exist.";
                 Session["Message.Class"] = ViewError.ERROR;
-                return RedirectToAction("Login", "Account");
             }
+            
 
-            return RedirectToAction("Tournament", "Tournament", new { guid = userData.TournamentID });
+            return RedirectToAction("Tournament", "Tournament", new { guid = tournamentId });
         }
 
         /// <summary>
@@ -315,30 +318,35 @@ namespace WebApplication.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("Tournament/Deregister")]
-        public ActionResult Deregister(TournamentRegisterViewModel userData)
+        public ActionResult Deregister(int tournamentId)
         {
-            if (userData.AccountID == account.Model.AccountID)
+            Models.Tournament model = new Models.Tournament(service, tournamentId);
+
+            if (model != null)
             {
-                Models.Tournament viewModel = new Models.Tournament(service, userData.TournamentID);
-                if (viewModel.RemoveUser(account.Model.AccountID))
+                if (account.IsLoggedIn())
                 {
-                    Session["Message"] = "You have been removed from this tournament.";
-                    Session["Message.Class"] = ViewError.SUCCESS;
+                    if (model.RemoveUser(account.Model.AccountID))
+                    {
+                        Session["Message"] = "You have been removed from this tournament.";
+                        Session["Message.Class"] = ViewError.SUCCESS;
+                    }
+                    else
+                    {
+                        Session["Message"] = "We could not remove you from the tournament due to an error.";
+                        Session["Message.Class"] = ViewError.ERROR;
+                    }
                 }
                 else
                 {
-                    Session["Message"] = "We could not remove you from the tournament due to an error.";
+                    Session["Message"] = "You must login to do this action.";
                     Session["Message.Class"] = ViewError.ERROR;
+                    return RedirectToAction("Login", "Account");
                 }
             }
-            else
-            {
-                Session["Message"] = "You must login to do this action.";
-                Session["Message.Class"] = ViewError.ERROR;
-                return RedirectToAction("Login", "Account");
-            }
+            
 
-            return RedirectToAction("Tournament", "Tournament", new { guid = userData.TournamentID });
+            return RedirectToAction("Tournament", "Tournament", new { guid = tournamentId });
         }
     }
 }
