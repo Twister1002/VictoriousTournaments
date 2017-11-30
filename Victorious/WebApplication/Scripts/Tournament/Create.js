@@ -32,17 +32,16 @@
         var newBracket = bracketInfo.replace(/%n%/g, $("#TournamentEdit .bracket-section .info").length);
         $("#TournamentEdit .bracket-section .info").append("<ul class='bracket'>" + newBracket + "</ul>");
 
-        //Reset all the events 
-        $("#TournamentEdit .bracket-section .type select").off("change");
-        $("#TournamentEdit .bracket-section .type select").on("change", BracketInfoChange);
-        $("#TournamentEdit .bracket-section .remove").off("click").on("click", RemoveBracket);
-
-        LimitBrackets();
+        ConsructBracketData();
     }
 
     function RemoveBracket() {
         $(this).closest(".bracket").remove();
 
+        ConsructBracketData();
+    }
+
+    function ConsructBracketData() {
         // Need to reorder and rename all brackets
         $("#TournamentEdit .bracket-section .bracket").each(function (i, e) {
             type = $(e).find(".type");
@@ -56,6 +55,9 @@
             group.find("select").attr("name", group.find("select").attr("name").replace(/[1234567890]/g, i));
         });
 
+        //Reset all the events 
+        $("#TournamentEdit .bracket-section .type select").off("change");
+        $("#TournamentEdit .bracket-section .type select").on("change", BracketInfoChange);
         $("#TournamentEdit .bracket-section .remove").off("click").on("click", RemoveBracket);
         LimitBrackets();
     }

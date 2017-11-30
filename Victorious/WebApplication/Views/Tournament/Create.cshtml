@@ -201,7 +201,16 @@
 
                         <ul data-columns="3" class="user">
                             @Html.Hidden("Participants[" + i + "].TournamentUserID", user.TournamentUserID)
-                            <li class="column">@user.Name</li>
+                            <li class="column">
+                                @if (user.AccountID == null)
+                                {
+                                    @Html.TextBox("Participants[" + i + "].Name", user.Name, attributes)
+                                }
+                                else
+                                {
+                                    @user.Name
+                                }
+                            </li>
                             <li class="column">
                                 @if (user.PermissionLevel == (int)DatabaseLib.Permission.TOURNAMENT_CREATOR)
                                 {
@@ -209,7 +218,7 @@
                                 }
                                 else
                                 {
-                                    @Html.DropDownList("Participants[" + i + "].PermissionLevel", new SelectList(Model.Permissions, "Key", "Value", user.PermissionLevel), attributes)
+                                    @Html.DropDownList("Participants[" + i + "].PermissionLevel", new SelectList(Model.Permissions, "Key", "Value", user.PermissionLevel == null ? (int)DatabaseLib.Permission.TOURNAMENT_STANDARD : user.PermissionLevel), attributes)
                                 }
                             </li>
                             <li class="column">
@@ -221,7 +230,9 @@
                         </ul>
                     }
                     <ul data-columns="3" class="hide orig">
-                        <li class="column">@Html.TextBox("Participants[%n%].Name", "", new { placeholder = "Name" })</li>
+                        <li class="column">
+                            @Html.TextBox("Participants[%n%].Name", "", new { placeholder = "Name" })
+                        </li>
                         <li class="column">
                             @Html.DropDownList("Participants[%n%].PermissionLevel", new SelectList(Model.Permissions, "Key", "Value", (int)DatabaseLib.Permission.TOURNAMENT_STANDARD), attributes)
                         </li>

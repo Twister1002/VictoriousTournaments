@@ -1075,10 +1075,24 @@ namespace WebApplication.Models
                 viewModel.PlatformTypes = this.viewModel.PlatformTypes;
                 viewModel.BroadcastServices = this.viewModel.BroadcastServices;
                 viewModel.Permissions = this.viewModel.Permissions;
-                viewModel.Participants = this.viewModel.Participants;
                 viewModel.NumberOfRounds = Enumerable.Range(0, 20).ToList();
                 viewModel.NumberOfGroups = Enumerable.Range(0, 10).ToList();
                 viewModel.NumberPlayersAdvance = Enumerable.Range(4, 20).ToList();
+
+                if (viewModel.Broadcasters == null)
+                {
+                    viewModel.Broadcasters = this.viewModel.Broadcasters;
+                }
+
+                if (viewModel.Participants == null)
+                {
+                    viewModel.Participants = this.viewModel.Participants;
+                }
+
+                if (viewModel.Brackets == null)
+                {
+                    viewModel.Brackets = this.viewModel.Brackets;
+                }
             }
             else
             {

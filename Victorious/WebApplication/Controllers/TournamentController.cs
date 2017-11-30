@@ -189,8 +189,8 @@ namespace WebApplication.Controllers
             // Verify the user is logged in first
             if (!account.IsLoggedIn())
             {
-                Session["Message"] = "You must login to create a tournament.";
-                Session["Message.Class"] = ViewError.WARNING;
+                account.viewModel.message = "You must login to create a tournament.";
+                account.viewModel.errorType = ViewError.WARNING;
                 return RedirectToAction("Login", "Account");
             }
             else
@@ -204,21 +204,23 @@ namespace WebApplication.Controllers
                     }
                     else
                     {
-                        // Show a success message.
-                        Session["Message"] = "We were unable to create the tournament.";
-                        Session["Message.Class"] = ViewError.ERROR;
+                        viewModel.message = "We could not create your tournament due to an error. Please try again.";
+                        viewModel.errorType = ViewError.ERROR;
                     }
                 }
                 else
                 {
-                    Session["Message.Class"] = ViewError.ERROR;
-                    Session["Message"] = "Please enter in the required fields listed below.";
+                    viewModel.message = "Please enter all the required information";
+                    viewModel.errorType = ViewError.ERROR;
                 }
 
                 ViewBag.Create = true;
                 ViewBag.CanEdit = tourny.CanEdit();
                 ViewBag.InProgress = tourny.Model.InProgress;
-                return View("Create", tourny.viewModel);
+                tourny.SetupViewModel(account);
+                tourny.SetupViewModel(viewModel);
+
+                return View("Create", viewModel);
             }
         }
 
